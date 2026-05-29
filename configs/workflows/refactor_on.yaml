@@ -1,0 +1,24 @@
+# Phase 3 fo146 — Refactorer + refactor critique (default off on hermes_production).
+refactor:
+  enabled: true
+  stub_only: true
+  max_iterations: 1
+
+security_critique:
+  enabled: false
+
+performance_critique:
+  enabled: false
+
+network_resilience_critique:
+  enabled: false
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false

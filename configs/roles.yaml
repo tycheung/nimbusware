@@ -34,3 +34,21 @@ roles:
   - taxonomy_key: integration_adapter_writer
     role_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbb01"
     display_name: Integration Adapter Writer
+  - taxonomy_key: security_critic
+    role_id: "cccccccc-cccc-4ccc-8ccc-cccccccccc01"
+    display_name: Security Critic
+  - taxonomy_key: performance_critic
+    role_id: "dddddddd-dddd-4ddd-8ddd-dddddddddd01"
+    display_name: Performance Critic
+  - taxonomy_key: network_resilience_critic
+    role_id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeee01"
+    display_name: Network Resilience Critic
+  - taxonomy_key: refactorer
+    role_id: "ffffffff-ffff-4fff-8fff-ffffffffff01"
+    display_name: Refactorer
+  - taxonomy_key: refactor_critic
+    role_id: "10101010-1010-4101-8101-101010101001"
+    display_name: Refactor Critic
+  - taxonomy_key: code_quality_critic
+    role_id: "20202020-2020-4202-8202-202020202002"
+    display_name: Code Quality Critic

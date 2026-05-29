@@ -1,0 +1,23 @@
+# Phase 3 fo145 — Network/Resilience Critic (backend writer path).
+network_resilience_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  backend_only: true
+  severity_floor: MEDIUM
+
+security_critique:
+  enabled: false
+
+performance_critique:
+  enabled: false
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false

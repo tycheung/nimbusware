@@ -56,6 +56,10 @@ class RunTimelineResponse(BaseModel):
     persona_assignment: dict[str, Any] | None = None
     micro_slice: dict[str, Any] | None = None
     custom_agent: dict[str, Any] | None = None
+    security_critique: dict[str, Any] | None = None
+    performance_critique: dict[str, Any] | None = None
+    network_resilience_critique: dict[str, Any] | None = None
+    refactor_critique: dict[str, Any] | None = None
 
 
 class RunListResponse(BaseModel):

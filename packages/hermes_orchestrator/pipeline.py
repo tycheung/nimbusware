@@ -138,6 +138,11 @@ from hermes_orchestrator.run_dispatch import (
 from hermes_orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
 from hermes_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
 from hermes_orchestrator.escalation_execution import append_run_escalated
+from hermes_orchestrator.security_critique import (
+    emit_stub_security_critique_panel,
+    execute_security_critique_llm,
+    run_security_scan_summary,
+)
 from hermes_orchestrator.security_scan import run_security_scan, security_scan_tool_summary
 from hermes_orchestrator.stage_graph import (
     event_metadata_for_stage,
@@ -173,6 +178,35 @@ from hermes_orchestrator.workflow_parallel_writers import (
 )
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
 from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from hermes_orchestrator.performance_critique import (
+    emit_stub_performance_critique_panel,
+    execute_performance_critique_llm,
+)
+from hermes_orchestrator.network_resilience_critique import (
+    emit_stub_network_resilience_critique_panel,
+    execute_network_resilience_critique_llm,
+)
+from hermes_orchestrator.network_resilience_scan import run_network_resilience_scan_summary
+from hermes_orchestrator.refactor_stage import emit_refactor_stage_and_critique
+from hermes_orchestrator.workflow_network_resilience_critique import (
+    parse_network_resilience_critique_workflow_block,
+    network_resilience_critique_effective,
+    network_resilience_critique_llm_branch_effective,
+)
+from hermes_orchestrator.workflow_performance_critique import (
+    parse_performance_critique_workflow_block,
+    performance_critique_effective,
+    performance_critique_llm_branch_effective,
+)
+from hermes_orchestrator.workflow_refactor import (
+    parse_refactor_workflow_block,
+    refactor_stage_effective,
+)
+from hermes_orchestrator.workflow_security_critique import (
+    parse_security_critique_workflow_block,
+    security_critique_effective,
+    security_critique_llm_branch_effective,
+)
 from hermes_orchestrator.workflow_self_refinement import (
     parse_self_refinement_workflow_block,
     self_refinement_llm_critique_branch_effective,
@@ -2036,6 +2070,228 @@ class RunOrchestrator:
 
         return execute_micro_slice_pass(self, run_id, workspace=workspace)
 
+    def _security_critique_producer_for_run(
+        self,
+        sg_snapshot: dict[str, Any] | None,
+    ) -> str:
+        if sg_snapshot and "module_integrator" in stage_graph_node_lookup(sg_snapshot):
+            return "module_integrator"
+        if sg_snapshot and "frontend_writer" in stage_graph_node_lookup(sg_snapshot):
+            return "frontend_writer"
+        return "backend_writer"
+
+    def _emit_security_critique_optional(
+        self,
+        run_id: UUID,
+        *,
+        workspace: Path | None,
+        workflow_profile: str | None,
+        sg_snapshot: dict[str, Any] | None,
+    ) -> bool:
+        """Return True when security critique gate last verdict is FAIL (hard-block hint)."""
+        block = parse_security_critique_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=self._config_materializer,
+        )
+        if not security_critique_effective(block):
+            return False
+        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        scan_summary = run_security_scan_summary(ws)
+        producer = self._security_critique_producer_for_run(sg_snapshot)
+        eff = self._effective_universal_critique_for_run(run_id)
+        enforce = eff.unanimous_gate_enforce
+        emitted_llm = False
+        if security_critique_llm_branch_effective(block):
+            model = self._selected_model_for_run(run_id)
+            if model:
+                base = self._base_cfg()
+                runtime = base.get("runtime") or {}
+                emitted_llm = execute_security_critique_llm(
+                    self._store,
+                    self._registry,
+                    self._critique_router,
+                    run_id=run_id,
+                    producer_tax_key=producer,
+                    scan_summary=scan_summary,
+                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    model_id=model,
+                    block=block,
+                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    unanimous_gate_enforce=enforce,
+                )
+        if not emitted_llm and block.stub:
+            emit_stub_security_critique_panel(
+                self._store,
+                self._registry,
+                self._critique_router,
+                run_id=run_id,
+                producer_tax_key=producer,
+                scan_summary=scan_summary,
+                block=block,
+                unanimous_gate_enforce=enforce,
+            )
+        rows = self._store.list_run_events(str(run_id))
+        for row in reversed(rows):
+            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+                continue
+            pl = row.get("payload") or {}
+            if pl.get("stage_name") != "implementation.security_critique":
+                continue
+            return str(pl.get("verdict", "")).upper() == "FAIL"
+        return False
+
+    def _emit_performance_critique_optional(
+        self,
+        run_id: UUID,
+        *,
+        workspace: Path | None,
+        workflow_profile: str | None,
+        sg_snapshot: dict[str, Any] | None,
+    ) -> bool:
+        block = parse_performance_critique_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=self._config_materializer,
+        )
+        if not performance_critique_effective(block):
+            return False
+        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        scan_summary = run_security_scan_summary(ws)
+        producer = self._security_critique_producer_for_run(sg_snapshot)
+        eff = self._effective_universal_critique_for_run(run_id)
+        enforce = eff.unanimous_gate_enforce
+        emitted_llm = False
+        if performance_critique_llm_branch_effective(block):
+            model = self._selected_model_for_run(run_id)
+            if model:
+                base = self._base_cfg()
+                runtime = base.get("runtime") or {}
+                emitted_llm = execute_performance_critique_llm(
+                    self._store,
+                    self._registry,
+                    self._critique_router,
+                    run_id=run_id,
+                    producer_tax_key=producer,
+                    scan_summary=scan_summary,
+                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    model_id=model,
+                    block=block,
+                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    unanimous_gate_enforce=enforce,
+                )
+        if not emitted_llm and block.stub:
+            emit_stub_performance_critique_panel(
+                self._store,
+                self._registry,
+                self._critique_router,
+                run_id=run_id,
+                producer_tax_key=producer,
+                scan_summary=scan_summary,
+                block=block,
+                unanimous_gate_enforce=enforce,
+            )
+        rows = self._store.list_run_events(str(run_id))
+        for row in reversed(rows):
+            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+                continue
+            pl = row.get("payload") or {}
+            if pl.get("stage_name") != "implementation.performance_critique":
+                continue
+            return str(pl.get("verdict", "")).upper() == "FAIL"
+        return False
+
+    def _emit_network_resilience_critique_optional(
+        self,
+        run_id: UUID,
+        *,
+        workspace: Path | None,
+        workflow_profile: str | None,
+        sg_snapshot: dict[str, Any] | None,
+    ) -> bool:
+        block = parse_network_resilience_critique_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=self._config_materializer,
+        )
+        if not network_resilience_critique_effective(block):
+            return False
+        producer = "backend_writer" if block.backend_only else self._security_critique_producer_for_run(
+            sg_snapshot,
+        )
+        if block.backend_only and "backend_writer" not in self._critique_router.known_producer_keys():
+            return False
+        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        scan_summary = run_network_resilience_scan_summary(ws)
+        eff = self._effective_universal_critique_for_run(run_id)
+        enforce = eff.unanimous_gate_enforce
+        emitted_llm = False
+        if network_resilience_critique_llm_branch_effective(block):
+            model = self._selected_model_for_run(run_id)
+            if model:
+                base = self._base_cfg()
+                runtime = base.get("runtime") or {}
+                emitted_llm = execute_network_resilience_critique_llm(
+                    self._store,
+                    self._registry,
+                    self._critique_router,
+                    run_id=run_id,
+                    scan_summary=scan_summary,
+                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    model_id=model,
+                    block=block,
+                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    unanimous_gate_enforce=enforce,
+                )
+        if not emitted_llm and block.stub:
+            emit_stub_network_resilience_critique_panel(
+                self._store,
+                self._registry,
+                self._critique_router,
+                run_id=run_id,
+                scan_summary=scan_summary,
+                block=block,
+                unanimous_gate_enforce=enforce,
+            )
+        rows = self._store.list_run_events(str(run_id))
+        for row in reversed(rows):
+            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+                continue
+            pl = row.get("payload") or {}
+            if pl.get("stage_name") != "implementation.network_resilience_critique":
+                continue
+            return str(pl.get("verdict", "")).upper() == "FAIL"
+        return False
+
+    def _emit_refactor_stage_optional(
+        self,
+        run_id: UUID,
+        *,
+        workflow_profile: str | None,
+    ) -> bool:
+        block = parse_refactor_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=self._config_materializer,
+        )
+        if not refactor_stage_effective(block):
+            return False
+        eff = self._effective_universal_critique_for_run(run_id)
+        force_fail = os.environ.get("HERMES_REFACTOR_FORCE_FAIL", "").lower() in (
+            "1",
+            "true",
+            "yes",
+        )
+        return emit_refactor_stage_and_critique(
+            self._store,
+            self._registry,
+            self._critique_router,
+            run_id=run_id,
+            block=block,
+            unanimous_gate_enforce=eff.unanimous_gate_enforce,
+            force_fail=force_fail,
+        )
+
     def execute_writer_verifier_pass(
         self,
         run_id: UUID,
@@ -2177,6 +2433,34 @@ class RunOrchestrator:
 
         log_snippet = "\n".join(log.splitlines()[:60])
         eff = self._effective_universal_critique_for_run(run_id)
+        security_gate_fail = self._emit_security_critique_optional(
+            run_id,
+            workspace=workspace,
+            workflow_profile=wf_prof,
+            sg_snapshot=sg_snapshot,
+        )
+        performance_gate_fail = False
+        if not security_gate_fail:
+            performance_gate_fail = self._emit_performance_critique_optional(
+                run_id,
+                workspace=workspace,
+                workflow_profile=wf_prof,
+                sg_snapshot=sg_snapshot,
+            )
+        network_gate_fail = False
+        if not security_gate_fail and not performance_gate_fail:
+            network_gate_fail = self._emit_network_resilience_critique_optional(
+                run_id,
+                workspace=workspace,
+                workflow_profile=wf_prof,
+                sg_snapshot=sg_snapshot,
+            )
+        refactor_gate_fail = False
+        if not security_gate_fail and not performance_gate_fail and not network_gate_fail:
+            refactor_gate_fail = self._emit_refactor_stage_optional(
+                run_id,
+                workflow_profile=wf_prof,
+            )
         impl_llm = eff.impl_llm
         stub_impl = eff.impl_stub
         emitted_impl_llm = False
@@ -2197,7 +2481,14 @@ class RunOrchestrator:
                     log_snippet=log_snippet,
                     timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                 )
-        if not emitted_impl_llm and stub_impl:
+        if (
+            not security_gate_fail
+            and not performance_gate_fail
+            and not network_gate_fail
+            and not refactor_gate_fail
+            and not emitted_impl_llm
+            and stub_impl
+        ):
             emit_stub_implementation_critique_panel(
                 self._store,
                 self._registry,
@@ -2205,6 +2496,8 @@ class RunOrchestrator:
                 run_id=run_id,
             )
         self._maybe_emit_stage_failed_for_implementation_critique_gate_fail(run_id, eff)
+        if security_gate_fail or performance_gate_fail or network_gate_fail or refactor_gate_fail:
+            return
         rows_post_impl = self._store.list_run_events(str(run_id))
         if not self._critique_impl_hard_block_gate_fail(rows_post_impl, eff):
             self._emit_test_writer_critique_optional(

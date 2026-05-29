@@ -1694,6 +1694,12 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     ss_sum = ss_hist[-1] if ss_hist else None
     sr_markers = self_refinement_marker_timeline_history(events)
     from hermes_orchestrator.micro_slice import micro_slice_timeline_summary
+    from hermes_orchestrator.network_resilience_critique import (
+        network_resilience_critique_timeline_summary,
+    )
+    from hermes_orchestrator.performance_critique import performance_critique_timeline_summary
+    from hermes_orchestrator.refactor_stage import refactor_critique_timeline_summary
+    from hermes_orchestrator.security_critique import security_critique_timeline_summary
 
     custom_agent_summary: dict[str, Any] | None = None
     for ev in events:
@@ -1725,6 +1731,10 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
         persona_assignment=persona_assignment_timeline_summary(events),
         micro_slice=micro_slice_timeline_summary(events),
         custom_agent=custom_agent_summary,
+        security_critique=security_critique_timeline_summary(events),
+        performance_critique=performance_critique_timeline_summary(events),
+        network_resilience_critique=network_resilience_critique_timeline_summary(events),
+        refactor_critique=refactor_critique_timeline_summary(events),
     )
 
 

@@ -4,6 +4,12 @@ pairings:
   backend_writer:
     - product_reference_critic
     - domain_critic
+    - security_critic
+    - performance_critic
+    - network_resilience_critic
+  refactorer:
+    - refactor_critic
+    - code_quality_critic
   planner:
     - product_reference_critic
     - domain_critic
@@ -13,9 +19,13 @@ pairings:
   frontend_writer:
     - product_reference_critic
     - domain_critic
+    - security_critic
+    - performance_critic
   module_integrator:
     - product_reference_critic
     - domain_critic
+    - security_critic
+    - performance_critic
   integration_adapter_writer:
     - product_reference_critic
     - domain_critic
