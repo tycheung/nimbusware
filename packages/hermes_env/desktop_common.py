@@ -39,15 +39,69 @@ def venv_python_candidates(root: Path) -> tuple[Path, ...]:
     )
 
 
+def python_in_venv(venv_root: Path) -> Path | None:
+    """Return the interpreter inside a Poetry/virtualenv root directory."""
+    if sys.platform == "win32":
+        candidates = (
+            venv_root / "Scripts" / "python.exe",
+            venv_root / "Scripts" / "python3.exe",
+        )
+    else:
+        candidates = (
+            venv_root / "bin" / "python3",
+            venv_root / "bin" / "python",
+        )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def poetry_venv_python(root: Path) -> Path | None:
+    """Resolve ``poetry env info -p`` when Poetry manages the project venv."""
+    poetry = shutil.which("poetry")
+    if not poetry:
+        return None
+    proc = subprocess.run(
+        [poetry, "env", "info", "-p"],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return None
+    return python_in_venv(Path(proc.stdout.strip()))
+
+
 def resolve_python_command(root: Path) -> list[str]:
-    """Prefer repo ``.venv`` Python, then ``poetry run python``, then current interpreter."""
+    """Prefer repo ``.venv``, then Poetry's env, then ``poetry run python``.
+
+    Never use a frozen launcher executable as Python.
+    """
     for candidate in venv_python_candidates(root):
         if candidate.is_file():
             return [str(candidate)]
+    poetry_python = poetry_venv_python(root)
+    if poetry_python is not None:
+        return [str(poetry_python)]
     poetry = shutil.which("poetry")
     if poetry:
         return [poetry, "run", "python"]
+    if getattr(sys, "frozen", False):
+        raise FileNotFoundError(
+            "No Python environment found for this repo. "
+            "Use Install / setup in the launcher (or run scripts/install_nimbusware.py)."
+        )
     return [sys.executable]
+
+
+def run_log_path(root: Path) -> Path:
+    """Desktop run diagnostics log (API / Streamlit / pywebview startup)."""
+    log_dir = root / ".cache"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    return log_dir / "nimbusware-run.log"
 
 
 def default_install_script_args() -> list[str]:
@@ -82,12 +136,20 @@ def ui_mono_font() -> tuple[str, int]:
     return ("DejaVu Sans Mono", 10)
 
 
-def subprocess_spawn_kwargs(*, detach: bool = False) -> dict[str, object]:
-    """Extra ``Popen`` kwargs for background services (API / Streamlit)."""
+def subprocess_spawn_kwargs(
+    *,
+    detach: bool = False,
+    hide_window: bool = False,
+) -> dict[str, object]:
+    """Extra ``Popen`` kwargs.
+
+    Use ``hide_window=True`` for headless API/Streamlit children on Windows.
+    Leave it false when starting ``run.py`` so failures can surface a console.
+    """
     kwargs: dict[str, object] = {}
-    if sys.platform == "win32":
+    if sys.platform == "win32" and hide_window:
         kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
-    elif detach:
+    elif detach and sys.platform != "win32":
         kwargs["start_new_session"] = True
     return kwargs
 

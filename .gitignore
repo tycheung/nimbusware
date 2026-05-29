@@ -23,6 +23,10 @@ env/
 build/
 develop-eggs/
 dist/
+# PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/NimbuswareLauncher.spec)
+/NimbuswareLauncher.spec
+# Rare stray single-character junk at repo root (broken UPX/tooling redirects)
+/[0-9]
 downloads/
 eggs/
 .eggs/
@@ -64,6 +68,7 @@ nosetests.xml
 # Logs and local scratch
 *.log
 logs/
+.cache/
 
 # Nimbusware planning docs (local sprint board; normative contract may stay out of repo)
 PLAN_GAP.md

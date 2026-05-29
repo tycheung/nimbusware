@@ -1,9 +1,14 @@
-# -*- mode: python ; coding: utf-8 -*-
+﻿# -*- mode: python ; coding: utf-8 -*-
+# Built by scripts/build_launcher.ps1 | build_launcher.sh
 
+import os
+
+ROOT = os.path.abspath(os.path.join(SPECPATH, ".."))
+LAUNCHER = os.path.join(ROOT, "launcher.py")
 
 a = Analysis(
-    ['launcher.py'],
-    pathex=['packages'],
+    [LAUNCHER],
+    pathex=[os.path.join(ROOT, "packages")],
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -22,11 +27,11 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='NimbuswareLauncher',
+    name="NimbuswareLauncher",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,

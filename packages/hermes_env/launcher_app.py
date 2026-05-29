@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 import tkinter as tk
 from collections.abc import Callable
 from tkinter import messagebox, scrolledtext, ttk
@@ -17,6 +18,7 @@ from hermes_env.desktop_common import (
     read_poetry_version,
     repo_root,
     resolve_python_command,
+    run_log_path,
     run_script,
     subprocess_spawn_kwargs,
     ui_mono_font,
@@ -169,10 +171,11 @@ class NimbuswareLauncherApp:
             return
 
         def _worker() -> None:
+            self._append_log("Running Nimbusware setup...")
             try:
                 code = run_script(
                     self.repo,
-                    "scripts/install_hermes.py",
+                    "scripts/install_nimbusware.py",
                     *default_install_script_args(),
                     log=self._append_log,
                 )
@@ -202,22 +205,51 @@ class NimbuswareLauncherApp:
         if not run_py.is_file():
             messagebox.showerror("Run failed", f"Missing {run_py}")
             return
-        cmd = [*resolve_python_command(self.repo), str(run_py)]
+        try:
+            cmd = [*resolve_python_command(self.repo), str(run_py)]
+        except FileNotFoundError as exc:
+            messagebox.showerror("Run failed", str(exc))
+            self._append_log(f"ERROR: {exc}")
+            return
+
+        log_file = run_log_path(self.repo)
         self._append_log(f"$ {' '.join(cmd)}")
+        self._append_log(f"Run log: {log_file}")
         env = os.environ.copy()
         env.setdefault("HERMES_REPO_ROOT", str(self.repo))
         try:
-            subprocess.Popen(  # noqa: S603
+            proc = subprocess.Popen(  # noqa: S603
                 cmd,
                 cwd=str(self.repo),
                 env=env,
-                **subprocess_spawn_kwargs(detach=True),
+                **subprocess_spawn_kwargs(detach=True, hide_window=False),
             )
         except OSError as exc:
             messagebox.showerror("Run failed", str(exc))
             return
-        self.status_label.configure(text="Nimbusware is running in a separate window.")
-        self._append_log("Started Nimbusware (Hermes agent API + console window).")
+
+        def _watch() -> None:
+            time.sleep(4.0)
+            if proc.poll() is None:
+                return
+            tail = ""
+            if log_file.is_file():
+                lines = log_file.read_text(encoding="utf-8", errors="replace").splitlines()
+                tail = "\n".join(lines[-12:])
+            detail = tail or f"Process exited immediately (code {proc.returncode})."
+            self.root.after(
+                0,
+                lambda: messagebox.showerror(
+                    "Nimbusware did not start",
+                    "The desktop run exited before opening a window.\n\n"
+                    f"{detail}\n\nFull log:\n{log_file}",
+                ),
+            )
+            self.root.after(0, lambda: self._append_log(f"ERROR: run.py exited (code {proc.returncode})"))
+
+        threading.Thread(target=_watch, daemon=True).start()
+        self.status_label.configure(text="Starting Nimbusware...")
+        self._append_log("Starting Nimbusware (console + desktop window)...")
 
 
 def main() -> int:

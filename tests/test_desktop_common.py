@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -10,9 +11,11 @@ import pytest
 from hermes_env.desktop_common import (
     default_install_script_args,
     pick_webview_gui,
+    poetry_venv_python,
     read_poetry_version,
     repo_root,
     resolve_python_command,
+    run_log_path,
     venv_python_candidates,
 )
 from hermes_env.run_app import _streamlit_command
@@ -59,6 +62,23 @@ def test_resolve_python_command_returns_executable() -> None:
     assert cmd
     exe = Path(cmd[0]).name.lower()
     assert exe.startswith("python") or "poetry" in exe
+    assert "nimbuswarelauncher" not in exe
+
+
+def test_poetry_venv_python_when_poetry_available() -> None:
+    root = repo_root(start=Path(__file__).resolve().parent)
+    if shutil.which("poetry") is None:
+        pytest.skip("poetry not on PATH")
+    py = poetry_venv_python(root)
+    assert py is not None
+    assert py.is_file()
+
+
+def test_run_log_path_under_cache() -> None:
+    root = repo_root(start=Path(__file__).resolve().parent)
+    path = run_log_path(root)
+    assert path.parent.name == ".cache"
+    assert path.name == "nimbusware-run.log"
 
 
 def test_streamlit_command_uses_headless_local_bind() -> None:

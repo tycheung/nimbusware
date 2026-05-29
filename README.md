@@ -68,7 +68,7 @@ Buttons:
 
 - **Check for updates** — `git fetch` + compare to upstream
 - **Update (git pull)** — `git pull --ff-only`
-- **Install / setup** — `scripts/install_hermes.py` (Poetry, Postgres, optional seed)
+- **Install / setup** — `scripts/install_nimbusware.py` (Poetry, Postgres, optional seed)
 - **Run Nimbusware** — launches `run.py`
 
 #### Option C: Separate processes
@@ -119,7 +119,7 @@ OpenAPI: http://127.0.0.1:8000/openapi.json
 On Linux, `run.py` can install GTK/WebKit deps automatically (`packages/hermes_env/linux_desktop_deps.py`). Skip during install:
 
 ```bash
-python scripts/install_hermes.py --skip-linux-desktop-deps
+python scripts/install_nimbusware.py --skip-linux-desktop-deps
 ```
 
 ## Build Launcher Binary
@@ -132,7 +132,7 @@ Platform-specific; build on each target OS.
 .\scripts\build_launcher.ps1
 ```
 
-→ `dist/NimbuswareLauncher.exe`
+→ `dist/NimbuswareLauncher.exe` (temp files stay under `build/` and `dist/`, both gitignored)
 
 **macOS / Linux**
 
@@ -159,7 +159,7 @@ poetry run pytest tests -q
 | **Hermes** / **Hermes agent** | Orchestration subsystem: `packages/hermes_*`, `agent_core`, LLM stage prompts, `.hermes/` artifacts |
 | **Hermes API** | HTTP control plane in `hermes_api` (`/v1`, `poetry run hermes-api`) |
 
-**Intentionally unchanged (compatibility):** Python package names (`hermes_api`, …), Poetry scripts `hermes-*`, `HERMES_*` env vars, `X-Hermes-Admin-Token`, Postgres role/db `hermes`, workflow profile `hermes_production`, install script filenames (`install_hermes.py`).
+**Intentionally unchanged (compatibility):** Python package names (`hermes_api`, …), Poetry scripts `hermes-*`, `HERMES_*` env vars, `X-Hermes-Admin-Token`, Postgres role/db `hermes`, workflow profile `hermes_production`.
 
 **Preferred for new docs and UX:** `nimbusware-run`, `nimbusware-launcher`, and “Nimbusware” for anything that is not specifically the agent runtime.
 

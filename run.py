@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start Nimbusware (Hermes agent API + operator console) in a pywebview desktop shell."""
+"""Start Nimbusware (API + operator console) in a pywebview desktop shell."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Start Nimbusware (Hermes agent API + Streamlit console) inside a pywebview window."""
+"""Start Nimbusware (API + Streamlit console) inside a pywebview window."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from hermes_env.desktop_common import (
     pick_webview_gui,
     repo_root,
     resolve_python_command,
+    run_log_path,
     subprocess_spawn_kwargs,
     terminate_process,
 )
@@ -78,7 +79,7 @@ def _spawn(
     cwd: Path,
     env: dict[str, str],
 ) -> subprocess.Popen[object]:
-    kwargs = subprocess_spawn_kwargs(detach=sys.platform != "win32")
+    kwargs = subprocess_spawn_kwargs(detach=sys.platform != "win32", hide_window=True)
     proc = subprocess.Popen(cmd, cwd=str(cwd), env=env, **kwargs)  # noqa: S603
     _PROCS.append(proc)
     return proc
@@ -156,6 +157,14 @@ def run_desktop(
     smoke_test: bool = False,
 ) -> int:
     repo = (root or repo_root()).resolve()
+    log_file = run_log_path(repo)
+
+    def _log(msg: str) -> None:
+        print(msg, flush=True)
+        with log_file.open("a", encoding="utf-8") as handle:
+            handle.write(msg + "\n")
+
+    log_file.write_text("", encoding="utf-8")
 
     atexit.register(_terminate_procs)
 
@@ -168,8 +177,9 @@ def run_desktop(
         signal.signal(signal.SIGTERM, _handle_signal)
 
     api_port_display = api_port or os.environ.get("HERMES_API_PORT", "8000")
-    print(f"Nimbusware repo: {repo}")
-    print(f"API: http://{api_host}:{api_port_display}/v1 (local only)")
+    _log(f"Nimbusware repo: {repo}")
+    _log(f"Log file: {log_file}")
+    _log(f"API: http://{api_host}:{api_port_display}/v1 (local only)")
 
     try:
         console_url, api_url, _env = start_servers(
@@ -180,40 +190,38 @@ def run_desktop(
             streamlit_port=streamlit_port,
         )
     except (TimeoutError, RuntimeError, FileNotFoundError) as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
+        _log(f"ERROR: {exc}")
         _terminate_procs()
         return 1
 
-    print(f"Console server: {console_url} (pywebview shell)")
-    print(f"API ready: {api_url}")
+    _log(f"Console server: {console_url} (pywebview shell)")
+    _log(f"API ready: {api_url}")
 
     if smoke_test:
-        print("Smoke test passed: API and Streamlit are reachable.")
+        _log("Smoke test passed: API and Streamlit are reachable.")
         _terminate_procs()
         return 0
 
     py_cmd = resolve_python_command(repo)
     if sys.platform.startswith("linux"):
-        ok, msg = ensure_linux_desktop_deps(repo, py_cmd, log=print)
+        ok, msg = ensure_linux_desktop_deps(repo, py_cmd, log=_log)
         if not ok:
-            print(f"ERROR: {msg}", file=sys.stderr)
-            print(f"Manual: {linux_desktop_manual_hint()}", file=sys.stderr)
+            _log(f"ERROR: {msg}")
+            _log(f"Manual: {linux_desktop_manual_hint()}")
             _terminate_procs()
             return 1
         if msg and "skipped" not in msg.lower():
-            print(msg)
+            _log(msg)
 
     try:
         import webview
     except ImportError:
-        print(
-            "ERROR: pywebview is not installed. Run: poetry install",
-            file=sys.stderr,
-        )
+        _log("ERROR: pywebview is not installed. Run Install / setup or: poetry install")
         _terminate_procs()
         return 1
 
     gui = pick_webview_gui()
+    _log(f"Opening desktop window (pywebview backend={gui!r})...")
     webview.create_window(
         window_title,
         console_url,
@@ -226,11 +234,13 @@ def run_desktop(
         webview.start(gui=gui)
     except Exception as exc:  # noqa: BLE001 — surface backend install hints
         hint = ""
-        if sys.platform.startswith("linux"):
+        if sys.platform == "win32":
+            hint = " Install Microsoft Edge WebView2 Runtime if missing."
+        elif sys.platform.startswith("linux"):
             hint = f" Try: {linux_desktop_manual_hint()}"
         elif sys.platform == "darwin":
             hint = " On macOS, pywebview uses Cocoa (no extra browser required)."
-        print(f"ERROR: pywebview failed to start: {exc}.{hint}", file=sys.stderr)
+        _log(f"ERROR: pywebview failed to start: {exc}.{hint}")
         _terminate_procs()
         return 1
     finally:
@@ -240,7 +250,7 @@ def run_desktop(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Run Nimbusware (Hermes agent API + operator console) in a desktop window.",
+        description="Run Nimbusware (API + operator console) in a desktop window.",
     )
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--api-host", default="127.0.0.1")

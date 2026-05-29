@@ -3,19 +3,19 @@
 
 Run from an existing clone::
 
-    python scripts/install_hermes.py
+    python scripts/install_nimbusware.py
 
 Or clone first (requires git)::
 
-    python scripts/install_hermes.py --clone <repo-url> --target-dir D:\\Nimbusware
+    python scripts/install_nimbusware.py --clone <repo-url> --target-dir D:\\Nimbusware
 
 If PostgreSQL is not running, the script shows an interactive menu (Docker,
 Windows ``.exe``, winget, manual, custom URL, or skip). Ollama can be installed
 via winget/brew/curl (see ``--ollama-choice``). Use ``--non-interactive`` for CI.
 Use ``--install-postgres-native`` or ``--postgres-choice native`` to skip the Postgres menu.
 
-Windows wrapper: ``.\\scripts\\install-hermes.ps1``
-Unix wrapper: ``bash scripts/install-hermes.sh``
+Windows wrapper: ``.\\scripts\\install-nimbusware.ps1``
+Unix wrapper: ``bash scripts/install-nimbusware.sh``
 """
 
 from __future__ import annotations
@@ -108,13 +108,13 @@ def _repo_root_from_script() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def _is_hermes_repo(path: Path) -> bool:
+def _is_nimbusware_repo(path: Path) -> bool:
     return (path / "pyproject.toml").is_file() and (path / SCHEMA_REL).is_file()
 
 
 def _clone_repo(url: str, target: Path) -> Path:
     if target.exists() and any(target.iterdir()):
-        if not _is_hermes_repo(target):
+        if not _is_nimbusware_repo(target):
             raise SetupError(f"Target exists but is not a Nimbusware repo: {target}")
         _log(f"Using existing clone at {target}")
         return target.resolve()
@@ -123,7 +123,7 @@ def _clone_repo(url: str, target: Path) -> Path:
         raise SetupError("git is required for --clone but was not found on PATH.")
     target.parent.mkdir(parents=True, exist_ok=True)
     _run([git, "clone", url, str(target)])
-    if not _is_hermes_repo(target):
+    if not _is_nimbusware_repo(target):
         raise SetupError(f"Cloned repo does not look like Nimbusware: {target}")
     return target.resolve()
 
@@ -145,6 +145,10 @@ def _poetry_install(
     with_redis: bool,
 ) -> None:
     _ensure_poetry_lock(poetry, repo)
+    _run(
+        [poetry, "config", "virtualenvs.in-project", "true", "--local"],
+        cwd=repo,
+    )
     cmd = [poetry, "install", "--no-interaction"]
     if with_faiss:
         cmd.extend(["--with", "faiss"])
@@ -539,7 +543,7 @@ def _print_next_steps(
     _log("")
     _log("Environment file:")
     _log(
-        f"  {repo / '.env'}  (see .env.example; loaded by Nimbusware apps and Hermes agent services)"
+        f"  {repo / '.env'}  (see .env.example; loaded automatically by Nimbusware)"
     )
     _log("")
     _log("PowerShell environment (current session; optional if using .env):")
@@ -828,7 +832,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.clone:
         target = args.target_dir or (Path.cwd() / "Nimbusware")
         repo = _clone_repo(args.clone, target)
-    elif not _is_hermes_repo(repo):
+    elif not _is_nimbusware_repo(repo):
         raise SetupError(
             f"Not a Nimbusware repo (missing pyproject.toml or schema): {repo}. "
             "Use --clone URL or run from a checkout.",

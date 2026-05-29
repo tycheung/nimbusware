@@ -239,9 +239,9 @@ def check_faiss_stale_rebuild() -> CheckResult:
 
 
 def check_install_script() -> CheckResult:
-    script = REPO_ROOT / "scripts" / "install_hermes.py"
+    script = REPO_ROOT / "scripts" / "install_nimbusware.py"
     code = _run([sys.executable, str(script), "--check-only"], cwd=REPO_ROOT)
-    return CheckResult("install_check", code == 0, "install_hermes.py --check-only", required=True)
+    return CheckResult("install_check", code == 0, "install_nimbusware.py --check-only", required=True)
 
 
 def run_checks(

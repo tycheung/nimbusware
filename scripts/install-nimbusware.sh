@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Bootstrap Nimbusware: Poetry deps, Docker Postgres, schema apply.
 # Usage (from repo root):
-#   bash scripts/install-hermes.sh
+#   bash scripts/install-nimbusware.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -13,4 +13,4 @@ else
   echo "ERROR: python3 not found" >&2
   exit 1
 fi
-exec "$PY" "$ROOT/scripts/install_hermes.py" "$@"
+exec "$PY" "$ROOT/scripts/install_nimbusware.py" "$@"
