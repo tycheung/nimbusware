@@ -28,6 +28,12 @@ KNOWN_STAGE_GRAPH_STAGES: frozenset[str] = frozenset(
         "scraper:fetch",
         "self_refinement:policy",
         "agent_evaluator.critique",
+        "slice.plan",
+        "slice.implement",
+        "slice.verify",
+        "slice.critique",
+        "slice.test",
+        "slice.gate",
     },
 )
 

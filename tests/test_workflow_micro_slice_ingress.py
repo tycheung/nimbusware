@@ -1,0 +1,13 @@
+"""micro_slice workflow validates against known stage graph (fo152)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from hermes_orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
+
+
+def test_micro_slice_workflow_profile_validates() -> None:
+    root = Path(__file__).resolve().parents[1]
+    assert_known_workflow(root, "micro_slice")
+    assert_stage_graph_valid(root, "micro_slice")

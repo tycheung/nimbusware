@@ -1304,6 +1304,18 @@ st.title("Nimbusware operator console")
 st.caption(streamlit_theme_defaults_caption(repo_root=Path(os.environ.get("HERMES_REPO_ROOT", "."))))
 st.caption(streamlit_white_label_deferred_caption())
 
+_repo_for_ui = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+with st.sidebar:
+    from hermes_console.custom_agents_ui import render_custom_agents_sidebar
+
+    render_custom_agents_sidebar(_repo_for_ui)
+
+with st.container():
+    from hermes_console.operator_chat import render_operator_chat
+
+    render_operator_chat(repo_root=_repo_for_ui)
+    st.divider()
+
 _run_list_ensure_defaults()
 if _SS_DETAIL not in st.session_state:
     st.session_state[_SS_DETAIL] = ""

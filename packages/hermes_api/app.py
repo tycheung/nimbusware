@@ -15,7 +15,15 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from hermes_api.errors import problem
-from hermes_api.routes import actions, bundles, personas, preflight, runs, scraper_artifacts
+from hermes_api.routes import (
+    actions,
+    bundles,
+    custom_agents,
+    personas,
+    preflight,
+    runs,
+    scraper_artifacts,
+)
 from hermes_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from hermes_config import ConfigMaterializer
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
@@ -176,5 +184,6 @@ app.include_router(runs.router, prefix="/v1")
 app.include_router(actions.router, prefix="/v1")
 app.include_router(bundles.router, prefix="/v1")
 app.include_router(personas.router, prefix="/v1")
+app.include_router(custom_agents.router, prefix="/v1")
 app.include_router(preflight.router, prefix="/v1")
 app.include_router(scraper_artifacts.router, prefix="/v1")

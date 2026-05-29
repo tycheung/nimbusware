@@ -9,12 +9,14 @@ from pathlib import Path
 from hermes_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,
+    KEY_CUSTOM_AGENTS_REGISTRY,
     KEY_ESCALATION,
     KEY_INTEGRATOR_THRESHOLDS,
     KEY_MODEL_ROUTING,
     KEY_PERSONA_SHELVES,
     KEY_ROLE_REGISTRY,
     KEY_SELF_REFINEMENT,
+    NS_CUSTOM_AGENTS,
     NS_PERSONAS,
     NS_POLICY,
     NS_ROLES,
@@ -129,7 +131,10 @@ def seed_config_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]
 
         counts[NS_WORKFLOWS] = wf_n
 
-
+    agents_path = repo / "configs" / "custom_agents" / "registry.yaml"
+    if agents_path.is_file():
+        store.upsert(NS_CUSTOM_AGENTS, KEY_CUSTOM_AGENTS_REGISTRY, load_yaml(agents_path))
+        counts[NS_CUSTOM_AGENTS] = counts.get(NS_CUSTOM_AGENTS, 0) + 1
 
     t2 = seed_t2_policy_documents_from_repo(repo, store)
 
@@ -171,6 +176,11 @@ def preview_seed_from_repo(
         NS_PERSONAS,
         KEY_CRITIQUE_PAIRINGS,
         repo / "configs" / "personas" / "critique_pairings.yaml",
+    )
+    _add(
+        NS_CUSTOM_AGENTS,
+        KEY_CUSTOM_AGENTS_REGISTRY,
+        repo / "configs" / "custom_agents" / "registry.yaml",
     )
     if namespaces is None or NS_WORKFLOWS in namespaces:
         wf_dir = repo / "configs" / "workflows"

@@ -69,6 +69,8 @@ nosetests.xml
 *.log
 logs/
 .cache/
+# Operator chat transcripts (fo150; local only)
+.cache/nimbusware_chat/
 
 # Nimbusware planning docs (local sprint board; normative contract may stay out of repo)
 PLAN_GAP.md

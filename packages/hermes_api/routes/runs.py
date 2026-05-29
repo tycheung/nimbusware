@@ -1217,6 +1217,7 @@ class CreateRunBody(BaseModel):
     workflow_profile: str = Field(default_factory=default_workflow_profile, min_length=1)
     business_area_persona_id: str | None = Field(default=None, max_length=200)
     development_role_persona_id: str | None = Field(default=None, max_length=200)
+    custom_agent_id: str | None = Field(default=None, max_length=120)
 
 
 @router.get(
@@ -1599,6 +1600,7 @@ def create_run(
             correlation_id=key_uuid,
             business_area_persona_id=body.business_area_persona_id,
             development_role_persona_id=body.development_role_persona_id,
+            custom_agent_id=body.custom_agent_id,
         )
     except FileNotFoundError as exc:
         raise HTTPException(
@@ -1691,6 +1693,15 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     ss_hist = security_scan_on_verify_timeline_history(events)
     ss_sum = ss_hist[-1] if ss_hist else None
     sr_markers = self_refinement_marker_timeline_history(events)
+    from hermes_orchestrator.micro_slice import micro_slice_timeline_summary
+
+    custom_agent_summary: dict[str, Any] | None = None
+    for ev in events:
+        if ev.get("event_type") == "run.created":
+            meta = ev.get("metadata")
+            if isinstance(meta, dict) and isinstance(meta.get("custom_agent"), dict):
+                custom_agent_summary = meta["custom_agent"]
+            break
     return RunTimelineResponse(
         run_id=rid,
         events=events,
@@ -1712,6 +1723,8 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
         parallel_writer_groups=parallel_writer_groups_timeline_summary(events),
         critic_matrix_live=critic_matrix_live_timeline_summary(events),
         persona_assignment=persona_assignment_timeline_summary(events),
+        micro_slice=micro_slice_timeline_summary(events),
+        custom_agent=custom_agent_summary,
     )
 
 
@@ -1822,6 +1835,44 @@ def lifecycle_plan(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, st
         500: PROBLEM_RESPONSE_500,
     },
 )
+@router.post(
+    "/runs/{run_id}/lifecycle/slice",
+    responses={
+        200: {
+            "description": "Micro-slice pass recorded",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "micro_slice_recorded",
+                        "slices_completed": 2,
+                        "slices_blocked": 0,
+                    },
+                },
+            },
+        },
+        404: PROBLEM_RESPONSE_404,
+        422: PROBLEM_RESPONSE_422,
+        500: PROBLEM_RESPONSE_500,
+    },
+)
+def lifecycle_slice(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    results = orch.execute_micro_slice_pass(run_id, workspace=repo)
+    completed = sum(1 for g in results if g.passed)
+    blocked = len(results) - completed
+    return {
+        "status": "micro_slice_recorded",
+        "slices_completed": completed,
+        "slices_blocked": blocked,
+    }
+
+
 def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
     rows = store.list_run_events(str(run_id))
     if not rows:

@@ -8,12 +8,14 @@ from typing import Any
 
 from hermes_config.keys import (
     KEY_CRITIQUE_PAIRINGS,
+    KEY_CUSTOM_AGENTS_REGISTRY,
     KEY_ESCALATION,
     KEY_INTEGRATOR_THRESHOLDS,
     KEY_MODEL_ROUTING,
     KEY_PERSONA_SHELVES,
     KEY_ROLE_REGISTRY,
     KEY_SELF_REFINEMENT,
+    NS_CUSTOM_AGENTS,
     NS_PERSONAS,
     NS_POLICY,
     NS_ROLES,
@@ -44,6 +46,11 @@ _STATIC_EXPORTS: list[tuple[str, str, PathFn]] = [
         NS_POLICY,
         KEY_SELF_REFINEMENT,
         lambda r: r / "configs" / "self_refinement" / "policy.yaml",
+    ),
+    (
+        NS_CUSTOM_AGENTS,
+        KEY_CUSTOM_AGENTS_REGISTRY,
+        lambda r: r / "configs" / "custom_agents" / "registry.yaml",
     ),
 ]
 

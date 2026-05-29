@@ -54,6 +54,8 @@ class RunTimelineResponse(BaseModel):
     parallel_writer_groups: list[dict[str, Any]] | None = None
     critic_matrix_live: dict[str, Any] | None = None
     persona_assignment: dict[str, Any] | None = None
+    micro_slice: dict[str, Any] | None = None
+    custom_agent: dict[str, Any] | None = None
 
 
 class RunListResponse(BaseModel):

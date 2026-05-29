@@ -321,6 +321,7 @@ class RunOrchestrator:
         run_policy_overrides: dict[str, Any] | None = None,
         business_area_persona_id: str | None = None,
         development_role_persona_id: str | None = None,
+        custom_agent_id: str | None = None,
     ) -> UUID:
         mat = self._config_materializer
         assert_known_workflow(
@@ -383,6 +384,30 @@ class RunOrchestrator:
             workflow_profile,
             config_materializer=mat,
         )
+        from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+
+        ms_block = parse_micro_slice_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        custom_agent_meta: dict[str, Any] | None = None
+        if custom_agent_id and str(custom_agent_id).strip():
+            from hermes_config.persist import load_custom_agent_registry
+
+            reg = load_custom_agent_registry(
+                self._repo_root,
+                materializer=self._config_materializer,
+            )
+            agent = reg.get(str(custom_agent_id).strip())
+            if agent is None:
+                raise ValueError(f"Unknown custom_agent_id: {custom_agent_id}")
+            custom_agent_meta = {
+                "id": agent.id,
+                "display_name": agent.display_name,
+                "system_prompt_preview": agent.system_prompt[:240],
+                "bound_role_id": agent.bound_role_id,
+            }
         universal_critique_effective = {
             "default_enabled": uc_block.default_enabled,
             "production_default_on": universal_critique_production_default_on(
@@ -460,6 +485,14 @@ class RunOrchestrator:
                 "universal_critique_effective": universal_critique_effective,
                 "agent_evaluator_effective": agent_evaluator_effective,
                 "self_refinement_effective": self_refinement_effective,
+                "micro_slice_effective": {
+                    "enabled": ms_block.enabled,
+                    "max_files": ms_block.max_files,
+                    "max_loc": ms_block.max_loc,
+                },
+                **(
+                    {"custom_agent": custom_agent_meta} if custom_agent_meta else {}
+                ),
                 **(
                     {
                         "persona_assignment": {
@@ -488,6 +521,94 @@ class RunOrchestrator:
         )
         self._store.append(ev)
         return run_id
+
+    def record_micro_slice_plan(
+        self,
+        run_id: UUID,
+        plan: dict[str, Any] | Any,
+    ) -> None:
+        """Persist a slice plan marker for timeline read-models (fo152)."""
+        from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+
+        p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
+        self._store.append(
+            StageStartedEvent(
+                event_type=EventType.STAGE_STARTED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={
+                    "slice_plan": True,
+                    "slice_id": p.slice_id,
+                    "target_paths": list(p.target_paths),
+                    "rationale": p.rationale,
+                    "acceptance_criteria": p.acceptance_criteria,
+                },
+                payload=StageStartedPayload(stage_name="slice.plan", attempt=1),
+            ),
+        )
+
+    def record_micro_slice_gate(
+        self,
+        run_id: UUID,
+        plan: dict[str, Any] | Any,
+        *,
+        verify_ok: bool,
+        critique_verdicts: list[str] | None = None,
+        tests_passed: bool | None = None,
+        diff_unified: str = "",
+        test_output: str = "",
+    ):
+        """Run per-slice gate chain and append pass/fail stage events (fo153–fo154)."""
+        from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+        from hermes_orchestrator.slice_context_packet import build_slice_context_packet
+        from hermes_orchestrator.slice_gate import SliceGateChainResult, run_slice_gate_chain
+
+        p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
+        gate = run_slice_gate_chain(
+            p,
+            verify_ok=verify_ok,
+            critique_verdicts=critique_verdicts,
+            tests_passed=tests_passed,
+        )
+        packet = build_slice_context_packet(
+            p,
+            diff_unified=diff_unified,
+            test_output=test_output,
+            gate=gate,
+        )
+        meta = {
+            **gate.to_metadata(),
+            "slice_context_packet": packet.model_dump(mode="json"),
+        }
+        now = datetime.now(timezone.utc)
+        if gate.passed:
+            self._store.append(
+                StagePassedEvent(
+                    event_type=EventType.STAGE_PASSED,
+                    event_id=uuid4(),
+                    run_id=run_id,
+                    occurred_at=now,
+                    metadata=meta,
+                    payload=StagePassedPayload(stage_name="slice.gate", duration_ms=0),
+                ),
+            )
+        else:
+            self._store.append(
+                StageFailedEvent(
+                    event_type=EventType.STAGE_FAILED,
+                    event_id=uuid4(),
+                    run_id=run_id,
+                    occurred_at=now,
+                    metadata=meta,
+                    payload=StageFailedPayload(
+                        stage_name="slice.gate",
+                        reason_code="slice_gate_blocked",
+                        message="per-slice gate did not pass",
+                    ),
+                ),
+            )
+        return gate
 
     def egress_checked_fetch_url(
         self,
@@ -1899,6 +2020,22 @@ class RunOrchestrator:
         )
         return WriterStageResult(stage_name="frontend_writer")
 
+    def _micro_slice_enabled_for_run(self, run_id: UUID) -> bool:
+        from hermes_orchestrator.micro_slice_executor import micro_slice_effective_from_rows
+
+        rows = self._store.list_run_events(str(run_id))
+        return micro_slice_effective_from_rows(rows) is not None
+
+    def execute_micro_slice_pass(
+        self,
+        run_id: UUID,
+        *,
+        workspace: Path | None = None,
+    ) -> list[Any]:
+        from hermes_orchestrator.micro_slice_executor import execute_micro_slice_pass
+
+        return execute_micro_slice_pass(self, run_id, workspace=workspace)
+
     def execute_writer_verifier_pass(
         self,
         run_id: UUID,
@@ -1906,6 +2043,9 @@ class RunOrchestrator:
         workspace: Path | None = None,
     ) -> None:
         """Append implementation stage + optional pytest finding on failure.
+
+        When ``micro_slice_effective.enabled`` on ``run.created``, runs the per-slice
+        chain instead of the default writer/verifier pass.
 
         After the verifier, optional **implementation.critique** panel: try LLM when
         workflow ``universal_critique.implementation.llm`` or ``HERMES_IMPLEMENTATION_CRITIQUE_LLM``
@@ -1926,6 +2066,9 @@ class RunOrchestrator:
         optional critique panels are **not** run (implementation FAIL skips test_writer and
         planner; test_writer FAIL skips planner only).
         """
+        if self._micro_slice_enabled_for_run(run_id):
+            self.execute_micro_slice_pass(run_id, workspace=workspace)
+            return
         self.run_optional_scraper_fetch_stage(run_id)
         writer = self._registry.resolve("backend_writer")
         sg_snapshot = self._stage_graph_snapshot_for_run(run_id)

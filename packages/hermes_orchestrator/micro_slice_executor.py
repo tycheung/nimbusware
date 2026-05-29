@@ -1,0 +1,284 @@
+"""Automatic micro-slice stage execution (fo152–fo154)."""
+
+from __future__ import annotations
+
+import os
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
+from uuid import UUID, uuid4
+
+from agent_core.models import (
+    EventType,
+    StagePassedEvent,
+    StagePassedPayload,
+    StageStartedEvent,
+    StageStartedPayload,
+)
+from hermes_orchestrator.llm_slice import execute_slice_critique_llm, execute_slice_plan_llm
+from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan, validate_diff_budget
+from hermes_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
+from hermes_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
+from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+
+if TYPE_CHECKING:
+    from hermes_orchestrator.pipeline import RunOrchestrator
+
+
+def micro_slice_effective_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    for row in rows:
+        if row.get("event_type") != EventType.RUN_CREATED.value:
+            continue
+        meta = row.get("metadata")
+        if isinstance(meta, dict):
+            ms = meta.get("micro_slice_effective")
+            if isinstance(ms, dict) and ms.get("enabled"):
+                return ms
+        break
+    return None
+
+
+def micro_slice_count_for_run() -> int:
+    raw = os.environ.get("HERMES_MICRO_SLICE_COUNT", "2").strip()
+    try:
+        return max(1, min(10, int(raw)))
+    except ValueError:
+        return 2
+
+
+def default_stub_slice_plan(slice_index: int) -> SlicePlan:
+    return parse_slice_plan(
+        {
+            "slice_id": f"slice-{slice_index}",
+            "rationale": "Conservative default micro-slice for automated verify pass",
+            "target_paths": [
+                "packages/hermes_orchestrator/micro_slice.py",
+                "packages/hermes_orchestrator/slice_gate.py",
+            ],
+            "acceptance_criteria": "Scoped unit tests pass",
+        },
+    )
+
+
+def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkflowBlock:
+    from hermes_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+    from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+
+    wf = workflow_profile_from_run_created_rows(orch._store.list_run_events(str(run_id)))
+    return parse_micro_slice_workflow_block(
+        orch.repo_root,
+        wf or "micro_slice",
+        config_materializer=orch.config_materializer,
+    )
+
+
+def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]]) -> str | None:
+    from hermes_config.persist import load_custom_agent_registry
+
+    for row in rows:
+        if row.get("event_type") != EventType.RUN_CREATED.value:
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            break
+        agent = meta.get("custom_agent")
+        if isinstance(agent, dict) and agent.get("id"):
+            reg = load_custom_agent_registry(
+                orch.repo_root,
+                materializer=orch.config_materializer,
+            )
+            full = reg.get(str(agent["id"]))
+            if full is not None:
+                return full.system_prompt
+        break
+    return None
+
+
+def _plan_one_slice(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    *,
+    slice_index: int,
+) -> SlicePlan:
+    rows = orch._store.list_run_events(str(run_id))
+    use_llm = os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
+    if use_llm:
+        base = orch._base_cfg()
+        runtime = base.get("runtime") or {}
+        model = orch._selected_model_for_run(run_id)
+        if model:
+            plan = execute_slice_plan_llm(
+                rows=rows,
+                base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                model_id=model,
+                slice_index=slice_index,
+                timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                system_prompt=_custom_agent_system_prompt(orch, rows),
+            )
+            if plan is not None:
+                return plan
+    return default_stub_slice_plan(slice_index)
+
+
+def _emit_slice_stage(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    stage_name: str,
+    *,
+    metadata: dict[str, Any] | None = None,
+    duration_ms: int = 0,
+) -> None:
+    now = datetime.now(timezone.utc)
+    orch._store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=now,
+            metadata=metadata or {},
+            payload=StageStartedPayload(stage_name=stage_name, attempt=1),
+        ),
+    )
+    orch._store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata=metadata or {},
+            payload=StagePassedPayload(stage_name=stage_name, duration_ms=duration_ms),
+        ),
+    )
+
+
+def _run_slice_verify_and_test(
+    workspace: Path,
+    plan: SlicePlan,
+    *,
+    timeout_seconds: float,
+) -> tuple[bool, str, bool, str]:
+    """Verify (ruff + path existence) and scoped pytest for one slice."""
+    missing = [p for p in plan.target_paths if not (workspace / p).is_file()]
+    sections: list[str] = []
+    verify_ok = True
+    if missing:
+        verify_ok = False
+        sections.append(f"missing target files: {missing}")
+    ruff_code, ruff_out = run_ruff_on_paths(
+        workspace,
+        list(plan.target_paths),
+        timeout_seconds=timeout_seconds,
+    )
+    sections.append(f"=== ruff (exit {ruff_code}) ===\n{ruff_out}")
+    if ruff_code != 0:
+        verify_ok = False
+    test_targets = map_paths_to_test_targets(plan.target_paths)
+    existing_tests = [t for t in test_targets if (workspace / t).is_file()]
+    if existing_tests:
+        test_code, test_out = run_pytest_targets(
+            workspace,
+            existing_tests,
+            timeout_seconds=timeout_seconds,
+        )
+        tests_passed = test_code == 0
+    else:
+        test_code, test_out = 0, "no mapped test files; skipped\n"
+        tests_passed = True
+    sections.append(f"=== pytest (exit {test_code}) ===\n{test_out}")
+    return verify_ok, "\n".join(sections), tests_passed, test_out
+
+
+def execute_micro_slice_pass(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    *,
+    workspace: Path | None = None,
+) -> list[SliceGateChainResult]:
+    """Run slice.plan → implement → verify → critique → test → gate for N slices."""
+    ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+    block = _resolve_slice_block(orch, run_id)
+    base = orch._base_cfg()
+    runtime = base.get("runtime") or {}
+    timeout = float(runtime.get("request_timeout_seconds", 120))
+    slice_count = micro_slice_count_for_run()
+    results: list[SliceGateChainResult] = []
+
+    for index in range(1, slice_count + 1):
+        plan = _plan_one_slice(orch, run_id, slice_index=index)
+        orch.record_micro_slice_plan(run_id, plan)
+
+        impl_meta = {
+            "slice_id": plan.slice_id,
+            "slice_implement_mode": "stub",
+        }
+        started = time.perf_counter()
+        _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
+        duration_ms = int((time.perf_counter() - started) * 1000)
+
+        verify_ok, verify_log, tests_passed, test_out = _run_slice_verify_and_test(
+            ws,
+            plan,
+            timeout_seconds=timeout,
+        )
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.verify",
+            metadata={"slice_id": plan.slice_id, "verify_ok": verify_ok},
+            duration_ms=duration_ms,
+        )
+
+        critique_verdicts = ["PASS"]
+        if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
+            model = orch._selected_model_for_run(run_id)
+            if model:
+                critique_verdicts = execute_slice_critique_llm(
+                    plan=plan,
+                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    model_id=model,
+                    verify_log=verify_log,
+                    timeout_seconds=timeout,
+                )
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.critique",
+            metadata={
+                "slice_id": plan.slice_id,
+                "critique_verdicts": critique_verdicts,
+            },
+            duration_ms=0,
+        )
+
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.test",
+            metadata={"slice_id": plan.slice_id, "tests_passed": tests_passed},
+            duration_ms=0,
+        )
+
+        budget = validate_diff_budget(
+            changed_files=list(plan.target_paths),
+            loc_added=0,
+            loc_removed=0,
+            config=block,
+        )
+        if not budget.ok:
+            verify_ok = False
+            verify_log = f"{verify_log}\n{budget.message}"
+
+        gate = orch.record_micro_slice_gate(
+            run_id,
+            plan,
+            verify_ok=verify_ok,
+            critique_verdicts=critique_verdicts,
+            tests_passed=tests_passed,
+            diff_unified="",
+            test_output=test_out[:4000],
+        )
+        results.append(gate)
+        if not gate.passed:
+            break
+    return results

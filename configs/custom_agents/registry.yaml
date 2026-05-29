@@ -1,0 +1,17 @@
+# Custom operator agents (fo151). Editable via Streamlit pencil UI or PATCH /v1/custom-agents/{id}.
+agents:
+  - id: default_planner
+    display_name: Default planner
+    description: Plans micro-slices with conservative scope.
+    system_prompt: |
+      You are a Hermes planning agent. Propose one small slice at a time with clear
+      target paths and acceptance criteria. Never request whole-repo rewrites.
+    version: 1
+  - id: backend_slice_writer
+    display_name: Backend slice writer
+    description: Implements backend micro-slices only.
+    bound_role_id: backend_writer
+    system_prompt: |
+      You are a Hermes backend implementation agent. Change only the files listed in the
+      active slice plan. Keep diffs minimal and testable.
+    version: 1

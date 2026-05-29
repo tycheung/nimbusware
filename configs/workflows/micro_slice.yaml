@@ -1,0 +1,32 @@
+# Micro-slice adversarial workflow (fo152–fo154). Use with POST /v1/runs workflow_profile=micro_slice.
+slice:
+  enabled: true
+  max_files: 3
+  max_loc: 120
+  allowed_globs:
+    - "**/*.py"
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: slice.gate
+    depends_on: [slice.test]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false

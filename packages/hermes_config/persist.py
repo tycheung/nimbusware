@@ -5,7 +5,16 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from hermes_config.keys import KEY_BUNDLE_CATALOG, KEY_PERSONA_SHELVES, NS_PERSONAS, NS_POLICY, NS_WORKFLOWS
+from hermes_config.keys import (
+    KEY_BUNDLE_CATALOG,
+    KEY_CUSTOM_AGENTS_REGISTRY,
+    KEY_PERSONA_SHELVES,
+    NS_CUSTOM_AGENTS,
+    NS_PERSONAS,
+    NS_POLICY,
+    NS_WORKFLOWS,
+)
+from hermes_extensions.custom_agents import CustomAgentRegistry, default_registry_path
 from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.merge import atomic_write_yaml, load_yaml
 from hermes_orchestrator.workflow_profiles import workflow_profile_path
@@ -68,6 +77,32 @@ def persist_bundle_catalog_dict(
         return
     path = repo_root / "configs" / "bundles" / "catalog.yaml"
     atomic_write_yaml(path, content)
+
+
+def load_custom_agent_registry(
+    repo_root: Path,
+    *,
+    materializer: Any | None = None,
+) -> CustomAgentRegistry:
+    if materializer is not None and getattr(materializer, "use_db", False):
+        return materializer.get_custom_agent_registry()
+    return CustomAgentRegistry.load(default_registry_path(repo_root))
+
+
+def persist_custom_agent_registry(
+    repo_root: Path,
+    registry: CustomAgentRegistry,
+    *,
+    materializer: Any | None = None,
+) -> None:
+    if materializer is not None and getattr(materializer, "use_db", False):
+        materializer.upsert_content(
+            NS_CUSTOM_AGENTS,
+            KEY_CUSTOM_AGENTS_REGISTRY,
+            registry.to_content(),
+        )
+        return
+    registry.save(default_registry_path(repo_root))
 
 
 def persist_workflow_profile_dict(

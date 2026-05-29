@@ -11,18 +11,21 @@ from hermes_config.flags import config_from_db_enabled
 from hermes_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,
+    KEY_CUSTOM_AGENTS_REGISTRY,
     KEY_ESCALATION,
     KEY_INTEGRATOR_THRESHOLDS,
     KEY_MODEL_ROUTING,
     KEY_PERSONA_SHELVES,
     KEY_ROLE_REGISTRY,
     KEY_SELF_REFINEMENT,
+    NS_CUSTOM_AGENTS,
     NS_PERSONAS,
     NS_POLICY,
     NS_ROLES,
     NS_WORKFLOWS,
 )
 from hermes_config.protocol import ConfigStore
+from hermes_extensions.custom_agents import CustomAgentRegistry
 from hermes_config.store import InMemoryConfigStore, PostgresConfigStore
 from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.merge import load_yaml
@@ -114,6 +117,11 @@ class ConfigMaterializer:
         if namespace == NS_WORKFLOWS:
             path = self._repo_root / "configs" / "workflows" / f"{document_key}.yaml"
             return load_yaml(path)
+        if namespace == NS_CUSTOM_AGENTS and document_key == KEY_CUSTOM_AGENTS_REGISTRY:
+            path = self._repo_root / "configs" / "custom_agents" / "registry.yaml"
+            if path.is_file():
+                return load_yaml(path)
+            return {"agents": []}
         msg = f"unknown config file mapping: {namespace}/{document_key}"
         raise KeyError(msg)
 
@@ -184,6 +192,10 @@ class ConfigMaterializer:
 
     def get_bundle_catalog(self) -> dict[str, Any]:
         return self._get_content(NS_POLICY, KEY_BUNDLE_CATALOG)
+
+    def get_custom_agent_registry(self) -> CustomAgentRegistry:
+        raw = self._get_content(NS_CUSTOM_AGENTS, KEY_CUSTOM_AGENTS_REGISTRY)
+        return CustomAgentRegistry.from_content(raw)
 
 
 def _default_paths(repo_root: Path) -> tuple[Path, Path]:

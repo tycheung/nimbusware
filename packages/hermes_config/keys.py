@@ -18,3 +18,6 @@ KEY_SELF_REFINEMENT = "self-refinement"
 KEY_BUNDLE_CATALOG = "bundle-catalog"
 
 KEY_CRITIQUE_PAIRINGS = "critique-pairings"
+
+NS_CUSTOM_AGENTS = "custom_agents"
+KEY_CUSTOM_AGENTS_REGISTRY = "registry"
