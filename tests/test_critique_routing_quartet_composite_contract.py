@@ -250,10 +250,21 @@ class TestPartBLoadCritiqueRouter:
         router = load_critique_router(_REPO_ROOT)
         assert isinstance(router, UniversalCritiqueRouter)
 
-        for producer in _CANONICAL_PRODUCERS:
+        _repo_pairings = {
+            "planner": _CANONICAL_CRITICS,
+            "backend_writer": (
+                "product_reference_critic",
+                "domain_critic",
+                "security_critic",
+                "performance_critic",
+                "network_resilience_critic",
+            ),
+            "test_writer": _CANONICAL_CRITICS,
+        }
+        for producer, expected in _repo_pairings.items():
             paired = router.pairing_for(producer)
-            assert sorted(paired) == sorted(_CANONICAL_CRITICS), (
-                f"producer {producer!r} should pair with canonical critics"
+            assert sorted(paired) == sorted(expected), (
+                f"producer {producer!r} pairing drift"
             )
 
     def test_b2_empty_pairings_yaml_returns_empty_router(

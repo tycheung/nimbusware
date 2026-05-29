@@ -633,6 +633,13 @@ from hermes_console.security_scan_metadata_workflow_explainer import (
     security_scan_metadata_yaml_effective_mismatch_caption,
     security_scan_metadata_yaml_raw_type_caption,
 )
+from hermes_console.micro_slice_packet_display import (
+    latest_slice_context_packet_from_timeline,
+)
+from hermes_console.phase3_critique_display import (
+    phase3_critique_caption,
+    phase3_critique_table_rows,
+)
 from hermes_console.security_scan_on_verify_display import (
     security_scan_category_severity_caption,
     security_scan_finding_event_ids_caption,
@@ -6874,6 +6881,19 @@ with st.container(border=True):
                             )
                         with st.expander("Raw run_escalated_delta JSON", expanded=False):
                             st.json(_re_delta)
+                with st.expander("Phase 3 critic stages (from timeline)", expanded=False):
+                    st.caption(phase3_critique_caption(data))
+                    _p3_rows = phase3_critique_table_rows(data)
+                    if _p3_rows:
+                        st.dataframe(_p3_rows, use_container_width=True)
+                _ms_tl = data.get("micro_slice") if isinstance(data, dict) else None
+                if isinstance(_ms_tl, dict) and _ms_tl:
+                    with st.expander("Micro-slice summary (from timeline)", expanded=False):
+                        st.json(_ms_tl)
+                    _pkt = latest_slice_context_packet_from_timeline(data)
+                    if _pkt:
+                        with st.expander("Slice context packet (latest)", expanded=False):
+                            st.json(_pkt)
                 _ss = security_scan_on_verify_from_timeline(data)
                 _ss_rows = security_scan_on_verify_summary_rows(_ss)
                 _ssm_align_payload = security_scan_metadata_workflow_explainer_payload(

@@ -45,3 +45,28 @@ integration_adapter_writer:
   stub_only: true
 escalation:
   suppress_automatic_escalation: false
+
+# Phase 3 critic stages (PZ-8): default-on for production profile (stub panels; LLM off).
+security_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  severity_floor: MEDIUM
+
+performance_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  severity_floor: MEDIUM
+
+network_resilience_critique:
+  enabled: true
+  stub: true
+  llm_enabled: false
+  backend_only: true
+  severity_floor: MEDIUM
+
+refactor:
+  enabled: true
+  stub_only: true
+  max_iterations: 1

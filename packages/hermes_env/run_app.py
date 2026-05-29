@@ -117,7 +117,9 @@ def start_servers(
     load_dotenv(repo_root=root)
     os.environ.setdefault("HERMES_REPO_ROOT", str(root))
 
-    api_port = api_port or int(os.environ.get("HERMES_API_PORT", "8000"))
+    if api_port is None:
+        env_port = os.environ.get("HERMES_API_PORT", "").strip()
+        api_port = int(env_port) if env_port else _pick_free_port(api_host)
     streamlit_port = streamlit_port or _pick_free_port(streamlit_host)
 
     os.environ["HERMES_API_HOST"] = api_host

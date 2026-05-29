@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
+
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
@@ -26,6 +28,20 @@ class LlmSliceCritiqueResponse(BaseModel):
     verdicts: list[str] = Field(default_factory=lambda: ["PASS"])
 
 
+class LlmSliceFileEdit(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    path: str = Field(min_length=1)
+    content: str = ""
+
+
+class LlmSliceImplementResponse(BaseModel):
+    model_config = {"extra": "ignore"}
+
+    edits: list[LlmSliceFileEdit] = Field(default_factory=list)
+    summary: str = ""
+
+
 def _custom_agent_prompt_from_rows(rows: list[dict[str, Any]]) -> str:
     for row in rows:
         if row.get("event_type") != "run.created":
@@ -45,6 +61,59 @@ def _custom_agent_prompt_from_rows(rows: list[dict[str, Any]]) -> str:
     )
 
 
+def execute_slice_replan_llm(
+    *,
+    rows: list[dict[str, Any]],
+    base_url: str,
+    model_id: str,
+    prior_plan: SlicePlan,
+    budget_message: str,
+    replan_attempt: int,
+    timeout_seconds: float = 120.0,
+    system_prompt: str | None = None,
+) -> SlicePlan | None:
+    """Ask LLM for a narrower slice after diff budget failure."""
+    agent_prompt = system_prompt or _custom_agent_prompt_from_rows(rows)
+    schema = (
+        '{"slice_id":"string","rationale":"string","target_paths":["path"],'
+        '"acceptance_criteria":"string"}'
+    )
+    system = (
+        f"{agent_prompt}\n\n"
+        "The previous slice was too large. Reply with JSON only matching: "
+        f"{schema}. "
+        f"Use fewer paths than before (max {max(1, len(prior_plan.target_paths) - 1)} files). "
+        "Keep each slice small enough to review and test."
+    )
+    user = (
+        f"Replan attempt {replan_attempt}. Prior slice_id={prior_plan.slice_id}, "
+        f"paths={list(prior_plan.target_paths)}. Budget failure: {budget_message}. "
+        "Propose a smaller slice_id (e.g. slice-1-r1)."
+    )
+    try:
+        data = ollama_chat_json(
+            base_url=base_url,
+            model=model,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            timeout_seconds=timeout_seconds,
+        )
+        parsed = LlmSlicePlanResponse.model_validate(data)
+        return parse_slice_plan(parsed.model_dump())
+    except (
+        httpx.HTTPError,
+        ValueError,
+        TypeError,
+        json.JSONDecodeError,
+        ValidationError,
+        KeyError,
+        RuntimeError,
+    ):
+        return None
+
+
 def execute_slice_plan_llm(
     *,
     rows: list[dict[str, Any]],
@@ -53,6 +122,7 @@ def execute_slice_plan_llm(
     slice_index: int = 1,
     timeout_seconds: float = 120.0,
     system_prompt: str | None = None,
+    budget_feedback: str | None = None,
 ) -> SlicePlan | None:
     """Return a slice plan from Ollama JSON, or None to fall back to stub."""
     agent_prompt = system_prompt or _custom_agent_prompt_from_rows(rows)
@@ -71,6 +141,8 @@ def execute_slice_plan_llm(
         f"Propose micro-slice #{slice_index} for this Hermes run. "
         "Use slice_id like slice-{n}."
     )
+    if budget_feedback:
+        user = f"{user}\nPrior budget feedback: {budget_feedback}"
     try:
         data = ollama_chat_json(
             base_url=base_url,
@@ -83,6 +155,66 @@ def execute_slice_plan_llm(
         )
         parsed = LlmSlicePlanResponse.model_validate(data)
         return parse_slice_plan(parsed.model_dump())
+    except (
+        httpx.HTTPError,
+        ValueError,
+        TypeError,
+        json.JSONDecodeError,
+        ValidationError,
+        KeyError,
+        RuntimeError,
+    ):
+        return None
+
+
+def execute_slice_implement_llm(
+    *,
+    plan: SlicePlan,
+    workspace: Path,
+    base_url: str,
+    model_id: str,
+    timeout_seconds: float = 120.0,
+    system_prompt: str | None = None,
+) -> list[dict[str, str]] | None:
+    """Return file edits for slice.implement, or None to fall back to scoped ruff."""
+    from pathlib import Path as _Path
+
+    agent_prompt = system_prompt or "You are a Hermes implementation agent for one micro-slice."
+    excerpts: list[str] = []
+    for rel in plan.target_paths[:3]:
+        fp = _Path(workspace) / rel
+        if fp.is_file():
+            try:
+                text = fp.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            excerpts.append(f"--- {rel} ---\n{text[:4000]}\n")
+    schema = '{"edits":[{"path":"string","content":"string"}],"summary":"string"}'
+    system = (
+        f"{agent_prompt}\n\n"
+        "Reply with JSON only matching: "
+        f"{schema}. "
+        "Provide FULL file content for each edited path. "
+        "Only include paths from the slice plan. Keep changes minimal."
+    )
+    user = (
+        f"Implement slice {plan.slice_id} for paths {list(plan.target_paths)}. "
+        f"Acceptance: {plan.acceptance_criteria or 'tests pass'}. "
+        f"Rationale: {plan.rationale}\n\n"
+        f"Current files:\n{''.join(excerpts)[:12000]}"
+    )
+    try:
+        data = ollama_chat_json(
+            base_url=base_url,
+            model=model_id,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            timeout_seconds=timeout_seconds,
+        )
+        parsed = LlmSliceImplementResponse.model_validate(data)
+        return [{"path": e.path, "content": e.content} for e in parsed.edits]
     except (
         httpx.HTTPError,
         ValueError,

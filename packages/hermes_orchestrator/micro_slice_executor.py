@@ -16,8 +16,19 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from hermes_orchestrator.llm_slice import execute_slice_critique_llm, execute_slice_plan_llm
-from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan, validate_diff_budget
+from hermes_orchestrator.llm_slice import (
+    execute_slice_critique_llm,
+    execute_slice_plan_llm,
+    execute_slice_replan_llm,
+)
+from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+from hermes_orchestrator.slice_implement import execute_slice_implement
+from hermes_orchestrator.slice_diff import (
+    check_slice_diff_budget,
+    collect_slice_diff_stats,
+    slice_replan_max_attempts,
+    subdivide_slice_plan,
+)
 from hermes_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
 from hermes_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
@@ -100,6 +111,7 @@ def _plan_one_slice(
     run_id: UUID,
     *,
     slice_index: int,
+    budget_feedback: str | None = None,
 ) -> SlicePlan:
     rows = orch._store.list_run_events(str(run_id))
     use_llm = os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
@@ -115,6 +127,7 @@ def _plan_one_slice(
                 slice_index=slice_index,
                 timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                 system_prompt=_custom_agent_system_prompt(orch, rows),
+                budget_feedback=budget_feedback,
             )
             if plan is not None:
                 return plan
@@ -204,17 +217,101 @@ def execute_micro_slice_pass(
     slice_count = micro_slice_count_for_run()
     results: list[SliceGateChainResult] = []
 
-    for index in range(1, slice_count + 1):
-        plan = _plan_one_slice(orch, run_id, slice_index=index)
-        orch.record_micro_slice_plan(run_id, plan)
+    max_replan = slice_replan_max_attempts()
 
-        impl_meta = {
-            "slice_id": plan.slice_id,
-            "slice_implement_mode": "stub",
-        }
-        started = time.perf_counter()
-        _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
-        duration_ms = int((time.perf_counter() - started) * 1000)
+    for index in range(1, slice_count + 1):
+        budget_feedback: str | None = None
+        plan = _plan_one_slice(orch, run_id, slice_index=index, budget_feedback=budget_feedback)
+        replan_attempt = 0
+        diff_unified = ""
+        stats_source = "plan_estimate"
+
+        while True:
+            orch.record_micro_slice_plan(run_id, plan)
+
+            started = time.perf_counter()
+            model = orch._selected_model_for_run(run_id)
+            impl_result = execute_slice_implement(
+                ws,
+                plan,
+                timeout_seconds=timeout,
+                llm_base_url=str(runtime.get("base_url", "http://localhost:11434"))
+                if model
+                else None,
+                llm_model_id=model,
+                llm_system_prompt=_custom_agent_system_prompt(
+                    orch,
+                    orch._store.list_run_events(str(run_id)),
+                ),
+            )
+            impl_meta = {
+                "slice_id": plan.slice_id,
+                "slice_implement_mode": impl_result.mode,
+                "slice_implement_exit": impl_result.exit_code,
+                "paths_touched": list(impl_result.paths_touched),
+            }
+            _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
+            duration_ms = int((time.perf_counter() - started) * 1000)
+
+            stats = collect_slice_diff_stats(ws, plan)
+            stats_source = stats.source
+            diff_unified = stats.unified_diff
+            budget = check_slice_diff_budget(stats, block)
+
+            if budget.ok or replan_attempt >= max_replan:
+                break
+
+            subdivided = subdivide_slice_plan(
+                plan,
+                budget=budget,
+                config=block,
+                stats=stats,
+                replan_attempt=replan_attempt + 1,
+            )
+            if subdivided is None and os.environ.get("HERMES_USE_LLM", "").lower() in (
+                "1",
+                "true",
+                "yes",
+            ):
+                model = orch._selected_model_for_run(run_id)
+                if model:
+                    subdivided = execute_slice_replan_llm(
+                        rows=orch._store.list_run_events(str(run_id)),
+                        base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                        model_id=model,
+                        prior_plan=plan,
+                        budget_message=budget.message,
+                        replan_attempt=replan_attempt + 1,
+                        timeout_seconds=timeout,
+                        system_prompt=_custom_agent_system_prompt(
+                            orch,
+                            orch._store.list_run_events(str(run_id)),
+                        ),
+                    )
+
+            if subdivided is None:
+                break
+
+            _emit_slice_stage(
+                orch,
+                run_id,
+                "slice.replan",
+                metadata={
+                    "slice_id": plan.slice_id,
+                    "next_slice_id": subdivided.slice_id,
+                    "replan_attempt": replan_attempt + 1,
+                    "budget_message": budget.message,
+                    "diff_stats": {
+                        "file_count": len(stats.changed_files),
+                        "loc_added": stats.loc_added,
+                        "loc_removed": stats.loc_removed,
+                        "source": stats.source,
+                    },
+                },
+            )
+            plan = subdivided
+            budget_feedback = budget.message
+            replan_attempt += 1
 
         verify_ok, verify_log, tests_passed, test_out = _run_slice_verify_and_test(
             ws,
@@ -230,6 +327,23 @@ def execute_micro_slice_pass(
         )
 
         critique_verdicts = ["PASS"]
+        critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
+        if os.environ.get("HERMES_SLICE_P3_EVIDENCE", "1").lower() not in ("0", "false", "no"):
+            from hermes_orchestrator.performance_scan import run_ruff_perf
+            from hermes_orchestrator.security_scan import run_security_scan
+
+            sec = run_security_scan(ws)
+            sec_code = sec[0]
+            sec_log = sec[1]
+            perf_code, perf_log = run_ruff_perf(ws, timeout_seconds=timeout)
+            critique_meta["phase3_evidence"] = {
+                "security_scan_exit": sec_code,
+                "security_snippet": (sec_log or "")[:1200],
+                "performance_scan_exit": perf_code,
+                "performance_snippet": (perf_log or "")[:1200],
+            }
+            if sec_code != 0 or perf_code != 0:
+                critique_verdicts = ["FAIL"]
         if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
             model = orch._selected_model_for_run(run_id)
             if model:
@@ -240,14 +354,12 @@ def execute_micro_slice_pass(
                     verify_log=verify_log,
                     timeout_seconds=timeout,
                 )
+        critique_meta["critique_verdicts"] = critique_verdicts
         _emit_slice_stage(
             orch,
             run_id,
             "slice.critique",
-            metadata={
-                "slice_id": plan.slice_id,
-                "critique_verdicts": critique_verdicts,
-            },
+            metadata=critique_meta,
             duration_ms=0,
         )
 
@@ -259,15 +371,15 @@ def execute_micro_slice_pass(
             duration_ms=0,
         )
 
-        budget = validate_diff_budget(
-            changed_files=list(plan.target_paths),
-            loc_added=0,
-            loc_removed=0,
-            config=block,
-        )
-        if not budget.ok:
+        final_stats = collect_slice_diff_stats(ws, plan)
+        final_budget = check_slice_diff_budget(final_stats, block)
+        if not final_budget.ok:
             verify_ok = False
-            verify_log = f"{verify_log}\n{budget.message}"
+            verify_log = (
+                f"{verify_log}\n[diff budget] {final_budget.message} "
+                f"(source={stats_source}, replans={replan_attempt})"
+            )
+        diff_for_gate = diff_unified or final_stats.unified_diff
 
         gate = orch.record_micro_slice_gate(
             run_id,
@@ -275,7 +387,7 @@ def execute_micro_slice_pass(
             verify_ok=verify_ok,
             critique_verdicts=critique_verdicts,
             tests_passed=tests_passed,
-            diff_unified="",
+            diff_unified=diff_for_gate[:8000],
             test_output=test_out[:4000],
         )
         results.append(gate)

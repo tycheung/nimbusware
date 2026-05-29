@@ -272,7 +272,7 @@ class SecurityScanner:
 
         from hermes_orchestrator.security_scan import run_security_scan
 
-        code, log, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec = run_security_scan(
+        code, log, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec, _semgrep_ec = run_security_scan(
             Path(workspace),
         )
         return {

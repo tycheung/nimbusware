@@ -1845,6 +1845,18 @@ def lifecycle_plan(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, st
         500: PROBLEM_RESPONSE_500,
     },
 )
+def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    dispatch = orch.dispatch_or_run_verify(run_id, workspace=repo)
+    return {"status": "verify_recorded", "dispatch": dispatch}
+
+
 @router.post(
     "/runs/{run_id}/lifecycle/slice",
     responses={
@@ -1881,15 +1893,3 @@ def lifecycle_slice(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, A
         "slices_completed": completed,
         "slices_blocked": blocked,
     }
-
-
-def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, str]:
-    rows = store.list_run_events(str(run_id))
-    if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
-        )
-    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
-    dispatch = orch.dispatch_or_run_verify(run_id, workspace=repo)
-    return {"status": "verify_recorded", "dispatch": dispatch}

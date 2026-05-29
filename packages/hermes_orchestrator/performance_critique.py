@@ -32,7 +32,7 @@ from hermes_store.protocol import EventStore
 
 PERFORMANCE_CRITIQUE_STAGE = "implementation.performance_critique"
 _PERFORMANCE_CRITIC = "performance_critic"
-_PERF_TOOLS = ("ruff_perf", "n_plus_one_heuristic")
+_PERF_TOOLS = ("ruff_perf", "n_plus_one_heuristic", "sql_profiler")
 
 
 class PerformanceCritiqueLlmResponse(BaseModel):

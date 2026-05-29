@@ -84,7 +84,7 @@ def micro_slice_stage_graph_nodes() -> tuple[dict[str, Any], ...]:
 
 
 def micro_slice_timeline_summary(
-  events: list[dict[str, Any]],
+    events: list[dict[str, Any]],
 ) -> dict[str, Any]:
     """Summarize slice plans and gate outcomes from run events (read-model helper)."""
     plans: list[str] = []

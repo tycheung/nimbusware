@@ -68,6 +68,18 @@ def _handle_command(text: str) -> str | None:
         return f"Active agent set to `{parts[1]}`."
     if text.strip().lower().startswith("start run"):
         return _start_run("micro_slice")
+    low = text.strip().lower()
+    if low.startswith("run with agent ") or low.startswith("start run with agent "):
+        agent = text.strip().split()[-1]
+        st.session_state[_SS_ACTIVE_AGENT] = agent
+        return _start_run("micro_slice")
+    if "micro_slice" in low and ("start" in low or "run" in low):
+        return _start_run("micro_slice")
+    if low.startswith("show timeline") or low.startswith("timeline"):
+        run_id = st.session_state.get(_SS_LAST_RUN)
+        if not run_id:
+            return "No run yet. Try `/run micro_slice`."
+        return _fetch_timeline_summary(run_id)
     return None
 
 

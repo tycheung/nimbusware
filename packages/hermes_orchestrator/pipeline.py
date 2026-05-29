@@ -2390,7 +2390,9 @@ class RunOrchestrator:
                 config_materializer=self._config_materializer,
             ):
                 ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
-                scode, slog, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec = run_security_scan(ws)
+                scode, slog, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec, semgrep_ec = (
+                    run_security_scan(ws)
+                )
                 scan_meta = {
                     "security_scan_exit": scode,
                     "security_scan_ruff_exit": ruff_ec,
@@ -2405,6 +2407,7 @@ class RunOrchestrator:
                         mypy_ec,
                         perf_ec,
                         n1_ec,
+                        semgrep_ec,
                     ),
                 }
             payload = FindingCreatedPayload.model_validate(

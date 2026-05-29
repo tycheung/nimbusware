@@ -102,7 +102,7 @@ def test_implementation_critique_stub_emits_backend_writer_panel(
         if r.get("event_type") == "critic.verdict.emitted"
         and (r.get("payload") or {}).get("evidence_refs") == ["stub://implementation"]
     ]
-    assert len(impl_critics) == 2
+    assert len(impl_critics) == len(orch._critique_router.pairing_for("backend_writer"))
     gates = [
         r
         for r in rows
@@ -163,7 +163,7 @@ def test_implementation_stub_after_llm_returns_false(
         if r.get("event_type") == "critic.verdict.emitted"
         and (r.get("payload") or {}).get("evidence_refs") == ["stub://implementation"]
     ]
-    assert len(impl_critics) == 2
+    assert len(impl_critics) == len(orch._critique_router.pairing_for("backend_writer"))
 
 
 @patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
@@ -491,11 +491,16 @@ def test_profile_stub_critique_yaml_without_env_emits_five_panels(
             and (r.get("payload") or {}).get("evidence_refs") == [uri]
         )
 
-    assert _stub_count("stub://implementation") == 2
-    assert _stub_count("stub://test_writer") == 2
-    assert _stub_count("stub://planner") == 2
-    assert _stub_count("stub://frontend_writer") == 2
-    assert _stub_count("stub://module_integrator") == 2
+    reg = orch._registry
+    router = orch._critique_router
+    assert _stub_count("stub://implementation") == len(router.pairing_for("backend_writer"))
+    assert _stub_count("stub://test_writer") == len(router.pairing_for("test_writer"))
+    assert _stub_count("stub://planner") == len(router.pairing_for("planner"))
+    assert _stub_count("stub://frontend_writer") == len(router.pairing_for("frontend_writer"))
+    assert _stub_count("stub://module_integrator") == len(
+        router.pairing_for("module_integrator"),
+    )
+    assert reg is not None
 
 
 @patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "0"}, clear=False)

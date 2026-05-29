@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 from typing import Any
@@ -53,46 +52,27 @@ def scan_http_resilience_heuristic(
 
 
 def check_sql_query_count_budget() -> tuple[int, str, dict[str, Any]]:
-    """Optional runtime hook: compare test session counter to ``HERMES_SQL_QUERY_COUNT_MAX``."""
-    max_raw = os.environ.get("HERMES_SQL_QUERY_COUNT_MAX", "").strip()
-    if not max_raw:
-        return 0, "sql query budget: skipped (HERMES_SQL_QUERY_COUNT_MAX unset)\n", {}
-    try:
-        limit = max(1, int(max_raw))
-    except ValueError:
-        return 0, "sql query budget: invalid HERMES_SQL_QUERY_COUNT_MAX\n", {}
-    count_raw = os.environ.get("HERMES_TEST_SQL_QUERY_COUNT", "").strip()
-    if not count_raw:
-        return (
-            0,
-            "sql query budget: no HERMES_TEST_SQL_QUERY_COUNT (no-op without test fixture)\n",
-            {"sql_query_budget_limit": limit, "sql_query_count": None},
-        )
-    try:
-        count = int(count_raw)
-    except ValueError:
-        return 1, "sql query budget: invalid HERMES_TEST_SQL_QUERY_COUNT\n", {}
-    meta = {"sql_query_budget_limit": limit, "sql_query_count": count}
-    if count > limit:
-        return (
-            1,
-            f"sql query budget exceeded: {count} > {limit}\n",
-            meta,
-        )
-    return 0, f"sql query budget ok: {count} <= {limit}\n", meta
+    """Optional runtime hook (delegates to ``sql_profiler``)."""
+    from hermes_orchestrator.sql_profiler import check_runtime_sql_budget
+
+    return check_runtime_sql_budget()
 
 
 def run_network_resilience_scan_summary(workspace: Path) -> dict[str, Any]:
+    from hermes_orchestrator.sql_profiler import run_sql_profiler_summary
+
     http_code, http_log, http_findings = scan_http_resilience_heuristic(workspace)
-    sql_code, sql_log, sql_meta = check_sql_query_count_budget()
-    worst = max(http_code, sql_code)
+    sql_prof = run_sql_profiler_summary(workspace)
+    sql_code = int(sql_prof.get("sql_query_budget_exit", 0))
+    static_code = int(sql_prof.get("sql_profiler_exit", 0))
+    worst = max(http_code, static_code)
     return {
         "network_resilience_exit": worst,
         "http_resilience_exit": http_code,
         "http_resilience_findings": http_findings,
         "sql_query_budget_exit": sql_code,
         "network_resilience_snippet": "\n".join(
-            (http_log + sql_log).splitlines()[:30],
+            (http_log + str(sql_prof.get("sql_profiler_snippet", ""))).splitlines()[:30],
         ),
-        **sql_meta,
+        **{k: v for k, v in sql_prof.items() if k != "sql_profiler_snippet"},
     }

@@ -43,7 +43,7 @@ def test_repo_profile_security_scan_metadata_on(monkeypatch: pytest.MonkeyPatch)
 
 @patch(
     "hermes_orchestrator.pipeline.run_security_scan",
-    return_value=(2, "scanlog\nline2\n", 1, 2, 0, 0, 0),
+    return_value=(2, "scanlog\nline2\n", 1, 2, 0, 0, 0, 0),
 )
 @patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
 def test_verifier_failure_attaches_security_metadata_when_workflow_on(
@@ -67,7 +67,7 @@ def test_verifier_failure_attaches_security_metadata_when_workflow_on(
 
 @patch(
     "hermes_orchestrator.pipeline.run_security_scan",
-    return_value=(0, "should_not_attach", 0, 0, 0, 0, 0),
+    return_value=(0, "should_not_attach", 0, 0, 0, 0, 0, 0),
 )
 @patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
 def test_env_kill_skips_security_scan_metadata(

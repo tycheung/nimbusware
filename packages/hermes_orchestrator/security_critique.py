@@ -84,10 +84,25 @@ def _required_fix_for_tools(failing: list[str]) -> RequiredFixArtifact:
 
 
 def run_security_scan_summary(workspace: Path) -> dict[str, Any]:
-    scode, slog, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec = run_security_scan(workspace)
-    summary = security_scan_tool_summary(ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec)
-    summary["security_scan_exit"] = scode
+    from hermes_orchestrator.sql_profiler import run_sql_profiler_summary
+
+    scode, slog, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec, semgrep_ec = run_security_scan(
+        workspace,
+    )
+    sql_prof = run_sql_profiler_summary(workspace)
+    sql_ec = int(sql_prof.get("sql_profiler_exit", 0))
+    summary = security_scan_tool_summary(
+        ruff_ec,
+        bandit_ec,
+        mypy_ec,
+        perf_ec,
+        n1_ec,
+        semgrep_ec,
+        sql_ec,
+    )
+    summary["security_scan_exit"] = max(scode, sql_ec)
     summary["security_scan_snippet"] = "\n".join(slog.splitlines()[:20])
+    summary["sql_profiler"] = sql_prof
     return summary
 
 
