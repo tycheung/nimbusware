@@ -1,0 +1,7 @@
+version: 1
+business_area:
+  - id: commerce
+    display_name: Commerce
+development_role:
+  - id: backend_engineer
+    display_name: Backend engineer

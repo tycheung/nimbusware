@@ -1,0 +1,64 @@
+"""Workflow YAML knobs for Integration Adapter Writer scaffold (plan §14 #13)."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+
+DEFAULT_ADAPTER_KIND = "compatibility_shim"
+
+
+@dataclass(frozen=True)
+class IntegrationAdapterWriterWorkflowBlock:
+    """Parsed ``integration_adapter_writer`` subsection from workflow YAML."""
+
+    enabled: bool = False
+    target_adapter_kind: str = DEFAULT_ADAPTER_KIND
+    stub_only: bool = True
+
+
+def parse_integration_adapter_writer_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> IntegrationAdapterWriterWorkflowBlock:
+    """Return workflow block; missing subsection → disabled defaults."""
+    if workflow_profile is None or not str(workflow_profile).strip():
+        return IntegrationAdapterWriterWorkflowBlock()
+    key = str(workflow_profile).strip()
+    try:
+        raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
+    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
+        return IntegrationAdapterWriterWorkflowBlock()
+    block = raw.get("integration_adapter_writer")
+    if not isinstance(block, dict):
+        return IntegrationAdapterWriterWorkflowBlock()
+    enabled = bool(block.get("enabled", False))
+    kind_raw = block.get("target_adapter_kind", DEFAULT_ADAPTER_KIND)
+    kind = str(kind_raw).strip() if kind_raw is not None else DEFAULT_ADAPTER_KIND
+    if not kind:
+        kind = DEFAULT_ADAPTER_KIND
+    stub_only = bool(block.get("stub_only", True))
+    return IntegrationAdapterWriterWorkflowBlock(
+        enabled=enabled,
+        target_adapter_kind=kind,
+        stub_only=stub_only,
+    )
+
+
+def integration_adapter_writer_effective(
+    block: IntegrationAdapterWriterWorkflowBlock,
+) -> bool:
+    """Env ``HERMES_INTEGRATION_ADAPTER_WRITER=0`` kill-switch overrides workflow YAML."""
+    import os
+
+    env_raw = os.environ.get("HERMES_INTEGRATION_ADAPTER_WRITER", "").strip().lower()
+    if env_raw in ("0", "false", "no"):
+        return False
+    if env_raw in ("1", "true", "yes"):
+        return True
+    return block.enabled

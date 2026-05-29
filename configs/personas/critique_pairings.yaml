@@ -1,0 +1,24 @@
+version: 1
+# Producer taxonomy_key → default critic taxonomy_keys (plan §3B.5).
+pairings:
+  backend_writer:
+    - product_reference_critic
+    - domain_critic
+  planner:
+    - product_reference_critic
+    - domain_critic
+  test_writer:
+    - product_reference_critic
+    - domain_critic
+  frontend_writer:
+    - product_reference_critic
+    - domain_critic
+  module_integrator:
+    - product_reference_critic
+    - domain_critic
+  integration_adapter_writer:
+    - product_reference_critic
+    - domain_critic
+  agent_evaluator:
+    - persona_coverage_critic
+    - agent_evaluator_critic

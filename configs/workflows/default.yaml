@@ -1,0 +1,96 @@
+# Default workflow profile (merged over configs/model-routing.yaml)
+version: 1
+finding_fix_strictness:
+  minimum_severity_requiring_fixes: MEDIUM
+  also_require_fixes_for_low_severity: false
+network_egress:
+  scraper_role_allowlist: null
+  domain_allowlist: null
+  budget_bytes_per_run: null
+# Optional outbound GET (egress-checked). Requires ``HERMES_OUTBOUND_FETCH_ENABLED=1`` for HTTP.
+scraper_fetch:
+  enabled: false
+  url: null
+  # Optional list of URLs (in order); when non-empty, overrides ``url`` for fetch targets.
+  urls: null
+  actor_role_key: backend_writer
+  max_attempts: 1
+  backoff_seconds: 0
+  max_bytes: null
+  # Truncate response body to this many bytes for UTF-8 ``body_snippet_preview`` in metadata; 0 omits snippet.
+  body_snippet_max_bytes: 256
+  # ``null``: no on-disk response files (events still carry digest/snippet metadata).
+  # When set (positive int), write truncated bytes under ``HERMES_SCRAPER_ARTIFACT_DIR`` or
+  # ``<repo>/.cache/hermes_scraper`` (values above **2 MiB** per URL are clamped in
+  # ``load_scraper_fetch_config``); ``metadata.scraper_fetch.fetches[]`` gains ``artifact_*`` keys.
+  persist_artifacts_max_bytes_per_url: null
+# When true, attach ``security_scan_*`` metadata on verifier ``finding.created``.
+# ``HERMES_ATTACH_SECURITY_SCAN_METADATA=1`` forces on; ``=0`` / ``false`` / ``no`` forces off (overrides YAML).
+security_scan_metadata_on_verify: false
+# Emit ``stage.started`` ``agent_eval:{persona_id}`` after verify when enabled or ``HERMES_AGENT_EVALUATOR=1``.
+# ``HERMES_AGENT_EVALUATOR=0`` / ``false`` / ``no`` suppresses emission even when ``enabled`` is true here.
+agent_evaluator:
+  enabled: false
+  persona_id: default
+# Emit ``bundle_compatibility`` ``gate.decision.emitted`` after verify when enabled here,
+# ``HERMES_EMIT_INTEGRATOR_GATE`` is truthy, or ``configs/integrator/thresholds.yaml`` ``enabled``.
+# Optional ``project_tags: [tag, ...]`` constrains scoring vs catalog bundle tags (omit = align with bundle).
+# Optional ``min_score_to_pass`` (0..1) overrides ``configs/integrator/thresholds.yaml`` for this profile;
+# non-empty ``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` overrides workflow + thresholds.
+integrator_gate:
+  enabled: false
+# Optional ``self_refinement:policy`` marker after verify when repo policy or this block enables.
+self_refinement:
+  enabled: false
+# Post-verify critique panels (§14 #16). Env ``HERMES_*`` overrides each flag when non-empty.
+# Optional ``default_enabled: true`` turns on panels whose per-stage ``enabled`` is omitted.
+universal_critique:
+  unanimous_gate_enforce: true
+  implementation:
+    llm: false
+    stub: false
+    stage_failed_on_gate_fail: false
+    emit_finding_on_gate_fail: false
+  test_writer:
+    enabled: false
+    llm: false
+    stub: false
+    stage_failed_on_gate_fail: false
+    emit_finding_on_gate_fail: false
+  planner:
+    enabled: false
+    llm: false
+    stub: false
+    stage_failed_on_gate_fail: false
+    emit_finding_on_gate_fail: false
+# Skip automatic ``run.escalated`` from cumulative findings/notices/checkpoints/stage/gate/anti-deadlock.
+escalation:
+  suppress_automatic_escalation: false
+# Optional explicit stage DAG (§12 Phase 2-a). When omitted, orchestrator uses the built-in default
+# (plan → parallel-ready writers → critique hooks → bundle_compatibility).
+stage_graph:
+  - stage_name: plan
+    depends_on: []
+  - stage_name: implementation
+    depends_on: [plan]
+    parallel_group: writers
+  - stage_name: test_writer
+    depends_on: [plan]
+    parallel_group: writers
+  - stage_name: frontend_writer
+    depends_on: [plan]
+    parallel_group: writers
+  - stage_name: implementation.critique
+    depends_on: [implementation, test_writer, frontend_writer]
+  - stage_name: test_writer.critique
+    depends_on: [implementation.critique]
+  - stage_name: planner.critique
+    depends_on: [test_writer.critique]
+  - stage_name: frontend_writer.critique
+    depends_on: [planner.critique]
+  - stage_name: module_integrator.critique
+    depends_on: [frontend_writer.critique]
+  - stage_name: bundle_compatibility
+    depends_on: [module_integrator.critique]
+  - stage_name: agent_evaluator.critique
+    depends_on: [bundle_compatibility]

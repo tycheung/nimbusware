@@ -1,0 +1,101 @@
+"""Minimal real test-writer stage executor for parallel writer dispatch."""
+
+from __future__ import annotations
+
+import os
+import shlex
+import subprocess
+from pathlib import Path
+from typing import Literal
+
+from hermes_orchestrator.ollama_chat import ollama_chat_json
+
+
+def _truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _run_test_writer_stage_subprocess(workspace: Path) -> tuple[int, str]:
+    """Run legacy subprocess-backed test-writer command."""
+    cmd_raw = os.environ.get(
+        "HERMES_TEST_WRITER_STAGE_CMD",
+        "python -m pytest -q -k test_writer --maxfail=1",
+    ).strip()
+    cmd = shlex.split(cmd_raw) if cmd_raw else []
+    if not cmd:
+        return 0, "test_writer stage command omitted"
+    proc = subprocess.run(
+        cmd,
+        cwd=str(workspace),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    output = "\n".join(x for x in (proc.stdout, proc.stderr) if x).strip()
+    return int(proc.returncode), output
+
+
+def _run_test_writer_stage_llm(
+    *,
+    model_id: str,
+    base_url: str,
+    timeout_seconds: float,
+) -> tuple[int, str]:
+    """Best-effort LLM-backed test-writer body generation summary."""
+    try:
+        payload = ollama_chat_json(
+            base_url=base_url,
+            model=model_id,
+            timeout_seconds=timeout_seconds,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a test-writer assistant. Return JSON object with keys "
+                        "status, summary, suggested_tests_count."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": "Suggest lightweight tests for the current workspace.",
+                },
+            ],
+        )
+    except Exception as exc:  # pragma: no cover - exercised via fallback tests
+        return 1, f"llm test-writer failed: {str(exc)[:200]}"
+    summary = str(payload.get("summary", "llm test-writer completed")).strip()
+    return 0, summary[:500]
+
+
+def run_test_writer_stage(
+    workspace: Path,
+    *,
+    llm_body_enabled: bool = False,
+    llm_stub_fallback: bool = False,
+    llm_model_id: str | None = None,
+    llm_base_url: str = "http://localhost:11434",
+    llm_timeout_seconds: float = 120.0,
+) -> tuple[int, str, Literal["subprocess", "llm", "stub"]]:
+    """Run a configurable command for the test-writer stage.
+
+    Defaults to a lightweight pytest invocation so this can be enabled without
+    introducing a second full verifier bundle execution.
+    """
+    if llm_body_enabled and _truthy_env("HERMES_USE_LLM"):
+        if _truthy_env("HERMES_TEST_WRITER_LLM_STUB"):
+            return 0, "stub test-writer llm body", "stub"
+        if llm_model_id:
+            code, out = _run_test_writer_stage_llm(
+                model_id=llm_model_id,
+                base_url=llm_base_url,
+                timeout_seconds=llm_timeout_seconds,
+            )
+            if code == 0:
+                return code, out, "llm"
+            if llm_stub_fallback:
+                return 0, "stub fallback after llm failure", "stub"
+            return code, out, "llm"
+        if llm_stub_fallback:
+            return 0, "stub fallback without selected model", "stub"
+    code, output = _run_test_writer_stage_subprocess(workspace)
+    return code, output, "subprocess"

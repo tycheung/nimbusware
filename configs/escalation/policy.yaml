@@ -1,0 +1,25 @@
+version: 1
+max_retries_per_stage: 3
+deadlock_escalation_after_minutes: 30
+anti_deadlock:
+  enabled: true
+  min_progress_events: 1
+# When set to a positive integer, append ``run.escalated`` after that many cumulative
+# ``finding.created`` events on the run (system actor). ``null`` disables.
+verification:
+  auto_escalate_after_cumulative_findings: null
+  # Optional: emit a single ``run.escalated`` (reason ``cumulative_findings_notice``) when
+  # cumulative ``finding.created`` reaches this count (in addition to auto_escalate above).
+  notice_escalate_at_cumulative_findings: null
+  # When true, emit one ``run.escalated`` (reason ``verifier_failure_checkpoint``) on first
+  # writer verifier ``finding.created`` for the run.
+  escalate_on_first_verifier_failure: false
+  # Optional: emit one ``run.escalated`` (reason ``cumulative_stage_failures``) when the run
+  # has this many ``stage.failed`` events (any stage_name).
+  escalate_after_cumulative_stage_failures: null
+  # Optional: emit one ``run.escalated`` (reason ``cumulative_gate_failures``) when the run has
+  # this many ``gate.decision.emitted`` events with verdict FAIL.
+  escalate_after_cumulative_gate_failures: null
+  # Optional: emit one ``run.escalated`` (reason ``cumulative_high_severity_findings``) when the
+  # run has this many ``finding.created`` events whose severity is HIGH or BLOCKER.
+  escalate_after_cumulative_high_severity_findings: null

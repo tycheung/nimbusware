@@ -1,0 +1,8 @@
+version: 1
+enabled: false
+max_iterations: 3
+auto_promote_probation: false
+description: >
+  Operator-facing description of the intended self-refinement loop. No new
+  event_type values are emitted until a dedicated migration updates EventType
+  and the PostgreSQL CHECK allowlist in lockstep.

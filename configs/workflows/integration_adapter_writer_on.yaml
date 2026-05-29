@@ -1,0 +1,8 @@
+# Optional profile: Integration Adapter Writer scaffold (§14 #13) — stub-only shim path.
+version: 1
+integration_adapter_writer:
+  enabled: true
+  target_adapter_kind: compatibility_shim
+  stub_only: true
+integrator_gate:
+  enabled: true

@@ -1,0 +1,348 @@
+"""Scraper fetch summary for Streamlit (plan §14 #10 / #11).
+
+Parity with timeline top-level ``scraper_fetch`` from the HTTP API.
+"""
+
+from __future__ import annotations
+
+import csv
+import json
+import re
+from collections.abc import Mapping, Sequence
+from io import StringIO
+from typing import Any
+
+_SCRAPER_FETCH_FIELDS: tuple[tuple[str, str], ...] = (
+    ("outcome", "Outcome"),
+    ("fetch_count", "Fetch count"),
+    ("total_bytes", "Total bytes"),
+    ("reason_code", "Reason code"),
+    ("failed_url_host", "Failed URL host"),
+    ("message", "Message"),
+    ("stage_name", "Stage name"),
+    ("event_id", "Event id"),
+    ("occurred_at", "Occurred at"),
+)
+
+
+def _stringify(value: Any) -> str:
+    if value is None:
+        return "—"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def scraper_fetch_from_timeline(
+    timeline_body: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Return top-level ``scraper_fetch`` from a ``GET /v1/runs/…/timeline`` JSON body."""
+    if not isinstance(timeline_body, Mapping):
+        return None
+    raw = timeline_body.get("scraper_fetch")
+    return raw if isinstance(raw, dict) else None
+
+
+def scraper_fetch_summary_rows(
+    summary: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    """Rows for ``st.dataframe`` (field / value columns)."""
+    if not summary:
+        return []
+    rows: list[dict[str, str]] = []
+    for key, label in _SCRAPER_FETCH_FIELDS:
+        if key not in summary:
+            continue
+        rows.append({"field": label, "value": _stringify(summary.get(key))})
+    return rows
+
+
+_SCRAPER_FETCH_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
+
+
+def scraper_fetch_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
+    """Serialize scraper_fetch summary display rows to CSV (UTF-8 text)."""
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_SCRAPER_FETCH_SUMMARY_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow(
+                {k: r.get(k, "") for k in _SCRAPER_FETCH_SUMMARY_CSV_COLUMNS},
+            )
+    return buf.getvalue()
+
+
+def scraper_fetch_summary_export_json(summary: Mapping[str, Any] | None) -> str:
+    """JSON export of timeline top-level ``scraper_fetch`` summary."""
+    if not isinstance(summary, Mapping):
+        return "{}"
+    return json.dumps(dict(summary), ensure_ascii=False, indent=2)
+
+
+def scraper_fetch_summary_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
+    """ASCII-ish slug for scraper_fetch summary download filenames."""
+    raw = str(run_id).strip().lower()
+    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
+    return slug[:max_len]
+
+
+def scraper_fetch_outcome_caption(summary: Mapping[str, Any] | None) -> str | None:
+    """One-line outcome and fetch totals."""
+    if not isinstance(summary, Mapping):
+        return None
+    outcome = summary.get("outcome")
+    if not isinstance(outcome, str) or not outcome.strip():
+        return None
+    fc = summary.get("fetch_count")
+    tb = summary.get("total_bytes")
+    parts = [f"Scraper fetch: {outcome.strip()}."]
+    if isinstance(fc, int) and not isinstance(fc, bool):
+        parts.append(f" {fc} URL(s)")
+        if isinstance(tb, int) and not isinstance(tb, bool):
+            parts.append(f", {tb} bytes total.")
+        else:
+            parts.append(".")
+    return "".join(parts)
+
+
+def scraper_fetch_fetches_table_rows(
+    summary: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    """Per-URL fetch rows from ``scraper_fetch.fetches`` for ``st.dataframe``."""
+    if not isinstance(summary, Mapping):
+        return []
+    raw = summary.get("fetches")
+    if not isinstance(raw, list):
+        return []
+    rows: list[dict[str, str]] = []
+    for i, row in enumerate(raw, start=1):
+        if not isinstance(row, dict):
+            continue
+        rows.append(
+            {
+                "#": str(i),
+                "URL host": _stringify(row.get("url_host")),
+                "HTTP status": _stringify(row.get("http_status")),
+                "Bytes": _stringify(row.get("bytes")),
+                "Attempts": _stringify(row.get("attempts")),
+                "Content length": _stringify(row.get("content_length")),
+                "Artifact relpath": _stringify(row.get("artifact_relpath")),
+            },
+        )
+    return rows
+
+
+_SCRAPER_FETCH_FETCHES_CSV_COLUMNS: tuple[str, ...] = (
+    "#",
+    "URL host",
+    "HTTP status",
+    "Bytes",
+    "Attempts",
+    "Content length",
+    "Artifact relpath",
+)
+
+
+def scraper_fetch_fetches_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
+    """Serialize per-URL fetch display rows to CSV (UTF-8 text)."""
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_SCRAPER_FETCH_FETCHES_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow({k: r.get(k, "") for k in _SCRAPER_FETCH_FETCHES_CSV_COLUMNS})
+    return buf.getvalue()
+
+
+def scraper_fetch_fetches_export_json(summary: Mapping[str, Any] | None) -> str:
+    """JSON export of raw ``scraper_fetch.fetches`` from the timeline summary."""
+    if not isinstance(summary, Mapping):
+        return "[]"
+    raw = summary.get("fetches")
+    if not isinstance(raw, list):
+        return "[]"
+    items = [dict(x) for x in raw if isinstance(x, dict)]
+    return json.dumps(items, ensure_ascii=False, indent=2)
+
+
+def scraper_fetch_fetches_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
+    """ASCII-ish slug for scraper fetch fetches download filenames."""
+    raw = str(run_id).strip().lower()
+    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
+    return slug[:max_len]
+
+
+def scraper_fetch_artifacts_caption(summary: Mapping[str, Any] | None) -> str | None:
+    """Count per-URL rows that carry an ``artifact_relpath``."""
+    if not isinstance(summary, Mapping):
+        return None
+    raw = summary.get("fetches")
+    if not isinstance(raw, list) or not raw:
+        return None
+    n = sum(
+        1
+        for row in raw
+        if isinstance(row, dict)
+        and isinstance(row.get("artifact_relpath"), str)
+        and str(row["artifact_relpath"]).strip()
+    )
+    if n == 0:
+        return None
+    word = "row" if n == 1 else "rows"
+    return f"Scraper fetch artifacts: **{n}** per-URL {word} with artifact_relpath."
+
+
+def scraper_fetch_failure_reason_caption(summary: Mapping[str, Any] | None) -> str | None:
+    """Surface failure reason when outcome is failed."""
+    if not isinstance(summary, Mapping):
+        return None
+    if summary.get("outcome") != "failed":
+        return None
+    rc = summary.get("reason_code")
+    if not isinstance(rc, str) or not rc.strip():
+        return None
+    host = summary.get("failed_url_host")
+    if isinstance(host, str) and host.strip():
+        return f"Failure reason: {rc.strip()} (host {host.strip()})."
+    return f"Failure reason: {rc.strip()}."
+
+
+def _scraper_fetch_artifact_relpath_count(summary: Mapping[str, Any]) -> int:
+    raw = summary.get("fetches")
+    if not isinstance(raw, list):
+        return 0
+    return sum(
+        1
+        for row in raw
+        if isinstance(row, dict)
+        and isinstance(row.get("artifact_relpath"), str)
+        and str(row["artifact_relpath"]).strip()
+    )
+
+
+def scraper_fetch_operator_metrics(
+    summary: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Rollup counts for operator summary from timeline ``scraper_fetch``."""
+    metrics: dict[str, Any] = {
+        "outcome": None,
+        "fetch_count": 0,
+        "total_bytes": 0,
+        "artifact_relpath_count": 0,
+        "failed_url_present": False,
+    }
+    if not isinstance(summary, Mapping):
+        return metrics
+    outcome = summary.get("outcome")
+    if isinstance(outcome, str) and outcome.strip():
+        metrics["outcome"] = outcome.strip()
+    fc = summary.get("fetch_count")
+    if isinstance(fc, int) and not isinstance(fc, bool):
+        metrics["fetch_count"] = fc
+    tb = summary.get("total_bytes")
+    if isinstance(tb, int) and not isinstance(tb, bool):
+        metrics["total_bytes"] = tb
+    metrics["artifact_relpath_count"] = _scraper_fetch_artifact_relpath_count(summary)
+    host = summary.get("failed_url_host")
+    metrics["failed_url_present"] = isinstance(host, str) and bool(host.strip())
+    return metrics
+
+
+def scraper_fetch_operator_metrics_table_rows(
+    metrics: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    """Two-column rows for ``st.dataframe`` (field / value)."""
+    if not isinstance(metrics, Mapping):
+        return []
+    rows: list[dict[str, str]] = []
+    outcome = metrics.get("outcome")
+    if isinstance(outcome, str) and outcome.strip():
+        rows.append({"field": "Outcome", "value": outcome.strip()})
+    rows.append({"field": "Fetch count", "value": str(metrics.get("fetch_count", 0))})
+    rows.append({"field": "Total bytes", "value": str(metrics.get("total_bytes", 0))})
+    arc = metrics.get("artifact_relpath_count", 0)
+    if isinstance(arc, int) and not isinstance(arc, bool) and arc > 0:
+        rows.append({"field": "Artifact relpath rows", "value": str(arc)})
+    if metrics.get("failed_url_present") is True:
+        rows.append({"field": "Failed URL host present", "value": "yes"})
+    return rows
+
+
+def scraper_fetch_operator_metrics_caption(
+    metrics: Mapping[str, Any] | None,
+) -> str | None:
+    """One-line operator caption from rollup metrics."""
+    if not isinstance(metrics, Mapping):
+        return None
+    outcome = metrics.get("outcome")
+    if not isinstance(outcome, str) or not outcome.strip():
+        return None
+    parts = [f"**{outcome.strip()}**"]
+    fc = metrics.get("fetch_count", 0)
+    if isinstance(fc, int) and not isinstance(fc, bool) and fc > 0:
+        parts.append(f"**{fc}** URL(s)")
+    tb = metrics.get("total_bytes", 0)
+    if isinstance(tb, int) and not isinstance(tb, bool) and tb > 0:
+        parts.append(f"**{tb}** bytes")
+    arc = metrics.get("artifact_relpath_count", 0)
+    if isinstance(arc, int) and not isinstance(arc, bool) and arc > 0:
+        parts.append(f"**{arc}** artifact row(s)")
+    return "Scraper fetch metrics: " + ", ".join(parts) + "."
+
+
+_SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
+
+
+def scraper_fetch_operator_metrics_export_json(
+    metrics: Mapping[str, Any] | None,
+) -> str:
+    """Pretty JSON for scraper fetch operator metrics."""
+    if not isinstance(metrics, Mapping):
+        return "{}"
+    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
+
+
+def scraper_fetch_operator_metrics_table_rows_csv(
+    rows: Sequence[Mapping[str, str]],
+) -> str:
+    """Serialize scraper fetch operator metrics rows to CSV."""
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow(
+                {
+                    k: r.get(k, "")
+                    for k in _SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS
+                },
+            )
+    return buf.getvalue()
+
+
+def scraper_fetch_operator_metrics_export_filename_slug(
+    run_id: str,
+    *,
+    max_len: int = 36,
+) -> str:
+    """ASCII-ish slug for scraper fetch operator metrics download filenames."""
+    return scraper_fetch_summary_export_filename_slug(run_id, max_len=max_len)

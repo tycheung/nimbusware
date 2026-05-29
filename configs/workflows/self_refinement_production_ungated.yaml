@@ -1,0 +1,8 @@
+# Self-refinement with YAML-only ungated iterative depth (§14 #17 B2).
+version: 1
+self_refinement:
+  enabled: true
+  ungated_loop: true
+  llm_critique_enabled: true
+  max_iterations: 3
+  description: Production ungated iterative self-refinement (§14 #17)

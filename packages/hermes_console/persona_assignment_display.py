@@ -1,0 +1,113 @@
+"""Persona assignment summary for Streamlit (P1-b / §3B.3).
+
+Parity with timeline top-level ``persona_assignment`` from the HTTP API.
+"""
+
+from __future__ import annotations
+
+import csv
+import json
+from collections.abc import Mapping, Sequence
+from io import StringIO
+from typing import Any
+
+_PERSONA_ASSIGNMENT_FIELDS: tuple[tuple[str, str], ...] = (
+    ("business_area.id", "Business area id"),
+    ("business_area.display_name", "Business area display name"),
+    ("development_role.id", "Development role id"),
+    ("development_role.display_name", "Development role display name"),
+)
+
+
+def _stringify(value: Any) -> str:
+    if value is None:
+        return "—"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
+def persona_assignment_from_timeline(
+    timeline_body: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Return top-level ``persona_assignment`` from a ``GET /v1/runs/…/timeline`` JSON body."""
+    if not isinstance(timeline_body, Mapping):
+        return None
+    raw = timeline_body.get("persona_assignment")
+    return raw if isinstance(raw, dict) else None
+
+
+def persona_assignment_summary_rows(
+    pa: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    """Flatten nested slots for ``st.dataframe``."""
+    if not isinstance(pa, Mapping):
+        return []
+    rows: list[dict[str, str]] = []
+    ba = pa.get("business_area")
+    if isinstance(ba, dict):
+        if "id" in ba:
+            rows.append(
+                {
+                    "field": "Business area id",
+                    "value": _stringify(ba.get("id")),
+                },
+            )
+        if ba.get("display_name") is not None:
+            rows.append(
+                {
+                    "field": "Business area display name",
+                    "value": _stringify(ba.get("display_name")),
+                },
+            )
+    dr = pa.get("development_role")
+    if isinstance(dr, dict):
+        if "id" in dr:
+            rows.append(
+                {
+                    "field": "Development role id",
+                    "value": _stringify(dr.get("id")),
+                },
+            )
+        if dr.get("display_name") is not None:
+            rows.append(
+                {
+                    "field": "Development role display name",
+                    "value": _stringify(dr.get("display_name")),
+                },
+            )
+    return rows
+
+
+def persona_assignment_caption(pa: Mapping[str, Any] | None) -> str | None:
+    """One-line summary of composite persona assignment."""
+    if not isinstance(pa, Mapping):
+        return None
+    parts: list[str] = []
+    ba = pa.get("business_area")
+    if isinstance(ba, dict) and isinstance(ba.get("id"), str) and ba["id"].strip():
+        parts.append(f"business_area={ba['id'].strip()!r}")
+    dr = pa.get("development_role")
+    if isinstance(dr, dict) and isinstance(dr.get("id"), str) and dr["id"].strip():
+        parts.append(f"development_role={dr['id'].strip()!r}")
+    if not parts:
+        return None
+    return "Persona assignment: " + ", ".join(parts) + "."
+
+
+def persona_assignment_timeline_table_rows_csv(
+    rows: Sequence[Mapping[str, str]],
+) -> str:
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(buf, fieldnames=["field", "value"], extrasaction="ignore")
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow({"field": r.get("field", ""), "value": r.get("value", "")})
+    return buf.getvalue()
+
+
+def persona_assignment_timeline_export_json(pa: Mapping[str, Any] | None) -> str:
+    return json.dumps(pa if isinstance(pa, Mapping) else {}, ensure_ascii=False, indent=2)

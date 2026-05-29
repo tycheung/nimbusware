@@ -1,0 +1,4 @@
+version: 1
+self_refinement:
+  enabled: true
+  ungated_loop: true

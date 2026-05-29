@@ -1,0 +1,100 @@
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "hermes"
+version = "0.5.0"
+description = "Hermes orchestrator workspace (local-first). Python >=3.10; use 3.11+ when available."
+authors = []
+package-mode = true
+packages = [
+  { include = "agent_core", from = "packages" },
+  { include = "hermes_store", from = "packages" },
+  { include = "hermes_orchestrator", from = "packages" },
+  { include = "hermes_api", from = "packages" },
+  { include = "hermes_executor", from = "packages" },
+  { include = "hermes_console", from = "packages" },
+  { include = "hermes_extensions", from = "packages" },
+  { include = "hermes_config", from = "packages" },
+  { include = "hermes_env", from = "packages" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4"
+pydantic = ">=2,<3"
+pyyaml = ">=6"
+httpx = ">=0.27"
+fastapi = ">=0.115"
+uvicorn = { version = ">=0.30", extras = ["standard"] }
+psycopg = { version = ">=3.2", extras = ["binary"] }
+streamlit = ">=1.39"
+idna = ">=3.7"
+numpy = ">=1.26"
+pywebview = ">=5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8"
+ruff = ">=0.8"
+mypy = ">=1.13"
+types-PyYAML = ">=6.0"
+bandit = { version = ">=1.7", extras = ["toml"] }
+
+[tool.poetry.group.faiss]
+optional = true
+
+[tool.poetry.group.faiss.dependencies]
+faiss-cpu = ">=1.8"
+
+[tool.poetry.group.redis]
+optional = true
+
+[tool.poetry.group.redis.dependencies]
+redis = ">=5"
+
+[tool.poetry.scripts]
+hermes-api = "hermes_api.cli:main"
+hermes-preflight = "hermes_orchestrator.preflight_cli:main"
+hermes-config = "hermes_config.cli:main"
+hermes-run-worker = "hermes_orchestrator.run_worker:main"
+hermes-run = "hermes_env.run_app:main"
+hermes-launcher = "hermes_env.launcher_app:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["packages"]
+markers = [
+  "integration: requires PostgreSQL (set HERMES_DATABASE_URL)",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["packages", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+packages = [
+  "agent_core",
+  "hermes_store",
+  "hermes_orchestrator",
+  "hermes_api",
+  "hermes_executor",
+  "hermes_console",
+  "hermes_extensions",
+  "hermes_config",
+  "hermes_env",
+]
+mypy_path = "packages"
+
+[[tool.mypy.overrides]]
+module = ["streamlit.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["webview.*"]
+ignore_missing_imports = true

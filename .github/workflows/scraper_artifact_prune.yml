@@ -1,0 +1,55 @@
+# Optional: scheduled prune for local scraper response artifacts (not part of default CI; see ci.yml).
+#
+# Operator flags (see scripts/prune_scraper_artifacts.py docstring for authoritative usage):
+#   --dry-run            Count stale files without deleting them (follow-on 41).
+#   --json-summary       Emit one extra stdout line {"pruned":N,"base":"...","dry_run":bool,
+#                        "include_patterns":...,"exclude_patterns":...} (follow-on 44, extended fo125).
+#   --include-pattern    fnmatch basename glob (e.g. '*.bin'); repeat to OR multiple (fo125).
+#   --exclude-pattern    fnmatch basename glob (e.g. '*.keep'); repeat to OR; exclude wins (fo125).
+#
+# Failure posture (fo125): job opens a GitHub issue labelled `prune-failure` on any non-zero
+# exit so operators are notified out-of-band. Concurrency group prevents overlapping cron +
+# workflow_dispatch runs. The default invocation actually deletes; swap in `--dry-run` to
+# preview-and-log only.
+name: Hermes scraper artifact prune
+
+on:
+  schedule:
+    - cron: "15 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: scraper-artifact-prune
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prune old artifacts
+        env:
+          HERMES_REPO_ROOT: ${{ github.workspace }}
+          HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS: "14"
+        # Default: delete stale files and emit a machine-readable JSON summary line
+        # for log agents. Swap to `--dry-run --json-summary` to preview without deleting.
+        run: |
+          pip install poetry
+          poetry install --no-interaction
+          poetry run python scripts/prune_scraper_artifacts.py --json-summary
+      - name: Open issue on prune failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "[scraper-artifact-prune] scheduled run failed on $(date -u +%Y-%m-%d)" \
+            --body "The weekly scraper artifact prune workflow failed. Inspect the run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --label "prune-failure"

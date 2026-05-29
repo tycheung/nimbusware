@@ -1,0 +1,7 @@
+version: 1
+# When true, emit ``gate.decision.emitted`` after verify (no ``HERMES_EMIT_INTEGRATOR_GATE`` env).
+# Workflow ``integrator_gate.enabled`` in ``configs/workflows/{profile}.yaml`` also enables emission.
+# Env ``HERMES_EMIT_INTEGRATOR_GATE`` still overrides: set to 0/false/no to force off; 1/true/yes on.
+enabled: false
+# Minimum ModuleIntegrator.score_fit() required for a bundle to pass a compatibility gate.
+min_score_to_pass: 0.7

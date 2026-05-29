@@ -1,0 +1,29 @@
+# Optional profile: on writer verifier failure, attach ``security_scan_*`` metadata to
+# ``finding.created`` when ``security_scan_metadata_on_verify`` is true (no env required).
+# ``HERMES_ATTACH_SECURITY_SCAN_METADATA=0`` / ``false`` / ``no`` still suppresses scans.
+version: 1
+finding_fix_strictness:
+  minimum_severity_requiring_fixes: MEDIUM
+  also_require_fixes_for_low_severity: false
+network_egress:
+  scraper_role_allowlist: null
+  domain_allowlist: null
+  budget_bytes_per_run: null
+scraper_fetch:
+  enabled: false
+  url: null
+  urls: null
+  actor_role_key: backend_writer
+  max_attempts: 1
+  backoff_seconds: 0
+  max_bytes: null
+  body_snippet_max_bytes: 256
+  persist_artifacts_max_bytes_per_url: null
+security_scan_metadata_on_verify: true
+agent_evaluator:
+  enabled: false
+  persona_id: default
+integrator_gate:
+  enabled: false
+self_refinement:
+  enabled: false

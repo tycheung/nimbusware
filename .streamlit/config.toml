@@ -1,0 +1,8 @@
+# Hermes operator console (`packages/hermes_console`). Override locally; do not commit secrets.
+#
+# Page title stays in packages/hermes_console/app.py (st.set_page_config).
+# Theme-only overrides: edit [theme] below; per-tenant CSS/logo skins are out of scope.
+[theme]
+base = "light"
+primaryColor = "#1f77b4"
+font = "sans serif"

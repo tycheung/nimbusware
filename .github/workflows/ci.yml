@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# Scraper response artifacts: CI does not run scripts/prune_scraper_artifacts.py. Operators
+# should schedule that script (cron / Windows Task Scheduler examples in its module docstring).
+# Optional GitHub-hosted prune: .github/workflows/scraper_artifact_prune.yml (not invoked here);
+# that workflow runs weekly with `--json-summary` logging and opens a `prune-failure`-labelled
+# GitHub issue on any non-zero exit (fo125), so prune health is monitored out-of-band from CI.
+#
+# Bundle FAISS index smoke: not on push/PR (keeps default CI fast). Weekly + manual dispatch
+# live in .github/workflows/bundle_faiss_index.yml (fo128 / PLAN_GAP §14 #12).
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Bundle FAISS stale check
+        run: poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
+      - name: Ruff
+        run: poetry run ruff check packages tests
+      - name: Mypy
+        run: poetry run mypy packages
+      - name: Pytest unit
+        run: poetry run pytest tests -q -m "not integration"
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hermes
+          POSTGRES_PASSWORD: hermes
+          POSTGRES_DB: hermes
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hermes -d hermes"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: Apply Postgres schema
+        run: |
+          export HERMES_DATABASE_URL="postgresql://hermes:hermes@localhost:5432/hermes"
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          bash scripts/apply_event_store.sh
+      - name: Integration tests
+        run: poetry run pytest tests -q -m integration
+        env:
+          HERMES_DATABASE_URL: postgresql://hermes:hermes@localhost:5432/hermes
+          HERMES_REPO_ROOT: ${{ github.workspace }}
+          HERMES_SKIP_PREFLIGHT: "1"

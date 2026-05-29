@@ -1,0 +1,60 @@
+name: E2E smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  e2e-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: E2E smoke (app profile)
+        run: poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+          HERMES_REPO_ROOT: ${{ github.workspace }}
+
+  e2e-full:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hermes
+          POSTGRES_PASSWORD: hermes
+          POSTGRES_DB: hermes
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Apply schema
+        run: bash scripts/apply_event_store.sh
+        env:
+          HERMES_DATABASE_URL: postgresql://hermes:hermes@127.0.0.1:5432/hermes
+      - name: E2E smoke (full profile)
+        run: poetry run python scripts/e2e_smoke.py --profile full --skip-install-check
+        env:
+          HERMES_DATABASE_URL: postgresql://hermes:hermes@127.0.0.1:5432/hermes
+          HERMES_SKIP_PREFLIGHT: "1"
+          HERMES_REPO_ROOT: ${{ github.workspace }}

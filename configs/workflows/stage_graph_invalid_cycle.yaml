@@ -1,0 +1,16 @@
+# Invalid stage graph for ingress validation tests (cycle).
+version: 1
+finding_fix_strictness:
+  minimum_severity_requiring_fixes: MEDIUM
+  also_require_fixes_for_low_severity: false
+network_egress:
+  scraper_role_allowlist: null
+  domain_allowlist: null
+  budget_bytes_per_run: null
+stage_graph:
+  - stage_name: plan
+    depends_on: [implementation]
+  - stage_name: implementation
+    depends_on: [plan]
+escalation:
+  suppress_automatic_escalation: false

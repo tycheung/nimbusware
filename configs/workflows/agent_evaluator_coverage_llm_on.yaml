@@ -1,0 +1,8 @@
+version: 1
+agent_evaluator:
+  enabled: true
+  persona_id: default
+  persona_coverage_critique:
+    enabled: true
+    stub: true
+    llm_enabled: true

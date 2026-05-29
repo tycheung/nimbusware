@@ -1,0 +1,22 @@
+version: 1
+# Map ``workflow_profile`` (from ``run.created``) to bundle id for integrator gate scoring.
+workflow_bundle_map:
+  default: auth-rbac-starter
+  self_refinement_on: auth-rbac-starter
+  agent_evaluator_on: auth-rbac-starter
+  security_scan_metadata_on: auth-rbac-starter
+  escalation_suppress_on: auth-rbac-starter
+  universal_critique_stub_on: auth-rbac-starter
+  universal_critique_stage_failed_on: auth-rbac-starter
+  universal_critique_emit_finding_on_gate_fail: auth-rbac-starter
+  universal_critique_hard_block_on: auth-rbac-starter
+  universal_critique_hard_block_chain_on: auth-rbac-starter
+  universal_critique_tw_hard_block_chain_on: auth-rbac-starter
+  integrator_gate_mismatch: auth-rbac-starter
+bundles:
+  - id: auth-rbac-starter
+    title: Admin RBAC starter
+    tags: [auth, rbac]
+  - id: billing-stripe
+    title: Stripe billing integration
+    tags: [billing, stripe]

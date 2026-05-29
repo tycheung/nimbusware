@@ -1,0 +1,139 @@
+"""Workflow YAML + env knobs for parallel writer dispatch (plan §12 Phase 2-b execution)."""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+
+
+def _coerce_yaml_bool(raw: object, default: bool = False) -> bool:
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, (int, float)):
+        return raw == 1
+    if isinstance(raw, str):
+        return raw.strip().lower() in ("1", "true", "yes", "on")
+    return default
+
+
+@dataclass(frozen=True)
+class ParallelWritersWorkflowBlock:
+    enabled: bool = False
+    test_writer_stage_enabled: bool = False
+    test_writer_llm_body_enabled: bool = False
+    test_writer_llm_stub_fallback: bool = False
+
+
+def parse_parallel_writers_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> ParallelWritersWorkflowBlock:
+    if workflow_profile is None or not str(workflow_profile).strip():
+        return ParallelWritersWorkflowBlock()
+    key = str(workflow_profile).strip()
+    try:
+        raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
+    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
+        return ParallelWritersWorkflowBlock()
+    block = raw.get("parallel_writers")
+    if not isinstance(block, dict):
+        return ParallelWritersWorkflowBlock()
+    tw = block.get("test_writer_stage")
+    tw_enabled = False
+    tw_llm_enabled = False
+    tw_llm_stub_fallback = False
+    if isinstance(tw, dict):
+        tw_enabled = _coerce_yaml_bool(tw.get("enabled"))
+        tw_llm_enabled = _coerce_yaml_bool(tw.get("llm_body_enabled"))
+        tw_llm_stub_fallback = _coerce_yaml_bool(tw.get("llm_stub_fallback"))
+    elif tw is not None:
+        tw_enabled = _coerce_yaml_bool(tw)
+    return ParallelWritersWorkflowBlock(
+        enabled=_coerce_yaml_bool(block.get("enabled")),
+        test_writer_stage_enabled=tw_enabled,
+        test_writer_llm_body_enabled=tw_llm_enabled,
+        test_writer_llm_stub_fallback=tw_llm_stub_fallback,
+    )
+
+
+def parallel_writers_enabled(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    """``HERMES_PARALLEL_WRITERS=1`` forces on; ``0``/``false``/``no`` forces off."""
+    env_raw = os.environ.get("HERMES_PARALLEL_WRITERS", "").strip().lower()
+    if env_raw in ("0", "false", "no"):
+        return False
+    if env_raw in ("1", "true", "yes"):
+        return True
+    wf = parse_parallel_writers_workflow_block(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    return wf.enabled
+
+
+def test_writer_stage_enabled(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    env_raw = os.environ.get("HERMES_TEST_WRITER_STAGE", "").strip().lower()
+    if env_raw in ("0", "false", "no"):
+        return False
+    if env_raw in ("1", "true", "yes"):
+        return True
+    wf = parse_parallel_writers_workflow_block(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    return wf.test_writer_stage_enabled
+
+
+def test_writer_llm_body_enabled(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    env_raw = os.environ.get("HERMES_TEST_WRITER_LLM_BODY", "").strip().lower()
+    if env_raw in ("0", "false", "no"):
+        return False
+    if env_raw in ("1", "true", "yes"):
+        return True
+    wf = parse_parallel_writers_workflow_block(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    return wf.test_writer_llm_body_enabled
+
+
+def test_writer_llm_stub_fallback(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    env_raw = os.environ.get("HERMES_TEST_WRITER_LLM_STUB", "").strip().lower()
+    if env_raw in ("0", "false", "no"):
+        return False
+    if env_raw in ("1", "true", "yes"):
+        return True
+    wf = parse_parallel_writers_workflow_block(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    return wf.test_writer_llm_stub_fallback
