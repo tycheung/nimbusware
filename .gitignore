@@ -71,6 +71,32 @@ logs/
 .cache/
 # Operator chat transcripts (fo150; local only)
 .cache/nimbusware_chat/
+# Explicit .cache artifacts (redundant with .cache/ but documents intent)
+.cache/hermes_scraper/
+.cache/run_dispatch_worker_heartbeat.json
+.cache/fleet_ollama_sli.json
+
+# Agent / editor scratch at repo root (not product code)
+/_patch*.txt
+/_patch_*.txt
+/_scraper_patch_*.txt
+/_recovered_*.txt
+
+# Derived FAISS / memory indexes (rebuild via scripts or API)
+configs/memory/index/
+configs/memory/fleet/
+configs/bundles/index/
+
+# Local credentials (extra guard alongside .env)
+*.pem
+*.key
+credentials.json
+secrets.json
+
+# Merge / editor noise
+*.orig
+*.rej
+*~
 
 # Nimbusware planning docs (local sprint board; normative contract may stay out of repo)
 PLAN_GAP.md
