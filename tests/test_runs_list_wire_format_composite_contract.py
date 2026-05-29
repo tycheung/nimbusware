@@ -84,8 +84,8 @@ from __future__ import annotations
 import re
 from urllib.parse import parse_qsl, urlencode
 
-from hermes_api.routes.runs import _runs_list_query_string
-from hermes_api.schemas.openapi import (
+from nimbusware_api.routes.runs import _runs_list_query_string
+from nimbusware_api.schemas.openapi import (
     RUN_DETAIL_LINK_HEADER,
     RUN_FINDINGS_LINK_HEADER,
     RUN_TIMELINE_LINK_HEADER,
@@ -122,7 +122,7 @@ def _parse_link_entries(link_header: str) -> list[tuple[str, str]]:
 def test_link_header_trio_structural_shape_5_axis() -> None:
     """Pin link-header trio structural shape (5 axes).
 
-    Implementations at [openapi.py:71-128](packages/hermes_api/schemas/openapi.py).
+    Implementations at [openapi.py:71-128](packages/nimbusware_api/schemas/openapi.py).
 
     A1 / A2 / A3 / A4 / A5 pin: ``str`` return type for all three,
     detail's 2-entry ``rel="timeline"`` + ``rel="findings"`` shape,
@@ -359,7 +359,7 @@ def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
 def test_runs_list_query_string_base_and_offset_5_axis() -> None:
     """Pin ``_runs_list_query_string`` base + offset insertion (5 axes).
 
-    Implementation at [runs.py:211-246](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:211-246](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 

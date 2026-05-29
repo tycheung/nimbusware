@@ -11,11 +11,11 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
-from hermes_api.deps import get_orchestrator, get_store
-from hermes_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
 from hermes_store.memory import InMemoryEventStore
 
@@ -45,9 +45,9 @@ def persona_db_env(
     store = InMemoryConfigStore()
     store.upsert(NS_PERSONAS, KEY_PERSONA_SHELVES, shelves)
     mat = ConfigMaterializer(tmp_path, store=store, use_db=True)
-    monkeypatch.setenv("HERMES_CONFIG_FROM_DB", "1")
-    monkeypatch.setenv("HERMES_ADMIN_TOKEN", "test-admin-token")
-    monkeypatch.delenv("HERMES_CONFIG_FROM_FILES", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_DB", "1")
+    monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
+    monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
     return tmp_path, mat
 
 
@@ -67,7 +67,7 @@ def test_persona_patch_db_mode_no_yaml_write(
     app.dependency_overrides[get_orchestrator] = lambda: _Orch()
     app.dependency_overrides[get_store] = lambda: mem
     try:
-        with patch("hermes_config.persist.atomic_write_yaml") as mock_write:
+        with patch("nimbusware_config.persist.atomic_write_yaml") as mock_write:
             with TestClient(app) as c:
                 r = c.patch(
                     "/v1/personas/business_area/commerce",
@@ -77,8 +77,8 @@ def test_persona_patch_db_mode_no_yaml_write(
                         "actor": "tester",
                     },
                     headers={
-                        "X-Hermes-Admin-Token": os.environ.get(
-                            "HERMES_ADMIN_TOKEN",
+                        "X-Nimbusware-Admin-Token": os.environ.get(
+                            "NIMBUSWARE_ADMIN_TOKEN",
                             "test-admin-token",
                         ),
                     },
@@ -104,7 +104,7 @@ def test_auto_promote_uses_db_not_yaml(persona_db_env: tuple[Path, ConfigMateria
     mem = InMemoryEventStore()
     run_id = uuid4()
 
-    with patch("hermes_config.persist.atomic_write_yaml") as mock_write:
+    with patch("nimbusware_config.persist.atomic_write_yaml") as mock_write:
         meta = try_auto_promote_probation_persona(
             tmp_path,
             mem,

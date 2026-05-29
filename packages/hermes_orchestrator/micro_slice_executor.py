@@ -85,7 +85,7 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
 
 
 def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]]) -> str | None:
-    from hermes_config.persist import load_custom_agent_registry
+    from nimbusware_config.persist import load_custom_agent_registry
 
     for row in rows:
         if row.get("event_type") != EventType.RUN_CREATED.value:

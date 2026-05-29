@@ -139,7 +139,7 @@ def self_refinement_production_llm_critique_effective(
     import os
 
     profile = (workflow_profile or "").strip()
-    if profile not in ("hermes_production", "self_refinement_production_ungated"):
+    if profile not in ("nimbusware_production", "self_refinement_production_ungated"):
         return False
     block = parse_self_refinement_workflow_block(
         repo_root,

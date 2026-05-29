@@ -19,15 +19,15 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-ENV_POSTGRES_PASSWORD = "HERMES_POSTGRES_SUPERPASSWORD"
+ENV_POSTGRES_PASSWORD = "NIMBUSWARE_POSTGRES_SUPERPASSWORD"
 
 EDB_DOWNLOAD_BASE = "https://get.enterprisedb.com/postgresql"
 DEFAULT_MAJOR = 16
 # Matches docker-compose / CI Postgres 16; override with --postgres-build.
 DEFAULT_BUILD = "16.9-1"
-HERMES_DB_USER = "hermes"
-HERMES_DB_PASSWORD = "hermes"
-HERMES_DB_NAME = "hermes"
+NIMBUSWARE_DB_USER = "nimbusware"
+NIMBUSWARE_DB_PASSWORD = "nimbusware"
+NIMBUSWARE_DB_NAME = "nimbusware"
 
 
 class PostgresWindowsError(RuntimeError):
@@ -441,19 +441,19 @@ def _psql_probe(major: int, superpassword: str) -> tuple[bool, str]:
     return False, err
 
 
-def _load_hermes_dotenv(repo_root: Path | None) -> Path | None:
+def _load_nimbusware_dotenv(repo_root: Path | None) -> Path | None:
     if repo_root is None:
         return None
     packages = repo_root / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from hermes_env import load_dotenv  # noqa: PLC0415
+    from nimbusware_env import load_dotenv  # noqa: PLC0415
 
     return load_dotenv(repo_root=repo_root)
 
 
 def _save_postgres_password_to_env(repo_root: Path, password: str, *, log) -> None:
-    from hermes_env import set_env_var  # noqa: PLC0415
+    from nimbusware_env import set_env_var  # noqa: PLC0415
 
     path = set_env_var(ENV_POSTGRES_PASSWORD, password, repo_root=repo_root)
     log(f"Saved {ENV_POSTGRES_PASSWORD} to {path}")
@@ -467,12 +467,12 @@ def resolve_postgres_superpassword(
     log,
 ) -> str:
     """Return a working postgres superuser password; prompt and update ``.env`` if needed."""
-    _load_hermes_dotenv(repo_root)
+    _load_nimbusware_dotenv(repo_root)
     tried: list[str] = []
     for candidate in (
         cli_password,
         os.environ.get(ENV_POSTGRES_PASSWORD, "").strip(),
-        "hermes_setup",
+        "nimbusware_setup",
     ):
         if not candidate or candidate in tried:
             continue
@@ -514,7 +514,7 @@ def resolve_postgres_superpassword(
     )
 
 
-def ensure_hermes_role(
+def ensure_nimbusware_role(
     major: int,
     *,
     superpassword: str,
@@ -530,13 +530,13 @@ def ensure_hermes_role(
     base = [str(psql), "-h", host, "-p", port, "-U", "postgres", "-v", "ON_ERROR_STOP=1"]
     # Use $tag$ not $$ so PowerShell parents do not treat $ as variables.
     sql_user = (
-        f"DO $hermes$ BEGIN CREATE USER {HERMES_DB_USER} WITH PASSWORD "
-        f"'{HERMES_DB_PASSWORD}' CREATEDB; EXCEPTION WHEN duplicate_object THEN "
-        f"ALTER USER {HERMES_DB_USER} WITH PASSWORD '{HERMES_DB_PASSWORD}'; "
-        f"END $hermes$;"
+        f"DO $nw$ BEGIN CREATE USER {NIMBUSWARE_DB_USER} WITH PASSWORD "
+        f"'{NIMBUSWARE_DB_PASSWORD}' CREATEDB; EXCEPTION WHEN duplicate_object THEN "
+        f"ALTER USER {NIMBUSWARE_DB_USER} WITH PASSWORD '{NIMBUSWARE_DB_PASSWORD}'; "
+        f"END $nw$;"
     )
     sql_db = (
-        f"SELECT 'ok' FROM pg_database WHERE datname = '{HERMES_DB_NAME}';"
+        f"SELECT 'ok' FROM pg_database WHERE datname = '{NIMBUSWARE_DB_NAME}';"
     )
     log("Creating application database role (if missing)...")
     _run_checked([*base, "-d", "postgres", "-c", sql_user], log=log, env=env)
@@ -548,16 +548,16 @@ def ensure_hermes_role(
         text=True,
     )
     if proc.stdout.strip():
-        log(f"Database {HERMES_DB_NAME!r} already exists.")
+        log(f"Database {NIMBUSWARE_DB_NAME!r} already exists.")
         return
-    log(f"Creating database {HERMES_DB_NAME!r}...")
+    log(f"Creating database {NIMBUSWARE_DB_NAME!r}...")
     _run_checked(
         [
             *base,
             "-d",
             "postgres",
             "-c",
-            f"CREATE DATABASE {HERMES_DB_NAME} OWNER {HERMES_DB_USER};",
+            f"CREATE DATABASE {NIMBUSWARE_DB_NAME} OWNER {NIMBUSWARE_DB_USER};",
         ],
         log=log,
         env=env,
@@ -572,7 +572,7 @@ def configure_existing_postgres(
     cli_password: str | None,
     log,
 ) -> Path:
-    """Start an on-disk PostgreSQL install and create the hermes role/database."""
+    """Start an on-disk PostgreSQL install and create the nimbusware role/database."""
     psql_path = psql_bin_for_major(major)
     if psql_path is None:
         raise PostgresWindowsError(f"PostgreSQL {major} binaries not found")
@@ -600,7 +600,7 @@ def configure_existing_postgres(
         cli_password=cli_password,
         log=log,
     )
-    ensure_hermes_role(major, superpassword=pw, log=log)
+    ensure_nimbusware_role(major, superpassword=pw, log=log)
     if not wait_for_postgres_url(
         database_url,
         attempts=15,
@@ -610,7 +610,7 @@ def configure_existing_postgres(
     ):
         raise PostgresWindowsError(
             f"Created role/database but {database_url} is not accepting connections. "
-            "Check pg_hba.conf or set HERMES_DATABASE_URL to a working URL.",
+            "Check pg_hba.conf or set NIMBUSWARE_DATABASE_URL to a working URL.",
         )
     bin_dir = prepend_postgres_bin(major)
     if bin_dir is None:
@@ -652,19 +652,19 @@ def install_postgresql_windows(
     database_url: str | None = None,
     log=print,
 ) -> Path:
-    """Install Postgres if missing, else boot existing install and create hermes/hermes DB."""
+    """Install Postgres if missing, else boot existing install and create nimbusware DB."""
     if not is_windows():
         raise PostgresWindowsError("Native PostgreSQL install is only supported on Windows.")
-    _load_hermes_dotenv(repo_root)
+    _load_nimbusware_dotenv(repo_root)
     if repo_root:
         env_file = repo_root / ".env"
         if env_file.is_file():
             log(f"Using environment from {env_file}")
         else:
             log(f"No .env at {env_file} (copy .env.example); will create entries as needed.")
-    db_url = (database_url or os.environ.get("HERMES_DATABASE_URL", "")).strip()
+    db_url = (database_url or os.environ.get("NIMBUSWARE_DATABASE_URL", "")).strip()
     if not db_url:
-        db_url = f"postgresql://{HERMES_DB_USER}:{HERMES_DB_PASSWORD}@127.0.0.1:{port}/{HERMES_DB_NAME}"
+        db_url = f"postgresql://{NIMBUSWARE_DB_USER}:{NIMBUSWARE_DB_PASSWORD}@127.0.0.1:{port}/{NIMBUSWARE_DB_NAME}"
 
     discovered = discover_installed_postgres_major(preferred=major)
     if discovered is not None:
@@ -678,7 +678,7 @@ def install_postgresql_windows(
 
     log("PostgreSQL not found on this machine; downloading the installer...")
     resolved_build = resolve_build(major=major, build=build)
-    cache = cache_dir or (Path.home() / ".cache" / "hermes_install")
+    cache = cache_dir or (Path.home() / ".cache" / "nimbusware_install")
     exe_path = cache / installer_filename(resolved_build)
     _download(installer_url(resolved_build), exe_path, log=log)
 

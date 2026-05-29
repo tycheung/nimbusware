@@ -123,7 +123,7 @@ def _unanimous_gate_enforce_for_run(store: EventStore, run_id: UUID) -> bool:
             if isinstance(val, bool):
                 return val
         break
-    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     wf = workflow_profile_from_run_created_rows(rows)
     return effective_universal_critique(repo, wf).unanimous_gate_enforce
 

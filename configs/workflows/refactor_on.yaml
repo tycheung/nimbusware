@@ -1,4 +1,4 @@
-# Phase 3 fo146 — Refactorer + refactor critique (default off on hermes_production).
+# Phase 3 fo146 — Refactorer + refactor critique (default off on nimbusware_production).
 refactor:
   enabled: true
   stub_only: true

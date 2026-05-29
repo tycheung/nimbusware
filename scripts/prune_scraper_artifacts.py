@@ -2,15 +2,15 @@
 """Remove scraper response artifact files older than a TTL (PLAN_GAP retention v0).
 
 Requires ``--max-age-days`` or ``HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS`` (positive integer).
-Uses ``HERMES_SCRAPER_ARTIFACT_DIR`` when set, else ``<HERMES_REPO_ROOT>/.cache/hermes_scraper``.
+Uses ``HERMES_SCRAPER_ARTIFACT_DIR`` when set, else ``<NIMBUSWARE_REPO_ROOT>/.cache/hermes_scraper``.
 
 Scheduled pruning (no in-repo daemon): point a system scheduler at this entrypoint after exporting
-the same env vars you use for runs (at minimum ``HERMES_REPO_ROOT``).
+the same env vars you use for runs (at minimum ``NIMBUSWARE_REPO_ROOT``).
 
 Examples:
 
 - **cron** (daily 03:15, 14-day TTL): ``15 3 * * * cd /path/to/nimbusware &&``
-  ``HERMES_REPO_ROOT=/path/to/nimbusware HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
+  ``NIMBUSWARE_REPO_ROOT=/path/to/nimbusware HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
   ``poetry run python scripts/prune_scraper_artifacts.py``
 - **Dry-run** (count only): add ``--dry-run`` to the same command to print how many files
   would be removed without deleting.
@@ -36,7 +36,7 @@ Examples:
   file without printing the extra stdout line, or do both.
 - **Windows Task Scheduler**: Action ``Program`` = ``powershell.exe``; ``Arguments`` =
   ``-NoProfile -Command "Set-Location 'D:\\Nimbusware';``
-  ``$env:HERMES_REPO_ROOT='D:\\Nimbusware';``
+  ``$env:NIMBUSWARE_REPO_ROOT='D:\\Nimbusware';``
   ``$env:HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS='14';``
   ``poetry run python scripts/prune_scraper_artifacts.py"``
 """
@@ -162,7 +162,7 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
-    root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     base = resolve_scraper_artifact_base_dir(root)
     include_patterns = _patterns_from_cli_or_env(
         args.include_pattern,

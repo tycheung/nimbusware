@@ -1,7 +1,7 @@
 """``GET /v1/runs`` query helpers composite (fo111).
 
 Four small but sharp helpers in
-[packages/hermes_api/routes/runs.py](packages/hermes_api/routes/runs.py)
+[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
 shape the wire-format of the ``GET /v1/runs`` list endpoint -- the
 keyset cursor codec pair, the ``workflow_profile_prefix`` regex
 sanitiser, and the ISO-8601 query-datetime parser. Today they are
@@ -93,7 +93,7 @@ from uuid import UUID
 
 import pytest
 
-from hermes_api.routes.runs import (
+from nimbusware_api.routes.runs import (
     _decode_run_list_cursor,
     _encode_run_list_cursor,
     _parse_query_datetime,
@@ -149,7 +149,7 @@ def _self_check_urlsafe_vs_standard_alphabet_differ() -> None:
 def test_encode_run_list_cursor_wire_format_5_axis() -> None:
     """Pin ``_encode_run_list_cursor`` wire format (5 axes).
 
-    Implementation at [runs.py:199-201](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:199-201](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 
@@ -163,7 +163,7 @@ def test_encode_run_list_cursor_wire_format_5_axis() -> None:
     whitespace, alphabet, padding) would shift the opaque
     ``next_cursor`` shape and silently break clients echoing it
     back. The cursor codec is the only ``200 OK`` -side opaque token
-    in [GET /v1/runs](packages/hermes_api/routes/runs.py:267-619) so
+    in [GET /v1/runs](packages/nimbusware_api/routes/runs.py:267-619) so
     the wire format is effectively the API contract.
 
     A1 / A2 / A3 / A4 / A5 pin distinct facets that no single axis
@@ -236,7 +236,7 @@ def test_encode_run_list_cursor_wire_format_5_axis() -> None:
 def test_decode_run_list_cursor_roundtrip_and_coercion_5_axis() -> None:
     """Pin ``_decode_run_list_cursor`` + roundtrip + coercion (5 axes).
 
-    Implementation at [runs.py:204-208](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:204-208](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 
@@ -252,7 +252,7 @@ def test_decode_run_list_cursor_roundtrip_and_coercion_5_axis() -> None:
     A refactor that dropped the ``int(...)`` would silently change
     the public type of ``cursor_seq`` (currently ``int``, fed into
     ``store.list_recent_run_rows_cursor(cursor_after_seq=...)`` at
-    [runs.py:494](packages/hermes_api/routes/runs.py)); a refactor
+    [runs.py:494](packages/nimbusware_api/routes/runs.py)); a refactor
     that dropped ``UUID(str(...))`` would change ``cursor_rid``'s
     public type and break the SQL parameter binding downstream.
     """
@@ -333,7 +333,7 @@ def test_decode_run_list_cursor_roundtrip_and_coercion_5_axis() -> None:
 def test_sanitize_workflow_profile_prefix_regex_5_axis() -> None:
     """Pin ``_sanitize_workflow_profile_prefix`` regex contract (5 axes).
 
-    Implementation at [runs.py:190-196](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:190-196](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 
@@ -457,7 +457,7 @@ def test_sanitize_workflow_profile_prefix_regex_5_axis() -> None:
 def test_parse_query_datetime_iso8601_tz_5_axis() -> None:
     """Pin ``_parse_query_datetime`` ISO-8601 + tz handling (5 axes).
 
-    Implementation at [runs.py:249-260](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:249-260](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 

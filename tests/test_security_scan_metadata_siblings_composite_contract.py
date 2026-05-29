@@ -4,7 +4,7 @@
 ``security_scan_on_verify_timeline_summary`` sibling composite.
 
 Two paired helpers in
-[packages/hermes_api/routes/runs.py](packages/hermes_api/routes/runs.py)
+[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
 (lines 158-187) shape the ``GET /v1/runs/{run_id}/timeline``
 ``security_scan_on_verify`` field. fo112 Part D already pinned 5 axes
 (generic non-dict guard, OR/``in`` value semantics, ``stage.started``
@@ -71,7 +71,7 @@ from dataclasses import dataclass
 from types import MappingProxyType, SimpleNamespace
 from typing import Any
 
-from hermes_api.routes.runs import (
+from nimbusware_api.routes.runs import (
     _finding_has_security_scan_metadata,
     security_scan_on_verify_timeline_summary,
 )

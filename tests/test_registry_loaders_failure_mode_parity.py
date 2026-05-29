@@ -11,7 +11,7 @@ Coverage today:
 * ``tests/test_registry_from_mapping.py`` lines 10-18 -- ``from_mapping``
   only (not ``from_yaml``).
 * ``tests/test_postgres_integration.py`` lines 351-355 -- DB happy path
-  **integration-marked**, skips without ``HERMES_DATABASE_URL``.
+  **integration-marked**, skips without ``NIMBUSWARE_DATABASE_URL``.
 
 fo95 closes the gap via 4 parts spanning 20 axes (~26 assertions, source
 unchanged):

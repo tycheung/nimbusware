@@ -1,11 +1,11 @@
-"""``HERMES_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16).
+"""``NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16).
 
 The FastAPI [`lifespan`](d:\\Hermes\\packages\\hermes_api\\app.py) selects the
 role registry at app startup via a **compound AND-gate** with
-`HERMES_DATABASE_URL`:
+`NIMBUSWARE_DATABASE_URL`:
 
-    url = os.environ.get("HERMES_DATABASE_URL")
-    if url and os.environ.get("HERMES_ROLES_FROM_DB", "").lower() in (
+    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
+    if url and os.environ.get("NIMBUSWARE_ROLES_FROM_DB", "").lower() in (
         "1", "true", "yes"
     ):
         registry = load_registry_from_postgres(url)
@@ -18,16 +18,16 @@ role registry at app startup via a **compound AND-gate** with
 
 This is the **sixth and final Pattern A binary-gate env** (closes the
 env-layer sweep started in fo62) AND the **first compound AND-gate** -- the
-short-circuiting `and` makes ``HERMES_ROLES_FROM_DB`` only matter when
-``HERMES_DATABASE_URL`` is also truthy. There is also an independent
+short-circuiting `and` makes ``NIMBUSWARE_ROLES_FROM_DB`` only matter when
+``NIMBUSWARE_DATABASE_URL`` is also truthy. There is also an independent
 single-arg store gate on the same ``url`` that is orthogonal to the flag.
 
-Before this slice ``HERMES_ROLES_FROM_DB`` had zero contract tests; the
+Before this slice ``NIMBUSWARE_ROLES_FROM_DB`` had zero contract tests; the
 fo69 plan listed it as "blocked on async lifespan + Postgres coupling",
 but ``TestClient(app)`` already drives the async lifespan synchronously
 (existing pattern in [tests/test_api.py](d:\\Hermes\\tests\\test_api.py))
 and ``PostgresEventStore.__init__`` is lazy (only stores ``conninfo``),
-so both blockers dissolve by patching at the ``hermes_api.app`` import
+so both blockers dissolve by patching at the ``nimbusware_api.app`` import
 boundary -- same pattern as fo68/69.
 
 Three parts:
@@ -48,9 +48,9 @@ failing gate + offending env scalar + (Part B) failing AND-gate arm.
 
 Two mock observables parallel fo69's ``(mock_llm, mock_stub)``:
 
-* ``mock_db_loader`` = ``patch("hermes_api.app.load_registry_from_postgres")``
+* ``mock_db_loader`` = ``patch("nimbusware_api.app.load_registry_from_postgres")``
   -- registry-branch signal.
-* ``mock_postgres_store`` = ``patch("hermes_api.app.PostgresEventStore")``
+* ``mock_postgres_store`` = ``patch("nimbusware_api.app.PostgresEventStore")``
   -- store-branch signal (orthogonal to flag).
 """
 
@@ -64,8 +64,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-import hermes_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
-from hermes_api.app import app
+import nimbusware_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
+from nimbusware_api.app import app
 from hermes_orchestrator.registry import RoleRegistry
 
 _FAKE_DB_URL = "postgresql://test:test@localhost/hermes"
@@ -75,11 +75,11 @@ _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
     content_digest_sha256_16="db:hermes_roles_registry",
 )
 
-_APP_MODULE = sys.modules["hermes_api.app"]
+_APP_MODULE = sys.modules["nimbusware_api.app"]
 """Direct submodule reference because ``hermes_api/__init__.py`` does
-``from hermes_api.app import app`` which rebinds ``hermes_api.app`` in
+``from nimbusware_api.app import app`` which rebinds ``nimbusware_api.app`` in
 the package namespace to the **FastAPI instance** (shadowing the
-submodule). ``mock.patch("hermes_api.app.X")`` follows the package
+submodule). ``mock.patch("nimbusware_api.app.X")`` follows the package
 namespace via ``getattr`` and therefore lands on the FastAPI instance
 rather than the submodule -- using ``patch.object(_APP_MODULE, ...)``
 sidesteps that resolution and patches the function reference inside
@@ -105,13 +105,13 @@ def _run_lifespan(
     [app.py:34](d:\\Hermes\\packages\\hermes_api\\app.py)).
     """
     if db_url is None:
-        monkeypatch.delenv("HERMES_DATABASE_URL", raising=False)
+        monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
     else:
-        monkeypatch.setenv("HERMES_DATABASE_URL", db_url)
+        monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", db_url)
     if roles_from_db is None:
-        monkeypatch.delenv("HERMES_ROLES_FROM_DB", raising=False)
+        monkeypatch.delenv("NIMBUSWARE_ROLES_FROM_DB", raising=False)
     else:
-        monkeypatch.setenv("HERMES_ROLES_FROM_DB", roles_from_db)
+        monkeypatch.setenv("NIMBUSWARE_ROLES_FROM_DB", roles_from_db)
     with patch.object(
         _APP_MODULE,
         "load_registry_from_postgres",
@@ -127,10 +127,10 @@ def _run_lifespan(
 def test_roles_from_db_env_force_on_string_arm_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §5 / §14 #16 ``HERMES_ROLES_FROM_DB`` force-on truthy tuple membership.
+    """Pin §5 / §14 #16 ``NIMBUSWARE_ROLES_FROM_DB`` force-on truthy tuple membership.
 
-    With ``HERMES_DATABASE_URL=_FAKE_DB_URL`` (AND-gate's first operand
-    truthy), every truthy variant of ``HERMES_ROLES_FROM_DB`` must reach
+    With ``NIMBUSWARE_DATABASE_URL=_FAKE_DB_URL`` (AND-gate's first operand
+    truthy), every truthy variant of ``NIMBUSWARE_ROLES_FROM_DB`` must reach
     ``load_registry_from_postgres`` once AND ``PostgresEventStore`` once
     (the latter is orthogonally controlled by ``url`` alone but serves
     as a sanity check that the lifespan reached the second branch).

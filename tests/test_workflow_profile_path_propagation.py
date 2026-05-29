@@ -71,16 +71,16 @@ import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# ``hermes_api.app`` requires these env vars at import time (mirrors
+# ``nimbusware_api.app`` requires these env vars at import time (mirrors
 # tests/test_api.py:11-13). Set BEFORE importing the FastAPI app so
 # the lifespan / preflight gating reads the expected values.
-os.environ.setdefault("HERMES_REPO_ROOT", str(_REPO_ROOT))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 from hermes_orchestrator.ingress import assert_known_workflow  # noqa: E402
 from hermes_orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
 from hermes_orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402

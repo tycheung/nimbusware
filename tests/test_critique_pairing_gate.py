@@ -9,7 +9,7 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
+from nimbusware_api.app import app
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.critique_routing import (
     assert_critique_coverage_complete,

@@ -156,7 +156,7 @@ def test_worker_loop_stops_after_max_idle_loops(tmp_path) -> None:
 
 def test_run_dispatch_worker_wrapper_smoke(tmp_path: Path) -> None:
     hb = tmp_path / "worker_heartbeat.json"
-    env = {**os.environ, "HERMES_REPO_ROOT": str(ROOT), "HERMES_SKIP_PREFLIGHT": "1"}
+    env = {**os.environ, "NIMBUSWARE_REPO_ROOT": str(ROOT), "HERMES_SKIP_PREFLIGHT": "1"}
     proc = subprocess.run(
         [
             "poetry",

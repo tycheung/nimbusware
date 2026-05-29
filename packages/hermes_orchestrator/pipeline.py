@@ -376,7 +376,7 @@ class RunOrchestrator:
             config_materializer=mat,
         )
         if business_area_persona_id or development_role_persona_id:
-            from hermes_config.persist import load_persona_shelf
+            from nimbusware_config.persist import load_persona_shelf
             from hermes_orchestrator.ingress import assert_persona_assignment_valid
 
             shelf = load_persona_shelf(self._repo_root, materializer=mat)
@@ -427,7 +427,7 @@ class RunOrchestrator:
         )
         custom_agent_meta: dict[str, Any] | None = None
         if custom_agent_id and str(custom_agent_id).strip():
-            from hermes_config.persist import load_custom_agent_registry
+            from nimbusware_config.persist import load_custom_agent_registry
 
             reg = load_custom_agent_registry(
                 self._repo_root,
@@ -2860,7 +2860,7 @@ class RunOrchestrator:
                     run_id=run_id,
                     config_materializer=self._config_materializer,
                 )
-        from hermes_config.persist import load_persona_shelf
+        from nimbusware_config.persist import load_persona_shelf
         from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
 
         rows = self._store.list_run_events(str(run_id))
@@ -3059,7 +3059,7 @@ class RunOrchestrator:
             return
 
         bounded = (description or "")[:2000]
-        from hermes_config.persist import load_persona_shelf
+        from nimbusware_config.persist import load_persona_shelf
         from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
 
         pa_for_eval: dict[str, Any] | None = None

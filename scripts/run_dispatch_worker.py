@@ -26,7 +26,7 @@ def _args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     ns = _args(argv)
-    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     hb = ns.heartbeat_path or str(repo / ".cache" / "run_dispatch_worker_heartbeat.json")
     cmd = [
         sys.executable,

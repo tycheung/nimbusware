@@ -1,7 +1,7 @@
 """Shared persona shelf audit helpers (fo127 + §14 #15 orchestrator promotions).
 
 ``persona_catalog_run_id`` MUST stay aligned with
-``packages/hermes_api/routes/personas.py`` so API and orchestrator writes share
+``packages/nimbusware_api/routes/personas.py`` so API and orchestrator writes share
 the same synthetic run id for ``persona.shelf.updated`` history queries.
 """
 

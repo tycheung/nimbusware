@@ -12,12 +12,12 @@ packages = [
   { include = "agent_core", from = "packages" },
   { include = "hermes_store", from = "packages" },
   { include = "hermes_orchestrator", from = "packages" },
-  { include = "hermes_api", from = "packages" },
+  { include = "nimbusware_api", from = "packages" },
   { include = "hermes_executor", from = "packages" },
-  { include = "hermes_console", from = "packages" },
+  { include = "nimbusware_console", from = "packages" },
   { include = "hermes_extensions", from = "packages" },
-  { include = "hermes_config", from = "packages" },
-  { include = "hermes_env", from = "packages" },
+  { include = "nimbusware_config", from = "packages" },
+  { include = "nimbusware_env", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -53,20 +53,18 @@ optional = true
 redis = ">=5"
 
 [tool.poetry.scripts]
-hermes-api = "hermes_api.cli:main"
+nimbusware-api = "nimbusware_api.cli:main"
 hermes-preflight = "hermes_orchestrator.preflight_cli:main"
-hermes-config = "hermes_config.cli:main"
+nimbusware-config = "nimbusware_config.cli:main"
 hermes-run-worker = "hermes_orchestrator.run_worker:main"
-hermes-run = "hermes_env.run_app:main"
-hermes-launcher = "hermes_env.launcher_app:main"
-nimbusware-run = "hermes_env.run_app:main"
-nimbusware-launcher = "hermes_env.launcher_app:main"
+nimbusware-run = "nimbusware_env.run_app:main"
+nimbusware-launcher = "nimbusware_env.launcher_app:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["packages"]
 markers = [
-  "integration: requires PostgreSQL (set HERMES_DATABASE_URL)",
+  "integration: requires PostgreSQL (set NIMBUSWARE_DATABASE_URL)",
 ]
 
 [tool.ruff]
@@ -84,12 +82,12 @@ packages = [
   "agent_core",
   "hermes_store",
   "hermes_orchestrator",
-  "hermes_api",
+  "nimbusware_api",
   "hermes_executor",
-  "hermes_console",
+  "nimbusware_console",
   "hermes_extensions",
-  "hermes_config",
-  "hermes_env",
+  "nimbusware_config",
+  "nimbusware_env",
 ]
 mypy_path = "packages"
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_console.console_theme import (
+from nimbusware_console.console_theme import (
     streamlit_theme_defaults_caption,
     streamlit_white_label_deferred_caption,
 )

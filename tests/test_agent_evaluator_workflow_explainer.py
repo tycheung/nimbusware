@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hermes_console.agent_evaluator_workflow_explainer import (
+from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_auto_create_env_gate_caption,
     agent_evaluator_auto_promote_env_gate_caption,
     agent_evaluator_env_gate_caption,

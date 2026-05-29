@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_console.universal_critique_timeline_display import (
+from nimbusware_console.universal_critique_timeline_display import (
     universal_critique_fail_stage_rows_csv,
     universal_critique_from_timeline,
     universal_critique_snapshot_from_compare_paste,
@@ -125,7 +125,7 @@ def test_universal_critique_timeline_fail_count_caption() -> None:
 
 def test_universal_critique_timeline_summary_fail_rate_field() -> None:
     from agent_core.models import EventType
-    from hermes_api.routes.runs import universal_critique_timeline_summary
+    from nimbusware_api.routes.runs import universal_critique_timeline_summary
 
     events = [
         {

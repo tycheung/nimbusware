@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hermes_console.operator_chat import process_user_message
+from nimbusware_console.operator_chat import process_user_message
 
 
 def test_help_command() -> None:

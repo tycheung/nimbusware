@@ -22,7 +22,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
     fake = {
         "slice_id": "slice-llm-1",
         "rationale": "touch api",
-        "target_paths": ["packages/hermes_api/app.py"],
+        "target_paths": ["packages/nimbusware_api/app.py"],
         "acceptance_criteria": "tests pass",
     }
     with patch(

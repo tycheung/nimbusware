@@ -8,9 +8,9 @@ from uuid import UUID, uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
 from agent_core.models import (  # noqa: E402
     EventType,
@@ -33,7 +33,7 @@ from agent_core.models import (  # noqa: E402
     StageStartedPayload,
     Verdict,
 )
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
 
 @pytest.fixture
@@ -121,13 +121,13 @@ def test_get_bundle_search_reports_faiss_index_ready_bool(client: TestClient) ->
     assert "faiss_index_ready" in body
     assert isinstance(body["faiss_index_ready"], bool)
     assert "faiss_index_stale" in body
-    repo_root = Path(os.environ["HERMES_REPO_ROOT"])
+    repo_root = Path(os.environ["NIMBUSWARE_REPO_ROOT"])
     assert body["faiss_index_ready"] is bundle_faiss_index_ready(repo_root)
     assert body["faiss_index_stale"] == bundle_faiss_index_sync_state(repo_root).get("stale")
 
 
 def test_get_bundle_search_uses_db_materialized_catalog(client: TestClient) -> None:
-    from hermes_api.deps import get_orchestrator
+    from nimbusware_api.deps import get_orchestrator
 
     class _Mat:
         use_db = True
@@ -147,7 +147,7 @@ def test_get_bundle_search_uses_db_materialized_catalog(client: TestClient) -> N
             self.repo_root = root
             self.config_materializer = _Mat()
 
-    app.dependency_overrides[get_orchestrator] = lambda: _Orch(Path(os.environ["HERMES_REPO_ROOT"]))
+    app.dependency_overrides[get_orchestrator] = lambda: _Orch(Path(os.environ["NIMBUSWARE_REPO_ROOT"]))
     try:
         r = client.get("/v1/bundles/search", params={"q": "db", "k": 5})
         assert r.status_code == 200
@@ -200,7 +200,7 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
     """
     import yaml as _yaml  # local import keeps test module imports tidy
 
-    from hermes_api.deps import get_orchestrator, get_store
+    from nimbusware_api.deps import get_orchestrator, get_store
     from hermes_store.memory import InMemoryEventStore
 
     personas_dir = tmp_path / "configs" / "personas"
@@ -234,7 +234,7 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
             r = c.patch(
                 "/v1/personas/business_area/commerce",
                 json=patch_body,
-                headers={"X-Hermes-Admin-Token": "test-admin-token"},
+                headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
             )
             assert r.status_code == 200, r.text
             patched = next(
@@ -1959,7 +1959,7 @@ def test_execute_role_requires_admin_token(client: TestClient) -> None:
     assert "message" in body
     ok = client.post(
         "/v1/roles/00000000-0000-4000-8000-000000000001/execute",
-        headers={"X-Hermes-Admin-Token": "test-admin-token"},
+        headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
     )
     assert ok.status_code == 200
 
@@ -2136,7 +2136,7 @@ def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> Non
         ):
             client.post(
                 f"/v1/runs/{run_id}/lifecycle/verify",
-                headers={"X-Hermes-Admin-Token": "test-admin-token"},
+                headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
             )
     live = client.get(f"/v1/runs/{run_id}/timeline").json().get("critic_matrix_live")
     assert isinstance(live, dict)

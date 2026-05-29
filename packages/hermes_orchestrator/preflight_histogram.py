@@ -5,7 +5,7 @@ Two callers depend on this module:
 * :mod:`hermes_orchestrator.preflight_cli` (fo123) — ``hermes-preflight`` CLI
   emits a single-line JSON record whose ``histogram`` block comes from
   :func:`build_histogram`.
-* :mod:`hermes_console.preflight_history_display` (fo124) — Streamlit
+* :mod:`nimbusware_console.preflight_history_display` (fo124) — Streamlit
   operator console renders the same histogram for the latest
   ``model.preflight.passed`` event on a run timeline.
 

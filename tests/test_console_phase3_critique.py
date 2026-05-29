@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hermes_console.phase3_critique_display import (
+from nimbusware_console.phase3_critique_display import (
     phase3_critique_caption,
     phase3_critique_table_rows,
 )

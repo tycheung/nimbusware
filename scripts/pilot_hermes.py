@@ -9,12 +9,12 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
-os.environ.setdefault("HERMES_REPO_ROOT", str(ROOT))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(ROOT))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 
 
 def main() -> int:
-    from hermes_api.app import app
+    from nimbusware_api.app import app
 
     with TestClient(app) as client:
         r = client.post("/v1/runs", json={"workflow_profile": "default"})

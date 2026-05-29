@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from hermes_console.universal_critique_timeline_display import (
+from nimbusware_console.universal_critique_timeline_display import (
     universal_critique_snapshot_from_compare_paste,
 )
-from hermes_console.universal_critique_workflow_explainer import (
+from nimbusware_console.universal_critique_workflow_explainer import (
     universal_critique_default_enabled_caption,
     universal_critique_enabled_stages_caption,
     universal_critique_env_override_deltas,

@@ -1,4 +1,4 @@
-"""Unit tests for ``hermes_console.prune_status_display`` (fo126 follow-up to fo125).
+"""Unit tests for ``nimbusware_console.prune_status_display`` (fo126 follow-up to fo125).
 
 Pure unit (no subprocess, no Streamlit, no filesystem races) so they run fast and
 deterministically. Seven axes (cf. plan):
@@ -19,7 +19,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from hermes_console.prune_status_display import (
+from nimbusware_console.prune_status_display import (
     SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH,
     load_prune_status,
     prune_scraper_artifact_prune_workflow_caption,

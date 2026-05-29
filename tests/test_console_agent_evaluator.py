@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_console.agent_evaluator_display import (
+from nimbusware_console.agent_evaluator_display import (
     agent_evaluator_auto_actions_caption,
     agent_evaluator_auto_actions_table_rows,
     agent_evaluator_coverage_gate_caption,

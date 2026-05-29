@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("HERMES_MICRO_SLICE_COUNT", "1")
 
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 @pytest.fixture
 def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     shutil.copytree(ROOT / "configs", tmp_path / "configs", dirs_exist_ok=True)
-    monkeypatch.setenv("HERMES_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
     with TestClient(app) as c:
         yield c
 

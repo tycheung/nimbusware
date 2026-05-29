@@ -10,16 +10,16 @@ import pytest
 from fastapi import Request
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
-from hermes_api.app import (  # noqa: E402
+from nimbusware_api.app import (  # noqa: E402
     app,
     hermes_uncaught_exception_handler,
 )
-from hermes_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
-from hermes_api.schemas.problem import Problem
+from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
+from nimbusware_api.schemas.problem import Problem
 
 
 @pytest.fixture

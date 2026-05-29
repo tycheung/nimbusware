@@ -7,10 +7,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_api.app import app
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_orchestrator.ingress import assert_persona_assignment_valid
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
 from hermes_store.memory import InMemoryEventStore
@@ -60,7 +60,7 @@ def test_unknown_business_area_persona_rejected() -> None:
 
 
 def test_assert_persona_assignment_wrong_shelf() -> None:
-    from hermes_config.persist import load_persona_shelf
+    from nimbusware_config.persist import load_persona_shelf
 
     root = Path(__file__).resolve().parents[1]
     shelf = load_persona_shelf(root)
@@ -72,7 +72,7 @@ def test_assert_persona_assignment_wrong_shelf() -> None:
 
 
 def test_api_create_run_with_persona_assignment() -> None:
-    from hermes_api.deps import get_orchestrator
+    from nimbusware_api.deps import get_orchestrator
 
     root = Path(__file__).resolve().parents[1]
     base, _ = default_paths(root)

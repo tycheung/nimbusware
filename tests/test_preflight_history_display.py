@@ -1,4 +1,4 @@
-"""Tests for `hermes_console.preflight_history_display` (fo124).
+"""Tests for `nimbusware_console.preflight_history_display` (fo124).
 
 Covers the three pure functions consumed by the new Streamlit expander:
 
@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_console.preflight_history_display import (
+from nimbusware_console.preflight_history_display import (
     preflight_history_checks_passed_caption,
     preflight_history_context_tokens_caption,
     preflight_history_event_id_caption,

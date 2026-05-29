@@ -1,7 +1,7 @@
 """Timeline-summary quintet composite (fo112).
 
 Five sibling helpers in
-[packages/hermes_api/routes/runs.py](packages/hermes_api/routes/runs.py)
+[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
 compute the per-section summaries that appear in
 ``RunTimelineResponse``:
 
@@ -88,7 +88,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from hermes_api.routes.runs import (
+from nimbusware_api.routes.runs import (
     _finding_has_security_scan_metadata,
     agent_evaluator_timeline_summary,
     integrator_gate_timeline_summary,
@@ -189,7 +189,7 @@ def _finding_created_event(
 def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
     """Pin ``integrator_gate_timeline_summary`` direct contract (5 axes).
 
-    Implementation at [runs.py:48-74](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:48-74](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 
@@ -364,7 +364,7 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
 def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     """Pin ``agent_evaluator_timeline_summary`` + persona suffix split (5 axes).
 
-    Implementation at [runs.py:80-101](packages/hermes_api/routes/runs.py):
+    Implementation at [runs.py:80-101](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 
@@ -496,7 +496,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
 def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
     """Pin ``self_refinement_timeline_summary`` + ``run_escalated_timeline_summary`` (5 axes).
 
-    Implementations at [runs.py](packages/hermes_api/routes/runs.py)
+    Implementations at [runs.py](packages/nimbusware_api/routes/runs.py)
     (``self_refinement_timeline_summary`` / ``run_escalated_timeline_summary``).
 
     C1 / C2 / C3 pin the self_refinement helper (happy 8-field
@@ -698,7 +698,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
 def test_security_scan_summary_and_guard_5_axis() -> None:
     """Pin scan-guard + ``security_scan_on_verify_timeline_summary`` (5 axes).
 
-    Implementations at [runs.py:158-187](packages/hermes_api/routes/runs.py):
+    Implementations at [runs.py:158-187](packages/nimbusware_api/routes/runs.py):
 
     .. code-block:: python
 

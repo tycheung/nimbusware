@@ -16,7 +16,7 @@ def test_record_micro_slice_plan_and_gate() -> None:
     plan = parse_slice_plan(
         {
             "slice_id": "slice-test-1",
-            "target_paths": ["packages/hermes_api/app.py"],
+            "target_paths": ["packages/nimbusware_api/app.py"],
         },
     )
     orch.record_micro_slice_plan(run_id, plan)

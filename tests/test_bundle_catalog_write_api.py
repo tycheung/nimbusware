@@ -10,11 +10,11 @@ import yaml
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
-ADMIN_HEADERS = {"X-Hermes-Admin-Token": "test-admin-token"}
+ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": "test-admin-token"}
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -32,7 +32,7 @@ def test_get_and_patch_bundle_catalog(tmp_path: Path, monkeypatch) -> None:
         yaml.safe_dump(catalog, sort_keys=False),
         encoding="utf-8",
     )
-    monkeypatch.setenv("HERMES_REPO_ROOT", str(tmp_path))
+    monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
 
     with TestClient(app) as client:
         got = client.get("/v1/bundles/catalog")

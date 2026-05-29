@@ -10,7 +10,7 @@ import pytest
 import yaml
 
 from agent_core.models import EventType
-from hermes_api.routes.runs import agent_evaluator_timeline_summary
+from nimbusware_api.routes.runs import agent_evaluator_timeline_summary
 from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
 from hermes_orchestrator.persona_shelf_auto_create import (

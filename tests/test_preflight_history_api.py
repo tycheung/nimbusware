@@ -10,16 +10,16 @@ from uuid import UUID, uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
 from agent_core.models import (  # noqa: E402
     EventType,
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
 )
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def test_preflight_history_empty(client: TestClient) -> None:
     r = client.get("/v1/preflight-history", params={"limit": 5})
     assert r.status_code == 200
     body = r.json()
-    if body["total"] > 0 and os.environ.get("HERMES_DATABASE_URL"):
+    if body["total"] > 0 and os.environ.get("NIMBUSWARE_DATABASE_URL"):
         pytest.skip(
             "event_store has prior runs on this Postgres URL; use a fresh DB for empty-state test",
         )

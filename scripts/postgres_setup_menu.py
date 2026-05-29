@@ -200,13 +200,13 @@ def print_os_package_hints() -> None:
     print("", flush=True)
     print("  Debian/Ubuntu:", flush=True)
     print("    sudo apt update && sudo apt install -y postgresql-16 postgresql-client-16", flush=True)
-    print("    sudo -u postgres createuser -P hermes   # password: hermes", flush=True)
-    print("    sudo -u postgres createdb -O hermes hermes", flush=True)
+    print("    sudo -u postgres createuser -P nimbusware   # password: nimbusware", flush=True)
+    print("    sudo -u postgres createdb -O nimbusware nimbusware", flush=True)
     print("", flush=True)
     print("  macOS (Homebrew):", flush=True)
     print("    brew install postgresql@16", flush=True)
     print("    brew services start postgresql@16", flush=True)
-    print("    createuser -s hermes && createdb -O hermes hermes", flush=True)
+    print("    createuser -s nimbusware && createdb -O nimbusware nimbusware", flush=True)
     print("", flush=True)
 
 

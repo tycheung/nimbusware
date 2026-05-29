@@ -1,11 +1,11 @@
 # Apply Nimbusware PostgreSQL bootstrap schema (single file, greenfield).
-# Usage: set HERMES_DATABASE_URL=postgresql://user:pass@host:5432/dbname then:
+# Usage: set NIMBUSWARE_DATABASE_URL=postgresql://user:pass@host:5432/dbname then:
 #   .\scripts\apply_event_store.ps1
 
 $ErrorActionPreference = "Stop"
-$url = $env:HERMES_DATABASE_URL
+$url = $env:NIMBUSWARE_DATABASE_URL
 if (-not $url) {
-    Write-Error "HERMES_DATABASE_URL is not set."
+    Write-Error "NIMBUSWARE_DATABASE_URL is not set."
 }
 $root = Split-Path -Parent $PSScriptRoot
 $sql = Join-Path $root "packages\hermes_store\schema\postgres.sql"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_console.scraper_fetch_display import (
+from nimbusware_console.scraper_fetch_display import (
     scraper_fetch_artifacts_caption,
     scraper_fetch_failure_reason_caption,
     scraper_fetch_fetches_export_filename_slug,

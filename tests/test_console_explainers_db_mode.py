@@ -6,20 +6,20 @@ from pathlib import Path
 
 import pytest
 
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo, seed_t2_policy_documents_from_repo
-from hermes_config.store import InMemoryConfigStore
-from hermes_console.agent_evaluator_workflow_explainer import (
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo, seed_t2_policy_documents_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_workflow_explainer_payload,
 )
-from hermes_console.escalation_suppress_workflow_explainer import (
+from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_suppress_workflow_explainer_payload,
 )
-from hermes_console.integrator_threshold_explainer import integrator_threshold_explainer_payload
-from hermes_console.security_scan_metadata_workflow_explainer import (
+from nimbusware_console.integrator_threshold_explainer import integrator_threshold_explainer_payload
+from nimbusware_console.security_scan_metadata_workflow_explainer import (
     security_scan_metadata_workflow_explainer_payload,
 )
-from hermes_console.self_refinement_workflow_explainer import (
+from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_workflow_explainer_payload,
 )
 
@@ -35,9 +35,9 @@ def _patch_console_materializer(
     monkeypatch: pytest.MonkeyPatch,
     mat: ConfigMaterializer,
 ) -> None:
-    monkeypatch.setenv("HERMES_CONFIG_FROM_DB", "1")
-    monkeypatch.setenv("HERMES_DATABASE_URL", "postgresql://test")
-    import hermes_console.config_materializer as cm
+    monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_DB", "1")
+    monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://test")
+    import nimbusware_console.config_materializer as cm
 
     monkeypatch.setattr(cm, "ConfigMaterializer", lambda repo: mat)
 

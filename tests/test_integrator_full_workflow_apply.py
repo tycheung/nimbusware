@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from hermes_console.integrator_workflow_apply import (
+from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_full_workflow_yaml,
     merge_full_workflow_into_profile_document,
     prepare_full_workflow_apply,
     workflow_yaml_write_enabled,
 )
-from hermes_console.integrator_workflow_preview import (
+from nimbusware_console.integrator_workflow_preview import (
     full_workflow_merge_added_top_level_caption,
     full_workflow_merge_attention_export_filename_slug,
     full_workflow_merge_attention_export_json,

@@ -17,11 +17,11 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-DEFAULT_DATABASE_URL = "postgresql://hermes:hermes@127.0.0.1:5432/hermes"
+DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 try:
-    from hermes_env import load_dotenv
+    from nimbusware_env import load_dotenv
 
     load_dotenv(repo_root=REPO_ROOT)
 except ImportError:
@@ -129,14 +129,19 @@ def check_bootstrap() -> CheckResult:
 
 
 def check_poetry_env() -> CheckResult:
-    code = _poetry_run_python("import hermes_api, hermes_orchestrator")
-    return CheckResult("poetry_env", code == 0, "imports hermes_api, hermes_orchestrator", required=True)
+    code = _poetry_run_python("import nimbusware_api, hermes_orchestrator")
+    return CheckResult(
+        "poetry_env",
+        code == 0,
+        "imports nimbusware_api, hermes_orchestrator",
+        required=True,
+    )
 
 
 def check_unit_tests(*, full_suite: bool) -> CheckResult:
     env = os.environ.copy()
     env.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-    env.setdefault("HERMES_REPO_ROOT", str(REPO_ROOT))
+    env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
     if full_suite:
         gate = REPO_ROOT / ".cursor/loop-artifacts/_round_gates.ps1"
         if sys.platform == "win32" and gate.is_file():
@@ -184,8 +189,8 @@ def check_schema(url: str) -> CheckResult:
 
 def check_integration(url: str) -> CheckResult:
     env = os.environ.copy()
-    env["HERMES_DATABASE_URL"] = url
-    env.setdefault("HERMES_REPO_ROOT", str(REPO_ROOT))
+    env["NIMBUSWARE_DATABASE_URL"] = url
+    env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
     env.setdefault("HERMES_SKIP_PREFLIGHT", "1")
     code = _run(
         [_poetry(), "run", "pytest", "tests", "-q", "-m", "integration", "--maxfail=3"],
@@ -198,9 +203,9 @@ def check_api_smoke() -> CheckResult:
     snippet = """
 import os
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_REPO_ROOT", %r)
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
 from fastapi.testclient import TestClient
-from hermes_api.app import app
+from nimbusware_api.app import app
 with TestClient(app) as client:
     r = client.post("/v1/runs", json={"workflow_profile": "default"})
     assert r.status_code == 200, r.text
@@ -217,12 +222,12 @@ print("api_smoke ok")
 def check_console_smoke() -> CheckResult:
     snippet = """
 import importlib.util
-spec = importlib.util.find_spec("hermes_console.app")
+spec = importlib.util.find_spec("nimbusware_console.app")
 assert spec is not None
 print("console_smoke ok")
 """
     code = _poetry_run_python(snippet)
-    return CheckResult("console_import", code == 0, "import hermes_console.app", required=True)
+    return CheckResult("console_import", code == 0, "import nimbusware_console.app", required=True)
 
 
 def check_faiss_stale_rebuild() -> CheckResult:
@@ -285,7 +290,7 @@ def run_checks(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Nimbusware end-to-end operator smoke checks.")
-    parser.add_argument("--database-url", default=os.environ.get("HERMES_DATABASE_URL", DEFAULT_DATABASE_URL))
+    parser.add_argument("--database-url", default=os.environ.get("NIMBUSWARE_DATABASE_URL", DEFAULT_DATABASE_URL))
     parser.add_argument("--no-docker", action="store_true", help="Do not try docker compose for Postgres")
     parser.add_argument("--skip-integration", action="store_true")
     parser.add_argument("--skip-install-check", action="store_true")

@@ -26,7 +26,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     os.environ.setdefault("HERMES_SELF_REFINEMENT_STAGE_MARKER", "1")
-    os.environ.setdefault("HERMES_REPO_ROOT", str(args.repo_root.resolve()))
+    os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(args.repo_root.resolve()))
 
     from hermes_orchestrator.pipeline import make_dev_orchestrator
     from hermes_orchestrator.workflow_self_refinement import (

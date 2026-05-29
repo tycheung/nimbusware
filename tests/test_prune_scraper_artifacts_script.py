@@ -17,7 +17,7 @@ def _run_prune_script(
     extra_args: list[str],
     extra_env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    env = {**os.environ, "HERMES_REPO_ROOT": str(repo_root)}
+    env = {**os.environ, "NIMBUSWARE_REPO_ROOT": str(repo_root)}
     if extra_env:
         env.update(extra_env)
     return subprocess.run(

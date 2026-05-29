@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from hermes_api.routes.runs import universal_critique_timeline_summary
+from nimbusware_api.routes.runs import universal_critique_timeline_summary
 from hermes_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,

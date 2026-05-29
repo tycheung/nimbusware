@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_console.integrator_workflow_preview import (
+from nimbusware_console.integrator_workflow_preview import (
     integrator_preview_payload,
     list_workflow_profile_keys,
     parse_integrator_gate_yaml_fragment,

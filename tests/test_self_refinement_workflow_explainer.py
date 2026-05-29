@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_console.self_refinement_display import self_refinement_snapshot_from_compare_paste
-from hermes_console.self_refinement_workflow_explainer import (
+from nimbusware_console.self_refinement_display import self_refinement_snapshot_from_compare_paste
+from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_explainer_export_json,
     self_refinement_explainer_table_rows,
     self_refinement_explainer_table_rows_csv,

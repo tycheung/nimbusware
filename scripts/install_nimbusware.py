@@ -30,7 +30,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-DEFAULT_DATABASE_URL = "postgresql://hermes:hermes@127.0.0.1:5432/hermes"
+DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 MIN_PYTHON = (3, 10)
 REC_PYTHON = (3, 11)
 SCHEMA_REL = Path("packages/hermes_store/schema/postgres.sql")
@@ -423,7 +423,7 @@ def _bootstrap_postgres(
 
     if choice == "manual":
         prompt_press_enter_when_ready(
-            "Start your PostgreSQL server (or point HERMES_DATABASE_URL at it), "
+            "Start your PostgreSQL server (or point NIMBUSWARE_DATABASE_URL at it), "
             f"then continue. Expected URL: {url}",
         )
         _wait_for_postgres(url)
@@ -440,7 +440,7 @@ def _start_postgres_compose(repo: Path) -> None:
     if not cmd:
         raise SetupError(
             "Docker is not available. Install Docker Desktop (Windows/macOS) or docker.io (Linux), "
-            "or run PostgreSQL yourself and set HERMES_DATABASE_URL.",
+            "or run PostgreSQL yourself and set NIMBUSWARE_DATABASE_URL.",
         )
     _run([*cmd, "-f", str(compose), "up", "-d", "postgres"], cwd=repo)
 
@@ -467,10 +467,10 @@ def apply_event_store_schema(
 
 def _seed_config(poetry: str, repo: Path, url: str) -> None:
     env = os.environ.copy()
-    env["HERMES_DATABASE_URL"] = url
-    env.setdefault("HERMES_REPO_ROOT", str(repo))
+    env["NIMBUSWARE_DATABASE_URL"] = url
+    env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
     _run(
-        [poetry, "run", "hermes-config", "seed-from-repo", "--repo-root", str(repo)],
+        [poetry, "run", "nimbusware-config", "seed-from-repo", "--repo-root", str(repo)],
         cwd=repo,
         env=env,
     )
@@ -547,13 +547,13 @@ def _print_next_steps(
     )
     _log("")
     _log("PowerShell environment (current session; optional if using .env):")
-    _log(f'  $env:HERMES_REPO_ROOT = "{repo}"')
-    _log(f'  $env:HERMES_DATABASE_URL = "{url}"')
+    _log(f'  $env:NIMBUSWARE_REPO_ROOT = "{repo}"')
+    _log(f'  $env:NIMBUSWARE_DATABASE_URL = "{url}"')
     _log('  $env:HERMES_SKIP_PREFLIGHT = "1"   # optional for tests')
     _log("")
     _log("Unix:")
-    _log(f'  export HERMES_REPO_ROOT="{repo}"')
-    _log(f'  export HERMES_DATABASE_URL="{url}"')
+    _log(f'  export NIMBUSWARE_REPO_ROOT="{repo}"')
+    _log(f'  export NIMBUSWARE_DATABASE_URL="{url}"')
     _log('  export HERMES_SKIP_PREFLIGHT=1')
     _log("")
     _log("Verify:")
@@ -561,9 +561,9 @@ def _print_next_steps(
     _log("  .\\scripts\\run_integration_like_ci.ps1   # or bash scripts/run_integration_like_ci.sh")
     _log("")
     _log("Run API:")
-    _log("  poetry run hermes-api")
+    _log("  poetry run nimbusware-api")
     _log("Run console:")
-    _log("  poetry run streamlit run packages/hermes_console/app.py")
+    _log("  poetry run streamlit run packages/nimbusware_console/app.py")
     if ollama_ok:
         _log("")
         _log("Ollama: ready (HERMES_USE_LLM=1 if enabled in .env)")
@@ -623,7 +623,7 @@ def _load_repo_dotenv() -> None:
     packages = repo / "packages"
     if str(packages) not in sys.path:
         sys.path.insert(0, str(packages))
-    from hermes_env import load_dotenv  # noqa: PLC0415
+    from nimbusware_env import load_dotenv  # noqa: PLC0415
 
     load_dotenv(repo_root=repo)
 
@@ -653,7 +653,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--database-url",
-        default=os.environ.get("HERMES_DATABASE_URL", DEFAULT_DATABASE_URL),
+        default=os.environ.get("NIMBUSWARE_DATABASE_URL", DEFAULT_DATABASE_URL),
         help=f"PostgreSQL URL (default: {DEFAULT_DATABASE_URL})",
     )
     parser.add_argument(
@@ -689,7 +689,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--seed-config",
         action="store_true",
-        help="Run hermes-config seed-from-repo after schema apply",
+        help="Run nimbusware-config seed-from-repo after schema apply",
     )
     parser.add_argument(
         "--run-unit-tests",
@@ -730,7 +730,7 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help=(
             "postgres superuser password for native install "
-            "(default: HERMES_POSTGRES_SUPERPASSWORD or hermes_setup)"
+            "(default: NIMBUSWARE_POSTGRES_SUPERPASSWORD or hermes_setup)"
         ),
     )
     parser.add_argument(
@@ -855,8 +855,8 @@ def main(argv: list[str] | None = None) -> int:
         packages = repo / "packages"
         if str(packages) not in sys.path:
             sys.path.insert(0, str(packages))
-        from hermes_env.desktop_common import resolve_python_command
-        from hermes_env.linux_desktop_deps import ensure_linux_desktop_deps
+        from nimbusware_env.desktop_common import resolve_python_command
+        from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps
 
         py_cmd = resolve_python_command(repo)
         ok, detail = ensure_linux_desktop_deps(repo, py_cmd, log=_log)
@@ -886,9 +886,9 @@ def main(argv: list[str] | None = None) -> int:
             _log("Seeding config from repo YAML into Postgres...")
             _seed_config(poetry, repo, url)
 
-    os.environ.setdefault("HERMES_REPO_ROOT", str(repo))
+    os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
     if postgres_ready:
-        os.environ["HERMES_DATABASE_URL"] = url
+        os.environ["NIMBUSWARE_DATABASE_URL"] = url
 
     ollama_ok = False
     if not args.skip_ollama:
@@ -897,7 +897,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.verify_ollama and ollama_ok:
             _log("\nVerifying Ollama preflight...")
             env = os.environ.copy()
-            env.setdefault("HERMES_REPO_ROOT", str(repo))
+            env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
             _run([poetry, "run", "hermes-preflight"], cwd=repo, env=env)
     else:
         ollama_ok = _check_ollama(args.ollama_host)
@@ -914,7 +914,7 @@ def main(argv: list[str] | None = None) -> int:
 
     _print_next_steps(
         repo,
-        url if postgres_ready else "(Postgres not configured - set HERMES_DATABASE_URL)",
+        url if postgres_ready else "(Postgres not configured - set NIMBUSWARE_DATABASE_URL)",
         ollama_ok=ollama_ok,
         with_faiss=args.with_faiss,
     )

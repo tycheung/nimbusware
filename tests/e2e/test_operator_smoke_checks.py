@@ -7,7 +7,7 @@ import os
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
+from nimbusware_api.app import app
 
 
 @pytest.fixture
@@ -29,4 +29,4 @@ def test_api_create_run_timeline(client: TestClient) -> None:
 def test_console_app_importable() -> None:
     import importlib.util
 
-    assert importlib.util.find_spec("hermes_console.app") is not None
+    assert importlib.util.find_spec("nimbusware_console.app") is not None

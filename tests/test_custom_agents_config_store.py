@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.persist import load_custom_agent_registry, persist_custom_agent_registry
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
 
 

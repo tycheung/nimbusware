@@ -47,8 +47,8 @@ def test_agent_evaluator_production_default_on_profile() -> None:
     assert agent_evaluator_production_default_on(ROOT, "agent_evaluator_default_on") is True
 
 
-def test_universal_critique_production_default_on_hermes_production() -> None:
-    assert universal_critique_production_default_on(ROOT, "hermes_production") is True
+def test_universal_critique_production_default_on_nimbusware_production() -> None:
+    assert universal_critique_production_default_on(ROOT, "nimbusware_production") is True
 
 
 def test_self_refinement_production_ungated_profile() -> None:
@@ -77,7 +77,7 @@ def test_create_run_freezes_production_effective_metadata() -> None:
     from hermes_orchestrator.pipeline import make_dev_orchestrator
 
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
-    rid = orch.create_run("hermes_production")
+    rid = orch.create_run("nimbusware_production")
     rows = mem.list_run_events(str(rid))
     created = next(r for r in rows if r["event_type"] == "run.created")
     meta = created.get("metadata") or {}

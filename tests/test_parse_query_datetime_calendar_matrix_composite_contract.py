@@ -1,7 +1,7 @@
 """``_parse_query_datetime`` calendar / time / chain composite (fo120).
 
 The 12-line ``_parse_query_datetime`` helper in
-[packages/hermes_api/routes/runs.py](packages/hermes_api/routes/runs.py)
+[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
 (lines 249-260) is the single coercion seam between raw
 ``?created_after=...`` / ``?created_before=...`` query strings and the
 typed ``datetime`` values consumed by ``GET /v1/runs``. fo111 Part D
@@ -57,13 +57,13 @@ from datetime import datetime, timezone
 
 import pytest
 
-from hermes_api.routes.runs import _parse_query_datetime
+from nimbusware_api.routes.runs import _parse_query_datetime
 
 # ---------------------------------------------------------------------------
 # Helper note
 # ---------------------------------------------------------------------------
 # All tests here exercise the contract at lines 249-260 of
-# packages/hermes_api/routes/runs.py:
+# packages/nimbusware_api/routes/runs.py:
 #
 #   def _parse_query_datetime(field: str, value: str | None) -> datetime | None:
 #       if value is None or not str(value).strip():

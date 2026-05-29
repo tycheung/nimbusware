@@ -8,11 +8,11 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
-from hermes_api.deps import get_orchestrator, get_store
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_extensions.personas import PersonaShelf
 from hermes_extensions.phase2 import (
     AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,

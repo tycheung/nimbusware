@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from hermes_api.routes.runs import self_refinement_timeline_summary
+from nimbusware_api.routes.runs import self_refinement_timeline_summary
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 
 

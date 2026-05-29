@@ -7,7 +7,7 @@ changes in operator-friendly form, parse_write_response surfaces 200 / 409 /
 
 from __future__ import annotations
 
-from hermes_console.persona_editor import (
+from nimbusware_console.persona_editor import (
     EDITABLE_FIELDS,
     build_patch_request,
     diff_summary,

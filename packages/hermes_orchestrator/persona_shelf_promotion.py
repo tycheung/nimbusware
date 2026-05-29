@@ -7,7 +7,7 @@ from typing import Any
 from uuid import UUID, uuid5
 
 from agent_core.models import EventType
-from hermes_config.persist import load_persona_shelf, persist_persona_shelf
+from nimbusware_config.persist import load_persona_shelf, persist_persona_shelf
 from hermes_extensions.personas import ALLOWED_SHELVES
 from hermes_orchestrator.persona_catalog_audit import (
     append_persona_shelf_updated_event,

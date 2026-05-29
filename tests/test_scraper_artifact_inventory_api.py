@@ -8,11 +8,11 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 
-from hermes_api.app import app  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 from hermes_orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
 
 

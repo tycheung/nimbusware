@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_orchestrator.merge import load_yaml
 
 

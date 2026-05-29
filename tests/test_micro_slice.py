@@ -17,7 +17,7 @@ def test_parse_slice_plan() -> None:
         {
             "slice_id": "s1",
             "rationale": "touch api only",
-            "target_paths": ["packages/hermes_api/routes/runs.py"],
+            "target_paths": ["packages/nimbusware_api/routes/runs.py"],
             "acceptance_criteria": "tests pass",
         },
     )

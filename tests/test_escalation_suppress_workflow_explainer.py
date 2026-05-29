@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from hermes_console.escalation_suppress_workflow_explainer import (
+from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_policy_export_filename_slug,
     escalation_policy_yaml_age_caption,
     escalation_policy_yaml_anti_deadlock_min_progress_caption,

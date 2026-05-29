@@ -1,5 +1,5 @@
 -- Nimbusware PostgreSQL bootstrap for the Hermes agent event store (greenfield, single file).
--- Apply to an empty database: psql "$HERMES_DATABASE_URL" -v ON_ERROR_STOP=1 -f postgres.sql
+-- Apply to an empty database: psql "$NIMBUSWARE_DATABASE_URL" -v ON_ERROR_STOP=1 -f postgres.sql
 -- Lockstep with agent_core.models.EventType (see hermes_store.allowed_types.allowed_event_type_values).
 
 -- =============================================================================

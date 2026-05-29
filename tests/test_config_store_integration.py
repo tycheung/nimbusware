@@ -1,4 +1,4 @@
-"""Postgres config document integration (requires ``HERMES_DATABASE_URL``)."""
+"""Postgres config document integration (requires ``NIMBUSWARE_DATABASE_URL``)."""
 
 from __future__ import annotations
 
@@ -7,19 +7,19 @@ from pathlib import Path
 
 import pytest
 
-from hermes_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import PostgresConfigStore
+from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import PostgresConfigStore
 from hermes_extensions.personas import PersonaShelf
 
 pytestmark = pytest.mark.integration
 
 
 def _url() -> str:
-    u = os.environ.get("HERMES_DATABASE_URL")
+    u = os.environ.get("NIMBUSWARE_DATABASE_URL")
     if not u:
-        pytest.skip("HERMES_DATABASE_URL not set")
+        pytest.skip("NIMBUSWARE_DATABASE_URL not set")
     return u
 
 

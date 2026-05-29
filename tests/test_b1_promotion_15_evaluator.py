@@ -17,9 +17,9 @@ from hermes_orchestrator.workflow_agent_evaluator import (
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_production_default_on_hermes_production_profile() -> None:
-    assert agent_evaluator_production_default_on(ROOT, "hermes_production") is True
-    block = parse_agent_evaluator_workflow_block(ROOT, "hermes_production")
+def test_production_default_on_nimbusware_production_profile() -> None:
+    assert agent_evaluator_production_default_on(ROOT, "nimbusware_production") is True
+    block = parse_agent_evaluator_workflow_block(ROOT, "nimbusware_production")
     assert agent_evaluator_llm_branch_effective(block) is True
 
 
@@ -27,7 +27,7 @@ def test_pipeline_agent_evaluator_production_metadata(monkeypatch: pytest.Monkey
     monkeypatch.delenv("HERMES_AGENT_EVALUATOR_LLM_STUB", raising=False)
     monkeypatch.delenv("HERMES_USE_LLM", raising=False)
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
-    rid = orch.create_run("hermes_production")
+    rid = orch.create_run("nimbusware_production")
     rows = mem.list_run_events(str(rid))
     created = next(r for r in rows if r["event_type"] == "run.created")
     ae = (created.get("metadata") or {}).get("agent_evaluator_effective") or {}
@@ -50,4 +50,4 @@ def test_pipeline_agent_evaluator_production_metadata(monkeypatch: pytest.Monkey
 
 def test_production_default_blocked_by_stub_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HERMES_AGENT_EVALUATOR_LLM_STUB", "1")
-    assert agent_evaluator_production_default_on(ROOT, "hermes_production") is False
+    assert agent_evaluator_production_default_on(ROOT, "nimbusware_production") is False

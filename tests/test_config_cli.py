@@ -1,4 +1,4 @@
-"""Tests for ``hermes-config`` gitops CLI."""
+"""Tests for ``nimbusware-config`` gitops CLI."""
 
 from __future__ import annotations
 
@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from hermes_config.cli import main
-from hermes_config.export import export_config_to_repo
-from hermes_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS, NS_WORKFLOWS
-from hermes_config.seed import preview_seed_from_repo, seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_config.cli import main
+from nimbusware_config.export import export_config_to_repo
+from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS, NS_WORKFLOWS
+from nimbusware_config.seed import preview_seed_from_repo, seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_orchestrator.merge import load_yaml
 
 pytestmark_integration = pytest.mark.integration
@@ -43,13 +43,13 @@ def test_import_dry_run_does_not_mutate_store(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     repo = Path(__file__).resolve().parents[1]
-    monkeypatch.setenv("HERMES_DATABASE_URL", "postgresql://unused")
-    monkeypatch.setenv("HERMES_REPO_ROOT", str(repo))
+    monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://unused")
+    monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(repo))
 
     preview_before = preview_seed_from_repo(repo)
     assert preview_before
 
-    import hermes_config.cli as cli_mod
+    import nimbusware_config.cli as cli_mod
 
     original = cli_mod.PostgresConfigStore
 
@@ -78,11 +78,11 @@ def test_preview_seed_lists_workflow_profiles() -> None:
 
 @pytest.mark.integration
 def test_postgres_seed_export_personas_round_trip() -> None:
-    url = os.environ.get("HERMES_DATABASE_URL")
+    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
     if not url:
-        pytest.skip("HERMES_DATABASE_URL not set")
+        pytest.skip("NIMBUSWARE_DATABASE_URL not set")
 
-    from hermes_config.store import PostgresConfigStore
+    from nimbusware_config.store import PostgresConfigStore
 
     repo = Path(__file__).resolve().parents[1]
     store = PostgresConfigStore(url)

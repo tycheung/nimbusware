@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
-from hermes_console.bundle_catalog import (
+from nimbusware_console.bundle_catalog import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     bundle_catalog_bundle_count_caption,
     bundle_catalog_bundle_ids_sample,
@@ -1629,7 +1629,7 @@ def test_bundle_catalog_top_tag_counts_ignores_non_string_entries(tmp_path: Path
 
 
 def test_bundle_catalog_bundles_without_tags_count_real_repo_consistent_with_summary() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     summary = bundle_catalog_local_summary(repo_root)
     without = bundle_catalog_bundles_without_tags_count(repo_root)
     assert isinstance(without, int)
@@ -1719,7 +1719,7 @@ def test_bundle_catalog_bundles_without_tags_count_mixed_boundary(tmp_path: Path
 
 
 def test_bundle_catalog_bundle_ids_sample_real_repo_sorted() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     ids = bundle_catalog_bundle_ids_sample(repo_root)
     assert isinstance(ids, list)
     assert ids == sorted(ids)
@@ -1814,7 +1814,7 @@ def test_bundle_catalog_bundle_ids_sample_ignores_non_string_and_empty(
 
 
 def test_bundle_catalog_bundle_count_caption_real_repo_matches_local_summary() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     cap = bundle_catalog_bundle_count_caption(repo_root)
     summary = bundle_catalog_local_summary(repo_root)
     untagged = bundle_catalog_bundles_without_tags_count(repo_root)
@@ -1894,7 +1894,7 @@ def test_bundle_catalog_bundle_count_caption_all_tagged(tmp_path: Path) -> None:
 
 
 def test_bundle_catalog_top_tag_caption_real_repo_non_empty_when_rows() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     rows = bundle_catalog_top_tag_counts(repo_root, top_n=3)
     cap = bundle_catalog_top_tag_caption(repo_root)
     if rows:
@@ -2030,7 +2030,7 @@ def test_bundle_catalog_top_tag_caption_non_positive_top_n_returns_none(
 
 
 def test_bundle_catalog_distinct_tag_count_caption_real_repo_matches_local_summary() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     summary = bundle_catalog_local_summary(repo_root)
     cap = bundle_catalog_distinct_tag_count_caption(repo_root)
     expected_n = summary["distinct_tag_count"]
@@ -2098,14 +2098,14 @@ def test_bundle_catalog_distinct_tag_count_caption_bool_value_treated_as_missing
     tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(
-        "hermes_console.bundle_catalog.bundle_catalog_local_summary",
+        "nimbusware_console.bundle_catalog.bundle_catalog_local_summary",
         lambda _root: {"distinct_tag_count": True},
     )
     assert bundle_catalog_distinct_tag_count_caption(tmp_path) is None
 
 
 def test_bundle_catalog_bundles_without_id_count_real_repo_bounded_by_bundle_count() -> None:
-    repo_root = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     summary = bundle_catalog_local_summary(repo_root)
     total = int(summary.get("bundle_count") or 0)
     wid = bundle_catalog_bundles_without_id_count(repo_root)

@@ -15,7 +15,7 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from hermes_api.app import app
+from nimbusware_api.app import app
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.critique_routing import (
     CRITIQUE_STAGE_TO_PRODUCER,

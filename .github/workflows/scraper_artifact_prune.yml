@@ -36,7 +36,7 @@ jobs:
           python-version: "3.12"
       - name: Prune old artifacts
         env:
-          HERMES_REPO_ROOT: ${{ github.workspace }}
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS: "14"
         # Default: delete stale files and emit a machine-readable JSON summary line
         # for log agents. Swap to `--dry-run --json-summary` to preview without deleting.

@@ -4,15 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_config.keys import (
+from nimbusware_config.keys import (
     KEY_CRITIQUE_PAIRINGS,
     KEY_INTEGRATOR_THRESHOLDS,
     NS_PERSONAS,
     NS_POLICY,
 )
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
 from hermes_orchestrator.critique_routing import load_critique_router
 from hermes_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths

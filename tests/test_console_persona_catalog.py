@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
-from hermes_console.persona_catalog import (
+from nimbusware_console.persona_catalog import (
     critique_pairings_critic_counts_all_export_json,
     critique_pairings_critic_counts_all_table_rows,
     critique_pairings_critic_counts_all_table_rows_csv,
@@ -1605,9 +1605,9 @@ def test_load_persona_shelves_catalog_db_mode_freshness(
     """Console reads Postgres shelves when DB mode is on (no stale YAML)."""
     import yaml
 
-    from hermes_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
-    from hermes_config.materializer import ConfigMaterializer
-    from hermes_config.store import InMemoryConfigStore
+    from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
+    from nimbusware_config.materializer import ConfigMaterializer
+    from nimbusware_config.store import InMemoryConfigStore
 
     shelves = {
         "version": 1,
@@ -1624,10 +1624,10 @@ def test_load_persona_shelves_catalog_db_mode_freshness(
     store.upsert(NS_PERSONAS, KEY_PERSONA_SHELVES, shelves)
     mat = ConfigMaterializer(tmp_path, store=store, use_db=True)
 
-    monkeypatch.setenv("HERMES_CONFIG_FROM_DB", "1")
-    monkeypatch.setenv("HERMES_DATABASE_URL", "postgresql://test")
+    monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_DB", "1")
+    monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://test")
 
-    import hermes_console.config_materializer as cm
+    import nimbusware_console.config_materializer as cm
 
     monkeypatch.setattr(cm, "ConfigMaterializer", lambda repo: mat)
 

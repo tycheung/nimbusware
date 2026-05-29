@@ -11,17 +11,17 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_default_workflow_profile_is_hermes_production() -> None:
+def test_default_workflow_profile_is_nimbusware_production() -> None:
     from hermes_orchestrator.default_workflow_profile import default_workflow_profile
 
-    os.environ.pop("HERMES_DEFAULT_WORKFLOW_PROFILE", None)
-    assert default_workflow_profile() == "hermes_production"
+    os.environ.pop("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", None)
+    assert default_workflow_profile() == "nimbusware_production"
 
 
 def test_default_workflow_profile_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
     from hermes_orchestrator.default_workflow_profile import default_workflow_profile
 
-    monkeypatch.setenv("HERMES_DEFAULT_WORKFLOW_PROFILE", "default")
+    monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "default")
     assert default_workflow_profile() == "default"
 
 
@@ -33,7 +33,7 @@ def test_self_refinement_production_llm_without_global_use_llm() -> None:
     os.environ.pop("HERMES_USE_LLM", None)
     assert self_refinement_production_llm_critique_effective(
         ROOT,
-        "hermes_production",
+        "nimbusware_production",
     ) is True
 
 
@@ -71,7 +71,7 @@ def test_production_sr_llm_path_without_hermes_use_llm(
 
     os.environ.pop("HERMES_USE_LLM", None)
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
-    rid = orch.create_run("hermes_production")
+    rid = orch.create_run("nimbusware_production")
     orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     signals = [
         r
@@ -83,7 +83,7 @@ def test_production_sr_llm_path_without_hermes_use_llm(
 
 
 def test_bundle_editor_tags_from_text() -> None:
-    from hermes_console.bundle_catalog_editor import bundle_editor_tags_from_text
+    from nimbusware_console.bundle_catalog_editor import bundle_editor_tags_from_text
 
     assert bundle_editor_tags_from_text("auth, rbac\nstripe") == [
         "auth",

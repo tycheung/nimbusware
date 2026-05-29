@@ -211,7 +211,7 @@ def _error_record(message: str, *, exit_code: int) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    from hermes_env import load_dotenv
+    from nimbusware_env import load_dotenv
 
     load_dotenv()
     """CLI entrypoint. Returns the process exit code.

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_console.integration_adapter_writer_explainer import (
+from nimbusware_console.integration_adapter_writer_explainer import (
     integration_adapter_writer_env_gate_caption,
     integration_adapter_writer_fleet_manifest_count,
     integration_adapter_writer_workflow_explainer_operator_metrics,
@@ -140,7 +140,7 @@ def test_integration_adapter_writer_env_gate_caption() -> None:
 
 
 def test_integration_adapter_writer_effective_caption() -> None:
-    from hermes_console.integration_adapter_writer_explainer import (
+    from nimbusware_console.integration_adapter_writer_explainer import (
         integration_adapter_writer_effective_caption,
     )
 

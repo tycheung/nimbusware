@@ -1,4 +1,4 @@
-"""Tests for `preflight_timeline_summary` in `hermes_api.routes.runs` (fo124).
+"""Tests for `preflight_timeline_summary` in `nimbusware_api.routes.runs` (fo124).
 
 Six axes:
 
@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from hermes_api.preflight_read_model import preflight_timeline_summary
+from nimbusware_api.preflight_read_model import preflight_timeline_summary
 
 
 def _passed_event(

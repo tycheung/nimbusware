@@ -6,12 +6,12 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
-from hermes_api.deps import get_orchestrator, get_store
-from hermes_config.materializer import ConfigMaterializer
-from hermes_config.seed import seed_config_from_repo
-from hermes_config.store import InMemoryConfigStore
-from hermes_console.persona_assignment_display import (
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_console.persona_assignment_display import (
     persona_assignment_caption,
     persona_assignment_from_timeline,
     persona_assignment_summary_rows,

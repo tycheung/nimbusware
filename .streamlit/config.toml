@@ -1,6 +1,6 @@
-# Nimbusware operator console (`packages/hermes_console`). Override locally; do not commit secrets.
+# Nimbusware operator console (`packages/nimbusware_console`). Override locally; do not commit secrets.
 #
-# Page title stays in packages/hermes_console/app.py (st.set_page_config).
+# Page title stays in packages/nimbusware_console/app.py (st.set_page_config).
 # Theme-only overrides: edit [theme] below; full white-label deferred — per-tenant CSS/logo skins out of scope.
 [theme]
 base = "light"

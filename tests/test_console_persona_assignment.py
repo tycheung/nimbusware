@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hermes_console.persona_assignment_display import (
+from nimbusware_console.persona_assignment_display import (
     persona_assignment_caption,
     persona_assignment_from_timeline,
     persona_assignment_summary_rows,

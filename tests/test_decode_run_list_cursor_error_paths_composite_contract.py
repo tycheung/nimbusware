@@ -1,7 +1,7 @@
 """``_decode_run_list_cursor`` error-paths + ``invalid_cursor`` 422 composite (fo117).
 
 Two coupled surfaces in
-[packages/hermes_api/routes/runs.py](packages/hermes_api/routes/runs.py)
+[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
 shape the ``cursor`` query-param error contract of ``GET /v1/runs``:
 
 * ``_decode_run_list_cursor(value)`` -- 4-line helper at lines 204-208
@@ -55,7 +55,7 @@ fired. fo117 closes the remaining matrix in 4 parts spanning 20 axes:
 * **Part D** -- route-layer ``invalid_cursor`` 422 integration matrix
   (5 axes): TestClient ``GET /v1/runs?cursor=<malformed>`` for each
   distinct exception class, plus the empty-cursor short-circuit at
-  [runs.py:449](packages/hermes_api/routes/runs.py) returning 200.
+  [runs.py:449](packages/nimbusware_api/routes/runs.py) returning 200.
 
 KEY DIVERGENCES pinned across the composite:
 
@@ -90,7 +90,7 @@ KEY DIVERGENCES pinned across the composite:
   wrapper would CHANGE the exception class for these inputs. Part C
   C4 / C5 pin the wrapping behaviour via the ``ValueError`` class.
 * **empty-cursor short-circuit** -- the route at
-  [runs.py:449](packages/hermes_api/routes/runs.py) computes
+  [runs.py:449](packages/nimbusware_api/routes/runs.py) computes
   ``use_cursor = cursor is not None and str(cursor).strip() != ""``
   BEFORE calling the helper. Empty / whitespace-only / omitted
   cursors return a NORMAL 200 list, NOT a 422. This is distinct from
@@ -112,8 +112,8 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_api.app import app
-from hermes_api.routes.runs import _decode_run_list_cursor
+from nimbusware_api.app import app
+from nimbusware_api.routes.runs import _decode_run_list_cursor
 
 _SAMPLE_UUID_STR = "11111111-1111-4111-8111-111111111111"
 
@@ -152,7 +152,7 @@ def test_catch_tuple_exception_class_inheritance_preflight() -> None:
     """Pin the inheritance shape underpinning the entire composite.
 
     The route catch tuple at
-    [runs.py:466-473](packages/hermes_api/routes/runs.py) lists 6
+    [runs.py:466-473](packages/nimbusware_api/routes/runs.py) lists 6
     explicit classes:
 
     .. code-block:: python
@@ -438,7 +438,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     """Pin ``GET /v1/runs`` route-layer ``invalid_cursor`` 422 mapping (5 axes).
 
     Each axis exercises a DIFFERENT exception class from the
-    [runs.py:466-481](packages/hermes_api/routes/runs.py) catch tuple
+    [runs.py:466-481](packages/nimbusware_api/routes/runs.py) catch tuple
     by crafting a cursor that triggers it inside
     ``_decode_run_list_cursor``. The empty-cursor short-circuit axis
     (D5) pins the route's ``use_cursor`` guard at line 449 that
@@ -447,7 +447,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     KEY DIVERGENCES pinned here:
 
     * D1 pins the FULL problem-JSON shape per
-      [packages/hermes_api/errors.py:8-18](packages/hermes_api/errors.py):
+      [packages/nimbusware_api/errors.py:8-18](packages/nimbusware_api/errors.py):
       ``code`` / ``message`` / ``details.reason`` -- a refactor that
       changed the ``code`` literal would break clients matching on it.
     * D4 covers the TWO non-ValueError-subclass arms (``KeyError`` +
@@ -468,14 +468,14 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     )
     assert body_d1.get("message") == "cursor is not a valid keyset token", (
         f"D1: problem ``message`` must be the exact literal at "
-        f"[runs.py:478](packages/hermes_api/routes/runs.py). Got: "
+        f"[runs.py:478](packages/nimbusware_api/routes/runs.py). Got: "
         f"{body_d1.get('message')!r}"
     )
     details_d1 = body_d1.get("details") or {}
     assert isinstance(details_d1, dict) and "reason" in details_d1, (
         f"D1: ``details.reason`` must be present (carries ``str(exc)`` "
         f"for operator-visible diagnostics per [runs.py:479]"
-        f"(packages/hermes_api/routes/runs.py)). Got details: "
+        f"(packages/nimbusware_api/routes/runs.py)). Got details: "
         f"{details_d1!r}"
     )
     reason_d1 = details_d1["reason"]
@@ -541,7 +541,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     r_d5_empty = client.get("/v1/runs", params={"cursor": "", "limit": 5})
     assert r_d5_empty.status_code == 200, (
         f"D5a: empty cursor (``cursor=``) must short-circuit BEFORE "
-        f"the helper at [runs.py:449](packages/hermes_api/routes/runs.py) "
+        f"the helper at [runs.py:449](packages/nimbusware_api/routes/runs.py) "
         f"and return 200 (NOT 422). A refactor that dropped the "
         f"``str(cursor).strip() != ''`` check would call the helper "
         f"on ``''``, which would raise ``binascii.Error`` from "

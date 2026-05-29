@@ -16,15 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_production_default_on_without_env_kill() -> None:
-    assert universal_critique_production_default_on(ROOT, "hermes_production") is True
-    eff = effective_universal_critique(ROOT, "hermes_production")
+    assert universal_critique_production_default_on(ROOT, "nimbusware_production") is True
+    eff = effective_universal_critique(ROOT, "nimbusware_production")
     assert eff.impl_stub is True
     assert eff.tw_enabled is True
 
 
 def test_create_run_freezes_production_critique_flags() -> None:
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
-    rid = orch.create_run("hermes_production")
+    rid = orch.create_run("nimbusware_production")
     created = next(
         r for r in mem.list_run_events(str(rid))
         if r["event_type"] == "run.created"
@@ -38,4 +38,4 @@ def test_kill_switch_disables_production_default(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("HERMES_STUB_IMPLEMENTATION_CRITICS", "0")
-    assert universal_critique_production_default_on(ROOT, "hermes_production") is False
+    assert universal_critique_production_default_on(ROOT, "nimbusware_production") is False

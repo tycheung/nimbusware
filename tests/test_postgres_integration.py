@@ -1,6 +1,6 @@
 """Postgres append-only store.
 
-Requires ``HERMES_DATABASE_URL`` and applied ``packages/hermes_store/schema/postgres.sql``.
+Requires ``NIMBUSWARE_DATABASE_URL`` and applied ``packages/hermes_store/schema/postgres.sql``.
 """
 
 from __future__ import annotations
@@ -31,9 +31,9 @@ pytestmark = pytest.mark.integration
 
 
 def _url() -> str:
-    u = os.environ.get("HERMES_DATABASE_URL")
+    u = os.environ.get("NIMBUSWARE_DATABASE_URL")
     if not u:
-        pytest.skip("HERMES_DATABASE_URL not set")
+        pytest.skip("NIMBUSWARE_DATABASE_URL not set")
     return u
 
 

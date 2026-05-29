@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_console.findings_display import (
+from nimbusware_console.findings_display import (
     findings_empty_caption,
     findings_export_filename_slug,
     findings_export_json,

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_console.integrator_workflow_apply import (
+from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_agent_evaluator_yaml,
     apply_integrator_gate_yaml,

@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
-from hermes_config import ConfigMaterializer, config_from_db_enabled
+from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.run_dispatch import RunQueuePort, get_run_queue
@@ -19,9 +19,9 @@ from hermes_store.postgres import PostgresEventStore
 
 
 def build_worker_orchestrator() -> RunOrchestrator:
-    repo = Path(os.environ.get("HERMES_REPO_ROOT", ".")).resolve()
+    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     base, _ = default_paths(repo)
-    url = os.environ.get("HERMES_DATABASE_URL")
+    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
     use_db_config = config_from_db_enabled()
     materializer: ConfigMaterializer | None = None
     if use_db_config and url:

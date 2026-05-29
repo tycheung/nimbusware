@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from hermes_console.self_refinement_display import (
+from nimbusware_console.self_refinement_display import (
     self_refinement_auto_promote_caption,
     self_refinement_description_length_caption,
     self_refinement_evaluation_caption,
@@ -908,7 +908,7 @@ def test_self_refinement_description_length_caption_bool_char_len_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "hermes_console.self_refinement_display.self_refinement_timeline_operator_metrics",
+        "nimbusware_console.self_refinement_display.self_refinement_timeline_operator_metrics",
         lambda _sr: {"present": True, "description_char_len": True},
     )
     assert self_refinement_description_length_caption({"description": "x"}) is None
@@ -918,7 +918,7 @@ def test_self_refinement_description_length_caption_negative_char_len_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "hermes_console.self_refinement_display.self_refinement_timeline_operator_metrics",
+        "nimbusware_console.self_refinement_display.self_refinement_timeline_operator_metrics",
         lambda _sr: {"present": True, "description_char_len": -1},
     )
     assert self_refinement_description_length_caption({"description": "x"}) is None
@@ -928,7 +928,7 @@ def test_self_refinement_description_length_caption_non_int_char_len_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "hermes_console.self_refinement_display.self_refinement_timeline_operator_metrics",
+        "nimbusware_console.self_refinement_display.self_refinement_timeline_operator_metrics",
         lambda _sr: {"present": True, "description_char_len": "12"},
     )
     assert self_refinement_description_length_caption({"description": "x"}) is None
