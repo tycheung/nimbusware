@@ -1,4 +1,4 @@
-"""Workflow YAML overrides for automatic escalation (plan §14 #19)."""
+"""Workflow YAML overrides for automatic escalation ."""
 
 from __future__ import annotations
 

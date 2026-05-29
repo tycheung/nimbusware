@@ -1,4 +1,4 @@
-"""Run lifecycle dispatch queue boundary (plan §12 Phase 2-d / §2.3)."""
+"""Run lifecycle dispatch queue boundary."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Read-only model-routing.yaml suggestions from fo190 aggregates (Phase 4 / fo191)."""
+"""Read-only model-routing.yaml suggestions from role telemetry aggregates."""
 
 from __future__ import annotations
 
@@ -130,7 +130,7 @@ def enrich_aggregate_with_model_selection(
     aggregate: dict[str, Any],
     rows: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Count primary vs fallback model selection events for fo191."""
+    """Count primary vs fallback model selection events."""
     primary = 0
     fallback = 0
     for row in rows:

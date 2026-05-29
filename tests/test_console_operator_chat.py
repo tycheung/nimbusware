@@ -1,4 +1,4 @@
-"""Operator chat helpers (fo150)."""
+"""Operator chat helpers."""
 
 from __future__ import annotations
 

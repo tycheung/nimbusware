@@ -1,4 +1,4 @@
-"""Fleet / org memory scope (Lane D / fo202)."""
+"""Fleet / org memory scope."""
 
 from __future__ import annotations
 

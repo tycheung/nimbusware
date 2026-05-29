@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for agent evaluator ``stage.started`` marker (plan §14 #15)."""
+"""Workflow YAML knobs for agent evaluator ``stage.started`` marker ."""
 
 from __future__ import annotations
 

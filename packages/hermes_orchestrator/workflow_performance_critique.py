@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for ``performance_critique`` (Phase 3 / fo144)."""
+"""Workflow YAML knobs for ``performance_critique``."""
 
 from __future__ import annotations
 

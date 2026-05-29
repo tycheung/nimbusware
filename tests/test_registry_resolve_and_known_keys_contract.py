@@ -1,32 +1,5 @@
-"""RoleRegistry resolve() + known_taxonomy_keys() direct contracts.
+"""RoleRegistry resolve + known_taxonomy_keys direct contracts."""
 
-fo95's Next-slice item (6) flagged this gap. fo95 closed the **load-side**
-loaders (`from_yaml` + `load_registry_from_postgres`); fo96 closes the
-**lookup-side** public API (`resolve` + `known_taxonomy_keys`).
-
-Current shallow coverage:
-
-* ``tests/test_registry_from_mapping.py:16`` -- single happy-path
- ``resolve("planner") == UUID(...)``.
-* ``tests/test_create_run_preflight_gate_chain.py:179-222`` --
- 3 known + 3 unknown axes via the ``assert_taxonomy_keys_resolve``
- wrapper using prefix-substring matching (not direct ``resolve()``).
-* ``tests/test_registry_loaders_failure_mode_parity.py`` C1 --
- single strip+lower symmetry assertion through ``from_yaml``.
-
-fo96 closes 4 unpinned surfaces via 4 parts spanning 16 axes
-(~21 assertions, source unchanged):
-
-* **Part A** -- ``resolve`` input strip+lower symmetry (5 axes --
- exact / mixed-case / whitespace / combined / multi-key distinct).
-* **Part B** -- ``resolve`` KeyError direct exception contract with
- exact-message via ``exc.value.args[0]`` (5 axes -- unknown / empty
- registry / empty-string / whitespace-only / dual-access).
-* **Part C** -- constructor-vs-factory normalization asymmetry
- (3 axes -- direct ctor fails both ways / from_mapping recovers).
-* **Part D** -- ``known_taxonomy_keys`` frozenset immutability +
- content (3 axes -- isinstance / normalized / .add raises).
-"""
 
 from __future__ import annotations
 

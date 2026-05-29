@@ -283,7 +283,7 @@ class ModelPreflightPassedPayload(BasePayload):
         max_length=20,
         description=(
             "Per-sample health probe latencies in ms when multisample "
-            "(plan ?4.4, fo124). Defaults to None when omitted from stored payloads / "
+            "(plan ?4.4). Defaults to None when omitted from stored payloads / "
             "single-sample runs; aligned with `preflight_latency_sample_count`."
         ),
     )
@@ -588,7 +588,7 @@ class GateDecisionEmittedEvent(BaseHermesEvent):
 
 
 class PersonaShelfUpdatedPayload(BasePayload):
-    """Audit record for a write through ``POST/PUT/PATCH/DELETE /v1/personas/...`` (fo127).
+    """Audit record for a write through ``POST/PUT/PATCH/DELETE /v1/personas/...``.
 
     Distinct from per-run events: ``run_id`` on the envelope is the API caller's
     correlation, NOT a real run (the persona catalog is repo-scoped). Persists
@@ -658,7 +658,7 @@ class SelfRefinementLoopSignalledEvent(BaseHermesEvent):
 
 
 class MemoryIndexedPayload(BasePayload):
-    """Audit record after a repo-scoped memory index rebuild (Phase 4 / fo160)."""
+    """Audit record after a repo-scoped memory index rebuild."""
 
     repo_scope_hash: str = Field(min_length=8, max_length=64)
     generation_id: str = Field(min_length=8, max_length=64)
@@ -675,7 +675,7 @@ class MemoryIndexedEvent(BaseHermesEvent):
 
 
 class MemoryRetrievalEmittedPayload(BasePayload):
-    """Audit record when memory hits are injected into a stage (Phase 4 / fo163)."""
+    """Audit record when memory hits are injected into a stage."""
 
     stage_name: str = Field(min_length=1, max_length=256)
     query_digest: str = Field(min_length=8, max_length=64)

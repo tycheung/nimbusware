@@ -1,4 +1,4 @@
-"""Persona Coverage Critic gate (plan §14 #15)."""
+"""Persona Coverage Critic gate ."""
 
 from __future__ import annotations
 

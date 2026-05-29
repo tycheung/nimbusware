@@ -1,4 +1,4 @@
-"""Append-only audit events for memory index lifecycle (Phase 4 / fo161)."""
+"""Append-only audit events for memory index lifecycle."""
 
 from __future__ import annotations
 

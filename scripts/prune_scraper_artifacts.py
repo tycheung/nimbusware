@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Remove scraper response artifact files older than a TTL (PLAN_GAP retention v0).
+"""Remove scraper response artifact files older than a TTL.
 
 Requires ``--max-age-days`` or ``HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS`` (positive integer).
 Uses ``HERMES_SCRAPER_ARTIFACT_DIR`` when set, else ``<NIMBUSWARE_REPO_ROOT>/.cache/hermes_scraper``.
@@ -18,17 +18,17 @@ Examples:
   human-readable line. Standalone usage emits the **extended** object (base fields plus
   retention/object-store counters). When ``--summary-path`` is also set, stdout uses the
   **slim base** object so it byte-matches the state file (minus ``wrote_at``).
-- **Include filter** (fo125): ``--include-pattern '*.bin'`` deletes only the on-disk
+- **Include filter**: ``--include-pattern '*.bin'`` deletes only the on-disk
   artifact bodies and leaves any operator-written sidecar files alone. Repeat the flag
   to OR multiple patterns.
-- **Exclude filter** (fo125): ``--exclude-pattern '*.keep'`` preserves marker files
+- **Exclude filter**: ``--exclude-pattern '*.keep'`` preserves marker files
   operators may write to pin a specific run's artifacts from auto-prune. Exclude wins
   on overlap with ``--include-pattern``.
 - **Env pattern defaults**: when no CLI include/exclude flags are passed,
   ``HERMES_PRUNE_INCLUDE_PATTERN`` / ``HERMES_PRUNE_EXCLUDE_PATTERN`` supply comma-separated
   globs (same semantics as repeating ``--include-pattern`` / ``--exclude-pattern``).
   CLI flags always win when present.
-- **State file** (fo126): ``--summary-path ~/.cache/hermes_scraper/.prune_status.json``
+- **State file**: ``--summary-path ~/.cache/hermes_scraper/.prune_status.json``
   writes the same JSON object as ``--json-summary`` plus a UTC ``wrote_at`` timestamp,
   atomically (tmp + ``os.replace``), so the Streamlit "Prune status" card can render
   the last-run summary. ``HERMES_PRUNE_STATUS_PATH`` is the env equivalent; the CLI

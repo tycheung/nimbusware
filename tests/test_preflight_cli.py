@@ -4,7 +4,7 @@ Covers:
 
 * `build_histogram` (5 axes): empty input, single sample, full distribution +
  bucket partition contract, overflow capture, stat parity (mean / median / p95).
- fo124 lifted the helper into ``preflight_histogram``; tests import from the
+ Helper lives in ``preflight_histogram``; tests import from the
  new module to track the public API.
 * `_samples_from_evidence` (3 axes): multisample list, singleton health latency
  fallback, None / non-dict input.
@@ -32,9 +32,7 @@ import pytest
 from hermes_orchestrator import preflight_cli, preflight_histogram
 from hermes_orchestrator.preflight import PreflightError
 
-# ---------------------------------------------------------------------------
-# build_histogram (lifted to hermes_orchestrator.preflight_histogram in fo124)
-# ---------------------------------------------------------------------------
+# build_histogram
 
 
 def test_build_histogram_empty_returns_zeroed_stats_and_buckets() -> None:
@@ -73,7 +71,7 @@ def test_build_histogram_partition_contract_buckets_sum_to_count() -> None:
     hist = preflight_histogram.build_histogram(samples)
     assert hist["count"] == len(samples)
     assert sum(b["count"] for b in hist["buckets"]) == len(samples)
-    # Edge inclusivity: 50 lands in {le_ms: 50}, 51 lands in {le_ms: 100};
+    # Edge inclusivity: 50 lands in {le_ms: 50}, 51 lands in {le_ms: 100}
     # 250 falls into (100, 250] alongside 101.
     by_edge = {b["le_ms"]: b["count"] for b in hist["buckets"]}
     assert by_edge[50] == 2  # 10, 50
@@ -103,9 +101,7 @@ def test_build_histogram_stats_match_manual_calculation() -> None:
     assert hist["p95_ms"] == 100
 
 
-# ---------------------------------------------------------------------------
 # _samples_from_evidence
-# ---------------------------------------------------------------------------
 
 
 def test_samples_from_evidence_prefers_multisample_list() -> None:
@@ -131,9 +127,7 @@ def test_samples_from_evidence_returns_empty_on_garbage() -> None:
     ) == [10, 20, 30]
 
 
-# ---------------------------------------------------------------------------
 # _env_overrides
-# ---------------------------------------------------------------------------
 
 
 def test_env_overrides_restores_prior_env_on_exit(
@@ -158,9 +152,7 @@ def test_env_overrides_noop_when_both_args_unset(
     assert "HERMES_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
 
 
-# ---------------------------------------------------------------------------
 # _extract_routing
-# ---------------------------------------------------------------------------
 
 
 def test_extract_routing_full_canonical_config() -> None:
@@ -200,9 +192,7 @@ def test_extract_routing_defensive_defaults_when_missing_keys() -> None:
     assert routing["request_timeout_seconds"] == 10.0
 
 
-# ---------------------------------------------------------------------------
-# main()
-# ---------------------------------------------------------------------------
+# main
 
 
 def _stub_preflight_ok(
@@ -353,7 +343,7 @@ def test_main_samples_flag_propagates_into_run_model_preflight_env(
     assert rc == 0
     assert observed["env_samples"] == "5"
     assert observed["env_json_probe"] == "1"
-    # Env restored after main() returns
+    # Env restored after main returns
     assert "HERMES_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
     assert "HERMES_PREFLIGHT_JSON_PROBE" not in os.environ
     _ = capsys.readouterr()  # consume stdout JSON

@@ -1,4 +1,4 @@
-"""Enterprise object-store primary status (Lane D / fo204)."""
+"""Enterprise object-store primary status."""
 
 from __future__ import annotations
 

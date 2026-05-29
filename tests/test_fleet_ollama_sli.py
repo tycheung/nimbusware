@@ -1,4 +1,4 @@
-"""Enterprise fleet Ollama SLI (Lane D / fo206)."""
+"""Enterprise fleet Ollama SLI."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Optional DB-backed role registry (plan §5 extension point)."""
+"""Optional DB-backed role registry ."""
 
 from __future__ import annotations
 

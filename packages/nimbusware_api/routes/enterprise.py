@@ -1,4 +1,4 @@
-"""Enterprise-only API surface (Lane D). Stub until fo201+ implementations land."""
+"""Enterprise-only API surface."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ EnterpriseDep = Annotated[None, Depends(_require_enterprise)]
 
 @router.get("/status")
 def enterprise_status(_gate: EnterpriseDep) -> dict:
-    """Lane D readiness map — features flip to implemented as fo201+ ship."""
+    """Enterprise feature readiness map."""
     features = {
         name: {
             "status": (

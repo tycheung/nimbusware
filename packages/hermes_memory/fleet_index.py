@@ -1,4 +1,4 @@
-"""Fleet-scoped memory index rebuild (Lane D / fo202)."""
+"""Fleet-scoped memory index rebuild."""
 
 from __future__ import annotations
 

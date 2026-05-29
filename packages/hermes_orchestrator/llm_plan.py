@@ -1,4 +1,4 @@
-"""LLM-backed plan stage: two critics + gate JSON (plan §12 Phase 1)."""
+"""LLM-backed plan stage: two critics + gate JSON ."""
 
 from __future__ import annotations
 

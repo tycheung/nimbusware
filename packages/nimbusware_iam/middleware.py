@@ -1,4 +1,4 @@
-"""Enterprise IAM request middleware (Lane D / fo201)."""
+"""Enterprise IAM request middleware."""
 
 from __future__ import annotations
 

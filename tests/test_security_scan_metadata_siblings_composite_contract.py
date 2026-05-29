@@ -1,67 +1,5 @@
-"""Security-scan metadata sibling helpers composite.
+"""Security-scan metadata sibling helpers composite."""
 
-``_finding_has_security_scan_metadata`` +
-``security_scan_on_verify_timeline_summary`` sibling composite.
-
-Two paired helpers in
-[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
-(lines 158-187) shape the ``GET /v1/runs/{run_id}/timeline``
-``security_scan_on_verify`` field. fo112 Part D already pinned 5 axes
-(generic non-dict guard, OR/``in`` value semantics, ``stage.started``
-event_type filter, 8-key happy path, latest-wins ordering). fo121
-extends with **20 NET-NEW** axes covering the four sharpest unpinned
-surfaces:
-
-* **Part A** -- ``_finding_has_security_scan_metadata`` isinstance /
- subclass matrix (5 axes): ``OrderedDict`` / ``defaultdict`` /
- ``Counter`` accepted (dict subclasses), **``collections.UserDict``**
- / **``types.MappingProxyType``** REJECTED (composition-based wrappers
- / read-only views that are NOT ``dict`` subclasses -- KEY DIVERGENCE
- against duck typing), ``SimpleNamespace`` and dataclass rejected,
- custom ``__contains__`` class rejected (isinstance over
- duck-typing), and a paired dict-subclass with overridden
- ``__contains__`` honoring the override.
-* **Part B** -- exact-key matching matrix (5 axes): case sensitivity
- (KEY DIVERGENCE), typo / whitespace variants, BOTH keys present with
- falsy values, key-as-VALUE rejection (``in dict`` checks KEYS, not
- values -- KEY DIVERGENCE), extra unrelated keys tolerated.
-* **Part C** -- summary ordering / filtering matrix (5 axes): empty
- input list, list-order ordering NOT timestamp-order (KEY
- DIVERGENCE), broader wrong-event-type matrix (run.created,
- run.escalated, stage.passed, gate.decision.emitted, finding.updated),
- mixed pass-through where guard fails on every event, no category
- gate at this layer.
-* **Part D** -- payload / source / return-type matrix (5 axes):
- ``payload=None`` coercion, non-dict payload (string / list) coercion
- to ``pl == {}``, source-split guard checks metadata ONLY (KEY
- DIVERGENCE), top-level ``event_id`` / ``occurred_at`` from event NOT
- payload, return type is plain ``dict`` -- not ``TypedDict``, not
- dataclass, mutable and ``json.dumps``-serializable (KEY DIVERGENCE).
-
-KEY DIVERGENCES pinned across the composite:
-
-* **``isinstance(meta, dict)`` over duck-typing** -- ``UserDict`` /
- ``MappingProxyType`` REJECTED despite being "dict-like." A refactor
- to ``isinstance(meta, collections.abc.Mapping)`` would silently
- accept them.
-* **Case-sensitive key matching** -- ``"SECURITY_SCAN_EXIT"`` NOT
- matched. A refactor to ``k.lower() in {...}`` would silently accept.
-* **``in dict`` checks KEYS, not values** -- a refactor to
- ``... in meta.values()`` would invert the contract.
-* **List-order ordering, NOT timestamp-order** -- LAST list match wins
- regardless of ``occurred_at``. A refactor to
- ``sorted(events, key=lambda e: e["occurred_at"])[-1]`` would change
- semantics for un-sorted input.
-* **Source-split guard** -- guard checks ``meta`` only; scan keys
- living in ``payload`` do NOT surface a summary.
-* **Plain ``dict`` return type** -- not ``TypedDict``, not dataclass.
- A future refactor to a frozen dataclass would break callers that
- mutate / ``json.dumps`` the result.
-
-All tests call the two helpers **directly** with hand-built event
-dicts. No FastAPI ``TestClient``, no fixtures beyond pytest built-ins,
-no mocks.
-"""
 
 from __future__ import annotations
 
@@ -76,9 +14,7 @@ from nimbusware_api.routes.runs import (
     security_scan_on_verify_timeline_summary,
 )
 
-# ---------------------------------------------------------------------------
 # Constants and tiny builder helpers
-# ---------------------------------------------------------------------------
 
 _EXIT_KEY = "security_scan_exit"
 _SNIPPET_KEY = "security_scan_snippet"
@@ -115,9 +51,7 @@ def _finding_event(
     }
 
 
-# ===========================================================================
 # Part A -- _finding_has_security_scan_metadata isinstance / subclass matrix
-# ===========================================================================
 
 
 class TestPartAIsinstanceSubclassMatrix:
@@ -236,7 +170,7 @@ class TestPartAIsinstanceSubclassMatrix:
 
         dsub = DictSubWithFalseContains({_EXIT_KEY: 1, _SNIPPET_KEY: "..."})
         assert isinstance(dsub, dict)
-        # The dict literal physically contains the keys (via dict.keys()),
+        # The dict literal physically contains the keys (via dict.keys),
         # but the override returns False for `in`.
         assert _EXIT_KEY in dsub.keys()
         assert _EXIT_KEY not in dsub  # override wins for `in`
@@ -244,9 +178,7 @@ class TestPartAIsinstanceSubclassMatrix:
         assert _finding_has_security_scan_metadata(dsub) is False
 
 
-# ===========================================================================
 # Part B -- _finding_has_security_scan_metadata exact-key matching matrix
-# ===========================================================================
 
 
 class TestPartBExactKeyMatchingMatrix:
@@ -340,9 +272,7 @@ class TestPartBExactKeyMatchingMatrix:
         assert _finding_has_security_scan_metadata(meta) is True
 
 
-# ===========================================================================
 # Part C -- security_scan_on_verify_timeline_summary ordering / filtering
-# ===========================================================================
 
 
 class TestPartCSummaryOrderingFiltering:
@@ -468,9 +398,7 @@ class TestPartCSummaryOrderingFiltering:
             assert result["severity"] == "low"
 
 
-# ===========================================================================
 # Part D -- payload / source / return-type matrix
-# ===========================================================================
 
 
 class TestPartDPayloadSourceReturnType:

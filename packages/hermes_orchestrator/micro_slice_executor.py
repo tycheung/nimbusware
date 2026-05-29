@@ -1,4 +1,4 @@
-"""Automatic micro-slice stage execution (fo152–fo154)."""
+"""Automatic micro-slice stage execution."""
 
 from __future__ import annotations
 

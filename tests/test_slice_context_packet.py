@@ -1,4 +1,4 @@
-"""Slice context packets (fo154)."""
+"""Slice context packets."""
 
 from __future__ import annotations
 

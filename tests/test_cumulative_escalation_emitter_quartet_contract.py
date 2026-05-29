@@ -1,46 +1,5 @@
-"""Cumulative-escalation emitter quartet direct-contract edges.
+"""Cumulative-escalation emitter quartet direct-contract edges."""
 
-The four cumulative-escalation emitters at [pipeline.py:1283-1403] share a
-canonical 5-step shape (suppress / threshold-None / dedup / under-threshold /
-emit-with-notes) but diverge in subtle ways:
-
-* ``_maybe_escalate_after_cumulative_stage_failures`` -- counts STAGE_FAILED,
- per-reason-code dedup, ``f"threshold={N} cumulative_stage_failed={n}"``
-* ``_maybe_escalate_after_cumulative_gate_failures`` -- counts
- GATE_DECISION_EMITTED rows with ``verdict==FAIL.value`` (PASS ignored),
- per-reason-code dedup, ``f"threshold={N} cumulative_gate_failed={n}"``
-* ``_maybe_auto_escalate`` -- counts FINDING_CREATED, **ANY-RUN_ESCALATED dedup**
- (asymmetric -- any reason_code short-circuits, not just its own),
- ``f"threshold={N} cumulative_findings={n}"``
-* ``_maybe_notice_escalate_findings`` -- counts FINDING_CREATED, per-reason-code
- dedup, **``f"notice_threshold={N} cumulative_findings={n}"``** (asymmetric
- ``notice_threshold=`` prefix vs the canonical ``threshold=`` used by the
- other three)
-
-fo88 closed the **suppress fork** for all 4 in
-[tests/test_workflow_suppress_automatic_escalation_matrix.py]; existing
-[tests/test_cumulative_stage_failure_escalation.py] and
-[tests/test_gate_failure_escalation.py] pin happy + dedup for Parts A and B
-only. The threshold-None / under-threshold / notes-format / count-filter /
-asymmetric-dedup axes are unpinned across the quartet.
-
-fo102 closes those gaps via 4 parts spanning 20 axes (~28 assertions,
-source unchanged):
-
-* **Part A** -- ``_maybe_escalate_after_cumulative_stage_failures`` (5
- axes -- threshold-None / reason-code dedup / under-threshold /
- hit-threshold + notes literal / count-filter STAGE_FAILED-only).
-* **Part B** -- ``_maybe_escalate_after_cumulative_gate_failures`` (5
- axes -- threshold-None / reason-code dedup / under-threshold /
- hit-threshold + notes literal / count-filter PASS-gates-ignored).
-* **Part C** -- ``_maybe_auto_escalate`` (5 axes -- threshold-None /
- **ANY-RUN_ESCALATED dedup (asymmetric)** / under-threshold /
- hit-threshold + notes literal / count-filter FINDING_CREATED-only).
-* **Part D** -- ``_maybe_notice_escalate_findings`` (5 axes --
- threshold-None / reason-code dedup / under-threshold / hit-threshold +
- asymmetric ``notice_threshold=`` notes prefix / **D-then-C cross-cut**
- proving Part C's any-escalated dedup blocks after D emits).
-"""
 
 from __future__ import annotations
 

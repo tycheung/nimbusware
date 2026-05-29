@@ -1,4 +1,4 @@
-"""pytest-benchmark helpers for fleet preflight aggregation (fo206)."""
+"""pytest-benchmark helpers for fleet preflight aggregation."""
 
 from __future__ import annotations
 

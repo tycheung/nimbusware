@@ -1,4 +1,4 @@
-"""CLI: aggregate per-role telemetry from recent runs (Phase 4 / fo190)."""
+"""CLI: aggregate per-role telemetry from recent runs."""
 
 from __future__ import annotations
 

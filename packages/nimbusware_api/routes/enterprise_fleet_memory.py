@@ -1,4 +1,4 @@
-"""Enterprise fleet memory routes (Lane D / fo202)."""
+"""Enterprise fleet memory routes."""
 
 from __future__ import annotations
 

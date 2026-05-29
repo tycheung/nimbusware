@@ -1,4 +1,4 @@
-"""Explicit stage DAG from materialized workflow profiles (plan §12 Phase 2-a)."""
+"""Explicit stage DAG from materialized workflow profiles ."""
 
 from __future__ import annotations
 

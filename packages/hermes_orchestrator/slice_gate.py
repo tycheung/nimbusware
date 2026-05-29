@@ -1,4 +1,4 @@
-"""Per-slice verify → critique → test → gate chain (fo153)."""
+"""Per-slice verify → critique → test → gate chain."""
 
 from __future__ import annotations
 

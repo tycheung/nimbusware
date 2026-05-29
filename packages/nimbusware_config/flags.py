@@ -30,7 +30,7 @@ def config_from_db_enabled() -> bool:
 
 
 def config_notify_enabled() -> bool:
-    """Enterprise LISTEN/NOTIFY freshness (fo203). Requires ``config_from_db`` + edition gate."""
+    """Enterprise LISTEN/NOTIFY freshness. Requires ``config_from_db`` and edition gate."""
     if not _truthy("NIMBUSWARE_CONFIG_NOTIFY"):
         return False
     try:

@@ -1,1 +1,1 @@
-"""Streamlit operator console (plan §7)."""
+"""Streamlit operator console ."""

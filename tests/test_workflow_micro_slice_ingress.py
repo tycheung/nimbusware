@@ -1,4 +1,4 @@
-"""micro_slice workflow validates against known stage graph (fo152)."""
+"""micro_slice workflow validates against known stage graph."""
 
 from __future__ import annotations
 

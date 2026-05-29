@@ -1,4 +1,4 @@
-"""Default-on universal critique workflow (plan §14 #16 slice)."""
+"""Default-on universal critique workflow ."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for ``network_resilience_critique`` (Phase 3 / fo145)."""
+"""Workflow YAML knobs for ``network_resilience_critique``."""
 
 from __future__ import annotations
 

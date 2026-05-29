@@ -1,56 +1,5 @@
-"""``_workflow_suppresses_automatic_escalation`` cross-path suppress matrix.
+"""_workflow_suppresses_automatic_escalation`` cross-path suppress matrix."""
 
-fo87's Next-slice item (5) surfaced this exact gap. The guard at
-[pipeline.py:1244-1248](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-is called by **6** escalation ``_maybe_*`` paths, but only **1**
-(``_maybe_escalate_after_cumulative_stage_failures``) has a
-suppress test today. The remaining 5 paths are unpinned for the
-suppress fork; one of them (``_maybe_auto_escalate``) has zero
-direct tests at all (only its loader is covered).
-
-fo88 closes the gap via 3 parts spanning 14 contract axes:
-
-* **Part A** locks the 5 direct-guard contract axes:
-
- - Bare ``default`` workflow -> ``False``.
- - ``escalation_suppress_on`` profile -> ``True`` (central True-arm).
- - Empty store random run_id -> ``False`` (helper returns
- ``None`` -> ``parse_escalation_workflow_block`` default off
- per "missing block does not suppress" docstring).
- - Same run_id with only non-``RUN_CREATED`` rows -> ``False``
- (pins the ``event_type == "run.created"`` filter).
- - Per-run isolation: same orchestrator with two different
- workflow profiles returns the correct value per run.
-
-* **Part B** locks the 5 unpinned ``_maybe_*`` caller paths:
-
- - ``_maybe_emit_anti_deadlock_escalation`` (B1)
- - ``_maybe_escalate_after_cumulative_gate_failures`` (B2)
- - ``_maybe_auto_escalate`` (B3) -- includes a **control
- sub-axis** providing the first direct base test for this
- method (the suppress vs non-suppress fork proves both halves).
- - ``_maybe_notice_escalate_findings`` (B4)
- - ``_maybe_escalate_verifier_failure_checkpoint`` (B5)
-
- Each axis sets up "would-trigger" conditions on the
- ``escalation_suppress_on`` workflow and asserts **zero**
- ``RUN_ESCALATED`` rows. Uses ``unittest.mock.patch`` at the
- ``hermes_orchestrator.pipeline.<loader>`` import site (mirrors
- ``test_cumulative_stage_failure_escalation.py``).
-
-* **Part C** locks the 4 ``workflow_profile_from_run_created_rows``
- helper axes (the underlying primitive the guard depends on):
-
- - Empty rows list -> ``None``.
- - Rows but no ``run.created`` -> ``None``.
- - Single ``run.created`` -> returns ``payload.workflow_profile``.
- - Two ``run.created`` rows -> **FIRST** in iteration order wins.
-
-After fo88: **6/6 escalation paths have suppress coverage**;
-``_maybe_auto_escalate`` gets its first direct test; the guard
-itself has a 5-axis direct contract; the underlying profile
-helper has a 4-axis matrix.
-"""
 
 from __future__ import annotations
 

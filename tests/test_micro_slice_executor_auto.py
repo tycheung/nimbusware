@@ -1,4 +1,4 @@
-"""Automatic micro-slice execution via lifecycle verify (fo152–fo153)."""
+"""Automatic micro-slice execution via lifecycle verify."""
 
 from __future__ import annotations
 

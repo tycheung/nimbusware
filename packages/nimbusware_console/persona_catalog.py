@@ -602,7 +602,7 @@ def persona_catalog_empty_id_operator_caption(
 
 
 def persona_catalog_taxonomy_scope_frozen_caption() -> str:
-    """Lane A scope freeze for §14 #14 — two-shelf taxonomy only."""
+    """Two-shelf persona taxonomy only."""
     return (
         "Persona taxonomy scope (frozen v1): **business_area** + **development_role** "
         "shelves only — broader taxonomy expansion is deferred; use probation filters "

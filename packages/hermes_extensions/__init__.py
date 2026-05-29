@@ -1,4 +1,4 @@
-"""Phase 2–4 extension points (plan §12 Phase 2+, §3A, §3B)."""
+"""Phase 2–4 extension points ."""
 
 from hermes_extensions.catalog import (
     BundleCatalog,

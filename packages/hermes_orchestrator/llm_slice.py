@@ -1,4 +1,4 @@
-"""LLM-backed micro-slice planning and critique (fo152–fo153)."""
+"""LLM-backed micro-slice planning and critique."""
 
 from __future__ import annotations
 

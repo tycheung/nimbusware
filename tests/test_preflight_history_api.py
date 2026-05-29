@@ -1,4 +1,4 @@
-"""GET /v1/preflight-history fleet aggregation (cycle 88)."""
+"""GET /v1/preflight-history fleet aggregation."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Windows-first execution helpers and egress policy checks (plan §9)."""
+"""Windows-first execution helpers and egress policy checks ."""
 
 from hermes_executor.egress import assert_egress_allowed, host_matches_allowlist
 from hermes_executor.windows import run_subprocess

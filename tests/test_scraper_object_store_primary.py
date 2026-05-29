@@ -1,4 +1,4 @@
-"""Object-store primary scraper artifacts (Lane D / fo204)."""
+"""Object-store primary scraper artifacts."""
 
 from __future__ import annotations
 

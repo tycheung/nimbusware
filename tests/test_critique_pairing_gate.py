@@ -1,4 +1,4 @@
-"""§14 #16: create_run rejects incomplete critique pairings (plan §3B.5)."""
+"""§14 #16: create_run rejects incomplete critique pairings ."""
 
 from __future__ import annotations
 

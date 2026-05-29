@@ -42,8 +42,7 @@ from hermes_orchestrator.preflight_histogram import (
     empty_histogram,
 )
 
-# Re-export private aliases so test code and other internal callers that
-# referenced these names before the fo124 lift continue to work.
+# Aliases for tests and internal callers.
 _BUCKET_EDGES_MS = BUCKET_EDGES_MS
 _build_histogram = build_histogram
 _empty_histogram = empty_histogram

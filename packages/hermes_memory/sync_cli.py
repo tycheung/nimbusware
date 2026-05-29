@@ -1,4 +1,4 @@
-"""Enterprise fleet memory sync CLI (Lane D / fo202)."""
+"""Enterprise fleet memory sync CLI."""
 
 from __future__ import annotations
 

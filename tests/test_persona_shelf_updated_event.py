@@ -51,9 +51,7 @@ def _ok_event(**payload_overrides: object) -> PersonaShelfUpdatedEvent:
     )
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: happy-path payload validates
-# ---------------------------------------------------------------------------
 
 
 def test_payload_happy_path_validates() -> None:
@@ -63,9 +61,7 @@ def test_payload_happy_path_validates() -> None:
     assert p.next_version == 2
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: shelf Literal rejects unknown shelves
-# ---------------------------------------------------------------------------
 
 
 def test_shelf_must_be_literal_subset() -> None:
@@ -73,9 +69,7 @@ def test_shelf_must_be_literal_subset() -> None:
         _ok_payload(shelf="archived")
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: persona_id must be non-empty (min_length=1)
-# ---------------------------------------------------------------------------
 
 
 def test_persona_id_min_length_one() -> None:
@@ -83,9 +77,7 @@ def test_persona_id_min_length_one() -> None:
         _ok_payload(persona_id="")
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: version invariants (prev>=0, next>=1, next>prev)
-# ---------------------------------------------------------------------------
 
 
 def test_version_invariants_enforced() -> None:
@@ -102,9 +94,7 @@ def test_version_invariants_enforced() -> None:
         _ok_payload(prev_version=0, next_version=0)
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: fields_changed cap at 16 entries; entries must be non-empty strings
-# ---------------------------------------------------------------------------
 
 
 def test_fields_changed_caps_and_string_invariants() -> None:
@@ -118,9 +108,7 @@ def test_fields_changed_caps_and_string_invariants() -> None:
     _ok_payload(fields_changed=["__deleted__"])
 
 
-# ---------------------------------------------------------------------------
 # Axis 6: envelope adapter round-trip preserves payload + event type
-# ---------------------------------------------------------------------------
 
 
 def test_event_envelope_adapter_round_trip() -> None:
@@ -135,9 +123,7 @@ def test_event_envelope_adapter_round_trip() -> None:
     assert isinstance(parsed2, PersonaShelfUpdatedEvent)
 
 
-# ---------------------------------------------------------------------------
 # Axis 7: InMemoryEventStore stores + returns the event row faithfully
-# ---------------------------------------------------------------------------
 
 
 def test_in_memory_store_persists_persona_event() -> None:
@@ -152,9 +138,7 @@ def test_in_memory_store_persists_persona_event() -> None:
     assert row["payload"]["fields_changed"] == ["instructions"]
 
 
-# ---------------------------------------------------------------------------
 # Axis 8: allowed-types registry includes the new type
-# ---------------------------------------------------------------------------
 
 
 def test_allowed_event_types_includes_persona_shelf_updated() -> None:

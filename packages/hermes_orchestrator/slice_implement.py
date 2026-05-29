@@ -1,4 +1,4 @@
-"""Scoped slice implementation (fo152 / PZ): real workspace mutations before diff budget."""
+"""Scoped slice implementation: real workspace mutations before diff budget."""
 
 from __future__ import annotations
 

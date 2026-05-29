@@ -1,4 +1,4 @@
-"""Concurrent writer-group dispatch via ``asyncio.gather`` (plan §12 Phase 2-b execution)."""
+"""Concurrent writer-group dispatch via ``asyncio.gather`` ."""
 
 from __future__ import annotations
 

@@ -1,36 +1,5 @@
-"""Catalog loader defensive paths composite.
+"""Catalog loader defensive paths composite."""
 
-The four catalog-driven loaders in [integrator_gate.py:61-120] share a
-defensive surface that is only partially covered today:
-
-* [tests/test_integrator_gate.py](tests/test_integrator_gate.py)
- pins ``select_bundle_id_for_workflow`` uses-map and first-bundle-fallback.
-* [tests/test_integrator_gate_workflow.py](tests/test_integrator_gate_workflow.py)
- pins ``load_bundle_tags_for_bundle_id`` repo-catalog happy path and
- ``load_bundle_title_for_bundle_id`` repo-catalog + unknown-bundle.
-* ``tests/test_bundle_integrator_gate_direct_contract.py``
- integrates these loaders at the emitter level.
-
-Eleven defensive arms remain unpinned (closed by fo108 in 4 parts /
-20 axes; source unchanged):
-
-* **Part A** -- ``select_bundle_id_for_workflow`` 4-arm fallback ladder
- (5 axes -- catalog absent / no bundles list / ``wmap[key] is None`` /
- ``wmap`` not a dict / ``bundles[0]`` non-dict OR missing ``id``).
-* **Part B** -- ``_bundle_entry_for_id`` lookup matrix via
- ``load_bundle_tags`` as externally-visible probe (5 axes -- catalog
- absent / ``bundles`` missing / ``bundles`` not a list / non-dict
- entries filtered / id ``.strip()`` tolerance).
-* **Part C** -- ``load_bundle_tags_for_bundle_id`` defensive arms (5
- axes -- ``tags`` key missing / ``tags`` non-list / mixed-tags
- coercion + strip + filter / whitespace-only entries filtered /
- **KEY DIVERGENCE** returns ``[]`` (NOT ``None``) for all-empty
- filter result vs ``parse_integrator_gate_project_tags`` which
- returns ``None`` via ``return out or None``).
-* **Part D** -- ``load_bundle_title_for_bundle_id`` defensive arms (5
- axes -- catalog absent / bundle not found / title key missing / title
- is YAML ``null`` / title whitespace-only).
-"""
 
 from __future__ import annotations
 

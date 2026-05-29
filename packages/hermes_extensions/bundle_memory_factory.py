@@ -1,4 +1,4 @@
-"""Factory for bundle outcome persistence (Phase 4 / fo170)."""
+"""Factory for bundle outcome persistence."""
 
 from __future__ import annotations
 

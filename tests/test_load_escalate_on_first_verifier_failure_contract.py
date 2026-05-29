@@ -1,32 +1,5 @@
-"""``load_escalate_on_first_verifier_failure`` direct contract.
+"""load_escalate_on_first_verifier_failure`` direct contract."""
 
-The YAML reader at [verifier_escalation.py:10-24] is the workflow-profile-YAML
-coercion-ladder twin of the fo62-fo74 env-layer matrix. Existing coverage is
-one happy-path axis only
-([tests/test_verifier_escalation_checkpoint.py] `test_load_escalate_on_first_
-verifier_failure_default` exercises the shipped ``False`` default). The full
-17-axis coercion-ladder is unpinned.
-
-Behavioral asymmetry pinned in Part A: ``load_yaml`` from [merge.py:19-24]
-raises ``ValueError`` if YAML root is not a mapping, so the helper
-PROPAGATES ``ValueError`` for root-not-dict YAML rather than gracefully
-returning ``False``. This diverges from other "graceful skip" loaders.
-
-fo99 closes 4 unpinned surfaces via 4 parts spanning 17 axes
-(~24 assertions, source unchanged):
-
-* **Part A** -- structural type-guard ladder (4 axes -- file missing /
- root not dict (ValueError propagates) / verification key missing /
- verification not dict).
-* **Part B** -- bool happy-path + missing-key fallback (3 axes -- bool True /
- bool False / target key missing under verification dict).
-* **Part C** -- string truthy set + ``.strip().lower()`` normalization
- (5 axes -- literal "1"/"true"/"yes"/"on" / case-insensitive / whitespace-
- wrapped / combined case+whitespace / empty string lower-bound).
-* **Part D** -- string falsy + non-bool/non-string type rejection (5 axes --
- literal "0"/"false"/"no"/"off" / arbitrary non-truthy strings / int 1+0 /
- float 1.0 / list+null).
-"""
 
 from __future__ import annotations
 

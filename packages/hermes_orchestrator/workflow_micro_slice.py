@@ -1,4 +1,4 @@
-"""Parse workflow ``slice`` block for micro-slice orchestration (fo152)."""
+"""Parse workflow ``slice`` block for micro-slice orchestration."""
 
 from __future__ import annotations
 

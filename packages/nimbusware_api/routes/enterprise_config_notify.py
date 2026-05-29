@@ -1,4 +1,4 @@
-"""Enterprise config NOTIFY status (Lane D / fo203)."""
+"""Enterprise config NOTIFY status."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""MVP run lifecycle: create → preflight → plan stage → writer loop (plan §12 Phase 1).
+"""MVP run lifecycle: create → preflight → plan stage → writer loop.
 
 Scraper or other roles that perform outbound HTTP should use
 ``hermes_executor.fetch.egress_checked_httpx_get`` with the frozen
@@ -228,8 +228,8 @@ def _coerce_samples_ms(raw: Any) -> list[int] | None:
     """Coerce ``evidence['health_latency_samples_ms']`` for payload persistence.
 
     The preflight evidence dict is loosely typed (``dict[str, Any]``); the
-    payload field requires ``list[int] | None`` with non-negative entries
-    (fo124). Filters defensively so a corrupted upstream entry can't crash
+    payload field requires ``list[int] | None`` with non-negative entries.
+    Filters defensively so a corrupted upstream entry can't crash
     persistence: returns ``None`` for non-list values, skips non-int / negative
     entries silently, returns ``None`` if every entry was filtered out.
     """
@@ -613,7 +613,7 @@ class RunOrchestrator:
         run_id: UUID,
         plan: dict[str, Any] | Any,
     ) -> None:
-        """Persist a slice plan marker for timeline read-models (fo152)."""
+        """Persist a slice plan marker for timeline read-models."""
         from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
@@ -645,7 +645,7 @@ class RunOrchestrator:
         diff_unified: str = "",
         test_output: str = "",
     ):
-        """Run per-slice gate chain and append pass/fail stage events (fo153–fo154)."""
+        """Run per-slice gate chain and append pass/fail stage events."""
         from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from hermes_orchestrator.slice_context_packet import build_slice_context_packet
         from hermes_orchestrator.slice_gate import SliceGateChainResult, run_slice_gate_chain
@@ -816,7 +816,7 @@ class RunOrchestrator:
         content: bytes,
         persist_cap: int,
     ) -> dict[str, Any]:
-        """Write truncated response bytes; object-store primary when Enterprise (fo204)."""
+        """Write truncated response bytes; object-store primary when Enterprise edition."""
         from hermes_orchestrator.scraper_artifacts import persist_scraper_artifact
 
         return persist_scraper_artifact(

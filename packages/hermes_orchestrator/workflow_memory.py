@@ -1,4 +1,4 @@
-"""Workflow memory block parsing and slice retrieval (Phase 4 / fo163–fo164)."""
+"""Workflow memory block parsing and slice retrieval."""
 
 from __future__ import annotations
 

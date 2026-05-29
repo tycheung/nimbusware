@@ -1,58 +1,5 @@
-"""``NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16).
+"""NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16)."""
 
-The FastAPI [`lifespan`](d:\\Hermes\\packages\\hermes_api\\app.py) selects the
-role registry at app startup via a **compound AND-gate** with
-`NIMBUSWARE_DATABASE_URL`:
-
-    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
-    if url and os.environ.get("NIMBUSWARE_ROLES_FROM_DB", "").lower() in (
-        "1", "true", "yes"
-    ):
-        registry = load_registry_from_postgres(url)
-    else:
-        registry = RoleRegistry.from_yaml(...)
-    if url:
-        app.state.store = PostgresEventStore(url)
-    else:
-        app.state.store = InMemoryEventStore()
-
-This is the **sixth and final Pattern A binary-gate env** (closes the
-env-layer sweep started in fo62) AND the **first compound AND-gate** -- the
-short-circuiting `and` makes ``NIMBUSWARE_ROLES_FROM_DB`` only matter when
-``NIMBUSWARE_DATABASE_URL`` is also truthy. There is also an independent
-single-arg store gate on the same ``url`` that is orthogonal to the flag.
-
-Before this slice ``NIMBUSWARE_ROLES_FROM_DB`` had zero contract tests; the
-fo69 plan listed it as "blocked on async lifespan + Postgres coupling",
-but ``TestClient(app)`` already drives the async lifespan synchronously
-(existing pattern in [tests/test_api.py](d:\\Hermes\\tests\\test_api.py))
-and ``PostgresEventStore.__init__`` is lazy (only stores ``conninfo``),
-so both blockers dissolve by patching at the ``nimbusware_api.app`` import
-boundary -- same pattern as fo68/69.
-
-Three parts:
-
-* **Part A** locks truthy tuple membership AND the AND-gate "both
-  truthy" arm as the canonical DB-path endpoint.
-* **Part B** locks the **2x2 compound matrix** across orthogonal
-  ``url`` / ``flag`` gates (first slice to lock a compound AND-gate
-  env contract).
-* **Part C** locks the asymmetric fail-closed string-arm (env-absent +
-  whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
-  + empty / junk / near-miss / interior whitespace). Parallel to
-  fo65 / 66 / 67 / 68 / 69 Part C.
-
-Per-case messages ``force_on raw=<raw>: <component>`` / ``<block>:
-<component>`` / ``fail_closed raw=<raw>: <component>`` identify the
-failing gate + offending env scalar + (Part B) failing AND-gate arm.
-
-Two mock observables parallel fo69's ``(mock_llm, mock_stub)``:
-
-* ``mock_db_loader`` = ``patch("nimbusware_api.app.load_registry_from_postgres")``
-  -- registry-branch signal.
-* ``mock_postgres_store`` = ``patch("nimbusware_api.app.PostgresEventStore")``
-  -- store-branch signal (orthogonal to flag).
-"""
 
 from __future__ import annotations
 

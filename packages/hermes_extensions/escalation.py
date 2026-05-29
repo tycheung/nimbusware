@@ -1,4 +1,4 @@
-"""Escalation / anti-deadlock policy snapshot (plan §14 #19)."""
+"""Escalation / anti-deadlock policy snapshot ."""
 from __future__ import annotations
 from pathlib import Path
 from typing import Any

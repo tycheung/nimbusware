@@ -1,4 +1,4 @@
-"""Build capped SliceContextPacket for role handoffs (fo154)."""
+"""Build capped SliceContextPacket for role handoffs."""
 
 from __future__ import annotations
 

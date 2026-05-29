@@ -1,4 +1,4 @@
-"""Enterprise IAM constants (Lane D / fo201)."""
+"""Enterprise IAM constants."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ DEFAULT_TENANT_SLUG = "default"
 
 API_KEY_HEADER = "X-Nimbusware-Api-Key"
 
-# fo201+ enterprise features with runtime implementations.
+# Enterprise features with runtime implementations.
 IMPLEMENTED_ENTERPRISE_FEATURES: frozenset[str] = frozenset(
     {
         "iam",

@@ -1,4 +1,4 @@
-"""Live orchestration critic matrix from gate + stage events (plan §12 Phase 2-c)."""
+"""Live orchestration critic matrix from gate + stage events ."""
 
 from __future__ import annotations
 

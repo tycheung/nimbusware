@@ -1,63 +1,5 @@
-"""``workflow_profile_path`` propagation trilogy.
+"""workflow_profile_path`` propagation trilogy."""
 
-fo79 pinned the direct ``workflow_profile_path`` 3-axis contract
-(accept / ``ValueError`` / ``FileNotFoundError``) and the cascade-vs-
-propagate divergence at the path-resolution layer using
-``load_scraper_fetch_config`` as the **one** representative propagating
-caller. The other two propagating callers --
-[`assert_known_workflow`](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py)
-and
-[`RunOrchestrator.create_run`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
--- were deferred from fo79 because they required orchestrator /
-registry fixtures.
-
-fo80 closes the propagation-trilogy coverage gap:
-
-* **Part A** locks the ``assert_known_workflow`` boundary directly.
- The function is a passthrough at
- [ingress.py:53-55](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py)
- with **zero** existing unit tests; Part A pins that it returns
- ``None`` on accept AND mirrors ``workflow_profile_path`` 1:1 on
- reject (``ValueError`` + ``FileNotFoundError``).
-* **Part B** locks ``RunOrchestrator.create_run`` propagation at
- [pipeline.py:154](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
- (the orchestrator's first gate, called BEFORE
- ``assert_bundle_catalog_maps_resolve`` / ``assert_persona_shelves_valid``
- / ``self._store.append``). Includes an **early-fail-order** assertion
- pinning that no events are appended to the event store when the
- first gate fires.
-* **Part C** locks the cross-propagating-caller uniformity meta-
- contract: all 3 propagating callers
- (``load_scraper_fetch_config`` + ``assert_known_workflow`` +
- ``RunOrchestrator.create_run``) uniformly raise (no swallow, no
- default) for both ``ValueError`` and ``FileNotFoundError``. A
- second sub-loop pins the HTTP-layer translation completeness at
- the FastAPI route boundary
- ([runs.py:644-653](d:\\Hermes\\packages\\hermes_api\\routes\\runs.py)):
- ``ValueError`` -> ``422 invalid_request`` and
- ``FileNotFoundError`` -> ``422 workflow_not_found``. The invalid-
- name -> ``invalid_request`` axis is **new** (existing
- ``test_unknown_workflow_profile_422`` covers only the missing-file
- axis).
-
-The 6+3 subset of fo79's 14+5 ``_INVALID_NAMES`` / ``_MISSING_VARIANTS``
-is **deliberately** smaller -- fo79 owns the exhaustive reject matrix
-at the direct ``workflow_profile_path`` layer; fo80 pins propagation
-across remaining callers with breadth-sampled inputs.
-
-Cross-slice symmetry table (wpp = ``workflow_profile_path``):
-
-| Slice | Boundary | Cascade uniformity | Propagate uniformity |
-|----------|---------------------|-----------------------------|----------------------------------|
-| fo77 | load_yaml family | 6 parsers (Part C) | (n/a) |
-| fo79 | wpp | 6 parsers (Part C, 12 asrt) | scraper_fetch (Part C, 2 asrt) |
-| **fo80** | **wpp propagation** | **(n/a)** | **3 callers (6) + HTTP (2 asrt)**|
-
-Part C Sub-loop 1 is the **structural inverse** of fo77 Part C: where
-fo77 pins cascade uniformity (catch + default) across 6 sibling
-parsers, fo80 pins propagate uniformity (raise + no swallow) across
-the 3 propagating callers.
-"""
 
 from __future__ import annotations
 
@@ -180,7 +122,7 @@ def test_assert_known_workflow_propagating_caller_3_axis_contract() -> None:
             f"expected None (case={case_id})"
         )
 
-    # ``.strip()``-rescue: leading/trailing whitespace is stripped by
+    # ``.strip``-rescue: leading/trailing whitespace is stripped by
     # ``workflow_profile_path`` before the regex check, so a wrapped
     # known-good name should also accept and return ``None``.
     strip_rescue = assert_known_workflow(_REPO_ROOT, " default \t")

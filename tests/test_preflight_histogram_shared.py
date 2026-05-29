@@ -1,12 +1,5 @@
-"""Tests for the shared `hermes_orchestrator.preflight_histogram` module.
+"""Tests for the shared `hermes_orchestrator.preflight_histogram` module."""
 
-The histogram helpers were lifted out of ``preflight_cli.py`` in fo124 so two
-callers (CLI + Streamlit console) share the same bucket edges and stat math.
-This file asserts the public surface (``BUCKET_EDGES_MS``, ``build_histogram``,
-``empty_histogram``, ``nearest_rank_p95``) and confirms that the fo123 CLI
-aliases (``preflight_cli._BUCKET_EDGES_MS`` etc.) still point at the shared
-implementation for backward compatibility.
-"""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Config NOTIFY freshness (Lane D / fo203)."""
+"""Config NOTIFY freshness."""
 
 from __future__ import annotations
 

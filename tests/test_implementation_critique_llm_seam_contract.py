@@ -1,37 +1,5 @@
-"""Implementation-critique LLM seam direct contract.
+"""Implementation-critique LLM seam direct contract."""
 
-fo93's Next-slice item (6) flagged this gap. The impl variant's LLM call
-site lives **inline** in ``execute_writer_verifier_pass`` at
-[`pipeline.py:1183-1211`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-(NOT in a standalone method like tw/pll's ``_emit_*_critique_optional``).
-
-Asymmetry vs fo91: there is **NO ``impl_enabled`` master switch** in
-``EffectiveUniversalCritique`` -- impl is gated only by ``impl_llm`` /
-``impl_stub`` flags + ``_selected_model_for_run`` returning non-None. So
-the path matrix here is **5 axes** instead of fo91's 6.
-
-Unique to impl: ``log_snippet = "\\n".join(log.splitlines()[:60])``
-truncation happens at this seam. tw/pll receive the already-truncated
-snippet from their caller, so this 60-line truncation contract is only
-observable here.
-
-Coverage today: ``tests/test_critique_router_pipeline.py:119-147`` patches
-``execute_implementation_critique_llm`` with ``return_value=True/False``
-and asserts event-level outcomes; zero assertions on ``call_args.kwargs``.
-
-fo94 closes the gap via 4 parts spanning 17 axes (~29 assertions, source
-unchanged):
-
-* **Part A** -- control-flow path matrix (5 axes -- all-off / stub-only /
- no-model / LLM-emitted / LLM-failed+stub-fallback).
-* **Part B** -- argument propagation mirroring fo91 Part C (5 axes --
- ``base_url`` default/override + ``timeout_seconds`` default/float-cast +
- ``run_id``/``model_id`` verbatim pass-through).
-* **Part C** -- ``log_snippet`` 60-line truncation contract (4 axes --
- empty / single-line / exactly-60 / 100-line truncated).
-* **Part D** -- ``verifier_exit_code`` propagation from
- ``run_writer_verifier_bundle``'s return tuple (3 axes -- 0 / 1 / 42).
-"""
 
 from __future__ import annotations
 

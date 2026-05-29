@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for ``refactor`` stage (Phase 3 / fo146)."""
+"""Workflow YAML knobs for ``refactor`` stage."""
 
 from __future__ import annotations
 

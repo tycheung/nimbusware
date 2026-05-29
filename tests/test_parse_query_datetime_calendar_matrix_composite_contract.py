@@ -1,55 +1,5 @@
-"""``_parse_query_datetime`` calendar / time / chain composite.
+"""_parse_query_datetime`` calendar / time / chain composite."""
 
-The 12-line ``_parse_query_datetime`` helper in
-[packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
-(lines 249-260) is the single coercion seam between raw
-``?created_after=...`` / ``?created_before=...`` query strings and the
-typed ``datetime`` values consumed by ``GET /v1/runs``. fo111 Part D
-already pinned 5 happy-path / ``Z``-substitution / tz-normalisation
-axes. fo120 extends with **20 NET-NEW** axes covering the four
-defensive surfaces that fo111 D leaves unpinned:
-
-* **Part A** -- preprocessing semantics (5 axes): whitespace-character
- matrix beyond plain spaces, **case-sensitive** ``.replace("Z", ...)``
- (lowercase ``"z"`` is NOT substituted), defensive ``str(value)``
- wrapping (integer input flows in), bare-date acceptance, internal
- whitespace strip-before-parse order.
-* **Part B** -- invalid calendar matrix (5 axes): month > 12, day > 31,
- day = 0, Feb 30, real **leap-year arithmetic** (``2020-02-29`` OK,
- ``2021-02-29`` raises; ``2000-02-29`` OK, ``1900-02-29`` raises).
-* **Part C** -- invalid time / offset / microsecond matrix (5 axes):
- hour > 23, minute > 59, second > 59 (no leap-second acceptance),
- offset > 23 hours, fractional-seconds happy + max-microsecond
- boundary.
-* **Part D** -- error-message / exception-chain / field-interpolation
- matrix (5 axes): ``created_after`` / ``created_before`` literals,
- empty ``field=""`` raw f-string interpolation, arbitrary
- non-allow-listed field names, **``raise ... from exc`` chain
- preservation** (``__cause__`` survives).
-
-KEY DIVERGENCES pinned across the composite:
-
-* Case-sensitive ``str.replace("Z", "+00:00")`` -- a refactor to
- ``re.sub(r"[Zz]", ...)`` would silently accept lowercase ``"z"``.
-* No clamping / no rollover -- ``datetime.fromisoformat`` rejects
- out-of-range components rather than wrapping. A refactor to
- ``dateutil.parser.parse`` would silently accept overflowed values.
-* Real leap-year arithmetic -- ``"2021-02-29"`` raises; a naive
- "always accept Feb 29" refactor would silently pass non-leap years.
-* Explicit ``raise ValueError(msg) from exc`` chain -- a refactor to
- plain ``raise ValueError(msg)`` would drop ``__cause__``.
-* Raw f-string interpolation of ``field`` -- ANY string interpolates
- literally without validation; ``field=""`` produces a leading-space
- message.
-* Defensive ``str(value)`` wrapping -- non-string callers (e.g.
- integers via lax-typed callers) coerce to string rather than raising
- ``AttributeError``.
-
-All tests call ``_parse_query_datetime`` **directly** (no FastAPI
-``TestClient``, no fixtures beyond pytest built-ins, no mocks). Error
-arms use ``pytest.raises(ValueError)``; happy arms assert datetime
-component equality.
-"""
 
 from __future__ import annotations
 
@@ -59,24 +9,22 @@ import pytest
 
 from nimbusware_api.routes.runs import _parse_query_datetime
 
-# ---------------------------------------------------------------------------
 # Helper note
-# ---------------------------------------------------------------------------
 # All tests here exercise the contract at lines 249-260 of
 # packages/nimbusware_api/routes/runs.py:
 #
-#   def _parse_query_datetime(field: str, value: str | None) -> datetime | None:
-#       if value is None or not str(value).strip():
-#           return None
-#       try:
-#           s = str(value).strip().replace("Z", "+00:00")
-#           dt = datetime.fromisoformat(s)
-#       except ValueError as exc:
-#           msg = f"{field} must be a valid ISO-8601 datetime"
-#           raise ValueError(msg) from exc
-#       if dt.tzinfo is None:
-#           return dt.replace(tzinfo=timezone.utc)
-#       return dt.astimezone(timezone.utc)
+# def _parse_query_datetime(field: str, value: str | None) -> datetime | None:
+# if value is None or not str(value).strip:
+# return None
+# try:
+# s = str(value).strip.replace("Z", "+00:00")
+# dt = datetime.fromisoformat(s)
+# except ValueError as exc:
+# msg = f"{field} must be a valid ISO-8601 datetime"
+# raise ValueError(msg) from exc
+# if dt.tzinfo is None:
+# return dt.replace(tzinfo=timezone.utc)
+# return dt.astimezone(timezone.utc)
 #
 # fo111 Part D already pins: None/empty/space short-circuit, ``"Z"`` ->
 # ``"+00:00"`` substitution, ``field`` interpolation for the two route
@@ -86,9 +34,7 @@ from nimbusware_api.routes.runs import _parse_query_datetime
 _EXPECTED_ERROR_SUFFIX = " must be a valid ISO-8601 datetime"
 
 
-# ===========================================================================
 # Part A -- preprocessing semantics (5 axes, NET-NEW vs fo111 D)
-# ===========================================================================
 
 
 class TestPartAPreprocessingSemantics:
@@ -194,9 +140,7 @@ class TestPartAPreprocessingSemantics:
         )
 
 
-# ===========================================================================
 # Part B -- invalid calendar matrix (5 axes)
-# ===========================================================================
 
 
 class TestPartBInvalidCalendarMatrix:
@@ -272,9 +216,7 @@ class TestPartBInvalidCalendarMatrix:
         assert "created_after" in str(exc_1900.value)
 
 
-# ===========================================================================
 # Part C -- invalid time / offset / microsecond matrix (5 axes)
-# ===========================================================================
 
 
 class TestPartCInvalidTimeMatrix:
@@ -342,9 +284,7 @@ class TestPartCInvalidTimeMatrix:
         )
 
 
-# ===========================================================================
 # Part D -- error-message / exception-chain / field-interpolation (5 axes)
-# ===========================================================================
 
 
 class TestPartDErrorChainAndFieldInterpolation:
@@ -428,7 +368,7 @@ class TestPartDErrorChainAndFieldInterpolation:
         assert isinstance(cause, ValueError)
         # The original message mentions the raw input -- pins that the
         # value flowed all the way to fromisoformat unchanged after
-        # strip() and Z-substitution (neither of which transform
+        # strip and Z-substitution (neither of which transform
         # "not-a-date").
         assert "not-a-date" in str(cause)
         # The outer message is OUR message, not the inner one -- pins

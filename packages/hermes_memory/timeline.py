@@ -1,4 +1,4 @@
-"""Memory timeline read-model helpers (Phase 4 / fo164, shared by API + replay)."""
+"""Memory timeline read-model helpers (shared by API + replay)."""
 
 from __future__ import annotations
 

@@ -26,10 +26,8 @@ from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.scraper_stage import ScraperFetchConfig
 from hermes_store.memory import InMemoryEventStore
 
-# ---------------------------------------------------------------------------
 # follow-on 65: shared fixtures + helper for HERMES_OUTBOUND_FETCH_ENABLED
 # string-arm contract tests at both call sites in ``pipeline.py``.
-# ---------------------------------------------------------------------------
 
 _SITE1_ACTOR_UUID = UUID("11111111-1111-4111-8111-111111111101")
 _SITE1_RUN_EGRESS: dict[str, Any] = {

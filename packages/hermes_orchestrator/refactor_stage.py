@@ -1,4 +1,4 @@
-"""Refactorer producer + refactor critique panel (Phase 3 / fo146)."""
+"""Refactorer producer + refactor critique panel."""
 
 from __future__ import annotations
 

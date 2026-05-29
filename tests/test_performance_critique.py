@@ -1,4 +1,4 @@
-"""Performance Critic stage (Phase 3 / fo144)."""
+"""Performance Critic stage."""
 
 from __future__ import annotations
 

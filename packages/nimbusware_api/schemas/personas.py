@@ -1,4 +1,4 @@
-"""Pydantic models for persona shelf HTTP responses + write-route bodies (plan §14 #14, fo127)."""
+"""Pydantic models for persona shelf HTTP responses + write-route bodies ."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ ProbationStatus = Literal["probation", "promoted", "shelved"]
 
 
 class PersonaEntry(BaseModel):
-    """One persona row on a shelf (``id`` / ``display_name`` plus optional fo127 fields)."""
+    """One persona row on a shelf (``id`` / ``display_name`` plus optional extended fields)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -172,7 +172,7 @@ class PersonaShelfPatchRequest(BaseModel):
         return out
 
 
-# Re-export for typing convenience.
+# Typing re-export.
 __all__ = (
     "PersonaEntry",
     "PersonaShelvesResponse",

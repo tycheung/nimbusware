@@ -1,4 +1,4 @@
-"""Network/resilience static scan + SQL budget (fo145)."""
+"""Network/resilience static scan + SQL budget."""
 
 from __future__ import annotations
 

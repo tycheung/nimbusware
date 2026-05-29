@@ -1,4 +1,4 @@
-"""Local-only admin gate for dangerous routes (plan §6.6)."""
+"""Local-only admin gate for dangerous routes ."""
 
 from __future__ import annotations
 

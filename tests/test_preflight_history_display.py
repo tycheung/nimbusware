@@ -42,9 +42,7 @@ from nimbusware_console.preflight_history_display import (
 )
 from hermes_orchestrator.preflight_histogram import BUCKET_EDGES_MS
 
-# ---------------------------------------------------------------------------
 # preflight_history_from_timeline
-# ---------------------------------------------------------------------------
 
 
 def test_from_timeline_none_or_non_mapping_returns_none() -> None:
@@ -67,9 +65,7 @@ def test_from_timeline_happy_path_returns_inner_dict() -> None:
     assert preflight_history_from_timeline(body) is inner
 
 
-# ---------------------------------------------------------------------------
 # preflight_history_summary_rows
-# ---------------------------------------------------------------------------
 
 
 def test_summary_rows_empty_summary_returns_empty_list() -> None:
@@ -136,9 +132,7 @@ def test_preflight_history_summary_export_helpers() -> None:
     assert preflight_history_export_filename_slug("Pf@x") == "pf_x"
 
 
-# ---------------------------------------------------------------------------
 # preflight_history_histogram_mode_caption
-# ---------------------------------------------------------------------------
 
 
 def test_histogram_mode_caption_multisample() -> None:
@@ -210,9 +204,7 @@ def test_preflight_history_event_id_caption() -> None:
     assert preflight_history_event_id_caption({"event_id": ""}) is None
 
 
-# ---------------------------------------------------------------------------
 # preflight_history_histogram_payload
-# ---------------------------------------------------------------------------
 
 
 def test_histogram_uses_raw_samples_when_present() -> None:

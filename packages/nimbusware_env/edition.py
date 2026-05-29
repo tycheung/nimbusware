@@ -1,7 +1,7 @@
-"""Nimbusware product edition gate (Lane D / fo200).
+"""Nimbusware product edition gate.
 
 **Individual** (default): local-first single-operator install; repo-scoped memory only.
-**Enterprise**: enables Lane D modules (IAM, fleet memory, NOTIFY, …) when implemented.
+**Enterprise**: enables IAM, fleet memory, NOTIFY, and related modules.
 
 Select at install: ``scripts/install_nimbusware.py --edition enterprise`` or
 ``NIMBUSWARE_EDITION`` in ``.env``.
@@ -17,7 +17,7 @@ DEFAULT_EDITION = "individual"
 ENTERPRISE_EDITION = "enterprise"
 VALID_EDITIONS = frozenset({DEFAULT_EDITION, ENTERPRISE_EDITION})
 
-# Lane D feature flags — enabled only when ``is_enterprise()`` (implementations land fo201+).
+# Enterprise feature flags — enabled only when ``is_enterprise``.
 ENTERPRISE_FEATURES: frozenset[str] = frozenset(
     {
         "iam",
@@ -73,7 +73,7 @@ def is_individual() -> bool:
 
 
 def enterprise_feature_enabled(feature: str) -> bool:
-    """True when Enterprise edition is active and ``feature`` is a known Lane D flag."""
+    """True when Enterprise edition is active and ``feature`` is a known enterprise flag."""
     return is_enterprise() and feature in ENTERPRISE_FEATURES
 
 
@@ -127,9 +127,9 @@ def enterprise_install_hints() -> list[str]:
             "Enterprise-only capabilities (IAM, fleet memory) stay disabled.",
         ]
     return [
-        "Enterprise edition: Lane D fo201–fo207 shipped.",
-        "Enterprise IAM (fo201): bootstrap via POST /v1/enterprise/iam/bootstrap.",
-        "Console: sidebar tenant switcher + Enterprise fleet dashboard (fo207).",
+        "Enterprise edition: IAM, fleet memory, NOTIFY, object-store, Redis worker, Ollama SLI, and console enabled.",
+        "Enterprise IAM: bootstrap via POST /v1/enterprise/iam/bootstrap.",
+        "Console: sidebar tenant switcher + Enterprise fleet dashboard.",
         "Start optional worker stack: docker compose --profile fleet --profile worker up -d",
         "Poetry redis group installed when --with-redis (default for enterprise).",
     ]

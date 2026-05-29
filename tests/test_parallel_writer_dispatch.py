@@ -1,4 +1,4 @@
-"""True parallel writer dispatch (plan §12 Phase 2-b execution)."""
+"""True parallel writer dispatch ."""
 
 from __future__ import annotations
 

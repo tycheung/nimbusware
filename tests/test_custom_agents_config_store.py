@@ -1,4 +1,4 @@
-"""Custom agents Postgres config store (fo151)."""
+"""Custom agents Postgres config store."""
 
 from __future__ import annotations
 

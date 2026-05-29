@@ -1,4 +1,4 @@
-"""Enterprise fleet Ollama sustained p95 SLI (Lane D / fo206)."""
+"""Enterprise fleet Ollama sustained p95 SLI."""
 
 from __future__ import annotations
 

@@ -44,7 +44,7 @@ def dump_yaml(payload: Mapping[str, Any]) -> str:
 def atomic_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
     """Write ``payload`` to ``path`` atomically (tmp + ``os.replace``).
 
-    Mirrors the fo126 ``_write_status_atomically`` pattern: creates parent
+    Mirrors the ``_write_status_atomically`` pattern: creates parent
     directories, writes a sibling ``.tmp`` file, then ``os.replace``s onto the
     target so concurrent readers never observe a partial YAML. On replace
     failure the partial tmp is removed so the original file is untouched.

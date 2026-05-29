@@ -1,4 +1,4 @@
-"""CLI: read-only model-routing.yaml suggestions (Phase 4 / fo191)."""
+"""CLI: read-only model-routing.yaml suggestions."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from hermes_orchestrator.routing_suggestions import (
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=(
-            "Suggest model-routing.yaml tweaks from fo190 telemetry aggregates. "
+            "Suggest model-routing.yaml tweaks from role telemetry aggregates. "
             "Read-only — apply via nimbusware-config after operator review."
         ),
     )
@@ -33,7 +33,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--aggregate",
         type=Path,
-        help="Existing fo190 aggregate JSON (skip DB scan)",
+        help="Existing telemetry aggregate JSON (skip DB scan)",
     )
     p.add_argument("--limit", type=int, default=50, help="Recent runs when scanning DB")
     p.add_argument("--out", type=Path, help="Write suggestions JSON (default stdout)")

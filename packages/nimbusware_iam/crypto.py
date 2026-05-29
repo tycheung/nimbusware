@@ -1,4 +1,4 @@
-"""API key generation and verification (Lane D / fo201)."""
+"""API key generation and verification."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Refactorer + refactor critique (fo146)."""
+"""Refactorer + refactor critique."""
 
 from __future__ import annotations
 

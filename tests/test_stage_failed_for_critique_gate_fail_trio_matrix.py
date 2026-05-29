@@ -1,38 +1,5 @@
-"""``_maybe_emit_stage_failed_for_*_critique_gate_fail`` trio direct contracts.
+"""_maybe_emit_stage_failed_for_*_critique_gate_fail`` trio direct contracts."""
 
-fo91 Next-slice item (5) in [`PLAN_GAP.md`](d:\\Hermes\\PLAN_GAP.md) surfaced
-the gap: the trio at [`pipeline.py:704-850`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-(`_maybe_emit_stage_failed_for_implementation_critique_gate_fail` /
-`_test_writer` / `_planner` variants) has indirect coverage via
-[`tests/test_critique_router_pipeline.py`](d:\\Hermes\\tests\\test_critique_router_pipeline.py)
-HAPPY / dedupe / env-off / PASS axes, but the following remain unpinned at
-the unit level:
-
-* multi-stage matrix (all-3 enabled with mixed verdicts);
-* stage-filter isolation (FAIL gates for OTHER stages must NOT cross-pollinate);
-* `eff` parameter contract (lazy ``_effective_universal_critique_for_run``
- resolution vs eager bypass);
-* LAST-wins ordering (PASS then FAIL -> emits; FAIL then PASS -> suppresses);
-* verdict-string coercion (`Verdict.FAIL` enum / ``"FAIL"`` / ``"fail"`` /
- ``"Fail"`` / ``" FAIL "`` via the
- ``str(verdict_raw).strip().upper() == "FAIL"`` fallback arm);
-* full payload triplet per variant (``stage_name`` + ``reason_code`` +
- ``message`` together).
-
-fo92 closes the gaps via 4 parts spanning 22 axes (~43 assertions, source
-unchanged):
-
-* **Part A** -- multi-stage matrix (4 axes -- all-FAIL / mixed-verdict /
- stage-filter isolation / already-emitted isolation).
-* **Part B** -- skip-branches per variant (4 axes x 3 variants in one
- test -- flag-off master / already-emitted dedup / no gate row for this
- stage / last gate PASS).
-* **Part C** -- payload shape per variant (3 axes -- emit + inspect
- ``stage_name`` + ``reason_code`` + ``message`` per impl/tw/pll).
-* **Part D** -- helper-level contracts using impl as proxy (5 axes --
- ``eff=None`` lazy / ``eff=<explicit>`` eager / LAST-wins PASS-then-FAIL /
- LAST-wins FAIL-then-PASS / verdict-string coercion 4-variant).
-"""
 
 from __future__ import annotations
 

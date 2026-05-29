@@ -1,14 +1,5 @@
-"""Library-level tests for ``prune_scraper_artifacts`` pattern filters.
+"""Library-level tests for ``prune_scraper_artifacts`` pattern filters."""
 
-Six axes:
-
-1. ``include_patterns`` alone: only matching basenames considered for deletion.
-2. ``exclude_patterns`` alone: matching basenames preserved; others deleted.
-3. Both lists: include first, then exclude wins on overlap.
-4. Empty list ``[]`` behaves like ``None`` (no filtering).
-5. Patterns evaluated AFTER the mtime cutoff: fresh files survive regardless of pattern.
-6. Backward compat: omitting both kwargs preserves the pre-fo125 4-arg behaviour.
-"""
 
 from __future__ import annotations
 
@@ -41,9 +32,7 @@ def _surviving_basenames(base: Path) -> set[str]:
     return {p.name for p in base.iterdir() if p.is_file()}
 
 
-# ---------------------------------------------------------------------------
 # _matches_any helper
-# ---------------------------------------------------------------------------
 
 
 def test_matches_any_handles_none_and_empty_list() -> None:
@@ -55,9 +44,7 @@ def test_matches_any_handles_none_and_empty_list() -> None:
     assert _matches_any("foo.txt", ["*.bin", "*.txt"]) is True
 
 
-# ---------------------------------------------------------------------------
 # prune_scraper_artifacts pattern filters
-# ---------------------------------------------------------------------------
 
 
 def test_include_pattern_alone_only_matches_subset(tmp_path: Path) -> None:

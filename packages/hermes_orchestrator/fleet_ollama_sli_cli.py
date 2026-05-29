@@ -17,7 +17,7 @@ from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION, edition
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Enterprise sustained Ollama health p95 probe (fo206)",
+        description="Enterprise sustained Ollama health p95 probe",
     )
     parser.add_argument(
         "--base-url",

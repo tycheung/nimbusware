@@ -1,4 +1,4 @@
-"""Consistent JSON error bodies for ``/v1`` (plan §6.2)."""
+"""Consistent JSON error bodies for ``/v1`` ."""
 
 from __future__ import annotations
 

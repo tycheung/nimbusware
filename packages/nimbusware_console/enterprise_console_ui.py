@@ -1,4 +1,4 @@
-"""Streamlit UI for Enterprise console (Lane D / fo207)."""
+"""Streamlit UI for Enterprise console."""
 
 from __future__ import annotations
 

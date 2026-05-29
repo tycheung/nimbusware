@@ -1,4 +1,4 @@
-"""Enterprise console helpers (Lane D / fo207) — pure functions, no Streamlit."""
+"""Enterprise console helpers — pure functions, no Streamlit."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ def is_enterprise_edition_manifest(manifest: Mapping[str, Any] | None) -> bool:
 
 
 def enterprise_console_feature_enabled(manifest: Mapping[str, Any] | None) -> bool:
-    """True when Enterprise edition and fo207 console feature is enabled."""
+    """True when Enterprise edition and enterprise console feature is enabled."""
     if not is_enterprise_edition_manifest(manifest):
         return False
     features = manifest.get("features")

@@ -1,4 +1,4 @@
-"""GET /v1/scraper-artifacts/inventory (cycle 90)."""
+"""GET /v1/scraper-artifacts/inventory."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Optional FAISS index for repo-scoped memory chunks (Phase 4 / fo162)."""
+"""Optional FAISS index for repo-scoped memory chunks."""
 
 from __future__ import annotations
 

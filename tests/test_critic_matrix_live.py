@@ -1,4 +1,4 @@
-"""Live orchestration critic matrix (plan §12 Phase 2-c)."""
+"""Live orchestration critic matrix ."""
 
 from __future__ import annotations
 

@@ -1,49 +1,5 @@
-"""``HERMES_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE.
+"""HERMES_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE."""
 
-[`load_anti_deadlock_settings`](d:\\Hermes\\packages\\hermes_orchestrator\\anti_deadlock.py)
-resolves the deadlock-escalation stall window across **two precedence
-layers**: env (when non-empty AND ``int()``-valid) beats the YAML
-``deadlock_escalation_after_minutes`` key in
-``configs/escalation/policy.yaml`` (default ``0`` via
-``raw.get(..., 0)``).
-
-This is the **second Pattern B (non-binary, numeric/int) env layer**
-pinned by the env-layer sweep and pins **three structural divergences**
-vs fo71 (`HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`) that a naive
-"unify all numeric env layers" refactor would silently break:
-
-* **Type**: ``int()`` (strict; rejects ``"30.5"`` and ``"1e2"``) rather
- than ``float()``.
-* **Clamping**: **NONE** -- negative ints pass through verbatim. fo71
- clamps to ``[0.0, 1.0]``.
-* **Env-invalid arm**: **NO `try/except`** -- ``ValueError`` propagates
- to the caller. fo71 swallows via ``except ValueError: pass`` and
- falls through to YAML.
-* **YAML-side invalid arm**: ALSO no ``try/except`` -- ``int(None)``
- raises ``TypeError`` and ``int("abc")`` raises ``ValueError``. fo71's
- ``parse_integrator_gate_min_score_to_pass`` catches both and
- cascades to ``None``.
-
-Three parts:
-
-* **Part A** locks the env-accept arm (canonical / zero / **negative
- passthrough** -- KEY DIVERGENCE vs fo71's clamp lattice / large /
- leading ``+`` / ``.strip()`` rescue).
-* **Part B** locks the 6-block 2-layer precedence cascade including
- the **YAML-side ``int(None)`` TypeError raise** (Block 4) and
- **YAML-side ``int("abc")`` ValueError raise** (Block 5) which
- together pin that the YAML loader is ALSO bare-``int()`` with no
- ``try/except``.
-* **Part C** locks the **fail-RAISE string-arm** via
- ``pytest.raises(ValueError)`` per case -- structural inversion vs
- fo71 Part C which asserted cascade-to-default via
- ``== pytest.approx(0.1)``.
-
-Per-case messages ``accept raw=<raw>: <expected>`` / ``<block_id>:
-<component>`` / ``fail_raise raw=<raw>: <component>`` identify failing
-layer + offending env scalar + (Part B) failing cascade arm +
-(Part C) misleading exception message.
-"""
 
 from __future__ import annotations
 

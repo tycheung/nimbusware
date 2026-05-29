@@ -1,4 +1,4 @@
-"""Cross-run preflight trend helpers (PLAN_GAP §14 #1 / fo130).
+"""Cross-run preflight trend helpers.
 
 Display helpers are pure (no Streamlit). :func:`fetch_preflight_history` is the
 single HTTP entry point for fleet aggregation via ``GET /v1/preflight-history``.

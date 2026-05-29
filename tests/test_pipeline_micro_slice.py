@@ -1,4 +1,4 @@
-"""Pipeline micro-slice event recording (fo152–fo154)."""
+"""Pipeline micro-slice event recording."""
 
 from __future__ import annotations
 

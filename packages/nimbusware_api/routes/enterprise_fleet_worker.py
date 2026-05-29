@@ -1,4 +1,4 @@
-"""Enterprise Redis fleet worker health (Lane D / fo205)."""
+"""Enterprise Redis fleet worker health."""
 
 from __future__ import annotations
 

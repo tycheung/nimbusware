@@ -1,4 +1,4 @@
-"""Bundle usage memory analytics for Streamlit (Phase 4 / fo172)."""
+"""Bundle usage memory analytics for Streamlit."""
 
 from __future__ import annotations
 

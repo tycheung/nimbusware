@@ -1,15 +1,5 @@
-"""Script-level tests for the fo126 ``--summary-path`` state-file output.
+"""Script-level tests for the fo126 ``--summary-path`` state-file output."""
 
-Five axes (cf. ``.cursor/plans/prune_status_card_4d7d9d37.plan.md``):
-
-1. ``--summary-path`` alone (no ``--json-summary``) writes the file with all expected
- keys including ``wrote_at``.
-2. ``HERMES_PRUNE_STATUS_PATH`` env equivalent (no CLI arg) writes to the same path.
-3. CLI flag wins over env when both are set.
-4. Atomic write: the ``.tmp`` sibling is gone after a successful run.
-5. State file content matches the ``--json-summary`` stdout JSON object (minus
- ``wrote_at``) when both flags are used together.
-"""
 
 from __future__ import annotations
 
@@ -67,9 +57,7 @@ def _read_status(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: --summary-path alone writes JSON with wrote_at
-# ---------------------------------------------------------------------------
 
 
 def test_summary_path_flag_writes_state_file(tmp_path: Path) -> None:
@@ -105,9 +93,7 @@ def test_summary_path_flag_writes_state_file(tmp_path: Path) -> None:
     assert parsed.tzinfo is not None, "wrote_at must be a tz-aware UTC ISO 8601 string"
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: HERMES_PRUNE_STATUS_PATH env writes the same file
-# ---------------------------------------------------------------------------
 
 
 def test_env_var_alone_writes_state_file(tmp_path: Path) -> None:
@@ -126,9 +112,7 @@ def test_env_var_alone_writes_state_file(tmp_path: Path) -> None:
     assert "wrote_at" in payload
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: CLI flag wins over env when both are set
-# ---------------------------------------------------------------------------
 
 
 def test_cli_flag_overrides_env(tmp_path: Path) -> None:
@@ -147,9 +131,7 @@ def test_cli_flag_overrides_env(tmp_path: Path) -> None:
     )
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: Atomic write — .tmp sibling cleaned up after success
-# ---------------------------------------------------------------------------
 
 
 def test_atomic_write_leaves_no_tmp_sibling(tmp_path: Path) -> None:
@@ -164,9 +146,7 @@ def test_atomic_write_leaves_no_tmp_sibling(tmp_path: Path) -> None:
     )
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: State file content matches --json-summary stdout (minus wrote_at)
-# ---------------------------------------------------------------------------
 
 
 def test_state_file_matches_json_summary_stdout(tmp_path: Path) -> None:

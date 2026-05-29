@@ -1,4 +1,4 @@
-"""Micro-slice planning and budgets (fo152)."""
+"""Micro-slice planning and budgets."""
 
 from __future__ import annotations
 

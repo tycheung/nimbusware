@@ -1,4 +1,4 @@
-"""Stage graph foundation (plan §12 Phase 2-a)."""
+"""Stage graph foundation ."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Extract memory chunks from append-only event rows (Phase 4 / fo161)."""
+"""Extract memory chunks from append-only event rows."""
 
 from __future__ import annotations
 

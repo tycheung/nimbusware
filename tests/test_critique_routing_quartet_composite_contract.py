@@ -1,67 +1,5 @@
-"""``critique_routing.py`` quartet composite (fo122).
+"""Composite contract tests for critique_routing."""
 
-Four pure helpers in
-[packages/hermes_orchestrator/critique_routing.py](packages/hermes_orchestrator/critique_routing.py)
-shape critique-pairing resolution for the run lifecycle: the path
-helper ``default_critique_pairings_path``, the YAML factory
-``load_critique_router``, the producer filter
-``registry_producer_taxonomy_keys``, and the lifecycle composer
-``taxonomy_keys_for_run_lifecycle``. Today only
-``taxonomy_keys_for_run_lifecycle`` has 2 thin smoke tests (membership
-+ sorted-unique) in
-[tests/test_critique_router_pipeline.py](tests/test_critique_router_pipeline.py);
-the other 3 are entirely unpinned.
-
-fo122 closes that gap with **20 NET-NEW axes** across 4 parts (one
-helper per part):
-
-* **Part A** -- ``default_critique_pairings_path`` path-composition
-  (5 axes): ``Path`` return type, exact 3-segment composition,
-  ``.yaml`` suffix (not ``.yml``), pure-function with no I/O, both
-  absolute and relative ``repo_root`` flow through.
-* **Part B** -- ``load_critique_router`` YAML factory (5 axes):
-  real-repo load, empty pairings YAML, missing file ->
-  ``FileNotFoundError``, non-dict YAML root -> ``ValueError``,
-  path-composition wiring via ``patch.object`` wraps.
-* **Part C** -- ``registry_producer_taxonomy_keys`` ``_critic`` suffix
-  filter (5 axes): canonical filter, ``frozenset`` return type +
-  immutability, empty registry, all-critic registry, suffix-vs-substring
-  boundary cases (KEY DIVERGENCE).
-* **Part D** -- ``taxonomy_keys_for_run_lifecycle`` set-union + sorted
-  (5 axes): set-union dedup, sorted-list contract, default-critics
-  fallback for unpinned producer, empty producers skips
-  ``pairing_for``, cross-reference dedup (KEY DIVERGENCE).
-
-KEY DIVERGENCES pinned across the composite:
-
-* **``endswith("_critic")``** -- case-sensitive, suffix-only filter on
-  the literal substring ``"_critic"``. A refactor to
-  ``endswith(("_critic", "_evaluator"))`` or ``"_critic" in k`` would
-  silently change the producer set.
-* **``frozenset`` return type** -- ``registry_producer_taxonomy_keys``
-  returns ``frozenset`` (immutable). A refactor to a set literal would
-  break callers relying on hashability / immutability.
-* **Default-critics fallback** --
-  ``UniversalCritiqueRouter.pairing_for`` returns
-  ``("product_reference_critic", "domain_critic")`` for any unpinned
-  producer. A refactor that returned ``[]`` would silently drop default
-  critic coverage.
-* **Set-union dedup with cross-references** -- if ``pairing_for(A)``
-  contains ``B`` AND ``B`` is itself a producer, ``B`` appears once.
-* **``sorted(set(...))`` list contract** --
-  ``taxonomy_keys_for_run_lifecycle`` returns a ``list[str]`` (stable
-  alphabetical order, deduplicated).
-* **``load_yaml`` exception passthrough** -- ``load_critique_router``
-  does NOT swallow ``FileNotFoundError`` / ``ValueError`` from missing
-  or malformed YAML.
-* **Path purity** -- ``default_critique_pairings_path`` does no I/O
-  (no ``.exists()`` / ``.is_file()`` / ``.resolve()``).
-
-All tests call the four helpers directly with synthetic
-``RoleRegistry.from_mapping(...)`` and ``UniversalCritiqueRouter({...})``
-fixtures. No FastAPI ``TestClient``. Part B uses ``tmp_path`` and one
-``patch.object`` wraps; all other parts use pure Python objects.
-"""
 
 from __future__ import annotations
 
@@ -80,9 +18,7 @@ from hermes_orchestrator.critique_routing import (
 )
 from hermes_orchestrator.registry import RoleRegistry
 
-# ---------------------------------------------------------------------------
 # Builder helpers (no fixtures beyond pytest built-ins)
-# ---------------------------------------------------------------------------
 
 # Real-repo workspace root (parent of `tests/`).
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -122,9 +58,7 @@ def _canonical_router() -> UniversalCritiqueRouter:
     )
 
 
-# ===========================================================================
 # Part A -- default_critique_pairings_path path-composition matrix
-# ===========================================================================
 
 
 class TestPartADefaultPathComposition:
@@ -223,9 +157,7 @@ class TestPartADefaultPathComposition:
         assert rel_result == rel_root / "configs" / "personas" / "critique_pairings.yaml"
 
 
-# ===========================================================================
 # Part B -- load_critique_router YAML factory matrix
-# ===========================================================================
 
 
 def _write_pairings_yaml(repo_root: Path, body: str) -> Path:
@@ -346,9 +278,7 @@ class TestPartBLoadCritiqueRouter:
         assert isinstance(router, UniversalCritiqueRouter)
 
 
-# ===========================================================================
 # Part C -- registry_producer_taxonomy_keys _critic suffix filter matrix
-# ===========================================================================
 
 
 class TestPartCProducerSuffixFilter:
@@ -462,9 +392,7 @@ class TestPartCProducerSuffixFilter:
         assert "agent_evaluator" not in result
 
 
-# ===========================================================================
 # Part D -- taxonomy_keys_for_run_lifecycle set-union + sorted matrix
-# ===========================================================================
 
 
 class TestPartDLifecycleUnionSorted:

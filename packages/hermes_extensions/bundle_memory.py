@@ -1,4 +1,4 @@
-"""Extract and persist integrator bundle gate outcomes (Phase 4 / fo170)."""
+"""Extract and persist integrator bundle gate outcomes."""
 
 from __future__ import annotations
 

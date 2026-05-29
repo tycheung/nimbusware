@@ -1,29 +1,5 @@
-"""``HERMES_RUN_BANDIT`` env-layer string-arm contract (follow-on 66, §14 #18).
+"""HERMES_RUN_BANDIT`` env-layer string-arm contract (follow-on 66, §14 #18)."""
 
-[`run_bandit`](d:\\Hermes\\packages\\hermes_orchestrator\\verifiers.py) reads
-``HERMES_RUN_BANDIT`` via ``os.environ.get(...).lower() not in ("1", "true",
-"yes")``. This is the **first inverted Pattern A** binary gate pinned by the
-fo62-65 env-layer sweep: truthy variants **enable** real bandit, every other
-value (including whitespace-padded canonical, the asymmetric YAML token
-``"on"``, falsy-look values, empty / junk) returns the operator-facing skip
-tuple. Before this slice no test file mentioned the env, so the full
-string-arm matrix was unpinned.
-
-Three parts:
-
-* **Part A** locks the truthy tuple membership (env-gate accepted -> reaches
- the ``shutil.which`` branch which we mock to None for determinism).
-* **Part B** locks the **exact** operator-facing skip message
- ``(0, "bandit skipped (set HERMES_RUN_BANDIT=1 to enable)\\n")`` so a
- refactor that drifts the exit code, the trailing newline, or the
- ``HERMES_RUN_BANDIT=1`` hint fails loudly.
-* **Part C** locks the asymmetric fail-closed string-arm (whitespace-padded,
- ``"on"`` / ``"ON"``, case-folded falsy, empty / junk / near-miss / interior
- whitespace) -- parallel to fo65 Part C.
-
-Per-case messages ``force_on raw=<raw>`` / ``skip_message raw=<raw>`` /
-``fail_closed raw=<raw>`` identify the failing branch + offending env scalar.
-"""
 
 from __future__ import annotations
 

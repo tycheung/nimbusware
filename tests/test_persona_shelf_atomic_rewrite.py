@@ -1,4 +1,4 @@
-"""Unit tests for fo127 ``dump_yaml`` + ``atomic_write_yaml`` helpers (§14 #14-edit).
+"""Unit tests for ``dump_yaml`` and ``atomic_write_yaml`` helpers.
 
 Six axes: round-trip, atomic tmp + replace pattern, parent-dir auto-create,
 simulated ``os.replace`` failure leaves original file intact, back-to-back
@@ -29,9 +29,7 @@ PAYLOAD: dict = {
 }
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: dump_yaml round-trip preserves the payload and key order
-# ---------------------------------------------------------------------------
 
 
 def test_dump_yaml_round_trip_preserves_payload(tmp_path: Path) -> None:
@@ -43,9 +41,7 @@ def test_dump_yaml_round_trip_preserves_payload(tmp_path: Path) -> None:
     assert text.find("business_area") < text.find("development_role")
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: atomic_write_yaml writes the target and removes the sibling tmp
-# ---------------------------------------------------------------------------
 
 
 def test_atomic_write_yaml_uses_tmp_then_replace(tmp_path: Path) -> None:
@@ -56,9 +52,7 @@ def test_atomic_write_yaml_uses_tmp_then_replace(tmp_path: Path) -> None:
     assert not (tmp_path / "shelves.yaml.tmp").exists()
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: missing parent directories are created on demand
-# ---------------------------------------------------------------------------
 
 
 def test_atomic_write_yaml_creates_parent_directory(tmp_path: Path) -> None:
@@ -69,9 +63,7 @@ def test_atomic_write_yaml_creates_parent_directory(tmp_path: Path) -> None:
     assert load_yaml(nested) == PAYLOAD
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: simulated os.replace failure leaves the original file intact
-# ---------------------------------------------------------------------------
 
 
 def test_atomic_write_yaml_failure_leaves_original_file(
@@ -93,9 +85,7 @@ def test_atomic_write_yaml_failure_leaves_original_file(
     assert not (tmp_path / "shelves.yaml.tmp").exists()
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: back-to-back writes both land
-# ---------------------------------------------------------------------------
 
 
 def test_back_to_back_writes_both_land(tmp_path: Path) -> None:
@@ -111,9 +101,7 @@ def test_back_to_back_writes_both_land(tmp_path: Path) -> None:
     assert not (tmp_path / "shelves.yaml.tmp").exists()
 
 
-# ---------------------------------------------------------------------------
 # Axis 6: PersonaShelf.write_entry → atomic_write_yaml pipeline
-# ---------------------------------------------------------------------------
 
 
 def test_persona_shelf_write_entry_through_atomic_write(tmp_path: Path) -> None:

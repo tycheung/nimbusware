@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Nimbusware end-to-end operator smoke checks (see PLAN_GAP.md § End-to-end operator validation).
+"""Nimbusware end-to-end operator smoke checks.
 
 Exit 0 when all required checks pass. Attempts Docker Postgres when DB is down.
 """

@@ -1,4 +1,4 @@
-"""Enterprise IAM (Lane D / fo201)."""
+"""Enterprise IAM."""
 
 from nimbusware_iam.constants import (
     API_KEY_HEADER,

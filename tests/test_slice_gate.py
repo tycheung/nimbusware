@@ -1,4 +1,4 @@
-"""Per-slice gate chain (fo153)."""
+"""Per-slice gate chain."""
 
 from __future__ import annotations
 

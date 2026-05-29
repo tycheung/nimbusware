@@ -1,4 +1,4 @@
-"""Enterprise console display helpers (fo207)."""
+"""Enterprise console display helpers."""
 
 from __future__ import annotations
 

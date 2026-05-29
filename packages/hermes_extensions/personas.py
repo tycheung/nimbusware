@@ -1,7 +1,6 @@
-"""Persona shelves (plan §3B, §14 #14, fo127 edit/instructions extension).
+"""Persona shelves and optional per-entry edit/instructions extension.
 
-The minimal on-disk shape is ``{id, display_name}`` per entry (plan §14 #14). fo127 adds
-seven OPTIONAL additive fields per entry so operators can author per-persona
+The minimal on-disk shape is ``{id, display_name}`` per entry. Optional additive fields let operators author per-persona
 instructions / capability profile / boundary statement / allowed tools /
 success metrics / probation status — plus a monotonic ``version`` for
 optimistic-concurrency on the new write API:
@@ -104,7 +103,7 @@ def collect_persona_entry_validation_errors(
 
 
 def _validate_entry_optional_fields(entry: Mapping[str, Any], *, where: str) -> None:
-    """Raise ``ValueError`` if any fo127 optional field has the wrong shape."""
+    """Raise ``ValueError`` if any optional persona field has the wrong shape."""
     _validate_optional_str(
         entry.get("instructions"),
         field="instructions",
@@ -261,7 +260,7 @@ class PersonaShelf:
         return None
 
     def to_public_catalog(self) -> dict[str, Any]:
-        """Read-only catalog shape for HTTP API (plan §14 #14, fo127 extended).
+        """Read-only catalog shape for HTTP API with optional extended fields.
 
         Each entry surfaces every present optional field plus a ``version`` that
         defaults to 1 when absent on disk. Absent optional fields are omitted

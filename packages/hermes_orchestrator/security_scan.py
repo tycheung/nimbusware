@@ -1,4 +1,4 @@
-"""Static security-oriented checks for verifier / extension hooks (plan §14 #18)."""
+"""Static security-oriented checks for verifier / extension hooks ."""
 
 from __future__ import annotations
 

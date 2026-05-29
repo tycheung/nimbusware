@@ -1,4 +1,4 @@
-"""Enterprise IAM (fo201)."""
+"""Enterprise IAM."""
 
 from __future__ import annotations
 

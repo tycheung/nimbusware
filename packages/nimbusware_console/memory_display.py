@@ -1,4 +1,4 @@
-"""Memory retrieval timeline + run policy display (Phase 4 / fo164)."""
+"""Memory retrieval timeline + run policy display."""
 
 from __future__ import annotations
 

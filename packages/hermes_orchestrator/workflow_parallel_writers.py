@@ -1,4 +1,4 @@
-"""Workflow YAML + env knobs for parallel writer dispatch (plan §12 Phase 2-b execution)."""
+"""Workflow YAML + env knobs for parallel writer dispatch ."""
 
 from __future__ import annotations
 

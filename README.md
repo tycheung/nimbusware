@@ -1,158 +1,277 @@
 # Nimbusware
 
-Nimbusware is a local-first platform for operating agentic software workflows. It includes the **Nimbusware API** and operator console (product layer) and the **Hermes** orchestration agent (`packages/hermes_*`, `agent_core`: event store, critics, gates, verifiers, LLM stages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit operator console**, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
 
-Current package version: `0.5.0`.
+**Version:** `0.5.0` · **Python:** `>=3.10` (3.11+ recommended) · **Default workflow profile:** `nimbusware_production`
+
+## Product editions
+
+| Edition | Install | Scope |
+|---------|---------|--------|
+| **Individual** (default) | `python scripts/install_nimbusware.py` | Single operator, repo-scoped memory, no IAM |
+| **Enterprise** | `python scripts/install_nimbusware.py --edition enterprise` | Multi-tenant IAM, fleet memory, config NOTIFY, Redis workers, fleet SLI, enterprise console panels |
+
+Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes return **404** on Individual. Check gates: `GET /v1/platform/edition`.
+
+**Enterprise capabilities** (when edition is `enterprise`):
+
+- **IAM** — API keys, tenants, row-level isolation on events/config/memory (`X-Nimbusware-Api-Key`)
+- **Fleet memory** — org-scoped index, canonical store sync (`hermes-memory-sync`), search API
+- **Config NOTIFY** — Postgres `LISTEN/NOTIFY` + `config.document.updated` cache invalidation
+- **Object-store primary** — S3-compatible scraper artifact backend (optional local mirror)
+- **Redis fleet worker** — shared verify queue, health/back-pressure metrics
+- **Fleet Ollama SLI** — sustained health p95 export + preflight aggregate API
+- **Enterprise console** — sidebar tenant switcher, fleet memory / preflight / worker dashboards
 
 ## Architecture
 
-| Layer | Role |
-|-------|------|
-| **Nimbusware** | Product: desktop launcher, operator console, install/update flow |
-| **Hermes agent** | Orchestration engine in `packages/hermes_*` and `agent_core` |
-| **Postgres** | Append-only event store and config documents (when `NIMBUSWARE_DATABASE_URL` is set) |
-| **Ollama** (optional) | Local LLM for plan/critique/evaluator branches when `HERMES_USE_LLM=1` |
+| Layer | Packages / entry | Role |
+|-------|------------------|------|
+| **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
+| **Operator console** | `nimbusware_console` | Streamlit ops UI (runs, timeline, config editors) |
+| **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
+| **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
+| **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
+| **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
+| **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
+| **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
+| **Desktop** | `nimbusware_env` | `nimbusware-run` (pywebview), `nimbusware-launcher` |
 
-Platform settings use the `NIMBUSWARE_*` prefix; agent runtime knobs use `HERMES_*` (see `.env.example`).
+Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`).
 
-## What Runs in This Repo
+Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). See [`.env.example`](.env.example).
 
-- **Nimbusware API**: `packages/nimbusware_api` (`poetry run nimbusware-api`)
-- **Operator console**: `packages/nimbusware_console/app.py` (Streamlit)
-- **Desktop run shell**: `run.py` / `poetry run nimbusware-run` (API + Streamlit in pywebview)
-- **Desktop launcher**: `launcher.py` / `poetry run nimbusware-launcher` (install / update / run)
+## Hermes orchestration (what the engine does)
 
-Default workflow profile for new runs: `nimbusware_production`.
+- **Run lifecycle** — `run.created` → plan → implement/verify paths with frozen `policy_snapshot` from materialized config
+- **Adversarial critics** — domain-bound critique stages (security, performance, network/resilience, refactor on production profile)
+- **Unanimous gates** — stage progression blocked until critics/verifiers pass (with escalation anti-deadlock)
+- **Parallel writers** — frontend/backend writers with role taxonomy and failure routing
+- **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
+- **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
+- **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection
+- **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
+- **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
+- **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-## Quick Start
+Configs live under [`configs/`](configs/) (workflows, personas, roles, model-routing, bundles). With Postgres, operator edits persist to `hermes_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
 
-### 1) Install dependencies
+## Repository layout
+
+```
+packages/
+  agent_core/           Event models and validation
+  hermes_orchestrator/  Pipeline, critics, slice, preflight, dispatch
+  hermes_store/         Postgres + in-memory event store
+  hermes_memory/        Memory chunks, FAISS, fleet sync
+  hermes_executor/      Role-gated outbound HTTP
+  hermes_extensions/    Personas, bundles, catalog
+  nimbusware_api/       FastAPI app
+  nimbusware_console/   Streamlit UI
+  nimbusware_config/    Config store + NOTIFY
+  nimbusware_iam/       Enterprise IAM
+  nimbusware_env/       Edition gate, desktop runners
+configs/                Workflow YAML, personas, bundles (seed / gitops review)
+scripts/                Install, FAISS build, workers, e2e smoke, runbooks
+tests/                  Pytest suite (~2400 tests)
+```
+
+Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
+
+## Quick start
+
+### 1. Dependencies
 
 ```bash
 poetry install
+# Optional:
+poetry install --with faiss    # bundle + memory FAISS indexes
+poetry install --with redis    # Enterprise Redis dispatch (included for --edition enterprise)
 ```
 
-### 2) Configure environment
-
-Copy `.env.example` to `.env`:
-
-- `NIMBUSWARE_DATABASE_URL` — Postgres for events/config
-- `NIMBUSWARE_ADMIN_TOKEN` — admin API mutations (`X-Nimbusware-Admin-Token` header)
-- `HERMES_USE_LLM=1` — enable Ollama-backed Hermes agent stages
-
-### 3) Run Nimbusware
-
-#### Option A: Desktop shell (recommended)
+### 2. Bootstrap (recommended)
 
 ```bash
-python run.py
-# or
+python scripts/install_nimbusware.py
+# Enterprise:
+python scripts/install_nimbusware.py --edition enterprise
+```
+
+The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/hermes_store/schema/postgres.sql`](packages/hermes_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`.
+
+Or manually:
+
+```bash
+docker compose up -d postgres
+cp .env.example .env
+# Edit NIMBUSWARE_DATABASE_URL, NIMBUSWARE_ADMIN_TOKEN, etc.
+poetry run nimbusware-config seed-from-repo
+```
+
+### 3. Run
+
+**Desktop shell (API + Streamlit + pywebview):**
+
+```bash
 poetry run nimbusware-run
+# or: python run.py
 ```
 
-Starts:
-
-- Nimbusware API on `127.0.0.1:${PORT:-8000}` (localhost only)
-- Streamlit console on a local port
-- pywebview window (no separate browser tab)
-
-#### Option B: Launcher UI
+**Launcher (install / update / run buttons):**
 
 ```bash
-python launcher.py
-# or
 poetry run nimbusware-launcher
 ```
 
-Buttons:
-
-- **Check for updates** — `git fetch` + compare to upstream
-- **Update (git pull)** — `git pull --ff-only`
-- **Install / setup** — `scripts/install_nimbusware.py` (Poetry, Postgres, optional seed)
-- **Run Nimbusware** — launches `run.py`
-
-#### Option C: Separate processes
+**Separate processes:**
 
 ```bash
 poetry run nimbusware-api
 poetry run streamlit run packages/nimbusware_console/app.py
 ```
 
-## Smoke Test
+Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`.
 
-No GUI window:
+API docs: http://127.0.0.1:8000/openapi.json (default port from `PORT` / `8000`).
 
-```bash
-python run.py --smoke
-```
+## Operator console
 
-Checks Streamlit `/_stcore/health` and API `/openapi.json`.
+Streamlit app: [`packages/nimbusware_console/app.py`](packages/nimbusware_console/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
 
-## Streamlit Operator Console
+**Runs & timeline**
 
-Single-page ops dashboard (`packages/nimbusware_console/app.py`):
+- Filtered run list (workflow profile, dates, escalation, status), pagination, CSV/JSON export
+- Run detail: summary, append-only timeline, findings, live critic matrix
+- Lifecycle actions: retry, escalate; drill-downs for integrator gate, personas, agent evaluator, self-refinement, security scan, universal critique, scraper fetch, preflight
 
-- **Recent runs** — filters, pagination, CSV/JSON export
-- **Run detail** — summary, timeline, findings, critic matrix, retry/escalate actions
-- **Timeline drill-downs** — integrator gate, persona assignment, agent evaluator, self-refinement, security scan, universal critique, escalations, scraper fetch, preflight
-- **Config tooling** — bundle catalog + FAISS, persona shelves/editor, workflow explainers, module integrator preview/apply
+**Configuration & search**
 
-The UI talks to the Nimbusware API over `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+- Operator chat — start runs, steer workflow from the UI
+- Custom agents — CRUD + system prompt editor (Postgres registry in DB mode)
+- Bundle catalog search (local + API parity), FAISS index status, catalog editor
+- Persona shelves and editor, workflow explainers, integrator preview/apply
+- Cross-run preflight trends and fleet metrics export
+
+**Enterprise only** (sidebar): API key connect, tenant switcher, **Enterprise fleet dashboard** (fleet memory status, Ollama SLI + preflight aggregate, Redis worker health).
 
 ## Nimbusware API (`/v1`)
 
-Routers in `packages/nimbusware_api/app.py`:
+All routes are under `/v1` unless noted. Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap) `X-Nimbusware-Api-Key`.
 
-| Router | Purpose |
-|--------|---------|
-| runs | Create/list runs, timeline, findings |
-| actions | Retry, escalate, role execute stub |
-| bundles | Search, catalog read/write |
-| personas | Shelf catalog; admin CRUD |
-| preflight | Fleet preflight history |
-| scraper-artifacts | On-disk artifact inventory |
+### Core (all editions)
 
-OpenAPI: http://127.0.0.1:8000/openapi.json
+| Area | Endpoints | Notes |
+|------|-----------|--------|
+| **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | Create runs with `workflow_profile`; list filters + keyset pagination |
+| **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Drive pipeline stages; slice runs micro-slice chain |
+| **Actions** | Retry, escalate, role execute stubs | Operator mutations |
+| **Bundles** | `GET /bundles/search`, catalog `GET/PUT/PATCH` | FAISS-backed search when index built |
+| **Personas** | Shelf read; admin CRUD with `X-Nimbusware-Admin-Token` | Postgres authority in DB mode |
+| **Custom agents** | `GET/POST/PATCH/DELETE /custom-agents` | Registry + prompts |
+| **Preflight** | `GET /preflight-history` | Bounded fleet aggregation + optional `metrics_export` |
+| **Scraper artifacts** | Inventory, retention signals | Local `.cache/hermes_scraper` or enterprise object-store primary |
+| **Platform** | `GET /platform/edition` | Edition + feature manifest |
 
-## Linux Desktop (GTK / pywebview)
+### Enterprise
 
-On Linux, `run.py` can install GTK/WebKit deps automatically (`packages/nimbusware_env/linux_desktop_deps.py`). Skip during install:
+| Area | Endpoints | Notes |
+|------|-----------|--------|
+| **IAM** | `POST /enterprise/iam/bootstrap` (admin token), `GET /iam/me`, tenants, API keys | First-time bootstrap returns a one-time API key |
+| **Fleet memory** | `GET /status`, `POST /rebuild`, `GET /search`, `POST /sync` | Tenant-scoped org index |
+| **Config NOTIFY** | `GET /enterprise/config-notify/status` | Listener status when enabled |
+| **Object store** | `GET /enterprise/scraper-artifacts/object-store/status` | Primary backend config |
+| **Fleet worker** | `GET /enterprise/fleet-worker/health`, `/metrics` | Redis queue depth, back-pressure |
+| **Fleet Ollama SLI** | `GET /enterprise/fleet-ollama-sli/status`, `/preflight-aggregate` | Sustained p95 + history merge |
+
+Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterprise auth: `X-Nimbusware-Api-Key`.
+
+## CLI tools
+
+| Command | Purpose |
+|---------|---------|
+| `poetry run nimbusware-api` | Start FastAPI/uvicorn |
+| `poetry run nimbusware-config` | Import/export/seed Postgres config |
+| `poetry run hermes-preflight` | Ad-hoc Ollama preflight probe + JSON histogram |
+| `poetry run hermes-memory-index` | Build repo-scoped memory FAISS index |
+| `poetry run hermes-memory-sync` | Enterprise fleet memory push/pull (canonical store) |
+| `poetry run hermes-memory-replay` | Replay runs against memory fixtures |
+| `poetry run hermes-role-telemetry` | Aggregate role telemetry from events |
+| `poetry run hermes-routing-suggest` | Read-only `model-routing.yaml` suggestions |
+| `poetry run hermes-run-worker` | Redis/in-memory run-dispatch worker |
+| `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
+| `poetry run nimbusware-run` | Desktop API + console window |
+| `poetry run nimbusware-launcher` | Install/update/run launcher UI |
+
+Scripts: [`scripts/build_bundle_faiss_index.py`](scripts/build_bundle_faiss_index.py), [`scripts/build_memory_faiss_index.py`](scripts/build_memory_faiss_index.py), [`scripts/run_dispatch_worker.py`](scripts/run_dispatch_worker.py), [`scripts/prune_scraper_artifacts.py`](scripts/prune_scraper_artifacts.py), [`scripts/e2e_smoke.py`](scripts/e2e_smoke.py).
+
+Runbooks: [`scripts/run_dispatch_fleet_runbook.md`](scripts/run_dispatch_fleet_runbook.md), [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md).
+
+## Docker Compose
+
+```bash
+docker compose up -d postgres
+# Enterprise Redis worker:
+docker compose --profile fleet up -d redis
+```
+
+Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
+
+## Enterprise setup sketch
+
+```powershell
+$env:NIMBUSWARE_EDITION = "enterprise"
+poetry run nimbusware-api
+# Bootstrap (once, admin token):
+# POST /v1/enterprise/iam/bootstrap  Header: X-Nimbusware-Admin-Token
+# Use returned api_key as X-Nimbusware-Api-Key on subsequent /v1/* calls
+```
+
+Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
+
+## Linux desktop (GTK / pywebview)
+
+On Linux, `run.py` can install GTK/WebKit deps via `nimbusware_env.linux_desktop_deps`. Skip during install:
 
 ```bash
 python scripts/install_nimbusware.py --skip-linux-desktop-deps
 ```
 
-## Build Launcher Binary
+## Build launcher binary
 
-Platform-specific; build on each target OS.
+**Windows:** `.\scripts\build_launcher.ps1` → `dist/NimbuswareLauncher.exe`  
+**macOS / Linux:** `./scripts/build_launcher.sh` → `dist/NimbuswareLauncher`
 
-**Windows**
-
-```powershell
-.\scripts\build_launcher.ps1
-```
-
-→ `dist/NimbuswareLauncher.exe` (temp files stay under `build/` and `dist/`, both gitignored)
-
-**macOS / Linux**
-
-```bash
-chmod +x scripts/build_launcher.sh
-./scripts/build_launcher.sh
-```
-
-→ `dist/NimbuswareLauncher`
-
-Place the binary in the repo root (next to `pyproject.toml`).
+Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Testing
 
 ```bash
-poetry run pytest tests -q
+poetry run pytest tests/ -q
+# CI-style unit subset (no Postgres integration):
+poetry run pytest tests/ -q -m "not integration"
+# Optional fleet benchmarks:
+poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
 ```
 
-## Repo Notes
+Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). Gates script: `scripts/run_integration_like_ci.ps1` / `.sh`.
 
-- `.hermes/` — Hermes agent run artifacts (integration adapter workspaces); gitignored
-- `HERMES_*` — agent runtime configuration (LLM, critics, scanners, slice orchestration)
-- `NIMBUSWARE_*` — platform configuration (database, API URL, admin token, default workflow profile)
+## Configuration reference (common env vars)
+
+| Variable | Purpose |
+|----------|---------|
+| `NIMBUSWARE_REPO_ROOT` | Repo root for configs and artifacts |
+| `NIMBUSWARE_DATABASE_URL` | Postgres for events + config |
+| `NIMBUSWARE_API_BASE` | Console → API URL |
+| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations |
+| `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
+| `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
+| `HERMES_USE_LLM` | Enable LLM-backed stages |
+| `HERMES_RUN_DISPATCH` | `redis` or in-memory queue for workers |
+| `HERMES_REDIS_URL` | Redis URL when dispatch=redis |
+
+Full list: [`.env.example`](.env.example).
+
+## License
+
+See repository license file if present; otherwise treat as private/unlicensed until stated.

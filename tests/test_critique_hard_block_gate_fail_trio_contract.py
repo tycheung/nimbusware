@@ -1,40 +1,5 @@
-"""``_critique_*_hard_block_gate_fail`` trio + aggregator direct contracts.
+"""_critique_*_hard_block_gate_fail`` trio + aggregator direct contracts."""
 
-fo89's Next-slice item (5) surfaced this exact gap: today the 3
-helpers (``_critique_impl_hard_block_gate_fail`` /
-``_critique_tw_hard_block_gate_fail`` /
-``_critique_pll_hard_block_gate_fail`` at
-[pipeline.py:960-999](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py))
-and the aggregator ``_should_skip_critique_downstream_tail`` at
-[pipeline.py:1001-1016](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-have **zero** direct unit tests; only indirect coverage exists via
-4 integration tests at
-[`tests/test_critique_router_pipeline.py`](d:\\Hermes\\tests\\test_critique_router_pipeline.py):927-1078
-that call ``execute_writer_verifier_pass()`` and check side
-effects. None isolate the 3 helpers; none cover the negative axes.
-
-fo90 closes the gap via 4 parts spanning 22 contract axes:
-
-* **Part A** -- ``_critique_impl_hard_block_gate_fail`` (5 axes):
- hard-block off / ``(llm OR stub)`` both off / no impl gate row
- (incl. stage-filter sub-assertion with TW+planner-only gates) /
- last impl gate PASS / HAPPY FAIL impl gate.
-* **Part B** -- ``_critique_tw_hard_block_gate_fail`` (6 axes):
- same as Part A PLUS the **master ``tw_enabled`` axis** (the
- asymmetric guard absent in impl).
-* **Part C** -- ``_critique_pll_hard_block_gate_fail`` (6 axes):
- parallel to Part B with ``pll_*`` and ``PLANNER_CRITIQUE_STAGE``
- proving symmetry between tw and pll modulo stage-name filter.
-* **Part D** -- ``_should_skip_critique_downstream_tail`` (5
- axes): all-off baseline / single-trigger per helper / **D5
- short-circuit ordering** via ``patch.object`` ``call_count``
- asserting impl evaluated first + tw/pll NOT invoked when impl
- returns True (pins the ``or`` short-circuit evaluation order).
-
-After fo90: the trio + aggregator have a complete 22-axis
-unit-level contract matrix; the impl/tw/pll asymmetry is now
-explicit in the test surface.
-"""
 
 from __future__ import annotations
 

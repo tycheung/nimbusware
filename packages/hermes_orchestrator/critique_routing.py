@@ -1,4 +1,4 @@
-"""Critique pairings for run lifecycle (plan §14 #16)."""
+"""Critique pairings for run lifecycle."""
 
 from __future__ import annotations
 

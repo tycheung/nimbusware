@@ -42,7 +42,7 @@ def memory_index_sync_state(repo_root: Path) -> dict[str, Any]:
 
 
 def memory_sync_manifest_stub(repo_root: Path) -> dict[str, Any]:
-    """Read-only sync manifest shape for remote hydrate (fo202)."""
+    """Read-only sync manifest shape for remote hydrate."""
     from hermes_memory.org_scope import fleet_memory_enabled
 
     index_dir = default_memory_index_dir(repo_root)

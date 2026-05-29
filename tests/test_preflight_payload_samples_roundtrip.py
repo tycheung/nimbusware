@@ -1,4 +1,4 @@
-"""Tests for the fo124 ``health_latency_samples_ms`` payload extension.
+"""Tests for ``health_latency_samples_ms`` payload extension.
 
 Asserts that ``ModelPreflightPassedPayload`` accepts the new optional field,
 rejects malformed entries, and round-trips through JSON (the persistence
@@ -64,7 +64,7 @@ def test_payload_rejects_negative_sample() -> None:
 def test_payload_rejects_non_int_sample() -> None:
     """Pydantic coerces numeric strings to int, but truly non-numeric values must be rejected.
 
-    The fo124 ``field_validator`` ensures non-int / non-coercible entries
+    The ``field_validator`` ensures non-int / non-coercible entries
     surface as ``ValidationError`` rather than silently corrupting the
     persisted payload. ``"300"`` would coerce to 300 (Pydantic default), so
     we use a nested list which is genuinely non-coercible.

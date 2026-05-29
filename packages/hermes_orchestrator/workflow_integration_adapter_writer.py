@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for Integration Adapter Writer scaffold (plan §14 #13)."""
+"""Workflow YAML knobs for Integration Adapter Writer scaffold ."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Enterprise fleet memory (fo202)."""
+"""Enterprise fleet memory."""
 
 from __future__ import annotations
 

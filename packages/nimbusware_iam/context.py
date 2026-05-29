@@ -1,4 +1,4 @@
-"""Request-scoped tenant and auth context (Lane D / fo201)."""
+"""Request-scoped tenant and auth context."""
 
 from __future__ import annotations
 

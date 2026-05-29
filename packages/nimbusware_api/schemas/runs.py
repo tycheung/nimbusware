@@ -1,4 +1,4 @@
-"""Typed JSON shapes for run list/detail (plan §6.2, PLAN_GAP backlog #3)."""
+"""Typed JSON shapes for run list/detail."""
 
 from __future__ import annotations
 

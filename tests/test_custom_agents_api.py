@@ -1,4 +1,4 @@
-"""Custom agents HTTP API (fo151)."""
+"""Custom agents HTTP API."""
 
 from __future__ import annotations
 

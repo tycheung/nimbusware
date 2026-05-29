@@ -1,4 +1,4 @@
-"""Postgres + in-memory IAM stores (Lane D / fo201)."""
+"""Postgres + in-memory IAM stores."""
 
 from __future__ import annotations
 

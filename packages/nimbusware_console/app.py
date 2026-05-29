@@ -1,4 +1,4 @@
-"""Run list, timeline, findings, critic matrix, retry / escalate (plan §7, §14 #11)."""
+"""Run list, timeline, findings, critic matrix, retry / escalate ."""
 
 from __future__ import annotations
 

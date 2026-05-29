@@ -1,4 +1,4 @@
-"""Remote canonical fleet memory store adapter (Lane D / fo202)."""
+"""Remote canonical fleet memory store adapter."""
 
 from __future__ import annotations
 

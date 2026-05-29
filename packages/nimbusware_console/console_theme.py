@@ -19,7 +19,7 @@ def streamlit_theme_defaults_caption(*, repo_root: Path | None = None) -> str:
 
 
 def streamlit_white_label_deferred_caption() -> str:
-    """Document Lane A close-out: custom CSS / white-label branding deferred."""
+    """Custom CSS / white-label branding deferred."""
     return (
         "White-label: **optional branding deferred** (§14 #11) — no per-tenant CSS injection. "
         "See the deferral note at the top of ``.streamlit/config.toml``; use ``[theme]`` keys "

@@ -1,44 +1,5 @@
-"""``HERMES_USE_LLM`` env-layer string-arm contract.
+"""HERMES_USE_LLM`` env-layer string-arm contract."""
 
-[`RunOrchestrator.execute_plan_stage`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-gates the LLM plan-stage path at line 679 via
-``os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")``.
-This is the **fifth Pattern A** binary gate pinned by the fo62-68 env-layer
-sweep and the **first with a three-branch fallback** within the env-gate
-accept arm:
-
-* env REJECT -> stub only (1 stub call, 0 LLM calls)
-* env ACCEPT + ``_selected_model_for_run`` returns ``None`` -> stub only
- (the ``if model:`` check at line 684 skips the LLM body entirely)
-* env ACCEPT + model valid + LLM raises -> the bare ``except Exception:
- pass`` arm at line 696 swallows it and falls through to stub
- (1 LLM call, 1 stub call)
-* env ACCEPT + model valid + LLM returns -> the ``return`` at line 695
- suppresses the stub fallback (1 LLM call, 0 stub calls)
-
-Before this slice no test file mentioned ``HERMES_USE_LLM`` or directly
-exercised ``execute_plan_stage`` despite the function being central to
-every run -- the "stub vs LLM coupling" concern from fo67/68 triage is
-resolved by patching ``execute_plan_stage_llm`` and ``emit_stub_plan_stage``
-at the ``hermes_orchestrator.pipeline`` imported-function boundary (same
-pattern as fo68's httpx mocks) plus ``_selected_model_for_run`` on the
-orchestrator instance to make model availability independently controllable.
-
-Three parts:
-
-* **Part A** locks the truthy tuple membership AND simultaneously locks the
- LLM-ok branch as the canonical accept-arm endpoint.
-* **Part B** locks the three-branch fallback contract independently:
- no-model fallback, LLM-raises fallback, and LLM-ok control.
-* **Part C** locks the asymmetric fail-closed string-arm (env-absent +
- whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy +
- empty / junk / near-miss / interior whitespace). Parallel to
- fo65 / 66 / 67 / 68 Part C.
-
-Per-case messages ``force_on raw=<raw>: <branch>`` / ``<branch>:
-<component>`` / ``fail_closed raw=<raw>: <branch>`` identify the failing
-branch + offending env scalar + (Part B) failing fallback path.
-"""
 
 from __future__ import annotations
 

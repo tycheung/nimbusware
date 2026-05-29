@@ -1,4 +1,4 @@
-"""Custom operator-defined agents with dedicated system prompts (fo151)."""
+"""Custom operator-defined agents with dedicated system prompts."""
 
 from __future__ import annotations
 

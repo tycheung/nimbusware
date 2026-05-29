@@ -1,4 +1,4 @@
-"""Persona catalog HTTP API (plan §14 #14, fo127 editing surface).
+"""Persona catalog HTTP API with optional editing surface.
 
 GET stays unauthenticated (read-only catalog discovery); POST / PUT / PATCH /
 DELETE require ``X-Nimbusware-Admin-Token`` since they mutate ``shelves.yaml`` and

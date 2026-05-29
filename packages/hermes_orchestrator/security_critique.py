@@ -1,4 +1,4 @@
-"""Security Critic stage after writer verify (Phase 3 / fo143)."""
+"""Security Critic stage after writer verify."""
 
 from __future__ import annotations
 

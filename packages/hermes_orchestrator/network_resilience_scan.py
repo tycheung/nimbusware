@@ -1,4 +1,4 @@
-"""Static network/resilience scans + optional SQL query budget (Phase 3 / fo145)."""
+"""Static network/resilience scans + optional SQL query budget."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Self-refinement policy YAML (plan §14 #17)."""
+"""Self-refinement policy YAML ."""
 from __future__ import annotations
 from pathlib import Path
 from hermes_extensions import load_self_refinement_policy

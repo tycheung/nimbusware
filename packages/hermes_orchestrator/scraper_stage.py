@@ -1,4 +1,4 @@
-"""Optional scraper / outbound fetch stage (plan §9, PLAN_GAP backlog #2)."""
+"""Optional scraper / outbound fetch stage."""
 
 from __future__ import annotations
 

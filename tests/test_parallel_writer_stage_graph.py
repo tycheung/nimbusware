@@ -1,4 +1,4 @@
-"""Parallel-writer stage graph metadata (plan §12 Phase 2-b)."""
+"""Parallel-writer stage graph metadata ."""
 
 from __future__ import annotations
 

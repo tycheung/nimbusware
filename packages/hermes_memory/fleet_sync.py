@@ -1,4 +1,4 @@
-"""Fleet memory pull/push helpers (Lane D / fo202)."""
+"""Fleet memory pull/push helpers."""
 
 from __future__ import annotations
 

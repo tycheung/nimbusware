@@ -1,4 +1,4 @@
-"""Config document change notifications (Lane D / fo203)."""
+"""Config document change notifications."""
 
 from __future__ import annotations
 

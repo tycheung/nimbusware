@@ -1,4 +1,4 @@
-"""Bundle integrator outcome models (Phase 4 / fo170)."""
+"""Bundle integrator outcome models."""
 
 from __future__ import annotations
 

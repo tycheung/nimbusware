@@ -61,7 +61,7 @@ RUN_LIST_LINK_HEADER: dict[str, Any] = {
     "schema": {"type": "string"},
 }
 
-# Optional RFC 5988 ``Link`` on ``GET /v1/runs/{run_id}`` — related sub-resources (OpenAPI hint;
+# Optional RFC 5988 ``Link`` on ``GET /v1/runs/{run_id}`` — related sub-resources (OpenAPI hint
 # servers may omit the header; paths follow ``/v1`` prefix).
 RUN_DETAIL_LINK_HEADER: dict[str, Any] = {
     "description": (

@@ -1,4 +1,4 @@
-"""Minimal Ollama ``/api/chat`` JSON helper for orchestration (plan §2, §19.1)."""
+"""Minimal Ollama ``/api/chat`` JSON helper for orchestration ."""
 
 from __future__ import annotations
 

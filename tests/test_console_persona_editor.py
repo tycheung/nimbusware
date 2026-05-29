@@ -1,9 +1,5 @@
-"""Unit tests for the fo127 Streamlit persona editor helpers (§14 #14-edit).
+"""Unit tests for the fo127 Streamlit persona editor helpers."""
 
-Six axes: build_patch_request only includes changed fields, diff_summary lists
-changes in operator-friendly form, parse_write_response surfaces 200 / 409 /
-422, find_persona_in_catalog handles missing/empty inputs.
-"""
 
 from __future__ import annotations
 
@@ -41,9 +37,7 @@ SNAPSHOT: dict = {
 }
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: build_patch_request only includes mutated fields + expected_version
-# ---------------------------------------------------------------------------
 
 
 def test_build_patch_request_only_includes_changed_fields() -> None:
@@ -63,9 +57,7 @@ def test_build_patch_request_treats_empty_string_and_none_as_same() -> None:
     assert "capability_profile" not in req
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: diff_summary returns operator-readable bullets
-# ---------------------------------------------------------------------------
 
 
 def test_diff_summary_returns_changed_field_pairs() -> None:
@@ -172,9 +164,7 @@ def test_persona_editor_diff_summary_caption_overflow_cap() -> None:
     assert str(len(EDITABLE_FIELDS)) in cap
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: parse_write_response on 200 returns ok=True + catalog
-# ---------------------------------------------------------------------------
 
 
 def test_parse_write_response_2xx_returns_catalog() -> None:
@@ -184,9 +174,7 @@ def test_parse_write_response_2xx_returns_catalog() -> None:
     assert parsed["catalog"] == body
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: 409 version conflict flagged for UI
-# ---------------------------------------------------------------------------
 
 
 def test_parse_write_response_flags_version_conflict() -> None:
@@ -208,9 +196,7 @@ def test_parse_write_response_409_without_version_code_is_not_version_conflict()
     assert parsed["version_conflict"] is False
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: 422 length-cap / validation surfaces structured error
-# ---------------------------------------------------------------------------
 
 
 def test_parse_write_response_422_surfaces_validation_error() -> None:
@@ -226,9 +212,7 @@ def test_parse_write_response_422_surfaces_validation_error() -> None:
     assert parsed["details"]["errors"]
 
 
-# ---------------------------------------------------------------------------
 # Axis 6: find_persona_in_catalog handles missing/empty inputs
-# ---------------------------------------------------------------------------
 
 
 def test_find_persona_in_catalog_returns_none_for_missing_shelf_or_id() -> None:

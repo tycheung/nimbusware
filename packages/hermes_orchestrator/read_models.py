@@ -1,4 +1,4 @@
-"""Lightweight read models from replayed events (plan §6.3, §19.3)."""
+"""Lightweight read models from replayed events ."""
 
 from __future__ import annotations
 

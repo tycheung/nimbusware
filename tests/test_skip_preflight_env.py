@@ -1,41 +1,5 @@
-"""``HERMES_SKIP_PREFLIGHT`` env-layer string-arm contract (follow-on 67, §14 #1).
+"""HERMES_SKIP_PREFLIGHT`` env-layer string-arm contract (follow-on 67, §14 #1)."""
 
-[`run_model_preflight`](d:\\Hermes\\packages\\hermes_orchestrator\\preflight.py)
-reads ``HERMES_SKIP_PREFLIGHT`` via ``os.environ.get(...).lower() in ("1",
-"true", "yes")``. This is the **third Pattern A** binary gate pinned by the
-fo62-66 env-layer sweep and the **first non-inverted single-call-site**
-Pattern A: truthy variants **short-circuit** to a deterministic
-``(primary_model_id, skipped_evidence, True)`` tuple; every other value falls
-through to ``httpx.get`` (which raises ``PreflightError("runtime not
-reachable: ...")`` when the runtime is unavailable).
-
-Before this slice the env was set to ``"1"`` in
-[tests/test_api.py:12](d:\\Hermes\\tests\\test_api.py) and many integration
-paths to silence preflight noise, but the **coercion contract itself** was
-completely unpinned -- a refactor that broke ``.lower()`` or shrank the
-truthy tuple would surface as a flood of unrelated test failures rather
-than a single focused contract failure.
-
-Three parts:
-
-* **Part A** locks the truthy tuple membership (env-gate accepted -> the
- deterministic skipped 3-tuple is returned without touching the network).
-* **Part B** locks the **exact** ``(str, dict, bool)`` tuple shape -- a
- bare ``result == _SKIPPED_TUPLE`` (Part A's check) silently passes when
- ``"skipped": True`` is refactored to ``"skipped": 1`` because Python's
- ``True == 1`` evaluates to ``True``. Part B's per-key
- ``type(...) is type(...)`` plus value equality catches that drift.
-* **Part C** locks the asymmetric fail-closed string-arm (env-absent +
- whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
- + empty / junk / near-miss / interior whitespace) by mocking
- ``httpx.get`` to raise ``httpx.ConnectError``; reaching the resulting
- ``PreflightError`` proves the env-gate did not short-circuit. Parallel
- to fo65.
-
-Per-case messages ``force_on raw=<raw>`` / ``shape raw=<raw>: <component>``
-/ ``fail_closed raw=<raw>`` identify the failing branch + offending env
-scalar + (Part B) failing tuple element or evidence key.
-"""
 
 from __future__ import annotations
 

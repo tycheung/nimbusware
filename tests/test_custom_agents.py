@@ -1,4 +1,4 @@
-"""Custom agent registry (fo151)."""
+"""Custom agent registry."""
 
 from __future__ import annotations
 

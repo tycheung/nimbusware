@@ -1,4 +1,4 @@
-"""Unit tests for cross-run preflight trend helpers (fo130 / §14 #1)."""
+"""Unit tests for cross-run preflight trend helpers."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Self-refinement policy loader (plan §14 #17) — config only until new event types migrate."""
+"""Self-refinement policy loader — config only until new event types migrate."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Tenant scoping helpers for Hermes stores (fo201)."""
+"""Tenant scoping helpers for Hermes stores."""
 
 from __future__ import annotations
 

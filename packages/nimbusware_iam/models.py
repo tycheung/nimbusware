@@ -1,4 +1,4 @@
-"""IAM data models (Lane D / fo201)."""
+"""IAM data models."""
 
 from __future__ import annotations
 

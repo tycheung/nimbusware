@@ -64,9 +64,7 @@ _FULL_STATUS: dict[str, object] = {
 }
 
 
-# ---------------------------------------------------------------------------
 # load_prune_status
-# ---------------------------------------------------------------------------
 
 
 def test_load_prune_status_returns_none_when_path_is_none() -> None:
@@ -98,9 +96,7 @@ def test_load_prune_status_parses_valid_payload(tmp_path: Path) -> None:
     assert parsed == _FULL_STATUS
 
 
-# ---------------------------------------------------------------------------
 # prune_status_summary_rows
-# ---------------------------------------------------------------------------
 
 
 def test_prune_status_summary_rows_returns_empty_for_none() -> None:
@@ -170,9 +166,7 @@ def test_prune_status_export_json_and_summary_rows_csv() -> None:
     assert prune_status_summary_rows_csv([]) == ""
 
 
-# ---------------------------------------------------------------------------
 # prune_status_age_since_wrote_at_caption
-# ---------------------------------------------------------------------------
 
 
 def test_age_since_wrote_at_caption_hours_and_minutes() -> None:
@@ -203,9 +197,7 @@ def test_age_since_wrote_at_caption_none_when_missing_status_or_wrote_at() -> No
     assert prune_status_age_since_wrote_at_caption({"wrote_at": "bad"}) is None
 
 
-# ---------------------------------------------------------------------------
 # prune_status_freshness_caption
-# ---------------------------------------------------------------------------
 
 
 _WROTE_AT = datetime(2026, 5, 12, 18, 0, tzinfo=timezone.utc)

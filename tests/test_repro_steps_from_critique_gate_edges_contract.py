@@ -1,32 +1,5 @@
-"""``_repro_steps_from_critique_gate`` direct-contract edges.
+"""_repro_steps_from_critique_gate`` direct-contract edges."""
 
-The pure helper at [pipeline.py:885-899] composes a stage-name + verdict
-header followed by up to 3 optional segments (failure_reason_code,
-failing_critics count, failing_finding_ids count) into a list of repro
-lines. fo89 D4 pinned the **main behavioral shape** (4 sub-axes: minimal
-2-line / full 5-line strict order / `.strip()` on failure_reason_code /
-combined non-list-critics+empty-ids axis). fo100 closes the remaining
-edges that fo89 didn't reach.
-
-fo100 closes 4 unpinned surfaces via 4 parts spanning 19 axes
-(~26 assertions, source unchanged):
-
-* **Part A** -- ``failure_reason_code`` coalesce ladder
- ``(gate_pl.get('failure_reason_code') or '').strip()`` (5 axes -- key
- missing / explicit None / empty string / whitespace-only collapses to
- empty / non-empty after strip is what gets appended).
-* **Part B** -- empty/None/non-list rejection matrix for both lists
- (5 axes -- failing_critics=[] / failing_critics=None /
- failing_finding_ids non-list (reverse asymmetry vs fo89 D4d) /
- failing_finding_ids=None / dual-empty cross-cut -> 2-line output).
-* **Part C** -- count-line pluralization at 1-element and N-element
- boundaries (4 axes -- critics 1 / critics 5 / ids 1 / ids 2; pins
- ``"critic(s)"`` and ``"id(s)"`` are literal suffixes, not pluralization
- branches).
-* **Part D** -- subset-of-optionals ordering + defensive ``[:40]``
- truncation cap (5 axes -- only code / only critics / only ids /
- code+ids skip critics / full 5-line result==result[:40]).
-"""
 
 from __future__ import annotations
 

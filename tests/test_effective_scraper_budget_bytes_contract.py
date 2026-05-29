@@ -1,27 +1,5 @@
-"""``_effective_scraper_budget_bytes`` direct contract.
+"""_effective_scraper_budget_bytes`` direct contract."""
 
-The helper at [pipeline.py:337-354] fuses the policy snapshot's
-``network_egress.budget_bytes_per_run`` with ``ScraperFetchConfig.max_bytes``
-into a single effective cap via ``min(caps) if caps else None``. fo87 pins
-``policy_snapshot_for_run`` (the source); fo97 pins this inner combiner.
-
-Zero direct test coverage today (only indirect exercise via
-``run_optional_scraper_fetch_stage`` in ``tests/test_scraper_stage_pipeline.py``,
-which uses whatever budget the helper computes without pinning the
-``min(policy, cfg)`` truth table).
-
-fo97 closes 4 unpinned surfaces via 4 parts spanning 16 axes
-(~21 assertions, source unchanged):
-
-* **Part A** -- snapshot-side type guards (4 axes -- snap not dict / no
- network_egress / ne not dict / no budget_bytes_per_run).
-* **Part B** -- pb value-guard matrix (5 axes -- None / string / float /
- negative / boundary 0 + positive).
-* **Part C** -- ``min`` composition (4 axes -- policy only / cfg only /
- both with policy stricter / both with cfg stricter).
-* **Part D** -- empty caps + zero-budget edges (3 axes -- both absent /
- both equal / zero is deny-all).
-"""
 
 from __future__ import annotations
 

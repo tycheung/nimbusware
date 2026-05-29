@@ -1,53 +1,5 @@
-"""``_emit_bundle_integrator_gate`` direct contract composite (fo107).
+"""_emit_bundle_integrator_gate`` direct contract composite."""
 
-The bundle integrator gate emitter at [pipeline.py:1484-1553] has substantial
-existing coverage for env-layer string arms and one PASS / one FAIL happy
-path (see [tests/test_pipeline_integrator_gate.py]), but six internal seams
-remain unpinned:
-
-1. **`thresholds.yaml` absent arm** at [pipeline.py:1496-1498] -- no test
-   today patches ``Path.is_file`` to ``False`` for the integrator
-   ``thresholds.yaml`` path.
-2. **`project_tags` 3-arm ladder** at [pipeline.py:1505-1510] -- the
-   singleton-fallback (``project_override is None`` + ``bundle_tags`` empty)
-   has zero coverage today because production YAML always supplies bundle
-   tags via ``auth-rbac-starter``.
-3. **`is not None` semantics vs truthy** -- production
-   ``parse_integrator_gate_project_tags`` collapses empty lists to ``None``
-   (see [integrator_gate.py:188-189] ``return out or None``), so the
-   pipeline guard being ``is not None`` (not ``if project_override:``) is
-   structurally unreachable from real configs.
-4. **Conditional ``bundle_tags`` key in the profile dict** at
-   [pipeline.py:1511-1515] -- when ``bundle_tags`` is empty the profile is
-   1-key (``{"tags": project_tags}``); when non-empty it is 2-key (``{"tags":
-   project_tags, "bundle_tags": bundle_tags}``).
-5. **`matched_tags` case-fold + whitespace filter** at
-   [pipeline.py:1518-1520] -- ``pset = {str(t).lower() for t in
-   project_tags if str(t).strip()}`` is unpinned for both axes.
-6. **`unanimous_pass_required=False` explicit literal** in both PASS and
-   FAIL branches -- ``GateDecisionEmittedPayload.unanimous_pass_required``
-   has Pydantic default ``True``, so a "remove the explicit param" refactor
-   would silently flip the field.
-
-fo107 closes those gaps via 4 parts spanning 20 axes (source unchanged):
-
-* **Part A** -- thresholds.yaml absent + OR-gate guard + env-vs-import
-  ordering (5 axes -- absent + workflow-on / absent + env-force-on /
-  env kill-switch precedes ``ModuleIntegrator`` construction / canonical
-  all-off guard / workflow-on alone via OR-gate).
-* **Part B** -- ``project_tags`` 3-arm ladder + ``is not None`` semantics
-  (5 axes -- override-wins / bundle_tags arm / singleton fallback /
-  empty override pins ``is not None`` / B3 vs B4 boundary).
-* **Part C** -- profile-dict shape + matched_tags case-fold + whitespace
-  filter (5 axes -- 2-key dict when bundle_tags non-empty / 1-key dict
-  when bundle_tags empty / case-fold / whitespace-only filtered /
-  bundle_tags empty short-circuits matched_tags to ``[]``).
-* **Part D** -- PASS-vs-FAIL payload divergence + emit shape (5 axes --
-  PASS no ``failure_reason_code`` / FAIL LITERAL
-  ``"integrator_below_threshold"`` / ``stage_name`` literal in BOTH /
-  ``unanimous_pass_required is False`` explicit in BOTH / 8-key
-  ``gate_meta`` shape exact set in BOTH).
-"""
 
 from __future__ import annotations
 

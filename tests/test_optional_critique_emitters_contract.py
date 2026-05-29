@@ -1,44 +1,5 @@
-"""``_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional``.
+"""_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional``."""
 
-fo90's Next-slice item (5) surfaced this exact gap: the 2 methods
-at
-[pipeline.py:1018-1103](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
-have **zero** direct unit tests; only indirect coverage exists
-via ``execute_writer_verifier_pass`` integration tests at
-[`tests/test_critique_router_pipeline.py`](d:\\Hermes\\tests\\test_critique_router_pipeline.py).
-None isolate the 6-path control flow nor the call-argument
-propagation contract.
-
-Each method has 6 distinct outcomes for ``(LLM_called,
-LLM_emitted, stub_called)``:
-
-- Path a: ``_enabled=False`` (master) -> no LLM, no stub.
-- Path b1: enabled + llm=False + stub=False -> no LLM, no stub.
-- Path b2: enabled + llm=False + stub=True -> stub-only.
-- Path c: enabled + llm=True + no model selected -> no LLM call;
- stub fallback gated on ``_stub``.
-- Path d: enabled + llm=True + model + LLM returns True -> LLM
- only (stub NOT invoked per ``if not emitted``).
-- Path f: enabled + llm=True + model + LLM returns False +
- stub=True -> LLM + stub fallback.
-
-Plus a 5-axis call-argument propagation contract: ``base_url``
-default/override + ``timeout_seconds`` default/float-cast +
-4-kwarg verbatim pass-through (``run_id``, ``model_id`` from
-``MODEL_SELECTED_PRIMARY``, ``verifier_exit_code``,
-``log_snippet``).
-
-fo91 closes the gap via 4 parts spanning 22 axes (~36 assertions,
-source unchanged):
-
-* **Part A** -- tw 6-path control-flow matrix (~8 assertions).
-* **Part B** -- pll 6-path control-flow matrix (~8 assertions,
- proving symmetric implementation).
-* **Part C** -- tw 5-axis call-argument propagation (~10
- assertions).
-* **Part D** -- pll 5-axis call-argument propagation (~10
- assertions, proving identical kwargs contract across methods).
-"""
 
 from __future__ import annotations
 

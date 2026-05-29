@@ -1,9 +1,5 @@
-"""Unit tests for the fo127 PersonaShelf schema extension (§14 #14-edit).
+"""Unit tests for the fo127 PersonaShelf schema extension."""
 
-Twelve axes spread across legacy backwards-compat, the seven new optional fields
-(accept/reject/length-cap), the version default, the probation_status enum, and
-unicode normalization. Direct calls to the library; no Streamlit / HTTP.
-"""
 
 from __future__ import annotations
 
@@ -37,9 +33,7 @@ def _shelf_with_entry(tmp_path: Path, entry: dict, *, shelf: str = "business_are
     return path
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: legacy compat
-# ---------------------------------------------------------------------------
 
 
 def test_legacy_minimal_entry_still_loads(tmp_path: Path) -> None:
@@ -57,9 +51,7 @@ def test_legacy_minimal_entry_still_loads(tmp_path: Path) -> None:
     assert "instructions" not in entry
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: full-payload entry (all fo127 fields) accepts + round-trips
-# ---------------------------------------------------------------------------
 
 
 def test_full_entry_with_all_optional_fields_accepted(tmp_path: Path) -> None:
@@ -81,9 +73,7 @@ def test_full_entry_with_all_optional_fields_accepted(tmp_path: Path) -> None:
         assert entry[key] == value
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: instructions length cap rejected
-# ---------------------------------------------------------------------------
 
 
 def test_instructions_length_cap_rejected(tmp_path: Path) -> None:
@@ -96,9 +86,7 @@ def test_instructions_length_cap_rejected(tmp_path: Path) -> None:
         shelf.validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: allowed_tools entry count cap rejected
-# ---------------------------------------------------------------------------
 
 
 def test_allowed_tools_entry_count_cap_rejected(tmp_path: Path) -> None:
@@ -111,9 +99,7 @@ def test_allowed_tools_entry_count_cap_rejected(tmp_path: Path) -> None:
         shelf.validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: allowed_tools per-entry length cap rejected
-# ---------------------------------------------------------------------------
 
 
 def test_allowed_tools_per_entry_length_cap_rejected(tmp_path: Path) -> None:
@@ -126,9 +112,7 @@ def test_allowed_tools_per_entry_length_cap_rejected(tmp_path: Path) -> None:
         shelf.validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 6: success_metrics entry count cap rejected
-# ---------------------------------------------------------------------------
 
 
 def test_success_metrics_entry_count_cap_rejected(tmp_path: Path) -> None:
@@ -143,9 +127,7 @@ def test_success_metrics_entry_count_cap_rejected(tmp_path: Path) -> None:
         shelf.validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 7: probation_status enum
-# ---------------------------------------------------------------------------
 
 
 def test_probation_status_must_be_known_value(tmp_path: Path) -> None:
@@ -160,9 +142,7 @@ def test_probation_status_must_be_known_value(tmp_path: Path) -> None:
         PersonaShelf(bad_path).validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 8: version must be int >= 1 when present
-# ---------------------------------------------------------------------------
 
 
 def test_version_must_be_positive_int(tmp_path: Path) -> None:
@@ -182,9 +162,7 @@ def test_version_must_be_int_not_string(tmp_path: Path) -> None:
         PersonaShelf(path).validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 9: wrong type for instructions rejected
-# ---------------------------------------------------------------------------
 
 
 def test_instructions_must_be_str_when_present(tmp_path: Path) -> None:
@@ -193,9 +171,7 @@ def test_instructions_must_be_str_when_present(tmp_path: Path) -> None:
         PersonaShelf(path).validate_structure()
 
 
-# ---------------------------------------------------------------------------
 # Axis 10: unicode NFC normalization on instructions
-# ---------------------------------------------------------------------------
 
 
 def test_normalize_entry_applies_nfc_to_instructions() -> None:
@@ -208,9 +184,7 @@ def test_normalize_entry_applies_nfc_to_instructions() -> None:
     assert n1["instructions"] == n2["instructions"] == composed
 
 
-# ---------------------------------------------------------------------------
 # Axis 11: to_public_catalog omits absent optional fields, includes present
-# ---------------------------------------------------------------------------
 
 
 def test_to_public_catalog_omits_absent_optional_fields(tmp_path: Path) -> None:
@@ -229,9 +203,7 @@ def test_to_public_catalog_omits_absent_optional_fields(tmp_path: Path) -> None:
     assert "allowed_tools" not in entry
 
 
-# ---------------------------------------------------------------------------
 # Axis 12: write_entry replaces in place; delete_entry raises when missing
-# ---------------------------------------------------------------------------
 
 
 def test_write_entry_replaces_in_place_and_delete_entry_raises_for_missing(

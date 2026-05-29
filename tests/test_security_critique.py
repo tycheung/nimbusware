@@ -1,4 +1,4 @@
-"""Security Critic stage (Phase 3 / fo143)."""
+"""Security Critic stage."""
 
 from __future__ import annotations
 

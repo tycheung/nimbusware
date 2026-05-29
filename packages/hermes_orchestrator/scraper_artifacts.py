@@ -1,4 +1,4 @@
-"""On-disk scraper response artifact helpers (PLAN_GAP retention v0)."""
+"""On-disk scraper response artifact helpers."""
 
 from __future__ import annotations
 
@@ -411,7 +411,7 @@ def prune_scraper_artifacts(
     When ``dry_run`` is true, counts stale files but does not delete them and does not
     remove empty directories (non-destructive preview).
 
-    ``include_patterns`` / ``exclude_patterns`` (fo125): optional ``fnmatch`` glob
+    ``include_patterns`` / ``exclude_patterns``: optional ``fnmatch`` glob
     lists evaluated against each file's BASENAME after the mtime cutoff filter.
 
     ``force_local`` skips object-store-primary dispatch (local mirror cleanup only).

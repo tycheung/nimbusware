@@ -11,7 +11,7 @@ router = APIRouter(tags=["platform"])
 
 @router.get("/platform/edition")
 def get_platform_edition() -> dict:
-    """Current product edition and Lane D feature gate manifest (fo200)."""
+    """Current product edition and enterprise feature gate manifest."""
     body = edition_manifest()
     body["compose_profiles"] = enterprise_compose_profiles()
     return body

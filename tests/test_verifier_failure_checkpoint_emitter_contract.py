@@ -1,44 +1,5 @@
-"""``_maybe_escalate_verifier_failure_checkpoint`` direct contract.
+"""_maybe_escalate_verifier_failure_checkpoint`` direct contract."""
 
-The verifier-failure-checkpoint escalation emitter at [pipeline.py:1405-1429]
-is the last mainline orchestrator-level escalation emitter with no
-comprehensive direct contract. Existing coverage:
-
-* [tests/test_verifier_escalation_checkpoint.py] -- only 2 axes (1 happy +
- 1 dedup via pre/post call counts).
-* [tests/test_workflow_suppress_automatic_escalation_matrix.py] B5 --
- only the suppress arm, single axis, no ordering pin.
-
-fo106 closes the gaps via 4 parts spanning 20 axes (~32 assertions, source
-unchanged):
-
-* **Part A** -- suppress fork + loader delegation (5 axes -- suppress
- short-circuits BEFORE loader / loader receives `self._repo_root` /
- loader called exactly once / loader False -> no emit /
- `_workflow_suppresses_automatic_escalation` called with `run_id`).
-* **Part B** -- happy path + emit shape + LITERAL notes (5 axes -- 1
- RUN_ESCALATED / reason_code literal / actor_id literal / **LITERAL
- notes string** distinct from fo104 f-string / no extraneous fields).
-* **Part C** -- dedup-by-reason-code (5 axes -- prior matching blocks /
- prior different reason_code does NOT block / prior STAGE_FAILED does
- NOT block / two prior matching still block / dedup-blocked path means
- `store.append` NOT called).
-* **Part D** -- **cross-emitter independence with fo104 anti-deadlock**
- (5 axes -- forward order / reverse order / double-call interleaving /
- shared suppress fork blocks BOTH / surgical cross-reason pre-seed).
-
-Key contract divergences pinned by fo106:
-
-* **`bool` loader vs tuple** -- loader return IS the gate (no `should_emit`
- pure delegate; distinct from fo104's tuple-unpack + `should_emit`).
-* **LITERAL notes string** -- `"escalate_on_first_verifier_failure policy"`
- is a FIXED string. fo104 uses f-string-based notes; fo102 uses
- `f"threshold=N cumulative_*=n"`. A "harmonize all escalation notes"
- refactor would silently break this contract.
-* **Cross-emitter dedup independence** -- prior to fo106, no test proved
- that the verifier-checkpoint and anti-deadlock emitters do not
- cross-dedup. fo106 Part D pins this surgically.
-"""
 
 from __future__ import annotations
 

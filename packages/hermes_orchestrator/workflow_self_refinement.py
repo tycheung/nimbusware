@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for self-refinement stage marker (plan §14 #17)."""
+"""Workflow YAML knobs for self-refinement stage marker ."""
 
 from __future__ import annotations
 

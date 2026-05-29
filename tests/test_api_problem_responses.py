@@ -1,4 +1,4 @@
-"""OpenAPI 5xx Problem+JSON fragments and uncaught exception handler (cycle 86)."""
+"""OpenAPI 5xx Problem+JSON fragments and uncaught exception handler."""
 
 from __future__ import annotations
 

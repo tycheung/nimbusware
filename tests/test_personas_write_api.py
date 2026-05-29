@@ -1,4 +1,4 @@
-"""Integration tests for fo127 persona write API (§14 #14-edit).
+"""Integration tests for persona write API.
 
 Fourteen axes split across all four HTTP verbs + cross-cutting validation:
 POST happy / duplicate-409 / idempotency replay / 422 length-cap,
@@ -94,9 +94,7 @@ def _persona_events(store: InMemoryEventStore) -> list[dict[str, Any]]:
     ]
 
 
-# ---------------------------------------------------------------------------
 # Axis 1: POST happy path — new persona shows up + audit event recorded
-# ---------------------------------------------------------------------------
 
 
 def test_post_creates_new_persona_and_emits_audit_event(
@@ -128,9 +126,7 @@ def test_post_creates_new_persona_and_emits_audit_event(
     assert events[0]["payload"]["next_version"] == 1
 
 
-# ---------------------------------------------------------------------------
 # Axis 2: POST duplicate id without Idempotency-Key → 409 persona_already_exists
-# ---------------------------------------------------------------------------
 
 
 def test_post_duplicate_id_returns_409(client: TestClient) -> None:
@@ -140,9 +136,7 @@ def test_post_duplicate_id_returns_409(client: TestClient) -> None:
     assert r.json()["code"] == "persona_already_exists"
 
 
-# ---------------------------------------------------------------------------
 # Axis 3: POST with Idempotency-Key replays prior request (returns 201, no double event)
-# ---------------------------------------------------------------------------
 
 
 def test_post_idempotency_key_replays_without_double_event(
@@ -166,9 +160,7 @@ def test_post_idempotency_key_replays_without_double_event(
     assert len(_persona_events(in_memory_store)) == 1
 
 
-# ---------------------------------------------------------------------------
 # Axis 4: POST 422 length-cap (instructions > 8000 chars)
-# ---------------------------------------------------------------------------
 
 
 def test_post_instructions_length_cap_returns_422(client: TestClient) -> None:
@@ -182,9 +174,7 @@ def test_post_instructions_length_cap_returns_422(client: TestClient) -> None:
     assert r.status_code == 422
 
 
-# ---------------------------------------------------------------------------
 # Axis 5: PATCH happy path increments version, sets new instructions
-# ---------------------------------------------------------------------------
 
 
 def test_patch_updates_field_and_increments_version(
@@ -206,9 +196,7 @@ def test_patch_updates_field_and_increments_version(
     assert events[-1]["payload"]["fields_changed"] == ["instructions"]
 
 
-# ---------------------------------------------------------------------------
 # Axis 6: PATCH 409 on version skew
-# ---------------------------------------------------------------------------
 
 
 def test_patch_version_conflict_returns_409(client: TestClient) -> None:
@@ -220,9 +208,7 @@ def test_patch_version_conflict_returns_409(client: TestClient) -> None:
     assert r.json()["code"] == "persona_version_conflict"
 
 
-# ---------------------------------------------------------------------------
 # Axis 7: PATCH 422 length-cap (instructions > 8000 chars)
-# ---------------------------------------------------------------------------
 
 
 def test_patch_length_cap_returns_422(client: TestClient) -> None:
@@ -236,9 +222,7 @@ def test_patch_length_cap_returns_422(client: TestClient) -> None:
     assert r.status_code == 422
 
 
-# ---------------------------------------------------------------------------
 # Axis 8: PATCH 422 when body sets no mutable fields (empty patch)
-# ---------------------------------------------------------------------------
 
 
 def test_patch_empty_body_returns_422(client: TestClient) -> None:
@@ -250,9 +234,7 @@ def test_patch_empty_body_returns_422(client: TestClient) -> None:
     assert r.json()["code"] == "empty_patch"
 
 
-# ---------------------------------------------------------------------------
 # Axis 9: PUT happy path replaces full entry and increments version
-# ---------------------------------------------------------------------------
 
 
 def test_put_replaces_entry_and_increments_version(
@@ -276,9 +258,7 @@ def test_put_replaces_entry_and_increments_version(
     assert _persona_events(in_memory_store)[-1]["payload"]["next_version"] == 2
 
 
-# ---------------------------------------------------------------------------
 # Axis 10: PUT 404 when persona does not exist
-# ---------------------------------------------------------------------------
 
 
 def test_put_unknown_persona_returns_404(client: TestClient) -> None:
@@ -290,9 +270,7 @@ def test_put_unknown_persona_returns_404(client: TestClient) -> None:
     assert r.json()["code"] == "persona_not_found"
 
 
-# ---------------------------------------------------------------------------
 # Axis 11: DELETE happy + 409 version skew
-# ---------------------------------------------------------------------------
 
 
 def test_delete_removes_persona_and_emits_audit(
@@ -318,9 +296,7 @@ def test_delete_version_conflict_returns_409(client: TestClient) -> None:
     assert r.status_code == 409
 
 
-# ---------------------------------------------------------------------------
 # Axis 12: unknown shelf → 422
-# ---------------------------------------------------------------------------
 
 
 def test_post_unknown_shelf_returns_422(client: TestClient) -> None:
@@ -333,9 +309,7 @@ def test_post_unknown_shelf_returns_422(client: TestClient) -> None:
     assert r.json()["code"] == "invalid_shelf"
 
 
-# ---------------------------------------------------------------------------
 # Axis 13: reserved persona_id → 422
-# ---------------------------------------------------------------------------
 
 
 def test_post_reserved_persona_id_returns_422(client: TestClient) -> None:
@@ -348,9 +322,7 @@ def test_post_reserved_persona_id_returns_422(client: TestClient) -> None:
     assert r.json()["code"] == "reserved_persona_id"
 
 
-# ---------------------------------------------------------------------------
 # Axis 14: read-after-write via GET /v1/personas
-# ---------------------------------------------------------------------------
 
 
 def test_read_after_write_shows_updated_catalog(client: TestClient) -> None:
@@ -365,9 +337,7 @@ def test_read_after_write_shows_updated_catalog(client: TestClient) -> None:
     assert entry["version"] == 2
 
 
-# ---------------------------------------------------------------------------
 # Bonus: 401 on missing admin token (sanity that gate is wired)
-# ---------------------------------------------------------------------------
 
 
 def test_post_without_admin_token_returns_401(client: TestClient) -> None:

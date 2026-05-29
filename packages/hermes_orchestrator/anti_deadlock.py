@@ -1,4 +1,4 @@
-"""Anti-deadlock escalation signals from ``configs/escalation/policy.yaml`` (plan §14 #19)."""
+"""Anti-deadlock escalation signals from ``configs/escalation/policy.yaml`` ."""
 
 from __future__ import annotations
 

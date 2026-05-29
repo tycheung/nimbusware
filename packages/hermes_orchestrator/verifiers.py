@@ -1,4 +1,4 @@
-"""Deterministic local verifiers (plan §12 Phase 1, §14 #5)."""
+"""Deterministic local verifiers ."""
 
 from __future__ import annotations
 

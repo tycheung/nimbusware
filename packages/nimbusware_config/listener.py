@@ -1,4 +1,4 @@
-"""Postgres LISTEN worker for config freshness (Lane D / fo203)."""
+"""Postgres LISTEN worker for config freshness."""
 
 from __future__ import annotations
 

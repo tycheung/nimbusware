@@ -1,4 +1,4 @@
-"""LLM slice planning helpers (fo152)."""
+"""LLM slice planning helpers."""
 
 from __future__ import annotations
 

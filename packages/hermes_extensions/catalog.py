@@ -33,7 +33,7 @@ def apply_bundle_memory_ranking(
     *,
     weight: float | None = None,
 ) -> list[dict[str, Any]]:
-    """Re-order catalog hits using historical integrator success rates (fo171)."""
+    """Re-order catalog hits using historical integrator success rates."""
     from hermes_extensions.bundle_memory import blend_bundle_rank_score
 
     if not hits or not stats:
@@ -238,7 +238,7 @@ def search_bundles(
     Returns ``[]`` when the catalog file is missing. Otherwise delegates to
     :class:`BundleCatalog` (FAISS when an index is present under ``bundles/index/``,
     else tag overlap — same semantics as :meth:`BundleCatalog.search`).
-    When ``bundle_outcome_store`` is provided, re-ranks hits using fo171 success rates.
+    When ``bundle_outcome_store`` is provided, re-ranks hits using historical success rates.
     """
     raw = load_bundle_catalog_content(repo_root, config_materializer=config_materializer)
     if raw is None:
@@ -268,7 +268,7 @@ def bundle_faiss_index_ready(repo_root: Path) -> bool:
 
 
 def bundle_faiss_index_sync_state(repo_root: Path) -> dict[str, Any]:
-    """Cheap index vs catalog mtimes for operators (PLAN_GAP §14 #12).
+    """Cheap index vs catalog mtimes for operators.
 
     ``stale`` is ``True`` when both index files exist, the catalog file exists, and the
     catalog's mtime is newer than the newer of the two index files — a rebuild is likely

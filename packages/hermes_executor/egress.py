@@ -1,4 +1,4 @@
-"""Network egress allowlists from frozen policy snapshot (plan §6.3A, §9.1)."""
+"""Network egress allowlists from frozen policy snapshot ."""
 
 from __future__ import annotations
 

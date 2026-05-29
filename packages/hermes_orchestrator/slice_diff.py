@@ -1,4 +1,4 @@
-"""Workspace diff stats and diff-aware slice replanning (fo152+)."""
+"""Workspace diff stats and diff-aware slice replanning."""
 
 from __future__ import annotations
 

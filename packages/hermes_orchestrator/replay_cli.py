@@ -1,4 +1,4 @@
-"""CLI: replay event-store rows into timeline JSON (Phase 4 / fo180)."""
+"""CLI: replay event-store rows into timeline JSON."""
 
 from __future__ import annotations
 

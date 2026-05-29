@@ -1,4 +1,4 @@
-"""Enterprise IAM routes (Lane D / fo201)."""
+"""Enterprise IAM routes."""
 
 from __future__ import annotations
 

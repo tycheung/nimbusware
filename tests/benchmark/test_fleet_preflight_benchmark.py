@@ -1,4 +1,4 @@
-"""pytest-benchmark fleet harness for preflight-history scan (fo206)."""
+"""pytest-benchmark fleet harness for preflight-history scan."""
 
 from __future__ import annotations
 

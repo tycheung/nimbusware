@@ -1,37 +1,5 @@
-"""``_parse_content_length_header`` / ``_scraper_stage_audit_metadata`` /
-``_scraper_body_digest_and_snippet`` / ``_persist_scraper_response_artifact``
-direct-contract edges.
+"""_parse_content_length_header`` / ``_scraper_stage_audit_metadata`` /."""
 
-The four pure scraper helpers at [pipeline.py:233-296] compose the
-``run_optional_scraper_fetch_stage`` pipeline (content-length parsing,
-audit-metadata dict envelope, body digest + snippet preview, on-disk
-artifact persistence). Today they are exercised only **indirectly** via
-``run_optional_scraper_fetch_stage`` in
-[tests/test_scraper_stage_pipeline.py]; fo98 closed
-``_scraper_get_with_retries`` and the budget helper, leaving these four
-pure-helper edges unpinned.
-
-fo101 closes 4 unpinned surfaces via 4 parts spanning 20 axes
-(~26 assertions, source unchanged):
-
-* **Part A** -- ``_parse_content_length_header`` (5 axes -- header
- missing / valid "0" / valid "12345" / malformed "abc" / negative
- "-1" pass-through with no semantic clamp).
-* **Part B** -- ``_scraper_stage_audit_metadata`` (5 axes -- default
- ``content_length_header=None`` suppresses key / ``content_length=0``
- IS included via ``is not None`` guard / ``content_length=42`` happy
- path / envelope outer-key shape / verbatim field-name propagation).
-* **Part C** -- ``_scraper_body_digest_and_snippet`` (5 axes -- sha256
- digest of FULL content invariant / ``snippet_max_bytes=0`` suppresses
- preview / ``snippet_max_bytes=-1`` also suppresses (pins ``> 0``
- strict guard) / positive slice contract / invalid UTF-8 +
- ``errors='replace'`` U+FFFD pass-through).
-* **Part D** -- ``_persist_scraper_response_artifact`` (5 axes --
- filename ``url{NN:02d}_<digest[:32]>.bin`` pattern / under-cap blob =
- full content / over-cap blob truncated to ``persist_cap`` / dual-digest
- invariant (filename uses sha256(full); metadata uses sha256(blob)) /
- ``artifact_relpath`` forward-slash normalization).
-"""
 
 from __future__ import annotations
 

@@ -129,7 +129,7 @@ def test_multiple_passed_events_latest_wins() -> None:
 
 
 def test_legacy_event_without_samples_field_projects_none() -> None:
-    """Pre-fo124 events have no ``health_latency_samples_ms``; projection is None."""
+    """Events without ``health_latency_samples_ms`` yield None projection."""
     legacy = _passed_event(health_samples=None)
     out = preflight_timeline_summary([legacy])
     assert out is not None

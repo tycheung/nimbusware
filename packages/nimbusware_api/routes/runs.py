@@ -72,9 +72,9 @@ INCLUDE_SUMMARY_MAX_LIMIT = 20
 # Timeline summary emission policy (additive / presence-gated):
 # - Integrator gate rows omit ranking/selection keys unless present in metadata.
 # - Self-refinement omits ``max_iterations`` / ``max_iterations_exceeded`` unless
-#   ``max_iterations`` is a positive int on the policy marker metadata.
-# - Helpers diverge on skip-vs-emit for degraded metadata (see fo112 quintet tests);
-#   do not unify integrator-gate skip logic with self-refinement emit-on-missing-meta.
+# ``max_iterations`` is a positive int on the policy marker metadata.
+# - Helpers diverge on skip-vs-emit for degraded metadata
+# do not unify integrator-gate skip logic with self-refinement emit-on-missing-meta.
 
 
 def _integrator_gate_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:

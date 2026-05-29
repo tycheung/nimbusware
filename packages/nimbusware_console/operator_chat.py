@@ -1,4 +1,4 @@
-"""Cursor-like operator chat for Nimbusware (fo150)."""
+"""Cursor-like operator chat for Nimbusware."""
 
 from __future__ import annotations
 

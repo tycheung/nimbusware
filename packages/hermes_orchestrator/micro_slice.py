@@ -1,4 +1,4 @@
-"""Micro-slice planning, diff budgets, and timeline helpers (fo152)."""
+"""Micro-slice planning, diff budgets, and timeline helpers."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Aggregate token/latency hints from event metadata per role (Phase 4 / fo190)."""
+"""Aggregate token/latency hints from event metadata per role."""
 
 from __future__ import annotations
 
@@ -283,7 +283,7 @@ def aggregate_role_telemetry_rows(
     registry: RoleRegistry | None = None,
     run_ids: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Build fo190 summary document from ordered event rows (one or many runs)."""
+    """Build role telemetry summary document from ordered event rows (one or many runs)."""
     buckets: dict[str, _RoleBucket] = {}
     preflight = _PreflightAccumulator()
     for row in rows:
