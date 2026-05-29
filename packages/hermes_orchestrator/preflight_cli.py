@@ -138,7 +138,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=_TOOL_NAME,
         description=(
-            "Run the Hermes Ollama preflight probe ad-hoc and emit a JSON "
+            "Run the Hermes agent Ollama preflight probe ad-hoc and emit a JSON "
             "histogram summary. Mirrors `run.start` selection logic so a "
             "successful CLI probe implies the next run.start will succeed."
         ),

@@ -89,7 +89,7 @@ def run_worker_loop(
 
 
 def _args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Hermes run-dispatch worker")
+    p = argparse.ArgumentParser(description="Hermes agent run-dispatch worker")
     p.add_argument(
         "--max-tasks",
         type=int,

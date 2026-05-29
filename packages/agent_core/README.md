@@ -1,6 +1,6 @@
 # agent_core
 
-Shared Pydantic models for Hermes orchestration events.
+Shared Pydantic models for the Hermes agent orchestration events.
 
 Normative product plan: `hermes-orchestrator-local-plan.md` (repo root).  
 Post-alignment gap analysis: `PLAN_GAP.md` (repo root).

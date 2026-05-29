@@ -1,3 +1,4 @@
+# Nimbusware local dev dependencies. Postgres user/db ``hermes`` is the event-store identifier.
 services:
   postgres:
     image: postgres:16-alpine

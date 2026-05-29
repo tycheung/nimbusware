@@ -1,4 +1,4 @@
-"""Start Hermes API + Streamlit operator console inside a pywebview window."""
+"""Start Nimbusware (Hermes agent API + Streamlit console) inside a pywebview window."""
 
 from __future__ import annotations
 
@@ -152,7 +152,7 @@ def run_desktop(
     streamlit_host: str = "127.0.0.1",
     api_port: int | None = None,
     streamlit_port: int | None = None,
-    window_title: str = "Hermes",
+    window_title: str = "Nimbusware",
     smoke_test: bool = False,
 ) -> int:
     repo = (root or repo_root()).resolve()
@@ -168,7 +168,7 @@ def run_desktop(
         signal.signal(signal.SIGTERM, _handle_signal)
 
     api_port_display = api_port or os.environ.get("HERMES_API_PORT", "8000")
-    print(f"Hermes repo: {repo}")
+    print(f"Nimbusware repo: {repo}")
     print(f"API: http://{api_host}:{api_port_display}/v1 (local only)")
 
     try:
@@ -240,14 +240,14 @@ def run_desktop(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Run Hermes API and operator console in a desktop window.",
+        description="Run Nimbusware (Hermes agent API + operator console) in a desktop window.",
     )
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--api-host", default="127.0.0.1")
     parser.add_argument("--api-port", type=int, default=None)
     parser.add_argument("--streamlit-host", default="127.0.0.1")
     parser.add_argument("--streamlit-port", type=int, default=None)
-    parser.add_argument("--title", default="Hermes")
+    parser.add_argument("--title", default="Nimbusware")
     parser.add_argument(
         "--smoke",
         action="store_true",

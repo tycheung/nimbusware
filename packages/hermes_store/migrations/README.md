@@ -1,6 +1,6 @@
 # Migrations (removed)
 
-Hermes no longer ships numbered incremental SQL migrations. For a **greenfield**
+Nimbusware no longer ships numbered incremental SQL migrations for the Hermes event store. For a **greenfield**
 Postgres, apply the single bootstrap script:
 
 [`../schema/postgres.sql`](../schema/postgres.sql)

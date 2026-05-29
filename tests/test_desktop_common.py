@@ -1,4 +1,4 @@
-"""Tests for Hermes desktop launcher helpers."""
+"""Tests for Nimbusware desktop launcher helpers."""
 
 from __future__ import annotations
 

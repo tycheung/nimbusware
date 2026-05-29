@@ -1,4 +1,4 @@
-# Bootstrap Hermes: Poetry deps, Docker Postgres, schema apply.
+# Bootstrap Nimbusware: Poetry deps, Docker Postgres, schema apply.
 # Usage (from repo root):
 #   .\scripts\install-hermes.ps1
 # Options are forwarded to scripts/install_hermes.py — run:

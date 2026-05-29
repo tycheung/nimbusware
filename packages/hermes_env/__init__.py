@@ -1,4 +1,4 @@
-"""Load Hermes operator environment from the repository ``.env`` file."""
+"""Load Nimbusware repository environment (``.env``), including Hermes agent settings."""
 
 from hermes_env.dotenv import find_repo_root, load_dotenv, set_env_var
 

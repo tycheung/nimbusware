@@ -1,4 +1,4 @@
-"""Apply Hermes ``postgres.sql`` using ``psql`` when available."""
+"""Apply Nimbusware ``postgres.sql`` (Hermes event store) using ``psql`` when available."""
 
 from __future__ import annotations
 

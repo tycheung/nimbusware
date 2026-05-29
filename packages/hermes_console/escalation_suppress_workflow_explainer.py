@@ -297,7 +297,7 @@ def escalation_policy_yaml_verification_shape_caption(
     if has_v is False:
         return (
             "Policy shape: no top-level ``verification`` mapping "
-            "(unexpected vs standard Hermes ``policy.yaml``)."
+            "(unexpected vs standard agent ``policy.yaml``)."
         )
     return None
 
@@ -363,7 +363,7 @@ def escalation_policy_yaml_anti_deadlock_shape_caption(
     if has_ad is False:
         return (
             "Policy shape: no top-level ``anti_deadlock`` mapping "
-            "(unexpected vs standard Hermes ``policy.yaml``)."
+            "(unexpected vs standard agent ``policy.yaml``)."
         )
     return None
 

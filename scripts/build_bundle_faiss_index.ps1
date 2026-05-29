@@ -11,7 +11,7 @@
 
 .EXAMPLE
   .\scripts\build_bundle_faiss_index.ps1
-  .\scripts\build_bundle_faiss_index.ps1 -RepoRoot "D:\Hermes"
+  .\scripts\build_bundle_faiss_index.ps1 -RepoRoot "D:\Nimbusware"
 #>
 param(
     [string]$RepoRoot = ""

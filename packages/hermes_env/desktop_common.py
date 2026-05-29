@@ -1,4 +1,4 @@
-"""Shared helpers for Hermes desktop launcher and run entry points."""
+"""Shared helpers for Nimbusware desktop launcher and run entry points."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from hermes_env.dotenv import find_repo_root
 
 
 def repo_root(*, start: Path | None = None) -> Path:
-    """Hermes repo root; when frozen, search from the executable directory first."""
+    """Nimbusware repo root; when frozen, search from the executable directory first."""
     if getattr(sys, "frozen", False):
         exe_dir = Path(sys.executable).resolve().parent
         for candidate in (exe_dir, *exe_dir.parents):

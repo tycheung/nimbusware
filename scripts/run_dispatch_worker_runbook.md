@@ -4,7 +4,7 @@
 
 1. Set repo root and dispatch mode:
    - PowerShell:
-     - `$env:HERMES_REPO_ROOT = "D:\Hermes"`
+     - `$env:HERMES_REPO_ROOT = "D:\Nimbusware"`
      - `$env:HERMES_RUN_DISPATCH = "memory"`
 2. Run worker with bounded idle exit:
    - `poetry run python scripts/run_dispatch_worker.py --max-idle-loops 20 --idle-sleep-seconds 0.1`

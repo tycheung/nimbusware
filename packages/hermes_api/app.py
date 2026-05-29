@@ -28,7 +28,7 @@ from hermes_store.postgres import PostgresEventStore
 logger = logging.getLogger(__name__)
 
 _OPENAPI_APP_DESCRIPTION = (
-    "Local Hermes run orchestration HTTP API. "
+    "Nimbusware Hermes agent run orchestration HTTP API. "
     "Resource paths are under /v1. "
     "Admin routes (for example POST /v1/roles/{role_id}/execute) require "
     "HERMES_ADMIN_TOKEN. See PLAN_GAP.md at the repository root for scope. "
@@ -75,7 +75,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-    title="Hermes",
+    title="Nimbusware (Hermes agent)",
     version="0.5.0",
     description=_OPENAPI_APP_DESCRIPTION,
     lifespan=lifespan,

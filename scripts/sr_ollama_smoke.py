@@ -22,7 +22,7 @@ def main() -> int:
         "--repo-root",
         type=Path,
         default=ROOT,
-        help="Hermes repository root",
+        help="Nimbusware repository root",
     )
     args = parser.parse_args()
     os.environ.setdefault("HERMES_SELF_REFINEMENT_STAGE_MARKER", "1")

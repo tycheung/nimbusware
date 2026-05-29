@@ -11,7 +11,7 @@
 # exit so operators are notified out-of-band. Concurrency group prevents overlapping cron +
 # workflow_dispatch runs. The default invocation actually deletes; swap in `--dry-run` to
 # preview-and-log only.
-name: Hermes scraper artifact prune
+name: Nimbusware scraper artifact prune
 
 on:
   schedule:

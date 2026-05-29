@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bootstrap Hermes: Poetry deps, Docker Postgres, schema apply.
+# Bootstrap Nimbusware: Poetry deps, Docker Postgres, schema apply.
 # Usage (from repo root):
 #   bash scripts/install-hermes.sh
 set -euo pipefail

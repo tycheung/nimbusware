@@ -1299,8 +1299,8 @@ def _run_list_fetch_and_display() -> bool:
         return True
 
 
-st.set_page_config(page_title="Hermes Console", layout="wide")
-st.title("Hermes operator console")
+st.set_page_config(page_title="Nimbusware Console", layout="wide")
+st.title("Nimbusware operator console")
 st.caption(streamlit_theme_defaults_caption(repo_root=Path(os.environ.get("HERMES_REPO_ROOT", "."))))
 st.caption(streamlit_white_label_deferred_caption())
 

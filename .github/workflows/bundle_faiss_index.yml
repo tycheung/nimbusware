@@ -7,7 +7,7 @@
 #
 # Cadence (fo128): weekly schedule plus manual ``workflow_dispatch``. Concurrency prevents
 # overlapping cron + dispatch runs.
-name: Hermes bundle FAISS index build
+name: Nimbusware bundle FAISS index build
 
 on:
   schedule:

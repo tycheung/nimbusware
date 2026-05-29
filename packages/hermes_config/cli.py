@@ -74,7 +74,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=_TOOL_NAME,
         description=(
-            "Bootstrap or export Hermes operator config between Postgres "
+            "Bootstrap or export Hermes agent operator config between Postgres "
             "(hermes_config_document) and repo configs/ YAML for git review."
         ),
     )

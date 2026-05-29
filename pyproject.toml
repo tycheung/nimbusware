@@ -3,9 +3,9 @@ requires = ["poetry-core>=1.9.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "hermes"
+name = "nimbusware"
 version = "0.5.0"
-description = "Hermes orchestrator workspace (local-first). Python >=3.10; use 3.11+ when available."
+description = "Nimbusware platform (local-first) with Hermes orchestration agent. Python >=3.10; use 3.11+ when available."
 authors = []
 package-mode = true
 packages = [
@@ -59,6 +59,8 @@ hermes-config = "hermes_config.cli:main"
 hermes-run-worker = "hermes_orchestrator.run_worker:main"
 hermes-run = "hermes_env.run_app:main"
 hermes-launcher = "hermes_env.launcher_app:main"
+nimbusware-run = "hermes_env.run_app:main"
+nimbusware-launcher = "hermes_env.launcher_app:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

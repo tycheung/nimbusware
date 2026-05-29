@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pilot: drive Hermes API for a minimal run timeline (plan §14 #20)."""
+"""Pilot: drive the Hermes agent API for a minimal run timeline."""
 
 from __future__ import annotations
 

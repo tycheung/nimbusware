@@ -1,4 +1,4 @@
-"""`poetry run hermes-api` → uvicorn."""
+"""Nimbusware Hermes agent API — ``poetry run hermes-api`` (uvicorn)."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Apply Hermes PostgreSQL bootstrap schema (single file, greenfield).
+# Apply Nimbusware PostgreSQL bootstrap schema (single file, greenfield).
 # Usage: HERMES_DATABASE_URL=postgresql://user:pass@host:5432/dbname ./scripts/apply_event_store.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

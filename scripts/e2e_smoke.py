@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end operator smoke checks (see PLAN_GAP.md § End-to-end operator validation).
+"""Nimbusware end-to-end operator smoke checks (see PLAN_GAP.md § End-to-end operator validation).
 
 Exit 0 when all required checks pass. Attempts Docker Postgres when DB is down.
 """
@@ -33,7 +33,7 @@ def _poetry() -> str:
         path = shutil.which(name)
         if path:
             return path
-    raise RuntimeError("Poetry not found on PATH; install Poetry or activate the Hermes venv.")
+    raise RuntimeError("Poetry not found on PATH; install Poetry or activate the Nimbusware venv.")
 
 
 @dataclass
@@ -284,7 +284,7 @@ def run_checks(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Hermes end-to-end operator smoke checks.")
+    parser = argparse.ArgumentParser(description="Nimbusware end-to-end operator smoke checks.")
     parser.add_argument("--database-url", default=os.environ.get("HERMES_DATABASE_URL", DEFAULT_DATABASE_URL))
     parser.add_argument("--no-docker", action="store_true", help="Do not try docker compose for Postgres")
     parser.add_argument("--skip-integration", action="store_true")
@@ -297,7 +297,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    _log(f"Hermes E2E smoke (profile={args.profile})")
+    _log(f"Nimbusware E2E smoke (profile={args.profile})")
     results = run_checks(
         profile=args.profile,
         database_url=args.database_url.strip(),

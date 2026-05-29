@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bootstrap a Hermes developer environment (Poetry, Postgres, schema, optional seed).
+"""Bootstrap a Nimbusware developer environment (Poetry, Postgres, schema, optional seed).
 
 Run from an existing clone::
 
@@ -7,7 +7,7 @@ Run from an existing clone::
 
 Or clone first (requires git)::
 
-    python scripts/install_hermes.py --clone <repo-url> --target-dir D:\\Hermes
+    python scripts/install_hermes.py --clone <repo-url> --target-dir D:\\Nimbusware
 
 If PostgreSQL is not running, the script shows an interactive menu (Docker,
 Windows ``.exe``, winget, manual, custom URL, or skip). Ollama can be installed
@@ -115,7 +115,7 @@ def _is_hermes_repo(path: Path) -> bool:
 def _clone_repo(url: str, target: Path) -> Path:
     if target.exists() and any(target.iterdir()):
         if not _is_hermes_repo(target):
-            raise SetupError(f"Target exists but is not a Hermes repo: {target}")
+            raise SetupError(f"Target exists but is not a Nimbusware repo: {target}")
         _log(f"Using existing clone at {target}")
         return target.resolve()
     git = _which("git")
@@ -124,7 +124,7 @@ def _clone_repo(url: str, target: Path) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     _run([git, "clone", url, str(target)])
     if not _is_hermes_repo(target):
-        raise SetupError(f"Cloned repo does not look like Hermes: {target}")
+        raise SetupError(f"Cloned repo does not look like Nimbusware: {target}")
     return target.resolve()
 
 
@@ -533,12 +533,14 @@ def _print_next_steps(
     with_faiss: bool,
 ) -> None:
     _log("")
-    _log("=== Hermes setup complete ===")
+    _log("=== Nimbusware setup complete ===")
     _log(f"  Repo:     {repo}")
     _log(f"  Database: {url}")
     _log("")
     _log("Environment file:")
-    _log(f"  {repo / '.env'}  (see .env.example; loaded automatically by Hermes apps)")
+    _log(
+        f"  {repo / '.env'}  (see .env.example; loaded by Nimbusware apps and Hermes agent services)"
+    )
     _log("")
     _log("PowerShell environment (current session; optional if using .env):")
     _log(f'  $env:HERMES_REPO_ROOT = "{repo}"')
@@ -625,25 +627,25 @@ def _load_repo_dotenv() -> None:
 def main(argv: list[str] | None = None) -> int:
     _load_repo_dotenv()
     parser = argparse.ArgumentParser(
-        description="Install and bootstrap a Hermes local development environment.",
+        description="Install and bootstrap a Nimbusware local development environment.",
     )
     parser.add_argument(
         "--repo-root",
         type=Path,
         default=None,
-        help="Hermes repository root (default: parent of scripts/)",
+        help="Nimbusware repository root (default: parent of scripts/)",
     )
     parser.add_argument(
         "--clone",
         metavar="URL",
         default=None,
-        help="Clone Hermes from this git URL before setup",
+        help="Clone Nimbusware from this git URL before setup",
     )
     parser.add_argument(
         "--target-dir",
         type=Path,
         default=None,
-        help="Directory for --clone (default: ./Hermes next to cwd)",
+        help="Directory for --clone (default: ./Nimbusware next to cwd)",
     )
     parser.add_argument(
         "--database-url",
@@ -805,7 +807,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.ollama_pull_only and args.ollama_choice is None:
         args.ollama_choice = "pull"
 
-    _log("Hermes install - prerequisite check")
+    _log("Nimbusware install - prerequisite check")
     issues = _check_prerequisites(install_poetry=not args.no_install_poetry)
     if issues:
         for item in issues:
@@ -824,11 +826,11 @@ def main(argv: list[str] | None = None) -> int:
 
     repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
     if args.clone:
-        target = args.target_dir or (Path.cwd() / "Hermes")
+        target = args.target_dir or (Path.cwd() / "Nimbusware")
         repo = _clone_repo(args.clone, target)
     elif not _is_hermes_repo(repo):
         raise SetupError(
-            f"Not a Hermes repo (missing pyproject.toml or schema): {repo}. "
+            f"Not a Nimbusware repo (missing pyproject.toml or schema): {repo}. "
             "Use --clone URL or run from a checkout.",
         )
 

@@ -196,7 +196,7 @@ def prompt_postgres_setup_choice(
 
 def print_os_package_hints() -> None:
     print("", flush=True)
-    print("Install PostgreSQL 16 using your OS package manager, then create Hermes DB:", flush=True)
+    print("Install PostgreSQL 16 using your OS package manager, then create the app DB:", flush=True)
     print("", flush=True)
     print("  Debian/Ubuntu:", flush=True)
     print("    sudo apt update && sudo apt install -y postgresql-16 postgresql-client-16", flush=True)

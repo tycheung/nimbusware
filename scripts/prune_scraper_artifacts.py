@@ -9,8 +9,8 @@ the same env vars you use for runs (at minimum ``HERMES_REPO_ROOT``).
 
 Examples:
 
-- **cron** (daily 03:15, 14-day TTL): ``15 3 * * * cd /path/to/Hermes &&``
-  ``HERMES_REPO_ROOT=/path/to/Hermes HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
+- **cron** (daily 03:15, 14-day TTL): ``15 3 * * * cd /path/to/nimbusware &&``
+  ``HERMES_REPO_ROOT=/path/to/nimbusware HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
   ``poetry run python scripts/prune_scraper_artifacts.py``
 - **Dry-run** (count only): add ``--dry-run`` to the same command to print how many files
   would be removed without deleting.
@@ -35,8 +35,8 @@ Examples:
   flag wins when both are set. Independent of ``--json-summary``: you can write the
   file without printing the extra stdout line, or do both.
 - **Windows Task Scheduler**: Action ``Program`` = ``powershell.exe``; ``Arguments`` =
-  ``-NoProfile -Command "Set-Location 'D:\\Hermes';``
-  ``$env:HERMES_REPO_ROOT='D:\\Hermes';``
+  ``-NoProfile -Command "Set-Location 'D:\\Nimbusware';``
+  ``$env:HERMES_REPO_ROOT='D:\\Nimbusware';``
   ``$env:HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS='14';``
   ``poetry run python scripts/prune_scraper_artifacts.py"``
 """

@@ -1,4 +1,4 @@
-"""Ollama install, model pull, and health checks for Hermes setup."""
+"""Ollama install, model pull, and health checks for Nimbusware / Hermes agent setup."""
 
 from __future__ import annotations
 
@@ -160,7 +160,7 @@ def build_ollama_setup_options(*, platform: str | None = None) -> list[OllamaSet
                 explanation=(
                     "Installs Ollama.Ollama via Windows Package Manager. "
                     "Runs in your user profile (no admin required). After install, "
-                    "pulls Hermes default models from configs/model-routing.yaml."
+                    "pulls Hermes agent default models from configs/model-routing.yaml."
                 ),
                 available=winget_ok,
                 unavailable_reason="winget was not found on PATH.",
@@ -184,7 +184,7 @@ def build_ollama_setup_options(*, platform: str | None = None) -> list[OllamaSet
                 key="brew",
                 title="Homebrew (brew install ollama)",
                 explanation=(
-                    "Installs the ollama formula via Homebrew, then pulls default Hermes models."
+                    "Installs the ollama formula via Homebrew, then pulls default Hermes agent models."
                 ),
                 available=brew_ok,
                 unavailable_reason="Homebrew (brew) was not found on PATH.",
@@ -208,7 +208,7 @@ def build_ollama_setup_options(*, platform: str | None = None) -> list[OllamaSet
                 title="Official install script (curl)",
                 explanation=(
                     "Runs curl -fsSL https://ollama.com/install.sh | sh. "
-                    "May require sudo. Then pulls default Hermes models."
+                    "May require sudo. Then pulls default Hermes agent models."
                 ),
                 available=_which("curl") is not None,
                 unavailable_reason="curl was not found on PATH.",
@@ -239,7 +239,7 @@ def build_ollama_setup_options(*, platform: str | None = None) -> list[OllamaSet
                 key="skip",
                 title="Skip Ollama for now",
                 explanation=(
-                    "Hermes core setup continues without LLM. Set HERMES_USE_LLM=1 later "
+                    "Nimbusware setup continues without LLM. Set HERMES_USE_LLM=1 later "
                     "after Ollama is running."
                 ),
                 available=True,
@@ -272,7 +272,7 @@ def _print_menu(options: list[OllamaSetupOption], host: str) -> None:
     print(f"  API: {host}/api/tags", flush=True)
     print("=" * 72, flush=True)
     print("", flush=True)
-    print("Choose how to set up Ollama for Hermes LLM stages:", flush=True)
+    print("Choose how to set up Ollama for Hermes agent LLM stages:", flush=True)
     print("", flush=True)
     for index, opt in enumerate(options, start=1):
         status = "available" if opt.available else f"NOT available - {opt.unavailable_reason}"
@@ -499,7 +499,7 @@ def bootstrap_ollama(
         target_models = models if models is not None else models_from_repo(repo)
         if target_models:
             log("")
-            log("Pulling Hermes model(s) for local LLM runs...")
+            log("Pulling Hermes agent model(s) for local LLM runs...")
             pull_ollama_models(target_models, host=base, log=log)
 
     if enable_llm:

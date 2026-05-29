@@ -538,7 +538,7 @@ def ensure_hermes_role(
     sql_db = (
         f"SELECT 'ok' FROM pg_database WHERE datname = '{HERMES_DB_NAME}';"
     )
-    log("Creating Hermes database role (if missing)...")
+    log("Creating application database role (if missing)...")
     _run_checked([*base, "-d", "postgres", "-c", sql_user], log=log, env=env)
     proc = subprocess.run(
         [*base, "-d", "postgres", "-tAc", sql_db],
@@ -579,7 +579,7 @@ def configure_existing_postgres(
     log(f"PostgreSQL {major} already installed: {psql_path.parent.parent}")
     prepend_postgres_bin(major)
     if postgres_reachable(database_url, major=major):
-        log("Hermes database URL is already reachable.")
+        log("Database URL is already reachable.")
         bin_dir = prepend_postgres_bin(major)
         if bin_dir is None:
             raise PostgresWindowsError(f"PostgreSQL {major} install did not produce psql.exe")
@@ -626,7 +626,7 @@ def try_boot_installed_postgres(
     cli_password: str | None,
     log,
 ) -> bool:
-    """If Postgres is installed locally, start it and configure Hermes. Returns True on success."""
+    """If Postgres is installed locally, start it and configure Nimbusware. Returns True on success."""
     discovered = discover_installed_postgres_major(preferred=preferred_major)
     if discovered is None:
         return False

@@ -65,11 +65,11 @@ nosetests.xml
 *.log
 logs/
 
-# Hermes planning docs (local sprint board; normative contract may stay out of repo)
+# Nimbusware planning docs (local sprint board; normative contract may stay out of repo)
 PLAN_GAP.md
 hermes-orchestrator-local-plan.md
 
-# Hermes local run artifacts (integration adapter workspaces, etc.)
+# Hermes agent local run artifacts (integration adapter workspaces, etc.)
 .hermes/
 
 # Cursor workspace (loops, plans, artifacts — local only)

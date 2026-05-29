@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hermes desktop launcher — install, update, and run."""
+"""Nimbusware desktop launcher — install, update, and run."""
 
 from __future__ import annotations
 

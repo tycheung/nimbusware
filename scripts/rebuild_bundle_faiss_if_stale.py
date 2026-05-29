@@ -17,7 +17,7 @@ def main() -> int:
         "--repo-root",
         type=Path,
         default=ROOT,
-        help="Hermes repository root",
+        help="Nimbusware repository root",
     )
     parser.add_argument(
         "--dry-run",

@@ -1,4 +1,4 @@
-# Apply Hermes PostgreSQL bootstrap schema (single file, greenfield).
+# Apply Nimbusware PostgreSQL bootstrap schema (single file, greenfield).
 # Usage: set HERMES_DATABASE_URL=postgresql://user:pass@host:5432/dbname then:
 #   .\scripts\apply_event_store.ps1
 

@@ -1,4 +1,4 @@
-"""Tkinter desktop launcher: install, update, and run Hermes."""
+"""Tkinter desktop launcher: install, update, and run Nimbusware."""
 
 from __future__ import annotations
 
@@ -24,20 +24,20 @@ from hermes_env.desktop_common import (
 )
 
 
-class HermesLauncherApp:
+class NimbuswareLauncherApp:
     def __init__(self, root: tk.Tk) -> None:
         self.root = root
         self.repo = repo_root()
         self._busy = False
         self._updates_available = False
 
-        root.title("Hermes")
+        root.title("Nimbusware")
         root.geometry("640x520")
         root.minsize(520, 420)
 
         header = ttk.Frame(root, padding=12)
         header.pack(fill=tk.X)
-        ttk.Label(header, text="Hermes", font=ui_title_font()).pack(anchor=tk.W)
+        ttk.Label(header, text="Nimbusware", font=ui_title_font()).pack(anchor=tk.W)
         self.version_label = ttk.Label(header, text="")
         self.version_label.pack(anchor=tk.W, pady=(4, 0))
         self.status_label = ttk.Label(header, text="Ready.")
@@ -56,7 +56,7 @@ class HermesLauncherApp:
         self.update_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.install_btn = ttk.Button(buttons, text="Install / setup", command=self.run_install)
         self.install_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.run_btn = ttk.Button(buttons, text="Run Hermes", command=self.run_hermes)
+        self.run_btn = ttk.Button(buttons, text="Run Nimbusware", command=self.run_nimbusware)
         self.run_btn.pack(side=tk.LEFT)
 
         log_frame = ttk.LabelFrame(root, text="Activity", padding=8)
@@ -133,7 +133,7 @@ class HermesLauncherApp:
         if not self._updates_available:
             return
         if not messagebox.askyesno(
-            "Update Hermes",
+            "Update Nimbusware",
             "Pull the latest code from git?\n\nUncommitted local changes may block the pull.",
         ):
             return
@@ -162,8 +162,8 @@ class HermesLauncherApp:
 
     def run_install(self) -> None:
         if not messagebox.askyesno(
-            "Install Hermes",
-            "Run the Hermes setup script?\n\n"
+            "Install Nimbusware",
+            "Run the Nimbusware setup script?\n\n"
             "This installs Poetry dependencies and bootstraps PostgreSQL (Docker when available).",
         ):
             return
@@ -197,7 +197,7 @@ class HermesLauncherApp:
 
         self._run_background("Installing...", _worker)
 
-    def run_hermes(self) -> None:
+    def run_nimbusware(self) -> None:
         run_py = self.repo / "run.py"
         if not run_py.is_file():
             messagebox.showerror("Run failed", f"Missing {run_py}")
@@ -216,8 +216,8 @@ class HermesLauncherApp:
         except OSError as exc:
             messagebox.showerror("Run failed", str(exc))
             return
-        self.status_label.configure(text="Hermes is running in a separate window.")
-        self._append_log("Started Hermes (API + console window).")
+        self.status_label.configure(text="Nimbusware is running in a separate window.")
+        self._append_log("Started Nimbusware (Hermes agent API + console window).")
 
 
 def main() -> int:
@@ -226,7 +226,7 @@ def main() -> int:
         ttk.Style().theme_use("vista" if sys.platform == "win32" else "default")
     except tk.TclError:
         pass
-    HermesLauncherApp(root)
+    NimbuswareLauncherApp(root)
     root.mainloop()
     return 0
 
