@@ -1,4 +1,4 @@
-"""``_maybe_emit_critique_gate_fail_findings`` per-stage axes matrix (fo89).
+"""``_maybe_emit_critique_gate_fail_findings`` per-stage axes matrix.
 
 fo88's Next-slice item (5) surfaced this exact gap: today the
 3-arm loop at
@@ -14,46 +14,46 @@ fo89 closes the gap via 4 parts spanning 16 contract axes:
 
 * **Part A** -- multi-stage permutation matrix (4 axes):
 
-  - A1 -- all 3 enabled + all 3 FAIL -> 3 findings (one per stage).
-  - A2 -- all 3 enabled + impl FAIL + tw PASS + planner FAIL -> 2
-    findings (tw skipped by the verdict guard).
-  - A3 -- all 3 enabled + only impl has a gate row -> 1 finding
-    (tw + planner skipped by the no-gate guard).
-  - A4 -- already-emitted per-stage isolation: prior impl finding
-    + all-3 FAIL -> 2 new findings (tw + planner; impl is silently
-    skipped by ``_critique_gate_fail_finding_already_emitted``).
+ - A1 -- all 3 enabled + all 3 FAIL -> 3 findings (one per stage).
+ - A2 -- all 3 enabled + impl FAIL + tw PASS + planner FAIL -> 2
+ findings (tw skipped by the verdict guard).
+ - A3 -- all 3 enabled + only impl has a gate row -> 1 finding
+ (tw + planner skipped by the no-gate guard).
+ - A4 -- already-emitted per-stage isolation: prior impl finding
+ + all-3 FAIL -> 2 new findings (tw + planner; impl is silently
+ skipped by ``_critique_gate_fail_finding_already_emitted``).
 
 * **Part B** -- skip-branch matrix (4 axes), each pinning a
-  distinct ``continue`` arm in isolation:
+ distinct ``continue`` arm in isolation:
 
-  - B1 -- ``not enabled`` (default workflow, no env override).
-  - B2 -- ``_critique_gate_fail_finding_already_emitted``.
-  - B3 -- ``not gate_pl`` (enabled but no gate row for the stage).
-  - B4 -- ``not _critique_gate_verdict_is_fail`` (NEEDS_INFO arm;
-    PASS is implicitly covered by Part A2).
+ - B1 -- ``not enabled`` (default workflow, no env override).
+ - B2 -- ``_critique_gate_fail_finding_already_emitted``.
+ - B3 -- ``not gate_pl`` (enabled but no gate row for the stage).
+ - B4 -- ``not _critique_gate_verdict_is_fail`` (NEEDS_INFO arm;
+ PASS is implicitly covered by Part A2).
 
 * **Part C** -- payload-shape per-stage (4 axes):
 
-  - C1 -- per-stage ``source_artifact`` format
-    (``f"critique_gate:{stage_name}"``).
-  - C2 -- per-stage ``owner_role`` registry resolution.
-  - C3 -- ``repro_steps`` 5-line strict-order composition with
-    ``failure_reason_code`` + ``failing_critics`` +
-    ``failing_finding_ids`` propagation.
-  - C4 -- invariants across all 3 stages (``category=="critique"``,
-    ``severity==Severity.LOW``, ``required_fixes==[]``,
-    ``metadata["critique_gate_fail_finding"] is True``).
+ - C1 -- per-stage ``source_artifact`` format
+ (``f"critique_gate:{stage_name}"``).
+ - C2 -- per-stage ``owner_role`` registry resolution.
+ - C3 -- ``repro_steps`` 5-line strict-order composition with
+ ``failure_reason_code`` + ``failing_critics`` +
+ ``failing_finding_ids`` propagation.
+ - C4 -- invariants across all 3 stages (``category=="critique"``,
+ ``severity==Severity.LOW``, ``required_fixes==[]``,
+ ``metadata["critique_gate_fail_finding"] is True``).
 
 * **Part D** -- pure helpers direct contract (4 axes):
 
-  - D1 -- ``_critique_gate_verdict_is_fail`` (6 sub-axes).
-  - D2 -- ``_last_critique_gate_payload_for_stage`` (4 sub-axes
-    incl. **LAST-wins** when multiple gates exist).
-  - D3 -- ``_critique_gate_fail_finding_already_emitted`` (4
-    sub-axes incl. ``stage_name`` mismatch isolation).
-  - D4 -- ``_repro_steps_from_critique_gate`` (4 sub-axes incl.
-    strict ordering + non-list ``failing_critics`` ignored +
-    ``.strip()`` on ``failure_reason_code``).
+ - D1 -- ``_critique_gate_verdict_is_fail`` (6 sub-axes).
+ - D2 -- ``_last_critique_gate_payload_for_stage`` (4 sub-axes
+ incl. **LAST-wins** when multiple gates exist).
+ - D3 -- ``_critique_gate_fail_finding_already_emitted`` (4
+ sub-axes incl. ``stage_name`` mismatch isolation).
+ - D4 -- ``_repro_steps_from_critique_gate`` (4 sub-axes incl.
+ strict ordering + non-list ``failing_critics`` ignored +
+ ``.strip()`` on ``failure_reason_code``).
 
 After fo89: the loop body has full multi-axis pin coverage and
 all 4 pure helpers gain dedicated direct contract tests.

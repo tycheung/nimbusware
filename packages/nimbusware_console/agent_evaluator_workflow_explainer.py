@@ -1,4 +1,4 @@
-"""Read-only ``agent_evaluator`` workflow + ``HERMES_AGENT_EVALUATOR`` (§14 #15 / fo139)."""
+"""Read-only ``agent_evaluator`` workflow + ``HERMES_AGENT_EVALUATOR`` (§14 #15."""
 
 from __future__ import annotations
 

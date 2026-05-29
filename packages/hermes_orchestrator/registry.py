@@ -73,3 +73,10 @@ class RoleRegistry:
 
     def known_taxonomy_keys(self) -> frozenset[str]:
         return frozenset(self._by_taxonomy.keys())
+
+    def taxonomy_key_for(self, role_id: UUID) -> str | None:
+        """Reverse lookup: Role Registry UUID → taxonomy key."""
+        for key, rid in self._by_taxonomy.items():
+            if rid == role_id:
+                return key
+        return None

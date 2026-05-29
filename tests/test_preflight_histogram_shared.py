@@ -1,4 +1,4 @@
-"""Tests for the shared `hermes_orchestrator.preflight_histogram` module (fo124).
+"""Tests for the shared `hermes_orchestrator.preflight_histogram` module.
 
 The histogram helpers were lifted out of ``preflight_cli.py`` in fo124 so two
 callers (CLI + Streamlit console) share the same bucket edges and stat math.

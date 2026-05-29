@@ -1,4 +1,4 @@
-"""Library-level tests for ``prune_scraper_artifacts`` pattern filters (fo125, §14 #10).
+"""Library-level tests for ``prune_scraper_artifacts`` pattern filters.
 
 Six axes:
 

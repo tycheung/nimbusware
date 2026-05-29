@@ -90,6 +90,8 @@ class EventType(str, Enum):
     GATE_OVERRIDDEN = "gate.overridden"
     PERSONA_SHELF_UPDATED = "persona.shelf.updated"
     SELF_REFINEMENT_LOOP_SIGNALLED = "self_refinement.loop.signalled"
+    MEMORY_INDEXED = "memory.indexed"
+    MEMORY_RETRIEVAL_EMITTED = "memory.retrieval.emitted"
 
 
 RoleId: TypeAlias = UUID
@@ -655,6 +657,40 @@ class SelfRefinementLoopSignalledEvent(BaseHermesEvent):
     payload: SelfRefinementLoopSignalledPayload
 
 
+class MemoryIndexedPayload(BasePayload):
+    """Audit record after a repo-scoped memory index rebuild (Phase 4 / fo160)."""
+
+    repo_scope_hash: str = Field(min_length=8, max_length=64)
+    generation_id: str = Field(min_length=8, max_length=64)
+    chunks_added: int = Field(ge=0)
+    chunks_skipped: int = Field(ge=0)
+    embedding_mode: Literal["deterministic", "ollama"] = "deterministic"
+    embedding_model_id: str = Field(min_length=1, max_length=128)
+    index_dir: str | None = Field(default=None, max_length=512)
+
+
+class MemoryIndexedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.MEMORY_INDEXED]
+    payload: MemoryIndexedPayload
+
+
+class MemoryRetrievalEmittedPayload(BasePayload):
+    """Audit record when memory hits are injected into a stage (Phase 4 / fo163)."""
+
+    stage_name: str = Field(min_length=1, max_length=256)
+    query_digest: str = Field(min_length=8, max_length=64)
+    hit_chunk_ids: list[str] = Field(default_factory=list, max_length=20)
+    excerpt_chars: int = Field(ge=0)
+    retrieval_k: int = Field(ge=0, le=20)
+    repo_scope_hash: str = Field(min_length=8, max_length=64)
+    generation_id: str | None = Field(default=None, max_length=64)
+
+
+class MemoryRetrievalEmittedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.MEMORY_RETRIEVAL_EMITTED]
+    payload: MemoryRetrievalEmittedPayload
+
+
 HermesEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -678,6 +714,8 @@ HermesEventUnion: TypeAlias = (
     | GateOverriddenEvent
     | PersonaShelfUpdatedEvent
     | SelfRefinementLoopSignalledEvent
+    | MemoryIndexedEvent
+    | MemoryRetrievalEmittedEvent
 )
 
 HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]

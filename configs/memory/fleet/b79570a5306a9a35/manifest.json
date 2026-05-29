@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "generation_id": "47a3dc70-1de6-45bd-94fd-e7c713861faf",
+  "repo_scope_hash": "9976c1940452bc60",
+  "org_scope_hash": "b79570a5306a9a35",
+  "tenant_id": "19b37234-f150-4146-9ad1-3606132e7d5b",
+  "embedding_mode": "deterministic",
+  "embedding_model_id": "hermes-memory-deterministic-v1",
+  "chunk_count": 0,
+  "built_at": "2026-05-29T20:09:27.129236Z"
+}

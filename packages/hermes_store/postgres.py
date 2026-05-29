@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Iterator
 from uuid import UUID
 
 import psycopg
@@ -11,6 +12,7 @@ from psycopg.types.json import Jsonb
 from agent_core.models import HermesEventUnion
 from hermes_store.allowed_types import assert_event_type_registered
 from hermes_store.protocol import event_row_from_serialized
+from hermes_store.tenant_scope import store_tenant_id
 
 
 def _run_list_status_fragments(
@@ -49,6 +51,14 @@ AND (
 class PostgresEventStore:
     def __init__(self, conninfo: str) -> None:
         self._conninfo = conninfo
+
+    @contextmanager
+    def _connect(self) -> Iterator[psycopg.Connection[Any]]:
+        tid = str(store_tenant_id())
+        with psycopg.connect(self._conninfo) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT set_config('hermes.tenant_id', %s, true)", (tid,))
+            yield conn
 
     def append(self, event: HermesEventUnion) -> int:
         from agent_core.models import serialize_event_persistent
@@ -96,7 +106,7 @@ class PostgresEventStore:
         return int(seq)
 
     def list_run_events(self, run_id: str) -> list[dict[str, Any]]:
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     """
@@ -116,7 +126,7 @@ class PostgresEventStore:
         if not wanted:
             return {}
         out: dict[str, list[dict[str, Any]]] = {str(r): [] for r in wanted}
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     """
@@ -139,7 +149,7 @@ class PostgresEventStore:
         return rows[-1] if rows else None
 
     def max_store_seq_for_run(self, run_id: str) -> int | None:
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     "SELECT MAX(store_seq) FROM event_store WHERE run_id = %s",
@@ -151,7 +161,7 @@ class PostgresEventStore:
                 return int(row[0])
 
     def find_run_id_for_run_created_correlation(self, correlation_id: UUID) -> UUID | None:
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
@@ -296,7 +306,7 @@ class PostgresEventStore:
             "c_rid": cursor_after_run_id,
         }
         qparams.update(extra_ls)
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     f"""
@@ -366,7 +376,7 @@ class PostgresEventStore:
             "has_esc": has_escalation,
         }
         qparams.update(extra_ls)
-        with psycopg.connect(self._conninfo) as conn:
+        with self._connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     f"""

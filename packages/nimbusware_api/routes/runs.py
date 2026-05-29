@@ -41,6 +41,10 @@ from nimbusware_api.schemas.runs import (
     RunTimelineResponse,
 )
 from hermes_extensions.phase2 import agent_evaluator_score_band
+from hermes_memory.timeline import (
+    memory_indexed_timeline_summary,
+    memory_retrieval_timeline_summary,
+)
 from hermes_orchestrator.default_workflow_profile import default_workflow_profile
 from hermes_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
@@ -1218,6 +1222,8 @@ class CreateRunBody(BaseModel):
     business_area_persona_id: str | None = Field(default=None, max_length=200)
     development_role_persona_id: str | None = Field(default=None, max_length=200)
     custom_agent_id: str | None = Field(default=None, max_length=120)
+    memory_retrieval_enabled: bool | None = Field(default=None)
+    memory_index_contribution: bool | None = Field(default=None)
 
 
 @router.get(
@@ -1594,6 +1600,12 @@ def create_run(
                 ),
             ) from exc
     try:
+        memory_overrides: dict[str, bool] = {}
+        if body.memory_retrieval_enabled is not None:
+            memory_overrides["retrieval_enabled"] = body.memory_retrieval_enabled
+        if body.memory_index_contribution is not None:
+            memory_overrides["index_contribution"] = body.memory_index_contribution
+        run_policy_overrides = {"memory": memory_overrides} if memory_overrides else None
         run_id = orch.create_run(
             body.workflow_profile,
             idempotency_key=key_uuid,
@@ -1601,6 +1613,7 @@ def create_run(
             business_area_persona_id=body.business_area_persona_id,
             development_role_persona_id=body.development_role_persona_id,
             custom_agent_id=body.custom_agent_id,
+            run_policy_overrides=run_policy_overrides,
         )
     except FileNotFoundError as exc:
         raise HTTPException(
@@ -1735,6 +1748,8 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
         performance_critique=performance_critique_timeline_summary(events),
         network_resilience_critique=network_resilience_critique_timeline_summary(events),
         refactor_critique=refactor_critique_timeline_summary(events),
+        memory_retrieval=memory_retrieval_timeline_summary(events),
+        memory_indexed=memory_indexed_timeline_summary(events),
     )
 
 

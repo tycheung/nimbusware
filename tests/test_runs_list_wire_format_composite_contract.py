@@ -1,16 +1,16 @@
-"""``GET /v1/runs`` RFC 5988 wire-format composite (fo113).
+"""``GET /v1/runs`` RFC 5988 wire-format composite.
 
 Four sibling helpers shape the user-visible HTTP wire format for
 ``GET /v1/runs`` and its sub-resources:
 
 * ``format_run_detail_link_header`` -- ``GET /v1/runs/{id}`` -> children
-  ``timeline`` + ``findings``
+ ``timeline`` + ``findings``
 * ``format_run_timeline_link_header`` -- ``GET /v1/runs/{id}/timeline``
-  -> parent ``run`` + sibling ``findings``
+ -> parent ``run`` + sibling ``findings``
 * ``format_run_findings_link_header`` -- ``GET /v1/runs/{id}/findings``
-  -> parent ``run`` + sibling ``timeline``
+ -> parent ``run`` + sibling ``timeline``
 * ``_runs_list_query_string`` -- builds the ``next``/``prev`` URL
-  query string for the ``Link`` header on ``GET /v1/runs``
+ query string for the ``Link`` header on ``GET /v1/runs``
 
 Today they are sampled only via end-to-end FastAPI substring
 assertions in [tests/test_api.py](tests/test_api.py)
@@ -30,53 +30,53 @@ fo113 closes the gap with 4 parts spanning 20 axes (no source
 changes):
 
 * **Part A** -- link-header trio structural shape (5 axes): ``str``
-  return type, detail 2-entry ``rel=timeline``+``rel=findings``,
-  timeline ``rel=run``+``rel=findings``, findings
-  ``rel=run``+``rel=timeline``, RFC 5988 entry syntax regex.
+ return type, detail 2-entry ``rel=timeline``+``rel=findings``,
+ timeline ``rel=run``+``rel=findings``, findings
+ ``rel=run``+``rel=timeline``, RFC 5988 entry syntax regex.
 * **Part B** -- trio navigation triangle + determinism (5 axes):
-  verbatim ``run_id`` substitution, 3-distinct-URL union,
-  self-omission, determinism, OpenAPI ``example`` cross-consistency.
+ verbatim ``run_id`` substitution, 3-distinct-URL union,
+ self-omission, determinism, OpenAPI ``example`` cross-consistency.
 * **Part C** -- ``_runs_list_query_string`` base + offset insertion
-  (5 axes): base 3-key prefix, ``offset`` insertion at index 1,
-  ``offset=0`` vs ``None`` divergence, ``str()`` coercion of
-  ``limit``/``include_summary``, ``cursor`` append after the base
-  prefix.
+ (5 axes): base 3-key prefix, ``offset`` insertion at index 1,
+ ``offset=0`` vs ``None`` divergence, ``str()`` coercion of
+ ``limit``/``include_summary``, ``cursor`` append after the base
+ prefix.
 * **Part D** -- ``_runs_list_query_string`` optional appends + key
-  transformations (5 axes): 6-field append order, ``list_status``
-  -> ``status`` rename, ``has_escalation`` 0-vs-None divergence,
-  ``urlencode`` special-char encoding, all-None excludes
-  (no empty-value entries).
+ transformations (5 axes): 6-field append order, ``list_status``
+ -> ``status`` rename, ``has_escalation`` 0-vs-None divergence,
+ ``urlencode`` special-char encoding, all-None excludes
+ (no empty-value entries).
 
 KEY DIVERGENCES pinned:
 
 * **RFC 5988 entry separator** -- entries are joined by ``", "``
-  (comma + ASCII space). A refactor that dropped the space or used
-  ``";"`` would break clients that split on ``", "`` exactly.
-  Pinned in Parts A5 and D1.
+ (comma + ASCII space). A refactor that dropped the space or used
+ ``";"`` would break clients that split on ``", "`` exactly.
+ Pinned in Parts A5 and D1.
 * **Navigation-triangle self-omission** -- each formatter omits the
-  URL representing its own page resource so clients don't loop
-  back to the current page when following ``Link`` rels. Pinned
-  in Part B3.
+ URL representing its own page resource so clients don't loop
+ back to the current page when following ``Link`` rels. Pinned
+ in Part B3.
 * **offset insertion at index 1** -- ``pairs.insert(1, ("offset", ...))``
-  places ``offset`` BETWEEN ``limit`` and ``order`` in the URL.
-  A refactor to ``append`` would move ``offset`` to the end of
-  the base prefix and silently shift URL parsers. Pinned in Part
-  C2.
+ places ``offset`` BETWEEN ``limit`` and ``order`` in the URL.
+ A refactor to ``append`` would move ``offset`` to the end of
+ the base prefix and silently shift URL parsers. Pinned in Part
+ C2.
 * **offset=0 vs None / has_escalation=0 vs None** -- both use
-  ``is not None`` checks (NOT truthiness); both ``0`` values MUST
-  appear in the URL. A refactor to ``if offset:`` / ``if
-  has_escalation:`` would silently drop the falsy-int filter
-  values. Pinned in Parts C3 and D3.
+ ``is not None`` checks (NOT truthiness); both ``0`` values MUST
+ appear in the URL. A refactor to ``if offset:`` / ``if
+ has_escalation:`` would silently drop the falsy-int filter
+ values. Pinned in Parts C3 and D3.
 * **list_status -> status kwarg-to-param rename** -- the kwarg is
-  ``list_status`` but the URL param is ``status``. A refactor
-  that used ``list_status`` as the param would break URL clients
-  expecting ``?status=running``. Pinned in Part D2.
+ ``list_status`` but the URL param is ``status``. A refactor
+ that used ``list_status`` as the param would break URL clients
+ expecting ``?status=running``. Pinned in Part D2.
 * **OpenAPI example cross-consistency** -- the three
-  ``RUN_*_LINK_HEADER`` dict ``example`` strings equal the
-  corresponding formatter outputs for the canonical UUID
-  byte-for-byte. A refactor that changed one side without the
-  other would desynchronise the documented contract from runtime
-  emission. Pinned in Part B5.
+ ``RUN_*_LINK_HEADER`` dict ``example`` strings equal the
+ corresponding formatter outputs for the canonical UUID
+ byte-for-byte. A refactor that changed one side without the
+ other would desynchronise the documented contract from runtime
+ emission. Pinned in Part B5.
 """
 
 from __future__ import annotations

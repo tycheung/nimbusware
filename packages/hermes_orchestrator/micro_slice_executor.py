@@ -115,6 +115,23 @@ def _plan_one_slice(
 ) -> SlicePlan:
     rows = orch._store.list_run_events(str(run_id))
     use_llm = os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
+    memory_excerpt = ""
+    run_meta = orch._run_created_metadata(run_id)
+    from hermes_orchestrator.workflow_memory import (
+        memory_settings_from_run_metadata,
+        retrieve_memory_excerpt_for_slice,
+        run_memory_retrieval_enabled,
+    )
+
+    if run_memory_retrieval_enabled(run_meta) and orch._memory_chunk_store is not None:
+        settings = memory_settings_from_run_metadata(run_meta)
+        stub = default_stub_slice_plan(slice_index)
+        memory_excerpt, _, _ = retrieve_memory_excerpt_for_slice(
+            orch._memory_chunk_store,
+            stub,
+            repo_root=orch.repo_root,
+            settings=settings,
+        )
     if use_llm:
         base = orch._base_cfg()
         runtime = base.get("runtime") or {}
@@ -128,6 +145,7 @@ def _plan_one_slice(
                 timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                 system_prompt=_custom_agent_system_prompt(orch, rows),
                 budget_feedback=budget_feedback,
+                memory_excerpt=memory_excerpt,
             )
             if plan is not None:
                 return plan
@@ -393,4 +411,5 @@ def execute_micro_slice_pass(
         results.append(gate)
         if not gate.passed:
             break
+    orch.maybe_rebuild_memory_index(run_id)
     return results

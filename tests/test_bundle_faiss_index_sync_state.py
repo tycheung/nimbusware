@@ -1,4 +1,4 @@
-"""Unit tests for ``bundle_faiss_index_sync_state`` (PLAN_GAP §14 #12, fo128)."""
+"""Unit tests for ``bundle_faiss_index_sync_state``."""
 
 from __future__ import annotations
 

@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""Replay a run's event-store rows into timeline JSON (Phase 4 / fo180)."""
+
+from __future__ import annotations
+
+import sys
+
+from hermes_orchestrator.replay_cli import main
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

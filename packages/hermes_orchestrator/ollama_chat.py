@@ -38,6 +38,21 @@ def ollama_chat_json(
     return parsed
 
 
+def extract_ollama_usage(response: dict[str, Any]) -> dict[str, int]:
+    """Extract token/latency hints from a raw Ollama ``/api/chat`` response."""
+    out: dict[str, int] = {}
+    prompt = response.get("prompt_eval_count")
+    completion = response.get("eval_count")
+    eval_ns = response.get("eval_duration")
+    if isinstance(prompt, int):
+        out["prompt_tokens"] = prompt
+    if isinstance(completion, int):
+        out["completion_tokens"] = completion
+    if isinstance(eval_ns, int) and eval_ns > 0:
+        out["latency_ms"] = max(1, int(eval_ns / 1_000_000))
+    return out
+
+
 class OllamaLlmJson:
     """Concrete ``LlmJsonPort`` for Ollama."""
 

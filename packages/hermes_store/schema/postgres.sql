@@ -3,11 +3,42 @@
 -- Lockstep with agent_core.models.EventType (see hermes_store.allowed_types.allowed_event_type_values).
 
 -- =============================================================================
+-- hermes_tenant + hermes_api_key (Enterprise IAM, fo201)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS hermes_tenant (
+  tenant_id UUID PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  display_name TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+INSERT INTO hermes_tenant (tenant_id, slug, display_name) VALUES
+  ('00000000-0000-4000-8000-000000000001'::uuid, 'default', 'Default (Individual)')
+ON CONFLICT (tenant_id) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS hermes_api_key (
+  key_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL REFERENCES hermes_tenant(tenant_id) ON DELETE CASCADE,
+  key_prefix TEXT NOT NULL,
+  key_hash TEXT NOT NULL UNIQUE,
+  label TEXT NOT NULL DEFAULT '',
+  role_taxonomy_keys JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  revoked_at TIMESTAMPTZ NULL,
+  CHECK (jsonb_typeof(role_taxonomy_keys) = 'array')
+);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_api_key_tenant
+  ON hermes_api_key (tenant_id);
+
+-- =============================================================================
 -- event_store (append-only, plan §19.2)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS event_store (
   store_seq BIGSERIAL NOT NULL,
   event_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES hermes_tenant(tenant_id),
   run_id UUID NOT NULL,
   stage_id UUID NULL,
   task_id UUID NULL,
@@ -30,12 +61,28 @@ CREATE TABLE IF NOT EXISTS event_store (
     'finding.created', 'finding.routed', 'finding.closed',
     'gate.decision.emitted', 'gate.overridden',
     'persona.shelf.updated',
-    'self_refinement.loop.signalled'
+    'self_refinement.loop.signalled',
+    'memory.indexed',
+    'memory.retrieval.emitted'
   ))
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_event_store_store_seq ON event_store(store_seq);
 CREATE INDEX IF NOT EXISTS idx_event_store_run_seq ON event_store(run_id, store_seq);
+CREATE INDEX IF NOT EXISTS idx_event_store_tenant_run
+  ON event_store (tenant_id, run_id, store_seq);
+
+ALTER TABLE event_store ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS event_store_tenant_isolation ON event_store;
+CREATE POLICY event_store_tenant_isolation ON event_store
+  FOR ALL
+  USING (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  )
+  WITH CHECK (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  );
 
 CREATE OR REPLACE FUNCTION prevent_event_store_mutation()
 RETURNS TRIGGER AS $$
@@ -114,6 +161,124 @@ CREATE TABLE IF NOT EXISTS hermes_config_document (
 
 CREATE INDEX IF NOT EXISTS idx_hermes_config_document_ns
   ON hermes_config_document (namespace);
+
+CREATE OR REPLACE FUNCTION notify_hermes_config_document_change()
+RETURNS TRIGGER AS $$
+DECLARE
+  payload text;
+BEGIN
+  payload := json_build_object(
+    'type', 'config.document.updated',
+    'namespace', NEW.namespace,
+    'document_key', NEW.document_key,
+    'version', NEW.version
+  )::text;
+  PERFORM pg_notify('hermes_config_document', payload);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_hermes_config_document_notify ON hermes_config_document;
+CREATE TRIGGER trg_hermes_config_document_notify
+AFTER INSERT OR UPDATE ON hermes_config_document
+FOR EACH ROW EXECUTE FUNCTION notify_hermes_config_document_change();
+
+-- =============================================================================
+-- hermes_memory_* (Phase 4 repo-scoped retrieval index, fo160)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS hermes_memory_index_generation (
+  generation_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES hermes_tenant(tenant_id),
+  org_scope_hash TEXT NOT NULL,
+  repo_scope_hash TEXT NOT NULL,
+  embedding_mode TEXT NOT NULL,
+  embedding_model_id TEXT NOT NULL,
+  chunk_count INT NOT NULL DEFAULT 0,
+  manifest_relpath TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_memory_generation_scope
+  ON hermes_memory_index_generation (repo_scope_hash, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_memory_generation_fleet
+  ON hermes_memory_index_generation (tenant_id, org_scope_hash, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS hermes_memory_chunk (
+  chunk_id UUID PRIMARY KEY,
+  generation_id UUID NOT NULL REFERENCES hermes_memory_index_generation(generation_id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES hermes_tenant(tenant_id),
+  org_scope_hash TEXT NOT NULL,
+  repo_scope_hash TEXT NOT NULL,
+  run_id UUID NOT NULL,
+  source_event_type TEXT NOT NULL,
+  source_store_seq BIGINT,
+  finding_id UUID,
+  category TEXT,
+  severity TEXT,
+  excerpt TEXT NOT NULL,
+  embedding_model_id TEXT NOT NULL,
+  embedding_dim INT NOT NULL,
+  embedding_vector JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(embedding_vector) = 'array')
+);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_memory_chunk_scope_run
+  ON hermes_memory_chunk (repo_scope_hash, run_id);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_memory_chunk_fleet
+  ON hermes_memory_chunk (tenant_id, org_scope_hash, run_id);
+
+ALTER TABLE hermes_memory_index_generation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE hermes_memory_chunk ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS hermes_memory_generation_tenant ON hermes_memory_index_generation;
+CREATE POLICY hermes_memory_generation_tenant ON hermes_memory_index_generation
+  FOR ALL
+  USING (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  )
+  WITH CHECK (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  );
+
+DROP POLICY IF EXISTS hermes_memory_chunk_tenant ON hermes_memory_chunk;
+CREATE POLICY hermes_memory_chunk_tenant ON hermes_memory_chunk
+  FOR ALL
+  USING (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  )
+  WITH CHECK (
+    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+  );
+
+CREATE INDEX IF NOT EXISTS idx_hermes_memory_chunk_generation
+  ON hermes_memory_chunk (generation_id);
+
+-- =============================================================================
+-- hermes_bundle_outcome (Phase 4 bundle usage memory, fo170)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS hermes_bundle_outcome (
+  outcome_id UUID PRIMARY KEY,
+  run_id UUID NOT NULL,
+  bundle_id TEXT NOT NULL,
+  workflow_profile TEXT,
+  project_tags JSONB NOT NULL DEFAULT '[]'::jsonb,
+  integrator_score DOUBLE PRECISION,
+  verdict TEXT NOT NULL,
+  source_store_seq BIGINT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(project_tags) = 'array')
+);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_bundle_outcome_bundle
+  ON hermes_bundle_outcome (bundle_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_bundle_outcome_run
+  ON hermes_bundle_outcome (run_id, created_at DESC);
 
 -- =============================================================================
 -- run_list_status (GET /v1/runs ?status= read model)

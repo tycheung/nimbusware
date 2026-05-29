@@ -1,21 +1,21 @@
-"""Unit tests for `hermes_orchestrator.preflight_cli` (PLAN_GAP §14 #1).
+"""Unit tests for `hermes_orchestrator.preflight_cli`.
 
 Covers:
 
 * `build_histogram` (5 axes): empty input, single sample, full distribution +
-  bucket partition contract, overflow capture, stat parity (mean / median / p95).
-  fo124 lifted the helper into ``preflight_histogram``; tests import from the
-  new module to track the public API.
+ bucket partition contract, overflow capture, stat parity (mean / median / p95).
+ fo124 lifted the helper into ``preflight_histogram``; tests import from the
+ new module to track the public API.
 * `_samples_from_evidence` (3 axes): multisample list, singleton health latency
-  fallback, None / non-dict input.
+ fallback, None / non-dict input.
 * `_env_overrides` (2 axes): saves & restores HERMES_PREFLIGHT_LATENCY_SAMPLES
-  and HERMES_PREFLIGHT_JSON_PROBE; no-op when both args are unset.
+ and HERMES_PREFLIGHT_JSON_PROBE; no-op when both args are unset.
 * `_extract_routing` (2 axes): full canonical config bundle, defensive defaults
-  when keys are missing.
+ when keys are missing.
 * `main` (8 axes): happy-path success, PreflightError → exit 1, missing config
-  file → exit 2, invalid `--samples 0` → exit 2, `--output FILE` writes JSON,
-  `--samples` overrides env var inside `run_model_preflight`, `--json-probe`
-  forces env var, env reentrancy (env unchanged after main returns).
+ file → exit 2, invalid `--samples 0` → exit 2, `--output FILE` writes JSON,
+ `--samples` overrides env var inside `run_model_preflight`, `--json-probe`
+ forces env var, env reentrancy (env unchanged after main returns).
 
 Tests mock `run_model_preflight` so no Ollama runtime is required.
 """

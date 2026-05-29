@@ -264,6 +264,7 @@ def fetch_preflight_history(
     limit: int,
     order: str = "newest_first",
     include_metrics_export: bool = False,
+    headers: Mapping[str, str] | None = None,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     """``GET {api_base}/preflight-history`` (raises ``httpx.HTTPError`` on failure)."""
@@ -274,7 +275,12 @@ def fetch_preflight_history(
     }
     if include_metrics_export:
         params["include_metrics_export"] = 1
-    response = httpx.get(f"{base}/preflight-history", params=params, timeout=timeout)
+    response = httpx.get(
+        f"{base}/preflight-history",
+        params=params,
+        headers=dict(headers or {}),
+        timeout=timeout,
+    )
     response.raise_for_status()
     body = response.json()
     return body if isinstance(body, dict) else {}

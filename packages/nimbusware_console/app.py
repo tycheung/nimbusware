@@ -63,6 +63,10 @@ from nimbusware_console.bundle_catalog_editor import (
     bundle_editor_patch_payload,
     bundle_editor_validation_issues,
 )
+from nimbusware_console.bundle_memory_display import (
+    bundle_memory_analytics_from_store,
+    bundle_memory_caption,
+)
 from nimbusware_console.bundle_catalog import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     bundle_catalog_bundle_count_caption,
@@ -635,6 +639,12 @@ from nimbusware_console.security_scan_metadata_workflow_explainer import (
 )
 from nimbusware_console.micro_slice_packet_display import (
     latest_slice_context_packet_from_timeline,
+)
+from nimbusware_console.memory_display import (
+    memory_indexed_timeline_summary,
+    memory_policy_from_run_summary,
+    memory_policy_table_rows,
+    memory_retrieval_timeline_summary,
 )
 from nimbusware_console.phase3_critique_display import (
     phase3_critique_caption,
@@ -1314,14 +1324,21 @@ st.caption(streamlit_white_label_deferred_caption())
 _repo_for_ui = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
 with st.sidebar:
     from nimbusware_console.custom_agents_ui import render_custom_agents_sidebar
+    from nimbusware_console.enterprise_console_ui import render_enterprise_sidebar
 
     render_custom_agents_sidebar(_repo_for_ui)
+    _hermes_enterprise_console_active = render_enterprise_sidebar(API_BASE)
 
 with st.container():
     from nimbusware_console.operator_chat import render_operator_chat
 
     render_operator_chat(repo_root=_repo_for_ui)
     st.divider()
+
+if _hermes_enterprise_console_active:
+    from nimbusware_console.enterprise_console_ui import render_enterprise_fleet_dashboard
+
+    render_enterprise_fleet_dashboard(API_BASE)
 
 _run_list_ensure_defaults()
 if _SS_DETAIL not in st.session_state:
@@ -2262,6 +2279,17 @@ with st.expander("Bundle catalog search (local repo)", expanded=False):
             mime="application/json",
             key="hermes_dl_bundle_search_json",
         )
+with st.expander("Bundle usage memory (integrator outcomes)", expanded=False):
+    from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
+
+    _bm_store = build_bundle_outcome_store(allow_in_memory=True)
+    _bm_analytics = bundle_memory_analytics_from_store(_bm_store)
+    st.caption(bundle_memory_caption(_bm_analytics))
+    _bm_rows = _bm_analytics.get("table_rows") or []
+    if _bm_rows:
+        st.dataframe(_bm_rows, use_container_width=True, hide_index=True)
+    else:
+        st.caption("No integrator bundle outcomes recorded yet.")
 with st.expander("Bundle catalog editor (writes via API)", expanded=False):
     st.caption(
         "Edits use **PATCH /v1/bundles/catalog/bundles/{id}** (admin token). "
@@ -5297,10 +5325,15 @@ with st.container(border=True):
             _slice = _ids_trend[:_cap]
             _trend_fetch_errs: list[str] = []
             try:
+                from nimbusware_console.enterprise_console_ui import (
+                    enterprise_preflight_headers_for_cross_run,
+                )
+
                 _hist_body = fetch_preflight_history(
                     API_BASE,
                     limit=_cap,
                     include_metrics_export=True,
+                    headers=enterprise_preflight_headers_for_cross_run(),
                 )
                 _pairs = preflight_pairs_from_history_response(_hist_body)
                 st.session_state[_PREFLIGHT_TREND_HISTORY_BODY] = _hist_body
@@ -5537,6 +5570,12 @@ with st.container(border=True):
                         use_container_width=True,
                         hide_index=True,
                     )
+                _mem_policy = memory_policy_from_run_summary(data)
+                if _mem_policy:
+                    with st.expander("Memory policy (from run.created)", expanded=False):
+                        _mem_rows = memory_policy_table_rows(_mem_policy)
+                        if _mem_rows:
+                            st.dataframe(_mem_rows, use_container_width=True, hide_index=True)
                 _sum_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
                 _sum_metrics_slug = run_detail_summary_operator_metrics_export_filename_slug()
                 _sum_metrics_json = run_detail_summary_operator_metrics_export_json(
@@ -6894,6 +6933,16 @@ with st.container(border=True):
                     if _pkt:
                         with st.expander("Slice context packet (latest)", expanded=False):
                             st.json(_pkt)
+                _mem_ret = memory_retrieval_timeline_summary(data.get("events") or [])
+                _mem_idx = memory_indexed_timeline_summary(data.get("events") or [])
+                if _mem_ret or _mem_idx:
+                    with st.expander("Memory retrieval / index (from timeline)", expanded=False):
+                        if _mem_ret:
+                            st.caption("Last retrieval event summary")
+                            st.json(_mem_ret)
+                        if _mem_idx:
+                            st.caption("Last memory.indexed summary")
+                            st.json(_mem_idx)
                 _ss = security_scan_on_verify_from_timeline(data)
                 _ss_rows = security_scan_on_verify_summary_rows(_ss)
                 _ssm_align_payload = security_scan_metadata_workflow_explainer_payload(

@@ -13,5 +13,10 @@ def get_orchestrator(request: Request) -> Any:
     return request.app.state.orchestrator
 
 
+def get_iam_store(request: Request) -> Any:
+    return request.app.state.iam_store
+
+
 StoreDep = Annotated[Any, Depends(get_store)]
 OrchDep = Annotated[Any, Depends(get_orchestrator)]
+IamStoreDep = Annotated[Any, Depends(get_iam_store)]

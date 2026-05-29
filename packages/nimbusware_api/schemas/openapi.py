@@ -1,11 +1,11 @@
-"""Shared OpenAPI response fragments (PLAN_GAP optional $ref / DRY).
+"""Shared OpenAPI response fragments.
 
 Routes import the ``PROBLEM_RESPONSE_*``, ``CREATE_RUN_RESPONSE_200``, and
 ``RUN_TIMELINE_RESPONSE_200`` dicts for ``responses=`` (timeline **200** merges description +
 ``Link`` header with ``response_model``). Timeline optional-key policy matches
 ``packages/nimbusware_api/routes/runs.py`` (presence-gated; fo112 helper divergence).
 Problem bodies are documented under both ``application/json`` and ``application/problem+json``
-(same schema). A full OpenAPI ``$ref`` component registry (PLAN_GAP backlog #3) is optional if
+(same schema). A full OpenAPI ``$ref`` component registry is optional if
 generated schema size or fragment reuse becomes a problem; the Problem JSON shape is
 single-sourced via ``Problem.model_json_schema()`` in ``_PROBLEM_JSON_CONTENT``.
 

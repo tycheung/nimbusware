@@ -1,4 +1,4 @@
-"""CLI tests for ``scripts/build_bundle_faiss_index.py`` (PLAN_GAP §14 #12, fo128)."""
+"""CLI tests for ``scripts/build_bundle_faiss_index.py``."""
 
 from __future__ import annotations
 

@@ -24,6 +24,7 @@ def build_slice_context_packet(
     test_output: str = "",
     gate: SliceGateChainResult | None = None,
     policy_excerpt: str = "",
+    memory_excerpt: str = "",
     max_chars: int | None = None,
 ) -> SliceContextPacket:
     verdicts: list[SliceVerdictSummary] = []
@@ -43,6 +44,7 @@ def build_slice_context_packet(
         test_output=test_output,
         prior_verdicts=tuple(verdicts),
         policy_excerpt=policy_excerpt,
+        memory_excerpt=memory_excerpt,
     )
     cap = max_chars if max_chars is not None else default_packet_max_chars()
     return packet.capped(max_chars=cap)

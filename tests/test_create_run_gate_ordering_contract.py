@@ -1,4 +1,4 @@
-"""``RunOrchestrator.create_run`` cross-gate ordering meta-contract (fo83).
+"""``RunOrchestrator.create_run`` cross-gate ordering meta-contract.
 
 fo80 pinned the **first** of 5 pre-flight gates at
 [pipeline.py:154-158](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
@@ -21,37 +21,37 @@ monkeypatching the 5 gate references in the
 resolves them at call time, per pipeline.py:70-76 imports):
 
 * **Part A** locks **forward call sequence**: all 5 gates patched to
-  recorders that append their name; ``create_run("default")``
-  drives the chain; assert the recorder list is exactly the
-  canonical [gate1, gate2, gate3, gate4, gate5] sequence AND each
-  gate fired exactly once (no accidental double-invocation by a
-  future caching / retry refactor).
+ recorders that append their name; ``create_run("default")``
+ drives the chain; assert the recorder list is exactly the
+ canonical [gate1, gate2, gate3, gate4, gate5] sequence AND each
+ gate fired exactly once (no accidental double-invocation by a
+ future caching / retry refactor).
 * **Part B** locks **per-gate isolation + early-fail-order** for all
-  5 gates. For each gate N, patch ONLY gate N to raise a distinct
-  sentinel exception; leave others as real implementations. Assert
-  the sentinel bubbles up unchanged (no swallow / no transformation)
-  AND ``InMemoryEventStore._rows == []`` (no partial state). This
-  extends fo80's gate-1-only early-fail-order assertion at
-  [test_workflow_profile_path_propagation.py:254-261](d:\\Hermes\\tests\\test_workflow_profile_path_propagation.py)
-  to the full chain.
+ 5 gates. For each gate N, patch ONLY gate N to raise a distinct
+ sentinel exception; leave others as real implementations. Assert
+ the sentinel bubbles up unchanged (no swallow / no transformation)
+ AND ``InMemoryEventStore._rows == []`` (no partial state). This
+ extends fo80's gate-1-only early-fail-order assertion at
+ [test_workflow_profile_path_propagation.py:254-261](d:\\Hermes\\tests\\test_workflow_profile_path_propagation.py)
+ to the full chain.
 * **Part C** locks **pairwise short-circuit priority**: for each of
-  4 adjacent pairs (N, N+1), patch gate N to raise its sentinel and
-  patch gate N+1 to **record-then-raise a different sentinel**.
-  Assert gate N's exception is the one that surfaces AND gate N+1's
-  recorder list stayed empty -- gate N+1 was never called. This is
-  the **strict** ordering proof: if ``create_run`` mistakenly invoked
-  gate N+1 before gate N, gate N+1's RuntimeError sentinel would
-  reach the caller OR its recorder would fire -- both caught.
+ 4 adjacent pairs (N, N+1), patch gate N to raise its sentinel and
+ patch gate N+1 to **record-then-raise a different sentinel**.
+ Assert gate N's exception is the one that surfaces AND gate N+1's
+ recorder list stayed empty -- gate N+1 was never called. This is
+ the **strict** ordering proof: if ``create_run`` mistakenly invoked
+ gate N+1 before gate N, gate N+1's RuntimeError sentinel would
+ reach the caller OR its recorder would fire -- both caught.
 
 Cross-slice symmetry table (gate coverage):
 
-| Slice    | Property pinned                       | Gates covered           |
+| Slice | Property pinned | Gates covered |
 |----------|---------------------------------------|-------------------------|
-| fo80 PtB | early-fail-order (no events on raise) | gate 1 only             |
-| fo81 PtA | direct contract (KE / accept)         | gate 5 only             |
-| fo81 PtB | wrapper-level FNF + VE                | gate 3 only             |
-| fo82 PtA | wrapper-level 3-axis                  | gate 2 only             |
-| **fo83** | **forward + early-fail + priority**   | **all 5 + 4 pairs**     |
+| fo80 PtB | early-fail-order (no events on raise) | gate 1 only |
+| fo81 PtA | direct contract (KE / accept) | gate 5 only |
+| fo81 PtB | wrapper-level FNF + VE | gate 3 only |
+| fo82 PtA | wrapper-level 3-axis | gate 2 only |
+| **fo83** | **forward + early-fail + priority** | **all 5 + 4 pairs** |
 
 fo83 is the **first** ordering meta-contract spanning the entire
 5-gate chain.

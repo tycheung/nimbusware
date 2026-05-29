@@ -12,10 +12,20 @@ services:
       - nimbusware_pg:/var/lib/postgresql/data
 
   redis:
-    profiles: ["worker"]
+    profiles: ["worker", "fleet"]
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # Scale workers on the host (see scripts/run_dispatch_fleet_runbook.md):
+  #   HERMES_RUN_DISPATCH=redis HERMES_REDIS_URL=redis://127.0.0.1:6379/0
+  #   poetry run python scripts/run_dispatch_worker.py
 
 volumes:
   nimbusware_pg:

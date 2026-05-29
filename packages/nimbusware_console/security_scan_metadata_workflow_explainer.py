@@ -1,4 +1,4 @@
-"""Read-only ``security_scan_metadata_on_verify`` + env for Streamlit (§14 #18 / fo136)."""
+"""Read-only ``security_scan_metadata_on_verify`` + env for Streamlit (§14 #18."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Tests for `preflight_timeline_summary` in `nimbusware_api.routes.runs` (fo124).
+"""Tests for `preflight_timeline_summary` in `nimbusware_api.routes.runs`.
 
 Six axes:
 
@@ -7,7 +7,7 @@ Six axes:
 3. Single event ⇒ projects all canonical fields.
 4. Multiple ``model.preflight.passed`` events ⇒ latest wins (list-order).
 5. Legacy event (no ``health_latency_samples_ms``) ⇒ field is ``None`` in
-   the projection (not missing — the projection always exposes the key).
+ the projection (not missing — the projection always exposes the key).
 6. Non-dict payload defensively projects ``None`` per field.
 """
 

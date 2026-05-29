@@ -1,4 +1,4 @@
-"""Custom agent picker and pencil prompt editor (fo151)."""
+"""Custom agent picker and pencil prompt editor."""
 
 from __future__ import annotations
 

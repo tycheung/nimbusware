@@ -1,4 +1,4 @@
-"""Read-only ``universal_critique`` workflow summary for Streamlit (PLAN_GAP §14 #16 / fo134)."""
+"""Read-only ``universal_critique`` workflow summary for Streamlit."""
 
 from __future__ import annotations
 

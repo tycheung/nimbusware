@@ -59,6 +59,13 @@ class InMemoryRunQueue:
             self._acked.add(task_id)
             return True
 
+    def stats(self) -> dict[str, int]:
+        with self._lock:
+            return {
+                "pending": len(self._pending),
+                "in_flight": len(self._in_flight),
+            }
+
 
 class RedisRunQueue:
     """Redis-backed queue with in-flight task tracking."""
@@ -129,6 +136,11 @@ class RedisRunQueue:
         removed = self._client.hdel(self._in_flight_key, str(task_id))
         return bool(removed)
 
+    def stats(self) -> dict[str, int]:
+        pending = int(self._client.llen(self._queue_key))
+        in_flight = int(self._client.hlen(self._in_flight_key))
+        return {"pending": pending, "in_flight": in_flight}
+
 
 _GLOBAL_QUEUE: RunQueuePort | None = None
 _GLOBAL_QUEUE_LOCK = threading.Lock()
@@ -153,6 +165,10 @@ def run_dispatch_enabled() -> bool:
 
 
 def get_run_queue() -> RunQueuePort:
+    global _GLOBAL_QUEUE
+    with _GLOBAL_QUEUE_LOCK:
+        if _GLOBAL_QUEUE is not None:
+            return _GLOBAL_QUEUE
     mode = run_dispatch_mode()
     if mode == "redis":
         url = os.environ.get("HERMES_REDIS_URL", "").strip()
@@ -160,7 +176,6 @@ def get_run_queue() -> RunQueuePort:
             msg = "HERMES_REDIS_URL required when HERMES_RUN_DISPATCH=redis"
             raise ValueError(msg)
         return RedisRunQueue(url)
-    global _GLOBAL_QUEUE
     with _GLOBAL_QUEUE_LOCK:
         if _GLOBAL_QUEUE is None:
             _GLOBAL_QUEUE = InMemoryRunQueue()

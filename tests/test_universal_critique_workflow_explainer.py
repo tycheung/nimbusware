@@ -1,4 +1,4 @@
-"""Unit tests for universal critique workflow explainer (fo134 / §14 #16)."""
+"""Unit tests for universal critique workflow explainer."""
 
 from __future__ import annotations
 

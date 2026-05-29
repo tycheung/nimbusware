@@ -21,7 +21,11 @@ def test_packet_caps_size() -> None:
     assert packet.char_count() <= 2500
 
 
-def test_packet_preserves_slice_id() -> None:
+def test_packet_preserves_memory_excerpt() -> None:
     plan = parse_slice_plan({"slice_id": "slice-abc", "target_paths": []})
-    packet = SliceContextPacket(slice_id=plan.slice_id, paths=plan.target_paths)
-    assert packet.slice_id == "slice-abc"
+    packet = build_slice_context_packet(
+        plan,
+        memory_excerpt="prior failure: sql injection",
+        max_chars=5000,
+    )
+    assert "sql injection" in packet.memory_excerpt

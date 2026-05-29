@@ -17,6 +17,8 @@ _SS_CHAT_MESSAGES = "nimbusware_chat_messages"
 _SS_CHAT_THREAD = "nimbusware_chat_thread"
 _SS_ACTIVE_AGENT = "nimbusware_active_agent_id"
 _SS_LAST_RUN = "nimbusware_last_run_id"
+_SS_MEMORY_RETRIEVAL = "nimbusware_memory_retrieval_enabled"
+_SS_MEMORY_CONTRIB = "nimbusware_memory_index_contribution"
 
 
 def _api_base() -> str:
@@ -88,6 +90,10 @@ def _start_run(workflow_profile: str) -> str:
     agent_id = st.session_state.get(_SS_ACTIVE_AGENT)
     if agent_id:
         payload["custom_agent_id"] = agent_id
+    if _SS_MEMORY_RETRIEVAL in st.session_state:
+        payload["memory_retrieval_enabled"] = bool(st.session_state[_SS_MEMORY_RETRIEVAL])
+    if _SS_MEMORY_CONTRIB in st.session_state:
+        payload["memory_index_contribution"] = bool(st.session_state[_SS_MEMORY_CONTRIB])
     try:
         with httpx.Client(timeout=30.0) as client:
             resp = client.post(f"{_api_base()}/runs", json=payload)
@@ -138,6 +144,18 @@ def render_operator_chat(*, repo_root: Path | None = None) -> None:
         st.caption(f"Active agent: `{agent}`")
     thread = st.session_state[_SS_CHAT_THREAD]
     st.caption(f"Thread: `{thread[:8]}…` · API: `{_api_base()}`")
+    st.checkbox(
+        "Memory retrieval enabled for /run",
+        value=st.session_state.get(_SS_MEMORY_RETRIEVAL, True),
+        key=_SS_MEMORY_RETRIEVAL,
+        help="Maps to POST /v1/runs memory_retrieval_enabled",
+    )
+    st.checkbox(
+        "Contribute this run to memory index",
+        value=st.session_state.get(_SS_MEMORY_CONTRIB, True),
+        key=_SS_MEMORY_CONTRIB,
+        help="Maps to POST /v1/runs memory_index_contribution",
+    )
 
     for msg in st.session_state[_SS_CHAT_MESSAGES]:
         with st.chat_message(msg["role"]):

@@ -123,6 +123,7 @@ def execute_slice_plan_llm(
     timeout_seconds: float = 120.0,
     system_prompt: str | None = None,
     budget_feedback: str | None = None,
+    memory_excerpt: str = "",
 ) -> SlicePlan | None:
     """Return a slice plan from Ollama JSON, or None to fall back to stub."""
     agent_prompt = system_prompt or _custom_agent_prompt_from_rows(rows)
@@ -141,6 +142,8 @@ def execute_slice_plan_llm(
         f"Propose micro-slice #{slice_index} for this Hermes run. "
         "Use slice_id like slice-{n}."
     )
+    if memory_excerpt.strip():
+        user = f"{user}\n\nPrior failure memory (advisory):\n{memory_excerpt[:2000]}"
     if budget_feedback:
         user = f"{user}\nPrior budget feedback: {budget_feedback}"
     try:

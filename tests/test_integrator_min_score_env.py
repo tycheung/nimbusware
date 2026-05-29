@@ -1,4 +1,4 @@
-"""``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` env-layer Pattern B + 3-layer precedence (fo71, §14 #13).
+"""``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` env-layer Pattern B + 3-layer precedence.
 
 [`effective_integrator_min_score_to_pass`](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py)
 resolves the integrator gate's minimum score across **three precedence
@@ -13,14 +13,14 @@ pinned by the env-layer sweep and opens a new contrast cluster against
 the fo65-fo70 Pattern A sweep:
 
 * **Coercion**: ``float(env_raw)`` + clamp ``max(0.0, min(1.0, v))``
-  rather than tuple membership.
+ rather than tuple membership.
 * **`.strip()` IS applied** -- whitespace-padded canonical floats are
-  RESCUED here, fail-closed in Pattern A. KEY DIVERGENCE.
+ RESCUED here, fail-closed in Pattern A. KEY DIVERGENCE.
 * **Three precedence layers** rather than one or two; first env-layer
-  slice to lock a 3-layer cascade with deterministic 0.0 floor.
+ slice to lock a 3-layer cascade with deterministic 0.0 floor.
 * **Fail-closed semantics**: ``ValueError`` swallowed via
-  ``except ValueError: pass`` then fall-through to wf, distinct from
-  Pattern A's tuple-non-membership single-layer fall-through.
+ ``except ValueError: pass`` then fall-through to wf, distinct from
+ Pattern A's tuple-non-membership single-layer fall-through.
 
 Before this slice the env-layer string-arm contract was essentially
 unpinned. Existing fo21 coverage in
@@ -32,12 +32,12 @@ missing clamping, ``.strip()`` rescue, fail-closed precedence, and the
 Three parts:
 
 * **Part A** locks the env-accept arm (boundary / in-range / integer
-  coercion / negative clamp / over-1.0 clamp / `.strip()` rescue).
+ coercion / negative clamp / over-1.0 clamp / `.strip()` rescue).
 * **Part B** locks the 6-arm 3-layer cascade including the fail-closed
-  precedence proof and the double-fallthrough cascade.
+ precedence proof and the double-fallthrough cascade.
 * **Part C** locks the asymmetric fail-closed string-arm (Pattern A
-  truthy tokens that are NOT numerically valid here -- direct
-  asymmetry contract; junk; strict-`float()` near-miss).
+ truthy tokens that are NOT numerically valid here -- direct
+ asymmetry contract; junk; strict-`float()` near-miss).
 
 Per-case messages ``accept raw=<raw>: <expected>`` / ``<block_id>:
 <component>`` / ``fail_closed raw=<raw>: ...`` identify failing layer

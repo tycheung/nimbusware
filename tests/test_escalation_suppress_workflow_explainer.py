@@ -1,4 +1,4 @@
-"""§14 #19 / fo137: read-only escalation suppress workflow explainer payload."""
+"""§14 #19."""
 
 from __future__ import annotations
 

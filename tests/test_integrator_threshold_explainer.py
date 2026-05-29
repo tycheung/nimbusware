@@ -1,4 +1,4 @@
-"""Unit tests for integrator threshold explainer (fo133 / §14 #13)."""
+"""Unit tests for integrator threshold explainer."""
 
 from __future__ import annotations
 

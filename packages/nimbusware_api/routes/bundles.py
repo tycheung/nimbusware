@@ -139,6 +139,7 @@ def get_bundle_search(
         q,
         k=k,
         config_materializer=getattr(orch, "config_materializer", None),
+        bundle_outcome_store=getattr(orch, "_bundle_outcome_store", None),
     )
     hits: list[BundleSearchHit] = []
     for row in rows:

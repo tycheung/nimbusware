@@ -1,4 +1,4 @@
-"""Apply workflow YAML edits: subtrees + full-profile merge (PLAN_GAP §14 #13).
+"""Apply workflow YAML edits: subtrees + full-profile merge.
 
 Writes only when ``HERMES_ALLOW_WORKFLOW_YAML_WRITE`` is truthy and confirmation
 matches the selected profile stem. Uses :func:`atomic_write_yaml` for a safe

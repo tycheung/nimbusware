@@ -1,43 +1,43 @@
-"""``_maybe_emit_anti_deadlock_escalation`` direct contract (fo104).
+"""``_maybe_emit_anti_deadlock_escalation`` direct contract.
 
 The anti-deadlock escalation emitter at [pipeline.py:1250-1281] is the only
 mainline orchestrator-level `_maybe_emit_*` escalation path with no direct
 happy-path or per-branch contract test today. Existing coverage:
 
 * [tests/test_anti_deadlock.py] -- pure `should_emit_anti_deadlock_escalation`
-  helper only (3 axes, no orchestrator method).
+ helper only (3 axes, no orchestrator method).
 * [tests/test_deadlock_minutes_env.py] -- pure `load_anti_deadlock_settings`
-  loader only (env + YAML cascade + RAISE arms).
-* [tests/test_workflow_suppress_automatic_escalation_matrix.py] B1 (fo88) --
-  only the **suppress arm**, single axis, no control side, no ordering pin.
+ loader only (env + YAML cascade + RAISE arms).
+* [tests/test_workflow_suppress_automatic_escalation_matrix.py] B1 --
+ only the **suppress arm**, single axis, no control side, no ordering pin.
 
 fo104 closes the gap via 4 parts spanning 20 axes (~29 assertions, source
 unchanged):
 
 * **Part A** -- settings loader delegation + suppress fork control (5 axes --
-  suppress short-circuits BEFORE loader / loader receives `self._repo_root` /
-  loader called exactly once / `enabled=False` propagates / `stall_minutes=0`
-  propagates).
+ suppress short-circuits BEFORE loader / loader receives `self._repo_root` /
+ loader called exactly once / `enabled=False` propagates / `stall_minutes=0`
+ propagates).
 * **Part B** -- `should_emit_anti_deadlock_escalation` delegation (5 axes --
-  rows kwarg threading / kwargs from loader / return False -> no emit /
-  return True -> exactly one emit / `now` is tz-aware UTC).
+ rows kwarg threading / kwargs from loader / return False -> no emit /
+ return True -> exactly one emit / `now` is tz-aware UTC).
 * **Part C** -- dedup-by-reason-code + dedup-before-should_emit ordering
-  (5 axes -- prior matching blocks / prior different reason_code does NOT
-  block / prior STAGE_FAILED does NOT block / two prior matching still
-  block / dedup fires BEFORE should_emit).
+ (5 axes -- prior matching blocks / prior different reason_code does NOT
+ block / prior STAGE_FAILED does NOT block / two prior matching still
+ block / dedup fires BEFORE should_emit).
 * **Part D** -- happy-path emit shape + literal notes format (5 axes --
-  exactly 1 RUN_ESCALATED / payload literals / notes literal format /
-  notes reflects loader values / no extraneous fields).
+ exactly 1 RUN_ESCALATED / payload literals / notes literal format /
+ notes reflects loader values / no extraneous fields).
 
 Key contract divergences pinned by fo104:
 
 * **Per-reason-code dedup** -- distinct from fo102 C's ANY-RUN_ESCALATED
-  asymmetric dedup for `_maybe_auto_escalate`. A future "unify all
-  escalation dedup" refactor would silently flip this.
+ asymmetric dedup for `_maybe_auto_escalate`. A future "unify all
+ escalation dedup" refactor would silently flip this.
 * **Notes literal** `f"stall_minutes={S} min_progress_events={M}"` --
-  distinct from fo102's `f"threshold=N cumulative_*=n"` shape.
+ distinct from fo102's `f"threshold=N cumulative_*=n"` shape.
 * **Suppress arm sits at TOP of function** -- loader is NOT called when
-  suppress fires (fo88 only proves no emit).
+ suppress fires.
 """
 
 from __future__ import annotations

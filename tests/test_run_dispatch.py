@@ -102,6 +102,13 @@ class _FakeRedis:
         return 0
 
 
+    def llen(self, _key: str) -> int:
+        return len(self.pending)
+
+    def hlen(self, _key: str) -> int:
+        return len(self.in_flight)
+
+
 def test_redis_run_queue_enqueue_dequeue_ack() -> None:
     fake = _FakeRedis()
     q = RedisRunQueue("redis://example", client=fake)

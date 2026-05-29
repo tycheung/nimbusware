@@ -1,4 +1,4 @@
-"""``HERMES_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default (fo73, §14 #1).
+"""``HERMES_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default.
 
 [`_latency_sample_count`](d:\\Hermes\\packages\\hermes_orchestrator\\preflight.py)
 resolves the preflight latency-sample count via the module-private
@@ -6,62 +6,62 @@ helper at [preflight.py:19-25](d:\\Hermes\\packages\\hermes_orchestrator\\prefli
 
 ```python
 def _latency_sample_count() -> int:
-    raw = (os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES") or "1").strip()
-    try:
-        n = int(raw)
-    except ValueError:
-        n = 1
-    return min(max(n, 1), 20)
+ raw = (os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES") or "1").strip()
+ try:
+ n = int(raw)
+ except ValueError:
+ n = 1
+ return min(max(n, 1), 20)
 ```
 
 This is the **third Pattern B (non-binary, numeric/int) env layer**
 pinned by the env-layer sweep and **closes the Pattern B 3-fail-mode
-trilogy** opened in fo71 / fo72:
+trilogy** opened in fo71
 
 * **fo71** ``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` -- ``float()`` +
-  ``[0.0, 1.0]`` clamp + ``except ValueError: pass`` cascades to
-  workflow YAML fallthrough.
+ ``[0.0, 1.0]`` clamp + ``except ValueError: pass`` cascades to
+ workflow YAML fallthrough.
 * **fo72** ``HERMES_DEADLOCK_ESCALATION_MINUTES`` -- ``int()`` strict +
-  NO clamping + **NO ``try/except``** so ``ValueError`` / ``TypeError``
-  propagate to caller.
+ NO clamping + **NO ``try/except``** so ``ValueError`` / ``TypeError``
+ propagate to caller.
 * **fo73** ``HERMES_PREFLIGHT_LATENCY_SAMPLES`` -- ``int()`` strict +
-  ``[1, 20]`` clamp + **``except ValueError: n = 1``** swallows to a
-  **hardcoded default** rather than a layered fallthrough.
+ ``[1, 20]`` clamp + **``except ValueError: n = 1``** swallows to a
+ **hardcoded default** rather than a layered fallthrough.
 
 Five distinct semantic axes that no single prior Pattern B env covered
 simultaneously:
 
 1. **Type** ``int()`` strict (rejects ``"5.5"`` / ``"1e2"``).
 2. **Clamp** ``[1, 20]`` with **floor=1** (not 0 like fo71); ``"0"`` /
-   ``"-5"`` clamp UP to 1.
+ ``"-5"`` clamp UP to 1.
 3. **``.strip()``** IS applied (same family as fo71).
 4. **Fail-swallow to hardcoded default** -- the operator-facing default
-   is a constant ``1`` baked into the function body.
+ is a constant ``1`` baked into the function body.
 5. **Missing-env `or "1"` short-circuit BEFORE `.strip()`** -- three
-   distinct paths converge on the returned value ``1``:
+ distinct paths converge on the returned value ``1``:
 
-   * ``or "1"`` short-circuit (env-absent, env-empty ``""``).
-   * ``int("")`` ``ValueError`` swallow (env-whitespace-only ``"   "``
-     because ``"   " or "1"`` evaluates to ``"   "``, then ``.strip()``
-     reduces to ``""``, then ``int("")`` raises and is swallowed).
-   * ``int(<junk>)`` ``ValueError`` swallow (env-``"abc"`` /
-     Pattern-A truthy tokens / float strings).
+ * ``or "1"`` short-circuit (env-absent, env-empty ``""``).
+ * ``int("")`` ``ValueError`` swallow (env-whitespace-only ``" "``
+ because ``" " or "1"`` evaluates to ``" "``, then ``.strip()``
+ reduces to ``""``, then ``int("")`` raises and is swallowed).
+ * ``int(<junk>)`` ``ValueError`` swallow (env-``"abc"`` /
+ Pattern-A truthy tokens / float strings).
 
 Three parts:
 
 * **Part A** locks the accept-arm passthrough + ``.strip()`` rescue +
-  leading ``+`` + int-not-bool return type in the non-fail, non-clamp
-  middle region.
+ leading ``+`` + int-not-bool return type in the non-fail, non-clamp
+ middle region.
 * **Part B** is the sharpest part -- locks the ``[1, 20]`` clamping
-  lattice AND the **three distinct paths to floor=1** in a single
-  5-block test so a refactor that conflates any two paths surfaces a
-  per-block ``<path_label>`` assertion message.
+ lattice AND the **three distinct paths to floor=1** in a single
+ 5-block test so a refactor that conflates any two paths surfaces a
+ per-block ``<path_label>`` assertion message.
 * **Part C** is the **structural triple inversion** vs fo71 Part C
-  (``== pytest.approx(0.1)`` cascade) and fo72 Part C
-  (``pytest.raises(ValueError)``) -- asserts the helper does NOT raise,
-  returns exactly ``_DEFAULT == 1``, AND ``_FLOOR <= result <=
-  _CEILING``, for the same 12-variant junk / Pattern A truthy / float
-  string / scientific / near-miss matrix that fo71 / fo72 used.
+ (``== pytest.approx(0.1)`` cascade) and fo72 Part C
+ (``pytest.raises(ValueError)``) -- asserts the helper does NOT raise,
+ returns exactly ``_DEFAULT == 1``, AND ``_FLOOR <= result <=
+ _CEILING``, for the same 12-variant junk / Pattern A truthy / float
+ string / scientific / near-miss matrix that fo71.
 
 Per-case messages ``accept raw=<raw>: <expected>`` / ``<path_label>
 raw=<raw>`` / ``fail_swallow raw=<raw>: <component>`` identify the

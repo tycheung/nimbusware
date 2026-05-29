@@ -1,4 +1,4 @@
-"""§14 #15 / fo139: read-only agent evaluator workflow explainer payload."""
+"""§14 #15."""
 
 from __future__ import annotations
 

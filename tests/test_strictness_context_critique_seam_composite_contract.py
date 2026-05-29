@@ -1,22 +1,22 @@
-"""Per-run resolver composite for strictness + universal critique (fo119).
+"""Per-run resolver composite for strictness + universal critique.
 
 Two sibling private methods of ``RunOrchestrator`` in
 [packages/hermes_orchestrator/pipeline.py](packages/hermes_orchestrator/pipeline.py):
 
 .. code-block:: python
 
-    def _strictness_context(self, run_id: UUID) -> dict[str, Any]:  # 554-559
-        snap = self.policy_snapshot_for_run(run_id)
-        fs = snap.get("finding_fix_strictness")
-        if isinstance(fs, dict):
-            return {"finding_fix_strictness": FindingFixStrictnessSettings.model_validate(fs)}
-        return {}
+ def _strictness_context(self, run_id: UUID) -> dict[str, Any]: # 554-559
+ snap = self.policy_snapshot_for_run(run_id)
+ fs = snap.get("finding_fix_strictness")
+ if isinstance(fs, dict):
+ return {"finding_fix_strictness": FindingFixStrictnessSettings.model_validate(fs)}
+ return {}
 
-    def _effective_universal_critique_for_run(  # 700-702
-        self, run_id: UUID,
-    ) -> EffectiveUniversalCritique:
-        wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
-        return effective_universal_critique(self._repo_root, wf)
+ def _effective_universal_critique_for_run( # 700-702
+ self, run_id: UUID,
+ ) -> EffectiveUniversalCritique:
+ wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
+ return effective_universal_critique(self._repo_root, wf)
 
 Both helpers consume the **same** row source
 (``self._store.list_run_events(str(run_id))``) but **different facets**
@@ -31,73 +31,73 @@ fo119 closes the gap with 4 parts spanning 20 axes (no source
 changes):
 
 * **Part A** -- ``_strictness_context`` ``fs``-input matrix, isolated
-  via ``patch.object`` on ``policy_snapshot_for_run`` (5 axes):
-  dict-valid HIGH/True (A1), dict-empty defaults to MEDIUM/False (A2),
-  dict-invalid 3-flavour ``ValidationError`` matrix (A3),
-  missing-key + explicit-``None`` converge to ``{}`` (A4),
-  non-dict 6-type matrix to ``{}`` (A5).
+ via ``patch.object`` on ``policy_snapshot_for_run`` (5 axes):
+ dict-valid HIGH/True (A1), dict-empty defaults to MEDIUM/False (A2),
+ dict-invalid 3-flavour ``ValidationError`` matrix (A3),
+ missing-key + explicit-``None`` converge to ``{}`` (A4),
+ non-dict 6-type matrix to ``{}`` (A5).
 * **Part B** -- ``_strictness_context`` real-path integration via
-  ``create_run`` (5 axes): default policy round-trip (B1),
-  ``run_policy_overrides`` propagation (B2), unknown ``run_id`` to
-  ``{}`` (B3), ``wraps`` call-count exactly 1 (B4), idempotency
-  ``==`` + freshness ``is not`` (B5).
+ ``create_run`` (5 axes): default policy round-trip (B1),
+ ``run_policy_overrides`` propagation (B2), unknown ``run_id`` to
+ ``{}`` (B3), ``wraps`` call-count exactly 1 (B4), idempotency
+ ``==`` + freshness ``is not`` (B5).
 * **Part C** -- ``_effective_universal_critique_for_run`` direct seam
-  contract (5 axes): no-events seam receives ``None`` (C1),
-  ``"default"`` profile round-trip (C2), real call returns
-  ``EffectiveUniversalCritique`` dataclass (C3), ``str(wf)`` coercion
-  on non-string ``workflow_profile`` (C4), FIRST-wins on two
-  ``run.created`` rows (C5).
+ contract (5 axes): no-events seam receives ``None`` (C1),
+ ``"default"`` profile round-trip (C2), real call returns
+ ``EffectiveUniversalCritique`` dataclass (C3), ``str(wf)`` coercion
+ on non-string ``workflow_profile`` (C4), FIRST-wins on two
+ ``run.created`` rows (C5).
 * **Part D** -- cross-helper KEY DIVERGENCES + invariants (5 axes):
-  shared ``list_run_events`` source (D1), different facets of
-  ``run.created`` (D2), neither mutates the store (D3),
-  ``self._repo_root`` propagation (D4), asymmetric error surface --
-  same ``rid`` raises ``ValidationError`` in one helper while the
-  other returns a valid ``EffectiveUniversalCritique`` (D5).
+ shared ``list_run_events`` source (D1), different facets of
+ ``run.created`` (D2), neither mutates the store (D3),
+ ``self._repo_root`` propagation (D4), asymmetric error surface --
+ same ``rid`` raises ``ValidationError`` in one helper while the
+ other returns a valid ``EffectiveUniversalCritique`` (D5).
 
 KEY DIVERGENCES pinned across the composite:
 
 * **3 observable outcomes through 2 input branches** --
-  ``isinstance(fs, dict)`` is the SOLE branch in ``_strictness_context``;
-  the True arm has TWO observable outcomes (validate-OK / raise
-  ``ValidationError``), the False arm has ONE (``{}``). A refactor
-  adding ``try``/``except ValidationError`` around ``model_validate``
-  would silently convert the raise arm to ``{}`` and lose the
-  fail-loud contract that ``_emit_critique_gate_fail_findings``
-  relies on. Part A A3 pins via ``pytest.raises(ValidationError)``.
+ ``isinstance(fs, dict)`` is the SOLE branch in ``_strictness_context``;
+ the True arm has TWO observable outcomes (validate-OK / raise
+ ``ValidationError``), the False arm has ONE (``{}``). A refactor
+ adding ``try``/``except ValidationError`` around ``model_validate``
+ would silently convert the raise arm to ``{}`` and lose the
+ fail-loud contract that ``_emit_critique_gate_fail_findings``
+ relies on. Part A A3 pins via ``pytest.raises(ValidationError)``.
 * **``.get(key)`` returns ``None`` for both missing-key AND
-  explicit-``None``** -- both inputs converge through the same
-  ``not isinstance(None, dict)`` branch to ``{}``. A refactor to
-  ``fs["finding_fix_strictness"]`` (bracket access) would raise
-  ``KeyError`` for missing-key, changing the contract. Part A A4
-  pins both inputs yield the same ``{}``.
+ explicit-``None``** -- both inputs converge through the same
+ ``not isinstance(None, dict)`` branch to ``{}``. A refactor to
+ ``fs["finding_fix_strictness"]`` (bracket access) would raise
+ ``KeyError`` for missing-key, changing the contract. Part A A4
+ pins both inputs yield the same ``{}``.
 * **``str(wf)`` cast in ``workflow_profile_from_run_created_rows``**
-  -- non-``None`` ``workflow_profile`` values are wrapped in
-  ``str(...)`` at
-  [integrator_gate.py:84](packages/hermes_orchestrator/integrator_gate.py).
-  A refactor that removed ``str()`` would let an ``int`` flow
-  downstream and break ``parse_universal_critique_workflow_block``'s
-  ``workflow_profile_path(repo_root, profile)`` filename composition.
-  Part C C4 pins via raw-row injection of ``workflow_profile=123``
-  and asserting the seam receives ``"123"`` (str).
+ -- non-``None`` ``workflow_profile`` values are wrapped in
+ ``str(...)`` at
+ [integrator_gate.py:84](packages/hermes_orchestrator/integrator_gate.py).
+ A refactor that removed ``str()`` would let an ``int`` flow
+ downstream and break ``parse_universal_critique_workflow_block``'s
+ ``workflow_profile_path(repo_root, profile)`` filename composition.
+ Part C C4 pins via raw-row injection of ``workflow_profile=123``
+ and asserting the seam receives ``"123"`` (str).
 * **FIRST-wins** -- both ``policy_snapshot_for_run`` and
-  ``workflow_profile_from_run_created_rows`` ``return`` inside the
-  first matching iteration of their ``for row in ...`` loop. A
-  refactor to last-wins or merge-all would silently change semantics.
-  Part C C5 pins via 2-row injection with distinguishable
-  ``workflow_profile`` values.
+ ``workflow_profile_from_run_created_rows`` ``return`` inside the
+ first matching iteration of their ``for row in ...`` loop. A
+ refactor to last-wins or merge-all would silently change semantics.
+ Part C C5 pins via 2-row injection with distinguishable
+ ``workflow_profile`` values.
 * **Same row source, different facets, no shared cache** -- both
-  helpers call ``self._store.list_run_events(str(run_id))``
-  independently (one via ``policy_snapshot_for_run``, one direct).
-  A refactor that memoized the call on ``self`` would still produce
-  the same outputs but change the observable call count. Part D D1
-  pins shared source; the 2-call count is asserted explicitly.
+ helpers call ``self._store.list_run_events(str(run_id))``
+ independently (one via ``policy_snapshot_for_run``, one direct).
+ A refactor that memoized the call on ``self`` would still produce
+ the same outputs but change the observable call count. Part D D1
+ pins shared source; the 2-call count is asserted explicitly.
 * **Asymmetric error surface** -- ``_strictness_context`` can raise
-  ``ValidationError``; ``_effective_universal_critique_for_run``
-  always succeeds at the seam (no validation arm; the env-over-YAML
-  resolver in ``effective_universal_critique`` always returns a
-  fully populated ``EffectiveUniversalCritique``). Part D D5 pins
-  the asymmetry via paired ``pytest.raises`` vs ``isinstance``
-  assertions on the **same** ``run_id``.
+ ``ValidationError``; ``_effective_universal_critique_for_run``
+ always succeeds at the seam (no validation arm; the env-over-YAML
+ resolver in ``effective_universal_critique`` always returns a
+ fully populated ``EffectiveUniversalCritique``). Part D D5 pins
+ the asymmetry via paired ``pytest.raises`` vs ``isinstance``
+ assertions on the **same** ``run_id``.
 """
 
 from __future__ import annotations

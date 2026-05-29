@@ -1,4 +1,4 @@
-"""Security-scan metadata sibling helpers composite (fo121).
+"""Security-scan metadata sibling helpers composite.
 
 ``_finding_has_security_scan_metadata`` +
 ``security_scan_on_verify_timeline_summary`` sibling composite.
@@ -13,50 +13,50 @@ extends with **20 NET-NEW** axes covering the four sharpest unpinned
 surfaces:
 
 * **Part A** -- ``_finding_has_security_scan_metadata`` isinstance /
-  subclass matrix (5 axes): ``OrderedDict`` / ``defaultdict`` /
-  ``Counter`` accepted (dict subclasses), **``collections.UserDict``**
-  / **``types.MappingProxyType``** REJECTED (composition-based wrappers
-  / read-only views that are NOT ``dict`` subclasses -- KEY DIVERGENCE
-  against duck typing), ``SimpleNamespace`` and dataclass rejected,
-  custom ``__contains__`` class rejected (isinstance over
-  duck-typing), and a paired dict-subclass with overridden
-  ``__contains__`` honoring the override.
+ subclass matrix (5 axes): ``OrderedDict`` / ``defaultdict`` /
+ ``Counter`` accepted (dict subclasses), **``collections.UserDict``**
+ / **``types.MappingProxyType``** REJECTED (composition-based wrappers
+ / read-only views that are NOT ``dict`` subclasses -- KEY DIVERGENCE
+ against duck typing), ``SimpleNamespace`` and dataclass rejected,
+ custom ``__contains__`` class rejected (isinstance over
+ duck-typing), and a paired dict-subclass with overridden
+ ``__contains__`` honoring the override.
 * **Part B** -- exact-key matching matrix (5 axes): case sensitivity
-  (KEY DIVERGENCE), typo / whitespace variants, BOTH keys present with
-  falsy values, key-as-VALUE rejection (``in dict`` checks KEYS, not
-  values -- KEY DIVERGENCE), extra unrelated keys tolerated.
+ (KEY DIVERGENCE), typo / whitespace variants, BOTH keys present with
+ falsy values, key-as-VALUE rejection (``in dict`` checks KEYS, not
+ values -- KEY DIVERGENCE), extra unrelated keys tolerated.
 * **Part C** -- summary ordering / filtering matrix (5 axes): empty
-  input list, list-order ordering NOT timestamp-order (KEY
-  DIVERGENCE), broader wrong-event-type matrix (run.created,
-  run.escalated, stage.passed, gate.decision.emitted, finding.updated),
-  mixed pass-through where guard fails on every event, no category
-  gate at this layer.
+ input list, list-order ordering NOT timestamp-order (KEY
+ DIVERGENCE), broader wrong-event-type matrix (run.created,
+ run.escalated, stage.passed, gate.decision.emitted, finding.updated),
+ mixed pass-through where guard fails on every event, no category
+ gate at this layer.
 * **Part D** -- payload / source / return-type matrix (5 axes):
-  ``payload=None`` coercion, non-dict payload (string / list) coercion
-  to ``pl == {}``, source-split guard checks metadata ONLY (KEY
-  DIVERGENCE), top-level ``event_id`` / ``occurred_at`` from event NOT
-  payload, return type is plain ``dict`` -- not ``TypedDict``, not
-  dataclass, mutable and ``json.dumps``-serializable (KEY DIVERGENCE).
+ ``payload=None`` coercion, non-dict payload (string / list) coercion
+ to ``pl == {}``, source-split guard checks metadata ONLY (KEY
+ DIVERGENCE), top-level ``event_id`` / ``occurred_at`` from event NOT
+ payload, return type is plain ``dict`` -- not ``TypedDict``, not
+ dataclass, mutable and ``json.dumps``-serializable (KEY DIVERGENCE).
 
 KEY DIVERGENCES pinned across the composite:
 
 * **``isinstance(meta, dict)`` over duck-typing** -- ``UserDict`` /
-  ``MappingProxyType`` REJECTED despite being "dict-like." A refactor
-  to ``isinstance(meta, collections.abc.Mapping)`` would silently
-  accept them.
+ ``MappingProxyType`` REJECTED despite being "dict-like." A refactor
+ to ``isinstance(meta, collections.abc.Mapping)`` would silently
+ accept them.
 * **Case-sensitive key matching** -- ``"SECURITY_SCAN_EXIT"`` NOT
-  matched. A refactor to ``k.lower() in {...}`` would silently accept.
+ matched. A refactor to ``k.lower() in {...}`` would silently accept.
 * **``in dict`` checks KEYS, not values** -- a refactor to
-  ``... in meta.values()`` would invert the contract.
+ ``... in meta.values()`` would invert the contract.
 * **List-order ordering, NOT timestamp-order** -- LAST list match wins
-  regardless of ``occurred_at``. A refactor to
-  ``sorted(events, key=lambda e: e["occurred_at"])[-1]`` would change
-  semantics for un-sorted input.
+ regardless of ``occurred_at``. A refactor to
+ ``sorted(events, key=lambda e: e["occurred_at"])[-1]`` would change
+ semantics for un-sorted input.
 * **Source-split guard** -- guard checks ``meta`` only; scan keys
-  living in ``payload`` do NOT surface a summary.
+ living in ``payload`` do NOT surface a summary.
 * **Plain ``dict`` return type** -- not ``TypedDict``, not dataclass.
-  A future refactor to a frozen dataclass would break callers that
-  mutate / ``json.dumps`` the result.
+ A future refactor to a frozen dataclass would break callers that
+ mutate / ``json.dumps`` the result.
 
 All tests call the two helpers **directly** with hand-built event
 dicts. No FastAPI ``TestClient``, no fixtures beyond pytest built-ins,

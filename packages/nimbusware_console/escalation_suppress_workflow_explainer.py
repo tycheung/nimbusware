@@ -1,4 +1,4 @@
-"""Read-only workflow ``escalation.suppress_automatic_escalation`` (§14 #19 / fo137)."""
+"""Read-only workflow ``escalation.suppress_automatic_escalation`` (§14 #19."""
 
 from __future__ import annotations
 

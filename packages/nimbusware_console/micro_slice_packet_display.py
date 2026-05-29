@@ -1,4 +1,4 @@
-"""Micro-slice context packet viewer (fo154 / PZ-4)."""
+"""Micro-slice context packet viewer."""
 
 from __future__ import annotations
 

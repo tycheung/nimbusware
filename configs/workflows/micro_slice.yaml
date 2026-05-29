@@ -30,3 +30,10 @@ integrator_gate:
 
 agent_evaluator:
   enabled: false
+
+memory:
+  retrieval_enabled: true
+  index_contribution: true
+  retrieval_k: 5
+  excerpt_max_chars: 2000
+  embedding_mode: deterministic

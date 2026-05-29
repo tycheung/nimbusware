@@ -529,15 +529,36 @@ def _bootstrap_ollama(args: argparse.Namespace, repo: Path) -> bool:
         raise SetupError(str(exc)) from exc
 
 
+def _configure_edition(args: argparse.Namespace, repo: Path) -> str:
+    packages = repo / "packages"
+    if str(packages) not in sys.path:
+        sys.path.insert(0, str(packages))
+    from nimbusware_env import set_env_var  # noqa: PLC0415
+    from nimbusware_env.edition import enterprise_install_hints, normalize_edition  # noqa: PLC0415
+
+    edition_name = normalize_edition(args.edition, strict=True)
+    env_path = set_env_var("NIMBUSWARE_EDITION", edition_name, repo_root=repo)
+    _log(f"\nProduct edition: {edition_name}")
+    _log(f"  Persisted {env_path}")
+    for hint in enterprise_install_hints():
+        _log(f"  {hint}")
+    if edition_name == "enterprise" and not args.with_redis:
+        args.with_redis = True
+        _log("  Auto-enabling Poetry redis group for enterprise (--with-redis).")
+    return edition_name
+
+
 def _print_next_steps(
     repo: Path,
     url: str,
     *,
     ollama_ok: bool,
     with_faiss: bool,
+    edition_name: str = "individual",
 ) -> None:
     _log("")
     _log("=== Nimbusware setup complete ===")
+    _log(f"  Edition:  {edition_name}")
     _log(f"  Repo:     {repo}")
     _log(f"  Database: {url}")
     _log("")
@@ -574,6 +595,11 @@ def _print_next_steps(
             "Ollama was not configured. Re-run install with an Ollama menu choice, "
             "or install from https://ollama.com and set HERMES_USE_LLM=1 in .env.",
         )
+    if edition_name == "enterprise":
+        _log("")
+        _log("Enterprise fleet worker (Redis dispatch):")
+        _log("  docker compose --profile fleet --profile worker up -d")
+        _log("  See scripts/run_dispatch_fleet_runbook.md")
     if with_faiss:
         _log("")
         _log("FAISS index (optional):")
@@ -632,6 +658,12 @@ def main(argv: list[str] | None = None) -> int:
     _load_repo_dotenv()
     parser = argparse.ArgumentParser(
         description="Install and bootstrap a Nimbusware local development environment.",
+    )
+    parser.add_argument(
+        "--edition",
+        choices=("individual", "enterprise"),
+        default=os.environ.get("NIMBUSWARE_EDITION", "individual"),
+        help="Product edition: individual (default) or enterprise (Lane D bootstrap)",
     )
     parser.add_argument(
         "--repo-root",
@@ -839,6 +871,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     _log(f"\nRepository: {repo}")
+    edition_name = _configure_edition(args, repo)
     poetry = _ensure_poetry(install=not args.no_install_poetry)
 
     if not args.no_poetry_install:
@@ -917,6 +950,7 @@ def main(argv: list[str] | None = None) -> int:
         url if postgres_ready else "(Postgres not configured - set NIMBUSWARE_DATABASE_URL)",
         ollama_ok=ollama_ok,
         with_faiss=args.with_faiss,
+        edition_name=edition_name,
     )
     return 0
 

@@ -12,14 +12,14 @@ string-arm matrix was unpinned.
 Three parts:
 
 * **Part A** locks the truthy tuple membership (env-gate accepted -> reaches
-  the ``shutil.which`` branch which we mock to None for determinism).
+ the ``shutil.which`` branch which we mock to None for determinism).
 * **Part B** locks the **exact** operator-facing skip message
-  ``(0, "bandit skipped (set HERMES_RUN_BANDIT=1 to enable)\\n")`` so a
-  refactor that drifts the exit code, the trailing newline, or the
-  ``HERMES_RUN_BANDIT=1`` hint fails loudly.
+ ``(0, "bandit skipped (set HERMES_RUN_BANDIT=1 to enable)\\n")`` so a
+ refactor that drifts the exit code, the trailing newline, or the
+ ``HERMES_RUN_BANDIT=1`` hint fails loudly.
 * **Part C** locks the asymmetric fail-closed string-arm (whitespace-padded,
-  ``"on"`` / ``"ON"``, case-folded falsy, empty / junk / near-miss / interior
-  whitespace) -- parallel to fo65 Part C.
+ ``"on"`` / ``"ON"``, case-folded falsy, empty / junk / near-miss / interior
+ whitespace) -- parallel to fo65 Part C.
 
 Per-case messages ``force_on raw=<raw>`` / ``skip_message raw=<raw>`` /
 ``fail_closed raw=<raw>`` identify the failing branch + offending env scalar.

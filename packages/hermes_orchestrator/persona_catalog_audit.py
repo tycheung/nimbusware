@@ -1,4 +1,4 @@
-"""Shared persona shelf audit helpers (fo127 + §14 #15 orchestrator promotions).
+"""Shared persona shelf audit helpers.
 
 ``persona_catalog_run_id`` MUST stay aligned with
 ``packages/nimbusware_api/routes/personas.py`` so API and orchestrator writes share

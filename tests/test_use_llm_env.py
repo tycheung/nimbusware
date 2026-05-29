@@ -1,4 +1,4 @@
-"""``HERMES_USE_LLM`` env-layer string-arm contract (fo69, §14 #16).
+"""``HERMES_USE_LLM`` env-layer string-arm contract.
 
 [`RunOrchestrator.execute_plan_stage`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
 gates the LLM plan-stage path at line 679 via
@@ -9,12 +9,12 @@ accept arm:
 
 * env REJECT -> stub only (1 stub call, 0 LLM calls)
 * env ACCEPT + ``_selected_model_for_run`` returns ``None`` -> stub only
-  (the ``if model:`` check at line 684 skips the LLM body entirely)
+ (the ``if model:`` check at line 684 skips the LLM body entirely)
 * env ACCEPT + model valid + LLM raises -> the bare ``except Exception:
-  pass`` arm at line 696 swallows it and falls through to stub
-  (1 LLM call, 1 stub call)
+ pass`` arm at line 696 swallows it and falls through to stub
+ (1 LLM call, 1 stub call)
 * env ACCEPT + model valid + LLM returns -> the ``return`` at line 695
-  suppresses the stub fallback (1 LLM call, 0 stub calls)
+ suppresses the stub fallback (1 LLM call, 0 stub calls)
 
 Before this slice no test file mentioned ``HERMES_USE_LLM`` or directly
 exercised ``execute_plan_stage`` despite the function being central to
@@ -27,13 +27,13 @@ orchestrator instance to make model availability independently controllable.
 Three parts:
 
 * **Part A** locks the truthy tuple membership AND simultaneously locks the
-  LLM-ok branch as the canonical accept-arm endpoint.
+ LLM-ok branch as the canonical accept-arm endpoint.
 * **Part B** locks the three-branch fallback contract independently:
-  no-model fallback, LLM-raises fallback, and LLM-ok control.
+ no-model fallback, LLM-raises fallback, and LLM-ok control.
 * **Part C** locks the asymmetric fail-closed string-arm (env-absent +
-  whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy +
-  empty / junk / near-miss / interior whitespace). Parallel to
-  fo65 / 66 / 67 / 68 Part C.
+ whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy +
+ empty / junk / near-miss / interior whitespace). Parallel to
+ fo65 / 66 / 67 / 68 Part C.
 
 Per-case messages ``force_on raw=<raw>: <branch>`` / ``<branch>:
 <component>`` / ``fail_closed raw=<raw>: <branch>`` identify the failing

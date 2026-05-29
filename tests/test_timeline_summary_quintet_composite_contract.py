@@ -1,4 +1,4 @@
-"""Timeline-summary quintet composite (fo112).
+"""Timeline-summary quintet composite.
 
 Five sibling helpers in
 [packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
@@ -10,7 +10,7 @@ compute the per-section summaries that appear in
 * ``self_refinement_timeline_summary`` (runs.py; ``marker_count`` + latest marker)
 * ``run_escalated_timeline_summary`` (runs.py:138-155)
 * ``security_scan_on_verify_timeline_summary`` (runs.py:164-187) +
-  its guard ``_finding_has_security_scan_metadata`` (runs.py:158-161)
+ its guard ``_finding_has_security_scan_metadata`` (runs.py:158-161)
 
 Today they are sampled only by happy-path tests in
 [tests/test_api.py](tests/test_api.py) (``test_timeline_*_summary_*``)
@@ -24,63 +24,63 @@ fo112 closes the gap with 4 parts spanning 20 axes (no source
 changes):
 
 * **Part A** -- ``integrator_gate_timeline_summary`` (5 axes):
-  empty input, event_type filter, metadata identity guard matrix,
-  happy 12-field emission, latest-wins.
+ empty input, event_type filter, metadata identity guard matrix,
+ happy 12-field emission, latest-wins.
 * **Part B** -- ``agent_evaluator_timeline_summary`` (5 axes):
-  event_type filter, stage prefix gate matrix, persona suffix
-  extraction, empty-suffix collapse to ``None``, latest-wins +
-  non-dict payload coercion.
+ event_type filter, stage prefix gate matrix, persona suffix
+ extraction, empty-suffix collapse to ``None``, latest-wins +
+ non-dict payload coercion.
 * **Part C** -- ``self_refinement_timeline_summary`` + ``run_escalated_timeline_summary``
-  (5 axes): self_refinement happy / EXACT-match divergence /
-  missing-nested-meta-emits-anyway divergence; run_escalated
-  happy 6-field / non-dict payload coercion.
+ (5 axes): self_refinement happy / EXACT-match divergence /
+ missing-nested-meta-emits-anyway divergence; run_escalated
+ happy 6-field / non-dict payload coercion.
 * **Part D** -- ``_finding_has_security_scan_metadata`` +
-  ``security_scan_on_verify_timeline_summary`` (5 axes): guard
-  non-dict matrix, OR semantics matrix, two-stage filter chain,
-  happy 8-field, latest-wins with interleaved skip.
+ ``security_scan_on_verify_timeline_summary`` (5 axes): guard
+ non-dict matrix, OR semantics matrix, two-stage filter chain,
+ happy 8-field, latest-wins with interleaved skip.
 
 KEY DIVERGENCES pinned:
 
 * **Skip vs emit on degraded metadata** -- ``integrator_gate_timeline_summary``
-  SKIPS the event entirely when metadata is non-dict OR missing the
-  ``integrator_gate`` key; ``self_refinement_timeline_summary``
-  EMITS a summary with ``version=None``, ``description=None`` even
-  when the nested ``self_refinement`` dict is missing or non-dict.
-  A refactor that unified the two would silently flip the
-  emission policy for the OTHER helper -- catastrophic for
-  consumers reading the timeline.
+ SKIPS the event entirely when metadata is non-dict OR missing the
+ ``integrator_gate`` key; ``self_refinement_timeline_summary``
+ EMITS a summary with ``version=None``, ``description=None`` even
+ when the nested ``self_refinement`` dict is missing or non-dict.
+ A refactor that unified the two would silently flip the
+ emission policy for the OTHER helper -- catastrophic for
+ consumers reading the timeline.
 * **Identity vs truthy** -- ``integrator_gate_timeline_summary``
-  uses ``meta.get("integrator_gate") is not True`` (identity
-  check); a refactor to ``not meta.get("integrator_gate")`` would
-  accept ``1`` / ``"True"`` / any truthy value as a positive
-  integrator-gate marker. Part A axis A3 forces both the
-  ``isinstance(meta, dict)`` and ``is True`` halves with the same
-  matrix.
+ uses ``meta.get("integrator_gate") is not True`` (identity
+ check); a refactor to ``not meta.get("integrator_gate")`` would
+ accept ``1`` / ``"True"`` / any truthy value as a positive
+ integrator-gate marker. Part A axis A3 forces both the
+ ``isinstance(meta, dict)`` and ``is True`` halves with the same
+ matrix.
 * **Exact vs prefix stage matching** -- ``agent_evaluator_timeline_summary``
-  uses ``stage_name.startswith("agent_eval:")`` (prefix match);
-  ``self_refinement_timeline_summary`` uses
-  ``stage_name == "self_refinement:policy"`` (exact equality). A
-  refactor that unified the two would let ``"self_refinement:other"``
-  silently emit a self-refinement summary, or fail to match
-  ``"agent_eval:default"``. Part B axes B2-B3 and Part C axis C2
-  pin both sides.
+ uses ``stage_name.startswith("agent_eval:")`` (prefix match);
+ ``self_refinement_timeline_summary`` uses
+ ``stage_name == "self_refinement:policy"`` (exact equality). A
+ refactor that unified the two would let ``"self_refinement:other"``
+ silently emit a self-refinement summary, or fail to match
+ ``"agent_eval:default"``. Part B axes B2-B3 and Part C axis C2
+ pin both sides.
 * **Empty-suffix divergence** -- ``"agent_eval:"`` (just the prefix)
-  emits the event but with ``persona_id is None`` (NOT empty
-  string). A refactor that returned ``suffix`` directly would
-  leak ``""`` into JSON consumers expecting ``str | None``. Part
-  B axis B4 pins this.
+ emits the event but with ``persona_id is None`` (NOT empty
+ string). A refactor that returned ``suffix`` directly would
+ leak ``""`` into JSON consumers expecting ``str | None``. Part
+ B axis B4 pins this.
 * **OR vs AND on guard keys** -- ``_finding_has_security_scan_metadata``
-  uses ``"security_scan_exit" in meta or "security_scan_snippet" in meta``
-  (OR + membership-only, no value check). A refactor to ``and``
-  would skip events with only one scan key; a refactor that
-  checked truthiness instead of membership would skip events with
-  ``"security_scan_exit": 0`` -- both common cases. Part D axis
-  D2 force-checks all three flavours.
+ uses ``"security_scan_exit" in meta or "security_scan_snippet" in meta``
+ (OR + membership-only, no value check). A refactor to ``and``
+ would skip events with only one scan key; a refactor that
+ checked truthiness instead of membership would skip events with
+ ``"security_scan_exit": 0`` -- both common cases. Part D axis
+ D2 force-checks all three flavours.
 * **Latest-wins** -- every helper loops without ``break`` so the
-  LAST matching event wins; a refactor that returned on the first
-  match would silently stop reflecting later state. Parts A5 /
-  B5 / D5 pin this with two matching events at non-adjacent
-  positions.
+ LAST matching event wins; a refactor that returned on the first
+ match would silently stop reflecting later state. Parts A5 /
+ B5 / D5 pin this with two matching events at non-adjacent
+ positions.
 """
 
 from __future__ import annotations

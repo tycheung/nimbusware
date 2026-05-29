@@ -3,12 +3,12 @@
 Five axes (cf. ``.cursor/plans/prune_status_card_4d7d9d37.plan.md``):
 
 1. ``--summary-path`` alone (no ``--json-summary``) writes the file with all expected
-   keys including ``wrote_at``.
+ keys including ``wrote_at``.
 2. ``HERMES_PRUNE_STATUS_PATH`` env equivalent (no CLI arg) writes to the same path.
 3. CLI flag wins over env when both are set.
 4. Atomic write: the ``.tmp`` sibling is gone after a successful run.
 5. State file content matches the ``--json-summary`` stdout JSON object (minus
-   ``wrote_at``) when both flags are used together.
+ ``wrote_at``) when both flags are used together.
 """
 
 from __future__ import annotations

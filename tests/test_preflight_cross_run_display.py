@@ -93,9 +93,16 @@ def test_fetch_preflight_history_include_metrics_export_param(monkeypatch) -> No
         def json(self) -> dict[str, object]:
             return {"entries": []}
 
-    def _fake_get(url: str, *, params: dict[str, object] | None = None, timeout: float = 30.0):
+    def _fake_get(
+        url: str,
+        *,
+        params: dict[str, object] | None = None,
+        headers: dict[str, str] | None = None,
+        timeout: float = 30.0,
+    ):
         captured["url"] = url
         captured["params"] = params
+        captured["headers"] = headers
         return _FakeResponse()
 
     monkeypatch.setattr(httpx, "get", _fake_get)

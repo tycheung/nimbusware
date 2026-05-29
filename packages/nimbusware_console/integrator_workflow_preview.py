@@ -1,4 +1,4 @@
-"""Module Integrator + workflow YAML preview helpers (PLAN_GAP §14 #13 / fo131, fo140).
+"""Module Integrator + workflow YAML preview helpers.
 
 Read-only: validates ``integrator_gate``, ``agent_evaluator``, and **full-profile** workflow
 roots; previews ``ModuleIntegrator`` scores against the local repo catalog. No writes

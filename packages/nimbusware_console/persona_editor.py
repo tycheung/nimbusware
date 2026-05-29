@@ -1,4 +1,4 @@
-"""Persona editor helpers for the Streamlit console (fo127 §14 #14-edit).
+"""Persona editor helpers for the Streamlit console.
 
 Pure functions so the diff / payload-shape logic can be unit-tested without
 spinning up Streamlit. The Streamlit-only glue (text_area, data_editor, button

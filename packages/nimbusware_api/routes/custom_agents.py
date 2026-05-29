@@ -1,4 +1,4 @@
-"""Custom agent registry API (fo151)."""
+"""Custom agent registry API."""
 
 from __future__ import annotations
 

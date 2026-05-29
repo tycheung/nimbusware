@@ -1,53 +1,53 @@
-"""Scraper artifact retention composite (fo110).
+"""Scraper artifact retention composite.
 
 Two sibling helpers in the scraper artifact retention subsystem are
 sampled today but have key defensive arms unpinned:
 
 * [`prune_scraper_artifacts`](packages/hermes_orchestrator/scraper_artifacts.py:18-58)
-  -- 3 sampled cases in
-  [tests/test_scraper_artifacts.py](tests/test_scraper_artifacts.py)
-  (dry-run / removal / missing-dir) all with ``max_age_days=7`` happy
-  values; CLI tests in
-  [tests/test_prune_scraper_artifacts_script.py](tests/test_prune_scraper_artifacts_script.py)
-  use the same.
+ -- 3 sampled cases in
+ [tests/test_scraper_artifacts.py](tests/test_scraper_artifacts.py)
+ (dry-run / removal / missing-dir) all with ``max_age_days=7`` happy
+ values; CLI tests in
+ [tests/test_prune_scraper_artifacts_script.py](tests/test_prune_scraper_artifacts_script.py)
+ use the same.
 * [`_persist_scraper_response_artifact`](packages/hermes_orchestrator/pipeline.py:270-296)
-  -- 5-axis fo101 happy-path matrix in
-  [tests/test_scraper_pure_helpers_edges_contract.py:204-295](tests/test_scraper_pure_helpers_edges_contract.py)
-  covering filename pattern / under-cap / over-cap / dual-digest /
-  relpath normalization. The ``try/except ValueError`` fallback at
-  pipeline.py:288-291 is **not** exercised there.
+ -- 5-axis fo101 happy-path matrix in
+ [tests/test_scraper_pure_helpers_edges_contract.py:204-295](tests/test_scraper_pure_helpers_edges_contract.py)
+ covering filename pattern / under-cap / over-cap / dual-digest /
+ relpath normalization. The ``try/except ValueError`` fallback at
+ pipeline.py:288-291 is **not** exercised there.
 
 fo110 closes 7 defensive arms via 4 parts spanning 20 axes
 (~30 assertions, source unchanged):
 
 * **Part A** -- ``prune_scraper_artifacts`` ValueError boundary
-  (5 axes -- 0 / -1 / -100 reject / 1 accept / message exactness).
+ (5 axes -- 0 / -1 / -100 reject / 1 accept / message exactness).
 * **Part B** -- nested ``rglob`` + mixed stale/fresh + cutoff
-  inclusive boundary + ``now=None`` default (5 axes).
+ inclusive boundary + ``now=None`` default (5 axes).
 * **Part C** -- empty-dir cleanup + dry_run divergence + OSError
-  suppression + reverse-len ordering (5 axes).
+ suppression + reverse-len ordering (5 axes).
 * **Part D** -- ``_persist_scraper_response_artifact`` ValueError
-  fallback (5 axes -- bare-filename relpath / file still written /
-  sha256 invariant / bytes_written invariant / forward-slash
-  normalization unconditional).
+ fallback (5 axes -- bare-filename relpath / file still written /
+ sha256 invariant / bytes_written invariant / forward-slash
+ normalization unconditional).
 
 KEY DIVERGENCES pinned:
 
 * **dry_run divergence** -- ``dry_run=True`` counts stale files AND
-  preserves them AND skips empty-dir cleanup via the line 50-51
-  early-return; ``dry_run=False`` removes files AND runs the
-  empty-dir cleanup pass at lines 52-57.
+ preserves them AND skips empty-dir cleanup via the line 50-51
+ early-return; ``dry_run=False`` removes files AND runs the
+ empty-dir cleanup pass at lines 52-57.
 * **happy vs fallback relpath** -- the happy ``_persist_*`` path
-  produces ``<run_id>/url<NN>_<digest>.bin``; the ValueError
-  fallback produces a **bare** ``url<NN>_<digest>.bin`` (NO
-  ``<run_id>/`` prefix). A refactor that drops the
-  ``try/except ValueError`` around ``relative_to`` would propagate
-  ValueError to callers -- Part D catches it.
+ produces ``<run_id>/url<NN>_<digest>.bin``; the ValueError
+ fallback produces a **bare** ``url<NN>_<digest>.bin`` (NO
+ ``<run_id>/`` prefix). A refactor that drops the
+ ``try/except ValueError`` around ``relative_to`` would propagate
+ ValueError to callers -- Part D catches it.
 * **cleanup ordering** -- the second sorted ``rglob`` pass uses
-  ``reverse=True`` so deepest paths come first; rmdir on an empty
-  child happens before rmdir on its (now-empty) parent. A naive
-  forward-sort would try to remove a non-empty parent before its
-  children, leaving stale empties.
+ ``reverse=True`` so deepest paths come first; rmdir on an empty
+ child happens before rmdir on its (now-empty) parent. A naive
+ forward-sort would try to remove a non-empty parent before its
+ children, leaving stale empties.
 """
 
 from __future__ import annotations

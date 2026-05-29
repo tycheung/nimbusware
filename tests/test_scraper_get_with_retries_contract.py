@@ -1,4 +1,4 @@
-"""``_scraper_get_with_retries`` direct contract (fo98).
+"""``_scraper_get_with_retries`` direct contract.
 
 The retry helper at [pipeline.py:298-335] is the inner egress-fetch loop that
 wraps ``egress_checked_get_for_run`` with attempt-bounded retries, an
@@ -14,17 +14,17 @@ fo98 closes 4 unpinned surfaces via 4 parts spanning 18 axes
 (~26 assertions, source unchanged):
 
 * **Part A** -- happy + retry-then-succeed (4 axes -- first-attempt success /
-  second-attempt success / third-attempt success / fetch_kw keyword surface).
+ second-attempt success / third-attempt success / fetch_kw keyword surface).
 * **Part B** -- immediate-reraise taxonomy (4 axes -- PermissionError max=1 /
-  PermissionError max=5 bypass / EgressResponseTooLarge max=1 /
-  EgressResponseTooLarge max=5 bypass).
+ PermissionError max=5 bypass / EgressResponseTooLarge max=1 /
+ EgressResponseTooLarge max=5 bypass).
 * **Part C** -- retry-eligible exhaustion (5 axes -- OSError / RuntimeError /
-  ValueError / httpx.HTTPError subclasses / last_err wins + fresh outer
-  RuntimeError identity cross-cut).
+ ValueError / httpx.HTTPError subclasses / last_err wins + fresh outer
+ RuntimeError identity cross-cut).
 * **Part D** -- backoff cadence + 2000-char truncation + fetch_kw matrix
-  (5 axes -- backoff=0 skip / backoff=0.5 N-1 sleeps / last-attempt no sleep
-  cross-cut / 5000-char message truncated to 2000 / max_response_bytes None
-  vs set conditional kwarg).
+ (5 axes -- backoff=0 skip / backoff=0.5 N-1 sleeps / last-attempt no sleep
+ cross-cut / 5000-char message truncated to 2000 / max_response_bytes None
+ vs set conditional kwarg).
 """
 
 from __future__ import annotations

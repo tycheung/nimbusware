@@ -1,16 +1,16 @@
-"""Preflight history summary for Streamlit (plan §14 #11 / fo124).
+"""Preflight history summary for Streamlit (plan §14 #11.
 
 Parity with the timeline top-level ``preflight`` summary from the HTTP API
 (:func:`nimbusware_api.preflight_read_model.preflight_timeline_summary`). Three pure
 functions:
 
 * :func:`preflight_history_from_timeline` — extract the ``preflight`` dict from
-  a ``GET /v1/runs/{run_id}/timeline`` body.
+ a ``GET /v1/runs/{run_id}/timeline`` body.
 * :func:`preflight_history_summary_rows` — turn that dict into field/value
-  rows for ``st.dataframe``.
+ rows for ``st.dataframe``.
 * :func:`preflight_history_histogram_payload` — build the latency histogram
-  for the Streamlit bar chart, with graceful fallback when raw per-sample
-  data is missing (runs where ``health_latency_samples_ms`` was never recorded).
+ for the Streamlit bar chart, with graceful fallback when raw per-sample
+ data is missing (runs where ``health_latency_samples_ms`` was never recorded).
 
 All functions are side-effect-free so they can be unit-tested without
 spinning up Streamlit.

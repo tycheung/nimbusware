@@ -12,6 +12,7 @@ NS_WORKFLOWS = "workflows"
 
 NS_POLICY = "policy"
 KEY_MODEL_ROUTING = "model-routing"
+KEY_ROLE_TELEMETRY = "role-telemetry-aggregate"
 KEY_ESCALATION = "escalation"
 KEY_INTEGRATOR_THRESHOLDS = "integrator-thresholds"
 KEY_SELF_REFINEMENT = "self-refinement"

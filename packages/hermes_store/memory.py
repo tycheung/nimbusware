@@ -9,6 +9,8 @@ from uuid import UUID
 from agent_core.models import HermesEventUnion, validate_event_dict
 from hermes_store.allowed_types import assert_event_type_registered
 from hermes_store.protocol import event_row_from_serialized, serialized_event_from_row
+from hermes_store.tenant_scope import store_tenant_id
+from nimbusware_iam.constants import DEFAULT_TENANT_ID
 
 
 def _json_safe(obj: Any) -> Any:
@@ -22,6 +24,10 @@ class InMemoryEventStore:
         self._rows: list[dict[str, Any]] = []
         self._seq = 0
 
+    def _scoped_rows(self) -> list[dict[str, Any]]:
+        tid = store_tenant_id()
+        return [r for r in self._rows if r.get("tenant_id", DEFAULT_TENANT_ID) == tid]
+
     def append(self, event: HermesEventUnion) -> int:
         from agent_core.models import serialize_event_persistent
 
@@ -31,6 +37,7 @@ class InMemoryEventStore:
         self._seq += 1
         db_row = {
             "store_seq": self._seq,
+            "tenant_id": store_tenant_id(),
             "event_id": UUID(str(row["event_id"])),
             "run_id": UUID(str(row["run_id"])),
             "stage_id": UUID(str(row["stage_id"])) if row.get("stage_id") else None,
@@ -54,8 +61,14 @@ class InMemoryEventStore:
 
     def list_run_events(self, run_id: str) -> list[dict[str, Any]]:
         rid = UUID(run_id)
-        out = [deepcopy(r) for r in self._rows if r["run_id"] == rid]
+        out = [deepcopy(r) for r in self._scoped_rows() if r["run_id"] == rid]
         out.sort(key=lambda r: r["store_seq"])
+        return out
+
+    def list_all_event_rows(self) -> list[dict[str, Any]]:
+        """All append-only rows (for in-memory memory index rebuild)."""
+        out = deepcopy(self._scoped_rows())
+        out.sort(key=lambda r: int(r["store_seq"]))
         return out
 
     def list_run_events_many(self, run_ids: list[str]) -> dict[str, list[dict[str, Any]]]:
@@ -71,7 +84,7 @@ class InMemoryEventStore:
     def max_store_seq_for_run(self, run_id: str) -> int | None:
         rid = UUID(run_id)
         mx: int | None = None
-        for r in self._rows:
+        for r in self._scoped_rows():
             if r["run_id"] != rid:
                 continue
             s = int(r["store_seq"])
@@ -79,14 +92,14 @@ class InMemoryEventStore:
         return mx
 
     def find_run_id_for_run_created_correlation(self, correlation_id: UUID) -> UUID | None:
-        for r in self._rows:
+        for r in self._scoped_rows():
             if r["event_type"] == "run.created" and r.get("correlation_id") == correlation_id:
                 rid = r["run_id"]
                 return rid if isinstance(rid, UUID) else UUID(str(rid))
         return None
 
     def _workflow_profile_for_run(self, run_id: UUID) -> str | None:
-        rows = [r for r in self._rows if r["run_id"] == run_id]
+        rows = [r for r in self._scoped_rows() if r["run_id"] == run_id]
         rows.sort(key=lambda r: int(r["store_seq"]))
         for r in rows:
             if r["event_type"] != "run.created":
@@ -97,7 +110,7 @@ class InMemoryEventStore:
         return None
 
     def _run_created_at(self, run_id: UUID) -> datetime | None:
-        rows = [r for r in self._rows if r["run_id"] == run_id]
+        rows = [r for r in self._scoped_rows() if r["run_id"] == run_id]
         rows.sort(key=lambda r: int(r["store_seq"]))
         for r in rows:
             if r["event_type"] != "run.created":
@@ -110,14 +123,14 @@ class InMemoryEventStore:
         return None
 
     def _run_has_escalation(self, run_id: UUID) -> bool:
-        for r in self._rows:
+        for r in self._scoped_rows():
             if r["run_id"] == run_id and r["event_type"] == "run.escalated":
                 return True
         return False
 
     def _replay_list_status(self, run_id: UUID) -> str:
         """Match ``hermes_orchestrator.read_models.build_run_summary`` status for non-empty runs."""
-        rows = [r for r in self._rows if r["run_id"] == run_id]
+        rows = [r for r in self._scoped_rows() if r["run_id"] == run_id]
         rows.sort(key=lambda r: int(r["store_seq"]))
         if not rows:
             return "unknown"
@@ -147,7 +160,7 @@ class InMemoryEventStore:
         order: str,
     ) -> list[tuple[UUID, int]]:
         best: dict[UUID, int] = {}
-        for r in self._rows:
+        for r in self._scoped_rows():
             rid = r["run_id"]
             seq = int(r["store_seq"])
             prev = best.get(rid, -1)
@@ -297,7 +310,7 @@ class InMemoryEventStore:
     def replay_validate(self, *, context: dict[str, Any] | None = None) -> list[HermesEventUnion]:
         """Round-trip all events through Pydantic (parity with Postgres read path)."""
         events: list[HermesEventUnion] = []
-        for r in self._rows:
+        for r in self._scoped_rows():
             d = serialized_event_from_row(r)
             events.append(validate_event_dict(d, context=context))
         return events

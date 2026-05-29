@@ -1,4 +1,4 @@
-"""Unit tests for Streamlit theme / white-label captions (PLAN_GAP §14 #11)."""
+"""Unit tests for Streamlit theme / white-label captions."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""``HERMES_SCRAPER_ARTIFACT_DIR`` Pattern B string-passthrough contract (fo74, §14 #10).
+"""``HERMES_SCRAPER_ARTIFACT_DIR`` Pattern B string-passthrough contract.
 
 [`resolve_scraper_artifact_base_dir`](d:\\Hermes\\packages\\hermes_orchestrator\\scraper_artifacts.py)
 resolves the scraper artifact base directory via the public function
@@ -6,10 +6,10 @@ at [scraper_artifacts.py:10-15](d:\\Hermes\\packages\\hermes_orchestrator\\scrap
 
 ```python
 def resolve_scraper_artifact_base_dir(repo_root: Path) -> Path:
-    raw = os.environ.get("HERMES_SCRAPER_ARTIFACT_DIR", "").strip()
-    if raw:
-        return Path(raw).expanduser().resolve()
-    return (repo_root / ".cache" / "hermes_scraper").resolve()
+ raw = os.environ.get("HERMES_SCRAPER_ARTIFACT_DIR", "").strip()
+ if raw:
+ return Path(raw).expanduser().resolve()
+ return (repo_root / ".cache" / "hermes_scraper").resolve()
 ```
 
 This is the **fourth and final Pattern B env layer** pinned by the
@@ -18,18 +18,18 @@ env-layer sweep started at fo62 (10 envs across two Patterns) and the
 quartet:
 
 * **fo71** ``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` -- ``float()`` strict
-  + ``[0.0, 1.0]`` clamp + ``except ValueError: pass`` cascades to YAML
-  fallthrough.
+ + ``[0.0, 1.0]`` clamp + ``except ValueError: pass`` cascades to YAML
+ fallthrough.
 * **fo72** ``HERMES_DEADLOCK_ESCALATION_MINUTES`` -- ``int()`` strict +
-  NO clamping + **NO ``try/except``** propagates ``ValueError`` /
-  ``TypeError``.
+ NO clamping + **NO ``try/except``** propagates ``ValueError`` /
+ ``TypeError``.
 * **fo73** ``HERMES_PREFLIGHT_LATENCY_SAMPLES`` -- ``int()`` strict +
-  ``[1, 20]`` clamp + ``except ValueError: n = 1`` swallow-to-default.
+ ``[1, 20]`` clamp + ``except ValueError: n = 1`` swallow-to-default.
 * **fo74** ``HERMES_SCRAPER_ARTIFACT_DIR`` -- **string passthrough, NO
-  parsing, NO fail-mode** (every string is a valid path); ``.strip()``
-  + ``if raw:`` truthy gate + ``.expanduser()`` + ``.resolve()``;
-  default fallthrough to ``(repo_root / ".cache" / "hermes_scraper")
-  .resolve()`` when post-strip empty.
+ parsing, NO fail-mode** (every string is a valid path); ``.strip()``
+ + ``if raw:`` truthy gate + ``.expanduser()`` + ``.resolve()``;
+ default fallthrough to ``(repo_root / ".cache" / "hermes_scraper")
+ .resolve()`` when post-strip empty.
 
 The string-passthrough subtype's sharpest contract is that **Pattern A
 truthy tokens become literal subdirectory names** rather than binary
@@ -43,14 +43,14 @@ directory literally named ``true`` / ``yes`` / ``on``.
 Three parts:
 
 * **Part A** locks the truthy-env accept arm (passthrough + ``.strip()``
-  rescue + ``isinstance(Path)`` + ``.is_absolute()``).
+ rescue + ``isinstance(Path)`` + ``.is_absolute()``).
 * **Part B** is the sharpest part -- mirror of fo73 Part B's three-path
-  floor-convergence applied to the **default-fallthrough** branch with
-  5 blocks covering env-absent / env-empty / ``.strip()``-collapse /
-  ``repo_root`` plumbing / default-side ``.resolve()`` normalization.
+ floor-convergence applied to the **default-fallthrough** branch with
+ 5 blocks covering env-absent / env-empty / ``.strip()``-collapse /
+ ``repo_root`` plumbing / default-side ``.resolve()`` normalization.
 * **Part C** locks the **normalization layer** (``.expanduser()`` +
-  ``.resolve()``) AND the **literal-path no-parsing contract**
-  (Pattern A asymmetry + numeric / junk strings become literal paths).
+ ``.resolve()``) AND the **literal-path no-parsing contract**
+ (Pattern A asymmetry + numeric / junk strings become literal paths).
 
 Per-case messages ``accept raw=<raw>: <component>`` / ``<path_label>
 raw=<raw>: <component>`` / ``<block> raw=<raw>: <component>`` identify

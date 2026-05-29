@@ -1,4 +1,4 @@
-"""CLI tests for ``scripts/prune_scraper_artifacts.py`` (PLAN_GAP backlog #1)."""
+"""CLI tests for ``scripts/prune_scraper_artifacts.py``."""
 
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ def test_prune_scraper_artifacts_help_lists_json_summary() -> None:
     assert proc.returncode == 0, proc.stderr
     assert "--json-summary" in proc.stdout
     assert "max_age_days" in proc.stdout
-    # fo125: two new flags must be advertised in --help
+
     assert "--include-pattern" in proc.stdout
     assert "--exclude-pattern" in proc.stdout
 

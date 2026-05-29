@@ -1,4 +1,4 @@
-"""``assert_bundle_catalog_maps_resolve`` wrapper-level + inner-helper coverage (fo82).
+"""``assert_bundle_catalog_maps_resolve`` wrapper-level + inner-helper coverage.
 
 fo81 closed the ``assert_persona_shelves_valid`` +
 ``assert_taxonomy_keys_resolve`` gaps but explicitly deferred
@@ -21,11 +21,11 @@ Current coverage map at
 [test_extensions_yaml.py](d:\\Hermes\\tests\\test_extensions_yaml.py):
 
 * ``test_bundle_catalog_maps_resolve_repository_catalog``
-  (lines 30-33) -- real-repo happy path for BOTH wrapper + helper.
+ (lines 30-33) -- real-repo happy path for BOTH wrapper + helper.
 * ``test_bundle_catalog_maps_reject_unknown_bundle_id``
-  (lines 36-43) -- ONE helper negative (corrupted real catalog,
-  swaps a known bundle id for "no-such-bundle"; calls the helper
-  directly, not the wrapper).
+ (lines 36-43) -- ONE helper negative (corrupted real catalog,
+ swaps a known bundle id for "no-such-bundle"; calls the helper
+ directly, not the wrapper).
 
 The inner helper has 5 reject sub-cases + 3 early-return cases at
 [catalog.py:20-49](d:\\Hermes\\packages\\hermes_extensions\\catalog.py);
@@ -34,29 +34,29 @@ only the "unknown bundle id" axis is tested.
 Three parts:
 
 * **Part A** locks the wrapper's 3-axis contract (accept + FNF + VE
-  propagation) at
-  [ingress.py:13-19](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py).
-  Pins the wrapper as a true passthrough -- no swallow, no
-  catch-and-default, no path-rewrite.
+ propagation) at
+ [ingress.py:13-19](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py).
+ Pins the wrapper as a true passthrough -- no swallow, no
+ catch-and-default, no path-rewrite.
 * **Part B** locks the inner helper's extended reject + early-return
-  matrix: 4 reject axes (load_yaml non-mapping root, empty/null
-  target, empty-string target, unknown bundle id) + 1
-  error-truncation contract ("(+N more)" suffix when errors > 10) +
-  3 early-return cases (no wmap key, wmap not a dict, wmap empty).
+ matrix: 4 reject axes (load_yaml non-mapping root, empty/null
+ target, empty-string target, unknown bundle id) + 1
+ error-truncation contract ("(+N more)" suffix when errors > 10) +
+ 3 early-return cases (no wmap key, wmap not a dict, wmap empty).
 * **Part C** locks the wrapper-vs-helper consistency meta-contract:
-  for any tmp_path, ``assert_bundle_catalog_maps_resolve(tmp_path)``
-  raises the SAME exception class with the SAME message as
-  ``assert_workflow_bundle_map_ids_resolve(tmp_path / "configs" /
-  "bundles" / "catalog.yaml")``. Prevents a future refactor from
-  silently swallowing exceptions, rewriting messages, or changing
-  the path-plumbing shape.
+ for any tmp_path, ``assert_bundle_catalog_maps_resolve(tmp_path)``
+ raises the SAME exception class with the SAME message as
+ ``assert_workflow_bundle_map_ids_resolve(tmp_path / "configs" /
+ "bundles" / "catalog.yaml")``. Prevents a future refactor from
+ silently swallowing exceptions, rewriting messages, or changing
+ the path-plumbing shape.
 
 Cross-slice symmetry table:
 
-| Slice    | Function pinned                        | Wrapper | Helper axes              |
+| Slice | Function pinned | Wrapper | Helper axes |
 |----------|----------------------------------------|---------|--------------------------|
-| fo81 PtA | assert_taxonomy_keys_resolve           | n/a     | 2-axis (KE / accept)     |
-| fo81 PtB | assert_persona_shelves_valid           | yes     | 4 VE sub-cases           |
+| fo81 PtA | assert_taxonomy_keys_resolve | n/a | 2-axis (KE / accept) |
+| fo81 PtB | assert_persona_shelves_valid | yes | 4 VE sub-cases |
 | **fo82** | **assert_bundle_catalog_maps_resolve** | **yes** | **4 VE + trunc + 3 early**|
 """
 

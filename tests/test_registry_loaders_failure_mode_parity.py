@@ -1,33 +1,33 @@
-"""RoleRegistry loader failure-mode + contract parity (fo95).
+"""RoleRegistry loader failure-mode + contract parity.
 
-fo93/fo94 Next-slice item (5) flagged this gap. Three explicit user-facing
+fo93. Three explicit user-facing
 ``ValueError`` paths are unpinned today, plus several normalization +
 digest + DB-sentinel parity contracts that exist only by implication.
 
 Coverage today:
 
 * ``tests/test_registry_digest.py`` lines 12-16 -- happy path only on
-  ``configs/roles.yaml`` (digest length + version).
+ ``configs/roles.yaml`` (digest length + version).
 * ``tests/test_registry_from_mapping.py`` lines 10-18 -- ``from_mapping``
-  only (not ``from_yaml``).
+ only (not ``from_yaml``).
 * ``tests/test_postgres_integration.py`` lines 351-355 -- DB happy path
-  **integration-marked**, skips without ``NIMBUSWARE_DATABASE_URL``.
+ **integration-marked**, skips without ``NIMBUSWARE_DATABASE_URL``.
 
 fo95 closes the gap via 4 parts spanning 20 axes (~26 assertions, source
 unchanged):
 
 * **Part A** -- ``from_yaml`` structural-error matrix (5 axes -- empty
-  file / top-level list / scalar / dict missing roles / dict with roles
-  as wrong type).
+ file / top-level list / scalar / dict missing roles / dict with roles
+ as wrong type).
 * **Part B** -- ``from_yaml`` graceful-skip happy paths (5 axes -- empty
-  list / non-dict items / missing taxonomy_key / missing role_id /
-  non-string taxonomy_key).
+ list / non-dict items / missing taxonomy_key / missing role_id /
+ non-string taxonomy_key).
 * **Part C** -- ``from_yaml`` normalization + digest (5 axes -- key
-  lower+strip / version default / version propagation / digest is
-  sha256[:16] / distinct content -> distinct digest).
+ lower+strip / version default / version propagation / digest is
+ sha256[:16] / distinct content -> distinct digest).
 * **Part D** -- ``load_registry_from_postgres`` empty-table + happy-path
-  parity (5 axes -- empty-rows ValueError / migration-filename in
-  message / row normalization / DB-sentinel digest / yaml_version 0).
+ parity (5 axes -- empty-rows ValueError / migration-filename in
+ message / row normalization / DB-sentinel digest / yaml_version 0).
 """
 
 from __future__ import annotations

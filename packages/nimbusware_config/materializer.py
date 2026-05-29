@@ -26,7 +26,7 @@ from nimbusware_config.keys import (
 )
 from nimbusware_config.protocol import ConfigStore
 from hermes_extensions.custom_agents import CustomAgentRegistry
-from nimbusware_config.store import InMemoryConfigStore, PostgresConfigStore
+from nimbusware_config.store import InMemoryConfigStore, PostgresConfigStore, _maybe_publish_config_notify
 from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.merge import load_yaml
 from hermes_orchestrator.registry import RoleRegistry
@@ -145,6 +145,7 @@ class ConfigMaterializer:
         )
         self._cache[(namespace, document_key)] = copy.deepcopy(content)
         self._generation += 1
+        _maybe_publish_config_notify(namespace, document_key, row.version)
         return row.version
 
     def get_persona_shelf(self) -> PersonaShelf:

@@ -1,4 +1,4 @@
-"""``RunOrchestrator.create_run`` post-gate idempotency contract (fo85).
+"""``RunOrchestrator.create_run`` post-gate idempotency contract.
 
 fo80 pinned ``create_run`` pre-flight propagation. fo83 pinned
 ``create_run`` gate sequencing + early-fail-order. fo84 pinned the
@@ -9,17 +9,17 @@ remained unpinned:
 
 .. code-block:: python
 
-    corr = correlation_id or idempotency_key      # line 162: precedence
-    if corr is not None:                           # line 163: skip when both None
-        existing = self._store.find_run_id_for_run_created_correlation(corr)
-        if existing is not None:                   # line 165: idempotent return
-            return existing
+ corr = correlation_id or idempotency_key # line 162: precedence
+ if corr is not None: # line 163: skip when both None
+ existing = self._store.find_run_id_for_run_created_correlation(corr)
+ if existing is not None: # line 165: idempotent return
+ return existing
 
-    run_id = uuid4()
-    ...
-    ev = RunCreatedEvent(..., correlation_id=corr, ...)   # line 180: implicit promotion
-    self._store.append(ev)
-    return run_id
+ run_id = uuid4()
+ ...
+ ev = RunCreatedEvent(..., correlation_id=corr, ...) # line 180: implicit promotion
+ self._store.append(ev)
+ return run_id
 
 Direct unit coverage at the orchestrator boundary: **zero**. Grep
 across 15+ test files invoking ``orch.create_run(`` shows NO call
@@ -30,49 +30,49 @@ covers only 2 axes (1 invalid-uuid 422 + 1 same-key roundtrip).
 fo85 closes the gap via 3 parts spanning 11 contract axes:
 
 * **Part A** locks the 4 fresh-run paths through the idempotency
-  block:
+ block:
 
-  - both ``correlation_id`` and ``idempotency_key`` None
-    (line 163 short-circuit, no lookup, new run on every call).
-  - ``correlation_id`` only (line 162 read + line 180 write).
-  - ``idempotency_key`` only -- the **implicit-promotion
-    contract**: ``idempotency_key`` becomes ``event.correlation_id``
-    via ``corr = correlation_id or idempotency_key``.
-  - Both provided + different UUIDs -- the **precedence-winner**:
-    ``correlation_id`` wins.
+ - both ``correlation_id`` and ``idempotency_key`` None
+ (line 163 short-circuit, no lookup, new run on every call).
+ - ``correlation_id`` only (line 162 read + line 180 write).
+ - ``idempotency_key`` only -- the **implicit-promotion
+ contract**: ``idempotency_key`` becomes ``event.correlation_id``
+ via ``corr = correlation_id or idempotency_key``.
+ - Both provided + different UUIDs -- the **precedence-winner**:
+ ``correlation_id`` wins.
 
 * **Part B** locks the 4 idempotent-return roundtrips:
 
-  - Same ``correlation_id`` repeated -> same ``run_id``, 1 event.
-  - Same ``idempotency_key`` repeated -> same ``run_id``, 1 event.
-  - **Cross-kwarg roundtrip** (the consistency pin): call 1 with
-    ``idempotency_key=K``, call 2 with ``correlation_id=K`` ->
-    SAME ``run_id``. Proves the implicit-promotion contract
-    (Axis A3) is consistent with the lookup at line 164.
-  - Same-corr + different ``workflow_profile`` -> same ``run_id``,
-    1 event. Proves idempotency does NOT re-validate workflow on
-    match -- the stored ``run_id`` wins regardless.
+ - Same ``correlation_id`` repeated -> same ``run_id``, 1 event.
+ - Same ``idempotency_key`` repeated -> same ``run_id``, 1 event.
+ - **Cross-kwarg roundtrip** (the consistency pin): call 1 with
+ ``idempotency_key=K``, call 2 with ``correlation_id=K`` ->
+ SAME ``run_id``. Proves the implicit-promotion contract
+ (Axis A3) is consistent with the lookup at line 164.
+ - Same-corr + different ``workflow_profile`` -> same ``run_id``,
+ 1 event. Proves idempotency does NOT re-validate workflow on
+ match -- the stored ``run_id`` wins regardless.
 
 * **Part C** locks the 3 distinctness axes including the **strong
-  precedence-lockout pin**:
+ precedence-lockout pin**:
 
-  - Different ``correlation_id`` values -> different run_ids.
-  - Mixed-None second call: corr_id-then-no-kwargs -> new run
-    (no implicit re-match against most-recent).
-  - **Precedence-lockout**: call 1 with
-    ``correlation_id=A, idempotency_key=B``, call 2 with
-    ``idempotency_key=B`` alone -> call 2 creates a **new** run
-    because B was IGNORED in call 1 (precedence) and never
-    promoted to ``event.correlation_id``. Pins that the non-
-    winning kwarg leaves NO trace.
+ - Different ``correlation_id`` values -> different run_ids.
+ - Mixed-None second call: corr_id-then-no-kwargs -> new run
+ (no implicit re-match against most-recent).
+ - **Precedence-lockout**: call 1 with
+ ``correlation_id=A, idempotency_key=B``, call 2 with
+ ``idempotency_key=B`` alone -> call 2 creates a **new** run
+ because B was IGNORED in call 1 (precedence) and never
+ promoted to ``event.correlation_id``. Pins that the non-
+ winning kwarg leaves NO trace.
 
 Cross-slice symmetry (the ``create_run`` contract matrix):
 
-| Slice    | Segment                          | Coverage                                  |
+| Slice | Segment | Coverage |
 |----------|----------------------------------|-------------------------------------------|
-| fo80 PtB | pipeline.py:154 (gate 1)         | propagation + early-fail-order           |
-| fo83     | pipeline.py:154-158 (5 gates)    | forward order + short-circuit            |
-| **fo85** | **pipeline.py:162-180**          | **fresh + roundtrip + distinctness+pin**|
+| fo80 PtB | pipeline.py:154 (gate 1) | propagation + early-fail-order |
+| fo83 | pipeline.py:154-158 (5 gates) | forward order + short-circuit |
+| **fo85** | **pipeline.py:162-180** | **fresh + roundtrip + distinctness+pin**|
 
 fo80 + fo83 + fo85 together form the **complete** ``create_run``
 contract matrix (pre-flight + gate-ordering + post-gate idempotency).

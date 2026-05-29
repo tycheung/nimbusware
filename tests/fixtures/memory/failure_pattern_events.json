@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "description": "Anonymized failure/fix pattern for memory index + replay CI (fo181).",
+  "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "rows": [
+    {
+      "store_seq": 1,
+      "event_id": "11111111-1111-4111-8111-111111111111",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "run.created",
+      "occurred_at": "2026-01-15T10:00:00Z",
+      "metadata": {
+        "memory": {
+          "retrieval_enabled": true,
+          "index_contribution": true,
+          "embedding_mode": "deterministic"
+        }
+      },
+      "payload": {
+        "workflow_profile": "micro_slice",
+        "policy_version": "1",
+        "config_snapshot_id": "cfg-fixture-v1"
+      }
+    },
+    {
+      "store_seq": 2,
+      "event_id": "22222222-2222-4222-8222-222222222222",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "finding.created",
+      "occurred_at": "2026-01-15T10:00:01Z",
+      "payload": {
+        "finding_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "category": "sql_injection",
+        "owner_role": "77777777-7777-4777-8777-777777777777",
+        "severity": "LOW",
+        "source_artifact": "sql_profiler",
+        "repro_steps": ["POST /api/search with crafted input"]
+      }
+    },
+    {
+      "store_seq": 3,
+      "event_id": "33333333-3333-4333-8333-333333333333",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "gate.decision.emitted",
+      "occurred_at": "2026-01-15T10:00:02Z",
+      "payload": {
+        "stage_name": "security_scan",
+        "verdict": "FAIL",
+        "failing_critics": ["88888888-8888-4888-8888-888888888888"]
+      }
+    },
+    {
+      "store_seq": 4,
+      "event_id": "44444444-4444-4444-8444-444444444444",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "run.completed",
+      "occurred_at": "2026-01-15T10:00:03Z",
+      "payload": {
+        "summary": "fixture run completed after security gate failure"
+      }
+    },
+    {
+      "store_seq": 5,
+      "event_id": "55555555-5555-4555-8555-555555555555",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "memory.indexed",
+      "occurred_at": "2026-01-15T10:00:04Z",
+      "payload": {
+        "repo_scope_hash": "fixturescope0001",
+        "chunks_added": 2,
+        "chunks_skipped": 0,
+        "generation_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "embedding_mode": "deterministic",
+        "embedding_model_id": "hermes-memory-deterministic-v1",
+        "index_dir": "configs/memory/index"
+      }
+    },
+    {
+      "store_seq": 6,
+      "event_id": "66666666-6666-4666-8666-666666666666",
+      "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "event_type": "memory.retrieval.emitted",
+      "occurred_at": "2026-01-15T10:00:05Z",
+      "payload": {
+        "stage_name": "slice.gate",
+        "retrieval_k": 3,
+        "excerpt_chars": 420,
+        "query_digest": "fixture-query-digest-v1",
+        "repo_scope_hash": "fixturescope0001",
+        "generation_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+        "hit_chunk_ids": [
+          "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+          "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee"
+        ]
+      }
+    }
+  ]
+}

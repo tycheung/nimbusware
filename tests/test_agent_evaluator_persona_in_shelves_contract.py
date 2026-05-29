@@ -1,4 +1,4 @@
-"""``assert_agent_evaluator_persona_in_shelves`` wrapper-level coverage closure (fo84).
+"""``assert_agent_evaluator_persona_in_shelves`` wrapper-level coverage closure.
 
 fo80, fo81, fo82, fo83 systematically pinned the wrapper-level / direct
 contracts for 4 of the 5 pre-flight gates in
@@ -7,11 +7,11 @@ at pipeline.py:154-158:
 
 * Gate 1 (``assert_known_workflow``): fo80 propagation trilogy.
 * Gate 2 (``assert_bundle_catalog_maps_resolve``): fo82 3-axis
-  wrapper + helper matrix + parity meta-contract.
+ wrapper + helper matrix + parity meta-contract.
 * Gate 3 (``assert_persona_shelves_valid``): fo81 Part B 3-axis
-  wrapper (accept + FNF + 4 VE).
+ wrapper (accept + FNF + 4 VE).
 * Gate 5 (``assert_taxonomy_keys_resolve``): fo81 Part A 2-axis
-  direct (accept + KE).
+ direct (accept + KE).
 
 Gate 4 (``assert_agent_evaluator_persona_in_shelves``) is the
 outlier -- only 3 ad-hoc tests at
@@ -20,50 +20,50 @@ cover (reject unknown / accept default / skip disabled) and never
 sweep-pinned. The wrapper has 7+ unpinned axes:
 
 * Accept arm with **shelf-backed** persona_id (only reserved
-  ``"default"`` was covered; the real ``commerce`` /
-  ``backend_engineer`` shelf entries from
-  [configs/personas/shelves.yaml](d:\\Hermes\\configs\\personas\\shelves.yaml)
-  were untested).
+ ``"default"`` was covered; the real ``commerce`` /
+ ``backend_engineer`` shelf entries from
+ [configs/personas/shelves.yaml](d:\\Hermes\\configs\\personas\\shelves.yaml)
+ were untested).
 * **Detailed reject message**:
-  ``got 'X'; known=['backend_engineer', 'commerce']`` -- only
-  ``match="agent_evaluator"`` was asserted.
+ ``got 'X'; known=['backend_engineer', 'commerce']`` -- only
+ ``match="agent_evaluator"`` was asserted.
 * **Short-circuit on persona_id="default" when shelves.yaml is
-  missing** -- proves the default-check at
-  [ingress.py:40-41](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py)
-  fires BEFORE PersonaShelf load at line 43.
+ missing** -- proves the default-check at
+ [ingress.py:40-41](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py)
+ fires BEFORE PersonaShelf load at line 43.
 * **FNF propagation**: missing shelves.yaml + non-default persona
-  -> FileNotFoundError from ``load_yaml`` in
-  ``PersonaShelf.__init__``.
+ -> FileNotFoundError from ``load_yaml`` in
+ ``PersonaShelf.__init__``.
 * **load_yaml VE propagation**: scalar-root shelves.yaml ->
-  ``ValueError "YAML root must be a mapping:"``.
+ ``ValueError "YAML root must be a mapping:"``.
 * **Graceful-degradation friendly errors**: valid YAML mapping but
-  missing / degraded ``business_area`` / ``development_role`` ->
-  ``all_persona_ids()`` returns frozenset() / partial ->
-  friendly ValueError with ``known=[]`` / partial list.
+ missing / degraded ``business_area`` / ``development_role`` ->
+ ``all_persona_ids()`` returns frozenset() / partial ->
+ friendly ValueError with ``known=[]`` / partial list.
 * **Workflow-profile-cascade no-op**: invalid ``workflow_profile``
-  -> ``parse_agent_evaluator_workflow_block`` cascades to defaults
-  (``enabled=False``) -> wrapper no-ops without touching shelves.
+ -> ``parse_agent_evaluator_workflow_block`` cascades to defaults
+ (``enabled=False``) -> wrapper no-ops without touching shelves.
 
 fo84 closes the gate-4 wrapper-level coverage gap via three parts:
 
 * **Part A** locks the 6-axis direct contract (4 accept axes + 1
-  detailed reject message + 1 default-short-circuit on missing
-  shelves).
+ detailed reject message + 1 default-short-circuit on missing
+ shelves).
 * **Part B** locks the shelves-load propagation + graceful-
-  degradation matrix (2 load-failure axes + 3 friendly-degradation
-  sub-cases with class + prefix + ``known=[...]`` fragment check).
+ degradation matrix (2 load-failure axes + 3 friendly-degradation
+ sub-cases with class + prefix + ``known=[...]`` fragment check).
 * **Part C** locks the workflow-profile-cascade no-op uniformity
-  (3 cascade triggers x bare-repo + with-shelves parity).
+ (3 cascade triggers x bare-repo + with-shelves parity).
 
 Cross-slice symmetry table (per-gate wrapper-level matrix):
 
-| Slice    | Gate | Function                                       |
+| Slice | Gate | Function |
 |----------|------|------------------------------------------------|
-| fo80     | 1    | assert_known_workflow                          |
-| fo82     | 2    | assert_bundle_catalog_maps_resolve             |
-| fo81 PtB | 3    | assert_persona_shelves_valid                   |
+| fo80 | 1 | assert_known_workflow |
+| fo82 | 2 | assert_bundle_catalog_maps_resolve |
+| fo81 PtB | 3 | assert_persona_shelves_valid |
 | **fo84** | **4** | **assert_agent_evaluator_persona_in_shelves** |
-| fo81 PtA | 5    | assert_taxonomy_keys_resolve                   |
+| fo81 PtA | 5 | assert_taxonomy_keys_resolve |
 
 fo84 completes the **full per-gate wrapper-level coverage matrix**.
 """

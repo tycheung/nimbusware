@@ -1,4 +1,4 @@
-"""Sibling-parser cascade-family extension (fo77, complement to fo75/fo76).
+"""Sibling-parser cascade-family extension.
 
 fo75 Part C pinned that non-dict YAML roots cascade to defaults for **2
 parsers** (`parse_escalation_workflow_block`,
@@ -9,17 +9,17 @@ share the identical `except (OSError, ValueError, UnicodeDecodeError)`
 tuple but have zero coverage** for either contract:
 
 * ``parse_agent_evaluator_workflow_block`` in
-  [workflow_agent_evaluator.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_agent_evaluator.py)
-  -- default ``AgentEvaluatorWorkflowBlock()``
+ [workflow_agent_evaluator.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_agent_evaluator.py)
+ -- default ``AgentEvaluatorWorkflowBlock()``
 * ``parse_self_refinement_workflow_block`` in
-  [workflow_self_refinement.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_self_refinement.py)
-  -- default ``SelfRefinementWorkflowBlock()``
+ [workflow_self_refinement.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_self_refinement.py)
+ -- default ``SelfRefinementWorkflowBlock()``
 * ``parse_universal_critique_workflow_block`` in
-  [workflow_universal_critique.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_universal_critique.py)
-  -- default ``UniversalCritiqueWorkflowBlock()`` (all bool fields False)
+ [workflow_universal_critique.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_universal_critique.py)
+ -- default ``UniversalCritiqueWorkflowBlock()`` (all bool fields False)
 * ``_integrator_gate_workflow_dict`` in
-  [integrator_gate.py](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py)
-  -- default ``None`` (not a dataclass)
+ [integrator_gate.py](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py)
+ -- default ``None`` (not a dataclass)
 
 Existing tests for these 4 parsers only exercise *non-dict subblock
 values under a mapping root* (e.g., ``agent_evaluator: true``,
@@ -29,19 +29,19 @@ a non-dict **document** root or malformed YAML syntax.
 Three parts:
 
 * **Part A** locks the non-dict-root cascade-to-default for the 4 new
-  parsers -- 5 root blocks x 4 parsers = 20 cases mirroring fo75 Part
-  C structure.
+ parsers -- 5 root blocks x 4 parsers = 20 cases mirroring fo75 Part
+ C structure.
 * **Part B** locks the malformed-YAML propagation for the 4 new
-  parsers -- 8 malformed bodies x 4 parsers = 32 cases mirroring fo76
-  Part C structure; the **structural inversion of Part A**.
+ parsers -- 8 malformed bodies x 4 parsers = 32 cases mirroring fo76
+ Part C structure; the **structural inversion of Part A**.
 * **Part C** locks the cross-parser uniformity meta-contract -- one
-  canonical ``ValueError``-producing body + one canonical
-  ``yaml.YAMLError``-producing body x **all 6 family parsers** (2
-  fo75/fo76 + 4 new) = 12 assertions pinning that every parser in the
-  family handles both exception axes identically. Any single parser
-  drifting its except tuple (e.g., adding ``yaml.YAMLError`` to the
-  catch-list) surfaces here as a uniformity break before it can
-  cascade silently.
+ canonical ``ValueError``-producing body + one canonical
+ ``yaml.YAMLError``-producing body x **all 6 family parsers** (2
+ fo75
+ family handles both exception axes identically. Any single parser
+ drifting its except tuple (e.g., adding ``yaml.YAMLError`` to the
+ catch-list) surfaces here as a uniformity break before it can
+ cascade silently.
 
 Cross-slice symmetry:
 

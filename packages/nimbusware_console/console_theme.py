@@ -1,4 +1,4 @@
-"""Streamlit theme / white-label operator hints (PLAN_GAP §14 #11)."""
+"""Streamlit theme / white-label operator hints."""
 
 from __future__ import annotations
 

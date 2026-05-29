@@ -1,4 +1,4 @@
-"""Unit tests for integrator workflow YAML apply (fo132 / fo140 / §14 #13)."""
+"""Unit tests for integrator workflow YAML apply."""
 
 from __future__ import annotations
 

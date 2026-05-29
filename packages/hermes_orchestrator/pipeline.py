@@ -323,12 +323,16 @@ class RunOrchestrator:
         repo_root: Path,
         base_config_path: Path,
         config_materializer: Any | None = None,
+        memory_chunk_store: Any | None = None,
+        bundle_outcome_store: Any | None = None,
     ) -> None:
         self._store = store
         self._registry = registry
         self._repo_root = repo_root
         self._base_path = base_config_path
         self._config_materializer = config_materializer
+        self._memory_chunk_store = memory_chunk_store
+        self._bundle_outcome_store = bundle_outcome_store
         self._critique_router = load_critique_router(
             repo_root,
             config_materializer,
@@ -419,12 +423,32 @@ class RunOrchestrator:
             config_materializer=mat,
         )
         from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+        from hermes_orchestrator.workflow_memory import (
+            memory_effective_metadata,
+            parse_memory_workflow_block,
+            resolve_memory_index_version,
+        )
 
         ms_block = parse_micro_slice_workflow_block(
             self._repo_root,
             workflow_profile,
             config_materializer=mat,
         )
+        mem_block = parse_memory_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        memory_meta = memory_effective_metadata(
+            mem_block,
+            run_policy_overrides=run_policy_overrides,
+        )
+        memory_index_version = resolve_memory_index_version(
+            self._memory_chunk_store,
+            repo_root=self._repo_root,
+        )
+        if memory_index_version:
+            memory_meta["memory_index_version"] = memory_index_version
         custom_agent_meta: dict[str, Any] | None = None
         if custom_agent_id and str(custom_agent_id).strip():
             from nimbusware_config.persist import load_custom_agent_registry
@@ -524,6 +548,15 @@ class RunOrchestrator:
                     "max_files": ms_block.max_files,
                     "max_loc": ms_block.max_loc,
                 },
+                "memory_effective": {
+                    "retrieval_enabled": memory_meta["retrieval_enabled"],
+                    "index_contribution": memory_meta["index_contribution"],
+                    "retrieval_k": memory_meta["retrieval_k"],
+                    "excerpt_max_chars": memory_meta["excerpt_max_chars"],
+                    "embedding_mode": memory_meta["embedding_mode"],
+                    "memory_index_version": memory_meta.get("memory_index_version"),
+                },
+                "memory": memory_meta,
                 **(
                     {"custom_agent": custom_agent_meta} if custom_agent_meta else {}
                 ),
@@ -555,6 +588,25 @@ class RunOrchestrator:
         )
         self._store.append(ev)
         return run_id
+
+    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]:
+        for row in self._store.list_run_events(str(run_id)):
+            if row.get("event_type") == EventType.RUN_CREATED.value:
+                meta = row.get("metadata") or {}
+                return dict(meta) if isinstance(meta, dict) else {}
+        return {}
+
+    def maybe_rebuild_memory_index(self, run_id: UUID) -> Any | None:
+        """Rebuild repo memory index when this run contributes (Phase 4)."""
+        from hermes_memory.contribution import maybe_rebuild_memory_index_for_run
+
+        return maybe_rebuild_memory_index_for_run(
+            self._memory_chunk_store,
+            self._store,
+            run_id=run_id,
+            repo_root=self._repo_root,
+            run_created_metadata=self._run_created_metadata(run_id),
+        )
 
     def record_micro_slice_plan(
         self,
@@ -597,6 +649,13 @@ class RunOrchestrator:
         from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from hermes_orchestrator.slice_context_packet import build_slice_context_packet
         from hermes_orchestrator.slice_gate import SliceGateChainResult, run_slice_gate_chain
+        from hermes_orchestrator.workflow_memory import (
+            memory_settings_from_run_metadata,
+            pinned_generation_for_scope,
+            query_digest,
+            retrieve_memory_excerpt_for_slice,
+            run_memory_retrieval_enabled,
+        )
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
         gate = run_slice_gate_chain(
@@ -605,17 +664,54 @@ class RunOrchestrator:
             critique_verdicts=critique_verdicts,
             tests_passed=tests_passed,
         )
+        run_meta = self._run_created_metadata(run_id)
+        memory_excerpt = ""
+        memory_hits: list[Any] = []
+        memory_scope = ""
+        memory_settings = memory_settings_from_run_metadata(run_meta)
+        if (
+            run_memory_retrieval_enabled(run_meta)
+            and self._memory_chunk_store is not None
+        ):
+            memory_excerpt, memory_hits, memory_scope = retrieve_memory_excerpt_for_slice(
+                self._memory_chunk_store,
+                p,
+                repo_root=self._repo_root,
+                settings=memory_settings,
+            )
         packet = build_slice_context_packet(
             p,
             diff_unified=diff_unified,
             test_output=test_output,
             gate=gate,
+            memory_excerpt=memory_excerpt,
         )
         meta = {
             **gate.to_metadata(),
             "slice_context_packet": packet.model_dump(mode="json"),
         }
         now = datetime.now(timezone.utc)
+        if memory_hits:
+            from hermes_memory.audit import append_memory_retrieval_emitted_event
+
+            append_memory_retrieval_emitted_event(
+                self._store,
+                run_id=run_id,
+                stage_name="slice.gate",
+                query_digest=query_digest(
+                    " ".join(
+                        [p.slice_id, p.rationale, *p.target_paths],
+                    ).strip() or "failure fix gate security",
+                ),
+                hits=memory_hits,
+                excerpt=memory_excerpt,
+                retrieval_k=memory_settings.retrieval_k,
+                repo_scope_hash=memory_scope,
+                generation_id=pinned_generation_for_scope(
+                    self._memory_chunk_store,
+                    repo_root=self._repo_root,
+                ),
+            )
         if gate.passed:
             self._store.append(
                 StagePassedEvent(
@@ -720,26 +816,16 @@ class RunOrchestrator:
         content: bytes,
         persist_cap: int,
     ) -> dict[str, Any]:
-        """Write truncated response bytes under artifact base dir; returns metadata fields."""
-        base_dir = resolve_scraper_artifact_base_dir(self._repo_root)
-        base_dir.mkdir(parents=True, exist_ok=True)
-        run_dir = base_dir / str(run_id)
-        run_dir.mkdir(parents=True, exist_ok=True)
-        blob = content[:persist_cap]
-        digest_full = hashlib.sha256(content).hexdigest()
-        fname = f"url{url_index:02d}_{digest_full[:32]}.bin"
-        out_path = run_dir / fname
-        out_path.write_bytes(blob)
-        artifact_digest = hashlib.sha256(blob).hexdigest()
-        try:
-            rel = out_path.relative_to(base_dir)
-        except ValueError:
-            rel = Path(fname)
-        return {
-            "artifact_relpath": str(rel).replace("\\", "/"),
-            "artifact_sha256": artifact_digest,
-            "artifact_bytes_written": len(blob),
-        }
+        """Write truncated response bytes; object-store primary when Enterprise (fo204)."""
+        from hermes_orchestrator.scraper_artifacts import persist_scraper_artifact
+
+        return persist_scraper_artifact(
+            self._repo_root,
+            run_id,
+            url_index,
+            content,
+            persist_cap,
+        )
 
     def _scraper_get_with_retries(
         self,
@@ -3317,6 +3403,7 @@ class RunOrchestrator:
             integrator=mi,
             config_materializer=self._config_materializer,
             limit=10,
+            bundle_outcome_store=self._bundle_outcome_store,
         )
         selected_bundle_rank: int | None = None
         for idx, row in enumerate(ranking):
@@ -3337,6 +3424,21 @@ class RunOrchestrator:
         }
         if selected_bundle_rank is not None:
             gate_meta["selected_bundle_rank"] = selected_bundle_rank
+        verdict = Verdict.PASS if ok else Verdict.FAIL
+        from hermes_extensions.bundle_memory import (
+            build_bundle_outcome_from_gate,
+            bundle_outcome_metadata,
+        )
+
+        outcome = build_bundle_outcome_from_gate(
+            run_id=run_id,
+            bundle_id=bundle_id,
+            workflow_profile=wf,
+            project_tags=list(project_tags),
+            integrator_score=score,
+            verdict=verdict,
+        )
+        gate_meta["bundle_outcome"] = bundle_outcome_metadata(outcome)
         if ok:
             gate_payload = GateDecisionEmittedPayload(
                 stage_name="bundle_compatibility",
@@ -3360,6 +3462,18 @@ class RunOrchestrator:
                 payload=gate_payload,
             ),
         )
+        if self._bundle_outcome_store is not None:
+            store_seq = self._store.max_store_seq_for_run(str(run_id))
+            persisted = build_bundle_outcome_from_gate(
+                run_id=run_id,
+                bundle_id=bundle_id,
+                workflow_profile=wf,
+                project_tags=list(project_tags),
+                integrator_score=score,
+                verdict=verdict,
+                source_store_seq=store_seq,
+            )
+            self._bundle_outcome_store.append(persisted)
 
 
 def default_paths(repo_root: Path | None = None) -> tuple[Path, Path]:
@@ -3372,10 +3486,20 @@ def default_paths(repo_root: Path | None = None) -> tuple[Path, Path]:
 
 def make_dev_orchestrator(
     repo_root: Path | None = None,
+    *,
+    memory_chunk_store: Any | None = None,
+    bundle_outcome_store: Any | None = None,
 ) -> tuple[RunOrchestrator, InMemoryEventStore]:
     root = repo_root or Path(__file__).resolve().parents[2]
     base, _ = default_paths(root)
     reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
     mem = InMemoryEventStore()
-    orch = RunOrchestrator(mem, reg, repo_root=root, base_config_path=base)
+    orch = RunOrchestrator(
+        mem,
+        reg,
+        repo_root=root,
+        base_config_path=base,
+        memory_chunk_store=memory_chunk_store,
+        bundle_outcome_store=bundle_outcome_store,
+    )
     return orch, mem

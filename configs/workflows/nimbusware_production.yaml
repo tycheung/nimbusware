@@ -70,3 +70,11 @@ refactor:
   enabled: true
   stub_only: true
   max_iterations: 1
+
+# Phase 4 memory (fo164): default-on retrieval + index contribution for production runs.
+memory:
+  retrieval_enabled: true
+  index_contribution: true
+  retrieval_k: 5
+  excerpt_max_chars: 2000
+  embedding_mode: deterministic

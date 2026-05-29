@@ -19,18 +19,18 @@ than a single focused contract failure.
 Three parts:
 
 * **Part A** locks the truthy tuple membership (env-gate accepted -> the
-  deterministic skipped 3-tuple is returned without touching the network).
+ deterministic skipped 3-tuple is returned without touching the network).
 * **Part B** locks the **exact** ``(str, dict, bool)`` tuple shape -- a
-  bare ``result == _SKIPPED_TUPLE`` (Part A's check) silently passes when
-  ``"skipped": True`` is refactored to ``"skipped": 1`` because Python's
-  ``True == 1`` evaluates to ``True``. Part B's per-key
-  ``type(...) is type(...)`` plus value equality catches that drift.
+ bare ``result == _SKIPPED_TUPLE`` (Part A's check) silently passes when
+ ``"skipped": True`` is refactored to ``"skipped": 1`` because Python's
+ ``True == 1`` evaluates to ``True``. Part B's per-key
+ ``type(...) is type(...)`` plus value equality catches that drift.
 * **Part C** locks the asymmetric fail-closed string-arm (env-absent +
-  whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
-  + empty / junk / near-miss / interior whitespace) by mocking
-  ``httpx.get`` to raise ``httpx.ConnectError``; reaching the resulting
-  ``PreflightError`` proves the env-gate did not short-circuit. Parallel
-  to fo65 / fo66 Part C.
+ whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
+ + empty / junk / near-miss / interior whitespace) by mocking
+ ``httpx.get`` to raise ``httpx.ConnectError``; reaching the resulting
+ ``PreflightError`` proves the env-gate did not short-circuit. Parallel
+ to fo65.
 
 Per-case messages ``force_on raw=<raw>`` / ``shape raw=<raw>: <component>``
 / ``fail_closed raw=<raw>`` identify the failing branch + offending env

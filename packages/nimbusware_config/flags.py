@@ -27,3 +27,15 @@ def config_from_db_enabled() -> bool:
     if url:
         return True
     return _truthy("NIMBUSWARE_CONFIG_FROM_DB")
+
+
+def config_notify_enabled() -> bool:
+    """Enterprise LISTEN/NOTIFY freshness (fo203). Requires ``config_from_db`` + edition gate."""
+    if not _truthy("NIMBUSWARE_CONFIG_NOTIFY"):
+        return False
+    try:
+        from nimbusware_env.edition import enterprise_feature_enabled
+
+        return enterprise_feature_enabled("config_notify")
+    except ImportError:
+        return False

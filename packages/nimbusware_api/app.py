@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from nimbusware_env import load_dotenv
+from nimbusware_env.edition import edition, is_enterprise
 
 load_dotenv()
 
 import logging
 import os
+import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -19,19 +21,31 @@ from nimbusware_api.routes import (
     actions,
     bundles,
     custom_agents,
+    enterprise,
+    enterprise_config_notify,
+    enterprise_fleet_memory,
+    enterprise_fleet_ollama_sli,
+    enterprise_fleet_worker,
+    enterprise_iam,
+    enterprise_object_store,
     personas,
+    platform,
     preflight,
     runs,
     scraper_artifacts,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from nimbusware_config import ConfigMaterializer
+from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
+from hermes_memory.factory import build_memory_chunk_store
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.registry_db import load_registry_from_postgres
 from hermes_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
 from hermes_store.memory import InMemoryEventStore
 from hermes_store.postgres import PostgresEventStore
+from nimbusware_iam.middleware import enterprise_iam_middleware
+from nimbusware_iam.store import PostgresIamStore, build_iam_store
 
 logger = logging.getLogger(__name__)
 
@@ -67,19 +81,51 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.store = PostgresEventStore(url)
     else:
         app.state.store = InMemoryEventStore()
+    app.state.iam_store = build_iam_store(url)
+    if url and isinstance(app.state.iam_store, PostgresIamStore):
+        app.state.iam_store.ensure_default_tenant()
     app.state.config_materializer = materializer
+    notify_stop: threading.Event | None = None
+    notify_thread: threading.Thread | None = None
+    if materializer is not None and url:
+        from nimbusware_config import (
+            config_notify_listener_enabled,
+            get_config_notify_hub,
+            start_config_notify_listener,
+        )
+
+        if config_notify_listener_enabled():
+            hub = get_config_notify_hub()
+            hub.register(materializer)
+            notify_stop = threading.Event()
+            notify_thread = start_config_notify_listener(url, hub, notify_stop)
+            app.state.config_notify_hub = hub
     app.state.orchestrator = RunOrchestrator(
         app.state.store,
         registry,
         repo_root=repo,
         base_config_path=base,
         config_materializer=materializer,
+        memory_chunk_store=build_memory_chunk_store(url),
+        bundle_outcome_store=build_bundle_outcome_store(url),
     )
     if run_dispatch_enabled():
         app.state.run_queue = get_run_queue()
     else:
         app.state.run_queue = None
-    yield
+    app.state.edition = edition()
+    logger.info("Nimbusware edition=%s enterprise=%s", app.state.edition, is_enterprise())
+    try:
+        yield
+    finally:
+        if notify_stop is not None:
+            notify_stop.set()
+        if notify_thread is not None:
+            notify_thread.join(timeout=5.0)
+        if materializer is not None:
+            hub = getattr(app.state, "config_notify_hub", None)
+            if hub is not None:
+                hub.unregister(materializer)
 
 
 app = FastAPI(
@@ -120,6 +166,17 @@ app = FastAPI(
             "description": (
                 "Fleet preflight history (``GET /v1/preflight-history``) — bounded "
                 "aggregation over recent runs without per-run timeline fan-out."
+            ),
+        },
+        {
+            "name": "platform",
+            "description": "Product edition and Lane D feature gates (fo200).",
+        },
+        {
+            "name": "enterprise",
+            "description": (
+                "Enterprise edition routes (404 when NIMBUSWARE_EDITION=individual). "
+                "IAM routes require X-Nimbusware-Api-Key on Enterprise."
             ),
         },
         {
@@ -180,6 +237,11 @@ async def hermes_uncaught_exception_handler(
     )
 
 
+@app.middleware("http")
+async def _enterprise_iam(request: Request, call_next):
+    return await enterprise_iam_middleware(request, call_next)
+
+
 app.include_router(runs.router, prefix="/v1")
 app.include_router(actions.router, prefix="/v1")
 app.include_router(bundles.router, prefix="/v1")
@@ -187,3 +249,11 @@ app.include_router(personas.router, prefix="/v1")
 app.include_router(custom_agents.router, prefix="/v1")
 app.include_router(preflight.router, prefix="/v1")
 app.include_router(scraper_artifacts.router, prefix="/v1")
+app.include_router(platform.router, prefix="/v1")
+app.include_router(enterprise.router, prefix="/v1")
+app.include_router(enterprise_iam.router, prefix="/v1")
+app.include_router(enterprise_fleet_memory.router, prefix="/v1")
+app.include_router(enterprise_config_notify.router, prefix="/v1")
+app.include_router(enterprise_object_store.router, prefix="/v1")
+app.include_router(enterprise_fleet_worker.router, prefix="/v1")
+app.include_router(enterprise_fleet_ollama_sli.router, prefix="/v1")

@@ -1,4 +1,4 @@
-"""``_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional`` (fo91).
+"""``_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional``.
 
 fo90's Next-slice item (5) surfaced this exact gap: the 2 methods
 at
@@ -16,11 +16,11 @@ LLM_emitted, stub_called)``:
 - Path b1: enabled + llm=False + stub=False -> no LLM, no stub.
 - Path b2: enabled + llm=False + stub=True -> stub-only.
 - Path c: enabled + llm=True + no model selected -> no LLM call;
-  stub fallback gated on ``_stub``.
+ stub fallback gated on ``_stub``.
 - Path d: enabled + llm=True + model + LLM returns True -> LLM
-  only (stub NOT invoked per ``if not emitted``).
+ only (stub NOT invoked per ``if not emitted``).
 - Path f: enabled + llm=True + model + LLM returns False +
-  stub=True -> LLM + stub fallback.
+ stub=True -> LLM + stub fallback.
 
 Plus a 5-axis call-argument propagation contract: ``base_url``
 default/override + ``timeout_seconds`` default/float-cast +
@@ -33,11 +33,11 @@ source unchanged):
 
 * **Part A** -- tw 6-path control-flow matrix (~8 assertions).
 * **Part B** -- pll 6-path control-flow matrix (~8 assertions,
-  proving symmetric implementation).
+ proving symmetric implementation).
 * **Part C** -- tw 5-axis call-argument propagation (~10
-  assertions).
+ assertions).
 * **Part D** -- pll 5-axis call-argument propagation (~10
-  assertions, proving identical kwargs contract across methods).
+ assertions, proving identical kwargs contract across methods).
 """
 
 from __future__ import annotations

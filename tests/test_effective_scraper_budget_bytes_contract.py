@@ -1,4 +1,4 @@
-"""``_effective_scraper_budget_bytes`` direct contract (fo97).
+"""``_effective_scraper_budget_bytes`` direct contract.
 
 The helper at [pipeline.py:337-354] fuses the policy snapshot's
 ``network_egress.budget_bytes_per_run`` with ``ScraperFetchConfig.max_bytes``
@@ -14,13 +14,13 @@ fo97 closes 4 unpinned surfaces via 4 parts spanning 16 axes
 (~21 assertions, source unchanged):
 
 * **Part A** -- snapshot-side type guards (4 axes -- snap not dict / no
-  network_egress / ne not dict / no budget_bytes_per_run).
+ network_egress / ne not dict / no budget_bytes_per_run).
 * **Part B** -- pb value-guard matrix (5 axes -- None / string / float /
-  negative / boundary 0 + positive).
+ negative / boundary 0 + positive).
 * **Part C** -- ``min`` composition (4 axes -- policy only / cfg only /
-  both with policy stricter / both with cfg stricter).
+ both with policy stricter / both with cfg stricter).
 * **Part D** -- empty caps + zero-budget edges (3 axes -- both absent /
-  both equal / zero is deny-all).
+ both equal / zero is deny-all).
 """
 
 from __future__ import annotations

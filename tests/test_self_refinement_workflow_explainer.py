@@ -1,4 +1,4 @@
-"""Unit tests for self-refinement workflow explainer (fo135 / §14 #17)."""
+"""Unit tests for self-refinement workflow explainer."""
 
 from __future__ import annotations
 

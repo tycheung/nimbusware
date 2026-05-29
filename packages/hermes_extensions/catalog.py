@@ -15,6 +15,42 @@ import numpy as np
 from numpy.typing import NDArray
 
 from hermes_orchestrator.merge import load_yaml
+from hermes_extensions.bundle_memory import bundle_memory_rank_weight
+from hermes_extensions.bundle_memory_models import BundleSuccessStats
+
+
+def _bundle_tag_overlap_score(row: dict[str, Any], query: str) -> float:
+    terms = {t.lower() for t in query.replace(",", " ").split() if t.strip()}
+    bid = str(row.get("id", "")).lower()
+    tags = {str(x).lower() for x in (row.get("tags") or []) if isinstance(x, str)}
+    return float(sum(1 for t in terms if t in tags or t in bid))
+
+
+def apply_bundle_memory_ranking(
+    hits: list[dict[str, Any]],
+    query: str,
+    stats: dict[str, BundleSuccessStats],
+    *,
+    weight: float | None = None,
+) -> list[dict[str, Any]]:
+    """Re-order catalog hits using historical integrator success rates (fo171)."""
+    from hermes_extensions.bundle_memory import blend_bundle_rank_score
+
+    if not hits or not stats:
+        return hits
+    w = weight if weight is not None else bundle_memory_rank_weight()
+    if w <= 0.0:
+        return hits
+    scored: list[tuple[float, dict[str, Any]]] = []
+    for i, row in enumerate(hits):
+        bid = str(row.get("id", ""))
+        base = _bundle_tag_overlap_score(row, query)
+        if base <= 0.0:
+            base = float(len(hits) - i) / max(len(hits), 1)
+        blended = blend_bundle_rank_score(base, bundle_id=bid, stats=stats, weight=w)
+        scored.append((blended, row))
+    scored.sort(key=lambda t: (-t[0], str(t[1].get("id", ""))))
+    return [row for _, row in scored]
 
 
 def assert_workflow_bundle_map_ids_resolve_content(raw: dict[str, Any]) -> None:
@@ -195,20 +231,27 @@ def search_bundles(
     *,
     k: int = 5,
     config_materializer: Any | None = None,
+    bundle_outcome_store: Any | None = None,
 ) -> list[dict[str, Any]]:
     """Operator helper: tag/id search over ``{repo_root}/configs/bundles/catalog.yaml``.
 
     Returns ``[]`` when the catalog file is missing. Otherwise delegates to
     :class:`BundleCatalog` (FAISS when an index is present under ``bundles/index/``,
     else tag overlap — same semantics as :meth:`BundleCatalog.search`).
+    When ``bundle_outcome_store`` is provided, re-ranks hits using fo171 success rates.
     """
     raw = load_bundle_catalog_content(repo_root, config_materializer=config_materializer)
     if raw is None:
         return []
     path = repo_root / "configs" / "bundles" / "catalog.yaml"
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
-        return search_bundles_raw(raw, query.strip(), k=k)
-    return BundleCatalog(path).search(query.strip(), k=k)
+        hits = search_bundles_raw(raw, query.strip(), k=k)
+    else:
+        hits = BundleCatalog(path).search(query.strip(), k=k)
+    if bundle_outcome_store is not None:
+        stats = bundle_outcome_store.success_stats()
+        hits = apply_bundle_memory_ranking(hits, query.strip(), stats)
+    return hits[: max(1, int(k))]
 
 
 def bundle_faiss_index_ready(repo_root: Path) -> bool:

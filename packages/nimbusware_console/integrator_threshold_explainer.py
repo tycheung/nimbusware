@@ -1,4 +1,4 @@
-"""Read-only breakdown of integrator min-score + gate emission sources (PLAN_GAP §14 #13 / fo133).
+"""Read-only breakdown of integrator min-score + gate emission sources.
 
 Mirrors :func:`effective_integrator_min_score_to_pass` and the preconditions in
 ``RunOrchestrator._emit_bundle_integrator_gate`` so operators can see why preview

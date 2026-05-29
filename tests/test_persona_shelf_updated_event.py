@@ -1,4 +1,4 @@
-"""Unit tests for ``PersonaShelfUpdatedEvent`` + payload (fo127 §14 #14-edit).
+"""Unit tests for ``PersonaShelfUpdatedEvent`` + payload.
 
 Eight axes: happy payload, shelf Literal, persona_id min length, version
 monotonicity, fields_changed cap, envelope adapter round-trip, in-memory store

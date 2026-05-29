@@ -1,4 +1,4 @@
-"""Persona shelves preview for the operator console (PLAN_GAP §14 #14 / fo141).
+"""Persona shelves preview for the operator console.
 
 Uses the same YAML and validation as **GET /v1/personas** (``PersonaShelf`` under the
 resolved repo root). Read-only; no HTTP call required for local operators.
@@ -602,7 +602,7 @@ def persona_catalog_empty_id_operator_caption(
 
 
 def persona_catalog_taxonomy_scope_frozen_caption() -> str:
-    """Lane A scope freeze for §14 #14 — two-shelf taxonomy only (PLAN_GAP close-out)."""
+    """Lane A scope freeze for §14 #14 — two-shelf taxonomy only."""
     return (
         "Persona taxonomy scope (frozen v1): **business_area** + **development_role** "
         "shelves only — broader taxonomy expansion is deferred; use probation filters "
@@ -629,7 +629,7 @@ def persona_catalog_critique_pairings_total_caption(
 
 
 def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
-    """Read-only peek at ``configs/personas/critique_pairings.yaml`` (PLAN_GAP §14 #14)."""
+    """Read-only peek at ``configs/personas/critique_pairings.yaml``."""
     import yaml
 
     from hermes_orchestrator.merge import load_yaml

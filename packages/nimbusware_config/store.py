@@ -13,6 +13,21 @@ from psycopg.types.json import Jsonb
 
 from nimbusware_config.protocol import ConfigDocumentRow, ConfigStore
 
+
+def _maybe_publish_config_notify(namespace: str, document_key: str, version: int) -> None:
+    try:
+        from nimbusware_config.flags import config_notify_enabled
+        from nimbusware_config.notify import get_config_notify_hub
+
+        if config_notify_enabled():
+            get_config_notify_hub().publish_local(
+                namespace=namespace,
+                document_key=document_key,
+                version=version,
+            )
+    except ImportError:
+        return
+
 _NS = "namespace"
 _KEY = "document_key"
 
@@ -129,7 +144,9 @@ class PostgresConfigStore:
         if rec is None:
             msg = "config upsert failed"
             raise RuntimeError(msg)
-        return _row_from_record(rec)
+        row = _row_from_record(rec)
+        _maybe_publish_config_notify(row.namespace, row.document_key, row.version)
+        return row
 
     def list_keys(self, namespace: str) -> list[str]:
         with psycopg.connect(self._conninfo) as conn:
@@ -202,6 +219,7 @@ class InMemoryConfigStore:
             updated_at=datetime.now(timezone.utc),
         )
         self._docs[key] = row
+        _maybe_publish_config_notify(row.namespace, row.document_key, row.version)
         return row
 
     def list_keys(self, namespace: str) -> list[str]:

@@ -1,42 +1,42 @@
-"""``configs/escalation/policy.yaml`` quartet loader composite (fo114).
+"""``configs/escalation/policy.yaml`` quartet loader composite.
 
 Four sibling pure helpers in
 [escalation_threshold.py:10-66](packages/hermes_orchestrator/escalation_threshold.py)
 read the **same** ``configs/escalation/policy.yaml`` file independently
 and form the lower layer beneath the cumulative-escalation emitter
-quartet (fo86) and ``_maybe_emit_anti_deadlock_escalation`` (fo104).
+quartet and ``_maybe_emit_anti_deadlock_escalation``.
 All four share an IDENTICAL 4-arm defensive shape but each consumes a
 DIFFERENT verification-subkey:
 
 ```python
 def loader(repo_root: Path) -> int | None:
-    path = repo_root / "configs" / "escalation" / "policy.yaml"
-    if not path.is_file():
-        return None
-    raw = load_yaml(path)
-    ver = raw.get("verification")
-    if not isinstance(ver, dict):
-        return None
-    n = ver.get(KEY)
-    if isinstance(n, int) and n >= 1:
-        return n
-    return None
+ path = repo_root / "configs" / "escalation" / "policy.yaml"
+ if not path.is_file():
+ return None
+ raw = load_yaml(path)
+ ver = raw.get("verification")
+ if not isinstance(ver, dict):
+ return None
+ n = ver.get(KEY)
+ if isinstance(n, int) and n >= 1:
+ return n
+ return None
 ```
 
-| Loader                                           | Verification subkey                        |
+| Loader | Verification subkey |
 |--------------------------------------------------|--------------------------------------------|
 | ``load_auto_escalate_after_cumulative_findings`` | ``auto_escalate_after_cumulative_findings`` |
-| ``load_notice_escalate_at_cumulative_findings``  | ``notice_escalate_at_cumulative_findings``  |
+| ``load_notice_escalate_at_cumulative_findings`` | ``notice_escalate_at_cumulative_findings`` |
 | ``load_escalate_after_cumulative_stage_failures``| ``escalate_after_cumulative_stage_failures``|
 | ``load_escalate_after_cumulative_gate_failures`` | ``escalate_after_cumulative_gate_failures`` |
 
 Existing coverage is sampled only:
 
 * [tests/test_escalation_threshold.py](tests/test_escalation_threshold.py)
-  -- 4 tests: ROOT-no-key fallback for 3 of 4 loaders, plus one happy
-  integer sample for each of 3 loaders. ``load_notice_escalate_at_cumulative_findings``
-  has NO direct test (only ``patch``ed in
-  [tests/test_cumulative_escalation_emitter_quartet_contract.py](tests/test_cumulative_escalation_emitter_quartet_contract.py)).
+ -- 4 tests: ROOT-no-key fallback for 3 of 4 loaders, plus one happy
+ integer sample for each of 3 loaders. ``load_notice_escalate_at_cumulative_findings``
+ has NO direct test (only ``patch``ed in
+ [tests/test_cumulative_escalation_emitter_quartet_contract.py](tests/test_cumulative_escalation_emitter_quartet_contract.py)).
 
 No direct tests for: file-absent fallback, ``verification`` non-dict
 arm, non-int value arm, boundary (0 / -1 / large positive), Python
@@ -47,39 +47,39 @@ unchanged).
 Five KEY DIVERGENCES are pinned across the matrix:
 
 * **Distinct keys per loader** -- each loader reads its OWN
-  verification subkey. A refactor consolidating into a single shared
-  loader with a key parameter could swap keys silently. Parts B / C / D
-  cross-check by writing each key alone and proving the SIBLING
-  loaders return ``None``.
+ verification subkey. A refactor consolidating into a single shared
+ loader with a key parameter could swap keys silently. Parts B / C / D
+ cross-check by writing each key alone and proving the SIBLING
+ loaders return ``None``.
 * **``isinstance(n, int)`` accepts ``bool``** -- ``isinstance(True, int) is True``
-  AND ``True >= 1`` so YAML ``true`` for any of the four keys returns
-  ``True`` (which equals 1). A "harden against bool leak" refactor
-  (``isinstance(n, int) and not isinstance(n, bool)``) would flip
-  this. Part D D2 pins it.
+ AND ``True >= 1`` so YAML ``true`` for any of the four keys returns
+ ``True`` (which equals 1). A "harden against bool leak" refactor
+ (``isinstance(n, int) and not isinstance(n, bool)``) would flip
+ this. Part D D2 pins it.
 * **No upper cap** -- value ``99999`` returns verbatim; only ``< 1``
-  is rejected. A "guard against unrealistic thresholds" refactor
-  adding ``min(n, 1000)`` would flip Part A A5 and Part D D1.
+ is rejected. A "guard against unrealistic thresholds" refactor
+ adding ``min(n, 1000)`` would flip Part A A5 and Part D D1.
 * **Strict ``int`` check rejects ``2.0`` / ``"2"``** -- only Python
-  ``int`` is accepted; YAML floats and string-ints both return
-  ``None``. Distinct from
-  [``load_anti_deadlock_settings``](packages/hermes_orchestrator/anti_deadlock.py)
-  whose ``int(...)`` coerces strings and raises on bad input (fo72).
+ ``int`` is accepted; YAML floats and string-ints both return
+ ``None``. Distinct from
+ [``load_anti_deadlock_settings``](packages/hermes_orchestrator/anti_deadlock.py)
+ whose ``int(...)`` coerces strings and raises on bad input.
 * **Independent file reads** -- each loader opens ``policy.yaml``
-  independently; no shared cache. Part D D5 pins call-order
-  idempotence.
+ independently; no shared cache. Part D D5 pins call-order
+ idempotence.
 
 Four parts:
 
 * **Part A** -- ``load_auto_escalate_after_cumulative_findings``
-  defensive arms (file absent / verification non-dict / key missing /
-  non-int value / boundary).
+ defensive arms (file absent / verification non-dict / key missing /
+ non-int value / boundary).
 * **Part B** -- ``load_notice_escalate_at_cumulative_findings``
-  defensive arms + KEY DIVERGENCE vs auto (each-key-alone proof).
+ defensive arms + KEY DIVERGENCE vs auto (each-key-alone proof).
 * **Part C** -- ``load_escalate_after_cumulative_stage_failures``
-  defensive arms + KEY DIVERGENCE vs gate.
+ defensive arms + KEY DIVERGENCE vs gate.
 * **Part D** -- ``load_escalate_after_cumulative_gate_failures``
-  condensed defensive arms + bool-is-int quirk (4-loader sweep) +
-  4-key isolation matrix + fault-isolation + call-order idempotence.
+ condensed defensive arms + bool-is-int quirk (4-loader sweep) +
+ 4-key isolation matrix + fault-isolation + call-order idempotence.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""``RunOrchestrator.create_run`` pre-flight gate chain coverage (fo81).
+"""``RunOrchestrator.create_run`` pre-flight gate chain coverage.
 
 fo80 closed the **first** of 5 pre-flight gates in
 [pipeline.py:154-158](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
@@ -6,17 +6,17 @@ fo80 closed the **first** of 5 pre-flight gates in
 **coverage gaps** at the wrapper / HTTP layer:
 
 * ``assert_bundle_catalog_maps_resolve`` -- wrapper happy path only;
-  negatives test the inner helper. (Deferred to a future slice to
-  keep fo81 at exactly 3 parts.)
+ negatives test the inner helper. (Deferred to a future slice to
+ keep fo81 at exactly 3 parts.)
 * ``assert_persona_shelves_valid`` -- wrapper happy path only at
-  [test_extensions_yaml.py:139-142](d:\\Hermes\\tests\\test_extensions_yaml.py);
-  the wrapper-layer ``FileNotFoundError`` (missing file) +
-  ``ValueError`` (invalid structure) axes are untested.
+ [test_extensions_yaml.py:139-142](d:\\Hermes\\tests\\test_extensions_yaml.py);
+ the wrapper-layer ``FileNotFoundError`` (missing file) +
+ ``ValueError`` (invalid structure) axes are untested.
 * ``assert_agent_evaluator_persona_in_shelves`` -- already covered by
-  3 direct tests at
-  [test_extensions_yaml.py:145-182](d:\\Hermes\\tests\\test_extensions_yaml.py).
+ 3 direct tests at
+ [test_extensions_yaml.py:145-182](d:\\Hermes\\tests\\test_extensions_yaml.py).
 * ``assert_taxonomy_keys_resolve`` -- **zero direct tests** anywhere
-  in ``tests/`` (only mentioned in fo80's docstring).
+ in ``tests/`` (only mentioned in fo80's docstring).
 
 HTTP-layer translation gap: the route handler at
 [runs.py:644-658](d:\\Hermes\\packages\\hermes_api\\routes\\runs.py)
@@ -24,40 +24,39 @@ catches 3 exception classes and maps each to a distinct HTTP 422
 problem code. Existing test coverage:
 
 * ``FileNotFoundError`` -> 422 ``workflow_not_found`` -- covered by
-  ``test_unknown_workflow_profile_422`` at
-  [test_api.py:645](d:\\Hermes\\tests\\test_api.py) (real-fixture
-  missing workflow file).
+ ``test_unknown_workflow_profile_422`` at
+ [test_api.py:645](d:\\Hermes\\tests\\test_api.py) (real-fixture
+ missing workflow file).
 * ``ValueError`` -> 422 ``invalid_request`` -- covered by
-  ``test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract``
-  at
-  [test_workflow_profile_path_propagation.py](d:\\Hermes\\tests\\test_workflow_profile_path_propagation.py)
-  (fo80 Part C Sub-loop 2 via real-fixture invalid-name).
+ ``test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract``
+ at
+ [test_workflow_profile_path_propagation.py](d:\\Hermes\\tests\\test_workflow_profile_path_propagation.py).
 * ``KeyError`` -> 422 ``registry_key_error`` -- **untested**
-  (``registry_key_error`` string appears only in route source; zero
-  test hits).
+ (``registry_key_error`` string appears only in route source; zero
+ test hits).
 
 fo81 is a single-file, 3-part slice that closes those gaps:
 
 * **Part A** locks the ``assert_taxonomy_keys_resolve`` 2-axis
-  contract directly (accept + ``KeyError`` reject) -- the only
-  function in the chain with zero existing tests.
+ contract directly (accept + ``KeyError`` reject) -- the only
+ function in the chain with zero existing tests.
 * **Part B** closes the ``assert_persona_shelves_valid``
-  wrapper-level coverage gap with all 3 axes (accept + missing-file
-  ``FileNotFoundError`` + 4 invalid-structure ``ValueError``
-  variants).
+ wrapper-level coverage gap with all 3 axes (accept + missing-file
+ ``FileNotFoundError`` + 4 invalid-structure ``ValueError``
+ variants).
 * **Part C** completes the 3-class HTTP-translation matrix at
-  ``runs.py:644-658`` by monkeypatching ``orch.create_run`` to
-  inject each exception class in turn and asserting the operator-
-  visible 422 problem code + message plumbing. The ``KeyError`` ->
-  ``registry_key_error`` axis is the **new** axis.
+ ``runs.py:644-658`` by monkeypatching ``orch.create_run`` to
+ inject each exception class in turn and asserting the operator-
+ visible 422 problem code + message plumbing. The ``KeyError`` ->
+ ``registry_key_error`` axis is the **new** axis.
 
 Cross-slice symmetry (HTTP 422 problem-code coverage):
 
-| Slice    | FNF axis              | VE axis            | KE axis (NEW)     |
+| Slice | FNF axis | VE axis | KE axis (NEW) |
 |----------|-----------------------|--------------------|-------------------|
-| pre-fo80 | test_api.py (1 case)  | (n/a)              | (n/a)             |
-| fo80     | (same as pre-fo80)    | test_workflow_profile_path_propagation.py | (n/a) |
-| **fo81** | (re-asserted)         | (re-asserted)      | **Part C NEW**    |
+| pre-fo80 | test_api.py (1 case) | (n/a) | (n/a) |
+| fo80 | (same as pre-fo80) | test_workflow_profile_path_propagation.py | (n/a) |
+| **fo81** | (re-asserted) | (re-asserted) | **Part C NEW** |
 
 Part C uses a monkeypatched ``orch.create_run`` (not real fixtures)
 so each exception class is **isolated** from any specific source

@@ -1,4 +1,4 @@
-"""§14 #18 / fo136: read-only security scan metadata workflow explainer payload."""
+"""§14 #18."""
 
 from __future__ import annotations
 

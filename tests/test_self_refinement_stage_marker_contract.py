@@ -1,21 +1,21 @@
-"""``_maybe_emit_self_refinement_stage_marker`` direct contract (fo105).
+"""``_maybe_emit_self_refinement_stage_marker`` direct contract.
 
 The self-refinement stage marker emitter at [pipeline.py:1446-1482] has rich
 cross-cuts that no prior fo plan has pinned:
 
 * **3-source resolution** -- ``pol`` from ``configs/self_refinement/policy.yaml``
-  if ``path.is_file()`` else the inline default
-  ``SelfRefinementPolicy(version=1, enabled=False, description="")``.
+ if ``path.is_file()`` else the inline default
+ ``SelfRefinementPolicy(version=1, enabled=False, description="")``.
 * **``path.is_file()`` False arm** -- never exercised; today the YAML always
-  exists in the repo.
+ exists in the repo.
 * **Override semantics** -- ``wf_sr.version is not None`` overrides
-  ``pol.version``; ``wf_sr.description is not None`` overrides
-  ``pol.description``.
+ ``pol.version``; ``wf_sr.description is not None`` overrides
+ ``pol.description``.
 * **Description ``[:2000]`` bounding** -- silently caps long descriptions.
-* **NO-dedup invariant** -- structurally distinct from fo102 / fo104's
-  escalation emitters: repeated calls emit duplicates. A future "unify all
-  emitters with dedup" refactor would silently break consumers relying on
-  repeated ``self_refinement:policy`` markers.
+* **NO-dedup invariant** -- structurally distinct from fo102
+ escalation emitters: repeated calls emit duplicates. A future "unify all
+ emitters with dedup" refactor would silently break consumers relying on
+ repeated ``self_refinement:policy`` markers.
 
 Existing [tests/test_workflow_self_refinement.py] covers the parser
 (``parse_self_refinement_workflow_block``) deeply but the orchestrator-side
@@ -25,14 +25,14 @@ fo105 closes the gaps via 4 parts spanning 20 axes (~31 assertions, source
 unchanged):
 
 * **Part A** -- policy-source resolution (5 axes -- path.is_file() True ->
-  loader called once / False arm -> inline default / parse_self_refinement_
-  workflow_block called with (repo_root, wf_prof) / wf_prof derives per-run
-  / list_run_events called exactly once).
+ loader called once / False arm -> inline default / parse_self_refinement_
+ workflow_block called with (repo_root, wf_prof) / wf_prof derives per-run
+ / list_run_events called exactly once).
 * **Part B** -- OR-enable early return (5 axes -- both off / pol ON / wf ON
-  / both ON (exactly once) / bare-default wf block).
+ / both ON (exactly once) / bare-default wf block).
 * **Part C** -- version + description override semantics (5 axes).
 * **Part D** -- emit shape + ``[:2000]`` bounding + **NO-dedup** invariant
-  (5 axes -- includes the marquee STRUCTURAL DIVERGENCE pin).
+ (5 axes -- includes the marquee STRUCTURAL DIVERGENCE pin).
 """
 
 from __future__ import annotations

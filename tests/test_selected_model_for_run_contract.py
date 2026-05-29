@@ -1,4 +1,4 @@
-"""``_selected_model_for_run`` direct contract (fo93).
+"""``_selected_model_for_run`` direct contract.
 
 fo92's Next-slice item (5) flagged "next-sharpest gap from agent exploration".
 Audit of [`pipeline.py:561-573`](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
@@ -24,14 +24,14 @@ fo93 closes the gap via 4 parts spanning 16 axes (~18 assertions, source
 unchanged):
 
 * **Part A** -- per-event-type happy-path field reads (4 axes -- empty store
-  / single PRIMARY / single FALLBACK / PRIMARY + unrelated event).
+ / single PRIMARY / single FALLBACK / PRIMARY + unrelated event).
 * **Part B** -- reverse-walk LAST-wins precedence (4 axes -- 2 PRIMARY / 2
-  FALLBACK / PRIMARY-then-FALLBACK / FALLBACK-then-PRIMARY).
+ FALLBACK / PRIMARY-then-FALLBACK / FALLBACK-then-PRIMARY).
 * **Part C** -- ``isinstance(mid, str)`` type-guard skip-and-continue (4 axes
-  -- non-string PRIMARY / non-string FALLBACK / valid earlier FALLBACK falls
-  through non-string PRIMARY / mirror).
+ -- non-string PRIMARY / non-string FALLBACK / valid earlier FALLBACK falls
+ through non-string PRIMARY / mirror).
 * **Part D** -- cross-cutting negative axes (4 axes -- multi-run isolation /
-  missing PRIMARY field / missing FALLBACK field / unknown event_type).
+ missing PRIMARY field / missing FALLBACK field / unknown event_type).
 """
 
 from __future__ import annotations

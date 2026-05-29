@@ -67,6 +67,7 @@ from fastapi.testclient import TestClient
 import nimbusware_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
 from nimbusware_api.app import app
 from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_iam.store import InMemoryIamStore
 
 _FAKE_DB_URL = "postgresql://test:test@localhost/hermes"
 _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
@@ -119,7 +120,11 @@ def _run_lifespan(
     ) as mock_db_loader, patch.object(
         _APP_MODULE,
         "PostgresEventStore",
-    ) as mock_postgres_store:
+    ) as mock_postgres_store, patch.object(
+        _APP_MODULE,
+        "build_iam_store",
+        return_value=InMemoryIamStore(),
+    ):
         with TestClient(app):
             yield mock_db_loader, mock_postgres_store
 

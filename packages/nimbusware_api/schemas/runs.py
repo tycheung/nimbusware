@@ -60,6 +60,8 @@ class RunTimelineResponse(BaseModel):
     performance_critique: dict[str, Any] | None = None
     network_resilience_critique: dict[str, Any] | None = None
     refactor_critique: dict[str, Any] | None = None
+    memory_retrieval: dict[str, Any] | None = None
+    memory_indexed: dict[str, Any] | None = None
 
 
 class RunListResponse(BaseModel):

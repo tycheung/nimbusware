@@ -1,4 +1,4 @@
-"""Read-only scraper artifact inventory (PLAN_GAP §14 #10 v0)."""
+"""Read-only scraper artifact inventory."""
 
 from __future__ import annotations
 

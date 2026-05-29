@@ -1,4 +1,4 @@
-"""Read-only self-refinement workflow + policy summary for Streamlit (PLAN_GAP §14 #17 / fo135)."""
+"""Read-only self-refinement workflow + policy summary for Streamlit."""
 
 from __future__ import annotations
 

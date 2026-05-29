@@ -1,4 +1,4 @@
-"""Unit tests for integrator workflow preview helpers (fo131 / §14 #13)."""
+"""Unit tests for integrator workflow preview helpers."""
 
 from __future__ import annotations
 

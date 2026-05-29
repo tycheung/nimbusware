@@ -1,4 +1,4 @@
-"""``GET /v1/runs`` query helpers composite (fo111).
+"""``GET /v1/runs`` query helpers composite.
 
 Four small but sharp helpers in
 [packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
@@ -19,68 +19,68 @@ fo111 closes that gap with 4 parts spanning 20 axes (no source
 changes):
 
 * **Part A** -- ``_encode_run_list_cursor`` (5 axes): ``str`` return
-  type, exact JSON shape, compact separators, urlsafe alphabet,
-  trailing ``=`` stripped.
+ type, exact JSON shape, compact separators, urlsafe alphabet,
+ trailing ``=`` stripped.
 * **Part B** -- ``_decode_run_list_cursor`` + roundtrip (5 axes):
-  invariance across sample tuples, padding restoration across all 3
-  valid b64 length-mod-4 residues, ``int`` coercion of ``seq``,
-  ``UUID`` coercion of ``r``, 2-tuple shape.
+ invariance across sample tuples, padding restoration across all 3
+ valid b64 length-mod-4 residues, ``int`` coercion of ``seq``,
+ ``UUID`` coercion of ``r``, 2-tuple shape.
 * **Part C** -- ``_sanitize_workflow_profile_prefix`` (5 axes):
-  ``None`` short-circuit, empty / whitespace-only collapse, valid
-  prefix matrix (chars / leading-digit / strip-rescue), invalid
-  silent-reject (NOT a ``ValueError``), 64-char accept / 65-char
-  reject length boundary.
+ ``None`` short-circuit, empty / whitespace-only collapse, valid
+ prefix matrix (chars / leading-digit / strip-rescue), invalid
+ silent-reject (NOT a ``ValueError``), 64-char accept / 65-char
+ reject length boundary.
 * **Part D** -- ``_parse_query_datetime`` (5 axes): ``None`` / empty
-  / whitespace short-circuit, ``"Z"`` -> ``"+00:00"`` substitution,
-  field-aware ``ValueError`` message interpolation, naive datetime
-  assumed UTC, tz-aware datetime ``astimezone(UTC)`` shift.
+ / whitespace short-circuit, ``"Z"`` -> ``"+00:00"`` substitution,
+ field-aware ``ValueError`` message interpolation, naive datetime
+ assumed UTC, tz-aware datetime ``astimezone(UTC)`` shift.
 
 KEY DIVERGENCES pinned:
 
 * **urlsafe vs standard b64** -- the helper uses
-  ``base64.urlsafe_b64encode`` which substitutes ``+`` -> ``-`` and
-  ``/`` -> ``_``. A refactor that switched to plain ``b64encode``
-  would silently produce URL-unsafe tokens that break clients
-  treating ``next_cursor`` as an opaque query param. The cursor
-  JSON's restricted byte vocabulary never produces 6-bit groups of
-  62 / 63, so for ANY cursor input today the two encoders are
-  bitwise identical -- meaning a refactor to ``b64encode`` would
-  not affect current outputs but WOULD break a future cursor JSON
-  variant that included arbitrary bytes. Part A4 pins this on two
-  fronts: (1) byte-for-byte equality with
-  ``urlsafe_b64encode(compact_json_bytes).rstrip('=')`` (pins the
-  exact codec), AND (2) an independent self-check on the byte
-  sequence ``b'\\xff\\xff\\xff'`` that confirms the two encoders DO
-  diverge there (pins our reasoning that urlsafe is the safer
-  choice).
+ ``base64.urlsafe_b64encode`` which substitutes ``+`` -> ``-`` and
+ ``/`` -> ``_``. A refactor that switched to plain ``b64encode``
+ would silently produce URL-unsafe tokens that break clients
+ treating ``next_cursor`` as an opaque query param. The cursor
+ JSON's restricted byte vocabulary never produces 6-bit groups of
+ 62 / 63, so for ANY cursor input today the two encoders are
+ bitwise identical -- meaning a refactor to ``b64encode`` would
+ not affect current outputs but WOULD break a future cursor JSON
+ variant that included arbitrary bytes. Part A4 pins this on two
+ fronts: (1) byte-for-byte equality with
+ ``urlsafe_b64encode(compact_json_bytes).rstrip('=')`` (pins the
+ exact codec), AND (2) an independent self-check on the byte
+ sequence ``b'\\xff\\xff\\xff'`` that confirms the two encoders DO
+ diverge there (pins our reasoning that urlsafe is the safer
+ choice).
 * **compact JSON** -- ``separators=(",", ":")`` keeps the cursor
-  token short. A refactor that dropped the kwarg would inflate
-  every cursor by ~2 bytes per separator (whitespace inside the
-  base64-encoded JSON). Part A3 decodes the token back and pins
-  the absence of ``", "`` and ``": "`` in the JSON body.
+ token short. A refactor that dropped the kwarg would inflate
+ every cursor by ~2 bytes per separator (whitespace inside the
+ base64-encoded JSON). Part A3 decodes the token back and pins
+ the absence of ``", "`` and ``": "`` in the JSON body.
 * **int / UUID coercion at decode** -- ``int(d["s"])`` and
-  ``UUID(str(d["r"]))`` are explicit type conversions. A refactor
-  that returned ``d["s"]`` / ``d["r"]`` directly would silently
-  switch ``seq`` to whatever JSON parses ``s`` as (e.g. ``int``
-  today but ``float`` for a future ``.0`` suffix) and ``r`` to
-  ``str``. Parts B3 / B4 pin both explicit casts.
+ ``UUID(str(d["r"]))`` are explicit type conversions. A refactor
+ that returned ``d["s"]`` / ``d["r"]`` directly would silently
+ switch ``seq`` to whatever JSON parses ``s`` as (e.g. ``int``
+ today but ``float`` for a future ``.0`` suffix) and ``r`` to
+ ``str``. Parts B3 / B4 pin both explicit casts.
 * **silent reject vs ValueError** -- the sanitiser returns ``None``
-  for invalid prefixes; a refactor that raised ``ValueError`` would
-  bubble a 500 to the client instead of the current 200 + "filter
-  ignored" behaviour. Part C4 pins the silent-reject contract.
+ for invalid prefixes; a refactor that raised ``ValueError`` would
+ bubble a 500 to the client instead of the current 200 + "filter
+ ignored" behaviour. Part C4 pins the silent-reject contract.
 * **field-aware error message** -- ``_parse_query_datetime`` raises
-  ``ValueError(f"{field} must be a valid ISO-8601 datetime")``; the
-  ``field`` interpolation lets the route layer surface
-  ``created_after`` vs ``created_before`` in the 422 problem
-  ``detail``. Part D3 asserts BOTH that ``ISO-8601`` appears AND
-  that the supplied ``field`` name appears, using two distinct
-  ``field`` values to pin the interpolation isn't hard-coded.
+ ``ValueError(f"{field} must be a valid ISO-8601 datetime")``; the
+ ``field`` interpolation lets the route layer surface
+ ``created_after`` vs ``created_before`` in the 422 problem
+ ``detail``. Part D3 asserts BOTH that ``ISO-8601`` appears AND
+ that the supplied ``field`` name appears, using two distinct
+ ``field`` values to pin the interpolation isn't hard-coded.
 * **naive vs aware tz handling** -- naive datetimes are *assumed*
-  UTC (``replace(tzinfo=UTC)``, no clock shift), while tz-aware
-  datetimes are *converted* (``astimezone(UTC)``, clock shifts).
-  Parts D4 and D5 pin both branches with hour-of-day assertions
-  that catch a refactor that conflated the two (e.g. always
-  ``replace``, which would silently corrupt non-UTC timestamps).
+ UTC (``replace(tzinfo=UTC)``, no clock shift), while tz-aware
+ datetimes are *converted* (``astimezone(UTC)``, clock shifts).
+ Parts D4 and D5 pin both branches with hour-of-day assertions
+ that catch a refactor that conflated the two (e.g. always
+ ``replace``, which would silently corrupt non-UTC timestamps).
 """
 
 from __future__ import annotations

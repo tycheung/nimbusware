@@ -1,4 +1,4 @@
-"""Timeline readouts for Phase 3 critic stages (fo143–fo146)."""
+"""Timeline readouts for Phase 3 critic stages."""
 
 from __future__ import annotations
 

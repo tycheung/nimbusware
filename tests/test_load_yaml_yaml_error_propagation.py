@@ -1,4 +1,4 @@
-"""``yaml.YAMLError`` propagation divergence at ``load_yaml`` (fo76, complement to fo75).
+"""``yaml.YAMLError`` propagation divergence at ``load_yaml``.
 
 [`load_yaml`](d:\\Hermes\\packages\\hermes_orchestrator\\merge.py) makes
 a single ``yaml.safe_load(...)`` call at
@@ -42,15 +42,15 @@ This is the **structural inversion of fo75 Part C**:
 Three parts:
 
 * **Part A** locks the loader-level reject arm -- 8 malformed YAML
-  variants each asserted to raise ``yaml.YAMLError`` AND
-  ``not isinstance(exc, (OSError, ValueError, UnicodeDecodeError))``
-  pinning the cascade-tuple non-membership inline.
+ variants each asserted to raise ``yaml.YAMLError`` AND
+ ``not isinstance(exc, (OSError, ValueError, UnicodeDecodeError))``
+ pinning the cascade-tuple non-membership inline.
 * **Part B** locks the class-hierarchy contract that *justifies* the
-  cascade divergence at the type-system level -- 5 assertions on the
-  imported ``yaml`` module (no fixtures, no I/O).
+ cascade divergence at the type-system level -- 5 assertions on the
+ imported ``yaml`` module (no fixtures, no I/O).
 * **Part C** locks the parser-integration propagation -- the structural
-  inversion of fo75 Part C; 8 malformed bodies x 2 parsers asserting
-  ``pytest.raises(yaml.YAMLError)`` per case (NOT cascade-to-default).
+ inversion of fo75 Part C; 8 malformed bodies x 2 parsers asserting
+ ``pytest.raises(yaml.YAMLError)`` per case (NOT cascade-to-default).
 
 A future "cascade-harden" refactor that adds ``yaml.YAMLError`` to the
 parsers' ``except`` tuple would flip Part C's ``pytest.raises`` to

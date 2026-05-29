@@ -18,6 +18,8 @@ packages = [
   { include = "hermes_extensions", from = "packages" },
   { include = "nimbusware_config", from = "packages" },
   { include = "nimbusware_env", from = "packages" },
+  { include = "nimbusware_iam", from = "packages" },
+  { include = "hermes_memory", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -35,6 +37,7 @@ pywebview = ">=5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"
+pytest-benchmark = ">=4"
 ruff = ">=0.8"
 mypy = ">=1.13"
 types-PyYAML = ">=6.0"
@@ -57,6 +60,11 @@ nimbusware-api = "nimbusware_api.cli:main"
 hermes-preflight = "hermes_orchestrator.preflight_cli:main"
 nimbusware-config = "nimbusware_config.cli:main"
 hermes-run-worker = "hermes_orchestrator.run_worker:main"
+hermes-memory-index = "hermes_memory.cli:main"
+hermes-memory-sync = "hermes_memory.sync_cli:main"
+hermes-memory-replay = "hermes_orchestrator.replay_cli:main"
+hermes-role-telemetry = "hermes_orchestrator.telemetry_cli:main"
+hermes-routing-suggest = "hermes_orchestrator.routing_suggestions_cli:main"
 nimbusware-run = "nimbusware_env.run_app:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
 
@@ -65,6 +73,7 @@ testpaths = ["tests"]
 pythonpath = ["packages"]
 markers = [
   "integration: requires PostgreSQL (set NIMBUSWARE_DATABASE_URL)",
+  "benchmark: pytest-benchmark fleet harness (fo206)",
 ]
 
 [tool.ruff]
@@ -88,6 +97,8 @@ packages = [
   "hermes_extensions",
   "nimbusware_config",
   "nimbusware_env",
+  "nimbusware_iam",
+  "hermes_memory",
 ]
 mypy_path = "packages"
 

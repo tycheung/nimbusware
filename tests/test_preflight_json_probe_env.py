@@ -1,4 +1,4 @@
-"""``HERMES_PREFLIGHT_JSON_PROBE`` env-layer string-arm contract (fo68, §14 #1).
+"""``HERMES_PREFLIGHT_JSON_PROBE`` env-layer string-arm contract.
 
 [`run_model_preflight`](d:\\Hermes\\packages\\hermes_orchestrator\\preflight.py)
 gates the optional ``format: json`` chat probe at line 194 via
@@ -16,20 +16,20 @@ shortcut now allows a test to confidently bypass that shortcut via
 Three parts:
 
 * **Part A** locks the truthy tuple membership (env-gate accepted ->
-  ``json_probe_latency_ms`` and ``structured_json_probe_ok`` surface in
-  the evidence dict).
+ ``json_probe_latency_ms`` and ``structured_json_probe_ok`` surface in
+ the evidence dict).
 * **Part B** locks the **two-arm contract** within the env-gate-accept
-  branch: OK arm vs FAIL arm. ``_mocked_httpx(probe_fails=True)`` makes
-  the ``/api/chat`` POST raise ``httpx.HTTPError`` which the probe's
-  ``except (httpx.HTTPError, ...)`` arm converts to ``(False, lat,
-  str(exc))``. Per-arm presence / absence of ``json_probe_latency_ms``,
-  ``json_probe_error``, ``structured_json_probe_ok``, and
-  ``structured_json_probe_skipped_or_failed`` is asserted independently.
+ branch: OK arm vs FAIL arm. ``_mocked_httpx(probe_fails=True)`` makes
+ the ``/api/chat`` POST raise ``httpx.HTTPError`` which the probe's
+ ``except (httpx.HTTPError, ...)`` arm converts to ``(False, lat,
+ str(exc))``. Per-arm presence / absence of ``json_probe_latency_ms``,
+ ``json_probe_error``, ``structured_json_probe_ok``, and
+ ``structured_json_probe_skipped_or_failed`` is asserted independently.
 * **Part C** locks the asymmetric fail-closed string-arm (env-absent +
-  whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
-  + empty / junk / near-miss / interior whitespace) by asserting that
-  **none** of the four probe-related keys / entries surface. Parallel
-  to fo65 / fo66 / fo67 Part C.
+ whitespace-padded canonical + ``"on"`` / ``"ON"`` + case-folded falsy
+ + empty / junk / near-miss / interior whitespace) by asserting that
+ **none** of the four probe-related keys / entries surface. Parallel
+ to fo65.
 
 Per-case messages ``force_on raw=<raw>: <key>`` / ``<arm>: <component>``
 / ``fail_closed raw=<raw>: <leaked_key>`` identify the failing branch +

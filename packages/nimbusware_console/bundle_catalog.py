@@ -1,4 +1,4 @@
-"""Local bundle catalog preview for the operator console (PLAN_GAP §14 #12 / fo138, fo142)."""
+"""Local bundle catalog preview for the operator console."""
 
 from __future__ import annotations
 
@@ -1045,7 +1045,7 @@ def bundle_catalog_bundles_without_id_count(repo_root: Path) -> int:
 
 
 def bundle_faiss_index_workflow_caption_note() -> str:
-    """One-line note naming the GitHub Actions workflow file (PLAN_GAP §14 #12 / fo138)."""
+    """One-line note naming the GitHub Actions workflow file."""
     return (
         f"Weekly / manual smoke: repo file ``{BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH}`` "
         "(workflow name **bundle_faiss_index**)."

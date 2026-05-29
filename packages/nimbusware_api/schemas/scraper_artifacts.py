@@ -32,9 +32,12 @@ class ScraperArtifactInventoryResponse(BaseModel):
         "local",
         "object_store_configured",
         "object_store_ready",
+        "object_store_primary",
     ] = "local"
     object_store_configured: bool = False
     object_store_ready: bool = False
+    object_store_primary: bool = False
+    object_store_local_mirror: bool = True
     object_store_timeout_seconds: int = Field(default=30, ge=1)
     object_store_delete_max_attempts: int = Field(default=1, ge=1)
     object_store_prune_requested: bool = False
@@ -42,6 +45,7 @@ class ScraperArtifactInventoryResponse(BaseModel):
     retention_execution_mode: Literal[
         "local_only",
         "local_with_object_store_mirror",
+        "object_store_primary",
     ] = "local_only"
     retention_alert_level: Literal["none", "stale_present", "stale_high"] = "none"
     entries: list[ScraperArtifactInventoryEntry]

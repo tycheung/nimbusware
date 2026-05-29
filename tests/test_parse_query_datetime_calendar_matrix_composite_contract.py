@@ -1,4 +1,4 @@
-"""``_parse_query_datetime`` calendar / time / chain composite (fo120).
+"""``_parse_query_datetime`` calendar / time / chain composite.
 
 The 12-line ``_parse_query_datetime`` helper in
 [packages/nimbusware_api/routes/runs.py](packages/nimbusware_api/routes/runs.py)
@@ -10,40 +10,40 @@ axes. fo120 extends with **20 NET-NEW** axes covering the four
 defensive surfaces that fo111 D leaves unpinned:
 
 * **Part A** -- preprocessing semantics (5 axes): whitespace-character
-  matrix beyond plain spaces, **case-sensitive** ``.replace("Z", ...)``
-  (lowercase ``"z"`` is NOT substituted), defensive ``str(value)``
-  wrapping (integer input flows in), bare-date acceptance, internal
-  whitespace strip-before-parse order.
+ matrix beyond plain spaces, **case-sensitive** ``.replace("Z", ...)``
+ (lowercase ``"z"`` is NOT substituted), defensive ``str(value)``
+ wrapping (integer input flows in), bare-date acceptance, internal
+ whitespace strip-before-parse order.
 * **Part B** -- invalid calendar matrix (5 axes): month > 12, day > 31,
-  day = 0, Feb 30, real **leap-year arithmetic** (``2020-02-29`` OK,
-  ``2021-02-29`` raises; ``2000-02-29`` OK, ``1900-02-29`` raises).
+ day = 0, Feb 30, real **leap-year arithmetic** (``2020-02-29`` OK,
+ ``2021-02-29`` raises; ``2000-02-29`` OK, ``1900-02-29`` raises).
 * **Part C** -- invalid time / offset / microsecond matrix (5 axes):
-  hour > 23, minute > 59, second > 59 (no leap-second acceptance),
-  offset > 23 hours, fractional-seconds happy + max-microsecond
-  boundary.
+ hour > 23, minute > 59, second > 59 (no leap-second acceptance),
+ offset > 23 hours, fractional-seconds happy + max-microsecond
+ boundary.
 * **Part D** -- error-message / exception-chain / field-interpolation
-  matrix (5 axes): ``created_after`` / ``created_before`` literals,
-  empty ``field=""`` raw f-string interpolation, arbitrary
-  non-allow-listed field names, **``raise ... from exc`` chain
-  preservation** (``__cause__`` survives).
+ matrix (5 axes): ``created_after`` / ``created_before`` literals,
+ empty ``field=""`` raw f-string interpolation, arbitrary
+ non-allow-listed field names, **``raise ... from exc`` chain
+ preservation** (``__cause__`` survives).
 
 KEY DIVERGENCES pinned across the composite:
 
 * Case-sensitive ``str.replace("Z", "+00:00")`` -- a refactor to
-  ``re.sub(r"[Zz]", ...)`` would silently accept lowercase ``"z"``.
+ ``re.sub(r"[Zz]", ...)`` would silently accept lowercase ``"z"``.
 * No clamping / no rollover -- ``datetime.fromisoformat`` rejects
-  out-of-range components rather than wrapping. A refactor to
-  ``dateutil.parser.parse`` would silently accept overflowed values.
+ out-of-range components rather than wrapping. A refactor to
+ ``dateutil.parser.parse`` would silently accept overflowed values.
 * Real leap-year arithmetic -- ``"2021-02-29"`` raises; a naive
-  "always accept Feb 29" refactor would silently pass non-leap years.
+ "always accept Feb 29" refactor would silently pass non-leap years.
 * Explicit ``raise ValueError(msg) from exc`` chain -- a refactor to
-  plain ``raise ValueError(msg)`` would drop ``__cause__``.
+ plain ``raise ValueError(msg)`` would drop ``__cause__``.
 * Raw f-string interpolation of ``field`` -- ANY string interpolates
-  literally without validation; ``field=""`` produces a leading-space
-  message.
+ literally without validation; ``field=""`` produces a leading-space
+ message.
 * Defensive ``str(value)`` wrapping -- non-string callers (e.g.
-  integers via lax-typed callers) coerce to string rather than raising
-  ``AttributeError``.
+ integers via lax-typed callers) coerce to string rather than raising
+ ``AttributeError``.
 
 All tests call ``_parse_query_datetime`` **directly** (no FastAPI
 ``TestClient``, no fixtures beyond pytest built-ins, no mocks). Error

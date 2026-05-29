@@ -1,4 +1,4 @@
-"""Fleet preflight history (PLAN_GAP §14 #1)."""
+"""Fleet preflight history."""
 
 from __future__ import annotations
 

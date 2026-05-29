@@ -78,6 +78,7 @@ _EXPECTED_META_KEYS = {
     "bundle_compatibility_ranking",
     "bundle_compatibility_ranking_count",
     "selected_bundle_rank",
+    "bundle_outcome",
 }
 
 

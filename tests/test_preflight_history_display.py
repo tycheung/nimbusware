@@ -1,14 +1,14 @@
-"""Tests for `nimbusware_console.preflight_history_display` (fo124).
+"""Tests for `nimbusware_console.preflight_history_display`.
 
 Covers the three pure functions consumed by the new Streamlit expander:
 
 * `preflight_history_from_timeline` (3 axes): None / non-mapping inputs,
-  missing key, non-dict ``preflight`` value, happy path.
+ missing key, non-dict ``preflight`` value, happy path.
 * `preflight_history_summary_rows` (3 axes): empty summary returns [], rows
-  match declared field order, absent keys are omitted (not rendered as "—").
+ match declared field order, absent keys are omitted (not rendered as "—").
 * `preflight_history_histogram_payload` (4 axes): raw samples win, synthetic
-  fallback from ``p95_latency_ms``, None summary returns None, summary with
-  no samples and no p95 returns the zeroed empty_histogram().
+ fallback from ``p95_latency_ms``, None summary returns None, summary with
+ no samples and no p95 returns the zeroed empty_histogram().
 """
 
 from __future__ import annotations

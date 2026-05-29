@@ -1,4 +1,4 @@
-"""``load_yaml`` root-type contract + sibling-parser cascade (fo75, precursor to fo76).
+"""``load_yaml`` root-type contract + sibling-parser cascade.
 
 [`load_yaml`](d:\\Hermes\\packages\\hermes_orchestrator\\merge.py) at
 [merge.py:19-24](d:\\Hermes\\packages\\hermes_orchestrator\\merge.py) is
@@ -7,21 +7,21 @@ orchestrator:
 
 ```python
 def load_yaml(path: Path) -> dict[str, Any]:
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not isinstance(raw, dict):
-        msg = f"YAML root must be a mapping: {path}"
-        raise ValueError(msg)
-    return cast(dict[str, Any], raw)
+ raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+ if not isinstance(raw, dict):
+ msg = f"YAML root must be a mapping: {path}"
+ raise ValueError(msg)
+ return cast(dict[str, Any], raw)
 ```
 
 Two contracts in 6 lines:
 
 1. **Returns ``dict[str, Any]``** for every successful call -- by
-   post-condition guarantee, callers can safely treat the return as a
-   mapping.
+ post-condition guarantee, callers can safely treat the return as a
+ mapping.
 2. **Raises ``ValueError``** with the operator-facing diagnostic
-   ``"YAML root must be a mapping: {path}"`` for every non-mapping
-   YAML root (list, scalar, null, empty file, tag-applied scalar).
+ ``"YAML root must be a mapping: {path}"`` for every non-mapping
+ YAML root (list, scalar, null, empty file, tag-applied scalar).
 
 The contract is directly relied on by sibling parsers like
 ``parse_escalation_workflow_block`` in
@@ -41,18 +41,18 @@ regression suite that proves behavior is preserved across the cleanup.
 Three parts:
 
 * **Part A** locks the dict-root accept arm (``isinstance(result,
-  dict)`` + inner-content preservation across mapping shapes including
-  list / scalar / nested-mapping values + Unicode round-trip).
+ dict)`` + inner-content preservation across mapping shapes including
+ list / scalar / nested-mapping values + Unicode round-trip).
 * **Part B** is the core fo75 contract -- 10 non-dict-root variants
-  (null / empty file / whitespace-only / scalar int / float / bool /
-  str / sequence-empty / sequence-non-empty / sequence-of-dicts /
-  tag-applied-scalar) each asserted to raise ``ValueError`` with the
-  operator-facing diagnostic prefix AND the file path in the message.
+ (null / empty file / whitespace-only / scalar int / float / bool /
+ str / sequence-empty / sequence-non-empty / sequence-of-dicts /
+ tag-applied-scalar) each asserted to raise ``ValueError`` with the
+ operator-facing diagnostic prefix AND the file path in the message.
 * **Part C** is the **tie-in to fo76** -- 5-block matrix x 2 parsers
-  pinning that both sibling parsers cascade to their respective
-  defaults for every non-dict YAML root (because ``load_yaml`` raises
-  ``ValueError``, caught by the parser's ``try/except``, returning
-  the default).
+ pinning that both sibling parsers cascade to their respective
+ defaults for every non-dict YAML root (because ``load_yaml`` raises
+ ``ValueError``, caught by the parser's ``try/except``, returning
+ the default).
 
 Per-case messages ``accept body=<body>: <component>`` /
 ``reject body=<body>: <component>`` /

@@ -1,4 +1,4 @@
-"""Run list pagination operator helpers (PLAN_GAP §14 #3, #11).
+"""Run list pagination operator helpers.
 
 Pure functions for captions that mirror ``GET /v1/runs`` list semantics
 (``total``, ``has_more``, ``next_cursor``, RFC 5988 ``Link``).

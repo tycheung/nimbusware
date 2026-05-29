@@ -6,13 +6,13 @@ instructions / capability profile / boundary statement / allowed tools /
 success metrics / probation status — plus a monotonic ``version`` for
 optimistic-concurrency on the new write API:
 
-    - ``instructions``       str  (≤ 8000 chars, NFC-normalized)
-    - ``capability_profile`` str  (≤ 2000)
-    - ``boundary_statement`` str  (≤ 2000)
-    - ``allowed_tools``      list[str]  (≤ 50 entries; each ≤ 100 chars)
-    - ``success_metrics``    list[str]  (≤ 20 entries; each ≤ 200 chars)
-    - ``probation_status``   Literal["probation", "promoted", "shelved"]
-    - ``version``            int (≥ 1, default 1 when absent)
+ - ``instructions`` str (≤ 8000 chars, NFC-normalized)
+ - ``capability_profile`` str (≤ 2000)
+ - ``boundary_statement`` str (≤ 2000)
+ - ``allowed_tools`` list[str] (≤ 50 entries; each ≤ 100 chars)
+ - ``success_metrics`` list[str] (≤ 20 entries; each ≤ 200 chars)
+ - ``probation_status`` Literal["probation", "promoted", "shelved"]
+ - ``version`` int (≥ 1, default 1 when absent)
 
 All new fields are OPTIONAL on disk so minimal ``shelves.yaml`` entries keep
 loading unchanged.

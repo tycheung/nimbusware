@@ -1,4 +1,4 @@
-"""``_maybe_emit_critique_gate_fail_findings`` composite cross-cuts (fo103).
+"""``_maybe_emit_critique_gate_fail_findings`` composite cross-cuts.
 
 The 3-arm loop at [pipeline.py:901-958] is already covered by fo89 for the
 per-stage permutation matrix, skip branches, payload shape, and the 4
@@ -7,36 +7,36 @@ supporting pure helpers (see
 remaining unpinned cross-cuts that fo89 did not reach:
 
 * ``eff=None`` public default fallback path -- every fo89 test passes an
-  explicit ``eff=effective_universal_critique(...)``; the None-fallback
-  via ``_effective_universal_critique_for_run`` is unpinned.
+ explicit ``eff=effective_universal_critique(...)``; the None-fallback
+ via ``_effective_universal_critique_for_run`` is unpinned.
 * Strict iteration ORDER -- fo89 A1 checks set equality on stage_names;
-  the literal loop order ``[impl, tw, planner]`` is unpinned.
+ the literal loop order ``[impl, tw, planner]`` is unpinned.
 * Multi-call idempotence -- fo89 is all single-call; double/triple-call
-  must remain a no-op (per-stage dedup).
+ must remain a no-op (per-stage dedup).
 * ``_strictness_context`` seam -- fo89 spot-checks emitted payload shape
-  but does NOT pin (a) ctx-fetched-once invariant, (b) ``context=`` kwarg
-  routing, or (c) ctx-instance-shared across iterations.
+ but does NOT pin (a) ctx-fetched-once invariant, (b) ``context=`` kwarg
+ routing, or (c) ctx-instance-shared across iterations.
 * Rows-refresh in-loop invariant at [pipeline.py:958] -- fo89 A4
-  implicitly relies on this for per-stage isolation but never directly
-  observes the seam (marquee gap fo102 flagged as Next-slice candidate 1).
+ implicitly relies on this for per-stage isolation but never directly
+ observes the seam (marquee gap fo102 flagged as Next-slice candidate 1).
 
 fo103 closes those gaps via 4 parts spanning 20 axes (~30 assertions,
 source unchanged):
 
 * **Part A** -- ``eff=None`` fallback ladder (5 axes -- default/no env /
-  impl env on / all 3 envs on / parity with explicit eff / resolver
-  called exactly once per call).
+ impl env on / all 3 envs on / parity with explicit eff / resolver
+ called exactly once per call).
 * **Part B** -- iteration order + multi-call idempotence (5 axes --
-  strict list order independent of gate-append order / double-call /
-  triple-call / between-call new FAIL gate / explicit-eff parity).
+ strict list order independent of gate-append order / double-call /
+ triple-call / between-call new FAIL gate / explicit-eff parity).
 * **Part C** -- ``_strictness_context`` propagation seam (5 axes -- ctx
-  fetched once across 3 emits / once across 1 emit / STILL once on
-  zero-emit / threaded as ``context=`` kwarg / same ctx instance across
-  3 emissions).
+ fetched once across 3 emits / once across 1 emit / STILL once on
+ zero-emit / threaded as ``context=`` kwarg / same ctx instance across
+ 3 emissions).
 * **Part D** -- rows-refresh in-loop invariant (5 axes -- 3-emit -> 4
-  list_run_events calls / zero-emit -> 1 / 1-emit -> 2 / tw iteration
-  sees impl finding row / refresh-AFTER-append ordering via dual-spy
-  ``attach_mock``).
+ list_run_events calls / zero-emit -> 1 / 1-emit -> 2 / tw iteration
+ sees impl finding row / refresh-AFTER-append ordering via dual-spy
+ ``attach_mock``).
 """
 
 from __future__ import annotations

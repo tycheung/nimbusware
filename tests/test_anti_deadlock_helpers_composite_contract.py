@@ -1,27 +1,25 @@
-"""``anti_deadlock.py`` pure-helpers composite (fo116).
+"""``anti_deadlock.py`` pure-helpers composite.
 
 Three module-level surfaces in
 [anti_deadlock.py:12-38](packages/hermes_orchestrator/anti_deadlock.py)
 form the lower layer beneath
-[`should_emit_anti_deadlock_escalation`](packages/hermes_orchestrator/anti_deadlock.py)
-(fo104) and
-[`load_anti_deadlock_settings`](packages/hermes_orchestrator/anti_deadlock.py)
-(fo72):
+[`should_emit_anti_deadlock_escalation`](packages/hermes_orchestrator/anti_deadlock.py) and
+[`load_anti_deadlock_settings`](packages/hermes_orchestrator/anti_deadlock.py):
 
 * ``_first_run_created_at(rows)`` (lines 24-33) -- extracts the FIRST
-  ``run.created`` event's ``occurred_at`` as a UTC-normalized datetime
-  via a 4-arm structure: sort by ``store_seq``, skip non-run.created,
-  skip non-datetime ``occurred_at``, then tz-naive vs tz-aware branch.
+ ``run.created`` event's ``occurred_at`` as a UTC-normalized datetime
+ via a 4-arm structure: sort by ``store_seq``, skip non-run.created,
+ skip non-datetime ``occurred_at``, then tz-naive vs tz-aware branch.
 * ``count_progress_events(rows)`` (lines 36-38) -- counts events whose
-  ``event_type`` is NOT in ``_PROGRESS_IGNORE`` (fail-open semantics).
+ ``event_type`` is NOT in ``_PROGRESS_IGNORE`` (fail-open semantics).
 * ``_PROGRESS_IGNORE`` (lines 12-21) -- module-level ``frozenset`` of
-  6 preflight/bootstrap event types.
+ 6 preflight/bootstrap event types.
 
 Existing coverage is sampled only:
 
 * [tests/test_anti_deadlock.py](tests/test_anti_deadlock.py) -- 3 tests,
-  ALL of which call ``should_emit_anti_deadlock_escalation``; none
-  call the three helpers directly.
+ ALL of which call ``should_emit_anti_deadlock_escalation``; none
+ call the three helpers directly.
 
 No direct tests for: empty rows, no-run.created fallback, non-datetime
 ``occurred_at`` (4 sub-types), multi-row skip-then-find, tz-aware vs
@@ -35,44 +33,44 @@ parts / 20 axes (source unchanged).
 Five KEY DIVERGENCES are pinned across the matrix:
 
 * **tz-naive (assumed-UTC) vs tz-aware (shifted-to-UTC)** -- for the
-  SAME wall-clock ``12:00:00``, a naive datetime returns
-  ``12:00:00 UTC`` while an aware datetime in ``+05:00`` returns
-  ``07:00:00 UTC``. A refactor unifying both branches to
-  ``astimezone(UTC)`` would crash on naive datetimes; unifying to
-  ``replace(tzinfo=UTC)`` would silently mis-shift aware datetimes.
-  Part B B3 pins both with co-located evidence.
+ SAME wall-clock ``12:00:00``, a naive datetime returns
+ ``12:00:00 UTC`` while an aware datetime in ``+05:00`` returns
+ ``07:00:00 UTC``. A refactor unifying both branches to
+ ``astimezone(UTC)`` would crash on naive datetimes; unifying to
+ ``replace(tzinfo=UTC)`` would silently mis-shift aware datetimes.
+ Part B B3 pins both with co-located evidence.
 * **``int``-coerced numeric sort vs lexicographic sort** -- sort key
-  is ``int(x["store_seq"])``. For ``store_seq`` values ``"10"`` and
-  ``"2"``, lexicographic sort orders ``"10"`` BEFORE ``"2"`` (inverse
-  of numeric). A refactor dropping the ``int(...)`` cast would flip
-  this. Part B B5 pins it.
+ is ``int(x["store_seq"])``. For ``store_seq`` values ``"10"`` and
+ ``"2"``, lexicographic sort orders ``"10"`` BEFORE ``"2"`` (inverse
+ of numeric). A refactor dropping the ``int(...)`` cast would flip
+ this. Part B B5 pins it.
 * **Unknown event_type counts as PROGRESS (fail-open)** --
-  ``count_progress_events`` uses ``not in _PROGRESS_IGNORE``, so any
-  novel event type is counted. A refactor swapping to an allowlist
-  (``in _PROGRESS_ALLOW``) would flip the boundary. Part C C5 pins
-  via synthetic event types.
+ ``count_progress_events`` uses ``not in _PROGRESS_IGNORE``, so any
+ novel event type is counted. A refactor swapping to an allowlist
+ (``in _PROGRESS_ALLOW``) would flip the boundary. Part C C5 pins
+ via synthetic event types.
 * **``"run.created"`` is in BOTH the ignore set AND extracted by
-  ``_first_run_created_at``** -- same row, two purposes. A refactor
-  "deduplicating" the two helpers would have to pick one purpose and
-  break the other. Part D D3 pins via single-row co-evaluation.
+ ``_first_run_created_at``** -- same row, two purposes. A refactor
+ "deduplicating" the two helpers would have to pick one purpose and
+ break the other. Part D D3 pins via single-row co-evaluation.
 * **``_PROGRESS_IGNORE`` is a ``frozenset``, not ``set``** --
-  immutability of the module-level constant prevents accidental
-  mutation by importers. A refactor swapping to a regular ``set``
-  would silently allow ``_PROGRESS_IGNORE.add("stage.started")`` and
-  break the count contract globally. Part D D1 pins via
-  ``isinstance(...)`` check.
+ immutability of the module-level constant prevents accidental
+ mutation by importers. A refactor swapping to a regular ``set``
+ would silently allow ``_PROGRESS_IGNORE.add("stage.started")`` and
+ break the count contract globally. Part D D1 pins via
+ ``isinstance(...)`` check.
 
 Four parts:
 
 * **Part A** -- ``_first_run_created_at`` empty / no-match / 4-type
-  isinstance guard / valid datetime / multi-row skip-then-find.
+ isinstance guard / valid datetime / multi-row skip-then-find.
 * **Part B** -- ``_first_run_created_at`` UTC normalization (aware
-  vs naive divergence) + sort order (unsorted + int-cast on str).
+ vs naive divergence) + sort order (unsorted + int-cast on str).
 * **Part C** -- ``count_progress_events`` empty / 6-member sweep /
-  4-sample non-ignore / 7-row mixed / fail-open KEY DIVERGENCE.
+ 4-sample non-ignore / 7-row mixed / fail-open KEY DIVERGENCE.
 * **Part D** -- ``_PROGRESS_IGNORE`` frozenset type + exact 6-element
-  set + cross-helper run.created dual-purpose + cross-helper
-  no-run.created axiom + cross-helper all-bootstrap scenario.
+ set + cross-helper run.created dual-purpose + cross-helper
+ no-run.created axiom + cross-helper all-bootstrap scenario.
 """
 
 from __future__ import annotations

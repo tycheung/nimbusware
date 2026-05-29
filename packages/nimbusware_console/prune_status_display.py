@@ -1,4 +1,4 @@
-"""Prune status card helpers for Streamlit (plan §14 #11 / fo126 follow-up to fo125 #10).
+"""Prune status card helpers for Streamlit (plan §14 #11.
 
 Bridges the JSON state file written by ``scripts/prune_scraper_artifacts.py``
 (``--summary-path`` / ``HERMES_PRUNE_STATUS_PATH``) to the Streamlit console.

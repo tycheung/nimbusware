@@ -1,4 +1,4 @@
-"""Implementation-critique LLM seam direct contract (fo94).
+"""Implementation-critique LLM seam direct contract.
 
 fo93's Next-slice item (6) flagged this gap. The impl variant's LLM call
 site lives **inline** in ``execute_writer_verifier_pass`` at
@@ -23,14 +23,14 @@ fo94 closes the gap via 4 parts spanning 17 axes (~29 assertions, source
 unchanged):
 
 * **Part A** -- control-flow path matrix (5 axes -- all-off / stub-only /
-  no-model / LLM-emitted / LLM-failed+stub-fallback).
+ no-model / LLM-emitted / LLM-failed+stub-fallback).
 * **Part B** -- argument propagation mirroring fo91 Part C (5 axes --
-  ``base_url`` default/override + ``timeout_seconds`` default/float-cast +
-  ``run_id``/``model_id`` verbatim pass-through).
+ ``base_url`` default/override + ``timeout_seconds`` default/float-cast +
+ ``run_id``/``model_id`` verbatim pass-through).
 * **Part C** -- ``log_snippet`` 60-line truncation contract (4 axes --
-  empty / single-line / exactly-60 / 100-line truncated).
+ empty / single-line / exactly-60 / 100-line truncated).
 * **Part D** -- ``verifier_exit_code`` propagation from
-  ``run_writer_verifier_bundle``'s return tuple (3 axes -- 0 / 1 / 42).
+ ``run_writer_verifier_bundle``'s return tuple (3 axes -- 0 / 1 / 42).
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from hermes_orchestrator.workflow_universal_critique import EffectiveUniversalCr
 
 
 def _make_eff(**overrides: bool) -> EffectiveUniversalCritique:
-    """Reused from fo90/fo91/fo92/fo93: all 17 flags default False."""
+    """Reused from fo90."""
     defaults: dict[str, bool] = {
         "impl_llm": False,
         "impl_stub": False,

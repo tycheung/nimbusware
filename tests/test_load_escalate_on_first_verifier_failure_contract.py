@@ -1,4 +1,4 @@
-"""``load_escalate_on_first_verifier_failure`` direct contract (fo99).
+"""``load_escalate_on_first_verifier_failure`` direct contract.
 
 The YAML reader at [verifier_escalation.py:10-24] is the workflow-profile-YAML
 coercion-ladder twin of the fo62-fo74 env-layer matrix. Existing coverage is
@@ -16,16 +16,16 @@ fo99 closes 4 unpinned surfaces via 4 parts spanning 17 axes
 (~24 assertions, source unchanged):
 
 * **Part A** -- structural type-guard ladder (4 axes -- file missing /
-  root not dict (ValueError propagates) / verification key missing /
-  verification not dict).
+ root not dict (ValueError propagates) / verification key missing /
+ verification not dict).
 * **Part B** -- bool happy-path + missing-key fallback (3 axes -- bool True /
-  bool False / target key missing under verification dict).
+ bool False / target key missing under verification dict).
 * **Part C** -- string truthy set + ``.strip().lower()`` normalization
-  (5 axes -- literal "1"/"true"/"yes"/"on" / case-insensitive / whitespace-
-  wrapped / combined case+whitespace / empty string lower-bound).
+ (5 axes -- literal "1"/"true"/"yes"/"on" / case-insensitive / whitespace-
+ wrapped / combined case+whitespace / empty string lower-bound).
 * **Part D** -- string falsy + non-bool/non-string type rejection (5 axes --
-  literal "0"/"false"/"no"/"off" / arbitrary non-truthy strings / int 1+0 /
-  float 1.0 / list+null).
+ literal "0"/"false"/"no"/"off" / arbitrary non-truthy strings / int 1+0 /
+ float 1.0 / list+null).
 """
 
 from __future__ import annotations

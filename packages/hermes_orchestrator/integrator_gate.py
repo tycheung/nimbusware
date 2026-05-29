@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+from hermes_extensions.bundle_memory import blend_bundle_rank_score
 from hermes_extensions.catalog import load_bundle_catalog_content
 from hermes_extensions.phase2 import ModuleIntegrator
 from hermes_orchestrator.merge import load_yaml
@@ -278,6 +279,7 @@ def rank_bundle_compatibility_candidates(
     integrator: ModuleIntegrator,
     config_materializer: Any | None = None,
     limit: int = 10,
+    bundle_outcome_store: Any | None = None,
 ) -> list[dict[str, Any]]:
     """Score every catalog bundle against ``project_tags`` (descending, capped).
 
@@ -323,5 +325,14 @@ def rank_bundle_compatibility_candidates(
             if title:
                 row["title"] = title
         rows.append(row)
+    stats = bundle_outcome_store.success_stats() if bundle_outcome_store is not None else {}
+    if stats:
+        for row in rows:
+            base = float(row.get("score", 0.0))
+            row["score"] = blend_bundle_rank_score(
+                base,
+                bundle_id=str(row.get("bundle_id", "")),
+                stats=stats,
+            )
     rows.sort(key=lambda r: (-float(r.get("score", 0.0)), str(r.get("bundle_id", ""))))
     return rows[:cap]
