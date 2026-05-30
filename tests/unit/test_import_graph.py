@@ -95,3 +95,38 @@ def test_enterprise_console_uses_shared_http_client() -> None:
     text = path.read_text(encoding="utf-8")
     assert "import httpx" not in text
     assert "nimbusware_client.http" in text
+
+
+def test_console_does_not_import_httpx_directly() -> None:
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+    offenders: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        if "import httpx" in text:
+            rel = path.relative_to(root)
+            offenders.append(str(rel))
+    assert not offenders, "\n".join(offenders)
+
+
+def test_run_detail_sections_do_not_star_import() -> None:
+    root = (
+        Path(__file__).resolve().parents[2]
+        / "packages"
+        / "nimbusware_console"
+        / "pages"
+        / "run_detail"
+    )
+    skip = {
+        "_imports.py",
+        "_imports_common.py",
+        "_imports_display_a.py",
+        "_imports_display_b.py",
+    }
+    offenders: list[str] = []
+    for path in sorted(root.glob("*.py")):
+        if path.name in skip:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "from nimbusware_console.pages.run_detail._imports import *" in text:
+            offenders.append(path.name)
+    assert not offenders, "\n".join(offenders)

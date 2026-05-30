@@ -10,6 +10,9 @@ def main() -> None:
     import uvicorn
 
     host = __import__("os").environ.get("HERMES_API_HOST", "0.0.0.0")
+    from nimbusware_env.admin_token import require_non_default_admin_token_for_host
+
+    require_non_default_admin_token_for_host(host)
     uvicorn.run(
         "nimbusware_api.app:app",
         host=host,

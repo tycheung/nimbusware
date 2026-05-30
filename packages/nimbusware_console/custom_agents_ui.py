@@ -3,8 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import httpx
 import streamlit as st
+
+from nimbusware_client.http import HTTPError
 
 from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
 from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
@@ -84,7 +85,7 @@ def _save_prompt(repo_root: Path, agent: CustomAgent, prompt: str) -> None:
             )
             if resp.status_code < 400:
                 return
-        except httpx.HTTPError:
+        except HTTPError:
             pass
     reg = load_registry_local(repo_root)
     updated = CustomAgent(

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_force_off, env_force_on
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
 
 
@@ -69,10 +69,9 @@ def parallel_writers_enabled(
     config_materializer: Any | None = None,
 ) -> bool:
     """``HERMES_PARALLEL_WRITERS=1`` forces on; ``0``/``false``/``no`` forces off."""
-    env_raw = os.environ.get("HERMES_PARALLEL_WRITERS", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("HERMES_PARALLEL_WRITERS"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("HERMES_PARALLEL_WRITERS"):
         return True
     wf = parse_parallel_writers_workflow_block(
         repo_root,
@@ -88,10 +87,9 @@ def test_writer_stage_enabled(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    env_raw = os.environ.get("HERMES_TEST_WRITER_STAGE", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("HERMES_TEST_WRITER_STAGE"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("HERMES_TEST_WRITER_STAGE"):
         return True
     wf = parse_parallel_writers_workflow_block(
         repo_root,
@@ -107,10 +105,9 @@ def test_writer_llm_body_enabled(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    env_raw = os.environ.get("HERMES_TEST_WRITER_LLM_BODY", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("HERMES_TEST_WRITER_LLM_BODY"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("HERMES_TEST_WRITER_LLM_BODY"):
         return True
     wf = parse_parallel_writers_workflow_block(
         repo_root,
@@ -126,10 +123,9 @@ def test_writer_llm_stub_fallback(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    env_raw = os.environ.get("HERMES_TEST_WRITER_LLM_STUB", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("HERMES_TEST_WRITER_LLM_STUB"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("HERMES_TEST_WRITER_LLM_STUB"):
         return True
     wf = parse_parallel_writers_workflow_block(
         repo_root,

@@ -4,12 +4,17 @@ from __future__ import annotations
 
 import json
 import math
-import os
 import time
 from typing import Any
 from urllib.parse import urljoin
 
 import httpx
+
+from nimbusware_env.env_flags import (
+    hermes_preflight_json_probe_enabled,
+    hermes_preflight_latency_sample_count,
+    hermes_skip_preflight_enabled,
+)
 
 
 class PreflightError(RuntimeError):
@@ -17,12 +22,7 @@ class PreflightError(RuntimeError):
 
 
 def _latency_sample_count() -> int:
-    raw = (os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES") or "1").strip()
-    try:
-        n = int(raw)
-    except ValueError:
-        n = 1
-    return min(max(n, 1), 20)
+    return hermes_preflight_latency_sample_count()
 
 
 def _nearest_rank_p95(samples: list[int]) -> int:
@@ -112,7 +112,7 @@ def run_model_preflight(
 
     ``used_primary`` is False when a fallback tag was selected first.
     """
-    if os.environ.get("HERMES_SKIP_PREFLIGHT", "").lower() in ("1", "true", "yes"):
+    if hermes_skip_preflight_enabled():
         return (
             primary_model_id,
             {
@@ -191,7 +191,7 @@ def run_model_preflight(
         if evidence["context_tokens"] >= min_ctx:
             checks_passed.append("context_budget_ok")
 
-    if os.environ.get("HERMES_PREFLIGHT_JSON_PROBE", "").lower() in ("1", "true", "yes"):
+    if hermes_preflight_json_probe_enabled():
         ok, lat, err = _optional_json_probe(
             base_url=base_url,
             model=selected,

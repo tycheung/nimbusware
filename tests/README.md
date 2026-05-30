@@ -1,0 +1,25 @@
+# Test layout
+
+Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root `pyproject.toml`).
+
+| Directory | Purpose |
+|-----------|---------|
+| `tests/unit/` | Default CI bulk — pure helpers, contracts, env wiring |
+| `tests/api/` | FastAPI route and OpenAPI tests |
+| `tests/console/` | Admin console display / explainer behavior |
+| `tests/orchestrator/` | `RunOrchestrator` integration paths |
+| `tests/integration/` | Postgres-marked (`-m integration`) |
+| `tests/e2e/` | Operator smoke checks |
+| `tests/benchmark/` | `pytest-benchmark` fleet preflight |
+
+## Conventions
+
+- Add new tests under the themed folder above, not at the `tests/` root.
+- Mark slow suites with `@pytest.mark.slow`; integration with `@pytest.mark.integration`.
+- Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `nimbusware_env.admin_token` instead of hardcoding dev token strings.
+
+## CI subsets
+
+- Default: `pytest tests -m "not integration and not slow"`
+- Integration job: `-m integration`
+- Weekly slow: `-m slow`

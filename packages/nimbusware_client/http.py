@@ -4,6 +4,7 @@ import os
 from typing import Any
 
 import httpx
+from httpx import HTTPError, Response
 
 from nimbusware_env.admin_token import nimbusware_admin_token
 from nimbusware_iam.constants import API_KEY_HEADER

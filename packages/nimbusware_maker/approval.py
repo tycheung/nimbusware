@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from agent_core.models import EventType
+from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
 
 STAGE_PLAN_APPROVED = "slice.plan.approved"
 STAGE_SLICE_PENDING = "slice.pending"
@@ -14,7 +14,7 @@ STAGE_WORKSPACE_REVERTED = "workspace.reverted"
 
 
 def slice_auto_advance_enabled(metadata: dict[str, Any] | None) -> bool:
-    if os.environ.get("HERMES_SLICE_AUTO_ADVANCE", "1").lower() in ("0", "false", "no"):
+    if not hermes_slice_auto_advance_enabled():
         return False
     if isinstance(metadata, dict):
         maker = metadata.get("maker_approval")

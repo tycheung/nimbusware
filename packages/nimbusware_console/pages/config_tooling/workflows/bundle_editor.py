@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import httpx
+from nimbusware_client.http import HTTPError
 
 from nimbusware_client.http import admin_token_headers, get_json, patch_response
 
@@ -25,7 +25,7 @@ def render_workflows_bundle_editor_section() -> None:
                     timeout=10.0,
                 )
                 st.success("Loaded bundle catalog from API.")
-            except httpx.HTTPError as _bc_exc:
+            except HTTPError as _bc_exc:
                 st.error(f"API error: {_bc_exc}")
         _bc_catalog = st.session_state.get("hermes_bundle_edit_catalog")
         if not isinstance(_bc_catalog, dict):
@@ -79,5 +79,5 @@ def render_workflows_bundle_editor_section() -> None:
                     )
                     st.session_state["hermes_bundle_edit_catalog"] = _bc_patch.json()
                     st.success("Bundle catalog updated.")
-                except httpx.HTTPError as _bc_patch_exc:
+                except HTTPError as _bc_patch_exc:
                     st.error(f"PATCH failed: {_bc_patch_exc}")

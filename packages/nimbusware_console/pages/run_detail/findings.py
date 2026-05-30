@@ -2,12 +2,25 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
+from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_client.http import get_json
 
-from nimbusware_console.pages.run_detail._imports import *  # noqa: F403
+from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
+from nimbusware_console.pages.run_detail._imports_display_a import (
+    findings_empty_caption,
+    findings_export_filename_slug,
+    findings_export_json,
+    findings_list_from_response,
+    findings_operator_metrics,
+    findings_operator_metrics_caption,
+    findings_operator_metrics_export_json,
+    findings_operator_metrics_table_rows,
+    findings_operator_metrics_table_rows_csv,
+    findings_table_rows,
+    findings_table_rows_csv,
+)
 
 
 def render_run_detail_findings(run_id: str) -> None:
@@ -99,5 +112,5 @@ def render_run_detail_findings(run_id: str) -> None:
                         )
             with st.expander("Raw findings JSON", expanded=False):
                 st.json(_find_body)
-        except httpx.HTTPError as exc:
+        except HTTPError as exc:
             st.error(f"API error: {exc}")

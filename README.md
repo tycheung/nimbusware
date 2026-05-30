@@ -39,11 +39,15 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
 | **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
-| **Desktop** | `nimbusware_env` | `nimbusware-run` → Maker (default); `nimbusware-admin` → Admin Console; `nimbusware-launcher` |
+| **Projections** | `nimbusware_projections` | Pure event → timeline read models (no API import from orchestrator) |
+| **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
+| **Desktop / env** | `nimbusware_env` | Edition gate, `env_flags`, admin token guards, desktop launchers |
 
 Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`).
 
-Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). See [`.env.example`](.env.example).
+Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
+
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map), [PLAN_GAP.md](PLAN_GAP.md) (sprint board), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout + Lane R status).
 
 ## Hermes orchestration (what the engine does)
 
@@ -54,7 +58,7 @@ Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent ru
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
-- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs pause for plan/slice approval unless auto-advance is enabled
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
 - **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses allowlisted tools instead of a single-shot writer stub
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
@@ -78,7 +82,9 @@ packages/
   hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
   nimbusware_iam/       Enterprise IAM
-  nimbusware_env/       Edition gate, desktop runners
+  nimbusware_client/    Shared HTTP client for Maker + Admin UIs
+  nimbusware_projections/  Timeline read-model helpers
+  nimbusware_env/       Edition gate, env_flags, desktop runners
 configs/                Workflow YAML, personas, bundles (seed / gitops review)
 scripts/                Install, FAISS build, workers, e2e smoke, runbooks
 tests/                  Pytest suite (~2,436 tests; unit/api/console/orchestrator/integration)
@@ -198,7 +204,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
-- Approval mode sets `maker_approval.enabled` on runs with requirements; disable auto chain with `HERMES_SLICE_AUTO_ADVANCE=0`
+- Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `HERMES_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
 
 **Admin unlock (optional)**
 
@@ -341,12 +347,16 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Testing
 
+Layout and CI subsets: [`tests/README.md`](tests/README.md).
+
 ```bash
 poetry run pytest tests/ -q
 # CI-style unit subset (no Postgres integration, no slow tests):
 poetry run pytest tests/ -q -m "not integration and not slow"
 # Optional fleet benchmarks:
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
+# Targeted guards (import graph, env_flags, admin token):
+poetry run pytest tests/unit/test_import_graph.py tests/unit/test_env_flags.py tests/unit/test_admin_token.py -q
 ```
 
 Install optional local hooks: `pip install pre-commit && pre-commit install` (runs ruff + whitespace checks).
@@ -362,13 +372,13 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 | `NIMBUSWARE_API_BASE` | UI → API URL |
 | `NIMBUSWARE_API_KEY` | Enterprise Maker user key (`maker_user` scope) |
 | `NIMBUSWARE_UI` | Desktop shell: `maker` (default) or `admin` / `console` |
-| `NIMBUSWARE_ADMIN_TOKEN` | Admin Console sign-in + admin API routes; default dev value in `.env.example` — search `SEARCH_AND_REPLACE_BEFORE_PROD` before production |
+| `NIMBUSWARE_ADMIN_TOKEN` | Admin Console sign-in + admin API routes; default dev value in `.env.example` — change before binding API to non-loopback hosts (CLI blocks dev default on `0.0.0.0` / public interfaces) |
 | `NIMBUSWARE_ADMIN_CONSOLE_URL` | Maker sidebar link target for Open Admin Console (default `http://127.0.0.1:8502`) |
 | `NIMBUSWARE_MAKER_URL` | Admin Console deep link back to Maker (default `http://127.0.0.1:8501`) |
 | `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
 | `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
 | `HERMES_USE_LLM` | Enable LLM-backed stages |
-| `HERMES_SLICE_AUTO_ADVANCE` | `0` pauses micro-slice chain for maker approval |
+| `HERMES_SLICE_AUTO_ADVANCE` | Default **on** (unset or `1`); set `0` to pause micro-slice chain for maker approval |
 | `HERMES_SLICE_IMPLEMENT` | Set to `agent` for allowlisted tool-based slice implement |
 | `HERMES_RUN_DISPATCH` | `redis` or in-memory queue for workers |
 | `HERMES_REDIS_URL` | Redis URL when dispatch=redis |

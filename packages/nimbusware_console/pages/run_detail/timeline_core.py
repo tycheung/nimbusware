@@ -2,19 +2,31 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
+from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_client.http import get_json
 
-from nimbusware_console.pages.run_detail._imports import *  # noqa: F403
+from nimbusware_console.pages.run_detail._imports_common import datetime, json, st, timezone
+from nimbusware_console.pages.run_detail._imports_display_b import (
+    timeline_events_export_filename_slug,
+    timeline_events_export_json,
+    timeline_events_from_body,
+    timeline_events_operator_metrics,
+    timeline_events_operator_metrics_caption,
+    timeline_events_operator_metrics_export_json,
+    timeline_events_operator_metrics_table_rows,
+    timeline_events_operator_metrics_table_rows_csv,
+    timeline_events_table_rows,
+    timeline_events_table_rows_csv,
+)
 
 
 def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] | None:
     if st.button("Load timeline") and run_id.strip():
         try:
             data = get_json(f"/runs/{run_id.strip()}/timeline", timeout=30.0)
-        except httpx.HTTPError as exc:
+        except HTTPError as exc:
             st.error(f"API error: {exc}")
             return None
         events = timeline_events_from_body(data)

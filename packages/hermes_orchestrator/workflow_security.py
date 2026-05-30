@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_force_off, env_force_on
 from hermes_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
@@ -24,10 +24,9 @@ def security_scan_metadata_on_verify_enabled(
       ``0`` / ``false`` / ``no`` disables attach even when workflow is on (ops kill-switch).
     When unset, follow ``security_scan_metadata_on_verify`` on the frozen workflow YAML.
     """
-    env_raw = os.environ.get("HERMES_ATTACH_SECURITY_SCAN_METADATA", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("HERMES_ATTACH_SECURITY_SCAN_METADATA"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("HERMES_ATTACH_SECURITY_SCAN_METADATA"):
         return True
     return parse_security_scan_metadata_on_verify_workflow(
         repo_root,

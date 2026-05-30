@@ -44,7 +44,7 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 | `nimbusware_iam` | Enterprise tenants + API keys (`maker_user` / `maker_admin`) |
 | `nimbusware_maker` | User product UI |
 | `nimbusware_console` | Admin Console (config, fleet, deep timeline) |
-| `nimbusware_env` | Edition gate, desktop launchers, dotenv |
+| `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
 
 ## Editions
 

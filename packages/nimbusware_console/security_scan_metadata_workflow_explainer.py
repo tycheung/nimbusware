@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+from nimbusware_console.components.operator_metrics import (
+    FIELD_VALUE_COLUMNS,
+    field_value_table_rows_csv,
+    mapping_export_json,
+    mapping_to_sorted_table_rows,
+    sequence_export_json,
+    table_rows_csv,
+)
 import csv
 import json
 import os
@@ -317,8 +325,6 @@ def security_scan_metadata_export_filename_slug() -> str:
     return "security_scan_metadata"
 
 
-_SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
 
 def _security_scan_metadata_explainer_cell(value: Any) -> str:
     if value is None:
@@ -331,25 +337,13 @@ def _security_scan_metadata_explainer_cell(value: Any) -> str:
 def security_scan_metadata_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(payload, Mapping):
-        return []
-    rows: list[dict[str, str]] = []
-    for key in sorted(str(k) for k in payload.keys()):
-        rows.append(
-            {
-                "field": key,
-                "value": _security_scan_metadata_explainer_cell(payload.get(key)),
-            },
-        )
-    return rows
+    return mapping_to_sorted_table_rows(payload, _security_scan_metadata_explainer_cell)
 
 
 def security_scan_metadata_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(payload, Mapping):
-        return "{}"
-    return json.dumps(dict(payload), indent=2, ensure_ascii=False)
+    return mapping_export_json(payload)
 
 
 def security_scan_metadata_explainer_table_rows_csv(
@@ -374,11 +368,6 @@ def security_scan_metadata_explainer_table_rows_csv(
             )
     return buf.getvalue()
 
-
-_SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
-)
 
 
 def security_scan_metadata_workflow_explainer_operator_metrics(
@@ -468,9 +457,7 @@ def security_scan_metadata_workflow_explainer_operator_metrics_table_rows(
 def security_scan_metadata_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
+    return mapping_export_json(metrics)
 
 
 def security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv(

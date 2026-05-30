@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import httpx
+from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_console.pages import _state as rl
@@ -62,7 +62,7 @@ def render_preflight_fleet_section() -> None:
                     _pairs = preflight_pairs_from_history_response(_hist_body)
                     st.session_state[rl._PREFLIGHT_TREND_HISTORY_BODY] = _hist_body
                     st.session_state.pop(rl._PREFLIGHT_TREND_ERR, None)
-                except httpx.HTTPError as _exc:
+                except HTTPError as _exc:
                     _pairs = []
                     _trend_fetch_errs.append(str(_exc))
                     st.session_state.pop(rl._PREFLIGHT_TREND_HISTORY_BODY, None)

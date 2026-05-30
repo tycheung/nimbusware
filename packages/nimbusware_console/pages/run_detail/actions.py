@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import httpx
+from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_client.http import get_json, post_json
@@ -14,7 +14,7 @@ def render_run_detail_actions(run_id: str) -> None:
             if st.button("Record retry (stage.started retry)"):
                 try:
                     st.success(post_json(f"/runs/{run_id.strip()}/actions/retry", {}, timeout=30.0))
-                except httpx.HTTPError as exc:
+                except HTTPError as exc:
                     st.error(f"API error: {exc}")
             esc_actor = st.text_input("Escalate actor_id", value="human:operator")
             esc_reason = st.text_input("Escalate reason_code", value="manual_review")
@@ -31,5 +31,5 @@ def render_run_detail_actions(run_id: str) -> None:
                             timeout=30.0,
                         ),
                     )
-                except httpx.HTTPError as exc:
+                except HTTPError as exc:
                     st.error(f"API error: {exc}")

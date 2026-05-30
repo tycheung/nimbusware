@@ -3,8 +3,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-import httpx
 import streamlit as st
+
+from nimbusware_client.http import HTTPError
 
 from nimbusware_console.enterprise_console import (
     SS_API_KEY,
@@ -37,7 +38,7 @@ def _load_edition_manifest() -> dict[str, Any] | None:
         return cached
     try:
         manifest = fetch_platform_edition()
-    except httpx.HTTPError:
+    except HTTPError:
         return None
     st.session_state[SS_EDITION_MANIFEST] = manifest
     return manifest
@@ -84,7 +85,7 @@ def render_enterprise_sidebar() -> bool:
                     )
                     st.session_state[SS_TENANT_KEYS] = tenant_keys
                 st.sidebar.success(f"Connected as tenant `{slug or '?'}`")
-            except httpx.HTTPError as exc:
+            except HTTPError as exc:
                 st.sidebar.error(f"IAM connect failed: {exc}")
 
     active_key = resolve_active_api_key(
@@ -97,7 +98,7 @@ def render_enterprise_sidebar() -> bool:
         try:
             tenants_body = fetch_tenants(api_key=active_key)
             tenant_options = tenant_select_options(tenants_body)
-        except httpx.HTTPError:
+        except HTTPError:
             tenant_options = []
 
     if tenant_options:
@@ -180,18 +181,18 @@ def render_enterprise_fleet_dashboard() -> None:
             worker_body: dict[str, Any] | None = None
             try:
                 memory_body = fetch_fleet_memory_status(api_key=api_key)
-            except httpx.HTTPError as exc:
+            except HTTPError as exc:
                 errors.append(f"fleet-memory/status: {exc}")
             try:
                 aggregate_body = fetch_fleet_preflight_aggregate(
                     api_key=api_key,
                     limit=int(limit),
                 )
-            except httpx.HTTPError as exc:
+            except HTTPError as exc:
                 errors.append(f"fleet-ollama-sli/preflight-aggregate: {exc}")
             try:
                 worker_body = fetch_fleet_worker_health(api_key=api_key)
-            except httpx.HTTPError as exc:
+            except HTTPError as exc:
                 errors.append(f"fleet-worker/health: {exc}")
             st.session_state["hermes_enterprise_dashboard_memory"] = memory_body
             st.session_state["hermes_enterprise_dashboard_aggregate"] = aggregate_body

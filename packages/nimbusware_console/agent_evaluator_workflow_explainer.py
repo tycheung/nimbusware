@@ -1,10 +1,16 @@
 from __future__ import annotations
 
-import csv
+from nimbusware_console.components.operator_metrics import (
+    FIELD_VALUE_COLUMNS,
+    field_value_table_rows_csv,
+    mapping_export_json,
+    mapping_to_sorted_table_rows,
+    sequence_export_json,
+    table_rows_csv,
+)
 import json
 import os
 from collections.abc import Mapping, Sequence
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
@@ -481,8 +487,6 @@ def agent_evaluator_export_filename_slug() -> str:
     return "agent_evaluator"
 
 
-_AGENT_EVALUATOR_EXPLAINER_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
 
 def _agent_evaluator_explainer_cell(value: Any) -> str:
     if value is None:
@@ -495,51 +499,20 @@ def _agent_evaluator_explainer_cell(value: Any) -> str:
 def agent_evaluator_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(payload, Mapping):
-        return []
-    rows: list[dict[str, str]] = []
-    for key in sorted(str(k) for k in payload.keys()):
-        rows.append(
-            {
-                "field": key,
-                "value": _agent_evaluator_explainer_cell(payload.get(key)),
-            },
-        )
-    return rows
+    return mapping_to_sorted_table_rows(payload, _agent_evaluator_explainer_cell)
 
 
 def agent_evaluator_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(payload, Mapping):
-        return "{}"
-    return json.dumps(dict(payload), indent=2, ensure_ascii=False)
+    return mapping_export_json(payload)
 
 
 def agent_evaluator_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_AGENT_EVALUATOR_EXPLAINER_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _AGENT_EVALUATOR_EXPLAINER_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
-
-_AGENT_EVALUATOR_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
-)
 
 
 def agent_evaluator_workflow_explainer_operator_metrics(
@@ -671,32 +644,13 @@ def agent_evaluator_workflow_explainer_operator_metrics_table_rows(
 def agent_evaluator_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
+    return mapping_export_json(metrics)
 
 
 def agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_AGENT_EVALUATOR_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _AGENT_EVALUATOR_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 def agent_evaluator_workflow_explainer_operator_metrics_caption(

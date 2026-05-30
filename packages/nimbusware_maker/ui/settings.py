@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import os
-
 import streamlit as st
 
+from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
 from nimbusware_maker.api_client import get_json
 
 
@@ -11,10 +10,11 @@ def render_settings_panel() -> None:
     st.subheader("Settings")
     st.caption("Workspace preferences for this machine. Admin-only routing lives in the Admin Console.")
 
-    auto_advance = os.environ.get("HERMES_SLICE_AUTO_ADVANCE", "0").strip()
+    enabled = hermes_slice_auto_advance_enabled()
+    auto_advance = "1" if enabled else "0"
     st.markdown(
-        f"**Auto-advance slices:** `{auto_advance or '0'}` "
-        "(set `HERMES_SLICE_AUTO_ADVANCE=1` in `.env` to chain slices without pauses)",
+        f"**Auto-advance slices:** `{auto_advance}` "
+        "(set `HERMES_SLICE_AUTO_ADVANCE=0` in `.env` to pause between slices)",
     )
 
     try:

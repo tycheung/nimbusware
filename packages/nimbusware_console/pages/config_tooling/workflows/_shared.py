@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
-import httpx
 import streamlit as st
 
 from nimbusware_console.agent_evaluator_display import (
@@ -799,11 +798,8 @@ from nimbusware_console.universal_critique_workflow_explainer import (
     universal_critique_yaml_top_level_nonempty_count_caption,
 )
 
-def _resolve_prune_status_path() -> Path | None:
-    raw = os.environ.get("HERMES_PRUNE_STATUS_PATH", "").strip()
-    return Path(raw).expanduser() if raw else None
-
-
-
-from nimbusware_console.settings import API_BASE
-from nimbusware_console.pages import _state as rl
+from nimbusware_console.pages.config_tooling._common import (  # noqa: E402
+    API_BASE,
+    _resolve_prune_status_path,
+    rl,
+)

@@ -8,10 +8,9 @@ from typing import Any
 from urllib.parse import urlencode
 from uuid import UUID
 
-import httpx
 import streamlit as st
 
-from nimbusware_client.http import get_response
+from nimbusware_client.http import HTTPError, get_response
 
 from nimbusware_console.run_list_pagination_display import (
     run_list_active_query_params_caption,
@@ -517,7 +516,7 @@ def _run_list_fetch_and_display() -> bool:
         st.session_state[_LAST_LIST_JSON] = data
         st.session_state.pop(_LAST_LIST_ERR, None)
         _render_run_list(data, include_summary=bool(st.session_state[_SS_SUM]))
-    except httpx.HTTPError as exc:
+    except HTTPError as exc:
         st.session_state.pop(_LAST_LIST_PAGE, None)
         st.session_state.pop(_LAST_LIST_JSON, None)
         st.session_state[_LAST_LIST_ERR] = str(exc)

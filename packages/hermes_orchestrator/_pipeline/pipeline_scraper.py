@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
+
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
 
 
@@ -19,11 +21,7 @@ class PipelineScraperMixin:
 
         Set ``HERMES_OUTBOUND_FETCH_ENABLED=1`` (or ``true``/``yes``) to allow network I/O.
         """
-        if os.environ.get("HERMES_OUTBOUND_FETCH_ENABLED", "").lower() not in (
-            "1",
-            "true",
-            "yes",
-        ):
+        if not hermes_outbound_fetch_enabled():
             msg = (
                 "Set HERMES_OUTBOUND_FETCH_ENABLED=1 to perform outbound GET "
                 "from the orchestrator"
@@ -185,11 +183,7 @@ class PipelineScraperMixin:
                 payload=StageStartedPayload(stage_name="scraper:fetch", attempt=1),
             ),
         )
-        if os.environ.get("HERMES_OUTBOUND_FETCH_ENABLED", "").lower() not in (
-            "1",
-            "true",
-            "yes",
-        ):
+        if not hermes_outbound_fetch_enabled():
             self._store.append(
                 StageFailedEvent(
                     event_type=EventType.STAGE_FAILED,

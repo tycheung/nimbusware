@@ -7,8 +7,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import httpx
 import streamlit as st
+
+from nimbusware_client.http import HTTPError
 
 from nimbusware_client.http import (
     api_base,
@@ -108,7 +109,7 @@ def _start_run(workflow_profile: str) -> str:
         run_id = data.get("run_id", "")
         st.session_state[_SS_LAST_RUN] = run_id
         return f"Started run `{run_id}` with profile `{workflow_profile}`."
-    except httpx.HTTPError as exc:
+    except HTTPError as exc:
         return f"Could not reach API at {api_base()}: {exc}"
 
 
@@ -130,7 +131,7 @@ def _fetch_timeline_summary(run_id: str) -> str:
                 f"completed={ms.get('slices_completed')}, blocked={ms.get('slices_blocked')}."
             )
         return f"Run `{run_id}` has {len(data.get('events', []))} events in timeline."
-    except httpx.HTTPError as exc:
+    except HTTPError as exc:
         return f"Timeline error: {exc}"
 
 

@@ -18,11 +18,11 @@
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
-| **Hold (regression-only)** | **Lane M (active greenfield)** | **Lane U (queued)** | **Optional depth / Lane D polish** |
-|----------------------------|--------------------------------|---------------------|-------------------------------------|
-| Individual: full `pytest tests/` green without enterprise deps | Lane M close-out polish (optional) | [User vs Admin path](#lane-u--recommended-build-path) fo310→fo317 | Desktop `run_app` / E2E CI matrix (PZ-1) |
-| §14 rows; fo150–fo207; fo143–fo146 | Hold regressions on fo300–fo308 | API auth split; admin console gating; grow Maker | Richer LLM critics / non-stub refactor apply |
-| Gates (`_round_gates.ps1`) | Agent tools + workspace snapshots | Enterprise IAM roles + packaging | OIDC / K8s / external SLI (Lane D ops) |
+| **Hold (regression-only)** | **Shipped (M / U / R hold)** | **Optional depth / Lane D polish** |
+|----------------------------|------------------------------|-------------------------------------|
+| Individual: full `pytest tests/` green without enterprise deps | Hold regressions on fo300–fo317 and fo400–fo407 follow-on | Desktop `run_app` / E2E CI matrix (PZ-1) |
+| §14 rows; fo150–fo207; fo143–fo146 | Optional: `env_flags` migration, console modules >400 lines | Richer LLM critics / non-stub refactor apply |
+| Gates (`_round_gates.ps1`); [`tests/README.md`](tests/README.md) | Import-graph + admin-token guards | OIDC / K8s / external SLI (Lane D ops) |
 
 | Document | Role |
 |----------|------|
@@ -45,6 +45,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Phase 4** — Memory and optimization (Individual) | **~95%** | **Shipped** fo160–fo191 — repo-scoped memory, bundle memory, replay, telemetry |
 | **Lane M** — Maker product (fo300–fo308) | **~98%** | **Shipped** — [build path](#lane-m--recommended-build-path) complete; hold regressions |
 | **Lane U** — User vs Admin consoles (fo310–fo317) | **~100%** | **Shipped** — [build path](#lane-u--recommended-build-path) complete |
+| **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -67,7 +68,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | §12 Phase **3** (fo143–fo146) | Phase 3 crosswalk | **Shipped** (~96%) |
 | §12 Phase **4** (fo160–fo191) | [Phase 4](#phase-4--memory-and-optimization-shipped) | **Shipped** (~95%) Individual scope |
 | §12 **Lane M** (fo300–fo308) | [Lane M build path](#lane-m--recommended-build-path) | **Shipped** (~98%) |
-| §12 **Lane U** (fo310–fo317) | [Lane U build path](#lane-u--recommended-build-path) | **Queued** (~0%); after Lane M |
+| §12 **Lane U** (fo310–fo317) | [Lane U build path](#lane-u--recommended-build-path) | **Shipped** (~100%) |
 | §1 Out of scope: Enterprise IAM / fleet index | Lane **D** fo201–fo202 | **Shipped** under Enterprise edition only |
 | §2.3 Redis worker | fo205 + §12 2-d boundary | **Shipped** (compose + runbook; K8s templates = polish) |
 
@@ -100,7 +101,7 @@ Legend: **Shipped** = epic exit criteria met in code + tests; **Polish** = works
 | **Lane D** fo200–fo207 | Shipped | 92% | Edition, IAM, fleet memory, NOTIFY, object-store, Redis worker, Ollama SLI, console — [Lane D](#lane-d--enterprise-edition) |
 | **Lane D ops polish** | Polish | 75% | OIDC, K8s deploy templates, external SLI cron — [Lane D polish](#lane-d--ops-polish-non-blocking) |
 | **Lane M** fo300–fo308 | **Shipped** | **98%** | Maker shell, projects, approval/revert, plain progress, readiness, agent tools, wizard — [Lane M](#lane-m--maker-product-fo300fo308) |
-| **Lane U** fo310–fo317 | **Queued** | **0%** | User vs Admin consoles, API auth split, admin-only packaging — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
+| **Lane U** fo310–fo317 | **Shipped** | **100%** | Maker = user console; Admin Console = admin/dev-only — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 
 **Optional v2 (also shipped):** `micro_slice_executor` auto chain, `llm_slice`, `POST …/lifecycle/slice`, config-store `custom_agents/registry`.
 
@@ -139,7 +140,7 @@ backlog: [P0 — Configuration store](#p0--configuration-store-postgres-authorit
 | Item | Category | Notes |
 |------|----------|--------|
 | **Lane M — Maker product (fo300–fo308)** | **Shipped** | Maker shell through M-D — [Lane M](#lane-m--maker-product-fo300fo308) |
-| **Lane U — User vs Admin consoles (fo310–fo317)** | **Queued** | Maker = user console; Admin Console = admin/dev-only; API auth split — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
+| **Lane U — User vs Admin consoles (fo310–fo317)** | **Shipped** | Maker = user console; Admin Console = admin/dev-only — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 | Enterprise **OIDC / SSO** console login | Lane D polish | API-key + tenant switcher shipped (fo201/fo207); no IdP integration yet |
 | **K8s / cloud** deploy templates | Ops polish | Compose profiles + runbooks exist; not full production charts |
 | **External** fleet p95 SLI (Prometheus/Grafana) | Ops polish | In-repo `hermes-fleet-ollama-sli` + `/preflight-history` aggregates shipped (fo206) |
@@ -161,15 +162,16 @@ backlog: [P0 — Configuration store](#p0--configuration-store-postgres-authorit
 
 ### §14 completion buckets (v1 sign-off)
 
-**Rule:** §14 defines v1. Rows are **Done** when checklist behavior is shipped and tested; new capability work is [Lane M](#lane-m--maker-product-fo300fo308), [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) (after M), [Optional depth](#optional-depth-on-request), or [Active backlog](#active-backlog-may-2026).
+**Rule:** §14 defines v1. Rows are **Done** when checklist behavior is shipped and tested; new capability work is [Optional depth](#optional-depth-on-request), [Lane R polish](#lane-r--maintainability-refactor-fo400fo407) (optional), or [Active backlog](#active-backlog-may-2026).
 
 | Bucket | Rows | Intent |
 |--------|------|--------|
 | **Done (hold)** | **#1–#21** | Regression fixes only; no feature churn |
 | **Verify-only (hold)** | Gates + E2E | Gates **478**; optional: stabilize desktop smoke |
 | **Shipped (v2 + P3)** | **fo150–fo155**, **fo143–fo146** | Regression-only unless explicitly requested |
-| **Active (greenfield)** | **Lane U fo310–fo317** | [Lane U build path](#lane-u--recommended-build-path) |
+| **Hold (shipped)** | **Lane U fo310–fo317** | Regression-only — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 | **Hold (shipped)** | **Lane M fo300–fo308** | Regression-only — [Lane M](#lane-m--maker-product-fo300fo308) |
+| **Hold (shipped)** | **Lane R fo400–fo407 + follow-on** | Regression-only — [Lane R](#lane-r--maintainability-refactor-fo400fo407) |
 | **Optional** | PZ-1 desktop smoke; depth on request | [Optional depth](#optional-depth-on-request) |
 | **Hold** | Lane **D** fo200–fo207 | Regression-only — [Lane D](#lane-d--enterprise-edition) |
 | **Polish** | Lane D ops + [Optional depth](#optional-depth-on-request) | On request only |
@@ -203,10 +205,11 @@ backlog: [P0 — Configuration store](#p0--configuration-store-postgres-authorit
 | **C — Greenfield (v2 product)** | **Shipped** | **fo150–fo154** — see [Product priorities (v2 — shipped)](#product-priorities-v2--shipped) |
 | **C2 — Greenfield (depth)** | **Shipped** | Phase 3 **fo143–fo146**; Phase 4 **fo160–fo191** |
 | **M — Maker product** | **Shipped (~98%)** | fo300–fo308 — [Lane M](#lane-m--maker-product-fo300fo308) |
-| **U — User vs Admin consoles** | **Active greenfield** | fo310–fo317 — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
+| **U — User vs Admin consoles** | **Shipped (~100%)** | fo310–fo317 — [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
+| **R — Maintainability** | **Complete (~100%)** | fo400–fo407 + follow-on — [Lane R](#lane-r--maintainability-refactor-fo400fo407) |
 | **D — Enterprise edition** | **Core shipped** | fo200–fo207; ops polish optional — [Lane D](#lane-d--enterprise-edition) |
 
-**Default next work:** **Hold regressions** on Lane M, then advance **Lane U** ([build path](#lane-u--recommended-build-path): **U-A → … → U-E**). Optional: [Optional depth](#optional-depth-on-request) or [Lane D polish](#lane-d--ops-polish-non-blocking).
+**Default next work:** **Hold regressions** on shipped M/U/R scope. Optional: further console splits (>400-line modules), migrate more `HERMES_*` reads to [`env_flags.py`](packages/nimbusware_env/env_flags.py), [Optional depth](#optional-depth-on-request), or [Lane D polish](#lane-d--ops-polish-non-blocking).
 
 ### v1 closure inventory (May 2026)
 
@@ -286,8 +289,9 @@ cache invalidation; no dual-write assertions.
 
 | Target | Focus |
 |--------|--------|
-| **Lane M (active)** | [Maker build path](#lane-m--recommended-build-path) — fo300→fo308 |
-| **Lane U (queued)** | [User vs Admin build path](#lane-u--recommended-build-path) — fo310→fo317; after Lane M exit |
+| **Lane M** | **Hold (shipped)** — [Maker build path](#lane-m--recommended-build-path) fo300→fo308 |
+| **Lane U** | **Hold (shipped)** — [User vs Admin build path](#lane-u--recommended-build-path) fo310→fo317 |
+| **Lane R** | **Hold (shipped)** — fo400→fo407 + follow-on; optional polish (splits, `env_flags`) |
 | **Regression** | Hold **2397** passed / gates **478** ([test health](#test-health-may-2026)) |
 | **Optional** | [Optional depth](#optional-depth-on-request) — desktop smoke, LLM depth, benchmark fleet |
 | **Lane D** | **Hold** — fo200–fo207 shipped; [Lane D](#lane-d--enterprise-edition) |
@@ -337,7 +341,7 @@ Aligns with [hermes-orchestrator-local-plan.md §19.5](hermes-orchestrator-local
 
 ## Strategic direction (May 2026 onward)
 
-**Current posture:** **v1 sign-off complete** (§14 **21/21**). **v2 shipped:** operator console + micro-slice engine (fo150–fo155). **v3 shipped:** **Lane M** maker app (~98%). **v4 (active):** **Lane U** — Maker = user console, Admin Console = admin/dev-only ([Lane U build path](#lane-u--recommended-build-path)).
+**Current posture:** **v1 sign-off complete** (§14 **21/21**). **v2 shipped:** operator console + micro-slice engine (fo150–fo155). **v3 shipped:** **Lane M** maker app (~98%). **v4 shipped:** **Lane U** — Maker = user console, Admin Console = admin/dev-only. **Lane R complete:** maintainability refactor (fo400–fo407 + follow-on). Default work = **regression hold** + optional polish.
 
 **North star (Lane M):** *Local-first software creation* — Hermes enforces adversarial micro-slices; Nimbusware **Maker** gives project-scoped UX, slice approval/revert, plain-language progress, and honest hardware/model guidance (not operator telemetry).
 
@@ -811,7 +815,7 @@ U-C (fo313) grow Maker              U-D (fo314–315) admin-only console
 **Depends on:** [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) shipped (~100%).  
 **Goal:** Raise maintainability from **~6.5/10 → ~8/10** without changing product behavior — decompose Admin Console monoliths, remove legacy shims, invert layering violations, add coverage gates.
 
-**Maturity audit (May 2026):** Architecture **8/10**, type safety **8.5/10**, tests **7.5/10**, console maintainability improving (integrator monolith split).
+**Maturity audit (May 2026):** Architecture **8/10**, type safety **8.5/10**, tests **7.5/10**, console maintainability **~8/10** (god-module splits, shared `operator_metrics` / `explainer_panel`, explicit `run_detail` imports, zero direct `httpx` in console).
 
 ### Epic queue (fo400–fo407)
 
@@ -929,15 +933,26 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 | R-E | fo405 | **Done** — `nimbusware_client`; all Admin/Maker HTTP including enterprise fleet |
 | R-F | fo406 | **Done** — `hermes_orchestrator/README.md` mixin map |
 | R-A2 | fo407 | **Done** — `components/explainer_panel.py`; all integrator explainer sections |
+| R-B2 | — | **Done** — `components/operator_metrics.py`; faiss_status, integrator_gate, persona_catalog, workflow explainers |
+| R-C2 | — | **Done** — all Admin Console HTTP via `nimbusware_client`; `test_console_does_not_import_httpx_directly` |
+| R-D2 | — | **Done** — `config_tooling/_common.py`; `bundles/_shared` → `workflows/_shared` |
+| R-E2 | — | **Done** — `faiss_status/`, `integrator_gate/`, `persona_catalog/`, `integrator_preview/` splits |
+| R-F2 | — | **Done** — 12 `pages/run_detail/*.py` explicit imports; `test_run_detail_sections_do_not_star_import` |
+| R-S | — | **Done** — `nimbusware_env/env_flags.py`; orchestrator + maker paths migrated |
+| R-ops | — | **Done** — `tests/README.md`; non-loopback API bind blocks dev default admin token |
 
 ### Lane R — exit criteria (program complete)
 
 - [x] `hermes_orchestrator` ↛ `nimbusware_api`
 - [x] CI publishes coverage report with floor on core packages
 - [x] `ARCHITECTURE.md` + console README maintained
-- [x] No production module >400 lines in `nimbusware_console/pages/config_tooling/workflows/integrator/` and `bundles/` *(largest integrator section: apply_full_profile ~389)*
+- [x] No production module >400 lines in `nimbusware_console/pages/config_tooling/workflows/integrator/` and `bundles/` *(optional polish: `integrator_gate/latest_delta.py`, `integrator_preview/merge.py`, `persona_catalog/summary.py` still >400)*
 - [x] Zero imports from legacy `hermes_{api,console,config,env}` packages
 - [x] Shared HTTP client for Maker + Admin *(all production UI paths via `nimbusware_client`; raw `httpx` limited to exception types in Streamlit handlers)*
+- [x] Admin Console has zero direct `httpx` imports (enforced by import-graph test)
+- [x] Run detail sections use explicit imports (no `from _imports import *`)
+- [x] Central `env_flags` helpers for common `HERMES_*` toggles
+- [x] API CLI rejects non-loopback bind with default dev admin token
 
 ### Lane R — out of scope
 
@@ -947,15 +962,14 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 | Merge Maker + Admin apps | Keep separate packages (Lane U) |
 | Big-bang orchestrator rewrite | Mixin compose stays; document first |
 
-## Execution priority (post–Lane D)
+## Execution priority (post–Lane D + M + U + R)
 
 1. **Hold** — gates **478**; unit suite green (`pytest tests/`).
-2. **Lane R** — follow [Lane R build path](#lane-r--recommended-build-path): **R-G → R-B → R-C → R-D → R-A → R-E**.
-3. **Hold Lane M + U** — fo300–fo317 regression-only.
-4. **Optional** — [Optional depth](#optional-depth-on-request) or [Lane D polish](#lane-d--ops-polish-non-blocking) when product asks.
-5. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
+2. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
+3. **Optional** — further console splits, `env_flags` migration, [Optional depth](#optional-depth-on-request), or [Lane D polish](#lane-d--ops-polish-non-blocking) when product asks.
+4. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
 
-**Per-cycle default (May 2026 onward):** one **Lane R** phase slice + regression hold on M/U; update progress tracker when an fo400–fo407 epic ships.
+**Per-cycle default (May 2026 onward):** regression hold on shipped lanes; optional polish slices (Lane R remainder, `env_flags`, >400-line modules) only when requested.
 
 ## Phase 4 — Memory and optimization (shipped)
 

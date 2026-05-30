@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import httpx
+from nimbusware_client.http import HTTPError, Response
 
 from nimbusware_client.http import (
     admin_token_headers,
@@ -34,7 +34,7 @@ def render_workflows_persona_editor_section() -> None:
                     timeout=10.0,
                 )
                 st.success("Loaded persona catalog from API.")
-            except httpx.HTTPError as _exc:
+            except HTTPError as _exc:
                 st.error(f"API error: {_exc}")
         _editor_catalog = st.session_state.get("hermes_persona_edit_catalog")
         if not isinstance(_editor_catalog, dict):
@@ -209,7 +209,7 @@ def render_workflows_persona_editor_section() -> None:
             _headers = admin_token_headers(_admin_token)
             _col_save, _col_replace, _col_delete, _col_create = st.columns(4)
 
-            def _handle_write_response(label: str, r: httpx.Response) -> None:
+            def _handle_write_response(label: str, r: Response) -> None:
                 try:
                     body = r.json() if r.content else None
                 except json.JSONDecodeError:
@@ -243,7 +243,7 @@ def render_workflows_persona_editor_section() -> None:
                             raise_for_status=False,
                         )
                         _handle_write_response("PATCH", _resp)
-                    except httpx.HTTPError as _exc:
+                    except HTTPError as _exc:
                         st.error(f"API error: {_exc}")
             with _col_replace:
                 if st.button(
@@ -267,7 +267,7 @@ def render_workflows_persona_editor_section() -> None:
                             raise_for_status=False,
                         )
                         _handle_write_response("PUT", _resp)
-                    except httpx.HTTPError as _exc:
+                    except HTTPError as _exc:
                         st.error(f"API error: {_exc}")
             with _col_delete:
                 if st.button(
@@ -289,7 +289,7 @@ def render_workflows_persona_editor_section() -> None:
                             raise_for_status=False,
                         )
                         _handle_write_response("DELETE", _resp)
-                    except httpx.HTTPError as _exc:
+                    except HTTPError as _exc:
                         st.error(f"API error: {_exc}")
             with _col_create:
                 if st.button(
@@ -317,5 +317,5 @@ def render_workflows_persona_editor_section() -> None:
                                 raise_for_status=False,
                             )
                             _handle_write_response("POST", _resp)
-                        except httpx.HTTPError as _exc:
+                        except HTTPError as _exc:
                             st.error(f"API error: {_exc}")

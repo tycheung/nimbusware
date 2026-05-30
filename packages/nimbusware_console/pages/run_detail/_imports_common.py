@@ -10,5 +10,4 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
-import httpx
 import streamlit as st
