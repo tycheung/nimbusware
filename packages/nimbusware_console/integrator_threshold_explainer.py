@@ -15,7 +15,6 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
 from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_console.integrator_workflow_preview import (
     parse_integrator_gate_yaml_fragment,

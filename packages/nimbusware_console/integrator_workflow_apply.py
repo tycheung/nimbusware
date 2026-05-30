@@ -12,7 +12,6 @@ import os
 from pathlib import Path
 from typing import Any
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
 from nimbusware_config.persist import (
     load_workflow_profile_dict,
     persist_workflow_profile_dict,

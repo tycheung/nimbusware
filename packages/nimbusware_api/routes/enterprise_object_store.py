@@ -1,23 +1,5 @@
-"""Enterprise object-store primary status."""
+"""Backward-compatible shim."""
 
-from __future__ import annotations
+from nimbusware_api.routes.enterprise.object_store import router
 
-from typing import Any
-
-from fastapi import APIRouter
-
-from nimbusware_api.routes.enterprise import EnterpriseDep
-from hermes_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
-from nimbusware_env.edition import enterprise_feature_enabled
-
-router = APIRouter(prefix="/enterprise/scraper-artifacts", tags=["enterprise"])
-
-
-@router.get("/storage")
-def scraper_artifact_storage_status(_gate: EnterpriseDep) -> dict[str, Any]:
-    sig = scraper_artifact_storage_backend_signals()
-    return {
-        "feature": "object_store_primary",
-        "enabled": enterprise_feature_enabled("object_store_primary"),
-        "signals": sig,
-    }
+__all__ = ["router"]

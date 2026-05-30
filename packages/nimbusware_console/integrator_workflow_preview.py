@@ -19,7 +19,6 @@ from typing import Any
 
 import yaml
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
 from hermes_extensions.personas import ALLOWED_SHELVES
 from hermes_extensions.phase2 import ModuleIntegrator
 from hermes_orchestrator.integrator_gate import (

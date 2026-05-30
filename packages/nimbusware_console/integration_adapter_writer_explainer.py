@@ -8,7 +8,6 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
 from nimbusware_console.config_materializer import console_config_materializer
 from hermes_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,

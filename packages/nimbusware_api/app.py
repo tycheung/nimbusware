@@ -17,23 +17,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from nimbusware_api.errors import problem
-from nimbusware_api.routes import (
-    actions,
-    bundles,
-    custom_agents,
-    enterprise,
-    enterprise_config_notify,
-    enterprise_fleet_memory,
-    enterprise_fleet_ollama_sli,
-    enterprise_fleet_worker,
-    enterprise_iam,
-    enterprise_object_store,
-    personas,
-    platform,
-    preflight,
-    runs,
-    scraper_artifacts,
-)
+from nimbusware_api.facade import build_v1_router
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from nimbusware_config import ConfigMaterializer
 from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
@@ -242,18 +226,4 @@ async def _enterprise_iam(request: Request, call_next):
     return await enterprise_iam_middleware(request, call_next)
 
 
-app.include_router(runs.router, prefix="/v1")
-app.include_router(actions.router, prefix="/v1")
-app.include_router(bundles.router, prefix="/v1")
-app.include_router(personas.router, prefix="/v1")
-app.include_router(custom_agents.router, prefix="/v1")
-app.include_router(preflight.router, prefix="/v1")
-app.include_router(scraper_artifacts.router, prefix="/v1")
-app.include_router(platform.router, prefix="/v1")
-app.include_router(enterprise.router, prefix="/v1")
-app.include_router(enterprise_iam.router, prefix="/v1")
-app.include_router(enterprise_fleet_memory.router, prefix="/v1")
-app.include_router(enterprise_config_notify.router, prefix="/v1")
-app.include_router(enterprise_object_store.router, prefix="/v1")
-app.include_router(enterprise_fleet_worker.router, prefix="/v1")
-app.include_router(enterprise_fleet_ollama_sli.router, prefix="/v1")
+app.include_router(build_v1_router(), prefix="/v1")

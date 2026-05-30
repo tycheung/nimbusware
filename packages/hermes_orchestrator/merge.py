@@ -15,50 +15,18 @@ from agent_core.models import (
     NetworkEgressPolicySnapshot,
     PolicySnapshotV1,
 )
+from agent_core.yaml_io import atomic_write_yaml, dump_yaml, load_yaml
 from hermes_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
 
 
-def load_yaml(path: Path) -> dict[str, Any]:
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
-    if not isinstance(raw, dict):
-        msg = f"YAML root must be a mapping: {path}"
-        raise ValueError(msg)
-    return cast(dict[str, Any], raw)
-
-
-def dump_yaml(payload: Mapping[str, Any]) -> str:
-    """Serialize ``payload`` deterministically for human-editable config files.
-
-    Uses ``yaml.safe_dump`` with ``sort_keys=False`` so persona entry key order
-    survives round-trips (operators arranged things deliberately) and
-    ``allow_unicode=True`` so NFC-normalized strings stay readable in the file.
-    """
-    return yaml.safe_dump(
-        dict(payload),
-        sort_keys=False,
-        allow_unicode=True,
-        default_flow_style=False,
-    )
-
-
-def atomic_write_yaml(path: Path, payload: Mapping[str, Any]) -> None:
-    """Write ``payload`` to ``path`` atomically (tmp + ``os.replace``).
-
-    Mirrors the ``_write_status_atomically`` pattern: creates parent
-    directories, writes a sibling ``.tmp`` file, then ``os.replace``s onto the
-    target so concurrent readers never observe a partial YAML. On replace
-    failure the partial tmp is removed so the original file is untouched.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(dump_yaml(payload), encoding="utf-8")
-    try:
-        os.replace(tmp, path)
-    except OSError:
-        if tmp.exists():
-            tmp.unlink(missing_ok=True)
-        raise
-
+# Re-export for backward compatibility.
+__all__ = [
+    "atomic_write_yaml",
+    "dump_yaml",
+    "load_yaml",
+    "merge_policy_snapshot",
+    "policy_snapshot_from_files",
+]
 
 def _merge_finding_strictness(
     layers: list[dict[str, Any] | None],

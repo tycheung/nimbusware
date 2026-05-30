@@ -24,7 +24,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.merge import load_yaml
+from agent_core.yaml_io import load_yaml
 
 ALLOWED_SHELVES: tuple[str, ...] = ("business_area", "development_role")
 ALLOWED_PROBATION_STATUSES: tuple[str, ...] = ("probation", "promoted", "shelved")

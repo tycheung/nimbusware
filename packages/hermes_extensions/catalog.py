@@ -14,7 +14,7 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from hermes_orchestrator.merge import load_yaml
+from agent_core.yaml_io import load_yaml
 from hermes_extensions.bundle_memory import bundle_memory_rank_weight
 from hermes_extensions.bundle_memory_models import BundleSuccessStats
 
