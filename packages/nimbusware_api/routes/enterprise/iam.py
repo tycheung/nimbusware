@@ -14,6 +14,7 @@ from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_iam.constants import DEFAULT_TENANT_ID
 from nimbusware_iam.context import get_auth_context
+from nimbusware_iam.scopes import DEFAULT_ADMIN_SCOPES, DEFAULT_USER_SCOPES, normalize_scopes
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 
@@ -26,6 +27,7 @@ class TenantCreateBody(BaseModel):
 class ApiKeyCreateBody(BaseModel):
     label: str = Field(default="", max_length=128)
     role_taxonomy_keys: list[str] = Field(default_factory=list)
+    api_scopes: list[str] = Field(default_factory=lambda: list(DEFAULT_USER_SCOPES))
 
 
 @router.post("/iam/bootstrap")
@@ -44,6 +46,7 @@ def bootstrap_iam(
         tenant_id=ops.tenant_id,
         label="bootstrap",
         role_taxonomy_keys=["planner", "backend_writer"],
+        api_scopes=list(DEFAULT_ADMIN_SCOPES),
     )
     return {
         "tenant_id": str(ops.tenant_id),
@@ -52,6 +55,7 @@ def bootstrap_iam(
         "key_prefix": key.key_prefix,
         "api_key": key.api_key,
         "role_taxonomy_keys": ["backend_writer", "planner"],
+        "api_scopes": sorted(DEFAULT_ADMIN_SCOPES),
         "message": "Store api_key securely; it is shown once.",
     }
 
@@ -69,6 +73,7 @@ def iam_me(_gate: EnterpriseDep) -> dict[str, Any]:
         "tenant_slug": ctx.tenant_slug,
         "key_id": str(ctx.key_id),
         "role_taxonomy_keys": list(ctx.role_taxonomy_keys),
+        "api_scopes": list(ctx.api_scopes),
     }
 
 
@@ -123,6 +128,7 @@ def create_api_key(
         tenant_id=tenant_id,
         label=body.label,
         role_taxonomy_keys=body.role_taxonomy_keys,
+        api_scopes=body.api_scopes or list(DEFAULT_USER_SCOPES),
     )
     return {
         "tenant_id": str(key.tenant_id),
@@ -130,5 +136,6 @@ def create_api_key(
         "key_prefix": key.key_prefix,
         "api_key": key.api_key,
         "label": key.label,
+        "api_scopes": list(normalize_scopes(body.api_scopes)),
         "message": "Store api_key securely; it is shown once.",
     }

@@ -37,10 +37,12 @@ logger = logging.getLogger(__name__)
 _OPENAPI_APP_DESCRIPTION = (
     "Nimbusware Hermes agent run orchestration HTTP API. "
     "Resource paths are under /v1. "
-    "Admin routes (for example POST /v1/roles/{role_id}/execute) require "
-    "NIMBUSWARE_ADMIN_TOKEN. See PLAN_GAP.md at the repository root for scope. "
-    "OpenAPI documents optional RFC 5988 Link headers on several GET 200 responses "
-    "where the server may emit them."
+    "Operations are tagged **user** (Maker product loop) or **admin** (Admin Console / "
+    "control plane). Individual edition: user routes are open locally; admin routes "
+    "require ``X-Nimbusware-Admin-Token``. Enterprise: user routes need "
+    "``X-Nimbusware-Api-Key`` with ``maker_user`` scope; admin routes need "
+    "``maker_admin`` scope or the admin token (bootstrap). "
+    "See PLAN_GAP.md Lane U for the full split."
 )
 
 
@@ -122,6 +124,20 @@ app = FastAPI(
     responses={422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
     openapi_tags=[
         {
+            "name": "user",
+            "description": (
+                "Maker product routes. Individual: implicit local user. Enterprise: "
+                "``maker_user`` API key scope."
+            ),
+        },
+        {
+            "name": "admin",
+            "description": (
+                "Admin Console / control plane. Individual: ``X-Nimbusware-Admin-Token``. "
+                "Enterprise: ``maker_admin`` scope or admin token."
+            ),
+        },
+        {
             "name": "runs",
             "description": (
                 "Run list (pagination, filters, keyset), detail, timeline, findings, "
@@ -160,7 +176,10 @@ app = FastAPI(
         },
         {
             "name": "projects",
-            "description": "Project workspaces bound to Hermes runs.",
+            "description": (
+                "Project workspaces bound to Hermes runs. "
+                "``GET/POST`` are user routes; ``DELETE`` is admin-only."
+            ),
         },
         {
             "name": "enterprise",
@@ -250,3 +269,30 @@ async def _enterprise_iam(request: Request, call_next):
 
 
 app.include_router(build_v1_router(), prefix="/v1")
+
+
+def _build_openapi_schema() -> dict:
+    from fastapi.openapi.utils import get_openapi
+
+    from nimbusware_api.openapi_access import enrich_openapi_access_tags
+
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        openapi_version=app.openapi_version,
+        description=app.description,
+        routes=app.routes,
+        tags=app.openapi_tags,
+    )
+    enrich_openapi_access_tags(schema)
+    return schema
+
+
+def custom_openapi() -> dict:
+    if app.openapi_schema:
+        return app.openapi_schema
+    app.openapi_schema = _build_openapi_schema()
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi

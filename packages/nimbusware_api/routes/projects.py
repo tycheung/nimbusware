@@ -5,9 +5,13 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import ProjectStoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.user import UserDep
+from nimbusware_env.edition import is_enterprise
+from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
@@ -45,8 +49,10 @@ def _to_response(record: object) -> ProjectResponse:
 
 
 @router.get("", response_model=ProjectListResponse)
-def list_projects(store: ProjectStoreDep) -> ProjectListResponse:
-    return ProjectListResponse(projects=[_to_response(p) for p in store.list()])
+def list_projects(store: ProjectStoreDep, _user: UserDep) -> ProjectListResponse:
+    tenant_id = resolve_store_tenant_id() if is_enterprise() else None
+    rows = store.list(tenant_id=tenant_id) if tenant_id is not None else store.list()
+    return ProjectListResponse(projects=[_to_response(p) for p in rows])
 
 
 @router.get("/{project_id}", response_model=ProjectResponse, responses={404: PROBLEM_RESPONSE_404})
@@ -68,7 +74,7 @@ def get_project(project_id: UUID, store: ProjectStoreDep) -> ProjectResponse:
 def create_project(
     body: ProjectCreateRequest,
     store: ProjectStoreDep,
-    _admin: AdminDep,
+    _user: UserDep,
 ) -> ProjectResponse:
     if body.template.strip().lower() not in PROJECT_TEMPLATES:
         raise HTTPException(
@@ -84,6 +90,7 @@ def create_project(
             workspace_path=body.workspace_path,
             template=body.template,
             default_workflow_profile=body.default_workflow_profile,
+            tenant_id=resolve_store_tenant_id(),
         )
     except ValueError as exc:
         raise HTTPException(

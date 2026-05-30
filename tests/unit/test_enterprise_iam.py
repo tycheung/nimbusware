@@ -122,6 +122,7 @@ def test_enterprise_bootstrap_and_me(
         me = client.get("/v1/enterprise/iam/me", headers=headers)
         assert me.status_code == 200
         assert me.json()["tenant_slug"] == "ops"
+        assert "maker_admin" in me.json()["api_scopes"]
 
 
 def test_enterprise_create_tenant_and_key(

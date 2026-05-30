@@ -96,14 +96,15 @@ def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> N
 
     monkeypatch.delenv("NIMBUSWARE_UI", raising=False)
     assert _resolve_ui_mode() == "maker"
-    assert _resolve_ui_mode(ui="console") == "console"
+    assert _resolve_ui_mode(ui="console") == "admin"
+    assert _resolve_ui_mode(ui="admin") == "admin"
     monkeypatch.setenv("NIMBUSWARE_UI", "operator")
-    assert _resolve_ui_mode() == "console"
+    assert _resolve_ui_mode() == "admin"
 
     root = repo_root(start=Path(__file__).resolve().parent)
     assert _streamlit_app_script(root, "maker").name == "app.py"
     assert "nimbusware_maker" in str(_streamlit_app_script(root, "maker"))
-    assert "nimbusware_console" in str(_streamlit_app_script(root, "console"))
+    assert "nimbusware_console" in str(_streamlit_app_script(root, "admin"))
 
 
 def test_launcher_module_imports() -> None:

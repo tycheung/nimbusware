@@ -10,7 +10,7 @@ def test_openapi_info_description_present(client: TestClient) -> None:
     spec = client.app.openapi()
     desc = spec.get("info", {}).get("description", "")
     assert isinstance(desc, str) and len(desc.strip()) > 0
-    assert "RFC 5988" in desc
+    assert "user" in desc.lower() and "admin" in desc.lower()
 
 
 def test_openapi_problem_responses_include_problem_json_media_type(
@@ -217,4 +217,27 @@ def test_timeline_and_findings_include_rfc5988_link_headers(client: TestClient) 
     assert rid in fl
     assert 'rel="run"' in fl
     assert "timeline" in fl
+
+
+def test_openapi_documents_user_and_admin_access_tags(client: TestClient) -> None:
+    spec = client.app.openapi()
+    tag_names = {t["name"] for t in spec.get("tags", []) if isinstance(t, dict)}
+    assert "user" in tag_names
+    assert "admin" in tag_names
+    assert "x-tagGroups" in spec
+    groups = {g["name"]: g["tags"] for g in spec["x-tagGroups"]}
+    assert groups["User routes (Maker)"] == ["user"]
+    assert groups["Admin routes (Admin Console)"] == ["admin"]
+
+    post_project = spec["paths"]["/v1/projects"]["post"]
+    assert post_project["tags"][0] == "user"
+
+    delete_project = spec["paths"]["/v1/projects/{project_id}"]["delete"]
+    assert delete_project["tags"][0] == "admin"
+
+    post_run = spec["paths"]["/v1/runs"]["post"]
+    assert post_run["tags"][0] == "user"
+
+    lifecycle = spec["paths"]["/v1/runs/{run_id}/lifecycle/start"]["post"]
+    assert lifecycle["tags"][0] == "admin"
 

@@ -10,6 +10,7 @@ from fastapi.routing import APIRouter
 from pydantic import BaseModel, Field
 
 from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import OrchDep, ProjectStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import (
@@ -94,6 +95,7 @@ def create_run(
                     status_code=422,
                     detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
                 )
+            assert_project_accessible(project)
         run_id = orch.create_run(
             body.workflow_profile,
             idempotency_key=key_uuid,

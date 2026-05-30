@@ -105,15 +105,15 @@ def _streamlit_command(py_cmd: list[str], console_script: Path, host: str, port:
 
 def _resolve_ui_mode(*, ui: str | None = None) -> str:
     raw = (ui or os.environ.get("NIMBUSWARE_UI", "maker")).strip().lower()
-    if raw in ("console", "operator"):
-        return "console"
+    if raw in ("console", "operator", "admin"):
+        return "admin"
     return "maker"
 
 
 def _streamlit_app_script(root: Path, ui_mode: str) -> Path:
-    if ui_mode == "console":
+    if ui_mode == "admin":
         script = root / "packages" / "nimbusware_console" / "app.py"
-        label = "operator console"
+        label = "admin console"
     else:
         script = root / "packages" / "nimbusware_maker" / "app.py"
         label = "maker app"
@@ -180,7 +180,7 @@ def run_desktop(
     repo = (root or repo_root()).resolve()
     mode = _resolve_ui_mode(ui=ui_mode)
     if window_title is None:
-        window_title = "Nimbusware Maker" if mode == "maker" else "Nimbusware Console"
+        window_title = "Nimbusware Maker" if mode == "maker" else "Nimbusware Admin Console"
     log_file = run_log_path(repo)
 
     def _log(msg: str) -> None:
@@ -287,7 +287,12 @@ def main(argv: list[str] | None = None) -> int:
     ui_group.add_argument(
         "--console",
         action="store_true",
-        help="Open the operator console instead of the maker app (default).",
+        help="Open the Admin Console instead of the maker app.",
+    )
+    ui_group.add_argument(
+        "--admin",
+        action="store_true",
+        help="Alias for --console (Admin Console + API).",
     )
     ui_group.add_argument(
         "--maker",
@@ -300,7 +305,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Start API + Streamlit, verify health, exit (no GUI window).",
     )
     args = parser.parse_args(argv)
-    ui_mode = "console" if args.console else "maker"
+    ui_mode = "admin" if (args.console or args.admin) else "maker"
     return run_desktop(
         root=args.repo_root,
         api_host=args.api_host,

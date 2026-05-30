@@ -20,7 +20,7 @@ from nimbusware_console.settings import API_BASE, repo_root
 
 def render_main() -> None:
     """Render the full operator console (section order unchanged)."""
-    st.title("Nimbusware operator console")
+    st.title("Nimbusware Admin Console")
     st.caption(streamlit_theme_defaults_caption(repo_root=repo_root()))
     st.caption(streamlit_white_label_deferred_caption())
 

@@ -3,9 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_maker.api_client import get_json, post_json
-
-
-from nimbusware_maker.runs import latest_run_id_for_project
+from nimbusware_maker.runs import list_runs_for_project
 
 
 def _status_emoji(status: str) -> str:
@@ -75,7 +73,8 @@ def render_projects_panel() -> None:
             with cols[1]:
                 if pid and st.button("Continue last run", key=f"continue-{pid}"):
                     try:
-                        run_id = latest_run_id_for_project(pid)
+                        runs = list_runs_for_project(pid)
+                        run_id = runs[0]["run_id"] if runs else None
                     except Exception as exc:  # noqa: BLE001
                         st.error(f"Could not load runs: {exc}")
                     else:
@@ -85,6 +84,23 @@ def render_projects_panel() -> None:
                             st.success(f"Resumed run {run_id} — open Review or Progress.")
                         else:
                             st.info("No runs yet for this project. Use Build to start one.")
+            history = []
+            if pid:
+                try:
+                    history = list_runs_for_project(pid, limit=10)
+                except Exception:
+                    history = []
+            if history:
+                with st.expander("Run history", expanded=False):
+                    for row in history:
+                        rid = row.get("run_id", "")
+                        status = row.get("status", "unknown")
+                        cols_h = st.columns([3, 1])
+                        cols_h[0].markdown(f"`{rid}` — {status}")
+                        if cols_h[1].button("Open", key=f"hist-{pid}-{rid}"):
+                            st.session_state["maker_active_project_id"] = pid
+                            st.session_state["maker_active_run_id"] = rid
+                            st.info("Switch to Review or Progress for this run.")
 
     with st.form("create_project"):
         st.markdown("**New project**")

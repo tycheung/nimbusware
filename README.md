@@ -1,6 +1,8 @@
 # Nimbusware
 
-Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit maker app** (business prompt → scoped projects → reviewable slice builds), an **operator console** for deep ops visibility, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit Maker app** (the default product UI — business prompt → scoped projects → reviewable slice builds), an **Admin Console** for ops/dev control-plane work, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
+
+**Default install:** Maker only. The Admin Console is optional and gated behind an admin token.
 
 **Version:** `0.5.0` · **Python:** `>=3.10` (3.11+ recommended) · **Default workflow profile:** `nimbusware_production`
 
@@ -28,8 +30,8 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | Layer | Packages / entry | Role |
 |-------|------------------|------|
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
-| **Maker app** | `nimbusware_maker` | Streamlit product UI — projects, intent, plain progress, slice approval/revert |
-| **Operator console** | `nimbusware_console` | Streamlit ops UI (runs, timeline, config editors) |
+| **Maker app** | `nimbusware_maker` | **User console** — projects, intent, plain progress, slice approval/revert (no admin token for the product loop) |
+| **Admin Console** | `nimbusware_console` | **Admin/dev console** — runs, timeline, config editors, fleet panels (admin token at sign-in) |
 | **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell for slice implement agent mode |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
@@ -37,7 +39,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
 | **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
-| **Desktop** | `nimbusware_env` | `nimbusware-run` (pywebview; maker by default), `nimbusware-launcher` |
+| **Desktop** | `nimbusware_env` | `nimbusware-run` → Maker (default); `nimbusware-admin` → Admin Console; `nimbusware-launcher` |
 
 Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`).
 
@@ -72,7 +74,7 @@ packages/
   hermes_extensions/    Personas, bundles, catalog
   nimbusware_api/       FastAPI app
   nimbusware_maker/     Maker Streamlit UI + project store helpers
-  nimbusware_console/   Operator Streamlit UI
+  nimbusware_console/   Admin Console Streamlit UI (ops/dev)
   hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
   nimbusware_iam/       Enterprise IAM
@@ -116,14 +118,19 @@ poetry run nimbusware-config seed-from-repo
 
 ### 3. Run
 
-**Desktop shell (API + maker app + pywebview):**
+**Desktop shell (API + Maker + pywebview):**
 
 ```bash
 poetry run nimbusware-run
 # or: python run.py
-# Operator console instead:
-poetry run nimbusware-run --console
-# or: NIMBUSWARE_UI=console python run.py
+```
+
+**Admin Console (separate window — admin token required at sign-in):**
+
+```bash
+poetry run nimbusware-admin
+# or: poetry run nimbusware-run --admin
+# or: python run.py --admin
 ```
 
 **Maker app only (API must be running separately):**
@@ -143,22 +150,40 @@ poetry run nimbusware-launcher
 ```bash
 poetry run nimbusware-api
 poetry run streamlit run packages/nimbusware_maker/app.py
-# Operator console:
+# Admin Console (admin token at load):
 poetry run streamlit run packages/nimbusware_console/app.py
 ```
 
-Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--console --smoke` to smoke the operator UI instead.
+Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--admin --smoke` to smoke the Admin Console instead.
 
-API docs: http://127.0.0.1:8000/openapi.json (default port from `PORT` / `8000`).
+API docs: http://127.0.0.1:8000/docs — operations are tagged **user** (Maker) vs **admin** (Admin Console) in OpenAPI.
+
+## User vs Admin
+
+| Surface | Who | Auth |
+|---------|-----|------|
+| **Maker** (default) | End user / maker | No admin token for the product loop (`GET/POST /projects`, runs, maker approval) |
+| **Admin Console** | Ops / dev / admin | Admin token at console sign-in; API admin routes use `X-Nimbusware-Admin-Token` (Individual) or `maker_admin` API key (Enterprise) |
+| **Maker → Admin** | Admin on same machine | Sidebar **Sign in as admin** → **Open Admin Console** |
+
+Enterprise IAM scopes on API keys:
+
+| Scope | Use |
+|-------|-----|
+| `maker_user` | Maker app / user routes only |
+| `maker_admin` | Admin Console + control-plane mutations (includes `maker_user`) |
+
+Bootstrap (`POST /v1/enterprise/iam/bootstrap`) returns a **maker_admin** key. Create tenant user keys with `POST /v1/enterprise/tenants/{id}/api-keys` and `"api_scopes": ["maker_user"]`.
 
 ## Maker app
 
-Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`). Set `NIMBUSWARE_API_KEY` on Enterprise (user-scoped key).
 
 **Home & onboarding**
 
 - First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
-- Project picker backed by `hermes_project` (`GET/POST/DELETE /v1/projects`; create/delete require `X-Nimbusware-Admin-Token`)
+- Project picker backed by `hermes_project` (`GET/POST /v1/projects` — **no admin token**; `DELETE` is admin-only)
+- Per-project run history and **Settings** tab (model presets, auto-advance hint)
 
 **Build**
 
@@ -175,9 +200,15 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
 - Approval mode sets `maker_approval.enabled` on runs with requirements; disable auto chain with `HERMES_SLICE_AUTO_ADVANCE=0`
 
-## Operator console
+**Admin unlock (optional)**
 
-Streamlit app: [`packages/nimbusware_console/app.py`](packages/nimbusware_console/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+- Sidebar **Sign in as admin** unlocks Advanced mode and **Open Admin Console** (does not grant user-route admin headers)
+
+## Admin Console
+
+**Admin/dev only** — not part of the default product path. Streamlit app: [`packages/nimbusware_console/app.py`](packages/nimbusware_console/app.py). Requires admin token at load. Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+
+Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher **Admin Console…** button.
 
 **Runs & timeline**
 
@@ -195,39 +226,54 @@ Streamlit app: [`packages/nimbusware_console/app.py`](packages/nimbusware_consol
 
 **Enterprise only** (sidebar): API key connect, tenant switcher, **Enterprise fleet dashboard** (fleet memory status, Ollama SLI + preflight aggregate, Redis worker health).
 
+Run detail includes **Open in Maker Review** deep links (`NIMBUSWARE_MAKER_URL/?run_id=…`).
+
 ## Nimbusware API (`/v1`)
 
-All routes are under `/v1` unless noted. Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap) `X-Nimbusware-Api-Key`.
+All routes are under `/v1` unless noted. OpenAPI groups operations as **user** (Maker) or **admin** (Admin Console); see `/docs`.
+
+### Auth (Individual vs Enterprise)
+
+| Route group | Individual | Enterprise |
+|-------------|------------|------------|
+| **User** (`user` tag) | Open on localhost | `X-Nimbusware-Api-Key` with `maker_user` scope |
+| **Admin** (`admin` tag) | `X-Nimbusware-Admin-Token` | `maker_admin` scope or admin token (bootstrap) |
+
+Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap) `X-Nimbusware-Api-Key`.
 
 ### Core (all editions)
 
-| Area | Endpoints | Notes |
+| Area | Endpoints | Access |
 |------|-----------|--------|
-| **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | Create runs with `workflow_profile`; optional `project_id`; list filters + keyset pagination |
-| **Maker progress** | `GET /runs/{id}/maker-progress` | Plain-language progress projection |
-| **Maker approval** | `GET /runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | Human-in-the-loop slice workflow |
-| **Projects** | `GET/POST/DELETE /projects` | Maker workspaces; create/delete require admin token |
-| **Platform** | `GET /platform/edition`, `GET /platform/readiness` | Edition manifest + local readiness probe |
-| **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Drive pipeline stages; slice runs micro-slice chain (`?mode=auto` for legacy full pass) |
-| **Actions** | Retry, escalate, role execute stubs | Operator mutations |
-| **Bundles** | `GET /bundles/search`, catalog `GET/PUT/PATCH` | FAISS-backed search when index built |
-| **Personas** | Shelf read; admin CRUD with `X-Nimbusware-Admin-Token` | Postgres authority in DB mode |
-| **Custom agents** | `GET/POST/PATCH/DELETE /custom-agents` | Registry + prompts |
-| **Preflight** | `GET /preflight-history` | Bounded fleet aggregation + optional `metrics_export` |
-| **Scraper artifacts** | Inventory, retention signals | Local `.cache/hermes_scraper` or enterprise object-store primary |
+| **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | User |
+| **Maker progress** | `GET /runs/{id}/maker-progress` | User |
+| **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
+| **Projects** | `GET/POST /projects` | User |
+| **Projects** | `DELETE /projects/{id}` | Admin |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness` | User |
+| **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
+| **Actions** | Retry, escalate | Admin |
+| **Bundles** | `GET /bundles/search`, `GET /catalog` | User |
+| **Bundles** | `PUT/PATCH /bundles/catalog` | Admin |
+| **Personas** | Shelf read | User |
+| **Personas** | Admin CRUD | Admin |
+| **Custom agents** | `GET` list | User |
+| **Custom agents** | `POST/PATCH/DELETE` | Admin |
+| **Preflight** | `GET /preflight-history` | User |
+| **Scraper artifacts** | Inventory | User |
 
 ### Enterprise
 
 | Area | Endpoints | Notes |
 |------|-----------|--------|
-| **IAM** | `POST /enterprise/iam/bootstrap` (admin token), `GET /iam/me`, tenants, API keys | First-time bootstrap returns a one-time API key |
+| **IAM** | `POST /enterprise/iam/bootstrap` (admin token), `GET /iam/me`, tenants, API keys | Bootstrap key has `maker_admin`; create `maker_user` keys per tenant |
 | **Fleet memory** | `GET /status`, `POST /rebuild`, `GET /search`, `POST /sync` | Tenant-scoped org index |
 | **Config NOTIFY** | `GET /enterprise/config-notify/status` | Listener status when enabled |
 | **Object store** | `GET /enterprise/scraper-artifacts/object-store/status` | Primary backend config |
 | **Fleet worker** | `GET /enterprise/fleet-worker/health`, `/metrics` | Redis queue depth, back-pressure |
 | **Fleet Ollama SLI** | `GET /enterprise/fleet-ollama-sli/status`, `/preflight-aggregate` | Sustained p95 + history merge |
 
-Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterprise auth: `X-Nimbusware-Api-Key`.
+Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterprise user auth: `X-Nimbusware-Api-Key` with `maker_user` or `maker_admin` scope.
 
 ## CLI tools
 
@@ -243,8 +289,9 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 | `poetry run hermes-routing-suggest` | Read-only `model-routing.yaml` suggestions |
 | `poetry run hermes-run-worker` | Redis/in-memory run-dispatch worker |
 | `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
-| `poetry run nimbusware-run` | Desktop API + maker app window (`--console` for operator UI) |
-| `poetry run nimbusware-maker` | Streamlit maker app (expects API at `NIMBUSWARE_API_BASE`) |
+| `poetry run nimbusware-run` | Desktop API + Maker window (default) |
+| `poetry run nimbusware-admin` | Desktop API + Admin Console window |
+| `poetry run nimbusware-maker` | Streamlit Maker only (expects API at `NIMBUSWARE_API_BASE`) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |
 
 Scripts: [`scripts/build_bundle_faiss_index.py`](scripts/build_bundle_faiss_index.py), [`scripts/build_memory_faiss_index.py`](scripts/build_memory_faiss_index.py), [`scripts/run_dispatch_worker.py`](scripts/run_dispatch_worker.py), [`scripts/prune_scraper_artifacts.py`](scripts/prune_scraper_artifacts.py), [`scripts/e2e_smoke.py`](scripts/e2e_smoke.py).
@@ -266,9 +313,13 @@ Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` 
 ```powershell
 $env:NIMBUSWARE_EDITION = "enterprise"
 poetry run nimbusware-api
-# Bootstrap (once, admin token):
+# Bootstrap (once, admin token) → maker_admin key:
 # POST /v1/enterprise/iam/bootstrap  Header: X-Nimbusware-Admin-Token
 # Use returned api_key as X-Nimbusware-Api-Key on subsequent /v1/* calls
+#
+# Create a Maker-only user key for a tenant:
+# POST /v1/enterprise/tenants/{tenant_id}/api-keys
+#   Body: { "label": "maker-user", "api_scopes": ["maker_user"] }
 ```
 
 Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
@@ -309,8 +360,11 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 | `NIMBUSWARE_REPO_ROOT` | Repo root for configs and artifacts |
 | `NIMBUSWARE_DATABASE_URL` | Postgres for events + config |
 | `NIMBUSWARE_API_BASE` | UI → API URL |
-| `NIMBUSWARE_UI` | Desktop shell Streamlit target: `maker` (default) or `console` |
-| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations (projects, personas, etc.); default dev value in `.env.example` — search `SEARCH_AND_REPLACE_BEFORE_PROD` before production |
+| `NIMBUSWARE_API_KEY` | Enterprise Maker user key (`maker_user` scope) |
+| `NIMBUSWARE_UI` | Desktop shell: `maker` (default) or `admin` / `console` |
+| `NIMBUSWARE_ADMIN_TOKEN` | Admin Console sign-in + admin API routes; default dev value in `.env.example` — search `SEARCH_AND_REPLACE_BEFORE_PROD` before production |
+| `NIMBUSWARE_ADMIN_CONSOLE_URL` | Maker sidebar link target for Open Admin Console (default `http://127.0.0.1:8502`) |
+| `NIMBUSWARE_MAKER_URL` | Admin Console deep link back to Maker (default `http://127.0.0.1:8501`) |
 | `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
 | `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
 | `HERMES_USE_LLM` | Enable LLM-backed stages |

@@ -23,7 +23,6 @@ def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
             "template": "attach",
             "default_workflow_profile": "micro_slice",
         },
-        headers=ADMIN_HEADERS,
     )
     assert create.status_code == 200
     project_id = create.json()["project_id"]
@@ -51,7 +50,6 @@ def test_create_run_with_project_id(client: TestClient, tmp_path: Path) -> None:
             "workspace_path": str(ws),
             "template": "attach",
         },
-        headers=ADMIN_HEADERS,
     ).json()
     run = client.post(
         "/v1/runs",

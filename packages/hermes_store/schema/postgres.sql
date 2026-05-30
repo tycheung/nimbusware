@@ -23,13 +23,18 @@ CREATE TABLE IF NOT EXISTS hermes_api_key (
   key_hash TEXT NOT NULL UNIQUE,
   label TEXT NOT NULL DEFAULT '',
   role_taxonomy_keys JSONB NOT NULL DEFAULT '[]'::jsonb,
+  api_scopes JSONB NOT NULL DEFAULT '["maker_user"]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   revoked_at TIMESTAMPTZ NULL,
-  CHECK (jsonb_typeof(role_taxonomy_keys) = 'array')
+  CHECK (jsonb_typeof(role_taxonomy_keys) = 'array'),
+  CHECK (jsonb_typeof(api_scopes) = 'array')
 );
 
 CREATE INDEX IF NOT EXISTS idx_hermes_api_key_tenant
   ON hermes_api_key (tenant_id);
+
+ALTER TABLE hermes_api_key
+  ADD COLUMN IF NOT EXISTS api_scopes JSONB NOT NULL DEFAULT '["maker_user"]'::jsonb;
 
 -- =============================================================================
 -- hermes_project (Maker product, fo301)

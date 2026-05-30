@@ -70,6 +70,7 @@ hermes-role-telemetry = "hermes_orchestrator.telemetry_cli:main"
 hermes-routing-suggest = "hermes_orchestrator.routing_suggestions_cli:main"
 hermes-fleet-ollama-sli = "hermes_orchestrator.fleet_ollama_sli_cli:main"
 nimbusware-run = "nimbusware_env.run_app:main"
+nimbusware-admin = "nimbusware_env.admin_app:main"
 nimbusware-maker = "nimbusware_maker.cli:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
 

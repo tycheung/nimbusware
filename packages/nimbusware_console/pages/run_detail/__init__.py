@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 import streamlit as st
 
 from nimbusware_console.pages import _state as rl
@@ -31,6 +33,12 @@ def render_run_detail_section() -> None:
 
         if run_id.strip():
             rid = run_id.strip()
+            maker_url = os.environ.get("NIMBUSWARE_MAKER_URL", "http://127.0.0.1:8501").rstrip("/")
+            st.link_button(
+                "Open in Maker Review",
+                f"{maker_url}/?run_id={rid}",
+                help="Opens the Maker app with this run selected.",
+            )
             st.markdown(
                 "Artifact-style **read-only JSON** (existing API; no separate artifact store yet):"
             )

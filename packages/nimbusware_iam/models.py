@@ -13,6 +13,7 @@ class AuthContext:
     tenant_slug: str
     key_id: UUID
     role_taxonomy_keys: tuple[str, ...]
+    api_scopes: tuple[str, ...] = ("maker_user",)
 
 
 @dataclass(frozen=True)

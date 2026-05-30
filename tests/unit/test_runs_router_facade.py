@@ -124,4 +124,6 @@ def test_runs_router_tags(client: Any) -> None:
     for method, rel_path in EXPECTED_RUN_ROUTES:
         path = f"/v1{rel_path}"
         op = spec["paths"][path][method.lower()]
-        assert op.get("tags") == ["runs"]
+        tags = op.get("tags") or []
+        assert tags[0] in {"user", "admin"}
+        assert "runs" in tags

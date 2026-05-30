@@ -59,7 +59,13 @@ class NimbuswareLauncherApp:
         self.install_btn = ttk.Button(buttons, text="Install / setup", command=self.run_install)
         self.install_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.run_btn = ttk.Button(buttons, text="Run Nimbusware", command=self.run_nimbusware)
-        self.run_btn.pack(side=tk.LEFT)
+        self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.admin_btn = ttk.Button(
+            buttons,
+            text="Admin Console…",
+            command=self.run_admin_console,
+        )
+        self.admin_btn.pack(side=tk.LEFT)
 
         log_frame = ttk.LabelFrame(root, text="Activity", padding=8)
         log_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
@@ -95,6 +101,7 @@ class NimbuswareLauncherApp:
         self.check_btn.configure(state=state)
         self.install_btn.configure(state=state)
         self.run_btn.configure(state=state)
+        self.admin_btn.configure(state=state)
         if busy:
             self.update_btn.configure(state=tk.DISABLED)
         else:
@@ -250,6 +257,36 @@ class NimbuswareLauncherApp:
         threading.Thread(target=_watch, daemon=True).start()
         self.status_label.configure(text="Starting Nimbusware...")
         self._append_log("Starting Nimbusware (maker app + desktop window)...")
+
+    def run_admin_console(self) -> None:
+        run_py = self.repo / "run.py"
+        if not run_py.is_file():
+            messagebox.showerror("Run failed", f"Missing {run_py}")
+            return
+        if not messagebox.askyesno(
+            "Admin Console",
+            "Open the Admin Console?\n\nYou will need your admin token to sign in.",
+        ):
+            return
+        try:
+            cmd = [*resolve_python_command(self.repo), str(run_py), "--admin"]
+        except FileNotFoundError as exc:
+            messagebox.showerror("Run failed", str(exc))
+            return
+        env = os.environ.copy()
+        env.setdefault("NIMBUSWARE_REPO_ROOT", str(self.repo))
+        try:
+            subprocess.Popen(  # noqa: S603
+                cmd,
+                cwd=str(self.repo),
+                env=env,
+                **subprocess_spawn_kwargs(detach=True, hide_window=False),
+            )
+        except OSError as exc:
+            messagebox.showerror("Run failed", str(exc))
+            return
+        self._append_log(f"$ {' '.join(cmd)}")
+        self.status_label.configure(text="Starting Admin Console...")
 
 
 def main() -> int:
