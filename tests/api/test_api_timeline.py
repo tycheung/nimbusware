@@ -1,10 +1,34 @@
 from __future__ import annotations
 
+import os
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+
+from agent_core.models import (  # noqa: E402
+    EventType,
+    FindingCreatedEvent,
+    FindingCreatedPayload,
+    GateDecisionEmittedEvent,
+    GateDecisionEmittedPayload,
+    ModelPreflightPassedEvent,
+    ModelPreflightPassedPayload,
+    RunEscalatedEvent,
+    RunEscalatedPayload,
+    SelfRefinementLoopSignalledEvent,
+    SelfRefinementLoopSignalledPayload,
+    Severity,
+    StageFailedEvent,
+    StageFailedPayload,
+    StagePassedEvent,
+    StagePassedPayload,
+    StageStartedEvent,
+    StageStartedPayload,
+    Verdict,
+)
 
 pytestmark = pytest.mark.slow
 

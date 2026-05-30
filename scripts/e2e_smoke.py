@@ -155,7 +155,7 @@ def check_unit_tests(*, full_suite: bool) -> CheckResult:
             _poetry(),
             "run",
             "pytest",
-            "tests/api/test_api.py::test_create_run_and_timeline",
+            "tests/api/test_api_timeline.py::test_create_run_and_timeline",
             "tests/unit/test_extensions_yaml.py",
             "tests/e2e/test_operator_smoke_checks.py",
             "-q",

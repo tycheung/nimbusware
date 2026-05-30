@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
-from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+
+from agent_core.models import EventType
+from nimbusware_api.app import app
 
 pytestmark = pytest.mark.slow
 
