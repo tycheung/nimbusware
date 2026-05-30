@@ -11,7 +11,7 @@ from typing import Any, Protocol, runtime_checkable
 from uuid import UUID
 
 from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.merge import load_yaml
+from agent_core.yaml_io import load_yaml
 from hermes_store.protocol import EventStore
 
 

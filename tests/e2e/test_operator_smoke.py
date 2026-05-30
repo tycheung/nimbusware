@@ -6,6 +6,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+pytestmark = [pytest.mark.integration, pytest.mark.slow]
+
 REPO = Path(__file__).resolve().parents[2]
 SCRIPT = REPO / "scripts" / "e2e_smoke.py"
 

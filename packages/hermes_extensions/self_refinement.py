@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.merge import load_yaml
+from agent_core.yaml_io import load_yaml
 
 
 @dataclass(frozen=True)

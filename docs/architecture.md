@@ -22,6 +22,7 @@ External contracts stay stable while internals split into packages:
 - `nimbusware_api.facade.build_v1_router()` — HTTP routes
 - `hermes_orchestrator.pipeline` — `RunOrchestrator` (implementation in `_pipeline/`)
 - `nimbusware_console.main.render_main()` — console sections
+- `nimbusware_console.pages.run_detail/` — run detail UI split into summary, timeline, findings, actions panels
 - `nimbusware_projections` — shared read-model builders consumed by API and console
 
 ## Data flow

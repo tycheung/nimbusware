@@ -1,11 +1,6 @@
 """Console bundle catalog helper (follow-on 24 §14 #12)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
-import pytest
-
-pytestmark = pytest.mark.slow
-
 
 import json
 import os
@@ -14,7 +9,8 @@ from pathlib import Path
 
 import pytest
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
+pytestmark = pytest.mark.slow
+
 from nimbusware_console.bundle_catalog import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     bundle_catalog_bundle_count_caption,
@@ -290,7 +286,7 @@ def test_bundle_search_after_hits_stale_caption_none_for_bad_payload() -> None:
 
 
 def test_run_bundle_catalog_search_finds_auth_bundle() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     out = run_bundle_catalog_search(root, "auth", k=5)
     assert out["query"] == "auth"
     assert out["k"] == 5
@@ -301,7 +297,7 @@ def test_run_bundle_catalog_search_finds_auth_bundle() -> None:
 
 
 def test_run_bundle_catalog_search_empty_query_returns_no_hits() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     out = run_bundle_catalog_search(root, "   ", k=3)
     assert out["hits"] == []
     assert out["query"] == ""
@@ -310,7 +306,7 @@ def test_run_bundle_catalog_search_empty_query_returns_no_hits() -> None:
 
 
 def test_run_bundle_catalog_search_clamps_k() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     out = run_bundle_catalog_search(root, "billing", k=99)
     assert out["k"] == 20
 
@@ -339,7 +335,7 @@ def test_bundle_faiss_index_workflow_relpath_and_caption_note() -> None:
 
 
 def test_bundle_faiss_index_status_paths_under_repo() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     info = bundle_faiss_index_status(root)
     norm = info["index_dir"].replace("\\", "/")
     assert "configs/bundles/index" in norm
@@ -1190,7 +1186,7 @@ def test_bundle_faiss_readiness_missing_caption(tmp_path: Path) -> None:
     assert "faiss.index" in cap
     assert "bundle_order.json" in cap
 
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     summ = bundle_faiss_readiness_summary(root)
     if summ.get("code") == "ready":
         assert bundle_faiss_readiness_missing_caption(root) is None
@@ -1228,7 +1224,7 @@ def test_bundle_faiss_invoke_ps1_snippet_explicit(tmp_path: Path) -> None:
 
 
 def test_bundle_catalog_local_summary_real_repo_has_counts() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     s = bundle_catalog_local_summary(root)
     assert s["has_catalog_yaml"] is True
     assert s["catalog_yaml_relpath"] == "configs/bundles/catalog.yaml"
@@ -1492,7 +1488,7 @@ def test_bundle_catalog_bundles_without_id_rollup_operator_metrics_export() -> N
 
 
 def test_bundle_catalog_distinct_tags_sample_real_repo_sorted_and_contains_expected() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     tags = bundle_catalog_distinct_tags_sample(root)
     assert tags == sorted(tags)
     assert len(tags) == len(set(tags))
@@ -1549,7 +1545,7 @@ def test_bundle_catalog_distinct_tags_sample_truncates_at_max_n(tmp_path: Path) 
 
 
 def test_bundle_catalog_top_tag_counts_real_repo_descending_with_counts() -> None:
-    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = Path(__file__).resolve().parents[2]
     rows = bundle_catalog_top_tag_counts(root)
     assert rows
     counts = [r["count"] for r in rows]
@@ -2258,7 +2254,7 @@ def test_bundle_catalog_bundles_without_tags_caption_mixed_fixture(
 
 
 def test_bundle_faiss_catalog_yaml_version_caption_from_repo() -> None:
-    repo_root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    repo_root = Path(__file__).resolve().parents[2]
     cap = bundle_faiss_catalog_yaml_version_caption(repo_root)
     assert cap is not None
     assert "top-level version" in cap.lower()

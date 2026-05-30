@@ -33,8 +33,11 @@ jobs:
         run: poetry run ruff check packages tests
       - name: Mypy
         run: poetry run mypy packages
+      - name: Bandit
+        run: poetry run bandit -r packages -ll -q
+        continue-on-error: true
       - name: Pytest unit
-        run: poetry run pytest tests -q -m "not integration"
+        run: poetry run pytest tests -q -m "not integration and not slow"
         env:
           HERMES_SKIP_PREFLIGHT: "1"
 
@@ -44,13 +47,13 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_USER: hermes
-          POSTGRES_PASSWORD: hermes
-          POSTGRES_DB: hermes
+          POSTGRES_USER: nimbusware
+          POSTGRES_PASSWORD: nimbusware
+          POSTGRES_DB: nimbusware
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U hermes -d hermes"
+          --health-cmd "pg_isready -U nimbusware -d nimbusware"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10

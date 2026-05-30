@@ -8,8 +8,6 @@ from pathlib import Path
 from typing import Any, cast
 from uuid import UUID
 
-import yaml
-
 from agent_core.models import (
     FindingFixStrictnessSettings,
     NetworkEgressPolicySnapshot,
@@ -17,16 +15,6 @@ from agent_core.models import (
 )
 from agent_core.yaml_io import atomic_write_yaml, dump_yaml, load_yaml
 from hermes_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
-
-
-# Re-export for backward compatibility.
-__all__ = [
-    "atomic_write_yaml",
-    "dump_yaml",
-    "load_yaml",
-    "merge_policy_snapshot",
-    "policy_snapshot_from_files",
-]
 
 def _merge_finding_strictness(
     layers: list[dict[str, Any] | None],

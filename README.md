@@ -74,7 +74,7 @@ packages/
   nimbusware_env/       Edition gate, desktop runners
 configs/                Workflow YAML, personas, bundles (seed / gitops review)
 scripts/                Install, FAISS build, workers, e2e smoke, runbooks
-tests/                  Pytest suite (~2400 tests)
+tests/                  Pytest suite (~2,436 tests; unit/api/console/orchestrator/integration)
 ```
 
 Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
@@ -248,11 +248,13 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ```bash
 poetry run pytest tests/ -q
-# CI-style unit subset (no Postgres integration):
-poetry run pytest tests/ -q -m "not integration"
+# CI-style unit subset (no Postgres integration, no slow tests):
+poetry run pytest tests/ -q -m "not integration and not slow"
 # Optional fleet benchmarks:
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
 ```
+
+Install optional local hooks: `pip install pre-commit && pre-commit install` (runs ruff + whitespace checks).
 
 Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). Gates script: `scripts/run_integration_like_ci.ps1` / `.sh`.
 

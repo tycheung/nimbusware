@@ -20,6 +20,7 @@ packages = [
   { include = "nimbusware_env", from = "packages" },
   { include = "nimbusware_iam", from = "packages" },
   { include = "hermes_memory", from = "packages" },
+  { include = "nimbusware_projections", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -75,6 +76,7 @@ pythonpath = ["packages"]
 markers = [
   "integration: requires PostgreSQL (set NIMBUSWARE_DATABASE_URL)",
   "benchmark: pytest-benchmark fleet harness (fo206)",
+  "slow: long-running tests excluded from default CI unit job",
 ]
 
 [tool.ruff]
@@ -100,6 +102,7 @@ packages = [
   "nimbusware_env",
   "nimbusware_iam",
   "hermes_memory",
+  "nimbusware_projections",
 ]
 mypy_path = "packages"
 

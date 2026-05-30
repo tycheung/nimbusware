@@ -2,12 +2,12 @@
 
 Shared Pydantic models for the Hermes agent orchestration events.
 
-Normative product plan: `hermes-orchestrator-local-plan.md` (repo root).  
-Post-alignment gap analysis: `PLAN_GAP.md` (repo root).
+Normative product plan: `hermes-orchestrator-local-plan.md` (local, gitignored).
 
 Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory append store),
-`hermes_orchestrator` (YAML §6.3A merge, registry, preflight, MVP pipeline), `hermes_api` (FastAPI
-`/v1`), `hermes_executor` (subprocess + egress helpers), `hermes_console` (Streamlit), `hermes_extensions` (Phase 2+ stubs).
+`hermes_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI
+`/v1`), `hermes_executor` (subprocess + egress helpers), `nimbusware_console` (Streamlit),
+`hermes_extensions` (personas, bundles, escalation), `nimbusware_projections` (shared timeline builders).
 
 ## Wire format
 
@@ -20,6 +20,8 @@ Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory a
 ## Public API
 
 See `agent_core.models` exports in `packages/agent_core/models/__init__.py`.
+
+YAML helpers live in `agent_core.yaml_io` (`load_yaml`, `dump_yaml`, `atomic_write_yaml`).
 
 ## Changelog
 

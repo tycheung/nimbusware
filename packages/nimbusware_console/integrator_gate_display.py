@@ -12,21 +12,10 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-# Order matches API field intent from ``integrator_gate_timeline_summary`` in runs.
-_INTEGRATOR_GATE_FIELDS: tuple[tuple[str, str], ...] = (
-    ("verdict", "Verdict"),
-    ("failure_reason_code", "Failure reason code"),
-    ("stage_name", "Stage name"),
-    ("bundle_id", "Bundle id"),
-    ("bundle_title", "Bundle title"),
-    ("integrator_score", "Integrator score"),
-    ("min_score_to_pass", "Min score to pass"),
-    ("integrator_project_tags", "Project tags"),
-    ("integrator_bundle_tags", "Bundle tags"),
-    ("integrator_matched_tags", "Matched tags"),
-    ("event_id", "Event id"),
-    ("occurred_at", "Occurred at"),
-)
+# Order matches shared projection field metadata.
+from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_DISPLAY_FIELDS
+
+_INTEGRATOR_GATE_FIELDS = INTEGRATOR_GATE_DISPLAY_FIELDS
 
 
 def _stringify(value: Any) -> str:

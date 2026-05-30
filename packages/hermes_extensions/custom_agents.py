@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.merge import atomic_write_yaml, load_yaml
+from agent_core.yaml_io import atomic_write_yaml, load_yaml
 
 
 @dataclass

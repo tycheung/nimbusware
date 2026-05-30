@@ -14,7 +14,7 @@ from hermes_orchestrator.replay_harness import (
     stable_replay_hash,
 )
 
-_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "memory" / "failure_pattern_events.json"
+_FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "memory" / "failure_pattern_events.json"
 _GOLDEN_REPLAY_HASH = "4608af5e53064660b7e3e38699bb1833a55a8e60d94ba00e6ea0756843db6542"
 
 

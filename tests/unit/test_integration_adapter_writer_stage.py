@@ -57,7 +57,7 @@ integration_adapter_writer:
 def test_pipeline_emits_stub_stage() -> None:
     from pathlib import Path as _Path
 
-    root = _find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = find_repo_root(start=Path(__file__).resolve().parents[2])
     orch, mem = make_dev_orchestrator(repo_root=root)
     rid = orch.create_run("integration_adapter_writer_on")
     orch._maybe_emit_integration_adapter_writer_stage(rid)  # noqa: SLF001
@@ -126,7 +126,7 @@ def test_emit_live_integration_adapter_writer_stage_direct() -> None:
 def test_pipeline_emits_live_stage() -> None:
     from pathlib import Path as _Path
 
-    root = _find_repo_root(start=Path(__file__).resolve().parents[1])
+    root = find_repo_root(start=Path(__file__).resolve().parents[2])
     orch, mem = make_dev_orchestrator(repo_root=root)
     rid = orch.create_run("integration_adapter_writer_live")
     orch._maybe_emit_integration_adapter_writer_stage(rid)  # noqa: SLF001

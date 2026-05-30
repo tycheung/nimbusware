@@ -1,9 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
-import pytest
-
-pytestmark = pytest.mark.slow
-
 
 import os
 from datetime import datetime, timezone
@@ -13,7 +8,9 @@ from uuid import UUID, uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
+pytestmark = pytest.mark.slow
+
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
 

@@ -62,7 +62,23 @@ def test_legacy_sections_shim_exports() -> None:
 
 def test_console_pages_module_paths() -> None:
     base = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_console" / "pages"
-    assert (base / "config_tooling.py").is_file()
-    assert (base / "run_detail.py").is_file()
+    assert (base / "config_tooling").is_dir()
+    assert (base / "run_detail").is_dir()
     assert (base / "run_list.py").is_file()
     assert (base / "preflight_fleet.py").is_file()
+
+
+def test_run_detail_section_modules() -> None:
+    base = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_console" / "pages" / "run_detail"
+    for name in (
+        "summary.py",
+        "timeline_core.py",
+        "timeline_integrator.py",
+        "timeline_personas.py",
+        "timeline_escalation.py",
+        "timeline_misc.py",
+        "critic_matrix.py",
+        "findings.py",
+        "actions.py",
+    ):
+        assert (base / name).is_file(), name

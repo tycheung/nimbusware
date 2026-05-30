@@ -12,7 +12,7 @@ def test_run_pytest_targets_on_existing_test() -> None:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     code, out = run_pytest_targets(
         repo,
-        ["tests/test_micro_slice.py"],
+        ["tests/unit/test_micro_slice.py"],
         timeout_seconds=120.0,
     )
     assert code == 0

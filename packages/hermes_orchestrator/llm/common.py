@@ -27,6 +27,8 @@ from hermes_orchestrator.ollama_chat import ollama_chat_json
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from hermes_store.protocol import EventStore
+
+
 class LlmCriticLine(BaseModel):
     model_config = {"extra": "ignore"}
 
@@ -183,5 +185,4 @@ def _fixes_from_llm(raw: object) -> list[RequiredFixArtifact]:
     return out
 
 
-
-__all__ = [name for name in globals() if not name.startswith('__')]
+__all__ = [name for name in globals() if not name.startswith("__")]

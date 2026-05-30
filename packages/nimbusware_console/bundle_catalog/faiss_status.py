@@ -12,6 +12,18 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
+from nimbusware_console.bundle_catalog.catalog_local import (
+    _bundle_faiss_index_status_cell,
+    _bundle_faiss_mtime_observability,
+    _bundle_faiss_readiness_summary_cell,
+    _bundle_order_duplicate_id_signals,
+    _bundle_order_list_length,
+    _catalog_bundle_row_counts,
+    _catalog_nonempty_stripped_id_set,
+    _file_size_mtime,
+    _parse_bundle_order_string_ids,
+)
+
 BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH = ".github/workflows/bundle_faiss_index.yml"
 
 _LOCAL_CATALOG_RELPATH = "configs/bundles/catalog.yaml"
@@ -708,7 +720,7 @@ def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
     )
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from agent_core.yaml_io import load_yaml
 
     catalog_yaml_top_level_version_int: int | None = None
     cat_yaml_p = repo_root / "configs" / "bundles" / "catalog.yaml"
