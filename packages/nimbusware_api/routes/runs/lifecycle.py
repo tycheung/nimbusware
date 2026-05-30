@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 from fastapi.routing import APIRouter
 
 from nimbusware_api.deps import OrchDep, StoreDep
@@ -118,15 +118,32 @@ def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, 
         500: PROBLEM_RESPONSE_500,
     },
 )
-def lifecycle_slice(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
+def lifecycle_slice(
+    run_id: UUID,
+    orch: OrchDep,
+    store: StoreDep,
+    mode: str = Query(
+        default="default",
+        description="default: maker-aware; auto: full micro-slice pass without approval gates",
+    ),
+) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
         raise HTTPException(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
+    from nimbusware_maker.approval import maker_approval_enabled_from_rows
+    from nimbusware_maker.slice_workflow import prepare_next_pending_slice
+
+    if maker_approval_enabled_from_rows(rows) and mode != "auto":
+        return prepare_next_pending_slice(orch, run_id)
+
     repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
-    results = orch.execute_micro_slice_pass(run_id, workspace=repo)
+    from nimbusware_maker.workspace import resolve_run_workspace
+
+    ws = resolve_run_workspace(rows, override=repo)
+    results = orch.execute_micro_slice_pass(run_id, workspace=ws)
     completed = sum(1 for g in results if g.passed)
     blocked = len(results) - completed
     return {

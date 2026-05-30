@@ -16,6 +16,11 @@ class CreateRunMixin:
         business_area_persona_id: str | None = None,
         development_role_persona_id: str | None = None,
         custom_agent_id: str | None = None,
+        project_id: UUID | None = None,
+        project_name: str | None = None,
+        project_workspace_path: str | None = None,
+        project_template: str | None = None,
+        requirements: dict[str, Any] | None = None,
     ) -> UUID:
         mat = self._config_materializer
         assert_known_workflow(
@@ -122,6 +127,24 @@ class CreateRunMixin:
                 "system_prompt_preview": agent.system_prompt[:240],
                 "bound_role_id": agent.bound_role_id,
             }
+        project_meta: dict[str, Any] | None = None
+        if project_id is not None:
+            if not project_workspace_path or not str(project_workspace_path).strip():
+                raise ValueError("project_workspace_path required when project_id is set")
+            ws = Path(str(project_workspace_path)).resolve()
+            if not ws.is_dir():
+                raise ValueError(f"project workspace_path is not a directory: {ws}")
+            project_meta = {
+                "id": str(project_id),
+                "name": (project_name or "").strip() or str(project_id),
+                "workspace_path": str(ws),
+                "template": (project_template or "attach").strip() or "attach",
+            }
+        requirements_meta: dict[str, Any] | None = None
+        if requirements is not None:
+            if not isinstance(requirements, dict) or not str(requirements.get("business_prompt", "")).strip():
+                raise ValueError("requirements.business_prompt required when requirements is set")
+            requirements_meta = dict(requirements)
         universal_critique_effective = {
             "default_enabled": uc_block.default_enabled,
             "production_default_on": universal_critique_production_default_on(
@@ -215,6 +238,17 @@ class CreateRunMixin:
                 "memory": memory_meta,
                 **(
                     {"custom_agent": custom_agent_meta} if custom_agent_meta else {}
+                ),
+                **(
+                    {"project": project_meta} if project_meta else {}
+                ),
+                **(
+                    {"requirements": requirements_meta} if requirements_meta else {}
+                ),
+                **(
+                    {"maker_approval": {"enabled": True}}
+                    if requirements_meta is not None
+                    else {}
                 ),
                 **(
                     {

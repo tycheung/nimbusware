@@ -105,6 +105,25 @@ def _streamlit_command(py_cmd: list[str], console_script: Path, host: str, port:
     ]
 
 
+def _resolve_ui_mode(*, ui: str | None = None) -> str:
+    raw = (ui or os.environ.get("NIMBUSWARE_UI", "maker")).strip().lower()
+    if raw in ("console", "operator"):
+        return "console"
+    return "maker"
+
+
+def _streamlit_app_script(root: Path, ui_mode: str) -> Path:
+    if ui_mode == "console":
+        script = root / "packages" / "nimbusware_console" / "app.py"
+        label = "operator console"
+    else:
+        script = root / "packages" / "nimbusware_maker" / "app.py"
+        label = "maker app"
+    if not script.is_file():
+        raise FileNotFoundError(f"Streamlit {label} not found: {script}")
+    return script
+
+
 def start_servers(
     *,
     root: Path,
@@ -112,10 +131,14 @@ def start_servers(
     streamlit_host: str = "127.0.0.1",
     api_port: int | None = None,
     streamlit_port: int | None = None,
+    ui_mode: str | None = None,
 ) -> tuple[str, str, dict[str, str]]:
     """Start API + Streamlit; return console URL, API OpenAPI URL, and child env."""
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
+
+    mode = _resolve_ui_mode(ui=ui_mode)
+    os.environ["NIMBUSWARE_UI"] = mode
 
     if api_port is None:
         env_port = os.environ.get("NIMBUSWARE_API_PORT", "").strip()
@@ -130,13 +153,11 @@ def start_servers(
     py_cmd = resolve_python_command(root)
     env = os.environ.copy()
 
-    console_script = root / "packages" / "nimbusware_console" / "app.py"
-    if not console_script.is_file():
-        raise FileNotFoundError(f"Streamlit app not found: {console_script}")
+    streamlit_script = _streamlit_app_script(root, mode)
 
     _spawn([*py_cmd, "-m", "nimbusware_api.cli"], cwd=root, env=env)
     _spawn(
-        _streamlit_command(py_cmd, console_script, streamlit_host, streamlit_port),
+        _streamlit_command(py_cmd, streamlit_script, streamlit_host, streamlit_port),
         cwd=root,
         env=env,
     )
@@ -155,10 +176,14 @@ def run_desktop(
     streamlit_host: str = "127.0.0.1",
     api_port: int | None = None,
     streamlit_port: int | None = None,
-    window_title: str = "Nimbusware",
+    window_title: str | None = None,
     smoke_test: bool = False,
+    ui_mode: str | None = None,
 ) -> int:
     repo = (root or repo_root()).resolve()
+    mode = _resolve_ui_mode(ui=ui_mode)
+    if window_title is None:
+        window_title = "Nimbusware Maker" if mode == "maker" else "Nimbusware Console"
     log_file = run_log_path(repo)
 
     def _log(msg: str) -> None:
@@ -190,13 +215,14 @@ def run_desktop(
             streamlit_host=streamlit_host,
             api_port=api_port,
             streamlit_port=streamlit_port,
+            ui_mode=mode,
         )
     except (TimeoutError, RuntimeError, FileNotFoundError) as exc:
         _log(f"ERROR: {exc}")
         _terminate_procs()
         return 1
 
-    _log(f"Console server: {console_url} (pywebview shell)")
+    _log(f"Console server: {console_url} ({mode} UI, pywebview shell)")
     _log(f"API ready: {api_url}")
 
     if smoke_test:
@@ -252,20 +278,32 @@ def run_desktop(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Run Nimbusware (API + operator console) in a desktop window.",
+        description="Run Nimbusware (API + Streamlit) in a desktop window.",
     )
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--api-host", default="127.0.0.1")
     parser.add_argument("--api-port", type=int, default=None)
     parser.add_argument("--streamlit-host", default="127.0.0.1")
     parser.add_argument("--streamlit-port", type=int, default=None)
-    parser.add_argument("--title", default="Nimbusware")
+    parser.add_argument("--title", default=None, help="Window title (default: Maker or Console)")
+    ui_group = parser.add_mutually_exclusive_group()
+    ui_group.add_argument(
+        "--console",
+        action="store_true",
+        help="Open the operator console instead of the maker app (default).",
+    )
+    ui_group.add_argument(
+        "--maker",
+        action="store_true",
+        help="Open the maker app (default when neither flag is set).",
+    )
     parser.add_argument(
         "--smoke",
         action="store_true",
         help="Start API + Streamlit, verify health, exit (no GUI window).",
     )
     args = parser.parse_args(argv)
+    ui_mode = "console" if args.console else "maker"
     return run_desktop(
         root=args.repo_root,
         api_host=args.api_host,
@@ -274,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
         streamlit_port=args.streamlit_port,
         window_title=args.title,
         smoke_test=args.smoke,
+        ui_mode=ui_mode,
     )
 
 

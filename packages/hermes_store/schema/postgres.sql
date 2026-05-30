@@ -32,6 +32,24 @@ CREATE INDEX IF NOT EXISTS idx_hermes_api_key_tenant
   ON hermes_api_key (tenant_id);
 
 -- =============================================================================
+-- hermes_project (Maker product, fo301)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS hermes_project (
+  project_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES hermes_tenant(tenant_id),
+  name TEXT NOT NULL,
+  workspace_path TEXT NOT NULL,
+  template TEXT NOT NULL DEFAULT 'attach'
+    CHECK (template IN ('greenfield', 'attach')),
+  default_workflow_profile TEXT NOT NULL DEFAULT 'micro_slice',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hermes_project_tenant
+  ON hermes_project (tenant_id, created_at DESC);
+
+-- =============================================================================
 -- event_store (append-only, plan §19.2)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS event_store (

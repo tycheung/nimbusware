@@ -18,6 +18,8 @@ def _is_iam_exempt(path: str) -> bool:
         return True
     if path == "/v1/platform/edition":
         return True
+    if path == "/v1/platform/readiness":
+        return True
     if path == "/v1/enterprise/iam/bootstrap":
         return True
     return False

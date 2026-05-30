@@ -227,7 +227,10 @@ def execute_micro_slice_pass(
     workspace: Path | None = None,
 ) -> list[SliceGateChainResult]:
     """Run slice.plan → implement → verify → critique → test → gate for N slices."""
-    ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+    rows = orch._store.list_run_events(str(run_id))
+    from nimbusware_maker.workspace import resolve_run_workspace
+
+    ws = resolve_run_workspace(rows, override=workspace)
     block = _resolve_slice_block(orch, run_id)
     base = orch._base_cfg()
     runtime = base.get("runtime") or {}

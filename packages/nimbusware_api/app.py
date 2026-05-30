@@ -30,6 +30,7 @@ from hermes_store.memory import InMemoryEventStore
 from hermes_store.postgres import PostgresEventStore
 from nimbusware_iam.middleware import enterprise_iam_middleware
 from nimbusware_iam.store import PostgresIamStore, build_iam_store
+from nimbusware_maker.store import build_project_store
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +67,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     else:
         app.state.store = InMemoryEventStore()
     app.state.iam_store = build_iam_store(url)
+    app.state.project_store = build_project_store(url)
     if url and isinstance(app.state.iam_store, PostgresIamStore):
         app.state.iam_store.ensure_default_tenant()
     app.state.config_materializer = materializer
@@ -154,7 +156,11 @@ app = FastAPI(
         },
         {
             "name": "platform",
-            "description": "Product edition and Lane D feature gates (fo200).",
+            "description": "Product edition, local readiness (fo307), and Lane D feature gates.",
+        },
+        {
+            "name": "projects",
+            "description": "Maker project workspaces bound to Hermes runs (fo301).",
         },
         {
             "name": "enterprise",

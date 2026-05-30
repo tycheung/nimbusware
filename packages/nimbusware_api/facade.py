@@ -11,6 +11,7 @@ from nimbusware_api.routes import (
     personas,
     platform,
     preflight,
+    projects,
     runs,
     scraper_artifacts,
 )
@@ -25,6 +26,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(bundles.router)
     router.include_router(personas.router)
     router.include_router(custom_agents.router)
+    router.include_router(projects.router)
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)

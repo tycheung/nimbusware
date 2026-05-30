@@ -19,10 +19,12 @@ class SliceImplementResult:
 
 
 def slice_implement_mode() -> str:
-    """``scoped`` (default): ruff; ``llm``: LLM file edits when ``HERMES_USE_LLM=1``; ``stub``: no-op."""
+    """``scoped`` (default): ruff; ``llm``/``agent``: LLM paths; ``stub``: no-op."""
     raw = os.environ.get("HERMES_SLICE_IMPLEMENT", "scoped").strip().lower()
     if raw in ("stub", "0", "false", "no"):
         return "stub"
+    if raw == "agent":
+        return "agent"
     if raw == "llm" or (
         raw in ("auto", "1", "true", "yes")
         and os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
@@ -87,6 +89,18 @@ def execute_slice_implement(
             exit_code=0,
             log="slice implement stub (HERMES_SLICE_IMPLEMENT=stub)\n",
             paths_touched=(),
+        )
+
+    if mode == "agent":
+        from hermes_agent_tools.runtime import execute_slice_implement_agent
+
+        return execute_slice_implement_agent(
+            workspace,
+            plan,
+            timeout_seconds=timeout_seconds,
+            llm_base_url=llm_base_url,
+            llm_model_id=llm_model_id,
+            llm_system_prompt=llm_system_prompt,
         )
 
     if mode == "llm" and llm_base_url and llm_model_id:

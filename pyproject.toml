@@ -21,6 +21,8 @@ packages = [
   { include = "nimbusware_iam", from = "packages" },
   { include = "hermes_memory", from = "packages" },
   { include = "nimbusware_projections", from = "packages" },
+  { include = "nimbusware_maker", from = "packages" },
+  { include = "hermes_agent_tools", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -68,6 +70,7 @@ hermes-role-telemetry = "hermes_orchestrator.telemetry_cli:main"
 hermes-routing-suggest = "hermes_orchestrator.routing_suggestions_cli:main"
 hermes-fleet-ollama-sli = "hermes_orchestrator.fleet_ollama_sli_cli:main"
 nimbusware-run = "nimbusware_env.run_app:main"
+nimbusware-maker = "nimbusware_maker.cli:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
 
 [tool.pytest.ini_options]
@@ -103,6 +106,8 @@ packages = [
   "nimbusware_iam",
   "hermes_memory",
   "nimbusware_projections",
+  "nimbusware_maker",
+  "hermes_agent_tools",
 ]
 mypy_path = "packages"
 

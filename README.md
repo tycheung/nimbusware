@@ -1,6 +1,6 @@
 # Nimbusware
 
-Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit operator console**, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit maker app** (business prompt → scoped projects → reviewable slice builds), an **operator console** for deep ops visibility, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
 
 **Version:** `0.5.0` · **Python:** `>=3.10` (3.11+ recommended) · **Default workflow profile:** `nimbusware_production`
 
@@ -28,14 +28,16 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | Layer | Packages / entry | Role |
 |-------|------------------|------|
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
+| **Maker app** | `nimbusware_maker` | Streamlit product UI — projects, intent, plain progress, slice approval/revert |
 | **Operator console** | `nimbusware_console` | Streamlit ops UI (runs, timeline, config editors) |
+| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell for slice implement agent mode |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
 | **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
 | **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
 | **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
-| **Desktop** | `nimbusware_env` | `nimbusware-run` (pywebview), `nimbusware-launcher` |
+| **Desktop** | `nimbusware_env` | `nimbusware-run` (pywebview; maker by default), `nimbusware-launcher` |
 
 Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`).
 
@@ -50,7 +52,8 @@ Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent ru
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
-- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs pause for plan/slice approval unless auto-advance is enabled
+- **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses allowlisted tools instead of a single-shot writer stub
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
@@ -68,7 +71,9 @@ packages/
   hermes_executor/      Role-gated outbound HTTP
   hermes_extensions/    Personas, bundles, catalog
   nimbusware_api/       FastAPI app
-  nimbusware_console/   Streamlit UI
+  nimbusware_maker/     Maker Streamlit UI + project store helpers
+  nimbusware_console/   Operator Streamlit UI
+  hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
   nimbusware_iam/       Enterprise IAM
   nimbusware_env/       Edition gate, desktop runners
@@ -111,11 +116,20 @@ poetry run nimbusware-config seed-from-repo
 
 ### 3. Run
 
-**Desktop shell (API + Streamlit + pywebview):**
+**Desktop shell (API + maker app + pywebview):**
 
 ```bash
 poetry run nimbusware-run
 # or: python run.py
+# Operator console instead:
+poetry run nimbusware-run --console
+# or: NIMBUSWARE_UI=console python run.py
+```
+
+**Maker app only (API must be running separately):**
+
+```bash
+poetry run nimbusware-maker
 ```
 
 **Launcher (install / update / run buttons):**
@@ -128,12 +142,38 @@ poetry run nimbusware-launcher
 
 ```bash
 poetry run nimbusware-api
+poetry run streamlit run packages/nimbusware_maker/app.py
+# Operator console:
 poetry run streamlit run packages/nimbusware_console/app.py
 ```
 
-Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`.
+Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--console --smoke` to smoke the operator UI instead.
 
 API docs: http://127.0.0.1:8000/openapi.json (default port from `PORT` / `8000`).
+
+## Maker app
+
+Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+
+**Home & onboarding**
+
+- First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
+- Project picker backed by `hermes_project` (`GET/POST/DELETE /v1/projects`; create/delete require `X-Nimbusware-Admin-Token`)
+
+**Build**
+
+- Plain-language business prompt → clarifying questions → `requirements` artifact on run create
+- Runs attach to a project workspace (`project_id` on `POST /v1/runs`); executor resolves workspace from project metadata
+
+**Progress**
+
+- Plain-language stage summaries via `GET /v1/runs/{id}/maker-progress` (projection over run events)
+
+**Review**
+
+- Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
+- Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
+- Approval mode sets `maker_approval.enabled` on runs with requirements; disable auto chain with `HERMES_SLICE_AUTO_ADVANCE=0`
 
 ## Operator console
 
@@ -163,15 +203,18 @@ All routes are under `/v1` unless noted. Enterprise routes require `NIMBUSWARE_E
 
 | Area | Endpoints | Notes |
 |------|-----------|--------|
-| **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | Create runs with `workflow_profile`; list filters + keyset pagination |
-| **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Drive pipeline stages; slice runs micro-slice chain |
+| **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | Create runs with `workflow_profile`; optional `project_id`; list filters + keyset pagination |
+| **Maker progress** | `GET /runs/{id}/maker-progress` | Plain-language progress projection |
+| **Maker approval** | `GET /runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | Human-in-the-loop slice workflow |
+| **Projects** | `GET/POST/DELETE /projects` | Maker workspaces; create/delete require admin token |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness` | Edition manifest + local readiness probe |
+| **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Drive pipeline stages; slice runs micro-slice chain (`?mode=auto` for legacy full pass) |
 | **Actions** | Retry, escalate, role execute stubs | Operator mutations |
 | **Bundles** | `GET /bundles/search`, catalog `GET/PUT/PATCH` | FAISS-backed search when index built |
 | **Personas** | Shelf read; admin CRUD with `X-Nimbusware-Admin-Token` | Postgres authority in DB mode |
 | **Custom agents** | `GET/POST/PATCH/DELETE /custom-agents` | Registry + prompts |
 | **Preflight** | `GET /preflight-history` | Bounded fleet aggregation + optional `metrics_export` |
 | **Scraper artifacts** | Inventory, retention signals | Local `.cache/hermes_scraper` or enterprise object-store primary |
-| **Platform** | `GET /platform/edition` | Edition + feature manifest |
 
 ### Enterprise
 
@@ -200,7 +243,8 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 | `poetry run hermes-routing-suggest` | Read-only `model-routing.yaml` suggestions |
 | `poetry run hermes-run-worker` | Redis/in-memory run-dispatch worker |
 | `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
-| `poetry run nimbusware-run` | Desktop API + console window |
+| `poetry run nimbusware-run` | Desktop API + maker app window (`--console` for operator UI) |
+| `poetry run nimbusware-maker` | Streamlit maker app (expects API at `NIMBUSWARE_API_BASE`) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |
 
 Scripts: [`scripts/build_bundle_faiss_index.py`](scripts/build_bundle_faiss_index.py), [`scripts/build_memory_faiss_index.py`](scripts/build_memory_faiss_index.py), [`scripts/run_dispatch_worker.py`](scripts/run_dispatch_worker.py), [`scripts/prune_scraper_artifacts.py`](scripts/prune_scraper_artifacts.py), [`scripts/e2e_smoke.py`](scripts/e2e_smoke.py).
@@ -264,11 +308,14 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 |----------|---------|
 | `NIMBUSWARE_REPO_ROOT` | Repo root for configs and artifacts |
 | `NIMBUSWARE_DATABASE_URL` | Postgres for events + config |
-| `NIMBUSWARE_API_BASE` | Console → API URL |
-| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations |
+| `NIMBUSWARE_API_BASE` | UI → API URL |
+| `NIMBUSWARE_UI` | Desktop shell Streamlit target: `maker` (default) or `console` |
+| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations (projects, personas, etc.) |
 | `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
 | `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
 | `HERMES_USE_LLM` | Enable LLM-backed stages |
+| `HERMES_SLICE_AUTO_ADVANCE` | `0` pauses micro-slice chain for maker approval |
+| `HERMES_SLICE_IMPLEMENT` | Set to `agent` for allowlisted tool-based slice implement |
 | `HERMES_RUN_DISPATCH` | `redis` or in-memory queue for workers |
 | `HERMES_REDIS_URL` | Redis URL when dispatch=redis |
 

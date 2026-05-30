@@ -9,16 +9,28 @@ from fastapi import Header, HTTPException
 from fastapi.routing import APIRouter
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import OrchDep
+from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+from nimbusware_api.deps import OrchDep, ProjectStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import (
     CREATE_RUN_RESPONSE_200,
     CREATE_RUN_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
-from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+from nimbusware_maker.intent import build_requirements_artifact
 
 router = APIRouter()
+
+
+class ClarificationAnswerBody(BaseModel):
+    question_id: str = Field(default="", max_length=80)
+    question: str = Field(default="", max_length=500)
+    answer: str = Field(default="", max_length=4000)
+
+
+class RunRequirementsBody(BaseModel):
+    business_prompt: str = Field(min_length=1, max_length=8000)
+    clarifications: list[ClarificationAnswerBody] = Field(default_factory=list, max_length=10)
 
 
 class CreateRunBody(BaseModel):
@@ -28,6 +40,8 @@ class CreateRunBody(BaseModel):
     custom_agent_id: str | None = Field(default=None, max_length=120)
     memory_retrieval_enabled: bool | None = Field(default=None)
     memory_index_contribution: bool | None = Field(default=None)
+    project_id: str | None = Field(default=None, max_length=36)
+    requirements: RunRequirementsBody | None = None
 
 
 @router.post(
@@ -41,6 +55,7 @@ class CreateRunBody(BaseModel):
 def create_run(
     body: CreateRunBody,
     orch: OrchDep,
+    project_store: ProjectStoreDep,
     idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
 ) -> dict[str, Any]:
     key_uuid: UUID | None = None
@@ -63,6 +78,22 @@ def create_run(
         if body.memory_index_contribution is not None:
             memory_overrides["index_contribution"] = body.memory_index_contribution
         run_policy_overrides = {"memory": memory_overrides} if memory_overrides else None
+        project_uuid: UUID | None = None
+        project = None
+        if body.project_id is not None and str(body.project_id).strip():
+            try:
+                project_uuid = UUID(str(body.project_id).strip())
+            except ValueError as exc:
+                raise HTTPException(
+                    status_code=422,
+                    detail=problem("invalid_request", "project_id must be a UUID"),
+                ) from exc
+            project = project_store.get(project_uuid)
+            if project is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
+                )
         run_id = orch.create_run(
             body.workflow_profile,
             idempotency_key=key_uuid,
@@ -71,6 +102,20 @@ def create_run(
             development_role_persona_id=body.development_role_persona_id,
             custom_agent_id=body.custom_agent_id,
             run_policy_overrides=run_policy_overrides,
+            project_id=project_uuid,
+            project_name=project.name if project_uuid else None,
+            project_workspace_path=project.workspace_path if project_uuid else None,
+            project_template=project.template if project_uuid else None,
+            requirements=(
+                build_requirements_artifact(
+                    business_prompt=body.requirements.business_prompt,
+                    clarifications=[
+                        c.model_dump(mode="json") for c in body.requirements.clarifications
+                    ],
+                )
+                if body.requirements is not None
+                else None
+            ),
         )
     except FileNotFoundError as exc:
         raise HTTPException(

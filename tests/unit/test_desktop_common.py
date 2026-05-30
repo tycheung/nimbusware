@@ -91,6 +91,21 @@ def test_streamlit_command_uses_headless_local_bind() -> None:
     assert "8501" in cmd
 
 
+def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> None:
+    from nimbusware_env.run_app import _resolve_ui_mode, _streamlit_app_script
+
+    monkeypatch.delenv("NIMBUSWARE_UI", raising=False)
+    assert _resolve_ui_mode() == "maker"
+    assert _resolve_ui_mode(ui="console") == "console"
+    monkeypatch.setenv("NIMBUSWARE_UI", "operator")
+    assert _resolve_ui_mode() == "console"
+
+    root = repo_root(start=Path(__file__).resolve().parent)
+    assert _streamlit_app_script(root, "maker").name == "app.py"
+    assert "nimbusware_maker" in str(_streamlit_app_script(root, "maker"))
+    assert "nimbusware_console" in str(_streamlit_app_script(root, "console"))
+
+
 def test_launcher_module_imports() -> None:
     from nimbusware_env import launcher_app
 

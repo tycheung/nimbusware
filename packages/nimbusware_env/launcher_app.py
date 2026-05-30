@@ -249,7 +249,7 @@ class NimbuswareLauncherApp:
 
         threading.Thread(target=_watch, daemon=True).start()
         self.status_label.configure(text="Starting Nimbusware...")
-        self._append_log("Starting Nimbusware (console + desktop window)...")
+        self._append_log("Starting Nimbusware (maker app + desktop window)...")
 
 
 def main() -> int:

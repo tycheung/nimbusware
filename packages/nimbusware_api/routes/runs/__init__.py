@@ -9,6 +9,8 @@ from nimbusware_api.routes.runs.create import CreateRunBody, router as create_ro
 from nimbusware_api.routes.runs.detail import router as detail_router
 from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
+from nimbusware_api.routes.runs.maker_approval import router as maker_approval_router
+from nimbusware_api.routes.runs.maker_progress import router as maker_progress_router
 from nimbusware_api.read_models import *  # noqa: F403
 from nimbusware_api.read_models import __all__ as _read_model_exports
 
@@ -21,6 +23,8 @@ __all__ = [
     "create_router",
     "detail_router",
     "lifecycle_router",
+    "maker_progress_router",
+    "maker_approval_router",
     *_read_model_exports,
 ]
 
@@ -32,6 +36,8 @@ def build_runs_router() -> APIRouter:
     composed.include_router(create_router)
     composed.include_router(detail_router)
     composed.include_router(lifecycle_router)
+    composed.include_router(maker_progress_router)
+    composed.include_router(maker_approval_router)
     return composed
 
 
