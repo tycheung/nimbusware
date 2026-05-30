@@ -5,13 +5,16 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+
+ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
+
 pytestmark = pytest.mark.slow
 
 
 def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "maker-app"
     ws.mkdir()
-    headers = {"X-Nimbusware-Admin-Token": "test-admin-token"}
     create = client.post(
         "/v1/projects",
         json={
@@ -20,7 +23,7 @@ def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
             "template": "attach",
             "default_workflow_profile": "micro_slice",
         },
-        headers=headers,
+        headers=ADMIN_HEADERS,
     )
     assert create.status_code == 200
     project_id = create.json()["project_id"]
@@ -33,7 +36,7 @@ def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
     assert detail.status_code == 200
     assert detail.json()["workspace_path"] == str(ws.resolve())
 
-    deleted = client.delete(f"/v1/projects/{project_id}", headers=headers)
+    deleted = client.delete(f"/v1/projects/{project_id}", headers=ADMIN_HEADERS)
     assert deleted.status_code == 204
     assert client.get(f"/v1/projects/{project_id}").status_code == 404
 
@@ -41,7 +44,6 @@ def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
 def test_create_run_with_project_id(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "proj-run"
     ws.mkdir()
-    headers = {"X-Nimbusware-Admin-Token": "test-admin-token"}
     project = client.post(
         "/v1/projects",
         json={
@@ -49,7 +51,7 @@ def test_create_run_with_project_id(client: TestClient, tmp_path: Path) -> None:
             "workspace_path": str(ws),
             "template": "attach",
         },
-        headers=headers,
+        headers=ADMIN_HEADERS,
     ).json()
     run = client.post(
         "/v1/runs",

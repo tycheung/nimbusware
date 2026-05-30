@@ -13,6 +13,7 @@ from nimbusware_maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
     prepare_next_pending_slice,
+    revert_workspace,
     skip_pending_slice,
 )
 
@@ -73,3 +74,18 @@ def test_apply_pending_slice_stub(maker_run: tuple) -> None:
     assert result["status"] == "applied"
     rows = store.list_run_events(str(run_id))
     assert pending_slice_from_rows(rows) is None
+
+
+def test_revert_workspace_after_apply(maker_run: tuple) -> None:
+    orch, store, run_id, ws = maker_run
+    target = ws / "packages/hermes_orchestrator/micro_slice.py"
+    before = target.read_text(encoding="utf-8")
+    approve_run_plan(orch, run_id)
+    prep = prepare_next_pending_slice(orch, run_id)
+    slice_id = prep["pending"]["slice_id"]
+    os.environ["HERMES_SKIP_PREFLIGHT"] = "1"
+    apply_pending_slice(orch, run_id, slice_id)
+    target.write_text("corrupted\n", encoding="utf-8")
+    result = revert_workspace(orch, run_id)
+    assert result["status"] == "reverted"
+    assert target.read_text(encoding="utf-8") == before

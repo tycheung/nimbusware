@@ -1,0 +1,22 @@
+from __future__ import annotations
+
+from nimbusware_env.admin_token import (
+    DEFAULT_NIMBUSWARE_ADMIN_TOKEN,
+    apply_default_admin_token_env,
+    nimbusware_admin_token,
+)
+
+
+def test_default_admin_token_constant_is_unique() -> None:
+    assert "SEARCH_AND_REPLACE_BEFORE_PROD" in DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+
+
+def test_nimbusware_admin_token_uses_env(monkeypatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "custom-admin-secret")
+    assert nimbusware_admin_token() == "custom-admin-secret"
+
+
+def test_apply_default_admin_token_env(monkeypatch) -> None:
+    monkeypatch.delenv("NIMBUSWARE_ADMIN_TOKEN", raising=False)
+    apply_default_admin_token_env()
+    assert nimbusware_admin_token() == DEFAULT_NIMBUSWARE_ADMIN_TOKEN

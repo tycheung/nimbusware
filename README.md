@@ -310,7 +310,7 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 | `NIMBUSWARE_DATABASE_URL` | Postgres for events + config |
 | `NIMBUSWARE_API_BASE` | UI → API URL |
 | `NIMBUSWARE_UI` | Desktop shell Streamlit target: `maker` (default) or `console` |
-| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations (projects, personas, etc.) |
+| `NIMBUSWARE_ADMIN_TOKEN` | Admin-only API mutations (projects, personas, etc.); default dev value in `.env.example` — search `SEARCH_AND_REPLACE_BEFORE_PROD` before production |
 | `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
 | `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
 | `HERMES_USE_LLM` | Enable LLM-backed stages |

@@ -38,20 +38,22 @@ def load_dotenv(
     """
     root = repo_root or find_repo_root()
     env_path = path or (root / ".env")
-    if not env_path.is_file():
-        return None
-    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            continue
-        match = _LINE.match(line)
-        if not match:
-            continue
-        key, value = match.group(1), _strip_quotes(match.group(2))
-        if not override and key in os.environ:
-            continue
-        os.environ[key] = value
-    return env_path.resolve()
+    if env_path.is_file():
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            match = _LINE.match(line)
+            if not match:
+                continue
+            key, value = match.group(1), _strip_quotes(match.group(2))
+            if not override and key in os.environ:
+                continue
+            os.environ[key] = value
+    from nimbusware_env.admin_token import apply_default_admin_token_env
+
+    apply_default_admin_token_env()
+    return env_path.resolve() if env_path.is_file() else None
 
 
 def _format_env_value(value: str) -> str:

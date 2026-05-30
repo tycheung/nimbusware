@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import ctypes
 import os
 import shutil
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -10,6 +12,8 @@ import yaml
 
 from hermes_store.memory import InMemoryEventStore
 from nimbusware_env.edition import edition_manifest
+
+INSTALL_GUIDE = "python scripts/install_nimbusware.py  (see README Quick start)"
 
 
 def _load_model_routing(repo_root: Path) -> dict[str, Any]:
@@ -82,12 +86,15 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         t0.raise_for_status()
         data = t0.json()
     except (httpx.HTTPError, ValueError) as exc:
-        return {
+        out: dict[str, Any] = {
             "status": "fail",
             "message": f"Ollama not reachable at {base_url}: {exc}",
             "base_url": base_url,
             "primary_model": primary,
         }
+        if primary:
+            out["pull_command"] = f"ollama pull {primary}"
+        return out
 
     names: set[str] = set()
     model_list = data.get("models") if isinstance(data, dict) else None
@@ -105,6 +112,7 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
             "base_url": base_url,
             "primary_model": primary,
             "loaded_models": sorted(names)[:12],
+            "pull_command": f"ollama pull {primary}",
         }
 
     return {
@@ -113,6 +121,67 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         "base_url": base_url,
         "primary_model": primary,
         "loaded_models": sorted(names)[:12] if names else [],
+    }
+
+
+def _available_memory_gb() -> float | None:
+    if sys.platform == "win32":
+        try:
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ("dwLength", ctypes.c_ulong),
+                    ("dwMemoryLoad", ctypes.c_ulong),
+                    ("ullTotalPhys", ctypes.c_ulonglong),
+                    ("ullAvailPhys", ctypes.c_ulonglong),
+                    ("ullTotalPageFile", ctypes.c_ulonglong),
+                    ("ullAvailPageFile", ctypes.c_ulonglong),
+                    ("ullTotalVirtual", ctypes.c_ulonglong),
+                    ("ullAvailVirtual", ctypes.c_ulonglong),
+                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                ]
+
+            stat = MEMORYSTATUSEX()
+            stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):  # type: ignore[attr-defined]
+                return stat.ullAvailPhys / (1024**3)
+        except (AttributeError, OSError, TypeError):
+            return None
+    elif sys.platform.startswith("linux"):
+        try:
+            meminfo = Path("/proc/meminfo").read_text(encoding="utf-8")
+        except OSError:
+            return None
+        for line in meminfo.splitlines():
+            if line.startswith("MemAvailable:"):
+                parts = line.split()
+                if len(parts) >= 2:
+                    return int(parts[1]) / (1024**2)
+    return None
+
+
+def _check_memory() -> dict[str, Any]:
+    avail = _available_memory_gb()
+    if avail is None:
+        return {
+            "status": "degraded",
+            "message": "RAM check unavailable on this platform",
+        }
+    if avail < 4.0:
+        return {
+            "status": "fail",
+            "message": f"Low available RAM ({avail:.1f} GB) — try the Fast preset",
+            "available_gb": round(avail, 2),
+        }
+    if avail < 8.0:
+        return {
+            "status": "degraded",
+            "message": f"Tight RAM ({avail:.1f} GB) — Fast preset recommended",
+            "available_gb": round(avail, 2),
+        }
+    return {
+        "status": "ok",
+        "message": f"{avail:.1f} GB RAM available",
+        "available_gb": round(avail, 2),
     }
 
 
@@ -151,12 +220,14 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
     checks = {
         "database": _check_database(store),
         "repo_root": _check_repo_root(repo_root),
+        "memory": _check_memory(),
         "ollama": _check_ollama(repo_root),
         "disk": _check_disk(repo_root),
     }
     manifest = edition_manifest()
-    return {
-        "status": _overall_status(checks),
+    overall = _overall_status(checks)
+    body: dict[str, Any] = {
+        "status": overall,
         "checks": checks,
         "edition": manifest.get("edition"),
         "presets": {
@@ -170,3 +241,9 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
             },
         },
     }
+    if overall == "not_ready":
+        body["install_guide"] = INSTALL_GUIDE
+    return body
+    if overall == "not_ready":
+        body["install_guide"] = INSTALL_GUIDE
+    return body

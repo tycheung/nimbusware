@@ -456,7 +456,7 @@ def test_execute_role_requires_admin_token(client: TestClient) -> None:
     assert "message" in body
     ok = client.post(
         "/v1/roles/00000000-0000-4000-8000-000000000001/execute",
-        headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
+        headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
     )
     assert ok.status_code == 200
 
@@ -633,7 +633,7 @@ def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> Non
         ):
             client.post(
                 f"/v1/runs/{run_id}/lifecycle/verify",
-                headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
+                headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
             )
     live = client.get(f"/v1/runs/{run_id}/timeline").json().get("critic_matrix_live")
     assert isinstance(live, dict)

@@ -17,7 +17,7 @@ _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 # tests/test_api.py:11-13 and tests/test_workflow_profile_path_propagation.py).
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
 
 from fastapi.testclient import TestClient  # noqa: E402
 

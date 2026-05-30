@@ -6,15 +6,15 @@ from typing import Any
 import httpx
 
 
+from nimbusware_env.admin_token import nimbusware_admin_token
+
+
 def api_base() -> str:
     return os.environ.get("NIMBUSWARE_API_BASE", "http://127.0.0.1:8000/v1").rstrip("/")
 
 
 def admin_headers() -> dict[str, str]:
-    token = os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "").strip()
-    if not token:
-        return {}
-    return {"X-Nimbusware-Admin-Token": token}
+    return {"X-Nimbusware-Admin-Token": nimbusware_admin_token()}
 
 
 def get_json(path: str) -> dict[str, Any]:

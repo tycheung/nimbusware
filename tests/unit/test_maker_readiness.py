@@ -56,6 +56,7 @@ def test_build_platform_readiness_in_memory_store(
     assert body["status"] in {"degraded", "not_ready", "ready"}
     assert body["checks"]["database"]["status"] == "degraded"
     assert body["checks"]["ollama"]["skipped"] is True
+    assert "memory" in body["checks"]
 
 
 @pytest.fixture

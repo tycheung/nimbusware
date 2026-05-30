@@ -5,6 +5,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+
+ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
+
 pytestmark = pytest.mark.slow
 
 
@@ -14,11 +18,10 @@ def test_maker_approval_flow(client: TestClient, tmp_path: Path) -> None:
     (ws / "packages/hermes_orchestrator").mkdir(parents=True)
     (ws / "packages/hermes_orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
     (ws / "packages/hermes_orchestrator/slice_gate.py").write_text("# x\n", encoding="utf-8")
-    headers = {"X-Nimbusware-Admin-Token": "test-admin-token"}
     project = client.post(
         "/v1/projects",
         json={"name": "Approval", "workspace_path": str(ws), "template": "attach"},
-        headers=headers,
+        headers=ADMIN_HEADERS,
     ).json()
     run = client.post(
         "/v1/runs",

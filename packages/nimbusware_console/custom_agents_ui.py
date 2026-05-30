@@ -16,13 +16,15 @@ _SS_EDIT_AGENT = "nimbusware_edit_agent_id"
 _SS_PROMPT_DRAFT = "nimbusware_prompt_draft"
 
 
+from nimbusware_env.admin_token import nimbusware_admin_token
+
+
 def _api_base() -> str:
     return os.environ.get("NIMBUSWARE_API_BASE", "http://127.0.0.1:8000/v1").rstrip("/")
 
 
 def _admin_headers() -> dict[str, str]:
-    token = os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "").strip()
-    return {"X-Nimbusware-Admin-Token": token} if token else {}
+    return {"X-Nimbusware-Admin-Token": nimbusware_admin_token()}
 
 
 def load_registry_local(repo_root: Path) -> CustomAgentRegistry:

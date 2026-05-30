@@ -538,6 +538,9 @@ def _configure_edition(args: argparse.Namespace, repo: Path) -> str:
 
     edition_name = normalize_edition(args.edition, strict=True)
     env_path = set_env_var("NIMBUSWARE_EDITION", edition_name, repo_root=repo)
+    from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN  # noqa: PLC0415
+
+    set_env_var("NIMBUSWARE_ADMIN_TOKEN", DEFAULT_NIMBUSWARE_ADMIN_TOKEN, repo_root=repo)
     _log(f"\nProduct edition: {edition_name}")
     _log(f"  Persisted {env_path}")
     for hint in enterprise_install_hints():

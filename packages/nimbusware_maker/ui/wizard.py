@@ -3,6 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_maker.api_client import get_json, post_json
+from nimbusware_maker.intent import CLARIFYING_QUESTIONS
 from nimbusware_maker.onboarding import SESSION_WIZARD_STEP, is_onboarded, mark_onboarded
 
 
@@ -51,6 +52,15 @@ def render_first_run_wizard() -> bool:
                 for name, check in checks.items():
                     if isinstance(check, dict):
                         st.caption(f"{name}: {check.get('message', '')}")
+            ollama = checks.get("ollama") if isinstance(checks, dict) else None
+            if isinstance(ollama, dict):
+                pull = ollama.get("pull_command")
+                if isinstance(pull, str) and pull.strip():
+                    st.markdown("If Ollama is running but the model is missing:")
+                    st.code(pull.strip())
+            guide = readiness.get("install_guide")
+            if isinstance(guide, str) and guide.strip():
+                st.caption(f"Setup: {guide}")
         except Exception as exc:  # noqa: BLE001
             st.warning(
                 f"Could not reach the API ({exc}). Start it with: poetry run nimbusware-api",
@@ -74,6 +84,22 @@ def render_first_run_wizard() -> bool:
             height=100,
         )
         st.session_state["wizard_business_prompt"] = business_prompt
+        clarifications: list[dict[str, str]] = []
+        st.markdown("**A few clarifying questions (optional)**")
+        for item in CLARIFYING_QUESTIONS:
+            answer = st.text_input(
+                item["question"],
+                key=f"wizard_clarify_{item['id']}",
+            )
+            if answer.strip():
+                clarifications.append(
+                    {
+                        "question_id": item["id"],
+                        "question": item["question"],
+                        "answer": answer.strip(),
+                    },
+                )
+        st.session_state["wizard_clarifications"] = clarifications
         cols = st.columns(2)
         with cols[0]:
             if st.button("Back"):
@@ -92,6 +118,9 @@ def render_first_run_wizard() -> bool:
         st.markdown("**Step 4 of 4 — Create project and start**")
         project_cfg = st.session_state.get("wizard_project") or {}
         prompt = str(st.session_state.get("wizard_business_prompt") or "").strip()
+        clarifications = st.session_state.get("wizard_clarifications")
+        if not isinstance(clarifications, list):
+            clarifications = []
         if st.button("Finish setup", type="primary"):
             try:
                 project = post_json(
@@ -108,7 +137,10 @@ def render_first_run_wizard() -> bool:
                     {
                         "workflow_profile": "micro_slice",
                         "project_id": project.get("project_id"),
-                        "requirements": {"business_prompt": prompt, "clarifications": []},
+                        "requirements": {
+                            "business_prompt": prompt,
+                            "clarifications": clarifications,
+                        },
                     },
                 )
                 run_id = str(run.get("run_id") or "")

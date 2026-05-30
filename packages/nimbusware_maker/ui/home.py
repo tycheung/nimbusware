@@ -5,6 +5,9 @@ import streamlit as st
 from nimbusware_maker.api_client import get_json, post_json
 
 
+from nimbusware_maker.runs import latest_run_id_for_project
+
+
 def _status_emoji(status: str) -> str:
     return {"ready": "🟢", "degraded": "🟡", "not_ready": "🔴"}.get(status, "⚪")
 
@@ -38,6 +41,10 @@ def render_readiness_strip() -> dict:
                     st.markdown(
                         f"**{preset.get('label', key)}** — {preset.get('hint', '')}",
                     )
+    if overall == "not_ready":
+        guide = readiness.get("install_guide")
+        if isinstance(guide, str) and guide.strip():
+            st.warning(f"Setup help: `{guide}`")
     return readiness
 
 
@@ -59,9 +66,25 @@ def render_projects_panel() -> None:
             st.markdown(
                 f"**{project.get('name', 'Project')}** — `{project.get('workspace_path', '')}`",
             )
-            if st.button("Use for build", key=f"use-{project.get('project_id')}"):
-                st.session_state["maker_active_project_id"] = project.get("project_id")
-                st.info("Switch to the Build tab to describe your intent and start a run.")
+            pid = str(project.get("project_id") or "")
+            cols = st.columns(2)
+            with cols[0]:
+                if st.button("Use for build", key=f"use-{pid}"):
+                    st.session_state["maker_active_project_id"] = pid
+                    st.info("Switch to the Build tab to describe your intent and start a run.")
+            with cols[1]:
+                if pid and st.button("Continue last run", key=f"continue-{pid}"):
+                    try:
+                        run_id = latest_run_id_for_project(pid)
+                    except Exception as exc:  # noqa: BLE001
+                        st.error(f"Could not load runs: {exc}")
+                    else:
+                        if run_id:
+                            st.session_state["maker_active_project_id"] = pid
+                            st.session_state["maker_active_run_id"] = run_id
+                            st.success(f"Resumed run {run_id} — open Review or Progress.")
+                        else:
+                            st.info("No runs yet for this project. Use Build to start one.")
 
     with st.form("create_project"):
         st.markdown("**New project**")

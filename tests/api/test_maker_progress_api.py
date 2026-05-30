@@ -5,6 +5,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
+
+ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
+
 pytestmark = pytest.mark.slow
 
 
@@ -16,11 +20,10 @@ def test_maker_progress_404(client: TestClient) -> None:
 def test_maker_progress_after_intent_run(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "intent-app"
     ws.mkdir()
-    headers = {"X-Nimbusware-Admin-Token": "test-admin-token"}
     project = client.post(
         "/v1/projects",
         json={"name": "Intent", "workspace_path": str(ws), "template": "attach"},
-        headers=headers,
+        headers=ADMIN_HEADERS,
     ).json()
     run = client.post(
         "/v1/runs",

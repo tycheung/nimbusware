@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")
+os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
 
 from nimbusware_api.app import app  # noqa: E402
 
@@ -36,7 +36,7 @@ def test_list_custom_agents(client: TestClient) -> None:
 def test_delete_custom_agent(client: TestClient) -> None:
     create = client.post(
         "/v1/custom-agents",
-        headers={"X-Nimbusware-Admin-Token": os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")},
+        headers={"X-Nimbusware-Admin-Token": os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")},
         json={
             "id": "temp_agent",
             "display_name": "Temp",
@@ -46,7 +46,7 @@ def test_delete_custom_agent(client: TestClient) -> None:
     assert create.status_code == 200
     deleted = client.delete(
         "/v1/custom-agents/temp_agent",
-        headers={"X-Nimbusware-Admin-Token": os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token")},
+        headers={"X-Nimbusware-Admin-Token": os.environ.get("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")},
     )
     assert deleted.status_code == 204
     missing = client.get("/v1/custom-agents/temp_agent")

@@ -1,13 +1,11 @@
-"""Local-only admin gate for dangerous routes ."""
-
 from __future__ import annotations
 
-import os
 from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException
 
 from nimbusware_api.errors import problem
+from nimbusware_env.admin_token import nimbusware_admin_token
 
 
 def require_admin_token(
@@ -16,15 +14,7 @@ def require_admin_token(
         alias="X-Nimbusware-Admin-Token",
     ),
 ) -> None:
-    secret = os.environ.get("NIMBUSWARE_ADMIN_TOKEN")
-    if not secret:
-        raise HTTPException(
-            status_code=503,
-            detail=problem(
-                "admin_token_not_configured",
-                "NIMBUSWARE_ADMIN_TOKEN is not configured on the server",
-            ),
-        )
+    secret = nimbusware_admin_token()
     if not x_nimbusware_admin_token or x_nimbusware_admin_token != secret:
         raise HTTPException(
             status_code=401,

@@ -192,7 +192,7 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
             r = c.patch(
                 "/v1/personas/business_area/commerce",
                 json=patch_body,
-                headers={"X-Nimbusware-Admin-Token": "test-admin-token"},
+                headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
             )
             assert r.status_code == 200, r.text
             patched = next(
