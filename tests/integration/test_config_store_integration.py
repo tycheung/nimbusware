@@ -25,7 +25,7 @@ def _url() -> str:
 
 
 def test_seed_personas_round_trip_matches_file_shape() -> None:
-    repo = find_repo_root(start=Path(__file__).resolve().parents[1])
+    repo = find_repo_root(start=Path(__file__).resolve().parents[2])
     url = _url()
     store = PostgresConfigStore(url)
     seed_config_from_repo(repo, store)

@@ -1,10 +1,5 @@
+# Local hooks — install: pip install pre-commit && pre-commit install
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.4
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
@@ -12,3 +7,17 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
         args: [--unsafe]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: mypy-packages
+        name: mypy (packages)
+        entry: poetry run mypy packages
+        language: system
+        pass_filenames: false
+        files: ^packages/

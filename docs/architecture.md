@@ -39,4 +39,20 @@ Operator / API
 
 `NIMBUSWARE_EDITION=individual|enterprise` controls IAM, fleet memory, Redis workers, and enterprise-only routes (404 on Individual).
 
-See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md) and [adr/002-edition-gate.md](adr/002-edition-gate.md).
+See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md), [adr/002-edition-gate.md](adr/002-edition-gate.md), [adr/003-projections-layer.md](adr/003-projections-layer.md), and [adr/004-api-request-logging.md](adr/004-api-request-logging.md).
+
+## Projections map
+
+| Domain | Builder module | Field metadata |
+|--------|----------------|----------------|
+| Integrator gate | `builders/integrator_gate.py` | `fields/integrator_gate.py` |
+| Security scan on verify | `builders/security_scan.py` | `fields/security_scan.py` |
+| Agent evaluator | `builders/agent_evaluator.py` | `fields/agent_evaluator.py` |
+| Self-refinement | `builders/self_refinement.py` | `fields/self_refinement.py` |
+| Universal critique | `builders/universal_critique.py` | (inline stage keys) |
+| Run escalated | `builders/run_escalated.py` | `fields/run_escalated.py` |
+| Scraper fetch | `builders/scraper_fetch.py` | `fields/scraper_fetch.py` |
+| Persona assignment | `builders/persona_assignment.py` | (from `run.created` metadata) |
+| Stage graph / parallel writers / critic matrix | `builders/stage_timeline.py` | (orchestrator-backed) |
+
+API shims live under `nimbusware_api/read_models/`. Console tables import `*_DISPLAY_FIELDS` or call the same builders via timeline JSON.

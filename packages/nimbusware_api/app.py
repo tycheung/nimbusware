@@ -222,6 +222,23 @@ async def hermes_uncaught_exception_handler(
 
 
 @app.middleware("http")
+async def _request_logging_middleware(request: Request, call_next):
+    import time
+
+    started = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - started) * 1000.0
+    logging.getLogger("nimbusware_api.request").info(
+        "%s %s -> %s (%.1f ms)",
+        request.method,
+        request.url.path,
+        response.status_code,
+        elapsed_ms,
+    )
+    return response
+
+
+@app.middleware("http")
 async def _enterprise_iam(request: Request, call_next):
     return await enterprise_iam_middleware(request, call_next)
 

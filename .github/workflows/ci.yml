@@ -34,8 +34,7 @@ jobs:
       - name: Mypy
         run: poetry run mypy packages
       - name: Bandit
-        run: poetry run bandit -r packages -ll -q
-        continue-on-error: true
+        run: poetry run bandit -r packages -lll -q
       - name: Pytest unit
         run: poetry run pytest tests -q -m "not integration and not slow"
         env:

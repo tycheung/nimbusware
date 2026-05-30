@@ -145,3 +145,125 @@ def test_self_refinement_api_shim_delegates_to_projections() -> None:
     assert self_refinement_timeline_summary(sample) == proj_sr_summary(sample)
     assert self_refinement_marker_timeline_entries(sample) == proj_sr_entries(sample)
     assert self_refinement_marker_timeline_history(sample) == proj_sr_history(sample)
+
+
+def test_run_escalated_api_shim_delegates_to_projections() -> None:
+    from nimbusware_api.read_models.run_escalated import (
+        run_escalated_timeline_delta,
+        run_escalated_timeline_entries,
+        run_escalated_timeline_history,
+        run_escalated_timeline_summary,
+    )
+    from nimbusware_projections.builders.run_escalated import (
+        run_escalated_timeline_delta as proj_delta,
+        run_escalated_timeline_entries as proj_entries,
+        run_escalated_timeline_history as proj_history,
+        run_escalated_timeline_summary as proj_summary,
+    )
+    from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
+
+    sample = [
+        {
+            "event_type": "run.escalated",
+            "event_id": "e1",
+            "occurred_at": "2026-01-01T00:00:00Z",
+            "payload": {
+                "actor_id": "ops",
+                "reason_code": "manual",
+                "policy_snapshot_id": "p1",
+                "notes": "review",
+            },
+        },
+        {
+            "event_type": "run.escalated",
+            "event_id": "e2",
+            "occurred_at": "2026-01-02T00:00:00Z",
+            "payload": {
+                "actor_id": "ops2",
+                "reason_code": "policy",
+                "policy_snapshot_id": "p2",
+            },
+        },
+    ]
+    assert run_escalated_timeline_summary(sample) == proj_summary(sample)
+    assert run_escalated_timeline_entries(sample) == proj_entries(sample)
+    assert run_escalated_timeline_history(sample) == proj_history(sample)
+    assert run_escalated_timeline_delta(sample) == proj_delta(sample)
+    display_keys = {k for k, _ in RUN_ESCALATED_DISPLAY_FIELDS}
+    summary = proj_summary(sample)
+    assert summary is not None
+    assert display_keys <= set(summary.keys())
+
+
+def test_scraper_fetch_api_shim_delegates_to_projections() -> None:
+    from nimbusware_api.read_models.scraper_fetch import scraper_fetch_timeline_summary
+    from nimbusware_projections.builders.scraper_fetch import (
+        scraper_fetch_timeline_summary as proj_summary,
+    )
+
+    sample = [
+        {
+            "event_type": "stage.passed",
+            "event_id": "s1",
+            "occurred_at": "2026-01-01T00:00:00Z",
+            "payload": {"stage_name": "scraper:fetch"},
+            "metadata": {
+                "scraper_fetch": {
+                    "fetches": [{"url_host": "example.com", "bytes": 42, "http_status": 200}],
+                },
+            },
+        },
+    ]
+    assert scraper_fetch_timeline_summary(sample) == proj_summary(sample)
+
+
+def test_persona_assignment_api_shim_delegates_to_projections() -> None:
+    from nimbusware_api.read_models.persona_assignment import persona_assignment_timeline_summary
+    from nimbusware_projections.builders.persona_assignment import (
+        persona_assignment_timeline_summary as proj_summary,
+    )
+
+    sample = [
+        {
+            "event_type": "run.created",
+            "event_id": "r1",
+            "occurred_at": "2026-01-01T00:00:00Z",
+            "payload": {},
+            "metadata": {
+                "business_area_persona_id": "ba-1",
+                "development_role_persona_id": "dr-1",
+            },
+        },
+    ]
+    assert persona_assignment_timeline_summary(sample) == proj_summary(sample)
+
+
+def test_stage_timeline_api_shim_delegates_to_projections() -> None:
+    from nimbusware_api.read_models.stage_timeline import (
+        critic_matrix_live_timeline_summary,
+        parallel_writer_groups_timeline_summary,
+        stage_graph_timeline_summary,
+    )
+    from nimbusware_projections.builders.stage_timeline import (
+        critic_matrix_live_timeline_summary as proj_critic,
+        parallel_writer_groups_timeline_summary as proj_parallel,
+        stage_graph_timeline_summary as proj_stage_graph,
+    )
+
+    created = [
+        {
+            "event_type": "run.created",
+            "event_id": "r1",
+            "occurred_at": "2026-01-01T00:00:00Z",
+            "payload": {},
+            "metadata": {
+                "stage_graph": {
+                    "nodes": [{"id": "planner"}],
+                    "parallel_groups": {"writers": ["implementation", "test_writer"]},
+                },
+            },
+        },
+    ]
+    assert stage_graph_timeline_summary(created) == proj_stage_graph(created)
+    assert parallel_writer_groups_timeline_summary(created) == proj_parallel(created)
+    assert critic_matrix_live_timeline_summary(created) == proj_critic(created)
