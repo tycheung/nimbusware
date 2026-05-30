@@ -1,5 +1,3 @@
-"""Nimbusware Admin Console Streamlit entrypoint."""
-
 from __future__ import annotations
 
 from nimbusware_env import load_dotenv

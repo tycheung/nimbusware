@@ -1,5 +1,3 @@
-"""Cross-run preflight trends (fleet aggregation)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -18,7 +16,6 @@ from nimbusware_console.preflight_cross_run_display import (
     preflight_history_response_sli_caption,
     preflight_pairs_from_history_response,
 )
-from nimbusware_console.settings import API_BASE
 
 
 def render_preflight_fleet_section() -> None:
@@ -58,7 +55,6 @@ def render_preflight_fleet_section() -> None:
                     )
 
                     _hist_body = fetch_preflight_history(
-                        API_BASE,
                         limit=_cap,
                         include_metrics_export=True,
                         headers=enterprise_preflight_headers_for_cross_run(),

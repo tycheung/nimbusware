@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from hermes_store.protocol import EventStore, serialized_event_from_row
-from nimbusware_api.preflight_read_model import preflight_timeline_summary
+from nimbusware_projections.builders.preflight import preflight_timeline_summary
 
 
 def benchmark_preflight_history_scan(

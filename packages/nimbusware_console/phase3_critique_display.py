@@ -1,5 +1,3 @@
-"""Timeline readouts for Phase 3 critic stages."""
-
 from __future__ import annotations
 
 import json

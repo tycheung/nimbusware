@@ -1,5 +1,3 @@
-"""Console page sections (import submodules directly to avoid cycles)."""
-
 from __future__ import annotations
 
 __all__ = [

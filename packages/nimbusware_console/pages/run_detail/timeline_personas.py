@@ -1,5 +1,3 @@
-"""Run detail — persona assignment, agent evaluator, self-refinement panels."""
-
 from __future__ import annotations
 
 import os

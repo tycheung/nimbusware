@@ -1,5 +1,3 @@
-"""Recent runs list filters, fetch, and display."""
-
 from __future__ import annotations
 
 import streamlit as st
@@ -10,7 +8,6 @@ from nimbusware_console.settings import API_BASE
 
 
 def render_run_list_section() -> None:
-    """Render the bordered run-list block (filters, paging, optional preflight)."""
     with st.container(border=True):
         st.subheader("Recent runs")
         st.caption(

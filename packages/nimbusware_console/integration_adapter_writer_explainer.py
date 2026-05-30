@@ -1,5 +1,3 @@
-"""Read-only Integration Adapter Writer workflow + env explainer (§14 #13 scaffold)."""
-
 from __future__ import annotations
 
 import json
@@ -82,7 +80,6 @@ def integration_adapter_writer_env_gate_caption(
 
 
 def integration_adapter_writer_fleet_manifest_count(repo_root: Path) -> int:
-    """Count persisted live-adapter workspace manifests (§14 #13 fleet slice)."""
     manifest_dir = repo_root / ".hermes" / "integration_adapter_writer"
     if not manifest_dir.is_dir():
         return 0
@@ -97,7 +94,6 @@ def integration_adapter_writer_workflow_explainer_payload(
     repo_root: Path,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """Read-only JSON-safe explainer for Module Integrator nested UI."""
     materializer = console_config_materializer(repo_root)
     block = parse_integration_adapter_writer_workflow_block(
         repo_root,
@@ -155,7 +151,6 @@ def integration_adapter_writer_explainer_export_json(
 def integration_adapter_writer_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Compact rollup for operator metrics table under integrator explainer."""
     metrics: dict[str, Any] = {
         "yaml_key_present": False,
         "workflow_enabled": False,
@@ -233,7 +228,6 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_table_rows(
 def integration_adapter_writer_effective_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line effective-enabled summary for integrator nested UI."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("effective_enabled") is True:

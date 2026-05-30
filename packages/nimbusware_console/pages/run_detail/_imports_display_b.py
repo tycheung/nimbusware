@@ -1,5 +1,3 @@
-"""Shared imports for run_detail section modules (part B)."""
-
 from __future__ import annotations
 
 from nimbusware_console.persona_editor import (

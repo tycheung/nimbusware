@@ -1,8 +1,3 @@
-"""Integrator gate summary for Streamlit (plan §14 #13).
-
-Parity with timeline top-level ``integrator_gate`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -27,7 +22,6 @@ def _stringify(value: Any) -> str:
 
 
 def integrator_gate_from_timeline(timeline_body: Mapping[str, Any] | None) -> dict[str, Any] | None:
-    """Return top-level ``integrator_gate`` dict from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("integrator_gate")
@@ -37,7 +31,6 @@ def integrator_gate_from_timeline(timeline_body: Mapping[str, Any] | None) -> di
 def integrator_gate_history_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
-    """Return ``integrator_gate_history`` list from a timeline JSON body (empty when absent)."""
     if not isinstance(timeline_body, Mapping):
         return []
     raw = timeline_body.get("integrator_gate_history")
@@ -47,7 +40,6 @@ def integrator_gate_history_from_timeline(
 
 
 def _format_tag_list_sample(tags: Any, *, max_n: int = 3) -> str:
-    """Compact tag list for history table cells (deduped, sorted, capped)."""
     if not isinstance(tags, list):
         return "—"
     usable: list[str] = []
@@ -64,7 +56,6 @@ def _format_tag_list_sample(tags: Any, *, max_n: int = 3) -> str:
 
 
 def integrator_gate_history_table_rows(history: list[dict[str, Any]]) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` — one row per gate in chronological order."""
     rows: list[dict[str, str]] = []
     for i, g in enumerate(history, start=1):
         rows.append(
@@ -101,7 +92,6 @@ _INTEGRATOR_GATE_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def integrator_gate_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize integrator gate history display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -118,13 +108,11 @@ def integrator_gate_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) ->
 
 
 def integrator_gate_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
-    """JSON export of raw ``integrator_gate_history`` timeline list."""
     items = [dict(x) for x in history if isinstance(x, Mapping)]
     return json.dumps(items, ensure_ascii=False, indent=2)
 
 
 def integrator_gate_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for integrator gate history download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -142,7 +130,6 @@ def _optional_float(value: Any) -> float | None:
 def integrator_gate_history_operator_metrics(
     history: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Aggregates over ``integrator_gate_history`` for console drill-down (JSON-serializable)."""
     if not history:
         return {"gate_event_count": 0}
     verdict_counts: dict[str, int] = {}
@@ -187,7 +174,6 @@ def integrator_gate_history_operator_metrics(
 def integrator_gate_history_entry_count_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
-    """One-line count of gate decisions in the bounded timeline history view."""
     if not history:
         return None
     n = len(history)
@@ -198,7 +184,6 @@ def integrator_gate_history_entry_count_caption(
 def integrator_gate_history_failure_reason_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
-    """Latest non-empty ``failure_reason_code`` in chronological history (scan newest first)."""
     if not history:
         return None
     for g in reversed(history):
@@ -215,7 +200,6 @@ def integrator_gate_history_failure_reason_caption(
 def integrator_gate_history_distinct_bundles_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line distinct ``bundle_id`` count from history operator metrics."""
     if not metrics:
         return None
     n_events = int(metrics.get("gate_event_count", 0) or 0)
@@ -233,7 +217,6 @@ def integrator_gate_history_distinct_bundles_caption(
 def integrator_gate_history_score_range_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line min/max ``integrator_score`` from history operator metrics."""
     if not metrics:
         return None
     n_events = int(metrics.get("gate_event_count", 0) or 0)
@@ -252,7 +235,6 @@ def integrator_gate_history_score_range_caption(
 def integrator_gate_history_latest_margin_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``latest_score_minus_min_pass`` from history operator metrics."""
     if not metrics:
         return None
     n_events = int(metrics.get("gate_event_count", 0) or 0)
@@ -270,7 +252,6 @@ def integrator_gate_history_latest_margin_caption(
 def integrator_gate_history_verdict_tally_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line verdict mix from :func:`integrator_gate_history_operator_metrics`."""
     if not metrics:
         return None
     vc = metrics.get("verdict_counts")
@@ -285,7 +266,6 @@ def integrator_gate_history_verdict_tally_caption(
 def integrator_gate_history_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line rollup from :func:`integrator_gate_history_operator_metrics` output."""
     if not isinstance(metrics, Mapping):
         return None
     n_events = int(metrics.get("gate_event_count", 0) or 0)
@@ -310,7 +290,6 @@ def integrator_gate_history_operator_metrics_caption(
 def integrator_gate_history_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not metrics:
         return []
     rows: list[dict[str, str]] = []
@@ -359,7 +338,6 @@ _INTEGRATOR_GATE_HISTORY_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value
 def integrator_gate_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for integrator gate history operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -368,7 +346,6 @@ def integrator_gate_history_operator_metrics_export_json(
 def integrator_gate_history_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize integrator gate history operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -394,7 +371,6 @@ def integrator_gate_history_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for integrator gate history operator metrics downloads."""
     return integrator_gate_history_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -404,7 +380,6 @@ _INTEGRATOR_GATE_LATEST_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 def integrator_gate_latest_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for integrator gate latest operator metrics."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -413,7 +388,6 @@ def integrator_gate_latest_operator_metrics_export_json(
 def integrator_gate_latest_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize integrator gate latest operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -439,7 +413,6 @@ def integrator_gate_latest_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for integrator gate latest operator metrics downloads."""
     return integrator_gate_latest_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -449,7 +422,6 @@ _INTEGRATOR_GATE_DELTA_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def integrator_gate_delta_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for integrator gate delta operator metrics."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -458,7 +430,6 @@ def integrator_gate_delta_operator_metrics_export_json(
 def integrator_gate_delta_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize integrator gate delta operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -484,14 +455,12 @@ def integrator_gate_delta_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for integrator gate delta operator metrics downloads."""
     return integrator_gate_delta_export_filename_slug(run_id, max_len=max_len)
 
 
 def integrator_gate_delta_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return ``integrator_gate_delta`` from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("integrator_gate_delta")
@@ -525,7 +494,6 @@ _INTEGRATOR_GATE_DELTA_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def integrator_gate_delta_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize integrator gate delta summary rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -544,21 +512,18 @@ def integrator_gate_delta_summary_rows_csv(rows: Sequence[Mapping[str, str]]) ->
 
 
 def integrator_gate_delta_export_json(delta: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline ``integrator_gate_delta`` object."""
     if not isinstance(delta, Mapping):
         return "{}"
     return json.dumps(dict(delta), ensure_ascii=False, indent=2)
 
 
 def integrator_gate_delta_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for integrator gate delta download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
 
 
 def integrator_gate_summary_rows(ig: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` (field / value columns)."""
     if not ig:
         return []
     rows: list[dict[str, str]] = []
@@ -573,7 +538,6 @@ _INTEGRATOR_GATE_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 
 
 def integrator_gate_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize latest integrator gate summary rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -592,14 +556,12 @@ def integrator_gate_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -
 
 
 def integrator_gate_latest_export_json(ig: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline top-level ``integrator_gate`` summary."""
     if not isinstance(ig, Mapping):
         return "{}"
     return json.dumps(dict(ig), ensure_ascii=False, indent=2)
 
 
 def integrator_gate_latest_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for latest integrator gate download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -618,7 +580,6 @@ def _string_tag_list(value: Any) -> list[str]:
 def integrator_gate_latest_operator_metrics(
     ig: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Read-only drill-down on top-level ``integrator_gate`` (tag overlap, numeric bar, codes)."""
     if not ig:
         return {"present": False}
     project = set(_string_tag_list(ig.get("integrator_project_tags")))
@@ -671,7 +632,6 @@ def integrator_gate_compatibility_ranking_table_rows(
     *,
     max_rows: int = 10,
 ) -> list[dict[str, str]]:
-    """Top-N bundle compatibility ranking rows for ``st.dataframe``."""
     if not isinstance(ig, Mapping):
         return []
     raw = ig.get("bundle_compatibility_ranking")
@@ -701,7 +661,6 @@ def integrator_gate_compatibility_ranking_table_rows(
 def integrator_gate_compatibility_ranking_caption(
     ig: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of pipeline bundle compatibility ranking inputs."""
     if not isinstance(ig, Mapping):
         return None
     ranking = ig.get("bundle_compatibility_ranking")
@@ -727,7 +686,6 @@ def integrator_gate_compatibility_ranking_caption(
 def integrator_gate_latest_bundle_id_caption(
     ig: Mapping[str, Any] | None,
 ) -> str | None:
-    """Selected bundle id from the latest integrator gate timeline summary."""
     if not isinstance(ig, Mapping):
         return None
     raw = ig.get("bundle_id")
@@ -742,7 +700,6 @@ def integrator_gate_latest_bundle_id_caption(
 def integrator_gate_latest_score_margin_caption(
     ig: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line score vs min-pass summary for the latest integrator gate row."""
     metrics = integrator_gate_latest_operator_metrics(ig)
     if not metrics.get("present"):
         return None
@@ -767,7 +724,6 @@ def integrator_gate_latest_score_margin_caption(
 def integrator_gate_latest_tag_overlap_caption(
     ig: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line tag overlap summary for the latest integrator gate row."""
     metrics = integrator_gate_latest_operator_metrics(ig)
     if not metrics.get("present"):
         return None
@@ -790,7 +746,6 @@ def integrator_gate_latest_tag_overlap_caption(
 def integrator_gate_latest_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line rollup from :func:`integrator_gate_latest_operator_metrics` output."""
     if not isinstance(metrics, Mapping) or metrics.get("present") is not True:
         return None
     parts: list[str] = []
@@ -836,7 +791,6 @@ def integrator_gate_latest_operator_metrics_caption(
 def integrator_gate_latest_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for latest-gate operator drill-down."""
     if not metrics or not metrics.get("present"):
         return []
     rows: list[dict[str, str]] = []
@@ -922,7 +876,6 @@ def integrator_gate_latest_metrics_table_rows(
 def integrator_gate_delta_operator_metrics(
     delta: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Short hints on latest-vs-prior integrator gate delta (read-only, JSON-serializable)."""
     if not delta:
         return {"present": False}
     sd = _optional_float(delta.get("integrator_score_delta"))
@@ -956,7 +909,6 @@ def integrator_gate_delta_operator_metrics(
 def integrator_gate_delta_bundle_changed_caption(
     delta: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated ``bundle_id_changed`` bool from timeline ``integrator_gate_delta``."""
     if not isinstance(delta, Mapping):
         return None
     raw = delta.get("bundle_id_changed")
@@ -968,7 +920,6 @@ def integrator_gate_delta_bundle_changed_caption(
 def integrator_gate_delta_verdict_changed_caption(
     delta: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``verdict_changed`` bool from timeline ``integrator_gate_delta``."""
     if not isinstance(delta, Mapping):
         return None
     raw = delta.get("verdict_changed")
@@ -980,7 +931,6 @@ def integrator_gate_delta_verdict_changed_caption(
 def integrator_gate_delta_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line rollup from :func:`integrator_gate_delta_operator_metrics` output."""
     if not isinstance(metrics, Mapping) or metrics.get("present") is not True:
         return None
     parts: list[str] = []
@@ -1006,7 +956,6 @@ def integrator_gate_delta_operator_metrics_caption(
 def integrator_gate_delta_transition_caption(
     delta: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of latest-vs-prior integrator gate delta."""
     return integrator_gate_delta_operator_metrics_caption(
         integrator_gate_delta_operator_metrics(delta),
     )

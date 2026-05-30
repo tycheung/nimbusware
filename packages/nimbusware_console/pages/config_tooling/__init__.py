@@ -1,5 +1,3 @@
-"""Config tooling page sections."""
-
 from nimbusware_console.pages.config_tooling.bundles import (
     render_config_tooling_bundles_section,
 )

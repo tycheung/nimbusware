@@ -1,6 +1,8 @@
-"""Config tooling — bundle editor section."""
-
 from __future__ import annotations
+
+import httpx
+
+from nimbusware_client.http import admin_token_headers, get_json, patch_response
 
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -18,9 +20,10 @@ def render_workflows_bundle_editor_section() -> None:
         )
         if st.button("Reload bundle catalog from API", key="hermes_bundle_edit_reload"):
             try:
-                _bc_r = httpx.get(f"{API_BASE}/bundles/catalog", timeout=10.0)
-                _bc_r.raise_for_status()
-                st.session_state["hermes_bundle_edit_catalog"] = _bc_r.json()
+                st.session_state["hermes_bundle_edit_catalog"] = get_json(
+                    "/bundles/catalog",
+                    timeout=10.0,
+                )
                 st.success("Loaded bundle catalog from API.")
             except httpx.HTTPError as _bc_exc:
                 st.error(f"API error: {_bc_exc}")
@@ -68,13 +71,12 @@ def render_workflows_bundle_editor_section() -> None:
                     tags_text=str(st.session_state.get("hermes_bundle_edit_tags", "")),
                 )
                 try:
-                    _bc_patch = httpx.patch(
-                        f"{API_BASE}/bundles/catalog/bundles/{_bc_sel}",
-                        headers={"X-Nimbusware-Admin-Token": _bc_admin},
-                        json=_payload,
+                    _bc_patch = patch_response(
+                        f"/bundles/catalog/bundles/{_bc_sel}",
+                        _payload,
+                        headers=admin_token_headers(_bc_admin),
                         timeout=15.0,
                     )
-                    _bc_patch.raise_for_status()
                     st.session_state["hermes_bundle_edit_catalog"] = _bc_patch.json()
                     st.success("Bundle catalog updated.")
                 except httpx.HTTPError as _bc_patch_exc:

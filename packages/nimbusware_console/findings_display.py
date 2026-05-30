@@ -1,8 +1,3 @@
-"""Run findings display for Streamlit (plan §14 #11).
-
-Parity with ``GET /v1/runs/{run_id}/findings`` (``finding.created`` events).
-"""
-
 from __future__ import annotations
 
 import csv
@@ -33,7 +28,6 @@ def _stringify(value: Any) -> str:
 
 
 def findings_list_from_response(body: Mapping[str, Any] | None) -> list[dict[str, Any]]:
-    """Extract ``findings`` from a ``GET /v1/runs/…/findings`` JSON body."""
     if not isinstance(body, Mapping):
         return []
     raw = body.get("findings")
@@ -43,7 +37,6 @@ def findings_list_from_response(body: Mapping[str, Any] | None) -> list[dict[str
 
 
 def findings_table_rows(findings: Sequence[Mapping[str, Any]]) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` — one row per ``finding.created`` event."""
     rows: list[dict[str, str]] = []
     for i, ev in enumerate(findings, start=1):
         pl = ev.get("payload")
@@ -66,7 +59,6 @@ def findings_table_rows(findings: Sequence[Mapping[str, Any]]) -> list[dict[str,
 def findings_operator_metrics(
     findings: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary (severity buckets + categories)."""
     metrics: dict[str, Any] = {
         "finding_count": 0,
         "severity_blocker": 0,
@@ -106,7 +98,6 @@ def findings_operator_metrics(
 def findings_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -132,7 +123,6 @@ def findings_operator_metrics_table_rows(
 def findings_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when the run has at least one finding."""
     if not isinstance(metrics, Mapping):
         return None
     fc = metrics.get("finding_count")
@@ -155,19 +145,16 @@ def findings_operator_metrics_caption(
 
 
 def findings_empty_caption() -> str:
-    """Caption when ``findings`` is empty."""
     return "No finding.created events for this run."
 
 
 def findings_export_json(body: Mapping[str, Any] | None) -> str:
-    """Pretty JSON for the full ``GET …/findings`` response (operator download)."""
     if not isinstance(body, Mapping):
         return "{}"
     return json.dumps(dict(body), indent=2, ensure_ascii=False)
 
 
 def findings_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize findings table rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -184,7 +171,6 @@ def findings_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
 
 
 def findings_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for findings download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -196,7 +182,6 @@ _FINDINGS_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def findings_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for findings operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -205,7 +190,6 @@ def findings_operator_metrics_export_json(
 def findings_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize findings operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -231,5 +215,4 @@ def findings_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for findings operator metrics download filenames."""
     return findings_export_filename_slug(run_id, max_len=max_len)

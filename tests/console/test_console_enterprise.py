@@ -103,6 +103,27 @@ def test_fleet_worker_health_caption() -> None:
     assert "backpressure=ok" in cap
 
 
+def test_fetch_platform_edition_uses_client(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    def _fake_get_json(path: str, *, timeout: float = 15.0, **kwargs: object) -> dict[str, str]:
+        captured["path"] = path
+        captured["timeout"] = timeout
+        captured["kwargs"] = kwargs
+        return {"edition": "enterprise"}
+
+    monkeypatch.setattr(
+        "nimbusware_console.enterprise_console.get_json",
+        _fake_get_json,
+    )
+    from nimbusware_console.enterprise_console import fetch_platform_edition
+
+    body = fetch_platform_edition(timeout=12.0)
+    assert body["edition"] == "enterprise"
+    assert captured["path"] == "/platform/edition"
+    assert captured["timeout"] == 12.0
+
+
 def test_enterprise_fleet_dashboard_api(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

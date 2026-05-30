@@ -22,6 +22,7 @@ packages = [
   { include = "hermes_memory", from = "packages" },
   { include = "nimbusware_projections", from = "packages" },
   { include = "nimbusware_maker", from = "packages" },
+  { include = "nimbusware_client", from = "packages" },
   { include = "hermes_agent_tools", from = "packages" },
 ]
 
@@ -40,6 +41,7 @@ pywebview = ">=5"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"
+pytest-cov = ">=6"
 pytest-benchmark = ">=4"
 ruff = ">=0.8"
 mypy = ">=1.13"
@@ -108,6 +110,7 @@ packages = [
   "hermes_memory",
   "nimbusware_projections",
   "nimbusware_maker",
+  "nimbusware_client",
   "hermes_agent_tools",
 ]
 mypy_path = "packages"

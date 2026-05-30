@@ -1,5 +1,3 @@
-"""Run escalated display helpers."""
-
 from __future__ import annotations
 
 import csv
@@ -15,7 +13,6 @@ from nimbusware_console.run_escalated._common import _stringify
 def run_escalated_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from latest escalation rollup."""
     if not isinstance(metrics, Mapping):
         return None
     sev = metrics.get("severity")
@@ -43,7 +40,6 @@ _RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 
 
 def run_escalated_occurred_at_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """One-line ``occurred_at`` from timeline ``run_escalated``."""
     if not isinstance(summary, Mapping):
         return None
     raw = summary.get("occurred_at")
@@ -58,7 +54,6 @@ def run_escalated_occurred_at_caption(summary: Mapping[str, Any] | None) -> str 
 
 
 def run_escalated_event_id_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """One-line ``event_id`` from timeline ``run_escalated``."""
     if not isinstance(summary, Mapping):
         return None
     raw = summary.get("event_id")
@@ -75,7 +70,6 @@ def run_escalated_event_id_caption(summary: Mapping[str, Any] | None) -> str | N
 def run_escalated_reason_summary_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line reason_code / actor_id / policy_snapshot_id from timeline ``run_escalated``."""
     if not isinstance(summary, Mapping) or not summary:
         return None
     parts: list[str] = []
@@ -100,7 +94,6 @@ def run_escalated_notes_preview_caption(
     *,
     max_len: int = 120,
 ) -> str | None:
-    """Truncated one-line preview of escalation ``notes`` when present."""
     if not isinstance(summary, Mapping):
         return None
     notes = summary.get("notes")
@@ -117,13 +110,6 @@ def run_escalated_notes_preview_caption(
 
 
 def run_escalated_actor_without_notes_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Surface timeline **run.escalated** rows that name an actor but omit free-form notes.
-
-    Helps operators correlate **run_escalated** with ``configs/escalation/policy.yaml`` and
-    Module Integrator escalation suppress explainers. Returns ``None`` when ``actor_id`` is
-    missing / not a non-empty string, when ``notes`` carries non-empty text, or when
-    ``notes`` is present but not a string.
-    """
     if not isinstance(summary, Mapping):
         return None
     raw_actor = summary.get("actor_id")
@@ -146,7 +132,6 @@ def run_escalated_policy_cross_ref_caption(
     repo_root: Path | None,
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """When ``policy_snapshot_id`` is set, point operators at disk policy + workflow suppress."""
     if not isinstance(summary, Mapping):
         return None
     raw = summary.get("policy_snapshot_id")
@@ -176,7 +161,6 @@ def run_escalated_policy_cross_ref_caption(
 def run_escalated_history_entry_count_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
-    """One-line count of escalation events in the bounded timeline history view."""
     if not history:
         return None
     n = len(history)
@@ -189,7 +173,6 @@ def run_escalated_history_entry_count_caption(
 def run_escalated_history_distinct_actors_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line distinct-actor count from :func:`run_escalated_history_operator_metrics`."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("entry_count")
@@ -209,7 +192,6 @@ def run_escalated_history_distinct_actors_caption(
 def run_escalated_history_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when history has at least one entry."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("entry_count")
@@ -240,7 +222,6 @@ _RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def run_escalated_delta_transition_caption(
     delta: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of latest-vs-prior escalation delta."""
     if not isinstance(delta, Mapping):
         return None
     parts: list[str] = []
@@ -264,7 +245,6 @@ def run_escalated_delta_transition_caption(
 def run_escalated_delta_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary listing which escalation delta fields changed."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return None
     changed: list[str] = []

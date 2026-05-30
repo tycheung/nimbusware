@@ -1,5 +1,3 @@
-"""Read-only ``security_scan_metadata_on_verify`` + env for Streamlit (§14 #18."""
-
 from __future__ import annotations
 
 import csv
@@ -27,7 +25,6 @@ def _relative_under(repo_root: Path, path: Path) -> str:
 
 
 def _hermes_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
-    """Mirror ``workflow_security.security_scan_metadata_on_verify_enabled`` env branch."""
     raw = os.environ.get("HERMES_ATTACH_SECURITY_SCAN_METADATA", "")
     low = raw.strip().lower()
     if not low:
@@ -65,7 +62,6 @@ def security_scan_metadata_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """Frozen workflow YAML value vs ``HERMES_ATTACH_SECURITY_SCAN_METADATA`` vs effective flag."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -151,7 +147,6 @@ def security_scan_metadata_workflow_explainer_payload(
 def security_scan_metadata_workflow_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Top-level ``version`` int from the selected workflow profile YAML on disk."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -166,7 +161,6 @@ def security_scan_metadata_workflow_yaml_version_caption(
 def security_scan_metadata_workflow_yaml_string_key_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of top-level string keys in the selected workflow profile YAML."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -184,7 +178,6 @@ def security_scan_metadata_workflow_yaml_string_key_count_caption(
 def security_scan_metadata_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of ``HERMES_ATTACH_SECURITY_SCAN_METADATA`` env gate."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -225,7 +218,6 @@ def security_scan_metadata_env_gate_caption(
 def security_scan_metadata_workflow_yaml_relpath_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Repo-relative workflow profile path from the explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -243,7 +235,6 @@ def security_scan_metadata_workflow_yaml_relpath_caption(
 def security_scan_metadata_workflow_yaml_file_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """On-disk workflow YAML file size from the explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -258,7 +249,6 @@ def security_scan_metadata_workflow_yaml_file_bytes_caption(
 def security_scan_metadata_yaml_raw_type_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Python type name of frozen ``security_scan_metadata_on_verify`` YAML value."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -276,7 +266,6 @@ def security_scan_metadata_yaml_raw_type_caption(
 def security_scan_metadata_effective_enabled_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``yaml_parsed_bool`` vs pipeline ``effective_enabled``."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -297,7 +286,6 @@ def security_scan_metadata_effective_enabled_caption(
 def security_scan_metadata_mapping_key_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface how many string keys sit under a mapping ``security_scan_metadata_on_verify``."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("security_scan_metadata_on_verify_yaml_raw_type") != "dict":
@@ -315,7 +303,6 @@ def security_scan_metadata_mapping_key_count_caption(
 def security_scan_metadata_yaml_effective_mismatch_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface when ``yaml_parsed_bool`` disagrees with ``effective_enabled`` (env override)."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("security_scan_metadata_yaml_parsed_bool_matches_effective") is not False:
@@ -327,7 +314,6 @@ def security_scan_metadata_yaml_effective_mismatch_caption(
 
 
 def security_scan_metadata_export_filename_slug() -> str:
-    """Filename slug prefix for security scan metadata explainer exports."""
     return "security_scan_metadata"
 
 
@@ -345,7 +331,6 @@ def _security_scan_metadata_explainer_cell(value: Any) -> str:
 def security_scan_metadata_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for security scan metadata explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -362,7 +347,6 @@ def security_scan_metadata_explainer_table_rows(
 def security_scan_metadata_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for security scan metadata explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -371,7 +355,6 @@ def security_scan_metadata_explainer_export_json(
 def security_scan_metadata_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize security scan metadata explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -401,7 +384,6 @@ _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[s
 def security_scan_metadata_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup over :func:`security_scan_metadata_workflow_explainer_payload` (§14 #18)."""
     metrics: dict[str, Any] = {
         "yaml_key_present": False,
         "yaml_parsed_bool": False,
@@ -445,7 +427,6 @@ def security_scan_metadata_workflow_explainer_operator_metrics(
 def security_scan_metadata_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -487,7 +468,6 @@ def security_scan_metadata_workflow_explainer_operator_metrics_table_rows(
 def security_scan_metadata_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of workflow explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -496,7 +476,6 @@ def security_scan_metadata_workflow_explainer_operator_metrics_export_json(
 def security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize security scan metadata workflow explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -522,7 +501,6 @@ def security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv(
 def security_scan_metadata_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for security scan metadata explainer metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -547,5 +525,4 @@ def security_scan_metadata_workflow_explainer_operator_metrics_caption(
 
 
 def security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for security scan metadata workflow explainer operator metrics downloads."""
     return "security_scan_metadata_workflow_explainer_operator_metrics"

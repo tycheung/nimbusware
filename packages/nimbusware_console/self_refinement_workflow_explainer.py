@@ -1,5 +1,3 @@
-"""Read-only self-refinement workflow + policy summary for Streamlit."""
-
 from __future__ import annotations
 
 import csv
@@ -111,7 +109,6 @@ def _self_refinement_stage_marker_env_disabled() -> bool:
 
 
 def _hermes_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
-    """Mirror ``RunOrchestrator._maybe_emit_self_refinement_stage_marker`` ungated env branch."""
     raw = os.environ.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP", "")
     low = raw.strip().lower()
     if not low:
@@ -147,7 +144,6 @@ def _hermes_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
 def self_refinement_ungated_loop_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of ``HERMES_SELF_REFINEMENT_UNGATED_LOOP`` env gate."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -186,7 +182,6 @@ def self_refinement_ungated_loop_env_gate_caption(
 
 
 def _hermes_self_refinement_stage_marker_env_summary() -> dict[str, Any]:
-    """Mirror ``RunOrchestrator._self_refinement_stage_marker_env_disabled``."""
     raw = os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "")
     low = raw.strip().lower()
     if not low:
@@ -213,7 +208,6 @@ def _marker_preview(
     wf_sr: SelfRefinementWorkflowBlock,
     pol: SelfRefinementPolicy,
 ) -> dict[str, Any]:
-    """Match ``RunOrchestrator._maybe_emit_self_refinement_stage_marker`` merge + gate."""
     version = pol.version
     description = pol.description
     if wf_sr.version is not None:
@@ -250,7 +244,6 @@ def _marker_preview(
 def self_refinement_merged_version_caption(
     marker_merge: Mapping[str, Any] | None,
 ) -> str | None:
-    """Pipeline-style merged policy version from ``marker_merge``."""
     if not isinstance(marker_merge, Mapping):
         return None
     ver = marker_merge.get("merged_version")
@@ -264,7 +257,6 @@ def self_refinement_merged_description_preview_caption(
     *,
     max_chars: int = 120,
 ) -> str | None:
-    """Bounded ``merged_description_preview`` from ``marker_merge``."""
     if not isinstance(marker_merge, Mapping):
         return None
     preview = marker_merge.get("merged_description_preview")
@@ -289,7 +281,6 @@ def self_refinement_merged_description_preview_caption(
 def self_refinement_would_emit_after_env_caption(
     marker_merge: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``would_emit_marker_after_env`` from ``marker_merge``."""
     if not isinstance(marker_merge, Mapping):
         return None
     after_env = marker_merge.get("would_emit_marker_after_env")
@@ -303,7 +294,6 @@ def self_refinement_would_emit_after_env_caption(
 def self_refinement_would_emit_marker_caption(
     marker_merge: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of whether a ``self_refinement:policy`` marker would emit after env."""
     if not isinstance(marker_merge, Mapping):
         return None
     after_env = marker_merge.get("would_emit_marker_after_env")
@@ -335,7 +325,6 @@ def self_refinement_would_emit_marker_caption(
 def self_refinement_workflow_yaml_raw_type_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Python type name of the frozen ``self_refinement`` workflow YAML value."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -353,7 +342,6 @@ def self_refinement_workflow_yaml_raw_type_caption(
 def self_refinement_policy_yaml_file_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """On-disk ``configs/self_refinement/policy.yaml`` file size from the explainer."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -371,7 +359,6 @@ def self_refinement_policy_yaml_file_bytes_caption(
 def self_refinement_policy_yaml_disk_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """``version`` int from ``configs/self_refinement/policy.yaml`` when parseable."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -391,7 +378,6 @@ def self_refinement_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """Workflow ``self_refinement`` block + disk policy + pipeline-style merge preview."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -472,13 +458,6 @@ def self_refinement_marker_merge_vs_timeline_rows(
     marker_merge: Mapping[str, Any] | None,
     timeline_sr: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Compare explainer ``marker_merge`` to an optional pasted timeline ``self_refinement`` dict.
-
-    Timeline values are **observed** last-marker fields from ``GET /v1/runs/…/timeline``;
-    explainer values are **predictive** for the selected workflow profile + current env.
-    When the pasted snapshot includes ``marker_count`` (timeline read-model), it is shown
-    beside ``—`` in the explainer column (``marker_merge`` does not model session multiplicity).
-    """
     mm: Mapping[str, Any] = marker_merge if isinstance(marker_merge, Mapping) else {}
     no_tl = "—"
     tl: Mapping[str, Any] | None = timeline_sr if isinstance(timeline_sr, Mapping) else None
@@ -559,7 +538,6 @@ def self_refinement_marker_merge_vs_timeline_rows(
 
 
 def self_refinement_export_filename_slug() -> str:
-    """Filename slug prefix for self-refinement explainer exports."""
     return "self_refinement"
 
 
@@ -577,7 +555,6 @@ def _self_refinement_explainer_cell(value: Any) -> str:
 def self_refinement_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for self-refinement explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -594,7 +571,6 @@ def self_refinement_explainer_table_rows(
 def self_refinement_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for self-refinement explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -603,7 +579,6 @@ def self_refinement_explainer_export_json(
 def self_refinement_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize self-refinement explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -630,7 +605,6 @@ _SELF_REFINEMENT_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...
 def self_refinement_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`self_refinement_workflow_explainer_payload` (§14 #17)."""
     metrics: dict[str, Any] = {
         "yaml_present": False,
         "yaml_mapping_key_count": 0,
@@ -678,7 +652,6 @@ def self_refinement_workflow_explainer_operator_metrics(
 def self_refinement_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -725,7 +698,6 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows(
 def self_refinement_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of workflow explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -734,7 +706,6 @@ def self_refinement_workflow_explainer_operator_metrics_export_json(
 def self_refinement_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize self-refinement workflow explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -758,7 +729,6 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows_csv(
 def self_refinement_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for self-refinement workflow explainer metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -788,12 +758,10 @@ def self_refinement_workflow_explainer_operator_metrics_caption(
 
 
 def self_refinement_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for self-refinement workflow explainer operator metrics downloads."""
     return "self_refinement_workflow_explainer_operator_metrics"
 
 
 def self_refinement_marker_merge_compare_export_filename_slug() -> str:
-    """Filename slug prefix for marker_merge vs timeline compare exports."""
     return "self_refinement_marker_compare"
 
 
@@ -801,7 +769,6 @@ def self_refinement_marker_merge_compare_snapshot(
     marker_merge: Mapping[str, Any] | None,
     timeline_sr: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Snapshot for marker_merge vs pasted timeline (matches Raw JSON expander)."""
     return {
         "marker_merge": marker_merge if isinstance(marker_merge, Mapping) else None,
         "timeline_self_refinement": (
@@ -813,7 +780,6 @@ def self_refinement_marker_merge_compare_snapshot(
 def self_refinement_marker_merge_compare_export_json(
     snapshot: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for marker_merge vs timeline compare snapshot."""
     if not isinstance(snapshot, Mapping):
         return "{}"
     return json.dumps(dict(snapshot), indent=2, ensure_ascii=False)
@@ -829,7 +795,6 @@ _MARKER_MERGE_COMPARE_CSV_COLUMNS: tuple[str, ...] = (
 def self_refinement_marker_merge_compare_export_json_rows(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Pretty JSON for marker_merge vs timeline comparison table rows."""
     out = [dict(r) for r in rows if isinstance(r, Mapping)]
     return json.dumps(out, indent=2, ensure_ascii=False)
 
@@ -837,7 +802,6 @@ def self_refinement_marker_merge_compare_export_json_rows(
 def self_refinement_marker_merge_compare_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize marker_merge vs timeline comparison rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()

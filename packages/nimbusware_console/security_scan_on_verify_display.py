@@ -1,8 +1,3 @@
-"""Verifier security-scan snippet summary for Streamlit (plan §14 #18).
-
-Parity with timeline top-level ``security_scan_on_verify`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -39,7 +34,6 @@ def _stringify(value: Any) -> str:
 def security_scan_on_verify_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return ``security_scan_on_verify`` dict from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("security_scan_on_verify")
@@ -49,7 +43,6 @@ def security_scan_on_verify_from_timeline(
 def security_scan_history_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
-    """Return ``security_scan_on_verify_history`` list from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return []
     raw = timeline_body.get("security_scan_on_verify_history")
@@ -61,7 +54,6 @@ def security_scan_history_from_timeline(
 def security_scan_history_table_rows(
     history: list[dict[str, Any]],
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` — one row per scan finding in chronological order."""
     rows: list[dict[str, str]] = []
     for i, e in enumerate(history, start=1):
         rows.append(
@@ -92,7 +84,6 @@ _SECURITY_SCAN_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def security_scan_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize security scan history display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -109,13 +100,11 @@ def security_scan_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> s
 
 
 def security_scan_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
-    """JSON export of raw ``security_scan_on_verify_history`` timeline list."""
     items = [dict(x) for x in history if isinstance(x, Mapping)]
     return json.dumps(items, ensure_ascii=False, indent=2)
 
 
 def security_scan_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for security scan history download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -124,7 +113,6 @@ def security_scan_history_export_filename_slug(run_id: str, *, max_len: int = 36
 def security_scan_history_entry_count_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
-    """One-line count of security-scan findings in the bounded timeline history view."""
     if not history:
         return None
     n = len(history)
@@ -137,7 +125,6 @@ def security_scan_history_severity_sample_caption(
     *,
     max_n: int = 6,
 ) -> str | None:
-    """One-line sorted sample of distinct severities across scan history entries."""
     if not history or max_n <= 0:
         return None
     severities: set[str] = set()
@@ -163,7 +150,6 @@ def security_scan_history_severity_sample_caption(
 def security_scan_history_operator_metrics(
     history: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from ``security_scan_on_verify_history``."""
     metrics: dict[str, Any] = {
         "entry_count": 0,
         "distinct_severity_count": 0,
@@ -198,7 +184,6 @@ def security_scan_history_operator_metrics(
 def security_scan_history_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -230,7 +215,6 @@ def security_scan_history_operator_metrics_table_rows(
 def security_scan_history_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when history has at least one entry."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("entry_count")
@@ -269,7 +253,6 @@ _SECURITY_SCAN_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def security_scan_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for security scan history operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -278,7 +261,6 @@ def security_scan_history_operator_metrics_export_json(
 def security_scan_history_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize security scan history operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -304,21 +286,12 @@ def security_scan_history_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for security scan history operator metrics downloads."""
     return security_scan_history_export_filename_slug(run_id, max_len=max_len)
 
 
 def security_scan_category_severity_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for ``category`` / ``severity`` on the timeline summary.
-
-    Emits ``"Security scan finding: category <c>, severity <s>."`` when at least one of
-    the two fields is a non-empty string after stripping (order fixed: category then
-    severity). Omits a leg entirely when that field is missing, not a string, or
-    whitespace-only. Returns ``None`` when ``summary`` is not a mapping or neither leg
-    is usable.
-    """
     if not isinstance(summary, Mapping):
         return None
     legs: list[str] = []
@@ -338,7 +311,6 @@ def security_scan_category_severity_caption(
 
 
 def security_scan_snippet_length_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Operator caption with character length of ``security_scan_snippet`` when present."""
     if not isinstance(summary, Mapping):
         return None
     sn = summary.get("security_scan_snippet")
@@ -351,7 +323,6 @@ def security_scan_snippet_length_caption(summary: Mapping[str, Any] | None) -> s
 
 
 def security_scan_snippet_line_count_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Line count for ``security_scan_snippet`` (newline-separated) when non-empty."""
     if not isinstance(summary, Mapping):
         return None
     sn = summary.get("security_scan_snippet")
@@ -367,7 +338,6 @@ def security_scan_snippet_line_count_caption(summary: Mapping[str, Any] | None) 
 
 
 def security_scan_finding_event_ids_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Whether ``finding_id`` / ``event_id`` are present as non-empty strings."""
     if not isinstance(summary, Mapping):
         return None
     legs: list[str] = []
@@ -383,7 +353,6 @@ def security_scan_finding_event_ids_caption(summary: Mapping[str, Any] | None) -
 
 
 def security_scan_occurred_at_age_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Whole-second age of ``occurred_at`` on the timeline summary vs UTC now."""
     if not isinstance(summary, Mapping):
         return None
     raw = summary.get("occurred_at")
@@ -404,11 +373,6 @@ def security_scan_occurred_at_age_caption(summary: Mapping[str, Any] | None) -> 
 
 
 def security_scan_linter_nonzero_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Short operator hint when Ruff or Bandit subprocess exit codes are non-zero.
-
-    Exit codes are integers on the timeline read-model (``0`` = success). Returns ``None``
-    when both are absent, zero, or not integers.
-    """
     if not isinstance(summary, Mapping):
         return None
     hints: list[str] = []
@@ -436,14 +400,6 @@ _LINTER_EXIT_FIELDS: tuple[tuple[str, str], ...] = (
 def security_scan_linter_status_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Per-linter status rows for ``st.dataframe`` (Ruff / Bandit, in fixed order).
-
-    Each row has ``linter`` / ``exit`` / ``status``. ``status`` is ``ok`` for an integer
-    exit code of ``0``, ``failed`` for any other integer, and ``missing`` when the key is
-    absent or the value is not an ``int`` (booleans are intentionally treated as missing
-    because :class:`bool` is a subclass of :class:`int` and we want only true integers).
-    Returns ``[]`` when ``summary`` is not a mapping.
-    """
     if not isinstance(summary, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -465,12 +421,6 @@ def security_scan_linter_status_rows(
 def security_scan_linter_status_summary_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption tallying per-linter ``ok`` / ``failed`` / ``missing`` counts.
-
-    Reuses :func:`security_scan_linter_status_rows`. Returns ``None`` when every linter is
-    ``missing`` (no signal worth surfacing) or when ``summary`` is not a mapping. Otherwise
-    returns a short caption such as ``"Linter summary: 1 ok, 1 failed, 0 missing."``.
-    """
     rows = security_scan_linter_status_rows(summary)
     if not rows:
         return None
@@ -492,15 +442,6 @@ def security_scan_linter_status_summary_caption(
 def security_scan_linter_worst_status_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Worst-of-linters caption naming the most severe observable Ruff / Bandit status.
-
-    Reuses :func:`security_scan_linter_status_rows`. Severity priority is
-    ``failed > ok > missing``. When at least one linter is ``failed``, names the **first**
-    failed row in the existing fixed Ruff -> Bandit order and quotes its exit code. When
-    every observable linter is ``ok`` (and none are ``failed``), summarises both exits.
-    Returns ``None`` when every linter is ``missing`` (no observable signal) or when
-    ``summary`` is not a mapping.
-    """
     rows = security_scan_linter_status_rows(summary)
     if not rows:
         return None
@@ -518,22 +459,6 @@ def security_scan_linter_worst_status_caption(
 def security_scan_linter_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured per-linter rollup for the **Raw linter operator metrics JSON** expander.
-
-    Reuses :func:`security_scan_linter_status_rows`, so the same Ruff -> Bandit fixed order
-    and ``ok`` / ``failed`` / ``missing`` semantics apply. Returns a dict with:
-
-    * ``observable_count`` — count of rows whose ``status`` is ``ok`` or ``failed``.
-    * ``ok_count`` / ``failed_count`` / ``missing_count`` — bucket totals.
-    * ``worst_status`` — ``"failed"`` if any linter is ``failed``, else ``"ok"`` when at
-      least one linter is observably ``ok``, else ``None`` (mirrors the priority used by
-      :func:`security_scan_linter_worst_status_caption`).
-    * ``worst_linter`` / ``worst_exit`` — the **first** failed row (Ruff -> Bandit) when any
-      failed; otherwise ``None`` for both.
-
-    Non-mapping input collapses to all zeros and ``worst_status``/``worst_linter``/
-    ``worst_exit`` of ``None``.
-    """
     metrics: dict[str, Any] = {
         "observable_count": 0,
         "ok_count": 0,
@@ -573,7 +498,6 @@ def security_scan_linter_operator_metrics(
 def security_scan_linter_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line rollup from :func:`security_scan_linter_operator_metrics` output."""
     if not isinstance(metrics, Mapping):
         return None
     if metrics.get("observable_count", 0) == 0:
@@ -600,7 +524,6 @@ def security_scan_linter_operator_metrics_caption(
 def security_scan_linter_operator_rollup_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compact rollup from :func:`security_scan_linter_operator_metrics`."""
     return security_scan_linter_operator_metrics_caption(
         security_scan_linter_operator_metrics(summary),
     )
@@ -609,24 +532,6 @@ def security_scan_linter_operator_rollup_caption(
 def security_scan_linter_ok_linters_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption naming the linters whose exit code is zero.
-
-    Positive mirror of :func:`security_scan_linter_failed_linters_caption`. Uses
-    the same fixed Ruff -> Bandit order from ``_LINTER_EXIT_FIELDS`` and the same
-    ``int`` / non-``bool`` observability rule.
-
-    Returns:
-
-    * ``"Passing linter: Ruff."`` / ``"Passing linter: Bandit."`` when exactly one
-      observable linter reports exit ``0``,
-    * ``"Passing linters: Ruff, Bandit."`` when both observable linters report
-      exit ``0``,
-    * ``None`` when ``summary`` is not a mapping, when no linter is observable, or
-      when every observable linter has a non-zero exit.
-
-    Purely additive — does **not** replace ``security_scan_linter_worst_status_caption``
-    (whose "All linters passed (...)." line already covers the all-ok summary tally).
-    """
     if not isinstance(summary, Mapping):
         return None
     passing: list[str] = []
@@ -646,18 +551,6 @@ def security_scan_linter_ok_linters_caption(
 def security_scan_linter_missing_linters_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption naming the linters with no integer exit on the timeline.
-
-    Third member of the ok / failed / **missing** caption trio. A linter is **missing**
-    when :func:`security_scan_linter_status_rows` would emit ``status: missing`` for it
-    (key absent, value not an ``int``, or value is a ``bool`` — booleans are excluded
-    because :class:`bool` subclasses :class:`int`).
-
-    Returns ``"Missing linter: Ruff."`` / ``"Missing linter: Bandit."`` when exactly one
-    linter is missing, ``"Missing linters: Ruff, Bandit."`` when both are missing, and
-    ``None`` when ``summary`` is not a mapping or when **both** linters are observable
-    (regardless of pass/fail).
-    """
     if not isinstance(summary, Mapping):
         return None
     missing: list[str] = []
@@ -675,23 +568,6 @@ def security_scan_linter_missing_linters_caption(
 def security_scan_linter_failed_linters_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption naming the linters whose exit code is non-zero.
-
-    Mirrors the observability rule used by :func:`security_scan_linter_status_rows`
-    (entry observable only when ``summary[key]`` is an ``int`` and **not** a ``bool``)
-    and the fixed Ruff -> Bandit order shared with
-    :func:`security_scan_linter_worst_status_caption`.
-
-    Returns:
-
-    * ``"Failed linter: Ruff."`` / ``"Failed linter: Bandit."`` when exactly one
-      observable linter has a non-zero exit code,
-    * ``"Failed linters: Ruff, Bandit."`` when both observable linters failed,
-    * ``None`` when ``summary`` is not a mapping, when no linter is observable, or
-      when every observable linter reported an exit code of ``0``.
-
-    Purely additive — does **not** replace ``security_scan_linter_worst_status_caption``.
-    """
     if not isinstance(summary, Mapping):
         return None
     failed: list[str] = []
@@ -711,19 +587,6 @@ def security_scan_linter_failed_linters_caption(
 def security_scan_linter_exit_codes_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption listing the per-linter exit codes observed.
-
-    Mirrors the observability rule used by :func:`security_scan_linter_status_rows`:
-    an entry is observable only when ``summary[key]`` is an ``int`` and **not** a
-    ``bool`` (``bool`` is a subclass of :class:`int` and we want only true integers).
-
-    Returns:
-
-    * ``"Linter exit codes: Ruff=<n>, Bandit=<m>."`` when both linters are observable,
-    * ``"Linter exit codes: Ruff=<n>."`` / ``"Linter exit codes: Bandit=<m>."`` when
-      only one is observable,
-    * ``None`` when ``summary`` is not a mapping or neither linter is observable.
-    """
     if not isinstance(summary, Mapping):
         return None
     observed: list[str] = []
@@ -740,17 +603,6 @@ def security_scan_linter_exit_codes_caption(
 def security_scan_linter_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column ``field`` / ``value`` rows for the linter operator metrics dict.
-
-    Renders the dict returned by :func:`security_scan_linter_operator_metrics` as stable
-    ``st.dataframe`` rows, mirroring ``self_refinement_timeline_metrics_table_rows``.
-    Always emits the four bucket counts (``Observable linters`` / ``Ok`` / ``Failed`` /
-    ``Missing``); appends ``Worst status`` / ``Worst linter`` / ``Worst exit`` rows only
-    when ``worst_status`` is not ``None`` (so a fully missing signal collapses to the
-    four bucket counts and nothing else).
-
-    Returns ``[]`` when ``metrics`` is not a mapping or is empty.
-    """
     if not isinstance(metrics, Mapping) or not metrics:
         return []
     rows: list[dict[str, str]] = [
@@ -775,7 +627,6 @@ def security_scan_linter_operator_metrics_table_rows(
 def security_scan_on_verify_summary_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` (field / value columns)."""
     if not summary:
         return []
     rows: list[dict[str, str]] = []
@@ -792,7 +643,6 @@ _SECURITY_SCAN_ON_VERIFY_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field",
 def security_scan_on_verify_latest_summary_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize latest security_scan_on_verify summary rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -813,7 +663,6 @@ def security_scan_on_verify_latest_summary_rows_csv(
 def security_scan_on_verify_latest_export_json(
     summary: Mapping[str, Any] | None,
 ) -> str:
-    """JSON export of timeline top-level ``security_scan_on_verify`` summary."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), ensure_ascii=False, indent=2)
@@ -824,7 +673,6 @@ def security_scan_on_verify_latest_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for latest security_scan_on_verify download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -840,7 +688,6 @@ def _security_scan_snippet_char_len(summary: Mapping[str, Any]) -> int:
 def security_scan_on_verify_latest_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup for latest timeline ``security_scan_on_verify`` finding summary."""
     metrics: dict[str, Any] = {
         "category_present": False,
         "severity_present": False,
@@ -871,7 +718,6 @@ def security_scan_on_verify_latest_operator_metrics(
 def security_scan_on_verify_latest_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -899,7 +745,6 @@ def security_scan_on_verify_latest_operator_metrics_table_rows(
 def security_scan_on_verify_latest_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from latest security scan finding rollup."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -932,7 +777,6 @@ _SECURITY_SCAN_ON_VERIFY_LATEST_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = 
 def security_scan_on_verify_latest_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for latest security scan finding operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -941,7 +785,6 @@ def security_scan_on_verify_latest_operator_metrics_export_json(
 def security_scan_on_verify_latest_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize latest security scan finding operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -967,7 +810,6 @@ def security_scan_on_verify_latest_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for latest security scan finding operator metrics downloads."""
     return security_scan_on_verify_latest_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -977,7 +819,6 @@ _SECURITY_SCAN_LINTER_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def security_scan_linter_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for security-scan linter operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -986,7 +827,6 @@ def security_scan_linter_operator_metrics_export_json(
 def security_scan_linter_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize security-scan linter operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1012,7 +852,6 @@ def security_scan_linter_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for security-scan linter operator metrics downloads."""
     return security_scan_on_verify_latest_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -1021,13 +860,6 @@ def security_scan_metadata_timeline_workflow_alignment_caption(
     timeline_security_scan_on_verify: Mapping[str, Any] | None,
     explainer_payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compare timeline **security_scan_on_verify** vs Module Integrator ``effective_enabled``.
-
-    Uses :func:`security_scan_on_verify_summary_rows` to detect operator-visible scan output
-    on the timeline. Returns ``None`` when the explainer payload is missing, carries a
-    non-empty ``load_error``, lacks a strict-bool ``effective_enabled``, or the signals
-    already align (scan output present ↔ effective true, or both absent/off).
-    """
     if not isinstance(explainer_payload, Mapping):
         return None
     err = explainer_payload.get("load_error")

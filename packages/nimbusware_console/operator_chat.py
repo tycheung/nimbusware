@@ -1,9 +1,6 @@
-"""Cursor-like operator chat for Nimbusware."""
-
 from __future__ import annotations
 
 import json
-import os
 import uuid
 from collections.abc import Callable
 from datetime import datetime, timezone
@@ -13,16 +10,19 @@ from typing import Any
 import httpx
 import streamlit as st
 
+from nimbusware_client.http import (
+    api_base,
+    get_response,
+    post_response,
+    user_headers,
+)
+
 _SS_CHAT_MESSAGES = "nimbusware_chat_messages"
 _SS_CHAT_THREAD = "nimbusware_chat_thread"
 _SS_ACTIVE_AGENT = "nimbusware_active_agent_id"
 _SS_LAST_RUN = "nimbusware_last_run_id"
 _SS_MEMORY_RETRIEVAL = "nimbusware_memory_retrieval_enabled"
 _SS_MEMORY_CONTRIB = "nimbusware_memory_index_contribution"
-
-
-def _api_base() -> str:
-    return os.environ.get("NIMBUSWARE_API_BASE", "http://127.0.0.1:8000/v1").rstrip("/")
 
 
 def _ensure_chat_state() -> None:
@@ -95,8 +95,13 @@ def _start_run(workflow_profile: str) -> str:
     if _SS_MEMORY_CONTRIB in st.session_state:
         payload["memory_index_contribution"] = bool(st.session_state[_SS_MEMORY_CONTRIB])
     try:
-        with httpx.Client(timeout=30.0) as client:
-            resp = client.post(f"{_api_base()}/runs", json=payload)
+        resp = post_response(
+            "/runs",
+            payload=payload,
+            headers=user_headers(),
+            timeout=30.0,
+            raise_for_status=False,
+        )
         if resp.status_code >= 400:
             return f"Run failed ({resp.status_code}): {resp.text[:500]}"
         data = resp.json()
@@ -104,13 +109,17 @@ def _start_run(workflow_profile: str) -> str:
         st.session_state[_SS_LAST_RUN] = run_id
         return f"Started run `{run_id}` with profile `{workflow_profile}`."
     except httpx.HTTPError as exc:
-        return f"Could not reach API at {_api_base()}: {exc}"
+        return f"Could not reach API at {api_base()}: {exc}"
 
 
 def _fetch_timeline_summary(run_id: str) -> str:
     try:
-        with httpx.Client(timeout=30.0) as client:
-            resp = client.get(f"{_api_base()}/runs/{run_id}/timeline")
+        resp = get_response(
+            f"/runs/{run_id}/timeline",
+            headers=user_headers(),
+            timeout=30.0,
+            raise_for_status=False,
+        )
         if resp.status_code >= 400:
             return f"Timeline fetch failed ({resp.status_code})."
         data = resp.json()
@@ -136,14 +145,13 @@ def process_user_message(text: str) -> str:
 
 
 def render_operator_chat(*, repo_root: Path | None = None) -> None:
-    """Render chat UI in the main Streamlit column."""
     _ensure_chat_state()
     st.subheader("Operator chat")
     agent = st.session_state.get(_SS_ACTIVE_AGENT)
     if agent:
         st.caption(f"Active agent: `{agent}`")
     thread = st.session_state[_SS_CHAT_THREAD]
-    st.caption(f"Thread: `{thread[:8]}…` · API: `{_api_base()}`")
+    st.caption(f"Thread: `{thread[:8]}…` · API: `{api_base()}`")
     st.checkbox(
         "Memory retrieval enabled for /run",
         value=st.session_state.get(_SS_MEMORY_RETRIEVAL, True),

@@ -1,10 +1,3 @@
-"""Persona editor helpers for the Streamlit console.
-
-Pure functions so the diff / payload-shape logic can be unit-tested without
-spinning up Streamlit. The Streamlit-only glue (text_area, data_editor, button
-handlers) lives in :mod:`nimbusware_console.app`.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -28,7 +21,6 @@ def persona_editor_validation_issues(
     *,
     require_non_empty_id: bool = False,
 ) -> list[str]:
-    """Pre-submit validation mirroring ``PersonaShelf`` write caps (§14 #14)."""
     issues: list[str] = []
     if require_non_empty_id:
         raw_id = edited.get("id")
@@ -45,7 +37,6 @@ def persona_editor_validation_issues(
 def persona_editor_validation_table_rows(
     issues: list[str],
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` when pre-submit validation fails."""
     rows: list[dict[str, str]] = []
     for msg in issues:
         rows.append({"field": "validation", "message": msg})
@@ -55,7 +46,6 @@ def persona_editor_validation_table_rows(
 def persona_editor_validation_blocking_caption(
     issues: list[str] | None,
 ) -> str | None:
-    """Operator caption when Save / Replace / Create must stay disabled."""
     if not issues:
         return None
     n = len(issues)
@@ -69,8 +59,6 @@ def persona_list_field_line_counts_caption(
     allowed_tools_raw: object,
     success_metrics_raw: object,
 ) -> str | None:
-    """Non-blank line counts for list-shaped persona editor fields (§14 #14)."""
-
     def _nonblank_lines(raw: object) -> int:
         if not isinstance(raw, str):
             return 0
@@ -84,7 +72,6 @@ def persona_list_field_line_counts_caption(
 
 
 def persona_editor_selected_shelf_caption(shelf: str | None) -> str | None:
-    """Surface the active persona shelf in the editor UI."""
     if not isinstance(shelf, str):
         return None
     text = shelf.strip()
@@ -96,7 +83,6 @@ def persona_editor_selected_shelf_caption(shelf: str | None) -> str | None:
 def persona_editor_display_name_draft_caption(
     display_name_raw: object,
 ) -> str | None:
-    """Char/byte counts for ``display_name`` draft (§14 #14)."""
     m = persona_field_metrics(display_name_raw)
     if not m["non_empty"]:
         return None
@@ -109,7 +95,6 @@ def persona_editor_display_name_draft_caption(
 def persona_editor_instructions_metrics_caption(
     instructions_raw: object,
 ) -> str | None:
-    """Char/byte/line counts for ``instructions`` draft (§14 #14)."""
     m = persona_field_metrics(instructions_raw)
     if not m["non_empty"]:
         return None
@@ -124,7 +109,6 @@ def persona_editor_multiline_field_metrics_caption(
     capability_profile_raw: object,
     boundary_statement_raw: object,
 ) -> str | None:
-    """Char/line counts for ``capability_profile`` and ``boundary_statement`` drafts."""
     cp = persona_field_metrics(capability_profile_raw)
     bs = persona_field_metrics(boundary_statement_raw)
     parts: list[str] = []
@@ -144,12 +128,6 @@ def persona_editor_multiline_field_metrics_caption(
 
 
 def persona_field_metrics(value: object) -> dict[str, Any]:
-    """Read-only draft stats for multiline persona fields (§14 #11).
-
-    ``non_empty`` is true only when stripped text is non-empty. ``char_len`` /
-    ``utf8_bytes`` / ``line_count`` describe the stripped payload when non-empty,
-    else zeros (draft is whitespace-only or absent).
-    """
     if not isinstance(value, str):
         return {
             "non_empty": False,
@@ -175,7 +153,6 @@ def persona_field_metrics(value: object) -> dict[str, Any]:
 
 
 def _normalize_value(value: Any) -> Any:
-    """Treat ``""`` / ``[]`` / ``None`` as the same "absent" for diff purposes."""
     if value is None:
         return None
     if isinstance(value, str) and value == "":
@@ -191,14 +168,6 @@ def build_patch_request(
     *,
     actor: str | None = None,
 ) -> dict[str, Any]:
-    """Build the request body for ``PATCH /v1/personas/{shelf}/{id}``.
-
-    Only includes fields that changed between ``snapshot`` (last known catalog row)
-    and ``edited`` (current editor state). ``expected_version`` is sourced from
-    the snapshot so callers can't accidentally clobber a concurrent edit.
-    Returns ``{"expected_version": int}`` alone when no fields actually changed
-    (caller decides whether to issue an empty PATCH or short-circuit).
-    """
     payload: dict[str, Any] = {"expected_version": int(snapshot.get("version", 1) or 1)}
     if actor:
         payload["actor"] = actor
@@ -220,7 +189,6 @@ _CANONICAL_PROBATION_STATUSES = frozenset({"probation", "promoted", "shelved"})
 def persona_editor_probation_status_draft_caption(
     probation_status_raw: object,
 ) -> str | None:
-    """Surface non-empty ``probation_status`` draft from the editor control."""
     if not isinstance(probation_status_raw, str):
         return None
     text = probation_status_raw.strip()
@@ -232,7 +200,6 @@ def persona_editor_probation_status_draft_caption(
 def persona_editor_probation_status_caption(
     snapshot: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface catalog ``probation_status`` for the loaded persona row."""
     if not isinstance(snapshot, Mapping):
         return None
     raw = snapshot.get("probation_status")
@@ -247,7 +214,6 @@ def persona_editor_probation_status_caption(
 def persona_editor_expected_version_caption(
     snapshot: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface optimistic-concurrency ``expected_version`` from the loaded catalog row."""
     if not isinstance(snapshot, Mapping):
         return None
     ver = snapshot.get("version")
@@ -263,7 +229,6 @@ def persona_editor_diff_summary_caption(
     snapshot: Mapping[str, Any],
     edited: Mapping[str, Any],
 ) -> str | None:
-    """One-line count of editable fields that differ from the loaded snapshot."""
     changed: list[str] = []
     for field in EDITABLE_FIELDS:
         if field not in edited:
@@ -290,12 +255,6 @@ def diff_summary(
     snapshot: Mapping[str, Any],
     edited: Mapping[str, Any],
 ) -> list[str]:
-    """Operator-readable diff bullets for the editor preview pane.
-
-    Format: ``"{field}: {before!r} -> {after!r}"`` for each EDITABLE_FIELDS entry
-    whose normalized value differs. Returns ``[]`` when nothing changed so the
-    Streamlit caller can hide the diff block.
-    """
     out: list[str] = []
     for field in EDITABLE_FIELDS:
         before = _normalize_value(snapshot.get(field))
@@ -310,13 +269,6 @@ def parse_write_response(
     status_code: int,
     body: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Translate a CRUD response into a flat dict the Streamlit layer can render.
-
-    Returns ``{"ok": True, "catalog": <body>}`` on 2xx, otherwise a structured
-    error mapping with ``ok=False``, ``status``, ``code``, ``message``, and a
-    boolean ``version_conflict`` flag so the UI can prompt a reload without
-    inspecting raw HTTP details.
-    """
     if 200 <= status_code < 300:
         return {"ok": True, "catalog": dict(body or {})}
     detail = (body or {}).get("detail") or {}
@@ -337,7 +289,6 @@ def find_persona_in_catalog(
     shelf: str,
     persona_id: str,
 ) -> dict[str, Any] | None:
-    """Return the entry from a ``GET /v1/personas`` body or ``None`` when missing."""
     if not catalog:
         return None
     entries = catalog.get(shelf)

@@ -1,13 +1,10 @@
-"""Enterprise console helpers — pure functions, no Streamlit."""
-
 from __future__ import annotations
 
 import json
 from collections.abc import Mapping
 from typing import Any
 
-import httpx
-
+from nimbusware_client.http import get_json
 from nimbusware_console.preflight_cross_run_display import (
     preflight_history_response_sli_caption,
 )
@@ -33,7 +30,6 @@ def is_enterprise_edition_manifest(manifest: Mapping[str, Any] | None) -> bool:
 
 
 def enterprise_console_feature_enabled(manifest: Mapping[str, Any] | None) -> bool:
-    """True when Enterprise edition and enterprise console feature is enabled."""
     if not is_enterprise_edition_manifest(manifest):
         return False
     features = manifest.get("features")
@@ -45,53 +41,40 @@ def enterprise_console_feature_enabled(manifest: Mapping[str, Any] | None) -> bo
     return str(block.get("status", "")).strip().lower() == "enabled"
 
 
-def fetch_platform_edition(api_base: str, *, timeout: float = 15.0) -> dict[str, Any]:
-    base = str(api_base).rstrip("/")
-    parent = base.rsplit("/v1", 1)[0] if base.endswith("/v1") else base
-    edition_url = f"{parent}/v1/platform/edition"
-    response = httpx.get(edition_url, timeout=timeout)
-    response.raise_for_status()
-    body = response.json()
-    return body if isinstance(body, dict) else {}
-
-
 def _enterprise_get(
-    api_base: str,
     path: str,
     *,
     api_key: str | None,
     params: dict[str, Any] | None = None,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
-    base = str(api_base).rstrip("/")
     suffix = path if path.startswith("/") else f"/{path}"
-    response = httpx.get(
-        f"{base}{suffix}",
+    return get_json(
+        suffix,
         params=params,
         headers=build_enterprise_headers(api_key),
         timeout=timeout,
     )
-    response.raise_for_status()
-    body = response.json()
-    return body if isinstance(body, dict) else {}
 
 
-def fetch_iam_me(api_base: str, *, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
-    return _enterprise_get(api_base, "/enterprise/iam/me", api_key=api_key, timeout=timeout)
+def fetch_platform_edition(*, timeout: float = 15.0) -> dict[str, Any]:
+    return get_json("/platform/edition", timeout=timeout)
 
 
-def fetch_tenants(api_base: str, *, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
-    return _enterprise_get(api_base, "/enterprise/tenants", api_key=api_key, timeout=timeout)
+def fetch_iam_me(*, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
+    return _enterprise_get("/enterprise/iam/me", api_key=api_key, timeout=timeout)
+
+
+def fetch_tenants(*, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
+    return _enterprise_get("/enterprise/tenants", api_key=api_key, timeout=timeout)
 
 
 def fetch_fleet_memory_status(
-    api_base: str,
     *,
     api_key: str,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     return _enterprise_get(
-        api_base,
         "/enterprise/fleet-memory/status",
         api_key=api_key,
         timeout=timeout,
@@ -99,14 +82,12 @@ def fetch_fleet_memory_status(
 
 
 def fetch_fleet_preflight_aggregate(
-    api_base: str,
     *,
     api_key: str,
     limit: int = 10,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     return _enterprise_get(
-        api_base,
         "/enterprise/fleet-ollama-sli/preflight-aggregate",
         api_key=api_key,
         params={"limit": max(1, min(50, int(limit))), "include_metrics_export": 1},
@@ -115,13 +96,11 @@ def fetch_fleet_preflight_aggregate(
 
 
 def fetch_fleet_worker_health(
-    api_base: str,
     *,
     api_key: str,
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     return _enterprise_get(
-        api_base,
         "/enterprise/fleet-worker/health",
         api_key=api_key,
         timeout=timeout,
@@ -129,7 +108,6 @@ def fetch_fleet_worker_health(
 
 
 def tenant_select_options(tenants_body: Mapping[str, Any] | None) -> list[tuple[str, str]]:
-    """Return ``(slug, label)`` pairs for a tenant selectbox."""
     if not isinstance(tenants_body, Mapping):
         return []
     raw = tenants_body.get("tenants")

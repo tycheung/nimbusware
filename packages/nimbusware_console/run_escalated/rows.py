@@ -1,5 +1,3 @@
-"""Run escalated display helpers."""
-
 from __future__ import annotations
 
 import csv
@@ -16,7 +14,6 @@ from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FI
 def run_escalated_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``run_escalated`` dict from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("run_escalated")
@@ -26,7 +23,6 @@ def run_escalated_from_timeline(
 
 
 def run_escalated_summary_rows(summary: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` (field / value columns)."""
     if not summary:
         return []
     rows: list[dict[str, str]] = []
@@ -43,7 +39,6 @@ _RUN_ESCALATED_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def run_escalated_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize run escalated summary field/value rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -62,7 +57,6 @@ def run_escalated_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
 
 
 def run_escalated_export_json(summary: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline top-level ``run_escalated`` summary."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), ensure_ascii=False, indent=2)
@@ -71,7 +65,6 @@ def run_escalated_export_json(summary: Mapping[str, Any] | None) -> str:
 
 
 def run_escalated_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for run escalated summary download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -82,7 +75,6 @@ def run_escalated_export_filename_slug(run_id: str, *, max_len: int = 36) -> str
 def run_escalated_history_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
-    """Return ``run_escalated_history`` list from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return []
     raw = timeline_body.get("run_escalated_history")
@@ -96,7 +88,6 @@ def run_escalated_history_from_timeline(
 def run_escalated_history_table_rows(
     history: list[dict[str, Any]],
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` — one row per escalation in chronological order."""
     rows: list[dict[str, str]] = []
     for i, e in enumerate(history, start=1):
         rows.append(
@@ -127,7 +118,6 @@ _RUN_ESCALATED_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def run_escalated_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize run escalated history display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -146,7 +136,6 @@ def run_escalated_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> s
 
 
 def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
-    """JSON export of raw ``run_escalated_history`` timeline list."""
     items = [dict(x) for x in history if isinstance(x, Mapping)]
     return json.dumps(items, ensure_ascii=False, indent=2)
 
@@ -154,7 +143,6 @@ def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> s
 
 
 def run_escalated_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for run escalated history download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -165,7 +153,6 @@ def run_escalated_history_export_filename_slug(run_id: str, *, max_len: int = 36
 def run_escalated_delta_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return ``run_escalated_delta`` from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("run_escalated_delta")
@@ -189,7 +176,6 @@ _RUN_ESCALATED_DELTA_FIELDS: tuple[tuple[str, str], ...] = (
 
 
 def run_escalated_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` / CSV — field / value from timeline delta."""
     if not isinstance(delta, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -206,7 +192,6 @@ _RUN_ESCALATED_DELTA_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def run_escalated_delta_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize run escalated delta summary rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -225,7 +210,6 @@ def run_escalated_delta_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str
 
 
 def run_escalated_delta_export_json(delta: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline ``run_escalated_delta`` object."""
     if not isinstance(delta, Mapping):
         return "{}"
     return json.dumps(dict(delta), ensure_ascii=False, indent=2)
@@ -234,7 +218,6 @@ def run_escalated_delta_export_json(delta: Mapping[str, Any] | None) -> str:
 
 
 def run_escalated_delta_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for run escalated delta download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]

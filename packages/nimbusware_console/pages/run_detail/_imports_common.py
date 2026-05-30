@@ -1,5 +1,3 @@
-"""Stdlib and framework imports for run_detail panels."""
-
 from __future__ import annotations
 
 import csv

@@ -1,5 +1,3 @@
-"""Run detail — timeline misc (preflight)."""
-
 from __future__ import annotations
 
 import os

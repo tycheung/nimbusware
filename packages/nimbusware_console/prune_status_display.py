@@ -1,14 +1,3 @@
-"""Prune status card helpers for Streamlit (plan §14 #11.
-
-Bridges the JSON state file written by ``scripts/prune_scraper_artifacts.py``
-(``--summary-path`` / ``HERMES_PRUNE_STATUS_PATH``) to the Streamlit console.
-Three pure functions so they can be unit-tested without spinning up Streamlit:
-
-* :func:`load_prune_status` — defensively read the state file (never raises).
-* :func:`prune_status_summary_rows` — field/value rows for ``st.dataframe``.
-* :func:`prune_status_freshness_caption` — operator-readable freshness blurb.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -25,7 +14,6 @@ SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = (
 
 
 def prune_scraper_artifact_prune_workflow_caption() -> str:
-    """One-line pointer to the scheduled prune GitHub Actions workflow."""
     return (
         f"Scheduled prune workflow: ``{SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH}`` "
         "(cron / workflow_dispatch; not default CI)."
@@ -35,7 +23,6 @@ def prune_scraper_artifact_prune_workflow_caption() -> str:
 def prune_status_schema_version_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``schema_version`` from the prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     raw = status.get("schema_version")
@@ -67,16 +54,6 @@ def _stringify(value: Any) -> str:
 
 
 def load_prune_status(path: Path | None) -> dict[str, Any] | None:
-    """Read ``path`` as JSON. Returns ``None`` on any failure (never raises).
-
-    Defensive in five ways so the console expander can call this unconditionally:
-
-    * ``path is None`` ⇒ ``None`` (env not set).
-    * File missing ⇒ ``None`` (operator hasn't run the prune script yet).
-    * ``OSError`` on read ⇒ ``None`` (permission / locking issue).
-    * JSON decode error ⇒ ``None`` (partial write / hand-edit gone wrong).
-    * Top-level not a dict ⇒ ``None`` (someone wrote a list / scalar).
-    """
     if path is None:
         return None
     try:
@@ -93,12 +70,6 @@ def load_prune_status(path: Path | None) -> dict[str, Any] | None:
 def prune_status_summary_rows(
     status: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` (field / value columns).
-
-    Returns ``[]`` when ``status`` is falsy so the caller can show a neutral
-    caption instead of an empty table. Renders ``None`` values as ``—`` (same
-    em-dash convention used by ``preflight_history_summary_rows``).
-    """
     if not status:
         return []
     rows: list[dict[str, str]] = []
@@ -113,14 +84,12 @@ _PRUNE_STATUS_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def prune_status_export_json(status: Mapping[str, Any] | None) -> str:
-    """Pretty JSON export of the loaded prune status dict."""
     if not isinstance(status, Mapping):
         return "{}"
     return json.dumps(dict(status), indent=2, ensure_ascii=False)
 
 
 def prune_status_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize summary field/value rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -152,7 +121,6 @@ def prune_status_age_since_wrote_at_caption(
     *,
     now: datetime | None = None,
 ) -> str | None:
-    """Hours/minutes since ``wrote_at`` (complements freshness caption)."""
     if not status:
         return None
     wrote_at = _parse_wrote_at(status.get("wrote_at"))
@@ -177,7 +145,6 @@ def prune_status_age_since_wrote_at_caption(
 def prune_status_pattern_filter_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compact rollup of include/exclude pattern counts from prune status JSON."""
     if not status:
         return None
     inc = status.get("include_pattern_count")
@@ -210,7 +177,6 @@ def prune_status_pattern_filter_caption(
 def prune_status_max_age_days_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface ``max_age_days`` from the prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     raw = status.get("max_age_days")
@@ -223,7 +189,6 @@ def prune_status_max_age_days_caption(
 def prune_status_retention_policy_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compact retention-policy caption derived from ``max_age_days``."""
     if not isinstance(status, Mapping):
         return None
     raw = status.get("max_age_days")
@@ -236,7 +201,6 @@ def prune_status_retention_policy_caption(
 def prune_status_retention_execution_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Retention execution mode from prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     mode = status.get("retention_execution_mode")
@@ -248,7 +212,6 @@ def prune_status_retention_execution_caption(
 def prune_status_object_store_prune_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Object-store mirror delete counts from prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     attempted = status.get("object_store_attempted")
@@ -276,7 +239,6 @@ def prune_status_object_store_prune_caption(
 def prune_status_retention_alert_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Retention alert and stale-volume rollup from prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     level = status.get("retention_alert_level")
@@ -301,7 +263,6 @@ def prune_status_retention_alert_caption(
 def scraper_artifact_inventory_retention_execution_caption(
     inventory: Mapping[str, Any] | None,
 ) -> str | None:
-    """Retention execution mode from scraper artifact inventory API."""
     if not isinstance(inventory, Mapping):
         return None
     mode = inventory.get("retention_execution_mode")
@@ -313,7 +274,6 @@ def scraper_artifact_inventory_retention_execution_caption(
 def scraper_artifact_inventory_retention_alert_caption(
     inventory: Mapping[str, Any] | None,
 ) -> str | None:
-    """Retention alert level from scraper artifact inventory API."""
     if not isinstance(inventory, Mapping):
         return None
     level = inventory.get("retention_alert_level")
@@ -335,7 +295,6 @@ def scraper_artifact_inventory_retention_alert_caption(
 def scraper_artifact_inventory_storage_caption(
     inventory: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line storage backend readiness from scraper artifact inventory."""
     if not isinstance(inventory, Mapping):
         return None
     backend = inventory.get("storage_backend")
@@ -366,7 +325,6 @@ def scraper_artifact_inventory_storage_caption(
 def prune_status_wrote_at_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """UTC ``wrote_at`` timestamp from the prune JSON summary."""
     if not isinstance(status, Mapping):
         return None
     raw = status.get("wrote_at")
@@ -381,7 +339,6 @@ def prune_status_wrote_at_caption(
 def prune_status_dry_run_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated ``dry_run`` flag from the prune JSON summary (no ``pruned`` count required)."""
     if not isinstance(status, Mapping):
         return None
     dry = status.get("dry_run")
@@ -395,7 +352,6 @@ def prune_status_dry_run_caption(
 def prune_status_pruned_outcome_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Last prune outcome: path count removed and whether the run was a dry run."""
     if not isinstance(status, Mapping):
         return None
     pruned = status.get("pruned")
@@ -417,7 +373,6 @@ def prune_status_pruned_outcome_caption(
 def prune_status_base_dir_caption(
     status: Mapping[str, Any] | None,
 ) -> str | None:
-    """Prune target base directory from the JSON summary."""
     if not isinstance(status, Mapping):
         return None
     raw = status.get("base")
@@ -435,21 +390,6 @@ def prune_status_freshness_caption(
     now: datetime | None = None,
     stale_after_hours: int = 24,
 ) -> str:
-    """Operator-readable freshness blurb derived from ``wrote_at`` + injected ``now``.
-
-    Three branches:
-
-    * ``status`` is falsy ⇒ "No prune status file yet (run scripts/prune_scraper_artifacts.py
-      with --summary-path or HERMES_PRUNE_STATUS_PATH set)."
-    * ``wrote_at`` missing / unparseable ⇒ "Status file present but missing wrote_at timestamp."
-    * Otherwise ⇒ "Last updated N minute(s)/hour(s) ago." with a "Stale (>24h)." suffix when
-      the delta exceeds ``stale_after_hours``.
-
-    ``now`` is injected so the caption is deterministic in tests; falls back to
-    ``datetime.now(timezone.utc)`` for live rendering. Timezone-naive ``wrote_at``
-    strings are treated as UTC (matches what the script writes via
-    ``datetime.now(timezone.utc).isoformat()``).
-    """
     if not status:
         return (
             "No prune status file yet (run scripts/prune_scraper_artifacts.py "
@@ -487,7 +427,6 @@ def _prune_status_is_stale(
     now: datetime | None = None,
     stale_after_hours: int = 24,
 ) -> bool:
-    """True when ``wrote_at`` is older than ``stale_after_hours`` (matches freshness caption)."""
     if not isinstance(status, Mapping):
         return False
     wrote_at = _parse_wrote_at(status.get("wrote_at"))
@@ -520,7 +459,6 @@ def prune_status_operator_metrics(
     now: datetime | None = None,
     stale_after_hours: int = 24,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from prune JSON status file."""
     metrics: dict[str, Any] = {
         "pruned": None,
         "dry_run": None,
@@ -579,7 +517,6 @@ def prune_status_operator_metrics(
 def prune_status_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -621,7 +558,6 @@ def prune_status_operator_metrics_table_rows(
 def prune_status_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from prune rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     pruned = metrics.get("pruned")
@@ -650,7 +586,6 @@ _PRUNE_STATUS_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def prune_status_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for prune status operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -659,7 +594,6 @@ def prune_status_operator_metrics_export_json(
 def prune_status_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize prune status operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -681,5 +615,4 @@ def prune_status_operator_metrics_table_rows_csv(
 
 
 def prune_status_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for prune status operator metrics download filenames."""
     return "prune_status_operator_metrics"

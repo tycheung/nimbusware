@@ -1,5 +1,3 @@
-"""Run escalated display helpers."""
-
 from __future__ import annotations
 
 import csv

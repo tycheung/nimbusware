@@ -1,10 +1,3 @@
-"""Apply workflow YAML edits: subtrees + full-profile merge.
-
-Writes only when ``HERMES_ALLOW_WORKFLOW_YAML_WRITE`` is truthy and confirmation
-matches the selected profile stem. Uses :func:`atomic_write_yaml` for a safe
-replace on ``configs/workflows/{profile}.yaml``.
-"""
-
 from __future__ import annotations
 
 import copy
@@ -39,7 +32,6 @@ def _config_materializer(repo_root: Path) -> Any | None:
 
 
 def workflow_yaml_write_enabled() -> bool:
-    """Truth gate for disk writes (``1`` / ``true`` / ``yes`` / ``on``, case-insensitive)."""
     raw = os.environ.get(ALLOW_WORKFLOW_YAML_WRITE_ENV, "").strip().lower()
     return raw in ("1", "true", "yes", "on")
 
@@ -51,7 +43,6 @@ def merge_integrator_gate_into_profile_document(
     *,
     materializer: Any | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None, dict[str, Any]]:
-    """Return ``(merged_full_doc, before_integrator_gate, after_integrator_gate)``."""
     mat = materializer if materializer is not None else _config_materializer(repo_root)
     raw = load_workflow_profile_dict(repo_root, profile_stem, materializer=mat)
     merged = copy.deepcopy(raw)
@@ -62,7 +53,6 @@ def merge_integrator_gate_into_profile_document(
 
 
 def normalize_agent_evaluator_block(block: dict[str, Any]) -> dict[str, Any]:
-    """Coerce to the shape :func:`parse_agent_evaluator_workflow_block` expects after load."""
     enabled = bool(block.get("enabled", False))
     raw_pid = block.get("persona_id", "default")
     if raw_pid is None:
@@ -93,7 +83,6 @@ def merge_agent_evaluator_into_profile_document(
     *,
     materializer: Any | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None, dict[str, Any]]:
-    """Return ``(merged_full_doc, before_agent_evaluator, after_agent_evaluator)``."""
     mat = materializer if materializer is not None else _config_materializer(repo_root)
     raw = load_workflow_profile_dict(repo_root, profile_stem, materializer=mat)
     merged = copy.deepcopy(raw)
@@ -111,10 +100,6 @@ def merge_full_workflow_into_profile_document(
     *,
     materializer: Any | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Shallow-merge pasted keys over on-disk profile.
-
-    Returns ``(merged, before_disk)``.
-    """
     mat = materializer if materializer is not None else _config_materializer(repo_root)
     disk = load_workflow_profile_dict(repo_root, profile_stem, materializer=mat)
     if not isinstance(disk, dict):
@@ -135,10 +120,6 @@ def prepare_full_workflow_apply(
     profile_stem: str,
     pasted_yaml: str,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, list[str]]:
-    """Parse, validate, and merge a full workflow document without writing.
-
-    Returns ``(merged_full, before_disk, errors)``. On error, ``merged_full`` is ``None``.
-    """
     stem = str(profile_stem).strip()
     if not stem:
         return None, None, ["workflow profile stem is empty"]
@@ -163,7 +144,6 @@ def apply_full_workflow_yaml(
     pasted_yaml: str,
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
-    """Write merged full workflow when guards pass."""
     if not workflow_yaml_write_enabled():
         return False, None, [
             f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
@@ -190,11 +170,6 @@ def prepare_integrator_gate_apply(
     profile_stem: str,
     pasted_yaml: str,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, dict[str, Any] | None, list[str]]:
-    """Parse, validate, and merge without writing.
-
-    Returns ``(merged_full, before_gate, after_gate, errors)``. On any error,
-    ``merged_full`` is ``None``.
-    """
     stem = str(profile_stem).strip()
     if not stem:
         return None, None, None, ["workflow profile stem is empty"]
@@ -222,7 +197,6 @@ def prepare_agent_evaluator_apply(
     profile_stem: str,
     pasted_yaml: str,
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, dict[str, Any] | None, list[str]]:
-    """Parse, validate, normalize, and merge ``agent_evaluator`` without writing."""
     stem = str(profile_stem).strip()
     if not stem:
         return None, None, None, ["workflow profile stem is empty"]
@@ -256,7 +230,6 @@ def apply_integrator_gate_yaml(
     pasted_yaml: str,
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
-    """Write merged workflow YAML when guards pass. Returns ``(ok, merged_doc, errors)``."""
     if not workflow_yaml_write_enabled():
         return False, None, [
             f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
@@ -284,7 +257,6 @@ def apply_agent_evaluator_yaml(
     pasted_yaml: str,
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
-    """Write merged workflow YAML when guards pass (``agent_evaluator`` subtree only)."""
     if not workflow_yaml_write_enabled():
         return False, None, [
             f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "

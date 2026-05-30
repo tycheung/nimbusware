@@ -1,10 +1,3 @@
-"""Read-only breakdown of integrator min-score + gate emission sources.
-
-Mirrors :func:`effective_integrator_min_score_to_pass` and the preconditions in
-``RunOrchestrator._emit_bundle_integrator_gate`` so operators can see why preview
-min score may differ when a pasted fragment sets ``min_score_to_pass``.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -145,7 +138,6 @@ def _emit_integrator_gate_breakdown(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any]:
-    """Match ``_emit_bundle_integrator_gate`` guardrails (no side effects)."""
     env_raw = os.environ.get("HERMES_EMIT_INTEGRATOR_GATE", "")
     env = env_raw.strip().lower()
     forces_off = env in ("0", "false", "no")
@@ -202,7 +194,6 @@ def _emit_integrator_gate_breakdown(
 def integrator_threshold_gate_emission_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of whether a ``gate.decision.emitted`` would be written."""
     if not isinstance(payload, Mapping):
         return None
     emission = payload.get("gate_event_emission")
@@ -224,7 +215,6 @@ def integrator_threshold_gate_emission_caption(
 def integrator_threshold_thresholds_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Top-level ``version`` int from ``configs/integrator/thresholds.yaml`` on disk."""
     if not isinstance(payload, Mapping):
         return None
     thr = payload.get("thresholds_yaml")
@@ -241,7 +231,6 @@ def integrator_threshold_thresholds_yaml_version_caption(
 def integrator_threshold_min_score_agreement_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line pipeline vs Streamlit preview ``min_score_to_pass`` agreement."""
     if not isinstance(payload, Mapping):
         return None
     pipe = payload.get("pipeline_effective_min_score_to_pass")
@@ -268,7 +257,6 @@ _INTEGRATOR_THRESHOLD_PASTE_PARSE_ERROR_CAP = 3
 def integrator_threshold_paste_parse_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface non-empty ``paste_parse_errors`` from the threshold explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     raw = payload.get("paste_parse_errors")
@@ -300,7 +288,6 @@ def integrator_threshold_paste_parse_caption(
 def integrator_threshold_project_tags_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``integrator_gate.project_tags`` list length on the selected workflow profile."""
     if not isinstance(payload, Mapping):
         return None
     wf = payload.get("workflow_integrator_gate")
@@ -321,7 +308,6 @@ def integrator_threshold_explainer_payload(
     workflow_profile: str | None,
     pasted_yaml: str,
 ) -> dict[str, Any]:
-    """JSON-serializable snapshot for Streamlit ``st.json`` / tables."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -405,7 +391,6 @@ def integrator_threshold_explainer_payload(
 
 
 def integrator_threshold_export_filename_slug() -> str:
-    """Filename slug prefix for integrator threshold explainer exports."""
     return "integrator_threshold"
 
 
@@ -423,7 +408,6 @@ def _integrator_threshold_explainer_cell(value: Any) -> str:
 def integrator_threshold_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for integrator threshold explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -440,7 +424,6 @@ def integrator_threshold_explainer_table_rows(
 def integrator_threshold_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for integrator threshold explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -449,7 +432,6 @@ def integrator_threshold_explainer_export_json(
 def integrator_threshold_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize integrator threshold explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -476,7 +458,6 @@ _INTEGRATOR_THRESHOLD_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = 
 def integrator_threshold_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`integrator_threshold_explainer_payload` (§14 #13)."""
     metrics: dict[str, Any] = {
         "would_emit_gate_event": False,
         "thresholds_yaml_exists": False,
@@ -526,7 +507,6 @@ def integrator_threshold_explainer_operator_metrics(
 def integrator_threshold_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -569,7 +549,6 @@ def integrator_threshold_explainer_operator_metrics_table_rows(
 def integrator_threshold_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of integrator threshold explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -578,7 +557,6 @@ def integrator_threshold_explainer_operator_metrics_export_json(
 def integrator_threshold_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize integrator threshold explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -602,7 +580,6 @@ def integrator_threshold_explainer_operator_metrics_table_rows_csv(
 def integrator_threshold_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for threshold explainer rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -638,5 +615,4 @@ def integrator_threshold_explainer_operator_metrics_caption(
 
 
 def integrator_threshold_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for integrator threshold explainer operator metrics downloads."""
     return "integrator_threshold_explainer_operator_metrics"

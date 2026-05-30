@@ -1,5 +1,3 @@
-"""Micro-slice context packet viewer."""
-
 from __future__ import annotations
 
 import json

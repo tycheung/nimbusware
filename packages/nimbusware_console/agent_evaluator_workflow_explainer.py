@@ -1,5 +1,3 @@
-"""Read-only ``agent_evaluator`` workflow + ``HERMES_AGENT_EVALUATOR`` (§14 #15."""
-
 from __future__ import annotations
 
 import csv
@@ -24,7 +22,6 @@ def _relative_under(repo_root: Path, path: Path) -> str:
 
 
 def _json_safe_yaml_fragment(raw: object) -> object:
-    """Best-effort JSON/streamlit-safe snapshot of a YAML subtree."""
     if raw is None or isinstance(raw, (bool, int, float, str)):
         return raw
     if isinstance(raw, dict):
@@ -39,7 +36,6 @@ def _json_safe_yaml_fragment(raw: object) -> object:
 
 
 def _hermes_agent_evaluator_env_summary() -> dict[str, Any]:
-    """Mirror ``RunOrchestrator._maybe_emit_agent_evaluator_stage`` env branch."""
     raw = os.environ.get("HERMES_AGENT_EVALUATOR", "")
     low = raw.strip().lower()
     if not low:
@@ -73,7 +69,6 @@ def _hermes_agent_evaluator_env_summary() -> dict[str, Any]:
 
 
 def _hermes_agent_evaluator_auto_promote_env_summary() -> dict[str, Any]:
-    """Mirror ``RunOrchestrator._agent_evaluator_auto_promote_env_disabled``."""
     raw = os.environ.get("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE", "")
     low = raw.strip().lower()
     if not low:
@@ -97,7 +92,6 @@ def _hermes_agent_evaluator_auto_promote_env_summary() -> dict[str, Any]:
 
 
 def _hermes_agent_evaluator_auto_create_env_summary() -> dict[str, Any]:
-    """Mirror ``RunOrchestrator._agent_evaluator_auto_create_env_disabled``."""
     raw = os.environ.get("HERMES_AGENT_EVALUATOR_AUTO_CREATE", "")
     low = raw.strip().lower()
     if not low:
@@ -121,7 +115,6 @@ def _hermes_agent_evaluator_auto_create_env_summary() -> dict[str, Any]:
 
 
 def _would_emit_agent_evaluator_stage(repo_root: Path, workflow_profile: str | None) -> bool:
-    """Same gate as ``_maybe_emit_agent_evaluator_stage`` before persona/catalog checks."""
     env_raw = os.environ.get("HERMES_AGENT_EVALUATOR", "").strip().lower()
     if env_raw in ("0", "false", "no"):
         return False
@@ -131,7 +124,6 @@ def _would_emit_agent_evaluator_stage(repo_root: Path, workflow_profile: str | N
 
 
 def _would_emit_llm_evaluation(repo_root: Path, workflow_profile: str | None) -> bool:
-    """Pipeline-aligned: LLM branch when stage would emit, YAML LLM on, and ``HERMES_USE_LLM``."""
     if not _would_emit_agent_evaluator_stage(repo_root, workflow_profile):
         return False
     if os.environ.get("HERMES_USE_LLM", "").strip().lower() not in ("1", "true", "yes"):
@@ -141,7 +133,6 @@ def _would_emit_llm_evaluation(repo_root: Path, workflow_profile: str | None) ->
 
 
 def agent_evaluator_env_gate_caption(payload: Mapping[str, Any] | None) -> str | None:
-    """One-line summary of ``HERMES_AGENT_EVALUATOR`` env gate (unset / kill-switch / force-on)."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -182,7 +173,6 @@ def agent_evaluator_env_gate_caption(payload: Mapping[str, Any] | None) -> str |
 def agent_evaluator_auto_promote_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of ``HERMES_AGENT_EVALUATOR_AUTO_PROMOTE`` env gate."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -219,7 +209,6 @@ def agent_evaluator_auto_promote_env_gate_caption(
 def agent_evaluator_workflow_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Top-level ``version`` int from the selected workflow profile YAML on disk."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -234,7 +223,6 @@ def agent_evaluator_workflow_yaml_version_caption(
 def agent_evaluator_auto_create_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of ``HERMES_AGENT_EVALUATOR_AUTO_CREATE`` env gate."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -271,7 +259,6 @@ def agent_evaluator_auto_create_env_gate_caption(
 def agent_evaluator_yaml_true_bool_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of ``true`` bool leaves under ``agent_evaluator`` in workflow YAML."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -286,7 +273,6 @@ def agent_evaluator_yaml_true_bool_count_caption(
 def agent_evaluator_yaml_raw_type_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Python type name of the frozen ``agent_evaluator`` YAML value."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -304,7 +290,6 @@ def agent_evaluator_yaml_raw_type_caption(
 def agent_evaluator_yaml_key_present_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Whether ``agent_evaluator`` exists on the workflow YAML and ``yaml_parsed_enabled``."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -328,7 +313,6 @@ def agent_evaluator_yaml_key_present_caption(
 def agent_evaluator_persona_id_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface ``yaml_parsed_persona_id`` from the workflow explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -346,7 +330,6 @@ def agent_evaluator_persona_id_caption(
 def agent_evaluator_llm_evaluation_enabled_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface ``yaml_parsed_llm_evaluation_enabled`` when the workflow YAML key is present."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -371,7 +354,6 @@ def agent_evaluator_llm_evaluation_enabled_caption(
 def agent_evaluator_yaml_parsed_enabled_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface ``yaml_parsed_enabled`` when the workflow YAML key is present."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -386,7 +368,6 @@ def agent_evaluator_yaml_parsed_enabled_caption(
 
 
 def agent_evaluator_would_emit_caption(payload: Mapping[str, Any] | None) -> str | None:
-    """One-line summary of ``would_emit_stage_started`` from the workflow explainer."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -411,7 +392,6 @@ def agent_evaluator_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """Frozen ``agent_evaluator`` YAML vs env vs ``would_emit_stage_started`` (pipeline-aligned)."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -498,7 +478,6 @@ def agent_evaluator_workflow_explainer_payload(
 
 
 def agent_evaluator_export_filename_slug() -> str:
-    """Filename slug prefix for agent evaluator explainer exports."""
     return "agent_evaluator"
 
 
@@ -516,7 +495,6 @@ def _agent_evaluator_explainer_cell(value: Any) -> str:
 def agent_evaluator_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for agent evaluator explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -533,7 +511,6 @@ def agent_evaluator_explainer_table_rows(
 def agent_evaluator_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for agent evaluator explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -542,7 +519,6 @@ def agent_evaluator_explainer_export_json(
 def agent_evaluator_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize agent evaluator explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -569,7 +545,6 @@ _AGENT_EVALUATOR_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...
 def agent_evaluator_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`agent_evaluator_workflow_explainer_payload` (§14 #15)."""
     metrics: dict[str, Any] = {
         "yaml_key_present": False,
         "yaml_parsed_enabled": False,
@@ -629,7 +604,6 @@ def agent_evaluator_workflow_explainer_operator_metrics(
 def agent_evaluator_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -697,7 +671,6 @@ def agent_evaluator_workflow_explainer_operator_metrics_table_rows(
 def agent_evaluator_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of workflow explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -706,7 +679,6 @@ def agent_evaluator_workflow_explainer_operator_metrics_export_json(
 def agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize workflow explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -730,7 +702,6 @@ def agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv(
 def agent_evaluator_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for workflow explainer rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -761,5 +732,4 @@ def agent_evaluator_workflow_explainer_operator_metrics_caption(
 
 
 def agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for workflow explainer operator metrics downloads."""
     return "agent_evaluator_workflow_explainer_operator_metrics"

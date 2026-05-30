@@ -1,5 +1,3 @@
-"""Shared imports for config tooling workflow sections."""
-
 from __future__ import annotations
 
 import csv
@@ -802,12 +800,6 @@ from nimbusware_console.universal_critique_workflow_explainer import (
 )
 
 def _resolve_prune_status_path() -> Path | None:
-    """Return ``HERMES_PRUNE_STATUS_PATH`` expanded to a ``Path``, or ``None`` when unset.
-
-    Resolved per-render so operators can switch the env var without restarting the
-    Streamlit server. Matches the script-side resolution in
-    ``scripts/prune_scraper_artifacts.py``.
-    """
     raw = os.environ.get("HERMES_PRUNE_STATUS_PATH", "").strip()
     return Path(raw).expanduser() if raw else None
 

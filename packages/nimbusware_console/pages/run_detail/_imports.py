@@ -1,5 +1,3 @@
-"""Shared imports for run_detail section modules."""
-
 from __future__ import annotations
 
 from nimbusware_console.pages.run_detail._imports_common import *  # noqa: F403

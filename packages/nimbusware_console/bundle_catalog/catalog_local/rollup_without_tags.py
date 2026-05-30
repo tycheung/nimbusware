@@ -1,0 +1,240 @@
+from __future__ import annotations
+
+import csv
+import json
+import re
+from collections import Counter
+from collections.abc import Mapping, Sequence
+from datetime import datetime, timezone
+from io import StringIO
+from pathlib import Path
+from typing import Any
+
+from nimbusware_console.bundle_catalog.catalog_local._cells import (
+    _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS,
+    _BUNDLE_CATALOG_LOCAL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS,
+    _bundle_catalog_local_summary_cell,
+)
+from nimbusware_console.bundle_catalog.catalog_local.summary import (
+    bundle_catalog_local_summary,
+)
+
+def bundle_catalog_bundles_without_tags_count(repo_root: Path) -> int:
+    path = repo_root / "configs" / "bundles" / "catalog.yaml"
+    if not path.is_file():
+        return 0
+    import yaml
+
+    from hermes_orchestrator.merge import load_yaml
+
+    try:
+        doc = load_yaml(path)
+    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
+        return 0
+    if not isinstance(doc, dict):
+        return 0
+    bundles = doc.get("bundles")
+    if not isinstance(bundles, list):
+        return 0
+    without = 0
+    for b in bundles:
+        if not isinstance(b, dict):
+            continue
+        raw_tags = b.get("tags")
+        if not isinstance(raw_tags, list):
+            without += 1
+            continue
+        usable = any(
+            isinstance(t, str) and t.strip()
+            for t in raw_tags
+        )
+        if not usable:
+            without += 1
+    return without
+
+
+def bundle_catalog_bundles_without_tags_caption(repo_root: Path) -> str | None:
+    without = bundle_catalog_bundles_without_tags_count(repo_root)
+    if without <= 0:
+        return None
+    total = bundle_catalog_local_summary(repo_root).get("bundle_count")
+    if not isinstance(total, int) or isinstance(total, bool) or total <= 0:
+        return f"Bundles without tags: **{without}**."
+    return f"Bundles without tags: **{without}** of **{total}**."
+
+
+def bundle_catalog_bundles_without_tags_rollup(repo_root: Path) -> dict[str, Any]:
+    summary = bundle_catalog_local_summary(repo_root)
+    without = bundle_catalog_bundles_without_tags_count(repo_root)
+    total = summary.get("bundle_count")
+    if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+        total = 0
+    return {
+        "has_catalog_yaml": summary.get("has_catalog_yaml"),
+        "catalog_yaml_relpath": summary.get("catalog_yaml_relpath"),
+        "bundle_count": total,
+        "distinct_tag_count": summary.get("distinct_tag_count"),
+        "bundles_without_tags_count": without,
+        "bundles_with_tags_count": max(total - without, 0),
+    }
+
+
+def bundle_catalog_bundles_without_tags_rollup_export_filename_slug() -> str:
+    return "bundle_catalog_bundles_without_tags"
+
+
+def bundle_catalog_bundles_without_tags_rollup_table_rows(
+    rollup: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not isinstance(rollup, Mapping):
+        return []
+    rows: list[dict[str, str]] = []
+    for key in sorted(str(k) for k in rollup.keys()):
+        rows.append(
+            {
+                "field": key,
+                "value": _bundle_catalog_local_summary_cell(rollup.get(key)),
+            },
+        )
+    return rows
+
+
+def bundle_catalog_bundles_without_tags_rollup_export_json(
+    rollup: Mapping[str, Any] | None,
+) -> str:
+    if not isinstance(rollup, Mapping):
+        return "{}"
+    return json.dumps(dict(rollup), indent=2, ensure_ascii=False)
+
+
+def bundle_catalog_bundles_without_tags_rollup_table_rows_csv(
+    rows: Sequence[Mapping[str, str]],
+) -> str:
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow(
+                {
+                    k: r.get(k, "")
+                    for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS
+                },
+            )
+    return buf.getvalue()
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics(
+    rollup: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    metrics: dict[str, Any] = {
+        "has_catalog_yaml": False,
+        "bundle_count": 0,
+        "bundles_without_tags_count": 0,
+        "bundles_with_tags_count": 0,
+        "untagged_ratio": None,
+    }
+    if not isinstance(rollup, Mapping):
+        return metrics
+    metrics["has_catalog_yaml"] = rollup.get("has_catalog_yaml") is True
+    bc = rollup.get("bundle_count")
+    if isinstance(bc, int) and not isinstance(bc, bool) and bc >= 0:
+        metrics["bundle_count"] = bc
+    without = rollup.get("bundles_without_tags_count")
+    if isinstance(without, int) and not isinstance(without, bool) and without >= 0:
+        metrics["bundles_without_tags_count"] = without
+    with_tags = rollup.get("bundles_with_tags_count")
+    if isinstance(with_tags, int) and not isinstance(with_tags, bool) and with_tags >= 0:
+        metrics["bundles_with_tags_count"] = with_tags
+    if metrics["bundle_count"] > 0:
+        metrics["untagged_ratio"] = round(
+            metrics["bundles_without_tags_count"] / metrics["bundle_count"],
+            4,
+        )
+    return metrics
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows(
+    metrics: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not isinstance(metrics, Mapping):
+        return []
+    rows: list[dict[str, str]] = [
+        {
+            "field": "Catalog YAML present",
+            "value": str(metrics.get("has_catalog_yaml", False)).lower(),
+        },
+        {"field": "Bundle count", "value": str(metrics.get("bundle_count", 0))},
+        {
+            "field": "Bundles without tags",
+            "value": str(metrics.get("bundles_without_tags_count", 0)),
+        },
+        {
+            "field": "Bundles with tags",
+            "value": str(metrics.get("bundles_with_tags_count", 0)),
+        },
+    ]
+    ratio = metrics.get("untagged_ratio")
+    if isinstance(ratio, (int, float)) and not isinstance(ratio, bool):
+        rows.append({"field": "Untagged ratio", "value": str(ratio)})
+    return rows
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_json(
+    metrics: Mapping[str, Any] | None,
+) -> str:
+    if not isinstance(metrics, Mapping):
+        return "{}"
+    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows_csv(
+    rows: Sequence[Mapping[str, str]],
+) -> str:
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_BUNDLE_CATALOG_LOCAL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow(
+                {
+                    k: r.get(k, "")
+                    for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS
+                },
+            )
+    return buf.getvalue()
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics_caption(
+    metrics: Mapping[str, Any] | None,
+) -> str | None:
+    if not isinstance(metrics, Mapping):
+        return None
+    if metrics.get("has_catalog_yaml") is not True:
+        return None
+    bc = metrics.get("bundle_count", 0)
+    without = metrics.get("bundles_without_tags_count", 0)
+    if not isinstance(bc, int) or isinstance(bc, bool):
+        bc = 0
+    if not isinstance(without, int) or isinstance(without, bool):
+        without = 0
+    return (
+        f"Bundles without tags rollup metrics: **{without}** untagged of **{bc}** bundle(s)."
+    )
+
+
+def bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_filename_slug() -> str:
+    return "bundle_catalog_bundles_without_tags_rollup_operator_metrics"
+

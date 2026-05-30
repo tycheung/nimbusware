@@ -1,5 +1,3 @@
-"""Config tooling — persona shelves section."""
-
 from __future__ import annotations
 
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403

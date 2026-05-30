@@ -1,8 +1,5 @@
-"""Custom agent picker and pencil prompt editor."""
-
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
@@ -16,15 +13,7 @@ _SS_EDIT_AGENT = "nimbusware_edit_agent_id"
 _SS_PROMPT_DRAFT = "nimbusware_prompt_draft"
 
 
-from nimbusware_env.admin_token import nimbusware_admin_token
-
-
-def _api_base() -> str:
-    return os.environ.get("NIMBUSWARE_API_BASE", "http://127.0.0.1:8000/v1").rstrip("/")
-
-
-def _admin_headers() -> dict[str, str]:
-    return {"X-Nimbusware-Admin-Token": nimbusware_admin_token()}
+from nimbusware_client.http import admin_headers, api_base, patch_response
 
 
 def load_registry_local(repo_root: Path) -> CustomAgentRegistry:
@@ -32,7 +21,6 @@ def load_registry_local(repo_root: Path) -> CustomAgentRegistry:
 
 
 def render_custom_agents_sidebar(repo_root: Path) -> str | None:
-    """Sidebar: agent list, selection, pencil edit. Returns selected agent id."""
     st.header("Custom agents")
     reg = load_registry_local(repo_root)
     agents = reg.list()
@@ -79,20 +67,21 @@ def render_custom_agents_sidebar(repo_root: Path) -> str | None:
 
 
 def _save_prompt(repo_root: Path, agent: CustomAgent, prompt: str) -> None:
-    headers = _admin_headers()
+    headers = admin_headers()
     if headers:
         try:
-            with httpx.Client(timeout=30.0) as client:
-                resp = client.patch(
-                    f"{_api_base()}/custom-agents/{agent.id}",
-                    headers=headers,
-                    json={
-                        "display_name": agent.display_name,
-                        "system_prompt": prompt,
-                        "description": agent.description,
-                        "bound_role_id": agent.bound_role_id,
-                    },
-                )
+            resp = patch_response(
+                f"/custom-agents/{agent.id}",
+                {
+                    "display_name": agent.display_name,
+                    "system_prompt": prompt,
+                    "description": agent.description,
+                    "bound_role_id": agent.bound_role_id,
+                },
+                headers=headers,
+                timeout=30.0,
+                raise_for_status=False,
+            )
             if resp.status_code < 400:
                 return
         except httpx.HTTPError:

@@ -1,5 +1,3 @@
-"""Run escalated Streamlit display (rows, captions, metrics)."""
-
 from __future__ import annotations
 
 from nimbusware_console.run_escalated.rows import (

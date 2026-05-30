@@ -1,5 +1,3 @@
-"""Read-only workflow ``escalation.suppress_automatic_escalation`` (§14 #19."""
-
 from __future__ import annotations
 
 import csv
@@ -20,11 +18,6 @@ from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflo
 
 
 def _mtime_iso_utc(path: Path) -> str | None:
-    """Return ``YYYY-MM-DDTHH:MM:SSZ`` for ``path.stat().st_mtime_ns`` or ``None``.
-
-    Mirrors the format used by ``bundle_faiss_index_operator_drilldown`` so operator
-    captions read consistently across the console.
-    """
     try:
         mtime_ns = int(path.stat().st_mtime_ns)
     except OSError:
@@ -35,13 +28,6 @@ def _mtime_iso_utc(path: Path) -> str | None:
 
 
 def _age_seconds_utc(iso: str | None) -> int | None:
-    """Whole-seconds age of ``iso`` (UTC) relative to ``datetime.now(timezone.utc)``.
-
-    Accepts the ``YYYY-MM-DDTHH:MM:SSZ`` shape emitted by :func:`_mtime_iso_utc`
-    (plus any ISO 8601 input :func:`datetime.fromisoformat` accepts once ``Z`` is
-    rewritten to ``+00:00``). Returns ``None`` for ``None`` / non-string input,
-    unparseable timestamps, or negative ages (clock skew / future mtime).
-    """
     if not isinstance(iso, str):
         return None
     stripped = iso.strip()
@@ -69,7 +55,6 @@ def _relative_under(repo_root: Path, path: Path) -> str:
 
 
 def _json_safe_yaml_fragment(raw: object) -> object:
-    """Best-effort JSON/streamlit-safe snapshot of a YAML subtree."""
     if raw is None or isinstance(raw, (bool, int, float, str)):
         return raw
     if isinstance(raw, dict):
@@ -88,7 +73,6 @@ def escalation_suppress_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """``escalation`` from frozen profile YAML vs ``parse_escalation_workflow_block``."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -279,7 +263,6 @@ def escalation_suppress_workflow_explainer_payload(
 def escalation_policy_yaml_verification_shape_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Hint whether ``configs/escalation/policy.yaml`` carries a top-level ``verification`` map."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
@@ -304,7 +287,6 @@ def escalation_policy_yaml_verification_shape_caption(
 def escalation_policy_yaml_deadlock_minutes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Top-level ``deadlock_escalation_after_minutes`` from parsed escalation policy."""
     if not isinstance(payload, Mapping):
         return None
     load_error = payload.get("load_error")
@@ -325,7 +307,6 @@ def escalation_policy_yaml_deadlock_minutes_caption(
 def escalation_policy_yaml_anti_deadlock_min_progress_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """``anti_deadlock.min_progress_events`` from parsed escalation policy."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
@@ -345,7 +326,6 @@ def escalation_policy_yaml_anti_deadlock_min_progress_caption(
 def escalation_policy_yaml_anti_deadlock_shape_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Hint whether ``configs/escalation/policy.yaml`` carries a top-level ``anti_deadlock`` map."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
@@ -370,7 +350,6 @@ def escalation_policy_yaml_anti_deadlock_shape_caption(
 def escalation_yaml_key_present_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Whether ``escalation`` exists on workflow YAML and effective suppress bool."""
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("load_error")
@@ -399,27 +378,6 @@ def escalation_yaml_key_present_caption(
 def escalation_suppress_flag_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption summarising the workflow's effective suppress flag.
-
-    Composes ``suppress_automatic_escalation_effective`` (the parsed bool returned by
-    :func:`parse_escalation_workflow_block`) with the previously-shipped
-    ``suppress_automatic_escalation_yaml_raw_type`` field (Python ``type(...)`` name
-    of the frozen YAML value, e.g. ``"bool"`` / ``"NoneType"``) into one of:
-
-    * ``"Suppress automatic escalation: True (YAML raw type: bool)."`` /
-      ``"Suppress automatic escalation: False (YAML raw type: NoneType)."`` when both
-      legs are observable,
-    * ``"Suppress automatic escalation: True."`` / ``"Suppress automatic escalation: False."``
-      when only the effective bool is observable (raw type missing / non-string /
-      empty after stripping).
-
-    Returns ``None`` when:
-
-    * ``payload`` is not a mapping,
-    * a non-empty ``load_error`` is recorded (workflow YAML failed to load), or
-    * ``suppress_automatic_escalation_effective`` is not a strict ``bool``
-      (``isinstance(..., bool)`` excludes integers / strings / ``None``).
-    """
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("load_error")
@@ -438,7 +396,6 @@ def escalation_suppress_flag_caption(
 def escalation_policy_yaml_age_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Age in seconds since ``configs/escalation/policy.yaml`` mtime (policy peek)."""
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -455,7 +412,6 @@ def escalation_policy_yaml_age_caption(
 def escalation_policy_yaml_file_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """On-disk ``configs/escalation/policy.yaml`` file size from the explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -472,21 +428,6 @@ def escalation_policy_yaml_file_bytes_caption(
 def escalation_policy_yaml_key_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption ``"Policy YAML top-level keys: N."`` for the policy YAML peek.
-
-    Caption form of the already-shipped ``escalation_policy_yaml_top_level_key_count``
-    payload field. Emits the caption only when:
-
-    * ``payload`` is a mapping,
-    * ``escalation_policy_yaml_load_error`` is **not** a non-empty string,
-    * ``escalation_policy_yaml_path_exists`` is ``True``,
-    * ``escalation_policy_yaml_top_level_key_count`` is a non-negative ``int``
-      (and **not** ``bool``).
-
-    Returns ``None`` otherwise (non-mapping payload, non-empty policy load_error,
-    policy file absent, count field missing / non-int / bool / negative). A
-    present-but-empty policy file (``N == 0``) still emits ``"Policy YAML top-level keys: 0."``.
-    """
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -505,7 +446,6 @@ def escalation_policy_yaml_key_count_caption(
 def escalation_policy_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``escalation_policy_yaml_version`` from the policy YAML peek."""
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -522,7 +462,6 @@ def escalation_policy_yaml_version_caption(
 def escalation_policy_yaml_max_retries_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``escalation_policy_yaml_max_retries_per_stage`` from policy YAML."""
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -539,22 +478,6 @@ def escalation_policy_yaml_max_retries_caption(
 def escalation_policy_yaml_keys_sample_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption listing ``escalation_policy_yaml_top_level_keys_sample``.
-
-    Caption form of the already-shipped sample list from
-    :func:`escalation_suppress_workflow_explainer_payload`. Emits
-    ``"Policy YAML top-level keys (sample): <a>, <b>, <c>."`` when:
-
-    * ``payload`` is a mapping,
-    * ``escalation_policy_yaml_load_error`` is **not** a non-empty string,
-    * ``escalation_policy_yaml_path_exists`` is ``True``,
-    * ``escalation_policy_yaml_top_level_keys_sample`` is a non-empty ``list``, and
-    * at least one list entry is a non-empty string after stripping (non-string /
-      whitespace-only entries are skipped).
-
-    Preserves the sample list order from the payload (the explainer already sorts and
-    caps keys). Returns ``None`` otherwise.
-    """
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -580,13 +503,6 @@ def escalation_policy_yaml_keys_sample_caption(
 def escalation_policy_yaml_relpath_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption quoting ``escalation_policy_yaml_relpath`` when the file is peekable.
-
-    Emits ``"Policy YAML path: <relpath>."`` when ``payload`` is a mapping, policy
-    ``escalation_policy_yaml_load_error`` is **not** a non-empty string,
-    ``escalation_policy_yaml_path_exists`` is ``True``, and ``escalation_policy_yaml_relpath``
-    is a non-empty string after stripping. Returns ``None`` otherwise.
-    """
     if not isinstance(payload, Mapping):
         return None
     load_err = payload.get("escalation_policy_yaml_load_error")
@@ -606,23 +522,6 @@ def escalation_policy_yaml_relpath_caption(
 def escalation_policy_yaml_mtime_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line composite caption summarising the policy YAML file's mtime.
-
-    Composes the two payload fields already shipped by
-    :func:`escalation_suppress_workflow_explainer_payload`
-    (``escalation_policy_yaml_mtime_iso`` and ``escalation_policy_yaml_age_seconds``)
-    into a single operator caption such as
-    ``"Policy YAML last modified: 2026-01-01T00:00:00Z (3600 seconds ago)."``.
-
-    Returns ``None`` when:
-
-    * ``payload`` is not a mapping,
-    * the policy file is absent (``escalation_policy_yaml_path_exists`` is falsy),
-    * the explainer recorded a non-empty ``escalation_policy_yaml_load_error``,
-    * ``escalation_policy_yaml_mtime_iso`` is ``None`` / not a non-empty string, or
-    * ``escalation_policy_yaml_age_seconds`` is ``None`` / not a true ``int``
-      (``bool`` is excluded because :class:`bool` subclasses :class:`int`).
-    """
     if not isinstance(payload, Mapping):
         return None
     if not payload.get("escalation_policy_yaml_path_exists", True):
@@ -642,23 +541,6 @@ def escalation_policy_yaml_mtime_caption(
 def escalation_policy_yaml_top_level_kinds_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption summarising policy.yaml top-level value kinds.
-
-    Accepts either the full explainer payload (and reads its
-    ``escalation_policy_yaml_top_level_kinds`` field) or the kinds mapping directly.
-    Returns ``"Policy top-level kinds: <M> mapping(s), <S> scalar(s), <L> list(s),
-    <O> other."`` when the policy is observable and at least one bucket is non-zero.
-
-    Returns ``None`` when:
-
-    * ``payload`` is not a mapping, or
-    * ``payload`` is the full explainer and the policy file is absent
-      (``escalation_policy_yaml_path_exists`` is falsy) or carries a load error
-      (``escalation_policy_yaml_load_error`` is a non-empty string), or
-    * the kinds block is missing / not a mapping, or
-    * every bucket is zero / missing / not an integer (booleans excluded since
-      :class:`bool` subclasses :class:`int`).
-    """
     if not isinstance(payload, Mapping):
         return None
 
@@ -695,12 +577,10 @@ def escalation_policy_yaml_top_level_kinds_caption(
 
 
 def escalation_policy_export_filename_slug() -> str:
-    """Filename slug prefix for escalation policy operator exports."""
     return "escalation_policy"
 
 
 def escalation_suppress_export_filename_slug() -> str:
-    """Filename slug prefix for full escalation suppress explainer exports."""
     return "escalation_suppress"
 
 
@@ -718,7 +598,6 @@ def _escalation_suppress_explainer_cell(value: Any) -> str:
 def escalation_suppress_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for full escalation suppress explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -735,7 +614,6 @@ def escalation_suppress_explainer_table_rows(
 def escalation_suppress_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for full escalation suppress explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -744,7 +622,6 @@ def escalation_suppress_explainer_export_json(
 def escalation_suppress_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize escalation suppress explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -769,7 +646,6 @@ _ESCALATION_SUPPRESS_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str,
 def escalation_suppress_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`escalation_suppress_workflow_explainer_payload` (§14 #19)."""
     metrics: dict[str, Any] = {
         "escalation_key_present": False,
         "suppress_automatic_escalation_effective": False,
@@ -814,7 +690,6 @@ def escalation_suppress_workflow_explainer_operator_metrics(
 def escalation_suppress_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -862,7 +737,6 @@ def escalation_suppress_workflow_explainer_operator_metrics_table_rows(
 def escalation_suppress_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of workflow explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -871,7 +745,6 @@ def escalation_suppress_workflow_explainer_operator_metrics_export_json(
 def escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize escalation suppress workflow explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -895,7 +768,6 @@ def escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv(
 def escalation_suppress_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption for escalation suppress workflow explainer metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -925,7 +797,6 @@ def escalation_suppress_workflow_explainer_operator_metrics_caption(
 
 
 def escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for escalation suppress workflow explainer operator metrics downloads."""
     return "escalation_suppress_workflow_explainer_operator_metrics"
 
 
@@ -949,7 +820,6 @@ def _escalation_policy_keys_rows_from_list(raw: Any) -> list[dict[str, str]]:
 def escalation_policy_yaml_keys_all_table_rows(
     payload: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Rows from full ``escalation_policy_yaml_top_level_keys`` (fallback: sample)."""
     if not isinstance(payload, Mapping):
         return []
     full = payload.get("escalation_policy_yaml_top_level_keys")
@@ -963,7 +833,6 @@ def escalation_policy_yaml_keys_all_table_rows(
 def escalation_policy_yaml_keys_all_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for full escalation policy top-level key rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -976,7 +845,6 @@ def escalation_policy_yaml_keys_all_export_json(
 def escalation_policy_yaml_keys_all_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full policy key rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -995,7 +863,6 @@ def escalation_policy_yaml_keys_all_table_rows_csv(
 def escalation_policy_yaml_top_level_kinds_table_rows(
     payload: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Table rows for policy YAML top-level value-kind buckets."""
     if not isinstance(payload, Mapping):
         return []
     if payload.get("escalation_policy_yaml_path_exists") is not True:
@@ -1028,7 +895,6 @@ def escalation_policy_yaml_top_level_kinds_table_rows(
 def escalation_policy_yaml_top_level_kinds_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for policy top-level kinds rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -1041,7 +907,6 @@ def escalation_policy_yaml_top_level_kinds_export_json(
 def escalation_policy_yaml_top_level_kinds_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize policy kinds rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()

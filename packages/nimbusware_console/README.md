@@ -1,0 +1,35 @@
+# Nimbusware Admin Console
+
+**Admin/dev-only** Streamlit control plane. Not the default product UI — use `nimbusware_maker` for the user loop.
+
+## Entry
+
+- `packages/nimbusware_console/app.py` — load gate + `main.render_main()`
+- Launch: `nimbusware-admin`, `nimbusware-run --admin`, or launcher **Admin Console…**
+
+## Layout
+
+| Area | Module |
+|------|--------|
+| Run list / detail | `pages/run_list.py`, `pages/run_detail/` |
+| Config tooling | `pages/config_tooling/` |
+| Workflow integrator (fo131–fo140) | `pages/config_tooling/workflows/integrator/` |
+| Bundle catalog + FAISS | `pages/config_tooling/bundles/` |
+| Enterprise panels | `enterprise_console_ui.py` |
+| Operator chat | `operator_chat.py` |
+
+## Refactor status (Lane R)
+
+| Area | Status |
+|------|--------|
+| `workflows/integrator/` | **Done** — 10 section modules + composer |
+| `config_tooling/bundles/` | **Done** — `catalog_search.py` + `faiss_readiness/` (4 modules) |
+| `bundle_catalog/catalog_local/` | **Done** — 8 modules (`summary`, `tags`, rollups, `search`, `faiss_helpers`) |
+| `components/explainer_panel.py` | **Done** — all integrator explainer sections |
+| HTTP via `nimbusware_client` | **Done** — all console/Maker paths including enterprise fleet |
+
+**Rule:** no module >400 lines where feasible.
+
+## Shared imports
+
+Workflow sections use `pages/config_tooling/workflows/_shared.py`. Bundle sections use `pages/config_tooling/bundles/_shared.py`. HTTP calls should use `nimbusware_client.http`.

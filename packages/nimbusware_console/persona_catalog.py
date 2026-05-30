@@ -1,9 +1,3 @@
-"""Persona shelves preview for the operator console.
-
-Uses the same YAML and validation as **GET /v1/personas** (``PersonaShelf`` under the
-resolved repo root). Read-only; no HTTP call required for local operators.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -16,7 +10,6 @@ from typing import Any
 
 
 def load_persona_shelves_catalog(repo_root: Path) -> dict[str, Any]:
-    """Load persona shelves from Postgres (DB mode) or ``configs/personas/shelves.yaml``."""
     from nimbusware_config.persist import load_persona_shelf
     from nimbusware_console.config_materializer import console_config_materializer
 
@@ -27,7 +20,6 @@ def load_persona_shelves_catalog(repo_root: Path) -> dict[str, Any]:
 
 
 def persona_catalog_flat_rows(catalog: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Flatten ``business_area`` / ``development_role`` entries with a ``shelf`` column."""
     out: list[dict[str, Any]] = []
     for shelf_key in ("business_area", "development_role"):
         entries = catalog.get(shelf_key)
@@ -43,7 +35,6 @@ def persona_catalog_flat_rows(catalog: Mapping[str, Any]) -> list[dict[str, Any]
 
 
 def persona_catalog_operator_summary(catalog: Mapping[str, Any]) -> dict[str, Any]:
-    """Aggregate counts for operators (matches ``to_public_catalog`` list shapes)."""
     summary: dict[str, Any] = {
         "catalog_version": catalog.get("version"),
         "business_area_count": 0,
@@ -243,7 +234,6 @@ def persona_catalog_operator_summary(catalog: Mapping[str, Any]) -> dict[str, An
 def persona_catalog_operator_summary_export_json(
     summary: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of :func:`persona_catalog_operator_summary` output."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), indent=2, ensure_ascii=False)
@@ -260,7 +250,6 @@ def _persona_operator_summary_cell(value: Any) -> str:
 def persona_catalog_operator_summary_table_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column field/value rows for operator summary export."""
     if not isinstance(summary, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -280,7 +269,6 @@ _PERSONA_OPERATOR_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def persona_catalog_operator_summary_table_rows_csv(
     summary: Mapping[str, Any] | None,
 ) -> str:
-    """Serialize operator summary field/value rows to CSV (UTF-8 text)."""
     rows = persona_catalog_operator_summary_table_rows(summary)
     if not rows:
         return ""
@@ -302,7 +290,6 @@ _PERSONA_OPERATOR_SUMMARY_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "valu
 def persona_catalog_operator_summary_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`persona_catalog_operator_summary` output (§14 #14)."""
     metrics: dict[str, Any] = {
         "total_entries": 0,
         "business_area_count": 0,
@@ -349,7 +336,6 @@ def _int_field_from_dict(d: Mapping[str, Any], key: str) -> int:
 def persona_catalog_operator_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     return [
@@ -383,7 +369,6 @@ def persona_catalog_operator_summary_operator_metrics_table_rows(
 def persona_catalog_operator_summary_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of :func:`persona_catalog_operator_summary_operator_metrics`."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -392,7 +377,6 @@ def persona_catalog_operator_summary_operator_metrics_export_json(
 def persona_catalog_operator_summary_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize persona operator summary metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -416,7 +400,6 @@ def persona_catalog_operator_summary_operator_metrics_table_rows_csv(
 def persona_catalog_operator_summary_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when the persona catalog has entries."""
     if not isinstance(metrics, Mapping):
         return None
     total = metrics.get("total_entries", 0)
@@ -432,14 +415,12 @@ def persona_catalog_operator_summary_operator_metrics_caption(
 
 
 def persona_catalog_operator_summary_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for persona operator summary metrics downloads."""
     return "persona_operator_summary_metrics"
 
 
 def persona_catalog_without_instructions_caption(
     operator_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``without_instructions`` tally from :func:`persona_catalog_operator_summary`."""
     if not isinstance(operator_summary, Mapping):
         return None
     raw = operator_summary.get("without_instructions")
@@ -458,7 +439,6 @@ def persona_catalog_without_instructions_caption(
 def persona_catalog_without_capability_profile_caption(
     operator_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``without_capability_profile`` tally from operator summary."""
     if not isinstance(operator_summary, Mapping):
         return None
     raw = operator_summary.get("without_capability_profile")
@@ -477,7 +457,6 @@ def persona_catalog_without_capability_profile_caption(
 def persona_catalog_probation_breakdown_caption(
     operator_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line probation_status tally from :func:`persona_catalog_operator_summary`."""
     if not isinstance(operator_summary, Mapping):
         return None
     bd = operator_summary.get("probation_status_breakdown")
@@ -504,7 +483,6 @@ def persona_catalog_probation_breakdown_caption(
 def persona_catalog_persona_id_duplicates_operator_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Hint when multiple rows share the same non-blank ``id`` string."""
     if not isinstance(summary, Mapping):
         return None
     n = summary.get("nonblank_persona_id_duplicate_row_count")
@@ -519,7 +497,6 @@ def persona_catalog_persona_id_duplicates_operator_caption(
 
 
 def persona_catalog_display_name_length_caption(catalog: Mapping[str, Any] | None) -> str | None:
-    """Min/max ``display_name`` character lengths for entries with non-empty names."""
     if not isinstance(catalog, Mapping):
         return None
     lengths: list[int] = []
@@ -544,7 +521,6 @@ def persona_catalog_display_name_length_caption(catalog: Mapping[str, Any] | Non
 
 
 def persona_catalog_persona_id_length_caption(catalog: Mapping[str, Any] | None) -> str | None:
-    """Min/max ``id`` string lengths for entries with non-empty ids."""
     if not isinstance(catalog, Mapping):
         return None
     lengths: list[int] = []
@@ -571,7 +547,6 @@ def persona_catalog_persona_id_length_caption(catalog: Mapping[str, Any] | None)
 def persona_catalog_display_name_duplicates_operator_caption(
     operator_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface when multiple shelf rows reuse the same non-empty ``display_name`` string."""
     if not isinstance(operator_summary, Mapping):
         return None
     n = operator_summary.get("nonblank_display_name_duplicate_row_count")
@@ -586,10 +561,6 @@ def persona_catalog_display_name_duplicates_operator_caption(
 def persona_catalog_empty_id_operator_caption(
     operator_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Warn when shelf entries lack a non-empty string ``id``.
-
-    Uses :func:`persona_catalog_operator_summary`.
-    """
     if not isinstance(operator_summary, Mapping):
         return None
     n = operator_summary.get("empty_or_missing_id_count")
@@ -602,7 +573,6 @@ def persona_catalog_empty_id_operator_caption(
 
 
 def persona_catalog_taxonomy_scope_frozen_caption() -> str:
-    """Two-shelf persona taxonomy only."""
     return (
         "Persona taxonomy scope (frozen v1): **business_area** + **development_role** "
         "shelves only — broader taxonomy expansion is deferred; use probation filters "
@@ -613,7 +583,6 @@ def persona_catalog_taxonomy_scope_frozen_caption() -> str:
 def persona_catalog_critique_pairings_total_caption(
     critique_summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line critic-role entry total from :func:`critique_pairings_operator_summary`."""
     if not isinstance(critique_summary, Mapping):
         return None
     if critique_summary.get("has_critique_pairings_yaml") is not True:
@@ -629,7 +598,6 @@ def persona_catalog_critique_pairings_total_caption(
 
 
 def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
-    """Read-only peek at ``configs/personas/critique_pairings.yaml``."""
     import yaml
 
     from hermes_orchestrator.merge import load_yaml
@@ -692,7 +660,6 @@ def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
 def persona_probation_other_examples_by_shelf_table_rows(
     operator_summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Build Streamlit table rows from ``probation_status_breakdown_other_examples_by_shelf``."""
     raw = operator_summary.get("probation_status_breakdown_other_examples_by_shelf")
     if not isinstance(raw, dict):
         return []
@@ -722,7 +689,6 @@ _PROBATION_OTHER_BY_SHELF_CSV_COLUMNS: tuple[str, ...] = (
 def persona_probation_other_by_shelf_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for probation-other-by-shelf table rows (operator download)."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -735,7 +701,6 @@ def persona_probation_other_by_shelf_export_json(
 def persona_probation_other_by_shelf_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize probation-other-by-shelf rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -752,14 +717,12 @@ def persona_probation_other_by_shelf_table_rows_csv(
 
 
 def persona_probation_other_export_filename_slug() -> str:
-    """Filename slug prefix for probation-other-by-shelf exports."""
     return "persona_probation_other"
 
 
 def critique_pairings_operator_summary_export_json(
     summary: Mapping[str, Any],
 ) -> str:
-    """Pretty JSON for critique_pairings operator summary (operator download)."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), indent=2, ensure_ascii=False)
@@ -768,7 +731,6 @@ def critique_pairings_operator_summary_export_json(
 def critique_pairings_operator_summary_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`critique_pairings_operator_summary` (§14 #14)."""
     metrics: dict[str, Any] = {
         "has_critique_pairings_yaml": False,
         "producer_taxonomy_key_count": 0,
@@ -792,7 +754,6 @@ def critique_pairings_operator_summary_operator_metrics(
 def critique_pairings_operator_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -817,7 +778,6 @@ def critique_pairings_operator_summary_operator_metrics_table_rows(
 def critique_pairings_operator_summary_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of critique pairings operator summary metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -826,7 +786,6 @@ def critique_pairings_operator_summary_operator_metrics_export_json(
 def critique_pairings_operator_summary_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize critique pairings operator summary metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -850,7 +809,6 @@ def critique_pairings_operator_summary_operator_metrics_table_rows_csv(
 def critique_pairings_operator_summary_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when critique_pairings YAML is present."""
     if not isinstance(metrics, Mapping):
         return None
     if metrics.get("has_critique_pairings_yaml") is not True:
@@ -870,12 +828,10 @@ def critique_pairings_operator_summary_operator_metrics_caption(
 
 
 def critique_pairings_operator_summary_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for critique pairings operator summary metrics downloads."""
     return "critique_pairings_operator_summary_operator_metrics"
 
 
 def critique_pairings_export_filename_slug() -> str:
-    """Filename slug prefix for critique_pairings summary exports."""
     return "critique_pairings"
 
 
@@ -910,7 +866,6 @@ def _critique_pairings_critic_counts_rows_from_list(
 def critique_pairings_critic_counts_table_rows(
     summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Rows from ``critique_pairing_critic_counts_by_producer_sample``."""
     if not isinstance(summary, Mapping):
         return []
     return _critique_pairings_critic_counts_rows_from_list(
@@ -921,7 +876,6 @@ def critique_pairings_critic_counts_table_rows(
 def critique_pairings_critic_counts_all_table_rows(
     summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Rows from full ``critique_pairing_critic_counts_by_producer`` (fallback: sample)."""
     if not isinstance(summary, Mapping):
         return []
     full = summary.get("critique_pairing_critic_counts_by_producer")
@@ -933,7 +887,6 @@ def critique_pairings_critic_counts_all_table_rows(
 def critique_pairings_critic_counts_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for critique pairings producer critic-count rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -946,7 +899,6 @@ def critique_pairings_critic_counts_export_json(
 def critique_pairings_critic_counts_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize critique pairings critic-count rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -967,14 +919,12 @@ def critique_pairings_critic_counts_table_rows_csv(
 def critique_pairings_critic_counts_all_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for full critique pairings producer critic-count rows."""
     return critique_pairings_critic_counts_export_json(rows)
 
 
 def critique_pairings_critic_counts_all_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full critique pairings critic-count rows to CSV."""
     return critique_pairings_critic_counts_table_rows_csv(rows)
 
 
@@ -994,7 +944,6 @@ def _critique_pairings_producer_keys_rows_from_list(raw: Any) -> list[dict[str, 
 def critique_pairings_producer_keys_table_rows(
     summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Rows from ``producer_taxonomy_keys_sample`` (order preserved)."""
     if not isinstance(summary, Mapping):
         return []
     return _critique_pairings_producer_keys_rows_from_list(
@@ -1005,7 +954,6 @@ def critique_pairings_producer_keys_table_rows(
 def critique_pairings_producer_keys_all_table_rows(
     summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Rows from full ``producer_taxonomy_keys`` (fallback: sample)."""
     if not isinstance(summary, Mapping):
         return []
     full = summary.get("producer_taxonomy_keys")
@@ -1017,7 +965,6 @@ def critique_pairings_producer_keys_all_table_rows(
 def critique_pairings_producer_keys_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for critique pairings producer key sample rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -1030,21 +977,18 @@ def critique_pairings_producer_keys_export_json(
 def critique_pairings_producer_keys_all_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for full critique pairings producer key rows."""
     return critique_pairings_producer_keys_export_json(rows)
 
 
 def critique_pairings_producer_keys_all_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full producer key rows to CSV."""
     return critique_pairings_producer_keys_table_rows_csv(rows)
 
 
 def critique_pairings_producer_keys_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize producer key rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1067,7 +1011,6 @@ def persona_catalog_distinct_allowed_tools(
     *,
     max_n: int = 50,
 ) -> list[str]:
-    """Sorted deduped ``allowed_tools`` strings across all persona entries."""
     tools: set[str] = set()
     for row in persona_catalog_flat_rows(catalog):
         raw = row.get("allowed_tools")
@@ -1109,7 +1052,6 @@ def persona_catalog_allowed_tool_filter_caption(
     match_count: int,
     total_count: int,
 ) -> str | None:
-    """Caption when an allowed-tool filter is active (interim until persona ``tags`` schema)."""
     t = str(tool).strip()
     if not t or t.lower() == "all":
         return None
@@ -1129,15 +1071,6 @@ def filter_persona_catalog_flat_rows(
     probation_status: str | None = None,
     allowed_tool: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Case-insensitive substring match on ``id`` / ``display_name``; optional shelf filter.
-
-    Optional **probation_status** (fo127): ``all`` / unset keeps all rows; ``(unset)`` keeps
-    rows with no ``probation_status``; otherwise match is case-insensitive on the literal
-    ``probation`` / ``promoted`` / ``shelved`` values.
-
-    Optional **allowed_tool**: ``all`` / unset keeps all rows; otherwise keep rows whose
-    ``allowed_tools`` list contains the filter (exact case-insensitive match or substring).
-    """
     q = str(query).strip().lower()
     want_shelf = str(shelf).strip() if shelf else ""
     ps_raw = str(probation_status).strip() if probation_status else ""
@@ -1171,7 +1104,6 @@ def filter_persona_catalog_flat_rows(
 
 
 def persona_catalog_flat_rows_csv(rows: Sequence[Mapping[str, Any]]) -> str:
-    """Serialize flat persona rows to CSV (UTF-8 text). Empty input yields header-only or empty."""
     if not rows:
         return ""
     preferred = ("shelf", "id", "display_name")
@@ -1195,7 +1127,6 @@ def persona_catalog_flat_rows_csv(rows: Sequence[Mapping[str, Any]]) -> str:
 
 
 def persona_catalog_flat_rows_export_json(rows: Sequence[Mapping[str, Any]]) -> str:
-    """Pretty JSON for filtered flat persona table rows (operator download)."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -1206,5 +1137,4 @@ def persona_catalog_flat_rows_export_json(rows: Sequence[Mapping[str, Any]]) -> 
 
 
 def persona_catalog_flat_export_filename_slug() -> str:
-    """Filename slug prefix for filtered flat persona exports (no run id on this screen)."""
     return "persona_flat"

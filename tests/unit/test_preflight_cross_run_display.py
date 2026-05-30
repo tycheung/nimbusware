@@ -93,25 +93,40 @@ def test_fetch_preflight_history_include_metrics_export_param(monkeypatch) -> No
         def json(self) -> dict[str, object]:
             return {"entries": []}
 
-    def _fake_get(
-        url: str,
-        *,
-        params: dict[str, object] | None = None,
-        headers: dict[str, str] | None = None,
-        timeout: float = 30.0,
-    ):
-        captured["url"] = url
-        captured["params"] = params
-        captured["headers"] = headers
-        return _FakeResponse()
+    class _FakeClient:
+        def __init__(self, *, timeout: float) -> None:
+            captured["timeout"] = timeout
 
-    monkeypatch.setattr(httpx, "get", _fake_get)
+        def __enter__(self) -> _FakeClient:
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def request(
+            self,
+            method: str,
+            url: str,
+            *,
+            params: dict[str, object] | None = None,
+            json: dict[str, object] | None = None,
+            headers: dict[str, str] | None = None,
+        ) -> _FakeResponse:
+            captured["method"] = method
+            captured["url"] = url
+            captured["params"] = params
+            captured["headers"] = headers
+            return _FakeResponse()
+
+    monkeypatch.setattr(httpx, "Client", _FakeClient)
+    monkeypatch.delenv("NIMBUSWARE_API_BASE", raising=False)
     body = fetch_preflight_history(
-        "http://127.0.0.1/v1",
         limit=10,
         include_metrics_export=True,
     )
     assert body == {"entries": []}
+    assert captured["method"] == "GET"
+    assert captured["url"] == "http://127.0.0.1:8000/v1/preflight-history"
     assert captured["params"] == {
         "limit": 10,
         "order": "newest_first",

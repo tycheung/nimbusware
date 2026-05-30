@@ -1,12 +1,9 @@
-"""Streamlit theme / white-label operator hints."""
-
 from __future__ import annotations
 
 from pathlib import Path
 
 
 def streamlit_theme_defaults_caption(*, repo_root: Path | None = None) -> str:
-    """Read-only blurb for repo ``.streamlit/config.toml`` theme defaults."""
     root = repo_root if repo_root is not None else Path(".")
     cfg = root.resolve() / ".streamlit" / "config.toml"
     exists = cfg.is_file()
@@ -19,7 +16,6 @@ def streamlit_theme_defaults_caption(*, repo_root: Path | None = None) -> str:
 
 
 def streamlit_white_label_deferred_caption() -> str:
-    """Custom CSS / white-label branding deferred."""
     return (
         "White-label: **optional branding deferred** (§14 #11) — no per-tenant CSS injection. "
         "See the deferral note at the top of ``.streamlit/config.toml``; use ``[theme]`` keys "

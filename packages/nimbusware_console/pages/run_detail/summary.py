@@ -1,5 +1,3 @@
-"""Run detail — summary panel."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -7,17 +5,16 @@ from typing import Any
 import httpx
 import streamlit as st
 
+from nimbusware_client.http import get_json
+
 from nimbusware_console.pages.run_detail._imports import *  # noqa: F403
-from nimbusware_console.settings import API_BASE
 
 
 def render_run_detail_summary(run_id: str) -> None:
     if st.button("Load run summary") and run_id.strip():
         try:
-            r = httpx.get(f"{API_BASE}/runs/{run_id.strip()}", timeout=30.0)
-            r.raise_for_status()
+            data = get_json(f"/runs/{run_id.strip()}", timeout=30.0)
             st.subheader("Summary")
-            data = r.json()
             c1m, c2m, c3m = st.columns(3)
             c1m.metric("Events", data.get("event_count", "—"))
             c2m.metric("Findings", data.get("findings_count", "—"))

@@ -1,5 +1,3 @@
-"""Run detail — timeline load and event table."""
-
 from __future__ import annotations
 
 from typing import Any
@@ -7,16 +5,15 @@ from typing import Any
 import httpx
 import streamlit as st
 
+from nimbusware_client.http import get_json
+
 from nimbusware_console.pages.run_detail._imports import *  # noqa: F403
-from nimbusware_console.settings import API_BASE
 
 
 def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] | None:
     if st.button("Load timeline") and run_id.strip():
         try:
-            r = httpx.get(f"{API_BASE}/runs/{run_id.strip()}/timeline", timeout=30.0)
-            r.raise_for_status()
-            data = r.json()
+            data = get_json(f"/runs/{run_id.strip()}/timeline", timeout=30.0)
         except httpx.HTTPError as exc:
             st.error(f"API error: {exc}")
             return None

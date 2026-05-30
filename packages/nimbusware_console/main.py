@@ -1,5 +1,3 @@
-"""Console layout facade — composes page sections."""
-
 from __future__ import annotations
 
 import os
@@ -19,7 +17,6 @@ from nimbusware_console.settings import API_BASE, repo_root
 
 
 def render_main() -> None:
-    """Render the full operator console (section order unchanged)."""
     st.title("Nimbusware Admin Console")
     st.caption(streamlit_theme_defaults_caption(repo_root=repo_root()))
     st.caption(streamlit_white_label_deferred_caption())
@@ -30,7 +27,7 @@ def render_main() -> None:
         from nimbusware_console.enterprise_console_ui import render_enterprise_sidebar
 
         render_custom_agents_sidebar(_repo_for_ui)
-        _hermes_enterprise_console_active = render_enterprise_sidebar(API_BASE)
+        _hermes_enterprise_console_active = render_enterprise_sidebar()
 
     with st.container():
         from nimbusware_console.operator_chat import render_operator_chat
@@ -41,7 +38,7 @@ def render_main() -> None:
     if _hermes_enterprise_console_active:
         from nimbusware_console.enterprise_console_ui import render_enterprise_fleet_dashboard
 
-        render_enterprise_fleet_dashboard(API_BASE)
+        render_enterprise_fleet_dashboard()
 
     rl._run_list_ensure_defaults()
     if rl._SS_DETAIL not in st.session_state:

@@ -36,7 +36,7 @@ jobs:
       - name: Bandit
         run: poetry run bandit -r packages -lll -q
       - name: Pytest unit
-        run: poetry run pytest tests -q -m "not integration and not slow"
+        run: poetry run pytest tests -q -m "not integration and not slow" --cov=packages --cov-report=term-missing:skip-covered
         env:
           HERMES_SKIP_PREFLIGHT: "1"
 

@@ -1,8 +1,3 @@
-"""Universal critique timeline summary for Streamlit (plan §14 #16).
-
-Parity with timeline top-level ``universal_critique`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -22,7 +17,6 @@ def _stringify(value: Any) -> str:
 def universal_critique_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``universal_critique`` from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("universal_critique")
@@ -32,7 +26,6 @@ def universal_critique_from_timeline(
 def universal_critique_timeline_stage_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Per-stage rows for ``st.dataframe`` from ``universal_critique.stages``."""
     if not isinstance(summary, Mapping):
         return []
     stages = summary.get("stages")
@@ -57,7 +50,6 @@ def universal_critique_timeline_stage_rows(
 def universal_critique_timeline_fail_stage_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Per-stage rows where ``verdict`` is FAIL (case-insensitive)."""
     if not isinstance(summary, Mapping):
         return []
     stages = summary.get("stages")
@@ -92,7 +84,6 @@ _UNIVERSAL_CRITIQUE_STAGE_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def universal_critique_timeline_stage_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize all critique stage rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -111,7 +102,6 @@ def universal_critique_timeline_stage_rows_csv(rows: Sequence[Mapping[str, str]]
 
 
 def universal_critique_fail_stage_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize FAIL-only critique stage rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -130,14 +120,12 @@ def universal_critique_fail_stage_rows_csv(rows: Sequence[Mapping[str, str]]) ->
 
 
 def universal_critique_timeline_export_json(summary: Mapping[str, Any] | None) -> str:
-    """Pretty JSON export of top-level timeline ``universal_critique`` summary."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), ensure_ascii=False, indent=2)
 
 
 def universal_critique_timeline_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for universal critique timeline download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -146,7 +134,6 @@ def universal_critique_timeline_export_filename_slug(run_id: str, *, max_len: in
 def universal_critique_timeline_fail_stage_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """List FAIL critique stage names when any exist."""
     if not isinstance(summary, Mapping):
         return None
     stages = summary.get("stages")
@@ -171,7 +158,6 @@ def universal_critique_timeline_fail_stage_caption(
 def universal_critique_snapshot_from_compare_paste(
     parsed: Mapping[str, Any],
 ) -> dict[str, Any] | None:
-    """Normalise pasted timeline body or bare ``universal_critique`` for MI compare."""
     if not isinstance(parsed, Mapping):
         return None
     if "events" in parsed or "universal_critique" in parsed:
@@ -184,7 +170,6 @@ def universal_critique_snapshot_from_compare_paste(
 def universal_critique_timeline_fail_count_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Tally FAIL verdicts across critique stages on the timeline."""
     if not isinstance(summary, Mapping):
         return None
     fail_count = summary.get("fail_count")
@@ -204,7 +189,6 @@ def universal_critique_timeline_fail_count_caption(
 def universal_critique_timeline_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from timeline ``universal_critique``."""
     metrics: dict[str, Any] = {
         "stage_count": 0,
         "fail_count": 0,
@@ -297,7 +281,6 @@ def universal_critique_timeline_operator_metrics(
 def universal_critique_timeline_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -343,7 +326,6 @@ def universal_critique_timeline_operator_metrics_table_rows(
 def universal_critique_timeline_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption mirroring fail/stage tallies."""
     if not isinstance(metrics, Mapping):
         return None
     stage_count = metrics.get("stage_count")
@@ -391,7 +373,6 @@ def universal_critique_timeline_operator_metrics_caption(
 def universal_critique_timeline_fail_rate_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line FAIL-rate caption from timeline summary ``fail_count``/``stage_count``."""
     if not isinstance(summary, Mapping):
         return None
     fail_count = summary.get("fail_count")
@@ -411,7 +392,6 @@ def universal_critique_timeline_fail_rate_caption(
 def universal_critique_timeline_default_on_caption(
     summary: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption when frozen run metadata enables default-on critique (plan §14 #16)."""
     if not isinstance(summary, Mapping):
         return None
     val = summary.get("default_enabled_effective")
@@ -445,7 +425,6 @@ _UNIVERSAL_CRITIQUE_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "v
 def universal_critique_timeline_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for universal critique timeline operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -454,7 +433,6 @@ def universal_critique_timeline_operator_metrics_export_json(
 def universal_critique_timeline_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize universal critique operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -480,5 +458,4 @@ def universal_critique_timeline_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for universal critique operator metrics download filenames."""
     return universal_critique_timeline_export_filename_slug(run_id, max_len=max_len)

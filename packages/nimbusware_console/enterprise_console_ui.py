@@ -1,5 +1,3 @@
-"""Streamlit UI for Enterprise console."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -33,21 +31,20 @@ from nimbusware_console.enterprise_console import (
 )
 
 
-def _load_edition_manifest(api_base: str) -> dict[str, Any] | None:
+def _load_edition_manifest() -> dict[str, Any] | None:
     cached = st.session_state.get(SS_EDITION_MANIFEST)
     if isinstance(cached, dict):
         return cached
     try:
-        manifest = fetch_platform_edition(api_base)
+        manifest = fetch_platform_edition()
     except httpx.HTTPError:
         return None
     st.session_state[SS_EDITION_MANIFEST] = manifest
     return manifest
 
 
-def render_enterprise_sidebar(api_base: str) -> bool:
-    """Tenant switcher + API key wiring. Returns True when Enterprise console is active."""
-    manifest = _load_edition_manifest(api_base)
+def render_enterprise_sidebar() -> bool:
+    manifest = _load_edition_manifest()
     if not enterprise_console_feature_enabled(manifest):
         if is_enterprise_edition_manifest(manifest):
             st.sidebar.caption(
@@ -74,7 +71,7 @@ def render_enterprise_sidebar(api_base: str) -> bool:
             st.sidebar.warning("Enter an API key first.")
         else:
             try:
-                me = fetch_iam_me(api_base, api_key=api_key_input.strip())
+                me = fetch_iam_me(api_key=api_key_input.strip())
                 st.session_state[SS_API_KEY] = api_key_input.strip()
                 st.session_state[SS_IAM_ME] = me
                 slug = str(me.get("tenant_slug", "")).strip()
@@ -98,7 +95,7 @@ def render_enterprise_sidebar(api_base: str) -> bool:
     tenant_options: list[tuple[str, str]] = []
     if active_key:
         try:
-            tenants_body = fetch_tenants(api_base, api_key=active_key)
+            tenants_body = fetch_tenants(api_key=active_key)
             tenant_options = tenant_select_options(tenants_body)
         except httpx.HTTPError:
             tenant_options = []
@@ -148,8 +145,7 @@ def render_enterprise_sidebar(api_base: str) -> bool:
     return True
 
 
-def render_enterprise_fleet_dashboard(api_base: str) -> None:
-    """Fleet memory + preflight SLI + worker panels (Enterprise only)."""
+def render_enterprise_fleet_dashboard() -> None:
     manifest = st.session_state.get(SS_EDITION_MANIFEST)
     if not enterprise_console_feature_enabled(manifest):
         return
@@ -183,19 +179,18 @@ def render_enterprise_fleet_dashboard(api_base: str) -> None:
             aggregate_body: dict[str, Any] | None = None
             worker_body: dict[str, Any] | None = None
             try:
-                memory_body = fetch_fleet_memory_status(api_base, api_key=api_key)
+                memory_body = fetch_fleet_memory_status(api_key=api_key)
             except httpx.HTTPError as exc:
                 errors.append(f"fleet-memory/status: {exc}")
             try:
                 aggregate_body = fetch_fleet_preflight_aggregate(
-                    api_base,
                     api_key=api_key,
                     limit=int(limit),
                 )
             except httpx.HTTPError as exc:
                 errors.append(f"fleet-ollama-sli/preflight-aggregate: {exc}")
             try:
-                worker_body = fetch_fleet_worker_health(api_base, api_key=api_key)
+                worker_body = fetch_fleet_worker_health(api_key=api_key)
             except httpx.HTTPError as exc:
                 errors.append(f"fleet-worker/health: {exc}")
             st.session_state["hermes_enterprise_dashboard_memory"] = memory_body
@@ -256,7 +251,6 @@ def render_enterprise_fleet_dashboard(api_base: str) -> None:
 
 
 def enterprise_preflight_headers_for_cross_run() -> dict[str, str]:
-    """Headers for ``fetch_preflight_history`` when Enterprise IAM is configured."""
     from nimbusware_console.enterprise_console import (
         build_enterprise_headers,
         resolve_active_api_key,

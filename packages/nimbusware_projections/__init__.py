@@ -11,6 +11,7 @@ from nimbusware_projections.builders.maker_progress import (
     maker_progress_from_events,
     strip_operator_fields,
 )
+from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_projections.builders.persona_assignment import persona_assignment_timeline_summary
 from nimbusware_projections.builders.run_escalated import (
     run_escalated_timeline_delta,
@@ -71,6 +72,7 @@ __all__ = [
     "strip_operator_fields",
     "parallel_writer_groups_timeline_summary",
     "persona_assignment_timeline_summary",
+    "preflight_timeline_summary",
     "run_escalated_timeline_delta",
     "run_escalated_timeline_entries",
     "run_escalated_timeline_history",

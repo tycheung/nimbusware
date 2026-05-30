@@ -1,8 +1,3 @@
-"""Agent evaluator summary for Streamlit (plan §14 #15).
-
-Parity with timeline top-level ``agent_evaluator`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -57,7 +52,6 @@ def _stringify(value: Any) -> str:
 def agent_evaluator_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``agent_evaluator`` dict from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("agent_evaluator")
@@ -65,7 +59,6 @@ def agent_evaluator_from_timeline(
 
 
 def agent_evaluator_auto_actions_caption(ae: Mapping[str, Any] | None) -> str | None:
-    """Readable summary of nested auto-promote / auto-create metadata on the timeline row."""
     if not isinstance(ae, Mapping):
         return None
     parts: list[str] = []
@@ -98,7 +91,6 @@ def agent_evaluator_auto_actions_caption(ae: Mapping[str, Any] | None) -> str | 
 
 
 def agent_evaluator_session_caption(ae: Mapping[str, Any] | None) -> str | None:
-    """One-line persona, stage, and attempt from the timeline agent_evaluator row."""
     if not isinstance(ae, Mapping):
         return None
     parts: list[str] = []
@@ -117,7 +109,6 @@ def agent_evaluator_session_caption(ae: Mapping[str, Any] | None) -> str | None:
 
 
 def agent_evaluator_coverage_gate_caption(ae: Mapping[str, Any] | None) -> str | None:
-    """Caption for ``agent_evaluator.critique`` gate verdict on the timeline row."""
     if not isinstance(ae, Mapping):
         return None
     verdict = ae.get("critique_gate_verdict")
@@ -127,7 +118,6 @@ def agent_evaluator_coverage_gate_caption(ae: Mapping[str, Any] | None) -> str |
 
 
 def agent_evaluator_evaluation_branch_caption(ae: Mapping[str, Any] | None) -> str | None:
-    """Distinguish rules-only vs rules+LLM policy branch on the timeline row."""
     if not isinstance(ae, Mapping):
         return None
     branch = ae.get("evaluation_branch")
@@ -162,7 +152,6 @@ def agent_evaluator_evaluation_branch_caption(ae: Mapping[str, Any] | None) -> s
 
 
 def agent_evaluator_evaluation_caption(ae: Mapping[str, Any] | None) -> str | None:
-    """One-line evaluation summary from timeline flat fields."""
     if not isinstance(ae, Mapping):
         return None
     status = ae.get("evaluation_status")
@@ -198,7 +187,6 @@ def agent_evaluator_evaluation_caption(ae: Mapping[str, Any] | None) -> str | No
 def agent_evaluator_auto_actions_table_rows(
     ae: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Flattened auto-promote / auto-create scalars for ``st.dataframe``."""
     if not isinstance(ae, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -210,7 +198,6 @@ def agent_evaluator_auto_actions_table_rows(
 
 
 def agent_evaluator_summary_rows(ae: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` (field / value columns)."""
     if not ae:
         return []
     rows: list[dict[str, str]] = []
@@ -225,14 +212,12 @@ _AGENT_EVALUATOR_TIMELINE_CSV_COLUMNS: tuple[str, ...] = ("section", "field", "v
 
 
 def agent_evaluator_timeline_export_json(ae: Mapping[str, Any] | None) -> str:
-    """Pretty JSON export of the timeline ``agent_evaluator`` mapping (API-shaped dict)."""
     if not isinstance(ae, Mapping):
         return "{}"
     return json.dumps(dict(ae), ensure_ascii=False, indent=2)
 
 
 def agent_evaluator_timeline_table_rows_csv(ae: Mapping[str, Any] | None) -> str:
-    """Single UTF-8 CSV: summary session rows + flattened auto-action rows."""
     summary = agent_evaluator_summary_rows(ae)
     auto_ = agent_evaluator_auto_actions_table_rows(ae)
     if not summary and not auto_:
@@ -264,7 +249,6 @@ def agent_evaluator_timeline_table_rows_csv(ae: Mapping[str, Any] | None) -> str
 
 
 def agent_evaluator_timeline_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for agent evaluator timeline download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -273,7 +257,6 @@ def agent_evaluator_timeline_export_filename_slug(run_id: str, *, max_len: int =
 def agent_evaluator_operator_metrics(
     ae: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup flags for operator summary from timeline ``agent_evaluator``."""
     metrics: dict[str, Any] = {
         "has_persona_id": False,
         "attempt": None,
@@ -378,7 +361,6 @@ def agent_evaluator_operator_metrics(
 def agent_evaluator_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -447,7 +429,6 @@ def agent_evaluator_operator_metrics_table_rows(
 def agent_evaluator_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     parts: list[str] = []
@@ -514,7 +495,6 @@ _AGENT_EVALUATOR_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "valu
 def agent_evaluator_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for agent evaluator operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -523,7 +503,6 @@ def agent_evaluator_operator_metrics_export_json(
 def agent_evaluator_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize agent evaluator operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -549,5 +528,4 @@ def agent_evaluator_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for agent evaluator operator metrics download filenames."""
     return agent_evaluator_timeline_export_filename_slug(run_id, max_len=max_len)

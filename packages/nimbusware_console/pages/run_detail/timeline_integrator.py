@@ -1,5 +1,3 @@
-"""Run detail — timeline integrator panel."""
-
 from __future__ import annotations
 
 from typing import Any

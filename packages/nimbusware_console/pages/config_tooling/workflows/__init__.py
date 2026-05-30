@@ -1,5 +1,3 @@
-"""Config tooling — workflow explainers and disk apply sections."""
-
 from __future__ import annotations
 
 from nimbusware_console.pages.config_tooling.workflows.bundle_editor import (

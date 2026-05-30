@@ -1,5 +1,3 @@
-"""Bundle usage memory analytics for Streamlit."""
-
 from __future__ import annotations
 
 from typing import Any

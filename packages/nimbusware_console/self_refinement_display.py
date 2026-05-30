@@ -1,8 +1,3 @@
-"""Self-refinement summary for Streamlit (plan §14 #17).
-
-Parity with timeline top-level ``self_refinement`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -59,7 +54,6 @@ def _stringify(value: Any) -> str:
 def self_refinement_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``self_refinement`` dict from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("self_refinement")
@@ -69,7 +63,6 @@ def self_refinement_from_timeline(
 def self_refinement_marker_history_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> list[dict[str, Any]]:
-    """Return ``self_refinement_marker_history`` list from a timeline JSON body."""
     if not isinstance(timeline_body, Mapping):
         return []
     raw = timeline_body.get("self_refinement_marker_history")
@@ -81,7 +74,6 @@ def self_refinement_marker_history_from_timeline(
 def self_refinement_marker_history_table_rows(
     history: list[dict[str, Any]],
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` — one row per policy marker in chronological order."""
     rows: list[dict[str, str]] = []
     for i, e in enumerate(history, start=1):
         rows.append(
@@ -106,7 +98,6 @@ _SELF_REFINEMENT_MARKER_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 def self_refinement_marker_history_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize self-refinement marker history display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -127,7 +118,6 @@ def self_refinement_marker_history_table_rows_csv(
 def self_refinement_marker_history_export_json(
     history: Sequence[Mapping[str, Any]],
 ) -> str:
-    """JSON export of raw ``self_refinement_marker_history`` timeline list."""
     items = [dict(x) for x in history if isinstance(x, Mapping)]
     return json.dumps(items, ensure_ascii=False, indent=2)
 
@@ -137,14 +127,12 @@ def self_refinement_marker_history_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for self-refinement marker history download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
 
 
 def _marker_history_window_seconds(history: list[dict[str, Any]]) -> int | None:
-    """Whole-second span between first and last parseable ``occurred_at`` in history."""
     stamps: list[datetime] = []
     for entry in history:
         if not isinstance(entry, dict):
@@ -164,7 +152,6 @@ def _marker_history_window_seconds(history: list[dict[str, Any]]) -> int | None:
 def self_refinement_marker_history_operator_metrics(
     history: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from ``self_refinement_marker_history``."""
     metrics: dict[str, Any] = {
         "entry_count": 0,
         "distinct_version_count": 0,
@@ -188,7 +175,6 @@ def self_refinement_marker_history_operator_metrics(
 def self_refinement_marker_history_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -207,7 +193,6 @@ def self_refinement_marker_history_operator_metrics_table_rows(
 def self_refinement_marker_history_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when marker history has at least one entry."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("entry_count")
@@ -232,7 +217,6 @@ _SELF_REFINEMENT_MARKER_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = 
 def self_refinement_marker_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for self-refinement marker history operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -241,7 +225,6 @@ def self_refinement_marker_history_operator_metrics_export_json(
 def self_refinement_marker_history_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize marker history operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -267,14 +250,12 @@ def self_refinement_marker_history_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for marker history operator metrics downloads."""
     return self_refinement_marker_history_export_filename_slug(run_id, max_len=max_len)
 
 
 def self_refinement_marker_history_entry_count_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
-    """One-line count of policy markers in the bounded timeline history view."""
     if not history:
         return None
     n = len(history)
@@ -285,11 +266,6 @@ def self_refinement_marker_history_entry_count_caption(
 def self_refinement_snapshot_from_compare_paste(
     parsed: Mapping[str, Any],
 ) -> dict[str, Any] | None:
-    """Normalise Module Integrator paste: full ``GET …/timeline`` body or bare ``self_refinement``.
-
-    Full timeline bodies include ``events`` and/or top-level ``self_refinement``; bare
-    pastes are the inner object only (same shape as ``self_refinement_from_timeline`` output).
-    """
     if isinstance(parsed.get("events"), list) or "self_refinement" in parsed:
         return self_refinement_from_timeline(parsed)
     return dict(parsed)
@@ -309,7 +285,6 @@ def self_refinement_timeline_policy_version_caption(
     timeline_sr: Mapping[str, Any] | None,
     explainer_payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compare timeline marker ``version`` with disk policy and explainer merge preview."""
     if not isinstance(timeline_sr, Mapping) or not timeline_sr:
         return None
     tl_ver = _version_as_optional_int(timeline_sr.get("version"))
@@ -345,7 +320,6 @@ def self_refinement_policy_attempt_caption(
     timeline_sr: Mapping[str, Any] | None,
     explainer_payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compare timeline ``attempt`` with the pipeline marker preview (always ``1`` when enabled)."""
     if not isinstance(timeline_sr, Mapping) or not timeline_sr:
         return None
     tl_attempt = timeline_sr.get("attempt")
@@ -372,7 +346,6 @@ def self_refinement_policy_attempt_caption(
 def self_refinement_version_attempt_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line ``version`` and ``attempt`` from timeline ``self_refinement``."""
     if not isinstance(sr, Mapping):
         return None
     parts: list[str] = []
@@ -390,7 +363,6 @@ def self_refinement_version_attempt_caption(
 
 
 def self_refinement_stage_name_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line caption when ``stage_name`` is a non-empty string on the timeline read-model."""
     if not isinstance(sr, Mapping):
         return None
     raw = sr.get("stage_name")
@@ -403,7 +375,6 @@ def self_refinement_stage_name_caption(sr: Mapping[str, Any] | None) -> str | No
 
 
 def self_refinement_evaluation_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line evaluation summary from timeline ``self_refinement`` fields."""
     if not isinstance(sr, Mapping):
         return None
     status = sr.get("evaluation_status")
@@ -420,7 +391,6 @@ def self_refinement_evaluation_caption(sr: Mapping[str, Any] | None) -> str | No
 
 
 def self_refinement_iteration_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line iteration summary from timeline ``self_refinement`` fields."""
     if not isinstance(sr, Mapping):
         return None
     attempt = sr.get("attempt")
@@ -436,7 +406,6 @@ def self_refinement_iteration_caption(sr: Mapping[str, Any] | None) -> str | Non
 
 
 def self_refinement_auto_promote_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line auto-promote summary from timeline ``self_refinement`` fields."""
     if not isinstance(sr, Mapping):
         return None
     applied = sr.get("auto_promote_applied")
@@ -462,7 +431,6 @@ def self_refinement_auto_promote_caption(sr: Mapping[str, Any] | None) -> str | 
 
 
 def self_refinement_llm_critique_stage_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """Caption for latest ``self_refinement.critique`` gate on the timeline."""
     if not isinstance(sr, Mapping):
         return None
     raw = sr.get("llm_critique_stage")
@@ -479,7 +447,6 @@ def self_refinement_llm_critique_stage_caption(sr: Mapping[str, Any] | None) -> 
 
 
 def self_refinement_phase_d_signal_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line Phase D kickoff signal summary from timeline ``self_refinement``."""
     if not isinstance(sr, Mapping):
         return None
     raw = sr.get("phase_d_signal")
@@ -520,7 +487,6 @@ def self_refinement_phase_d_signal_caption(sr: Mapping[str, Any] | None) -> str 
 
 
 def self_refinement_prior_gate_verdict_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line caption for rules-gate verdict that preceded the latest SR marker."""
     if not isinstance(sr, Mapping):
         return None
     verdict = sr.get("prior_gate_verdict")
@@ -530,7 +496,6 @@ def self_refinement_prior_gate_verdict_caption(sr: Mapping[str, Any] | None) -> 
 
 
 def self_refinement_ungated_loop_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line caption for ungated-loop progression fields from timeline summary."""
     if not isinstance(sr, Mapping):
         return None
     ungated = sr.get("ungated_loop")
@@ -559,7 +524,6 @@ def self_refinement_ungated_loop_caption(sr: Mapping[str, Any] | None) -> str | 
 
 
 def self_refinement_summary_rows(sr: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Rows suitable for ``st.dataframe`` (field / value columns)."""
     if not sr:
         return []
     rows: list[dict[str, str]] = []
@@ -574,7 +538,6 @@ _SELF_REFINEMENT_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 
 
 def self_refinement_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize latest self-refinement summary rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -593,7 +556,6 @@ def self_refinement_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -
 
 
 def self_refinement_latest_export_json(sr: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline top-level ``self_refinement`` summary."""
     if not isinstance(sr, Mapping):
         return "{}"
     return json.dumps(dict(sr), ensure_ascii=False, indent=2)
@@ -604,7 +566,6 @@ def self_refinement_latest_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for latest self-refinement summary download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -613,7 +574,6 @@ def self_refinement_latest_export_filename_slug(
 def self_refinement_timeline_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for self-refinement timeline operator metrics."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -622,7 +582,6 @@ def self_refinement_timeline_operator_metrics_export_json(
 def self_refinement_timeline_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize self-refinement timeline operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -645,7 +604,6 @@ def self_refinement_timeline_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for self-refinement timeline operator metrics downloads."""
     return self_refinement_latest_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -655,7 +613,6 @@ _TIMELINE_DESC_PREVIEW_MAX = 240
 def self_refinement_timeline_operator_metrics(
     sr: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Read-only drill-down on timeline ``self_refinement`` (length + preview, version hints)."""
     if not sr:
         return {"present": False}
     desc = sr.get("description")
@@ -741,7 +698,6 @@ def self_refinement_timeline_operator_metrics(
 
 
 def _parse_iso_utc(value: Any) -> datetime | None:
-    """Parse an ISO 8601 timestamp written by the API; ``Z`` suffix is accepted."""
     if not isinstance(value, str):
         return None
     raw = value.strip()
@@ -755,19 +711,6 @@ def _parse_iso_utc(value: Any) -> datetime | None:
 
 
 def self_refinement_session_caption(sr: Mapping[str, Any] | None) -> str | None:
-    """One-line operator caption rolling marker count + window + average together.
-
-    Reads only the existing timeline fields (no new operator-metric keys). Returns:
-
-    * ``"Self-refinement: <N> markers across <W>s (avg <A>s)."`` when ``marker_count >= 2``
-      and ``self_refinement_marker_window_seconds`` is observable (the average uses
-      :func:`self_refinement_marker_avg_interval_seconds` for parity with the table row),
-    * ``"Self-refinement: single marker."`` when ``marker_count == 1``,
-    * ``None`` when ``sr`` is not a mapping, ``marker_count`` is absent / not a
-      non-negative integer (booleans excluded since :class:`bool` subclasses
-      :class:`int`), ``marker_count == 0``, or the window / average is unobservable for
-      the multi-marker case.
-    """
     if not isinstance(sr, Mapping):
         return None
     mc = sr.get("marker_count")
@@ -783,19 +726,6 @@ def self_refinement_session_caption(sr: Mapping[str, Any] | None) -> str | None:
 
 
 def self_refinement_markers_per_minute(sr: Mapping[str, Any] | None) -> int | None:
-    """Marker throughput rounded to whole markers per minute.
-
-    Computed as ``round(marker_count * 60 / marker_window_seconds)`` so that a session
-    with two markers exactly thirty seconds apart yields ``4`` (two markers extrapolated
-    over a one-minute window). Returns ``None`` when:
-
-    * ``sr`` is not a mapping, **or**
-    * ``self_refinement_marker_window_seconds`` returns ``None`` or ``0`` (single marker
-      runs have no observable rate even though the window is technically zero), **or**
-    * ``marker_count`` is absent / not a non-negative integer (booleans are excluded
-      since :class:`bool` is a subclass of :class:`int`), **or**
-    * ``marker_count`` is less than ``2`` (no observable rate over the window).
-    """
     if not isinstance(sr, Mapping):
         return None
     mc = sr.get("marker_count")
@@ -810,21 +740,6 @@ def self_refinement_markers_per_minute(sr: Mapping[str, Any] | None) -> int | No
 def self_refinement_marker_first_last_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption quoting the first and last marker ISO timestamps.
-
-    Reuses :func:`_parse_iso_utc` so the same ``Z``-suffix handling applies. Returns:
-
-    * ``"Markers: first <iso>, last <iso>."`` when both ``first_marker_occurred_at`` and
-      ``last_marker_occurred_at`` parse and the timestamps differ,
-    * ``"Markers: single at <iso>."`` when both parse and the timestamps are equal
-      (single-marker session collapsed into one ISO string),
-    * ``None`` when ``sr`` is not a mapping, either timestamp is missing or
-      unparseable, or the values cannot be normalised against each other.
-
-    The emitted ISO strings are the raw, whitespace-stripped originals from ``sr`` (so
-    the operator sees the exact wire-format the API emitted), not re-serialised from
-    the parsed :class:`datetime` value.
-    """
     if not isinstance(sr, Mapping):
         return None
     first_raw = sr.get("first_marker_occurred_at")
@@ -845,13 +760,6 @@ def self_refinement_marker_first_last_caption(
 def self_refinement_marker_window_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption form of :func:`self_refinement_marker_window_seconds`.
-
-    Returns ``"Marker window: <N>s."`` when the underlying numeric helper yields a
-    non-negative integer; ``None`` whenever the helper returns ``None``. Mirrors
-    the caption-wrapper pattern of ``self_refinement_marker_avg_interval_caption``
-    / ``self_refinement_markers_per_minute_caption``.
-    """
     window = self_refinement_marker_window_seconds(sr)
     if window is None:
         return None
@@ -861,14 +769,6 @@ def self_refinement_marker_window_caption(
 def self_refinement_description_length_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption from ``description_char_len`` in operator metrics.
-
-    Sources :func:`self_refinement_timeline_operator_metrics` so the rule for
-    description length stays in one place. Returns ``"Description length: <N> chars."``
-    when the metric is a positive ``int`` (``bool`` excluded since :class:`bool` subclasses
-    :class:`int`). Returns ``None`` for non-mapping ``sr``, missing / non-positive /
-    non-integer ``description_char_len``, or zero length (missing / empty description).
-    """
     if not isinstance(sr, Mapping):
         return None
     raw = self_refinement_timeline_operator_metrics(sr).get("description_char_len")
@@ -880,15 +780,6 @@ def self_refinement_description_length_caption(
 def self_refinement_markers_per_minute_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption form of :func:`self_refinement_markers_per_minute`.
-
-    Returns ``"Markers: <N>/min."`` when the underlying numeric helper yields a
-    non-negative integer (mirrors the caption pattern used by
-    ``self_refinement_session_caption`` / ``self_refinement_marker_first_last_caption`` /
-    ``self_refinement_marker_avg_interval_caption``). Returns ``None`` whenever the
-    helper returns ``None`` (non-mapping input, missing window, missing / non-int /
-    boolean ``marker_count``, ``marker_count < 2``, zero window).
-    """
     rate = self_refinement_markers_per_minute(sr)
     if rate is None:
         return None
@@ -898,15 +789,6 @@ def self_refinement_markers_per_minute_caption(
 def self_refinement_marker_avg_interval_caption(
     sr: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption form of :func:`self_refinement_marker_avg_interval_seconds`.
-
-    Returns ``"Markers: avg interval ~<N>s."`` when the underlying numeric helper
-    yields a non-negative integer (mirrors the caption pattern used by
-    ``self_refinement_session_caption`` and ``self_refinement_marker_first_last_caption``).
-    Returns ``None`` whenever the helper returns ``None`` (non-mapping input, missing /
-    unparseable timestamps, missing / non-int / boolean ``marker_count``, or
-    ``marker_count < 2``).
-    """
     seconds = self_refinement_marker_avg_interval_seconds(sr)
     if seconds is None:
         return None
@@ -916,18 +798,6 @@ def self_refinement_marker_avg_interval_caption(
 def self_refinement_marker_avg_interval_seconds(
     sr: Mapping[str, Any] | None,
 ) -> int | None:
-    """Average seconds between adjacent self-refinement markers in a session.
-
-    Computed as ``marker_window_seconds / (marker_count - 1)`` rounded to the nearest
-    integer second. Returns ``None`` when:
-
-    * ``sr`` is not a mapping, **or**
-    * ``self_refinement_marker_window_seconds`` returns ``None`` (missing / unparseable
-      first / last timestamps, clock skew), **or**
-    * ``marker_count`` is absent or not a non-negative integer (booleans are excluded
-      since :class:`bool` is a subclass of :class:`int`), **or**
-    * ``marker_count`` is less than ``2`` (no interval to average over).
-    """
     if not isinstance(sr, Mapping):
         return None
     window = self_refinement_marker_window_seconds(sr)
@@ -940,12 +810,6 @@ def self_refinement_marker_avg_interval_seconds(
 
 
 def self_refinement_marker_window_seconds(sr: Mapping[str, Any] | None) -> int | None:
-    """Whole-seconds delta between ``first_marker_occurred_at`` and ``last_marker_occurred_at``.
-
-    Returns ``None`` when either timestamp is absent or not a parseable ISO 8601 UTC string.
-    A single-marker run (first == last) returns ``0``. The window is rounded to the nearest
-    integer second; negative deltas (clock skew) collapse to ``None``.
-    """
     if not isinstance(sr, Mapping):
         return None
     first = _parse_iso_utc(sr.get("first_marker_occurred_at"))
@@ -961,7 +825,6 @@ def self_refinement_marker_window_seconds(sr: Mapping[str, Any] | None) -> int |
 def self_refinement_timeline_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not metrics or not metrics.get("present"):
         return []
     rows: list[dict[str, str]] = []

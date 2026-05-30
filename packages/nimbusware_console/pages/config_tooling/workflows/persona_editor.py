@@ -1,6 +1,15 @@
-"""Config tooling — persona editor section."""
-
 from __future__ import annotations
+
+import httpx
+
+from nimbusware_client.http import (
+    admin_token_headers,
+    delete_response,
+    get_json,
+    patch_response,
+    post_response,
+    put_response,
+)
 
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -20,9 +29,10 @@ def render_workflows_persona_editor_section() -> None:
         )
         if st.button("Reload from API", key="hermes_persona_edit_reload_btn"):
             try:
-                _r = httpx.get(f"{API_BASE}/personas", timeout=10.0)
-                _r.raise_for_status()
-                st.session_state["hermes_persona_edit_catalog"] = _r.json()
+                st.session_state["hermes_persona_edit_catalog"] = get_json(
+                    "/personas",
+                    timeout=10.0,
+                )
                 st.success("Loaded persona catalog from API.")
             except httpx.HTTPError as _exc:
                 st.error(f"API error: {_exc}")
@@ -196,9 +206,7 @@ def render_workflows_persona_editor_section() -> None:
             _write_blocked = bool(_validation_issues)
 
             _actor = st.session_state["hermes_persona_edit_actor"].strip() or None
-            _headers = (
-                {"X-Nimbusware-Admin-Token": _admin_token} if _admin_token else {}
-            )
+            _headers = admin_token_headers(_admin_token)
             _col_save, _col_replace, _col_delete, _col_create = st.columns(4)
 
             def _handle_write_response(label: str, r: httpx.Response) -> None:
@@ -227,11 +235,12 @@ def render_workflows_persona_editor_section() -> None:
                 ):
                     req = build_patch_request(_snapshot, _edited, actor=_actor)
                     try:
-                        _resp = httpx.patch(
-                            f"{API_BASE}/personas/{_shelf}/{_selected}",
-                            json=req,
+                        _resp = patch_response(
+                            f"/personas/{_shelf}/{_selected}",
+                            req,
                             headers=_headers,
                             timeout=10.0,
+                            raise_for_status=False,
                         )
                         _handle_write_response("PATCH", _resp)
                     except httpx.HTTPError as _exc:
@@ -250,11 +259,12 @@ def render_workflows_persona_editor_section() -> None:
                         "actor": _actor,
                     }
                     try:
-                        _resp = httpx.put(
-                            f"{API_BASE}/personas/{_shelf}/{_selected}",
-                            json=put_body,
+                        _resp = put_response(
+                            f"/personas/{_shelf}/{_selected}",
+                            put_body,
                             headers=_headers,
                             timeout=10.0,
+                            raise_for_status=False,
                         )
                         _handle_write_response("PUT", _resp)
                     except httpx.HTTPError as _exc:
@@ -266,8 +276,8 @@ def render_workflows_persona_editor_section() -> None:
                     disabled=_existing is None,
                 ):
                     try:
-                        _resp = httpx.delete(
-                            f"{API_BASE}/personas/{_shelf}/{_selected}",
+                        _resp = delete_response(
+                            f"/personas/{_shelf}/{_selected}",
                             params={
                                 "expected_version": int(
                                     _snapshot.get("version", 1) or 1,
@@ -276,6 +286,7 @@ def render_workflows_persona_editor_section() -> None:
                             },
                             headers=_headers,
                             timeout=10.0,
+                            raise_for_status=False,
                         )
                         _handle_write_response("DELETE", _resp)
                     except httpx.HTTPError as _exc:
@@ -298,11 +309,12 @@ def render_workflows_persona_editor_section() -> None:
                         entry_body["id"] = new_id
                         post_body = {"entry": entry_body, "actor": _actor}
                         try:
-                            _resp = httpx.post(
-                                f"{API_BASE}/personas/{_shelf}",
-                                json=post_body,
+                            _resp = post_response(
+                                f"/personas/{_shelf}",
+                                payload=post_body,
                                 headers=_headers,
                                 timeout=10.0,
+                                raise_for_status=False,
                             )
                             _handle_write_response("POST", _resp)
                         except httpx.HTTPError as _exc:

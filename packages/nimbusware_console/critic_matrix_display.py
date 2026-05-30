@@ -1,8 +1,3 @@
-"""Critic matrix (extracted) for Streamlit (plan §14 #11).
-
-Rows derived from ``critic.verdict.emitted`` events on a timeline ``events`` list.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -31,7 +26,6 @@ def _stringify(value: Any) -> str:
 
 
 def critic_matrix_rows_from_events(events: Sequence[Any]) -> list[dict[str, str]]:
-    """Extract stable rows from timeline ``events`` (``critic.verdict.emitted`` only)."""
     rows: list[dict[str, str]] = []
     if not isinstance(events, list):
         return rows
@@ -58,7 +52,6 @@ def critic_matrix_rows_from_events(events: Sequence[Any]) -> list[dict[str, str]
 def critic_matrix_operator_metrics(
     rows: Sequence[Mapping[str, str]],
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary."""
     metrics: dict[str, Any] = {
         "verdict_count": 0,
         "fail_count": 0,
@@ -86,7 +79,6 @@ def critic_matrix_operator_metrics(
 def critic_matrix_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -103,7 +95,6 @@ def critic_matrix_operator_metrics_table_rows(
 def critic_matrix_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when at least one critic verdict exists."""
     if not isinstance(metrics, Mapping):
         return None
     vc = metrics.get("verdict_count")
@@ -117,13 +108,11 @@ def critic_matrix_operator_metrics_caption(
 
 
 def critic_matrix_export_json(rows: Sequence[Mapping[str, str]]) -> str:
-    """Pretty JSON for the critic matrix rows (operator download)."""
     out = [dict(r) for r in rows if isinstance(r, Mapping)]
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
 def critic_matrix_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize critic matrix rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -140,7 +129,6 @@ def critic_matrix_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
 
 
 def critic_matrix_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for critic matrix download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -152,7 +140,6 @@ _CRITIC_MATRIX_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 def critic_matrix_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for critic matrix operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -161,7 +148,6 @@ def critic_matrix_operator_metrics_export_json(
 def critic_matrix_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize critic matrix operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -187,7 +173,6 @@ def critic_matrix_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for critic matrix operator metrics download filenames."""
     return critic_matrix_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -211,7 +196,6 @@ def critic_matrix_live_display_caption() -> str:
 def critic_matrix_live_table_rows(
     rows: Sequence[Mapping[str, Any]] | None,
 ) -> list[dict[str, str]]:
-    """Format live matrix rows for ``st.dataframe``."""
     out: list[dict[str, str]] = []
     if not isinstance(rows, Sequence):
         return out

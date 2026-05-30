@@ -1,12 +1,9 @@
-"""Bundle catalog editor helpers for Streamlit (§14 #12 optional UX)."""
-
 from __future__ import annotations
 
 from typing import Any
 
 
 def bundle_editor_tags_from_text(raw: str) -> list[str]:
-    """Parse comma- or newline-separated tags."""
     parts: list[str] = []
     for chunk in raw.replace("\n", ",").split(","):
         t = chunk.strip()

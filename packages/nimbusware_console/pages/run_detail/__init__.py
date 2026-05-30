@@ -1,5 +1,3 @@
-"""Run detail page — composed section panels."""
-
 from __future__ import annotations
 
 import os

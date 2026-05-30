@@ -1,5 +1,3 @@
-"""FAISS index readiness, sync status, and operator drill-down."""
-
 from __future__ import annotations
 
 import csv
@@ -12,10 +10,12 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
-from nimbusware_console.bundle_catalog.catalog_local import (
+from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_faiss_index_status_cell,
-    _bundle_faiss_mtime_observability,
     _bundle_faiss_readiness_summary_cell,
+)
+from nimbusware_console.bundle_catalog.catalog_local.faiss_helpers import (
+    _bundle_faiss_mtime_observability,
     _bundle_order_duplicate_id_signals,
     _bundle_order_list_length,
     _catalog_bundle_row_counts,
@@ -32,7 +32,6 @@ _LOCAL_CATALOG_RELPATH = "configs/bundles/catalog.yaml"
 def bundle_faiss_index_status_operator_metrics(
     status: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup for FAISS index sync status (§14 #12 operator drill-down)."""
     metrics: dict[str, Any] = {
         "ready": False,
         "stale": None,
@@ -87,7 +86,6 @@ def bundle_faiss_index_status_operator_metrics_caption(
 
 
 def bundle_faiss_index_workflow_caption_note() -> str:
-    """One-line note naming the GitHub Actions workflow file."""
     return (
         f"Weekly / manual smoke: repo file ``{BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH}`` "
         "(workflow name **bundle_faiss_index**)."
@@ -95,12 +93,6 @@ def bundle_faiss_index_workflow_caption_note() -> str:
 
 
 def bundle_faiss_build_command_snippet() -> str:
-    """Copy-friendly shell snippet to build the optional bundle FAISS index (repo root).
-
-    Matches operator guidance in ``PLAN_GAP.md`` (Poetry optional ``faiss`` group) and the
-    **bundle_faiss_index** CI workflow (path in ``BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH``;
-    same default paths as ``--repo-root`` here).
-    """
     return (
         "poetry install --with faiss\n"
         "poetry run python scripts/build_bundle_faiss_index.py\n"
@@ -109,7 +101,6 @@ def bundle_faiss_build_command_snippet() -> str:
 
 
 def bundle_faiss_build_command_snippet_explicit(repo_root: Path) -> str:
-    """Pin ``--repo-root`` for copy-paste (same as :func:`bundle_faiss_build_command_snippet`)."""
     root_s = str(repo_root.resolve())
     return (
         "poetry install --with faiss\n"
@@ -119,7 +110,6 @@ def bundle_faiss_build_command_snippet_explicit(repo_root: Path) -> str:
 
 
 def bundle_faiss_build_powershell_snippet_explicit(repo_root: Path) -> str:
-    """Windows-first copy-paste (same steps as ``bundle_faiss_build_command_snippet_explicit``)."""
     root_s = str(repo_root.resolve())
     return (
         "poetry install --with faiss\n"
@@ -129,7 +119,6 @@ def bundle_faiss_build_powershell_snippet_explicit(repo_root: Path) -> str:
 
 
 def bundle_faiss_invoke_ps1_snippet_explicit(repo_root: Path) -> str:
-    """One-liner to run ``scripts/build_bundle_faiss_index.ps1`` (Windows)."""
     root = repo_root.resolve()
     ps1 = root / "scripts" / "build_bundle_faiss_index.ps1"
     return (
@@ -139,10 +128,6 @@ def bundle_faiss_invoke_ps1_snippet_explicit(repo_root: Path) -> str:
 
 
 def bundle_faiss_readiness_summary(repo_root: Path) -> dict[str, Any]:
-    """Human-oriented FAISS index state for operators (no ``faiss`` import).
-
-    ``code`` is one of: ``ready``, ``stale``, ``incomplete``, ``no_catalog``.
-    """
     sync = bundle_faiss_index_status(repo_root)
     mtime_flags = _bundle_faiss_mtime_observability(sync)
     cat_ok = bool(sync.get("catalog_exists"))
@@ -207,7 +192,6 @@ def bundle_faiss_readiness_summary(repo_root: Path) -> dict[str, Any]:
 
 
 def bundle_faiss_readiness_summary_export_json(repo_root: Path) -> str:
-    """Pretty-printed JSON export of :func:`bundle_faiss_readiness_summary`."""
     summ = bundle_faiss_readiness_summary(repo_root)
     if not isinstance(summ, Mapping):
         return "{}"
@@ -217,7 +201,6 @@ def bundle_faiss_readiness_summary_export_json(repo_root: Path) -> str:
 def bundle_faiss_readiness_summary_table_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column field/value rows for FAISS readiness summary export."""
     if not isinstance(summary, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -237,7 +220,6 @@ _BUNDLE_FAISS_READINESS_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 def bundle_faiss_readiness_summary_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize FAISS readiness field/value rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -264,7 +246,6 @@ _BUNDLE_FAISS_READINESS_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = 
 def bundle_faiss_readiness_summary_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`bundle_faiss_readiness_summary` output (§14 #12)."""
     metrics: dict[str, Any] = {
         "code": None,
         "missing_path_count": 0,
@@ -308,7 +289,6 @@ def bundle_faiss_readiness_summary_operator_metrics(
 def bundle_faiss_readiness_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -340,7 +320,6 @@ def bundle_faiss_readiness_summary_operator_metrics_table_rows(
 def bundle_faiss_readiness_summary_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of :func:`bundle_faiss_readiness_summary_operator_metrics`."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -349,7 +328,6 @@ def bundle_faiss_readiness_summary_operator_metrics_export_json(
 def bundle_faiss_readiness_summary_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize FAISS readiness summary operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -373,7 +351,6 @@ def bundle_faiss_readiness_summary_operator_metrics_table_rows_csv(
 def bundle_faiss_readiness_summary_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from FAISS readiness rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     code = metrics.get("code")
@@ -403,7 +380,6 @@ def bundle_faiss_readiness_summary_operator_metrics_caption(
 
 
 def bundle_faiss_readiness_summary_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for FAISS readiness summary operator metrics downloads."""
     return "bundle_faiss_readiness_summary_operator_metrics"
 
 
@@ -412,18 +388,10 @@ def bundle_faiss_readiness_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug from repo directory name for FAISS readiness download filenames."""
     return bundle_faiss_operator_drilldown_export_filename_slug(repo_root, max_len=max_len)
 
 
 def bundle_faiss_readiness_code_caption(repo_root: Path) -> str | None:
-    """One-line caption naming the readiness ``code`` from :func:`bundle_faiss_readiness_summary`.
-
-    Emits ``"FAISS readiness bucket: <code>."`` for the canonical bucket string
-    (``no_catalog`` / ``incomplete`` / ``stale`` / ``ready``). Returns ``None`` when the
-    summary dict lacks a non-empty string ``code`` (defensive; the helper always sets it
-    today).
-    """
     summ = bundle_faiss_readiness_summary(repo_root)
     code = summ.get("code")
     if not isinstance(code, str) or not code.strip():
@@ -432,7 +400,6 @@ def bundle_faiss_readiness_code_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_readiness_headline_caption(repo_root: Path) -> str | None:
-    """One-line human headline from :func:`bundle_faiss_readiness_summary`."""
     summ = bundle_faiss_readiness_summary(repo_root)
     headline = summ.get("headline")
     if not isinstance(headline, str):
@@ -448,7 +415,6 @@ def bundle_faiss_readiness_missing_caption(
     *,
     max_paths: int = 3,
 ) -> str | None:
-    """One-line list of missing index paths from :func:`bundle_faiss_readiness_summary`."""
     summ = bundle_faiss_readiness_summary(repo_root)
     missing = summ.get("missing")
     if not isinstance(missing, list) or not missing:
@@ -476,7 +442,6 @@ _FAISS_READINESS_MISSING_PATHS_CSV_COLUMNS: tuple[str, ...] = ("path",)
 def bundle_faiss_readiness_missing_paths_table_rows(
     summary: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Table rows for missing index paths from :func:`bundle_faiss_readiness_summary`."""
     if not isinstance(summary, Mapping):
         return []
     missing = summary.get("missing")
@@ -492,7 +457,6 @@ def bundle_faiss_readiness_missing_paths_table_rows(
 def bundle_faiss_readiness_missing_paths_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for FAISS readiness missing path rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -505,7 +469,6 @@ def bundle_faiss_readiness_missing_paths_export_json(
 def bundle_faiss_readiness_missing_paths_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize missing path rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -524,7 +487,6 @@ def bundle_faiss_readiness_missing_paths_table_rows_csv(
 
 
 def bundle_faiss_index_stale_caption(repo_root: Path) -> str | None:
-    """Whether the local FAISS index is older than the bundle catalog."""
     status = bundle_faiss_index_status(repo_root)
     ready = status.get("ready")
     if ready is False:
@@ -542,12 +504,6 @@ def bundle_faiss_index_stale_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_index_status(repo_root: Path) -> dict[str, Any]:
-    """Paths, presence, and catalog vs index mtimes for ``configs/bundles/index``.
-
-    ``ready`` matches :func:`hermes_extensions.catalog.bundle_faiss_index_ready` so the
-    console and ``GET /v1/bundles/search`` agree on whether vector search may activate.
-    ``stale`` comes from :func:`hermes_extensions.catalog.bundle_faiss_index_sync_state`.
-    """
     from hermes_extensions.catalog import bundle_faiss_index_sync_state
 
     sync = bundle_faiss_index_sync_state(repo_root)
@@ -572,7 +528,6 @@ def bundle_faiss_index_status(repo_root: Path) -> dict[str, Any]:
 def bundle_faiss_index_status_table_rows(
     status: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column field/value rows for FAISS index sync status export."""
     if not isinstance(status, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -592,7 +547,6 @@ _BUNDLE_FAISS_INDEX_STATUS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 def bundle_faiss_index_status_export_json(
     status: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of :func:`bundle_faiss_index_status`."""
     if not isinstance(status, Mapping):
         return "{}"
     return json.dumps(dict(status), ensure_ascii=False, indent=2)
@@ -601,7 +555,6 @@ def bundle_faiss_index_status_export_json(
 def bundle_faiss_index_status_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize FAISS index sync status field/value rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -620,7 +573,6 @@ def bundle_faiss_index_status_table_rows_csv(
 
 
 def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
-    """Read-only file stats + index-dir listing for operators (no ``faiss`` import)."""
     base = dict(bundle_faiss_index_status(repo_root))
     idx_dir = Path(base["index_dir"])
     faiss_p = idx_dir / "faiss.index"
@@ -738,7 +690,6 @@ def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
 
 
 def bundle_faiss_index_operator_drilldown_export_json(repo_root: Path) -> str:
-    """Pretty-printed JSON export of :func:`bundle_faiss_index_operator_drilldown`."""
     drill = bundle_faiss_index_operator_drilldown(repo_root)
     if not isinstance(drill, Mapping):
         return "{}"
@@ -750,7 +701,6 @@ def bundle_faiss_operator_drilldown_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug from repo directory name for FAISS drill-down download filenames."""
     try:
         name = repo_root.resolve().name
     except OSError:
@@ -761,7 +711,6 @@ def bundle_faiss_operator_drilldown_export_filename_slug(
 
 
 def bundle_faiss_catalog_yaml_version_caption(repo_root: Path) -> str | None:
-    """Top-level ``version`` int from ``configs/bundles/catalog.yaml`` (FAISS drill-down)."""
     raw = bundle_faiss_index_operator_drilldown(repo_root).get(
         "catalog_yaml_top_level_version_int",
     )
@@ -771,7 +720,6 @@ def bundle_faiss_catalog_yaml_version_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_bundle_order_json_file_bytes_caption(repo_root: Path) -> str | None:
-    """Operator line for on-disk ``bundle_order.json`` size (index ordering manifest)."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     n = d.get("bundle_order_json_file_bytes")
     if type(n) is not int or isinstance(n, bool) or n < 0:
@@ -780,7 +728,6 @@ def bundle_faiss_bundle_order_json_file_bytes_caption(repo_root: Path) -> str | 
 
 
 def bundle_faiss_catalog_order_id_set_mismatch_caption(repo_root: Path) -> str | None:
-    """Warn when counts match but catalog id **set** differs from ``bundle_order.json`` ids."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     if d.get("bundle_order_catalog_id_set_parity") is not False:
         return None
@@ -808,7 +755,6 @@ _FAISS_ID_SET_MISMATCH_CSV_COLUMNS: tuple[str, ...] = ("direction", "bundle_id")
 def bundle_faiss_id_set_mismatch_table_rows(
     drilldown: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Table rows for catalog vs ``bundle_order.json`` id-set mismatch samples."""
     if not isinstance(drilldown, Mapping):
         return []
     if drilldown.get("bundle_order_catalog_id_set_parity") is not False:
@@ -840,7 +786,6 @@ def bundle_faiss_id_set_mismatch_table_rows(
 def bundle_faiss_id_set_mismatch_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for FAISS id-set mismatch sample rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -853,7 +798,6 @@ def bundle_faiss_id_set_mismatch_export_json(
 def bundle_faiss_id_set_mismatch_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize FAISS id-set mismatch rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -875,7 +819,6 @@ _FAISS_DUPLICATE_ID_CSV_COLUMNS: tuple[str, ...] = ("bundle_id",)
 def bundle_faiss_duplicate_id_table_rows(
     drilldown: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Table rows for duplicate bundle ids in ``bundle_order.json`` (sample)."""
     if not isinstance(drilldown, Mapping):
         return []
     if drilldown.get("bundle_order_json_has_duplicate_ids") is not True:
@@ -893,7 +836,6 @@ def bundle_faiss_duplicate_id_table_rows(
 def bundle_faiss_duplicate_id_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for duplicate bundle id sample rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -906,7 +848,6 @@ def bundle_faiss_duplicate_id_export_json(
 def bundle_faiss_duplicate_id_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize duplicate bundle id rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -928,7 +869,6 @@ _FAISS_INDEX_DIR_LISTING_CSV_COLUMNS: tuple[str, ...] = ("name", "bytes", "mtime
 def bundle_faiss_index_dir_listing_table_rows(
     drilldown: Mapping[str, Any],
 ) -> list[dict[str, str]]:
-    """Normalize ``index_dir_listing`` from FAISS operator drill-down."""
     if not isinstance(drilldown, Mapping):
         return []
     raw = drilldown.get("index_dir_listing")
@@ -958,7 +898,6 @@ def bundle_faiss_index_dir_listing_table_rows(
 def bundle_faiss_index_dir_listing_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    """Pretty JSON for FAISS index directory listing rows."""
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
     out: list[dict[str, Any]] = []
@@ -971,7 +910,6 @@ def bundle_faiss_index_dir_listing_export_json(
 def bundle_faiss_index_dir_listing_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize index directory listing rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -990,7 +928,6 @@ def bundle_faiss_index_dir_listing_table_rows_csv(
 
 
 def bundle_faiss_catalog_index_mtime_delta_caption(repo_root: Path) -> str | None:
-    """One-line hint comparing ``catalog.yaml`` mtime to newest FAISS artifact mtime."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     if d.get("ready") is not True or d.get("catalog_exists") is not True:
         return None
@@ -1012,7 +949,6 @@ def bundle_faiss_catalog_index_mtime_delta_caption(repo_root: Path) -> str | Non
 
 
 def bundle_faiss_index_dir_file_count_caption(repo_root: Path) -> str | None:
-    """Top-level regular-file count in the FAISS index directory (no ``faiss`` import)."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     n = d.get("index_dir_regular_file_count")
     if not isinstance(n, int) or n < 0:
@@ -1025,7 +961,6 @@ def bundle_faiss_index_dir_file_count_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_index_dir_subdirectory_count_caption(repo_root: Path) -> str | None:
-    """Top-level subdirectory count in the FAISS index directory (no ``faiss`` import)."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     n = d.get("index_dir_subdirectory_count")
     if not isinstance(n, int) or n < 0:
@@ -1038,7 +973,6 @@ def bundle_faiss_index_dir_subdirectory_count_caption(repo_root: Path) -> str | 
 
 
 def bundle_faiss_index_dir_listing_truncated_caption(repo_root: Path) -> str | None:
-    """Hint when ``index_dir_listing`` omits files beyond the first 25 sorted names."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     if d.get("index_dir_listing_truncated") is not True:
         return None
@@ -1053,7 +987,6 @@ _LARGE_FAISS_INDEX_BYTES = 4 * 1024 * 1024
 
 
 def bundle_faiss_index_large_file_caption(repo_root: Path) -> str | None:
-    """Warn when on-disk ``faiss.index`` exceeds a byte threshold (no ``faiss`` import)."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     fi = d.get("faiss_index_file")
     if not isinstance(fi, dict):
@@ -1073,7 +1006,6 @@ def bundle_faiss_index_large_file_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_bundle_order_duplicate_ids_caption(repo_root: Path) -> str | None:
-    """Warn when ``bundle_order.json`` lists the same bundle id more than once."""
     d = bundle_faiss_index_operator_drilldown(repo_root)
     if d.get("bundle_order_json_has_duplicate_ids") is not True:
         return None
@@ -1096,12 +1028,6 @@ def bundle_faiss_bundle_order_duplicate_ids_caption(repo_root: Path) -> str | No
 
 
 def bundle_faiss_catalog_order_count_parity_caption(repo_root: Path) -> str | None:
-    """One-line caption when ``catalog.yaml`` vs ``bundle_order.json`` counts are comparable.
-
-    Compares **catalog bundles with non-empty string ids** (same rule as the FAISS build
-    script) to the length of the JSON list in ``bundle_order.json``. Returns ``None`` when
-    either side is missing, unreadable, or not parseable.
-    """
     d = bundle_faiss_index_operator_drilldown(repo_root)
     if d.get("bundle_order_parse_error"):
         return None

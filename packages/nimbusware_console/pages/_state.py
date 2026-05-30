@@ -1,5 +1,3 @@
-"""Run list session keys and query-param helpers."""
-
 from __future__ import annotations
 
 import csv
@@ -12,6 +10,8 @@ from uuid import UUID
 
 import httpx
 import streamlit as st
+
+from nimbusware_client.http import get_response
 
 from nimbusware_console.run_list_pagination_display import (
     run_list_active_query_params_caption,
@@ -287,7 +287,6 @@ def _run_list_clear_query_params() -> None:
 
 
 def _run_list_payload_to_csv(data: dict[str, Any]) -> str:
-    """Serialize last list payload to CSV (parity with compact dataframe columns)."""
     run_ids = data.get("run_ids") or []
     raw_sum = data.get("summaries")
     summaries: dict[str, Any] = raw_sum if isinstance(raw_sum, dict) else {}
@@ -508,8 +507,7 @@ def _render_run_list(data: dict[str, Any], *, include_summary: bool) -> None:
 def _run_list_fetch_and_display() -> bool:
     params = _build_run_list_params()
     try:
-        r = httpx.get(f"{API_BASE}/runs", params=params, timeout=15.0)
-        r.raise_for_status()
+        r = get_response("/runs", params=params, timeout=15.0)
         _run_list_qp_push(params)
         data = r.json()
         _hdrs = r.headers

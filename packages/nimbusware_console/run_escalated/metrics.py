@@ -1,5 +1,3 @@
-"""Run escalated display helpers."""
-
 from __future__ import annotations
 
 import csv
@@ -19,7 +17,6 @@ from nimbusware_console.run_escalated.rows import (
 def run_escalated_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup presence flags for latest timeline ``run_escalated`` summary."""
     metrics: dict[str, Any] = {
         "notes_present": False,
         "actor_id_present": False,
@@ -53,7 +50,6 @@ def run_escalated_operator_metrics(
 def run_escalated_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -77,7 +73,6 @@ def run_escalated_operator_metrics_table_rows(
 def run_escalated_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from latest escalation rollup."""
     if not isinstance(metrics, Mapping):
         return None
     sev = metrics.get("severity")
@@ -107,7 +102,6 @@ _RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 def run_escalated_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for run escalated operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -118,7 +112,6 @@ def run_escalated_operator_metrics_export_json(
 def run_escalated_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize run escalated operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -146,7 +139,6 @@ def run_escalated_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for run escalated operator metrics downloads."""
     return run_escalated_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -155,7 +147,6 @@ def run_escalated_operator_metrics_export_filename_slug(
 def run_escalated_history_operator_metrics(
     history: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from ``run_escalated_history``."""
     metrics: dict[str, Any] = {
         "entry_count": 0,
         "distinct_reason_codes": 0,
@@ -189,7 +180,6 @@ def run_escalated_history_operator_metrics(
 def run_escalated_history_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -215,7 +205,6 @@ def run_escalated_history_operator_metrics_table_rows(
 def run_escalated_history_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when history has at least one entry."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("entry_count")
@@ -246,7 +235,6 @@ _RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def run_escalated_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for run escalated history operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -257,7 +245,6 @@ def run_escalated_history_operator_metrics_export_json(
 def run_escalated_history_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize run escalated history operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -285,7 +272,6 @@ def run_escalated_history_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for run escalated history operator metrics downloads."""
     return run_escalated_history_export_filename_slug(run_id, max_len=max_len)
 
 
@@ -294,7 +280,6 @@ def run_escalated_history_operator_metrics_export_filename_slug(
 def run_escalated_delta_operator_metrics(
     delta: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Short hints on latest-vs-prior run escalation delta (read-only, JSON-serializable)."""
     if not isinstance(delta, Mapping):
         return {"present": False}
     prev_id = delta.get("previous_event_id")
@@ -320,7 +305,6 @@ def run_escalated_delta_operator_metrics(
 def run_escalated_delta_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return []
     rows: list[dict[str, str]] = []
@@ -344,7 +328,6 @@ def run_escalated_delta_operator_metrics_table_rows(
 def run_escalated_delta_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary listing which escalation delta fields changed."""
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return None
     changed: list[str] = []
@@ -378,7 +361,6 @@ _RUN_ESCALATED_DELTA_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def run_escalated_delta_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for run escalated delta operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -389,7 +371,6 @@ def run_escalated_delta_operator_metrics_export_json(
 def run_escalated_delta_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize run escalated delta operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -417,5 +398,4 @@ def run_escalated_delta_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for run escalated delta operator metrics downloads."""
     return run_escalated_delta_export_filename_slug(run_id, max_len=max_len)

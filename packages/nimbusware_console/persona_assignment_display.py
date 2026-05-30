@@ -1,8 +1,3 @@
-"""Persona assignment summary for Streamlit (P1-b / §3B.3).
-
-Parity with timeline top-level ``persona_assignment`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -30,7 +25,6 @@ def _stringify(value: Any) -> str:
 def persona_assignment_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``persona_assignment`` from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("persona_assignment")
@@ -40,7 +34,6 @@ def persona_assignment_from_timeline(
 def persona_assignment_summary_rows(
     pa: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Flatten nested slots for ``st.dataframe``."""
     if not isinstance(pa, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -80,7 +73,6 @@ def persona_assignment_summary_rows(
 
 
 def persona_assignment_caption(pa: Mapping[str, Any] | None) -> str | None:
-    """One-line summary of composite persona assignment."""
     if not isinstance(pa, Mapping):
         return None
     parts: list[str] = []

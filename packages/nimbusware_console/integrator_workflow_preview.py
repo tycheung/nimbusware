@@ -1,10 +1,3 @@
-"""Module Integrator + workflow YAML preview helpers.
-
-Read-only: validates ``integrator_gate``, ``agent_evaluator``, and **full-profile** workflow
-roots; previews ``ModuleIntegrator`` scores against the local repo catalog. No writes
-to ``configs/workflows/*.yaml``.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -49,7 +42,6 @@ ALLOWED_FULL_WORKFLOW_ROOT_KEYS: frozenset[str] = frozenset(
 
 
 def list_workflow_profile_keys(repo_root: Path) -> list[str]:
-    """Basenames under ``configs/workflows`` (stem only, ``.yaml`` / ``.yml``)."""
     d = repo_root / "configs" / "workflows"
     if not d.is_dir():
         return []
@@ -66,7 +58,6 @@ def list_workflow_profile_keys(repo_root: Path) -> list[str]:
 
 
 def parse_integrator_gate_yaml_fragment(text: str) -> tuple[dict[str, Any] | None, list[str]]:
-    """Parse YAML that is either a full workflow root or an ``integrator_gate``-only map."""
     raw = text.strip()
     if not raw:
         return None, []
@@ -87,7 +78,6 @@ def parse_integrator_gate_yaml_fragment(text: str) -> tuple[dict[str, Any] | Non
 
 
 def validate_integrator_gate_block(block: dict[str, Any] | None) -> list[str]:
-    """Structural checks for operator-authored fragments."""
     if not block:
         return []
     errs: list[str] = []
@@ -111,7 +101,6 @@ def validate_integrator_gate_block(block: dict[str, Any] | None) -> list[str]:
 
 
 def parse_agent_evaluator_yaml_fragment(text: str) -> tuple[dict[str, Any] | None, list[str]]:
-    """Parse YAML that is either a full workflow root or an ``agent_evaluator``-only map."""
     raw = text.strip()
     if not raw:
         return None, []
@@ -138,7 +127,6 @@ def parse_agent_evaluator_yaml_fragment(text: str) -> tuple[dict[str, Any] | Non
 
 
 def validate_agent_evaluator_block(block: dict[str, Any] | None) -> list[str]:
-    """Structural checks for operator-authored ``agent_evaluator`` fragments."""
     if not block:
         return []
     errs: list[str] = []
@@ -188,7 +176,6 @@ def validate_agent_evaluator_block(block: dict[str, Any] | None) -> list[str]:
 
 
 def parse_full_workflow_yaml_paste(text: str) -> tuple[dict[str, Any] | None, list[str]]:
-    """Parse a pasted full workflow root document (``configs/workflows/{profile}.yaml`` shape)."""
     raw = text.strip()
     if not raw:
         return None, ["pasted YAML is empty"]
@@ -204,7 +191,6 @@ def parse_full_workflow_yaml_paste(text: str) -> tuple[dict[str, Any] | None, li
 
 
 def validate_full_workflow_document(doc: dict[str, Any] | None) -> list[str]:
-    """Structural validation for operator full-profile pastes (closed top-level key set)."""
     if not doc:
         return ["workflow document is empty"]
     errs: list[str] = []
@@ -239,7 +225,6 @@ def _shallow_mapping_field_diff(
     old: dict[str, Any],
     new: dict[str, Any],
 ) -> dict[str, Any]:
-    """First-level key churn between two mappings (JSON-safe values)."""
     keys = sorted(set(old) | set(new))
     added = [k for k in keys if k not in old]
     removed = [k for k in keys if k not in new]
@@ -269,18 +254,6 @@ def full_workflow_merge_diff(
     *,
     pasted_root: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Summarize shallow full-profile merge: top-level key buckets + optional gate/AE fields.
-
-    Pure helper for console dry-run: on-disk document vs merged preview from
-    ``prepare_full_workflow_apply``.
-
-    When ``pasted_root`` is a mapping, ``disk_only_top_level_keys`` lists keys present on
-    ``before_disk`` but absent from the paste (they survive a shallow merge unchanged —
-    operators pasting a partial root should review them). ``paste_only_top_level_keys``
-    lists keys present in the paste but absent from ``before_disk`` (new sections the
-    shallow merge would introduce). ``pasted_top_level_keys`` lists sorted top-level keys
-    from the paste for quick diff orientation.
-    """
     if before_disk is None or merged_preview is None:
         return {"error": "before_disk and merged_preview are required"}
     if not isinstance(before_disk, dict) or not isinstance(merged_preview, dict):
@@ -324,14 +297,6 @@ _SUBTREE_CHANGED_FIELDS_CAPTION_MAX_KEYS = 6
 
 
 def full_workflow_merge_overview_caption(diff: Mapping[str, Any] | None) -> str | None:
-    """Compact one-line top-level diff overview for the full-workflow dry-run.
-
-    Counts ``added_top_level_keys`` / ``removed_top_level_keys`` /
-    ``changed_top_level_keys`` / ``unchanged_top_level_keys`` (each treated as ``0`` when
-    absent or not a list). Returns ``"Top-level: +<A> / -<R> / ~<C> / =<U>"`` when the
-    diff is observable; returns ``None`` when ``diff`` is not a mapping or carries an
-    ``error`` payload.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
 
@@ -349,7 +314,6 @@ def full_workflow_merge_overview_caption(diff: Mapping[str, Any] | None) -> str 
 def full_workflow_merge_top_level_churn_count_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count top-level keys that are added, removed, or value-changed (excludes ``=`` bucket)."""
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
 
@@ -372,11 +336,6 @@ def full_workflow_merge_top_level_churn_count_caption(
 def full_workflow_merge_diff_audit_fingerprint_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """SHA-256 prefix + UTF-8 byte length of canonical merge-diff JSON (operator audit).
-
-    Stable for the same logical diff so operators can compare dry-runs across sessions.
-    Returns ``None`` when ``diff`` is not a mapping or carries an ``error`` key.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     try:
@@ -394,7 +353,6 @@ def full_workflow_merge_diff_audit_fingerprint_caption(
 def full_workflow_merge_unchanged_with_churn_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """Surface how many top-level keys stay unchanged while some other root keys churn."""
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
 
@@ -421,26 +379,6 @@ def full_workflow_merge_unchanged_with_churn_caption(
 def full_workflow_merge_removed_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming the removed top-level keys.
-
-    Mirror of :func:`full_workflow_merge_changed_top_level_caption` /
-    :func:`full_workflow_merge_added_top_level_caption` for the
-    ``removed_top_level_keys`` field. Returns
-    ``"Removed top-level keys: <a>, <b>, <c>."`` when the field is a non-empty
-    list with at least one usable string entry. Entries are whitespace-stripped,
-    empty / non-string entries are skipped, and surviving entries are deduped +
-    sorted alphabetically before joining.
-
-    Returns ``None`` for:
-
-    * non-mapping ``diff`` or ``error`` payloads,
-    * missing / non-list ``removed_top_level_keys``,
-    * an empty list, or
-    * a list whose only entries are non-string / whitespace-only.
-
-    Completes the added / changed / removed / unchanged caption quartet for the
-    Top-level merge diff summary.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("removed_top_level_keys")
@@ -461,13 +399,6 @@ def full_workflow_merge_removed_top_level_caption(
 def full_workflow_merge_disk_only_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming top-level keys on disk that the paste omits.
-
-    Returns ``"Disk-only top-level keys: <a>, <b>."`` when ``disk_only_top_level_keys``
-    is a non-empty list with at least one usable string entry (deduped + sorted).
-    Returns ``None`` for non-mapping ``diff``, ``error`` payloads, missing / non-list field,
-    or empty after filtering.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("disk_only_top_level_keys")
@@ -488,13 +419,6 @@ def full_workflow_merge_disk_only_top_level_caption(
 def full_workflow_merge_paste_only_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming top-level keys in the paste but not on disk.
-
-    Returns ``"Paste-only top-level keys: <a>, <b>."`` when ``paste_only_top_level_keys``
-    is a non-empty list with at least one usable string entry (deduped + sorted).
-    Returns ``None`` for non-mapping ``diff``, ``error`` payloads, missing / non-list field,
-    or empty after filtering.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("paste_only_top_level_keys")
@@ -515,7 +439,6 @@ def full_workflow_merge_paste_only_top_level_caption(
 def full_workflow_merge_pasted_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming top-level keys present in the pasted YAML root."""
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("pasted_top_level_keys")
@@ -536,21 +459,6 @@ def full_workflow_merge_pasted_top_level_caption(
 def full_workflow_merge_added_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming the added top-level keys.
-
-    Mirror of :func:`full_workflow_merge_changed_top_level_caption` for the
-    ``added_top_level_keys`` field. Returns ``"Added top-level keys: <a>, <b>, <c>."``
-    when the field is a non-empty list with at least one usable string entry.
-    Entries are whitespace-stripped, empty / non-string entries are skipped, and
-    surviving entries are deduped + sorted alphabetically before joining.
-
-    Returns ``None`` for:
-
-    * non-mapping ``diff`` or ``error`` payloads,
-    * missing / non-list ``added_top_level_keys``,
-    * an empty list, or
-    * a list whose only entries are non-string / whitespace-only.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("added_top_level_keys")
@@ -571,21 +479,6 @@ def full_workflow_merge_added_top_level_caption(
 def full_workflow_merge_changed_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming the changed top-level keys.
-
-    Returns ``"Changed top-level keys: <a>, <b>, <c>."`` when ``changed_top_level_keys``
-    is a non-empty list with at least one string entry. Entries are whitespace-stripped,
-    empty / non-string entries are skipped, and the surviving entries are deduped +
-    sorted alphabetically before joining.
-
-    Returns ``None`` for:
-
-    * non-mapping ``diff`` or ``error`` payloads,
-    * missing / non-list ``changed_top_level_keys``,
-    * an empty list, or
-    * a list whose only entries are non-string / whitespace-only (nothing left to
-      surface after filtering).
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     raw = diff.get("changed_top_level_keys")
@@ -606,17 +499,6 @@ def full_workflow_merge_changed_top_level_caption(
 def full_workflow_merge_unchanged_top_level_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption confirming a paste reproduces the on-disk workflow exactly.
-
-    Returns ``"All top-level keys unchanged (<N> keys; paste reproduces disk)."`` when
-    ``added_top_level_keys`` / ``removed_top_level_keys`` / ``changed_top_level_keys``
-    are all empty lists (or absent / not a list, treated as ``0``) and
-    ``unchanged_top_level_keys`` has at least one entry. Returns ``None`` when:
-
-    * ``diff`` is not a mapping or carries an ``error`` payload,
-    * any of the churn buckets is a non-empty list (real churn to surface), **or**
-    * ``unchanged_top_level_keys`` is missing / empty (nothing to confirm).
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
 
@@ -641,21 +523,6 @@ def full_workflow_merge_unchanged_top_level_caption(
 def full_workflow_merge_subtree_overview_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compact subtree-level diff overview for the full-workflow dry-run.
-
-    Aggregates ``subtree_field_diffs.{integrator_gate,agent_evaluator}.{added,removed,
-    changed,unchanged}_keys`` list lengths (each treated as ``0`` when absent or not a
-    list) into the single line::
-
-        "Subtree churn: integrator_gate (+A / -R / ~C / =U), "
-        "agent_evaluator (+A / -R / ~C / =U)"
-
-    Subtree blocks that are missing or not a mapping contribute zero counts (so the
-    caption is always two named blocks in the same fixed order as the existing subtree
-    dataframe). Returns ``None`` when ``diff`` is not a mapping, carries an ``error``
-    payload, or when ``subtree_field_diffs`` itself is missing / not a mapping (there is
-    no subtree signal to summarise in that case).
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     subtrees = diff.get("subtree_field_diffs")
@@ -682,19 +549,6 @@ def full_workflow_merge_subtree_overview_caption(
 def full_workflow_merge_subtree_changed_fields_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming changed shallow keys under ``integrator_gate`` / ``agent_evaluator``.
-
-    Complements :func:`full_workflow_merge_subtree_overview_caption` with concrete field
-    names from ``subtree_field_diffs[*].changed_keys``. Per-block keys are whitespace-stripped,
-    empty / non-string entries skipped, surviving entries deduped + sorted alphabetically,
-    then capped at :data:`_SUBTREE_CHANGED_FIELDS_CAPTION_MAX_KEYS` with a trailing
-    ``(+N more)`` overflow hint. A subtree block is **omitted** when ``changed_keys`` is
-    missing, not a list, empty, or yields no usable strings after cleaning.
-
-    Returns ``None`` when ``diff`` is not a mapping, carries an ``error`` payload, when
-    ``subtree_field_diffs`` is missing / not a mapping, or when both subtrees have nothing
-    to show.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     subtrees = diff.get("subtree_field_diffs")
@@ -739,13 +593,6 @@ def full_workflow_merge_subtree_changed_fields_caption(
 def full_workflow_merge_subtree_removed_fields_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming removed shallow keys under ``integrator_gate`` / ``agent_evaluator``.
-
-    Mirrors :func:`full_workflow_merge_subtree_changed_fields_caption` for
-    ``subtree_field_diffs[*].removed_keys`` (same strip / dedupe / sort / cap rules).
-    Returns ``None`` when there is nothing to show for either subtree or when the diff
-    carries no usable ``subtree_field_diffs`` mapping.
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     subtrees = diff.get("subtree_field_diffs")
@@ -790,11 +637,6 @@ def full_workflow_merge_subtree_removed_fields_caption(
 def full_workflow_merge_subtree_added_fields_caption(
     diff: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption naming added shallow keys under ``integrator_gate`` / ``agent_evaluator``.
-
-    Mirrors :func:`full_workflow_merge_subtree_removed_fields_caption` for
-    ``subtree_field_diffs[*].added_keys`` (same strip / dedupe / sort / cap rules).
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return None
     subtrees = diff.get("subtree_field_diffs")
@@ -837,19 +679,6 @@ def full_workflow_merge_subtree_added_fields_caption(
 
 
 def full_workflow_merge_attention_rows(diff: Mapping[str, Any] | None) -> list[dict[str, str]]:
-    """Read-only hints when a full-profile dry-run diff warrants extra operator review.
-
-    Flags: removed top-level keys, **added** top-level keys, **disk-only** top-level keys
-    (present on disk but absent from the pasted YAML — they survive shallow merge),
-    **paste-only** top-level keys (present in the paste but absent from on-disk profile),
-    **pasted** top-level keys (when ``pasted_top_level_keys`` is populated), simultaneous
-    ``integrator_gate`` + ``agent_evaluator`` top-level changes, **removed shallow keys**
-    under those subtrees (``subtree_field_diffs[*].removed_keys``), **added shallow keys**
-    under those subtrees (``subtree_field_diffs[*].added_keys``), and **changed shallow
-    keys** under those subtrees (``subtree_field_diffs[*].changed_keys``). Each per-name
-    key list under the changed-keys flag is capped at the first
-    :data:`_SUBTREE_CHANGED_KEYS_CAP` entries (``+N more`` hint appended on overflow).
-    """
     if not isinstance(diff, Mapping) or diff.get("error"):
         return []
     rows: list[dict[str, str]] = []
@@ -979,7 +808,6 @@ def preview_effective_min_score_to_pass(
     workflow_profile: str | None,
     pasted_block: dict[str, Any] | None,
 ) -> float:
-    """Resolve min score: env beats pasted ``min_score_to_pass``, then workflow file, then YAML."""
     env_raw = os.environ.get("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
     if env_raw:
         try:
@@ -1003,7 +831,6 @@ def preview_effective_min_score_to_pass(
 
 
 def parse_synthetic_tags_json(text: str) -> tuple[list[str] | None, list[str]]:
-    """Parse JSON array of tags; empty input → ``([], [])``."""
     raw = text.strip()
     if not raw:
         return [], []
@@ -1030,7 +857,6 @@ def build_project_profile_for_preview(
     bundle_id: str,
     synthetic_tags: list[str] | None,
 ) -> dict[str, Any]:
-    """Shape passed to :meth:`ModuleIntegrator.score_fit` (``tags`` + ``bundle_tags``)."""
     tags: list[str] = []
     if synthetic_tags:
         tags = list(synthetic_tags)
@@ -1053,7 +879,6 @@ def integrator_preview_payload(
     bundle_id: str,
     synthetic_tags_json: str,
 ) -> dict[str, Any]:
-    """Single JSON-serializable dict for Streamlit tables / ``st.json``."""
     pasted_block, frag_errs = parse_integrator_gate_yaml_fragment(pasted_yaml)
     val_errs = validate_integrator_gate_block(pasted_block)
     tag_list, tag_errs = parse_synthetic_tags_json(synthetic_tags_json)
@@ -1098,7 +923,6 @@ def integrator_preview_payload(
 
 
 def full_workflow_merge_diff_export_filename_slug() -> str:
-    """Filename slug prefix for full-workflow merge diff exports."""
     return "full_workflow_merge_diff"
 
 
@@ -1116,7 +940,6 @@ def _full_workflow_merge_diff_cell(value: Any) -> str:
 def full_workflow_merge_diff_table_rows(
     diff: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for full-workflow merge diff export."""
     if not isinstance(diff, Mapping):
         return []
     if diff.get("error"):
@@ -1135,7 +958,6 @@ def full_workflow_merge_diff_table_rows(
 def full_workflow_merge_diff_export_json(
     diff: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for full-workflow merge diff payload."""
     if not isinstance(diff, Mapping):
         return "{}"
     return json.dumps(dict(diff), indent=2, ensure_ascii=False)
@@ -1144,7 +966,6 @@ def full_workflow_merge_diff_export_json(
 def full_workflow_merge_diff_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full-workflow merge diff field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1170,7 +991,6 @@ def _full_workflow_merge_diff_list_count(diff: Mapping[str, Any], key: str) -> i
 def full_workflow_merge_diff_operator_metrics(
     diff: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`full_workflow_merge_diff` output (§14 #13)."""
     metrics: dict[str, Any] = {
         "added_top_level_count": 0,
         "removed_top_level_count": 0,
@@ -1211,7 +1031,6 @@ def full_workflow_merge_diff_operator_metrics(
 def full_workflow_merge_diff_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     if metrics.get("has_error") is True:
@@ -1240,7 +1059,6 @@ def full_workflow_merge_diff_operator_metrics_table_rows(
 def full_workflow_merge_diff_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line top-level diff overview from merge-diff operator metrics."""
     if not isinstance(metrics, Mapping) or metrics.get("has_error") is True:
         return None
     added = metrics.get("added_top_level_count", 0)
@@ -1277,7 +1095,6 @@ _FULL_WORKFLOW_MERGE_DIFF_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def full_workflow_merge_diff_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of :func:`full_workflow_merge_diff_operator_metrics`."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -1286,7 +1103,6 @@ def full_workflow_merge_diff_operator_metrics_export_json(
 def full_workflow_merge_diff_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full-workflow merge diff operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1308,12 +1124,10 @@ def full_workflow_merge_diff_operator_metrics_table_rows_csv(
 
 
 def full_workflow_merge_diff_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for full-workflow merge diff operator metrics downloads."""
     return "full_workflow_merge_diff_operator_metrics"
 
 
 def full_workflow_merge_attention_export_filename_slug() -> str:
-    """Filename slug prefix for full-workflow merge attention row exports."""
     return "full_workflow_merge_attention"
 
 
@@ -1323,7 +1137,6 @@ _FULL_WORKFLOW_MERGE_ATTENTION_CSV_COLUMNS: tuple[str, ...] = ("flag", "keys")
 def full_workflow_merge_attention_export_json(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Pretty JSON for full-workflow merge attention hint rows."""
     out = [dict(r) for r in rows if isinstance(r, Mapping)]
     return json.dumps(out, indent=2, ensure_ascii=False)
 
@@ -1331,7 +1144,6 @@ def full_workflow_merge_attention_export_json(
 def full_workflow_merge_attention_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize full-workflow merge attention rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1353,7 +1165,6 @@ def full_workflow_merge_attention_table_rows_csv(
 
 
 def _full_workflow_merge_attention_subtree_row_count(diff: Mapping[str, Any]) -> int:
-    """Count subtree removed/added/changed attention rows (mirrors attention_rows logic)."""
     subtrees = diff.get("subtree_field_diffs")
     if not isinstance(subtrees, dict):
         return 0
@@ -1376,7 +1187,6 @@ def _full_workflow_merge_attention_subtree_row_count(diff: Mapping[str, Any]) ->
 def full_workflow_merge_attention_operator_metrics(
     diff: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`full_workflow_merge_attention_rows` (§14 #13)."""
     metrics: dict[str, Any] = {
         "attention_row_count": 0,
         "has_removed_top_level": False,
@@ -1416,7 +1226,6 @@ def full_workflow_merge_attention_operator_metrics(
 def full_workflow_merge_attention_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     if metrics.get("has_error") is True:
@@ -1456,7 +1265,6 @@ def full_workflow_merge_attention_operator_metrics_table_rows(
 def full_workflow_merge_attention_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line caption when merge attention hints are present."""
     if not isinstance(metrics, Mapping) or metrics.get("has_error") is True:
         return None
     n = metrics.get("attention_row_count", 0)
@@ -1475,7 +1283,6 @@ _FULL_WORKFLOW_MERGE_ATTENTION_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 def full_workflow_merge_attention_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of merge attention operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -1484,7 +1291,6 @@ def full_workflow_merge_attention_operator_metrics_export_json(
 def full_workflow_merge_attention_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize merge attention operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -1506,5 +1312,4 @@ def full_workflow_merge_attention_operator_metrics_table_rows_csv(
 
 
 def full_workflow_merge_attention_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for full-workflow merge attention operator metrics downloads."""
     return "full_workflow_merge_attention_operator_metrics"

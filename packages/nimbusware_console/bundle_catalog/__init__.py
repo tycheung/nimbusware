@@ -1,5 +1,3 @@
-"""Bundle catalog console helpers — facade."""
-
 from nimbusware_console.bundle_catalog.catalog_local import *  # noqa: F403
 from nimbusware_console.bundle_catalog.faiss_status import *  # noqa: F403
 

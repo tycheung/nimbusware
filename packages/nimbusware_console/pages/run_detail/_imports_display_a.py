@@ -1,5 +1,3 @@
-"""Shared imports for run_detail section modules (part A)."""
-
 from __future__ import annotations
 
 from nimbusware_console.agent_evaluator_display import (

@@ -1,8 +1,3 @@
-"""Scraper fetch summary for Streamlit (plan §14 #10 / #11).
-
-Parity with timeline top-level ``scraper_fetch`` from the HTTP API.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -36,7 +31,6 @@ def _stringify(value: Any) -> str:
 def scraper_fetch_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
-    """Return top-level ``scraper_fetch`` from a ``GET /v1/runs/…/timeline`` JSON body."""
     if not isinstance(timeline_body, Mapping):
         return None
     raw = timeline_body.get("scraper_fetch")
@@ -46,7 +40,6 @@ def scraper_fetch_from_timeline(
 def scraper_fetch_summary_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Rows for ``st.dataframe`` (field / value columns)."""
     if not summary:
         return []
     rows: list[dict[str, str]] = []
@@ -61,7 +54,6 @@ _SCRAPER_FETCH_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def scraper_fetch_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize scraper_fetch summary display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -80,21 +72,18 @@ def scraper_fetch_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
 
 
 def scraper_fetch_summary_export_json(summary: Mapping[str, Any] | None) -> str:
-    """JSON export of timeline top-level ``scraper_fetch`` summary."""
     if not isinstance(summary, Mapping):
         return "{}"
     return json.dumps(dict(summary), ensure_ascii=False, indent=2)
 
 
 def scraper_fetch_summary_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for scraper_fetch summary download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
 
 
 def scraper_fetch_outcome_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """One-line outcome and fetch totals."""
     if not isinstance(summary, Mapping):
         return None
     outcome = summary.get("outcome")
@@ -115,7 +104,6 @@ def scraper_fetch_outcome_caption(summary: Mapping[str, Any] | None) -> str | No
 def scraper_fetch_fetches_table_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Per-URL fetch rows from ``scraper_fetch.fetches`` for ``st.dataframe``."""
     if not isinstance(summary, Mapping):
         return []
     raw = summary.get("fetches")
@@ -151,7 +139,6 @@ _SCRAPER_FETCH_FETCHES_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def scraper_fetch_fetches_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize per-URL fetch display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -168,7 +155,6 @@ def scraper_fetch_fetches_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> s
 
 
 def scraper_fetch_fetches_export_json(summary: Mapping[str, Any] | None) -> str:
-    """JSON export of raw ``scraper_fetch.fetches`` from the timeline summary."""
     if not isinstance(summary, Mapping):
         return "[]"
     raw = summary.get("fetches")
@@ -179,14 +165,12 @@ def scraper_fetch_fetches_export_json(summary: Mapping[str, Any] | None) -> str:
 
 
 def scraper_fetch_fetches_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for scraper fetch fetches download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
 
 
 def scraper_fetch_artifacts_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Count per-URL rows that carry an ``artifact_relpath``."""
     if not isinstance(summary, Mapping):
         return None
     raw = summary.get("fetches")
@@ -206,7 +190,6 @@ def scraper_fetch_artifacts_caption(summary: Mapping[str, Any] | None) -> str | 
 
 
 def scraper_fetch_failure_reason_caption(summary: Mapping[str, Any] | None) -> str | None:
-    """Surface failure reason when outcome is failed."""
     if not isinstance(summary, Mapping):
         return None
     if summary.get("outcome") != "failed":
@@ -236,7 +219,6 @@ def _scraper_fetch_artifact_relpath_count(summary: Mapping[str, Any]) -> int:
 def scraper_fetch_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Rollup counts for operator summary from timeline ``scraper_fetch``."""
     metrics: dict[str, Any] = {
         "outcome": None,
         "fetch_count": 0,
@@ -264,7 +246,6 @@ def scraper_fetch_operator_metrics(
 def scraper_fetch_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -284,7 +265,6 @@ def scraper_fetch_operator_metrics_table_rows(
 def scraper_fetch_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     outcome = metrics.get("outcome")
@@ -309,7 +289,6 @@ _SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value"
 def scraper_fetch_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for scraper fetch operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -318,7 +297,6 @@ def scraper_fetch_operator_metrics_export_json(
 def scraper_fetch_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize scraper fetch operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -344,5 +322,4 @@ def scraper_fetch_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for scraper fetch operator metrics download filenames."""
     return scraper_fetch_summary_export_filename_slug(run_id, max_len=max_len)

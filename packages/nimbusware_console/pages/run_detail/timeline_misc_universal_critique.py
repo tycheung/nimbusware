@@ -1,5 +1,3 @@
-"""Run detail — timeline misc (universal_critique)."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Read-only ``universal_critique`` workflow summary for Streamlit."""
-
 from __future__ import annotations
 
 import csv
@@ -20,7 +18,6 @@ from hermes_orchestrator.workflow_universal_critique import (
 
 
 def _universal_critique_yaml_value_nonempty(value: Any) -> bool:
-    """True when a frozen ``universal_critique`` subtree value is not an empty shell."""
     if value is None:
         return False
     if isinstance(value, bool):
@@ -41,36 +38,30 @@ def _universal_critique_top_level_nonempty_count(uc: Mapping[str, Any]) -> int:
 
 
 def _universal_critique_top_level_enabled_true_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level ``universal_critique`` children that are mappings with ``enabled: true``."""
     return sum(
         1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is True
     )
 
 
 def _universal_critique_top_level_enabled_false_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level children that are mappings with explicit ``enabled: false``."""
     return sum(
         1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is False
     )
 
 
 def _universal_critique_top_level_mapping_child_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level ``universal_critique`` children that are YAML mappings (incl. ``{}``)."""
     return sum(1 for v in uc.values() if isinstance(v, dict))
 
 
 def _universal_critique_top_level_scalar_leaf_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level children that are not mappings or lists (YAML scalars / null)."""
     return sum(1 for v in uc.values() if not isinstance(v, (dict, list)))
 
 
 def _universal_critique_top_level_list_child_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level ``universal_critique`` children that are YAML sequences."""
     return sum(1 for v in uc.values() if isinstance(v, list))
 
 
 def _universal_critique_top_level_enabled_unset_mapping_count(uc: Mapping[str, Any]) -> int:
-    """Count top-level mapping children with no ``enabled`` key (stage knob unset in YAML)."""
     return sum(
         1 for v in uc.values() if isinstance(v, dict) and "enabled" not in v
     )
@@ -89,7 +80,6 @@ def universal_critique_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    """YAML-only vs env-resolved ``universal_critique`` knobs for the selected profile."""
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel: str | None = wf_key if wf_key else None
 
@@ -191,7 +181,6 @@ def universal_critique_workflow_explainer_payload(
 def universal_critique_yaml_present_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Whether the workflow profile carries a ``universal_critique`` mapping."""
     if not isinstance(payload, Mapping):
         return None
     if isinstance(payload.get("load_error"), str) and str(payload.get("load_error")).strip():
@@ -209,7 +198,6 @@ def universal_critique_yaml_present_caption(
 def universal_critique_default_enabled_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Caption for ``default_enabled`` YAML knob and effective panel flags."""
     if not isinstance(payload, Mapping):
         return None
     yaml_only = payload.get("yaml_only")
@@ -234,7 +222,6 @@ def universal_critique_default_enabled_caption(
 def universal_critique_workflow_yaml_relpath_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Repo-relative workflow profile path from the explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     if isinstance(payload.get("load_error"), str) and str(payload.get("load_error")).strip():
@@ -251,7 +238,6 @@ def universal_critique_workflow_yaml_relpath_caption(
 def universal_critique_yaml_top_level_nonempty_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Top-level ``universal_critique`` subtree count with a non-empty YAML value."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -270,7 +256,6 @@ def universal_critique_yaml_top_level_nonempty_count_caption(
 def universal_critique_yaml_top_level_list_child_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of top-level ``universal_critique`` YAML list-valued children."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -289,7 +274,6 @@ def universal_critique_yaml_top_level_list_child_count_caption(
 def universal_critique_yaml_top_level_enabled_true_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of ``universal_critique`` YAML subtrees with ``enabled: true``."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -308,7 +292,6 @@ def universal_critique_yaml_top_level_enabled_true_count_caption(
 def universal_critique_yaml_top_level_enabled_false_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of ``universal_critique`` YAML subtrees with explicit ``enabled: false``."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -327,7 +310,6 @@ def universal_critique_yaml_top_level_enabled_false_count_caption(
 def universal_critique_yaml_top_level_mapping_child_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Count of top-level ``universal_critique`` YAML mapping-valued children."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -346,7 +328,6 @@ def universal_critique_yaml_top_level_mapping_child_count_caption(
 def universal_critique_workflow_yaml_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """On-disk workflow YAML file size from the explainer payload."""
     if not isinstance(payload, Mapping):
         return None
     if isinstance(payload.get("load_error"), str) and str(payload.get("load_error")).strip():
@@ -360,7 +341,6 @@ def universal_critique_workflow_yaml_bytes_caption(
 def universal_critique_yaml_enabled_bucket_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Compact enabled-bucket rollup from workflow YAML (true / false / unset mapping)."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -393,7 +373,6 @@ _UNIVERSAL_CRITIQUE_STAGE_KEYS_CAP = 6
 def universal_critique_yaml_stage_keys_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """Sorted top-level stage key names under workflow ``universal_critique``."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -425,7 +404,6 @@ def universal_critique_yaml_stage_keys_caption(
 def universal_critique_enabled_stages_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line summary of ``enabled: true`` / ``false`` / unset stage subtrees in workflow YAML."""
     if not isinstance(payload, Mapping):
         return None
     if payload.get("universal_critique_yaml_present") is not True:
@@ -463,7 +441,6 @@ def universal_critique_enabled_stages_caption(
 def universal_critique_env_override_summary_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line count of env-vs-YAML boolean deltas for universal critique."""
     if not isinstance(payload, Mapping):
         return None
     n = len(universal_critique_env_override_deltas(payload))
@@ -477,7 +454,6 @@ def universal_critique_workflow_vs_timeline_rows(
     explainer_payload: Mapping[str, Any] | None,
     timeline_uc: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Compare workflow explainer rollup to pasted ``universal_critique`` timeline snapshot."""
     exp: Mapping[str, Any] = (
         explainer_payload if isinstance(explainer_payload, Mapping) else {}
     )
@@ -535,7 +511,6 @@ def universal_critique_workflow_vs_timeline_rows(
 
 
 def universal_critique_env_override_deltas(payload: Mapping[str, Any]) -> list[dict[str, str]]:
-    """Rows where ``HERMES_*`` env overrides diverge from frozen workflow YAML booleans."""
     yo = payload.get("yaml_only")
     eff = payload.get("effective_with_env")
     if not isinstance(yo, dict) or not isinstance(eff, dict):
@@ -553,7 +528,6 @@ def universal_critique_env_override_deltas(payload: Mapping[str, Any]) -> list[d
 
 
 def universal_critique_export_filename_slug() -> str:
-    """Filename slug prefix for universal critique explainer exports."""
     return "universal_critique"
 
 
@@ -571,7 +545,6 @@ def _universal_critique_explainer_cell(value: Any) -> str:
 def universal_critique_explainer_table_rows(
     payload: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Sorted field/value rows for universal critique explainer export."""
     if not isinstance(payload, Mapping):
         return []
     rows: list[dict[str, str]] = []
@@ -588,7 +561,6 @@ def universal_critique_explainer_table_rows(
 def universal_critique_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for universal critique explainer payload."""
     if not isinstance(payload, Mapping):
         return "{}"
     return json.dumps(dict(payload), indent=2, ensure_ascii=False)
@@ -597,7 +569,6 @@ def universal_critique_explainer_export_json(
 def universal_critique_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize universal critique explainer field/value rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -624,7 +595,6 @@ _UNIVERSAL_CRITIQUE_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, 
 def universal_critique_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over :func:`universal_critique_workflow_explainer_payload` (§14 #16)."""
     metrics: dict[str, Any] = {
         "yaml_present": False,
         "top_level_key_count": 0,
@@ -687,7 +657,6 @@ def universal_critique_workflow_explainer_operator_metrics(
 def universal_critique_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     return [
@@ -718,7 +687,6 @@ def universal_critique_workflow_explainer_operator_metrics_table_rows(
 def universal_critique_workflow_explainer_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of workflow explainer operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -727,7 +695,6 @@ def universal_critique_workflow_explainer_operator_metrics_export_json(
 def universal_critique_workflow_explainer_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize universal critique workflow explainer operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -751,7 +718,6 @@ def universal_critique_workflow_explainer_operator_metrics_table_rows_csv(
 def universal_critique_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption when universal critique YAML is present."""
     if not isinstance(metrics, Mapping):
         return None
     if metrics.get("yaml_present") is not True:
@@ -787,5 +753,4 @@ def universal_critique_workflow_explainer_operator_metrics_caption(
 
 
 def universal_critique_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for universal critique workflow explainer operator metrics downloads."""
     return "universal_critique_workflow_explainer_operator_metrics"

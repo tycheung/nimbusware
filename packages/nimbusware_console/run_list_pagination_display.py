@@ -1,9 +1,3 @@
-"""Run list pagination operator helpers.
-
-Pure functions for captions that mirror ``GET /v1/runs`` list semantics
-(``total``, ``has_more``, ``next_cursor``, RFC 5988 ``Link``).
-"""
-
 from __future__ import annotations
 
 import csv
@@ -19,10 +13,6 @@ def run_list_response_pagination_caption(
     *,
     link_header_present: bool,
 ) -> str | None:
-    """One-line operator caption after a successful list fetch.
-
-    Returns ``None`` when ``data`` is not a mapping with ``run_ids``.
-    """
     if not isinstance(data, Mapping):
         return None
     raw_ids = data.get("run_ids")
@@ -54,7 +44,6 @@ def run_list_response_pagination_caption(
 def run_list_order_desc_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``order=desc`` is active on the last list request."""
     if not isinstance(params, Mapping):
         return None
     order = params.get("order")
@@ -66,7 +55,6 @@ def run_list_order_desc_caption(
 
 
 def run_list_has_more_true_caption(data: Mapping[str, Any] | None) -> str | None:
-    """Hint when the API reports more pages after this list response."""
     if not isinstance(data, Mapping):
         return None
     if data.get("has_more") is not True:
@@ -78,7 +66,6 @@ def run_list_has_more_true_caption(data: Mapping[str, Any] | None) -> str | None
 
 
 def run_list_pagination_link_caption(*, link_header_present: bool) -> str | None:
-    """Blurb when the last ``GET /v1/runs`` response had an RFC 5988 ``Link`` header."""
     if not link_header_present:
         return None
     return (
@@ -88,7 +75,6 @@ def run_list_pagination_link_caption(*, link_header_present: bool) -> str | None
 
 
 def run_list_summaries_sparse_caption(data: Mapping[str, Any] | None) -> str | None:
-    """Hint when ``summaries`` omits some on-page ``run_ids`` (sparse ``include_summary``)."""
     if not isinstance(data, Mapping):
         return None
     raw_ids = data.get("run_ids")
@@ -112,7 +98,6 @@ def run_list_summaries_sparse_caption(data: Mapping[str, Any] | None) -> str | N
 def run_list_active_query_params_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Summarize active ``GET /v1/runs`` query parameters for operators."""
     if not isinstance(params, Mapping) or not params:
         return (
             "List filters: **defaults only** (no explicit query parameters on the last "
@@ -160,7 +145,6 @@ def run_list_active_query_params_caption(
 def run_list_created_range_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``created_after`` / ``created_before`` bounds are active."""
     if not isinstance(params, Mapping):
         return None
     parts: list[str] = []
@@ -178,7 +162,6 @@ def run_list_created_range_caption(
 def run_list_status_filter_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``status`` is set on the list query."""
     if not isinstance(params, Mapping):
         return None
     raw = params.get("status")
@@ -193,7 +176,6 @@ def run_list_status_filter_caption(
 def run_list_include_summary_filter_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``include_summary`` is active on the last list request."""
     if not isinstance(params, Mapping):
         return None
     inc = params.get("include_summary")
@@ -211,7 +193,6 @@ def run_list_include_summary_filter_caption(
 def run_list_workflow_profile_filter_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``workflow_profile`` or ``workflow_profile_prefix`` is active."""
     if not isinstance(params, Mapping):
         return None
     wf = params.get("workflow_profile")
@@ -226,7 +207,6 @@ def run_list_workflow_profile_filter_caption(
 def run_list_has_escalation_filter_caption(
     params: Mapping[str, Any] | None,
 ) -> str | None:
-    """Dedicated blurb when ``has_escalation`` is set on the list query."""
     if not isinstance(params, Mapping):
         return None
     raw = params.get("has_escalation")
@@ -244,7 +224,6 @@ def run_list_has_escalation_filter_caption(
 
 
 def run_list_page_vs_total_caption(data: Mapping[str, Any] | None) -> str | None:
-    """When ``total`` exceeds on-page ``run_ids``, surface partial-page context."""
     if not isinstance(data, Mapping):
         return None
     raw_ids = data.get("run_ids")
@@ -265,7 +244,6 @@ def run_list_page_vs_total_caption(data: Mapping[str, Any] | None) -> str | None
 def run_list_keyset_next_page_caption(
     data: Mapping[str, Any] | None,
 ) -> str | None:
-    """Hint when another keyset page is available via ``next_cursor``."""
     if not isinstance(data, Mapping):
         return None
     hm = data.get("has_more")
@@ -284,7 +262,6 @@ def run_list_keyset_next_page_caption(
 
 
 def run_list_next_cursor_length_caption(data: Mapping[str, Any] | None) -> str | None:
-    """Opaque ``next_cursor`` string length (trimmed) for paging visibility."""
     if not isinstance(data, Mapping):
         return None
     nc = data.get("next_cursor")
@@ -301,14 +278,12 @@ def run_list_next_cursor_length_caption(data: Mapping[str, Any] | None) -> str |
 
 
 def run_detail_summary_export_json(body: Mapping[str, Any] | None) -> str:
-    """Pretty JSON for ``GET /v1/runs/{run_id}`` summary response (operator download)."""
     if not isinstance(body, Mapping):
         return "{}"
     return json.dumps(dict(body), indent=2, ensure_ascii=False)
 
 
 def run_detail_summary_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for run summary download filenames."""
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
@@ -320,7 +295,6 @@ _RUN_DETAIL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "v
 def run_detail_summary_operator_metrics(
     body: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    """Structured rollup over ``GET /v1/runs/{id}`` summary body (§14 #11)."""
     metrics: dict[str, Any] = {
         "event_count": 0,
         "findings_count": 0,
@@ -355,7 +329,6 @@ def run_detail_summary_operator_metrics(
 def run_detail_summary_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     return [
@@ -377,7 +350,6 @@ def run_detail_summary_operator_metrics_table_rows(
 def run_detail_summary_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON export of run detail summary operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -386,7 +358,6 @@ def run_detail_summary_operator_metrics_export_json(
 def run_detail_summary_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize run detail summary operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -410,7 +381,6 @@ def run_detail_summary_operator_metrics_table_rows_csv(
 def run_detail_summary_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from run summary rollup metrics."""
     if not isinstance(metrics, Mapping):
         return None
     if metrics.get("run_id_present") is not True:
@@ -429,12 +399,10 @@ def run_detail_summary_operator_metrics_caption(
 
 
 def run_detail_summary_operator_metrics_export_filename_slug() -> str:
-    """Stable slug for run detail summary operator metrics downloads."""
     return "run_detail_summary_operator_metrics"
 
 
 def timeline_events_from_body(body: Mapping[str, Any] | None) -> list[Any]:
-    """Return ``events`` from a ``GET /v1/runs/{id}/timeline`` JSON body."""
     if not isinstance(body, Mapping):
         return []
     raw = body.get("events")
@@ -452,7 +420,6 @@ def _timeline_event_stringify(value: Any) -> str:
 
 
 def timeline_events_table_rows(events: Sequence[Any]) -> list[dict[str, str]]:
-    """Stable rows for operator CSV (event_type, occurred_at, event_id)."""
     rows: list[dict[str, str]] = []
     for ev in events:
         if not isinstance(ev, dict):
@@ -471,7 +438,6 @@ _TIMELINE_EVENTS_CSV_COLUMNS: tuple[str, ...] = ("event_type", "occurred_at", "e
 
 
 def timeline_events_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    """Serialize timeline event display rows to CSV (UTF-8 text)."""
     if not rows:
         return ""
     buf = StringIO()
@@ -488,20 +454,17 @@ def timeline_events_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
 
 
 def timeline_events_export_json(body: Mapping[str, Any] | None) -> str:
-    """Pretty JSON for the ``events`` subset only (operator download)."""
     events = timeline_events_from_body(body)
     return json.dumps(events, indent=2, ensure_ascii=False)
 
 
 def timeline_events_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    """ASCII-ish slug for timeline events subset download filenames."""
     return run_detail_summary_export_filename_slug(run_id, max_len=max_len)
 
 
 def timeline_events_operator_metrics(
     events: Sequence[Any] | None,
 ) -> dict[str, Any]:
-    """Rollup counts over loaded timeline ``events`` subset."""
     metrics: dict[str, Any] = {
         "event_count": 0,
         "distinct_event_type_count": 0,
@@ -530,7 +493,6 @@ def timeline_events_operator_metrics(
 def timeline_events_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    """Two-column rows for ``st.dataframe`` (field / value)."""
     if not isinstance(metrics, Mapping):
         return []
     rows: list[dict[str, str]] = [
@@ -550,7 +512,6 @@ def timeline_events_operator_metrics_table_rows(
 def timeline_events_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
-    """One-line operator caption from timeline events rollup."""
     if not isinstance(metrics, Mapping):
         return None
     ec = metrics.get("event_count")
@@ -572,7 +533,6 @@ _TIMELINE_EVENTS_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "valu
 def timeline_events_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    """Pretty JSON for timeline events operator metrics."""
     if not isinstance(metrics, Mapping):
         return "{}"
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
@@ -581,7 +541,6 @@ def timeline_events_operator_metrics_export_json(
 def timeline_events_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    """Serialize timeline events operator metrics rows to CSV."""
     if not rows:
         return ""
     buf = StringIO()
@@ -607,5 +566,4 @@ def timeline_events_operator_metrics_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    """ASCII-ish slug for timeline events operator metrics downloads."""
     return timeline_events_export_filename_slug(run_id, max_len=max_len)
