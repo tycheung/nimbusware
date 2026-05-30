@@ -1,5 +1,3 @@
-"""Local platform readiness for maker UX (fo307)."""
-
 from __future__ import annotations
 
 import os

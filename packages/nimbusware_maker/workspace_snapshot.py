@@ -1,5 +1,3 @@
-"""Workspace snapshots before slice apply (fo305)."""
-
 from __future__ import annotations
 
 import os

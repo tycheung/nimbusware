@@ -1,5 +1,3 @@
-"""Runs HTTP routes — composed sub-routers under ``/v1/runs*``."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter
@@ -30,7 +28,6 @@ __all__ = [
 
 
 def build_runs_router() -> APIRouter:
-    """Compose runs sub-routers without changing path prefixes."""
     composed = APIRouter(tags=["runs"])
     composed.include_router(list_router)
     composed.include_router(create_router)

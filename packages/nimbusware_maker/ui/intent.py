@@ -1,5 +1,3 @@
-"""Intent intake wizard (fo302)."""
-
 from __future__ import annotations
 
 import streamlit as st

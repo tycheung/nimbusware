@@ -1,5 +1,3 @@
-"""Launch the Nimbusware Maker Streamlit app."""
-
 from __future__ import annotations
 
 import subprocess

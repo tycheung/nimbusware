@@ -1,5 +1,3 @@
-"""First-run wizard — folder, readiness, first project (fo308)."""
-
 from __future__ import annotations
 
 import streamlit as st
@@ -9,7 +7,6 @@ from nimbusware_maker.onboarding import SESSION_WIZARD_STEP, is_onboarded, mark_
 
 
 def render_first_run_wizard() -> bool:
-    """Return True if wizard was shown (caller may skip other home content)."""
     if is_onboarded(st.session_state):
         return False
 

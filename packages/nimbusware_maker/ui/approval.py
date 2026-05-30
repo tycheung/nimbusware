@@ -1,5 +1,3 @@
-"""Slice approval, diff preview, apply/skip/revert (fo304 + fo305)."""
-
 from __future__ import annotations
 
 import streamlit as st

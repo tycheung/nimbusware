@@ -1,5 +1,3 @@
-"""Resolve workspace path for a run from project metadata."""
-
 from __future__ import annotations
 
 import os
@@ -48,7 +46,6 @@ def resolve_run_workspace(
     *,
     override: Path | None = None,
 ) -> Path:
-    """Pick workspace for slice execution: explicit override → env → project metadata → cwd."""
     if override is not None:
         return override.resolve()
     env_ws = os.environ.get("HERMES_WORKSPACE", "").strip()

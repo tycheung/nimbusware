@@ -1,5 +1,3 @@
-"""Maker home — readiness strip and project overview."""
-
 from __future__ import annotations
 
 import streamlit as st

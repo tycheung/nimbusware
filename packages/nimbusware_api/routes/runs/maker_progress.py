@@ -1,5 +1,3 @@
-"""GET /runs/{run_id}/maker-progress — plain-language progress (fo303)."""
-
 from __future__ import annotations
 
 from uuid import UUID

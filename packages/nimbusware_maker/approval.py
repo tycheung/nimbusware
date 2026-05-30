@@ -1,5 +1,3 @@
-"""Maker slice approval helpers (fo304)."""
-
 from __future__ import annotations
 
 import os

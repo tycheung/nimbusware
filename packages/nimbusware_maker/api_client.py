@@ -1,5 +1,3 @@
-"""HTTP client helpers for maker UI."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Start Nimbusware (API + Streamlit console) inside a pywebview window."""
-
 from __future__ import annotations
 
 import argparse
@@ -133,7 +131,6 @@ def start_servers(
     streamlit_port: int | None = None,
     ui_mode: str | None = None,
 ) -> tuple[str, str, dict[str, str]]:
-    """Start API + Streamlit; return console URL, API OpenAPI URL, and child env."""
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
 
@@ -260,7 +257,7 @@ def run_desktop(
     )
     try:
         webview.start(gui=gui)
-    except Exception as exc:  # noqa: BLE001 — surface backend install hints
+    except Exception as exc:  # noqa: BLE001
         hint = ""
         if sys.platform == "win32":
             hint = " Install Microsoft Edge WebView2 Runtime if missing."

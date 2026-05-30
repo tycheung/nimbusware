@@ -1,5 +1,3 @@
-"""create_run project metadata."""
-
 from __future__ import annotations
 
 from pathlib import Path

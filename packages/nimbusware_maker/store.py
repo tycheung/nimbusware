@@ -1,5 +1,3 @@
-"""Postgres + in-memory project stores."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -39,8 +37,6 @@ def _row_to_record(row: dict[str, object]) -> ProjectRecord:
 
 
 class InMemoryProjectStore:
-    """Project store for dev/tests without Postgres."""
-
     def __init__(self) -> None:
         self._projects: dict[UUID, ProjectRecord] = {}
 

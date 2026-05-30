@@ -1,5 +1,3 @@
-"""Maker slice approval workflow."""
-
 from __future__ import annotations
 
 import os

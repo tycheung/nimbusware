@@ -156,11 +156,11 @@ app = FastAPI(
         },
         {
             "name": "platform",
-            "description": "Product edition, local readiness (fo307), and Lane D feature gates.",
+            "description": "Product edition, local readiness, and feature gates.",
         },
         {
             "name": "projects",
-            "description": "Maker project workspaces bound to Hermes runs (fo301).",
+            "description": "Project workspaces bound to Hermes runs.",
         },
         {
             "name": "enterprise",

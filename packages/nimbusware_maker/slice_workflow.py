@@ -1,5 +1,3 @@
-"""Maker approval-gated micro-slice workflow (fo304 + fo305)."""
-
 from __future__ import annotations
 
 import time

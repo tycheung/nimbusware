@@ -1,5 +1,3 @@
-"""Plain-language run progress (fo303)."""
-
 from __future__ import annotations
 
 import streamlit as st

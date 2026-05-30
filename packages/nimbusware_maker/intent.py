@@ -1,5 +1,3 @@
-"""Business intent intake — clarifying questions and requirements artifact (fo302)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

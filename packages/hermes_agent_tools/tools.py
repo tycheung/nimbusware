@@ -1,5 +1,3 @@
-"""Individual agent tools — read, grep, write, shell."""
-
 from __future__ import annotations
 
 import re

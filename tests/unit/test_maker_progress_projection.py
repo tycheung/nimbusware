@@ -1,5 +1,3 @@
-"""Maker progress projection."""
-
 from __future__ import annotations
 
 from nimbusware_projections.builders.maker_progress import (

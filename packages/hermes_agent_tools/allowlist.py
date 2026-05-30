@@ -1,5 +1,3 @@
-"""Path and shell allowlists for agent tools."""
-
 from __future__ import annotations
 
 import os

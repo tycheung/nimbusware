@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Start Nimbusware (API + maker app) in a pywebview desktop shell."""
-
 from __future__ import annotations
 
 import sys

@@ -1,5 +1,3 @@
-"""Maker approval and workspace revert routes (fo304, fo305)."""
-
 from __future__ import annotations
 
 from typing import Any

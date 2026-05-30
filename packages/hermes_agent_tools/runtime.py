@@ -1,5 +1,3 @@
-"""Agent-backed slice implement — tool loop + optional Ollama (fo306)."""
-
 from __future__ import annotations
 
 import os
@@ -155,7 +153,6 @@ def execute_slice_implement_agent(
     llm_model_id: str | None = None,
     llm_system_prompt: str | None = None,
 ) -> SliceImplementResult:
-    """Run allowlisted tools for one slice; LLM plans steps when configured."""
     ws = Path(workspace).resolve()
     allowed = _allowed_paths(plan)
     logs: list[str] = []
@@ -177,7 +174,7 @@ def execute_slice_implement_agent(
                 timeout_seconds=timeout_seconds,
                 system_prompt=llm_system_prompt,
             )
-        except Exception as exc:  # noqa: BLE001 — fall back to LLM implement
+        except Exception as exc:  # noqa: BLE001
             logs.append(f"agent LLM steps failed: {exc}")
             steps = []
 

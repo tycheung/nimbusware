@@ -1,5 +1,3 @@
-"""Plain-language maker progress projection (fo303)."""
-
 from __future__ import annotations
 
 import re
@@ -136,7 +134,6 @@ def _headline_for_slice(
 
 
 def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
-    """Map timeline events to plain-language maker progress."""
     requirements: dict[str, Any] | None = None
     slice_total_hint = 2
     run_status = "created"
@@ -249,7 +246,6 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def strip_operator_fields(payload: dict[str, Any]) -> dict[str, Any]:
-    """Return a Simple-mode safe copy without operator telemetry keys."""
     blocked_keys = re.compile(
         r"(telemetry|csv|fo133|matrix|critic_matrix|preflight_history)",
         re.IGNORECASE,
