@@ -62,3 +62,9 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 ## Refactor lane
 
 See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for console decomposition and coverage gates.
+
+Local CI mirror: `./scripts/ci_check.sh` or `scripts/ci_check.ps1` (Ruff, Mypy, Bandit, pytest with `--cov-fail-under=60`).
+
+Module size guards: `tests/unit/test_console_module_size.py` (400 lines), `tests/unit/test_package_module_size.py` (orchestrator/API/memory), `tests/unit/test_module_integrity.py` (anti-gutted facades).
+
+Display packages use explicit re-exports (`scripts/explicit_star_imports.py`); avoid repo-wide `ruff check --fix`, which strips re-export imports.

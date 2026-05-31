@@ -100,6 +100,13 @@ ignore = ["E501"]
 "packages/nimbusware_console/pages/**/_shared*.py" = ["F401", "F403", "F405"]
 "packages/nimbusware_console/pages/run_detail/_imports_display_a/*.py" = ["F401", "F403", "F405"]
 "packages/nimbusware_console/**/*_display.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_console/*_display.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_console/*_explainer.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_console/bundle_catalog.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_console/integrator_workflow_preview.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_console/bundle_catalog/__init__.py" = ["F811"]
+"packages/nimbusware_console/bundle_catalog/catalog_local/__init__.py" = ["F811"]
+"packages/nimbusware_console/bundle_catalog/faiss_status/__init__.py" = ["F811"]
 "packages/nimbusware_console/pages/_state.py" = ["F403", "F405"]
 "packages/hermes_orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
 "packages/hermes_orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405"]
@@ -120,6 +127,24 @@ ignore = ["E501"]
 "packages/nimbusware_console/main.py" = ["E402", "F401"]
 "packages/nimbusware_maker/main.py" = ["E402"]
 "tests/**" = ["E402"]
+
+[tool.coverage.run]
+source = ["packages"]
+branch = false
+omit = [
+  "*/tests/*",
+  "*/__main__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@abstractmethod",
+]
+show_missing = true
+skip_covered = true
 
 [tool.mypy]
 python_version = "3.10"

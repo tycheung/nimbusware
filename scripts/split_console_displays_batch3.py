@@ -39,6 +39,7 @@ def _split_explainer(
         init += f"from nimbusware_console.{mod}.{name} import *  # noqa: F403\n"
     (pkg / "__init__.py").write_text(init, encoding="utf-8")
     src_path.write_text(f"from nimbusware_console.{mod} import *  # noqa: F403\n", encoding="utf-8")
+    print(f"Split {rel_module}; run: poetry run python scripts/explicit_star_imports.py")
 
 
 def _extract_body(lines: list[str], start: int, end: int, *, dedent: int = 0) -> str:
