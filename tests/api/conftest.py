@@ -6,8 +6,6 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-pytestmark = pytest.mark.slow
-
 from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))

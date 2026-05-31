@@ -7,6 +7,7 @@ import streamlit as st
 
 from nimbusware_client.http import get_json
 
+from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (
     findings_empty_caption,
@@ -113,4 +114,4 @@ def render_run_detail_findings(run_id: str) -> None:
             with st.expander("Raw findings JSON", expanded=False):
                 st.json(_find_body)
         except HTTPError as exc:
-            st.error(f"API error: {exc}")
+            render_api_error(exc)

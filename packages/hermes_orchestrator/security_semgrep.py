@@ -2,15 +2,15 @@
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
 
+from nimbusware_env.env_flags import env_str, hermes_run_semgrep_enabled
+
 
 def semgrep_enabled() -> bool:
-    raw = os.environ.get("HERMES_RUN_SEMGREP", "1").strip().lower()
-    return raw not in ("0", "false", "no")
+    return hermes_run_semgrep_enabled()
 
 
 def run_semgrep_scan(
@@ -27,7 +27,7 @@ def run_semgrep_scan(
     target = workspace / "packages"
     if not target.is_dir():
         return 0, "semgrep skipped (no packages/)\n"
-    config = os.environ.get("HERMES_SEMGREP_CONFIG", "p/ci").strip() or "p/ci"
+    config = env_str("HERMES_SEMGREP_CONFIG", "p/ci") or "p/ci"
     proc = subprocess.run(
         [exe, "scan", "--config", config, "--quiet", "--json", str(target)],
         cwd=workspace,

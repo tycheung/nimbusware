@@ -13,8 +13,6 @@ from nimbusware_iam.store import InMemoryIamStore
 
 ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
 
-pytestmark = pytest.mark.slow
-
 
 def test_create_project_without_admin_token(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "user-project"

@@ -14,6 +14,7 @@ from typing import Any
 
 from nimbusware_console.integrator_gate._helpers import (
     _format_tag_list_sample,
+    _optional_float,
     _stringify,
 )
 def integrator_gate_history_table_rows(history: list[dict[str, Any]]) -> list[dict[str, str]]:
@@ -77,15 +78,6 @@ def integrator_gate_history_export_filename_slug(run_id: str, *, max_len: int = 
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-
-def _optional_float(value: Any) -> float | None:
-    if value is None:
-        return None
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def integrator_gate_history_operator_metrics(

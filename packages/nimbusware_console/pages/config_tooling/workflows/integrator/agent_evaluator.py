@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.components.explainer_panel import (
-    render_explainer_export_downloads,
-    render_operator_metrics_explainer,
+from nimbusware_console.components.explainer_panel import render_explainer_export_downloads
+from nimbusware_console.components.workflow_explainer_helpers import (
+    render_workflow_explainer_metrics_panel,
 )
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -23,24 +23,12 @@ def render_agent_evaluator_section(*, repo_root: Path, workflow_profile: str | N
             repo_root,
             workflow_profile=workflow_profile,
         )
-        _ae_expl_metrics = agent_evaluator_workflow_explainer_operator_metrics(_ae_expl)
-        _ae_expl_metric_rows = (
-            agent_evaluator_workflow_explainer_operator_metrics_table_rows(_ae_expl_metrics)
-        )
-        render_operator_metrics_explainer(
-            caption=agent_evaluator_workflow_explainer_operator_metrics_caption(
-                _ae_expl_metrics,
-            ),
-            table_rows=_ae_expl_metric_rows,
-            json_text=agent_evaluator_workflow_explainer_operator_metrics_export_json(
-                _ae_expl_metrics,
-            ),
-            csv_text=agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv(
-                _ae_expl_metric_rows,
-            ),
-            filename_slug=(
-                agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug()
-            ),
+        _ae_expl_metrics, _ae_expl_metric_rows = render_workflow_explainer_metrics_panel(
+            _ae_expl,
+            metrics_fn=agent_evaluator_workflow_explainer_operator_metrics,
+            metrics_table_rows_fn=agent_evaluator_workflow_explainer_operator_metrics_table_rows,
+            metrics_caption_fn=agent_evaluator_workflow_explainer_operator_metrics_caption,
+            filename_slug=agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug(),
             json_label="Download agent evaluator operator metrics JSON",
             csv_label="Download agent evaluator operator metrics CSV",
             json_download_key="hermes_dl_agent_evaluator_explainer_metrics_json",

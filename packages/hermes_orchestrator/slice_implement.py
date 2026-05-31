@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 from hermes_orchestrator.micro_slice import SlicePlan
+from nimbusware_env.env_flags import hermes_slice_implement_mode
 
 
 @dataclass(frozen=True)
@@ -20,17 +20,7 @@ class SliceImplementResult:
 
 def slice_implement_mode() -> str:
     """``scoped`` (default): ruff; ``llm``/``agent``: LLM paths; ``stub``: no-op."""
-    raw = os.environ.get("HERMES_SLICE_IMPLEMENT", "scoped").strip().lower()
-    if raw in ("stub", "0", "false", "no"):
-        return "stub"
-    if raw == "agent":
-        return "agent"
-    if raw == "llm" or (
-        raw in ("auto", "1", "true", "yes")
-        and os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
-    ):
-        return "llm"
-    return "scoped"
+    return hermes_slice_implement_mode()
 
 
 def _resolve_existing_files(workspace: Path, paths: tuple[str, ...]) -> list[Path]:

@@ -4,6 +4,7 @@ from nimbusware_client.http import HTTPError
 
 from nimbusware_client.http import admin_token_headers, get_json, patch_response
 
+from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
@@ -26,7 +27,7 @@ def render_workflows_bundle_editor_section() -> None:
                 )
                 st.success("Loaded bundle catalog from API.")
             except HTTPError as _bc_exc:
-                st.error(f"API error: {_bc_exc}")
+                render_api_error(_bc_exc)
         _bc_catalog = st.session_state.get("hermes_bundle_edit_catalog")
         if not isinstance(_bc_catalog, dict):
             st.caption("Click 'Reload bundle catalog from API' first.")

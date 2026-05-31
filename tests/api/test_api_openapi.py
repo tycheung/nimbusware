@@ -4,8 +4,6 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-pytestmark = pytest.mark.slow
-
 def test_openapi_info_description_present(client: TestClient) -> None:
     spec = client.app.openapi()
     desc = spec.get("info", {}).get("description", "")

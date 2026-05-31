@@ -7,6 +7,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from nimbusware_env.env_flags import hermes_run_bandit_enabled
+
 
 def run_pytest(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int, str]:
     proc = subprocess.run(
@@ -97,7 +99,7 @@ def run_mypy(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int, s
 
 
 def run_bandit(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int, str]:
-    if os.environ.get("HERMES_RUN_BANDIT", "").lower() not in ("1", "true", "yes"):
+    if not hermes_run_bandit_enabled():
         return 0, "bandit skipped (set HERMES_RUN_BANDIT=1 to enable)\n"
     exe = shutil.which("bandit")
     if not exe:

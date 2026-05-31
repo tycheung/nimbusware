@@ -6,6 +6,7 @@ from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_client.http import get_json
+from nimbusware_console.components.ui_errors import render_api_error
 
 from nimbusware_console.pages.run_detail._imports_common import datetime, json, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_b import (
@@ -27,7 +28,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
         try:
             data = get_json(f"/runs/{run_id.strip()}/timeline", timeout=30.0)
         except HTTPError as exc:
-            st.error(f"API error: {exc}")
+            render_api_error(exc)
             return None
         events = timeline_events_from_body(data)
         st.subheader("Timeline")

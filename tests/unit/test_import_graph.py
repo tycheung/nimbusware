@@ -130,3 +130,19 @@ def test_run_detail_sections_do_not_star_import() -> None:
         if "from nimbusware_console.pages.run_detail._imports import *" in text:
             offenders.append(path.name)
     assert not offenders, "\n".join(offenders)
+
+
+_MAKER_HTTPX_ALLOWLIST = frozenset({"readiness.py"})
+
+
+def test_maker_does_not_import_httpx_directly() -> None:
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
+    offenders: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel in _MAKER_HTTPX_ALLOWLIST:
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "import httpx" in text:
+            offenders.append(rel)
+    assert not offenders, "\n".join(offenders)

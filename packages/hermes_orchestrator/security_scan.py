@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.performance_scan import run_ruff_perf, scan_n_plus_one_heuristic
 from hermes_orchestrator.security_semgrep import run_semgrep_scan
 from hermes_orchestrator.verifiers import run_bandit, run_mypy, run_ruff_check
+from nimbusware_env.env_flags import hermes_run_perf_scan_enabled
 
 
 SECURITY_SCAN_CATEGORIES: tuple[str, ...] = (
@@ -23,8 +23,7 @@ SECURITY_SCAN_CATEGORIES: tuple[str, ...] = (
 
 
 def _phase3_scanners_enabled() -> bool:
-    raw = os.environ.get("HERMES_RUN_PERF_SCAN", "1").strip().lower()
-    return raw not in ("0", "false", "no")
+    return hermes_run_perf_scan_enabled()
 
 
 def run_security_scan(

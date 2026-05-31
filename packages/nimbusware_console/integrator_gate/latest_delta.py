@@ -13,6 +13,7 @@ from io import StringIO
 from typing import Any
 
 from nimbusware_console.integrator_gate._helpers import (
+    _INTEGRATOR_GATE_FIELDS,
     _optional_float,
     _stringify,
     integrator_gate_from_timeline,
@@ -86,6 +87,8 @@ _DELTA_FIELDS: tuple[tuple[str, str], ...] = (
     ("current_event_id", "Current event id"),
 )
 
+_INTEGRATOR_GATE_DELTA_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
+
 
 def integrator_gate_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[dict[str, str]]:
     if not delta:
@@ -139,6 +142,8 @@ def integrator_gate_summary_rows(ig: Mapping[str, Any] | None) -> list[dict[str,
         rows.append({"field": label, "value": _stringify(ig.get(key))})
     return rows
 
+
+_INTEGRATOR_GATE_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def integrator_gate_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:

@@ -30,12 +30,10 @@ from hermes_orchestrator.integrator_gate import (
     parse_integrator_gate_project_tags,
 )
 
-from nimbusware_console.integrator_preview.merge import (
-    full_workflow_merge_diff,
-    validate_full_workflow_document,
-)
+from nimbusware_console.integrator_preview.merge import full_workflow_merge_diff
 from nimbusware_console.integrator_preview.parse import (
     parse_integrator_gate_yaml_fragment,
+    validate_full_workflow_document,
     validate_integrator_gate_block,
 )
 def preview_effective_min_score_to_pass(

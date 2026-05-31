@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.components.explainer_panel import (
-    render_explainer_export_downloads,
-    render_operator_metrics_explainer,
+from nimbusware_console.components.explainer_panel import render_explainer_export_downloads
+from nimbusware_console.components.workflow_explainer_helpers import (
+    render_workflow_explainer_metrics_panel,
 )
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -21,24 +21,12 @@ def render_universal_critique_section(*, repo_root: Path, workflow_profile: str 
             repo_root,
             workflow_profile=workflow_profile,
         )
-        _uc_expl_metrics = universal_critique_workflow_explainer_operator_metrics(_uc_expl)
-        _uc_expl_metric_rows = universal_critique_workflow_explainer_operator_metrics_table_rows(
-            _uc_expl_metrics,
-        )
-        render_operator_metrics_explainer(
-            caption=universal_critique_workflow_explainer_operator_metrics_caption(
-                _uc_expl_metrics,
-            ),
-            table_rows=_uc_expl_metric_rows,
-            json_text=universal_critique_workflow_explainer_operator_metrics_export_json(
-                _uc_expl_metrics,
-            ),
-            csv_text=universal_critique_workflow_explainer_operator_metrics_table_rows_csv(
-                _uc_expl_metric_rows,
-            ),
-            filename_slug=(
-                universal_critique_workflow_explainer_operator_metrics_export_filename_slug()
-            ),
+        _uc_expl_metrics, _uc_expl_metric_rows = render_workflow_explainer_metrics_panel(
+            _uc_expl,
+            metrics_fn=universal_critique_workflow_explainer_operator_metrics,
+            metrics_table_rows_fn=universal_critique_workflow_explainer_operator_metrics_table_rows,
+            metrics_caption_fn=universal_critique_workflow_explainer_operator_metrics_caption,
+            filename_slug=universal_critique_workflow_explainer_operator_metrics_export_filename_slug(),
             json_label="Download universal critique operator metrics JSON",
             csv_label="Download universal critique operator metrics CSV",
             json_download_key="hermes_dl_universal_critique_explainer_metrics_json",

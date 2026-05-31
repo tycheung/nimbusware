@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.components.explainer_panel import (
-    render_explainer_export_downloads,
-    render_operator_metrics_explainer,
+from nimbusware_console.components.explainer_panel import render_explainer_export_downloads
+from nimbusware_console.components.workflow_explainer_helpers import (
+    render_workflow_explainer_metrics_panel,
 )
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -22,26 +22,12 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
             repo_root,
             workflow_profile=workflow_profile,
         )
-        _es_expl_metrics = escalation_suppress_workflow_explainer_operator_metrics(_es_expl)
-        _es_expl_metric_rows = (
-            escalation_suppress_workflow_explainer_operator_metrics_table_rows(
-                _es_expl_metrics,
-            )
-        )
-        render_operator_metrics_explainer(
-            caption=escalation_suppress_workflow_explainer_operator_metrics_caption(
-                _es_expl_metrics,
-            ),
-            table_rows=_es_expl_metric_rows,
-            json_text=escalation_suppress_workflow_explainer_operator_metrics_export_json(
-                _es_expl_metrics,
-            ),
-            csv_text=escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv(
-                _es_expl_metric_rows,
-            ),
-            filename_slug=(
-                escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug()
-            ),
+        _es_expl_metrics, _es_expl_metric_rows = render_workflow_explainer_metrics_panel(
+            _es_expl,
+            metrics_fn=escalation_suppress_workflow_explainer_operator_metrics,
+            metrics_table_rows_fn=escalation_suppress_workflow_explainer_operator_metrics_table_rows,
+            metrics_caption_fn=escalation_suppress_workflow_explainer_operator_metrics_caption,
+            filename_slug=escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug(),
             json_label="Download escalation suppress operator metrics JSON",
             csv_label="Download escalation suppress operator metrics CSV",
             json_download_key="hermes_dl_escalation_suppress_explainer_metrics_json",

@@ -340,6 +340,10 @@ def security_scan_metadata_explainer_table_rows(
     return mapping_to_sorted_table_rows(payload, _security_scan_metadata_explainer_cell)
 
 
+_SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS = FIELD_VALUE_COLUMNS
+_SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS = FIELD_VALUE_COLUMNS
+
+
 def security_scan_metadata_explainer_export_json(
     payload: Mapping[str, Any] | None,
 ) -> str:

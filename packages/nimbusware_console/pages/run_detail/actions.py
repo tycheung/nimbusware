@@ -4,6 +4,7 @@ from nimbusware_client.http import HTTPError
 import streamlit as st
 
 from nimbusware_client.http import get_json, post_json
+from nimbusware_console.components.ui_errors import render_api_error
 
 
 def render_run_detail_actions(run_id: str) -> None:
@@ -15,7 +16,7 @@ def render_run_detail_actions(run_id: str) -> None:
                 try:
                     st.success(post_json(f"/runs/{run_id.strip()}/actions/retry", {}, timeout=30.0))
                 except HTTPError as exc:
-                    st.error(f"API error: {exc}")
+                    render_api_error(exc)
             esc_actor = st.text_input("Escalate actor_id", value="human:operator")
             esc_reason = st.text_input("Escalate reason_code", value="manual_review")
             esc_notes = st.text_area("Escalate notes (optional)", value="")
@@ -32,4 +33,4 @@ def render_run_detail_actions(run_id: str) -> None:
                         ),
                     )
                 except HTTPError as exc:
-                    st.error(f"API error: {exc}")
+                    render_api_error(exc)

@@ -17,6 +17,15 @@ def _stringify(value: Any) -> str:
     return str(value)
 
 
+def _optional_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def integrator_gate_from_timeline(timeline_body: Mapping[str, Any] | None) -> dict[str, Any] | None:
     if not isinstance(timeline_body, Mapping):
         return None

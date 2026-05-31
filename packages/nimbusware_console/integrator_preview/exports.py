@@ -31,15 +31,8 @@ from hermes_orchestrator.integrator_gate import (
 )
 
 from nimbusware_console.integrator_preview.merge import (
-    full_workflow_merge_attention_operator_metrics,
-    full_workflow_merge_attention_operator_metrics_caption,
-    full_workflow_merge_attention_operator_metrics_table_rows,
     full_workflow_merge_attention_rows,
     full_workflow_merge_diff,
-    full_workflow_merge_diff_operator_metrics,
-    full_workflow_merge_diff_operator_metrics_caption,
-    full_workflow_merge_diff_operator_metrics_table_rows,
-    full_workflow_merge_diff_table_rows,
 )
 def full_workflow_merge_diff_export_filename_slug() -> str:
     return "full_workflow_merge_diff"

@@ -12,6 +12,7 @@ import yaml
 
 from hermes_store.memory import InMemoryEventStore
 from nimbusware_env.edition import edition_manifest
+from nimbusware_env.env_flags import hermes_skip_preflight_enabled
 
 INSTALL_GUIDE = "python scripts/install_nimbusware.py  (see README Quick start)"
 
@@ -59,7 +60,7 @@ def _check_database(store: Any) -> dict[str, Any]:
 
 
 def _check_ollama(repo_root: Path) -> dict[str, Any]:
-    if os.environ.get("HERMES_SKIP_PREFLIGHT", "").lower() in ("1", "true", "yes"):
+    if hermes_skip_preflight_enabled():
         routing = _load_model_routing(repo_root)
         runtime = routing.get("runtime") if isinstance(routing.get("runtime"), dict) else {}
         models = routing.get("models") if isinstance(routing.get("models"), dict) else {}
@@ -241,9 +242,6 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
             },
         },
     }
-    if overall == "not_ready":
-        body["install_guide"] = INSTALL_GUIDE
-    return body
     if overall == "not_ready":
         body["install_guide"] = INSTALL_GUIDE
     return body

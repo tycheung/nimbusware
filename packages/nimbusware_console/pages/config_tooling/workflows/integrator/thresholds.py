@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.components.explainer_panel import (
-    render_explainer_export_downloads,
-    render_operator_metrics_explainer,
+from nimbusware_console.components.explainer_panel import render_explainer_export_downloads
+from nimbusware_console.components.workflow_explainer_helpers import (
+    render_workflow_explainer_metrics_panel,
 )
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
@@ -23,24 +23,12 @@ def render_thresholds_section(*, repo_root: Path, workflow_profile: str | None) 
             workflow_profile=workflow_profile,
             pasted_yaml=str(st.session_state.get("hermes_integrator_paste_yaml", "")),
         )
-        _thr_expl_metrics = integrator_threshold_explainer_operator_metrics(_thr_payload)
-        _thr_expl_metric_rows = integrator_threshold_explainer_operator_metrics_table_rows(
-            _thr_expl_metrics,
-        )
-        render_operator_metrics_explainer(
-            caption=integrator_threshold_explainer_operator_metrics_caption(
-                _thr_expl_metrics,
-            ),
-            table_rows=_thr_expl_metric_rows,
-            json_text=integrator_threshold_explainer_operator_metrics_export_json(
-                _thr_expl_metrics,
-            ),
-            csv_text=integrator_threshold_explainer_operator_metrics_table_rows_csv(
-                _thr_expl_metric_rows,
-            ),
-            filename_slug=(
-                integrator_threshold_explainer_operator_metrics_export_filename_slug()
-            ),
+        _thr_expl_metrics, _thr_expl_metric_rows = render_workflow_explainer_metrics_panel(
+            _thr_payload,
+            metrics_fn=integrator_threshold_explainer_operator_metrics,
+            metrics_table_rows_fn=integrator_threshold_explainer_operator_metrics_table_rows,
+            metrics_caption_fn=integrator_threshold_explainer_operator_metrics_caption,
+            filename_slug=integrator_threshold_explainer_operator_metrics_export_filename_slug(),
             json_label="Download integrator threshold operator metrics JSON",
             csv_label="Download integrator threshold operator metrics CSV",
             json_download_key="hermes_dl_integrator_threshold_explainer_metrics_json",

@@ -21,6 +21,10 @@ from nimbusware_env.desktop_common import (
     terminate_process,
 )
 from nimbusware_env.dotenv import load_dotenv
+from nimbusware_env.admin_token import (
+    require_non_default_admin_token_for_host,
+    using_default_admin_token,
+)
 from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps, linux_desktop_manual_hint
 
 _PROCS: list[subprocess.Popen[object]] = []
@@ -134,6 +138,8 @@ def start_servers(
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
 
+    require_non_default_admin_token_for_host(api_host)
+
     mode = _resolve_ui_mode(ui=ui_mode)
     os.environ["NIMBUSWARE_UI"] = mode
 
@@ -203,6 +209,11 @@ def run_desktop(
     api_port_display = api_port or os.environ.get("NIMBUSWARE_API_PORT", "8000")
     _log(f"Nimbusware repo: {repo}")
     _log(f"Log file: {log_file}")
+    if using_default_admin_token():
+        _log(
+            "NOTE: Using dev default NIMBUSWARE_ADMIN_TOKEN — "
+            "set a unique token before production or non-local API bind.",
+        )
     _log(f"API: http://{api_host}:{api_port_display}/v1 (local only)")
 
     try:

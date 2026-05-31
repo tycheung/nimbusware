@@ -8,10 +8,12 @@ from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,
 )
+import csv
 import json
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict
+from io import StringIO
 from pathlib import Path
 from typing import Any
 
@@ -754,4 +756,16 @@ def self_refinement_marker_merge_compare_export_json_rows(
 def self_refinement_marker_merge_compare_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return field_value_table_rows_csv(rows)
+    if not rows:
+        return ""
+    buf = StringIO()
+    w = csv.DictWriter(
+        buf,
+        fieldnames=list(_MARKER_MERGE_COMPARE_CSV_COLUMNS),
+        extrasaction="ignore",
+    )
+    w.writeheader()
+    for r in rows:
+        if isinstance(r, Mapping):
+            w.writerow({k: r.get(k, "") for k in _MARKER_MERGE_COMPARE_CSV_COLUMNS})
+    return buf.getvalue()

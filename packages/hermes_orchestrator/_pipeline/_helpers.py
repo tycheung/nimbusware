@@ -16,6 +16,7 @@ from uuid import UUID, uuid4
 
 import httpx
 
+from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
 from agent_core.models import (
     EventType,
     FindingCreatedEvent,

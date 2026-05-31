@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import csv
-import json
 import re
 from collections.abc import Mapping, Sequence
-from io import StringIO
-from pathlib import Path
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+)
 from nimbusware_console.run_escalated.rows import (
     run_escalated_delta_export_filename_slug,
     run_escalated_export_filename_slug,
@@ -94,42 +94,16 @@ def run_escalated_operator_metrics_caption(
     return "Run escalated metrics: " + ", ".join(present) + " present."
 
 
-_RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-
-
 def run_escalated_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
+    return mapping_export_json(metrics)
 
 
 def run_escalated_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 
@@ -224,45 +198,16 @@ def run_escalated_history_operator_metrics_caption(
     return "Run escalated history metrics: " + ", ".join(parts) + "."
 
 
-_RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
-)
-
-
-
-
 def run_escalated_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
+    return mapping_export_json(metrics)
 
 
 def run_escalated_history_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 
@@ -350,47 +295,16 @@ def run_escalated_delta_operator_metrics_caption(
     return "Run escalated delta metrics: changed " + ", ".join(changed) + "."
 
 
-_RUN_ESCALATED_DELTA_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
-)
-
-
-
-
 def run_escalated_delta_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
+    return mapping_export_json(metrics)
 
 
 def run_escalated_delta_operator_metrics_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_DELTA_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _RUN_ESCALATED_DELTA_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
-
-
+    return field_value_table_rows_csv(rows)
 
 
 def run_escalated_delta_operator_metrics_export_filename_slug(

@@ -6,6 +6,9 @@ from nimbusware_console.components.explainer_panel import (
     render_explainer_export_downloads,
     render_operator_metrics_explainer,
 )
+from nimbusware_console.components.workflow_explainer_helpers import (
+    render_workflow_explainer_metrics_panel,
+)
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
@@ -23,24 +26,12 @@ def render_self_refinement_section(*, repo_root: Path, workflow_profile: str | N
             repo_root,
             workflow_profile=workflow_profile,
         )
-        _sr_expl_metrics = self_refinement_workflow_explainer_operator_metrics(_sr_expl)
-        _sr_expl_metric_rows = self_refinement_workflow_explainer_operator_metrics_table_rows(
-            _sr_expl_metrics,
-        )
-        render_operator_metrics_explainer(
-            caption=self_refinement_workflow_explainer_operator_metrics_caption(
-                _sr_expl_metrics,
-            ),
-            table_rows=_sr_expl_metric_rows,
-            json_text=self_refinement_workflow_explainer_operator_metrics_export_json(
-                _sr_expl_metrics,
-            ),
-            csv_text=self_refinement_workflow_explainer_operator_metrics_table_rows_csv(
-                _sr_expl_metric_rows,
-            ),
-            filename_slug=(
-                self_refinement_workflow_explainer_operator_metrics_export_filename_slug()
-            ),
+        _sr_expl_metrics, _sr_expl_metric_rows = render_workflow_explainer_metrics_panel(
+            _sr_expl,
+            metrics_fn=self_refinement_workflow_explainer_operator_metrics,
+            metrics_table_rows_fn=self_refinement_workflow_explainer_operator_metrics_table_rows,
+            metrics_caption_fn=self_refinement_workflow_explainer_operator_metrics_caption,
+            filename_slug=self_refinement_workflow_explainer_operator_metrics_export_filename_slug(),
             json_label="Download self-refinement operator metrics JSON",
             csv_label="Download self-refinement operator metrics CSV",
             json_download_key="hermes_dl_self_refinement_explainer_metrics_json",

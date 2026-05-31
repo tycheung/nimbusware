@@ -30,11 +30,26 @@
 | `integrator_gate/`, `integrator_preview/`, `persona_catalog/` | **Done** — split from former god modules (facades kept) |
 | `bundle_catalog/faiss_status/` | **Done** — `status`, `readiness`, `index_status`, `drilldown` |
 | `pages/config_tooling/_common.py` | **Done** — prune path + session wiring |
+| `pages/config_tooling/workflows/_shared.py` | **Done** — thin facade over `_shared_{session,catalog,displays,explainers,integrator}.py` |
+| `components/ui_errors.py` | **Done** — shared `render_api_error()` for Streamlit HTTP failures |
 | `bundles/_shared.py` | **Done** — re-exports `workflows/_shared.py` |
 | HTTP via `nimbusware_client` | **Done** — enforced by `test_console_does_not_import_httpx_directly` |
 | `pages/run_detail/` explicit imports | **Done** — no `from _imports import *`; `test_run_detail_sections_do_not_star_import` |
 
 **Rule:** no module >400 lines where feasible.
+
+## Refactor status (Lane X — console decomposition)
+
+| Step | Status |
+|------|--------|
+| X-A `_shared.py` split | **Done** — `_shared_{session,catalog,displays,explainers,integrator}.py` |
+| X-B integrator metrics panels | **Done** — `components/workflow_explainer_helpers.py` + 6 integrator sections |
+| X-C `run_escalated` CSV/JSON | **Done** — `rows.py` + `metrics.py` use `operator_metrics` |
+| X-D `pages/_state.py` | **Done** — `_state_keys.py` + `_state_run_list.py` facade |
+| X-E large displays | **Done** — `security_scan_on_verify/` + `self_refinement/` packages (facades kept) |
+| X-F API error UI | **Done** — `components/ui_errors.py` |
+
+Remaining >400-line allowlist entries are tracked in `tests/unit/test_console_module_size.py` (workflow explainers, run-detail timelines, etc.).
 
 ## Shared imports
 

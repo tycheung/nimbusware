@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-import csv
-import json
 import re
 from collections.abc import Mapping, Sequence
-from io import StringIO
-from pathlib import Path
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+    sequence_export_json,
+    table_rows_csv,
+)
 from nimbusware_console.run_escalated._common import _stringify
 from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
 
@@ -33,33 +35,14 @@ def run_escalated_summary_rows(summary: Mapping[str, Any] | None) -> list[dict[s
     return rows
 
 
-_RUN_ESCALATED_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-
-
 def run_escalated_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _RUN_ESCALATED_SUMMARY_CSV_COLUMNS})
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 
 
 def run_escalated_export_json(summary: Mapping[str, Any] | None) -> str:
-    if not isinstance(summary, Mapping):
-        return "{}"
-    return json.dumps(dict(summary), ensure_ascii=False, indent=2)
+    return mapping_export_json(summary)
 
 
 
@@ -118,26 +101,14 @@ _RUN_ESCALATED_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 
 
 def run_escalated_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_HISTORY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _RUN_ESCALATED_HISTORY_CSV_COLUMNS})
-    return buf.getvalue()
+    return table_rows_csv(rows, _RUN_ESCALATED_HISTORY_CSV_COLUMNS)
 
 
 
 
 def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
     items = [dict(x) for x in history if isinstance(x, Mapping)]
-    return json.dumps(items, ensure_ascii=False, indent=2)
+    return sequence_export_json(items)
 
 
 
@@ -186,33 +157,14 @@ def run_escalated_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[di
     return rows
 
 
-_RUN_ESCALATED_DELTA_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-
-
 def run_escalated_delta_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_RUN_ESCALATED_DELTA_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _RUN_ESCALATED_DELTA_SUMMARY_CSV_COLUMNS})
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 
 
 def run_escalated_delta_export_json(delta: Mapping[str, Any] | None) -> str:
-    if not isinstance(delta, Mapping):
-        return "{}"
-    return json.dumps(dict(delta), ensure_ascii=False, indent=2)
+    return mapping_export_json(delta)
 
 
 

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-import httpx
-
+from nimbusware_client import HTTPError
 from nimbusware_client.http import (
     admin_headers,
     delete,
@@ -37,7 +36,7 @@ def get_json(path: str) -> dict[str, Any]:
 def post_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:
     try:
         return _post_json(path, payload)
-    except httpx.HTTPStatusError as exc:
+    except HTTPError as exc:
         if exc.response.status_code in {401, 403}:
             try:
                 body = exc.response.json()

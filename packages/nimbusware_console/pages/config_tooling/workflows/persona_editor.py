@@ -11,6 +11,7 @@ from nimbusware_client.http import (
     put_response,
 )
 
+from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
@@ -35,7 +36,7 @@ def render_workflows_persona_editor_section() -> None:
                 )
                 st.success("Loaded persona catalog from API.")
             except HTTPError as _exc:
-                st.error(f"API error: {_exc}")
+                render_api_error(_exc)
         _editor_catalog = st.session_state.get("hermes_persona_edit_catalog")
         if not isinstance(_editor_catalog, dict):
             st.caption("Click 'Reload from API' to load the catalog before editing.")
@@ -244,7 +245,7 @@ def render_workflows_persona_editor_section() -> None:
                         )
                         _handle_write_response("PATCH", _resp)
                     except HTTPError as _exc:
-                        st.error(f"API error: {_exc}")
+                        render_api_error(_exc)
             with _col_replace:
                 if st.button(
                     "Replace (PUT)",
@@ -268,7 +269,7 @@ def render_workflows_persona_editor_section() -> None:
                         )
                         _handle_write_response("PUT", _resp)
                     except HTTPError as _exc:
-                        st.error(f"API error: {_exc}")
+                        render_api_error(_exc)
             with _col_delete:
                 if st.button(
                     "Delete",
@@ -290,7 +291,7 @@ def render_workflows_persona_editor_section() -> None:
                         )
                         _handle_write_response("DELETE", _resp)
                     except HTTPError as _exc:
-                        st.error(f"API error: {_exc}")
+                        render_api_error(_exc)
             with _col_create:
                 if st.button(
                     "Create (POST)",
@@ -318,4 +319,4 @@ def render_workflows_persona_editor_section() -> None:
                             )
                             _handle_write_response("POST", _resp)
                         except HTTPError as _exc:
-                            st.error(f"API error: {_exc}")
+                            render_api_error(_exc)
