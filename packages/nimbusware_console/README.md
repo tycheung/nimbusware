@@ -49,7 +49,33 @@
 | X-E large displays | **Done** — `security_scan_on_verify/` + `self_refinement/` packages (facades kept) |
 | X-F API error UI | **Done** — `components/ui_errors.py` |
 
-Remaining >400-line allowlist entries are tracked in `tests/unit/test_console_module_size.py` (workflow explainers, run-detail timelines, etc.).
+## Refactor status (Lane Y — projections purity & UI boundary)
+
+| Step | Status |
+|------|--------|
+| Y-A `build_run_summary` in projections | **Done** — `nimbusware_projections/run_summary.py`; API list/detail import projections; orchestrator shim kept |
+| Y-B workflow read facade | **Done** — `nimbusware_config/workflow_read.py`; explainers + `explainer_workflow_disk` use facade; shared path/YAML helpers in `workflow_explainer_helpers` |
+| Y-C Maker `slice_workflow` boundary | **Done** — `slice_engine.py` sole orchestrator import site; `packages/nimbusware_maker/README.md` |
+
+## Refactor status (Lane Z — housekeeping)
+
+| Step | Status |
+|------|--------|
+| Z-A Lane R script archive | **Done** — `scripts/_archive/lane_r/` |
+| Z-B package README stubs | **Done** — `nimbusware_{maker,client,api,env}/README.md` |
+| Z-C orchestrator module splits | **Done** — `optional_stages_*` + `critique_gates_*` mixin packages (~170–276 LOC each) |
+
+## Optional console decomposition (post-Lane Z)
+
+| Step | Status |
+|------|--------|
+| Workflow explainer packages | **Done** — 6 explainers split into subpackages with 1-line facades (`integrator_threshold`, `security_scan_metadata`, `agent_evaluator`, `escalation_suppress`, `self_refinement`, `universal_critique`) |
+| `pages/_state_run_list.py` | **Done** — `_state_run_list_qp.py` + `_state_run_list_render.py` facade |
+| `security_scan` metrics CSV | **Done** — uses `field_value_table_rows_csv` |
+| Display packages (batch 2) | **Done** — `preflight_cross_run_display/`, `prune_status_display/`, `run_list_pagination_display/`, `agent_evaluator_display/`; `integrator_gate/latest_delta/`, `integrator_preview/merge/`, `persona_catalog/summary/` |
+| Display packages (batch 3) | **Done** — catalog search/FAISS drilldown/universal-critique timeline; run-detail timeline sections; config tooling page panels; `_imports_display_a/` |
+
+**400-line guard:** allowlist is empty — all console modules are ≤400 lines (`tests/unit/test_console_module_size.py`).
 
 ## Shared imports
 

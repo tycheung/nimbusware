@@ -10,11 +10,11 @@ Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `p
 | `MicroSliceMixin` | `micro_slice.py` | Slice plan/implement/verify chain |
 | `PipelineScraperMixin` | `pipeline_scraper.py` | Scraper stage + artifacts |
 | `LifecycleMixin` | `lifecycle.py` | start / plan / verify / slice API transitions |
-| `CritiqueGatesMixin` | `critique_gates.py` | Unanimous gates, critic stages |
+| `CritiqueGatesMixin` | `critique_gates.py` | Composed: `critique_gates_{stage_failed,helpers,optional_emit}.py` |
 | `WritersMixin` | `writers.py` | Parallel frontend/backend writers |
 | `OptionalCritiqueMixin` | `optional_critique.py` | Universal critique, agent evaluator |
 | `EscalationMixin` | `escalation.py` | Anti-deadlock escalation |
-| `OptionalStagesMixin` | `optional_stages.py` | Self-refinement, security scan, refactor |
+| `OptionalStagesMixin` | `optional_stages.py` | Composed: `optional_stages_{integration,agent_evaluator,self_refinement,integrator}.py` |
 | `RunOrchestratorBase` | `base.py` | Shared store/registry wiring |
 
 ## Layering

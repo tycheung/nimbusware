@@ -1,4 +1,4 @@
-"""Console module size guard — shrink allowlist as Lane X splits land."""
+"""Console module size guard — no modules may exceed 400 lines."""
 
 from __future__ import annotations
 
@@ -6,35 +6,8 @@ from pathlib import Path
 
 _CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
 
-# Modules still >400 lines (May 2026). Remove entries when splits land.
-_ALLOWLIST_OVER_400: frozenset[str] = frozenset(
-    {
-        "agent_evaluator_display.py",
-        "agent_evaluator_workflow_explainer.py",
-        "bundle_catalog/catalog_local/search.py",
-        "bundle_catalog/faiss_status/drilldown.py",
-        "escalation_suppress_workflow_explainer.py",
-        "integrator_gate/latest_delta.py",
-        "integrator_preview/merge.py",
-        "integrator_threshold_explainer.py",
-        "pages/_state_run_list.py",
-        "pages/config_tooling/bundles/catalog_search.py",
-        "pages/config_tooling/workflows/persona_shelves.py",
-        "pages/run_detail/_imports_display_a.py",
-        "pages/run_detail/timeline_escalation.py",
-        "pages/run_detail/timeline_integrator.py",
-        "pages/run_detail/timeline_misc_security.py",
-        "pages/run_detail/timeline_personas.py",
-        "persona_catalog/summary.py",
-        "preflight_cross_run_display.py",
-        "prune_status_display.py",
-        "run_list_pagination_display.py",
-        "security_scan_metadata_workflow_explainer.py",
-        "self_refinement_workflow_explainer.py",
-        "universal_critique_timeline_display.py",
-        "universal_critique_workflow_explainer.py",
-    },
-)
+# Empty: batch 3 splits cleared the allowlist (May 2026).
+_ALLOWLIST_OVER_400: frozenset[str] = frozenset()
 
 
 def _line_count(path: Path) -> int:

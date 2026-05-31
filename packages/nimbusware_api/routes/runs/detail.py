@@ -44,7 +44,7 @@ from hermes_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_summary,
 )
-from hermes_orchestrator.read_models import build_run_summary
+from nimbusware_projections.run_summary import build_run_summary
 from hermes_store.protocol import serialized_event_from_row
 
 router = APIRouter()

@@ -26,7 +26,7 @@ from nimbusware_api.schemas.openapi import (
     RUN_LIST_LINK_HEADER,
 )
 from nimbusware_api.schemas.runs import RunListResponse, RunSummary
-from hermes_orchestrator.read_models import RUN_LIST_FILTER_STATUSES, build_run_summary
+from nimbusware_projections.run_summary import RUN_LIST_FILTER_STATUSES, build_run_summary
 
 router = APIRouter()
 

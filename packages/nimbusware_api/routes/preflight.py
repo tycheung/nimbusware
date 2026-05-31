@@ -27,7 +27,7 @@ from hermes_store.protocol import serialized_event_from_row
 router = APIRouter(tags=["preflight"])
 
 PREFLIGHT_HISTORY_MAX_LIMIT = 50
-RUN_LIST_FILTER_STATUSES = frozenset({"created", "running", "terminal"})
+from nimbusware_projections.run_summary import RUN_LIST_FILTER_STATUSES
 
 
 @router.get(

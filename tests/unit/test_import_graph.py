@@ -135,6 +135,19 @@ def test_run_detail_sections_do_not_star_import() -> None:
 _MAKER_HTTPX_ALLOWLIST = frozenset({"readiness.py"})
 
 
+def test_maker_slice_workflow_uses_slice_engine_boundary() -> None:
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
+    offenders: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel == "slice_engine.py":
+            continue
+        hits = _module_level_imports_matching(path, "hermes_orchestrator")
+        if hits:
+            offenders.append(f"{rel}: {hits}")
+    assert not offenders, "\n".join(offenders)
+
+
 def test_maker_does_not_import_httpx_directly() -> None:
     root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
     offenders: list[str] = []
@@ -145,4 +158,47 @@ def test_maker_does_not_import_httpx_directly() -> None:
         text = path.read_text(encoding="utf-8")
         if "import httpx" in text:
             offenders.append(rel)
+    assert not offenders, "\n".join(offenders)
+
+
+def test_api_runs_use_projections_run_summary() -> None:
+    api_runs = (
+        Path(__file__).resolve().parents[2]
+        / "packages"
+        / "nimbusware_api"
+        / "routes"
+        / "runs"
+    )
+    offenders: list[str] = []
+    for path in sorted(api_runs.glob("*.py")):
+        hits = _module_level_imports_matching(path, "hermes_orchestrator.read_models")
+        if hits:
+            offenders.append(f"{path.name}: {hits}")
+    assert not offenders, "\n".join(offenders)
+
+
+_WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST = frozenset(
+    {
+        "integrator_threshold_explainer.py",  # integrator gate emission helpers
+        "integration_adapter_writer_explainer.py",
+    },
+)
+
+
+def test_workflow_explainers_use_config_workflow_read_facade() -> None:
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+    offenders: list[str] = []
+    for path in sorted(root.glob("*workflow_explainer.py")):
+        if path.name in _WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST:
+            continue
+        hits = [
+            mod
+            for mod in _module_level_imports_matching(path, "hermes_orchestrator")
+            if mod
+            not in {
+                "hermes_orchestrator.integrator_gate",
+            }
+        ]
+        if hits:
+            offenders.append(f"{path.name}: {hits}")
     assert not offenders, "\n".join(offenders)

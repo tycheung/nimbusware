@@ -13,17 +13,24 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
-from hermes_orchestrator.micro_slice_executor import (
+from nimbusware_maker.slice_engine import (
+    SlicePlan,
+    _collect_slice_diff_stats,
+    _complete_slice_p3_evidence,
     _custom_agent_system_prompt,
     _emit_slice_stage,
+    _execute_slice_critique_llm,
+    _execute_slice_implement_llm,
     _plan_one_slice,
     _resolve_slice_block,
     _run_slice_verify_and_test,
+    apply_slice_file_edits,
+    check_slice_diff_budget,
+    execute_slice_implement,
     micro_slice_count_for_run,
+    parse_slice_plan,
+    slice_implement_mode,
 )
-from hermes_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
-from hermes_orchestrator.slice_patch_apply import apply_slice_file_edits
 from nimbusware_maker.approval import (
     STAGE_PLAN_APPROVED,
     STAGE_SLICE_APPLIED,
@@ -136,9 +143,7 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
     model = orch._selected_model_for_run(run_id)
 
     if mode == "llm" and model:
-        from hermes_orchestrator.llm_slice import execute_slice_implement_llm
-
-        proposed_edits = execute_slice_implement_llm(
+        proposed_edits = _execute_slice_implement_llm(
             plan=plan,
             workspace=ws,
             base_url=str(runtime.get("base_url", "http://localhost:11434")),
@@ -207,9 +212,6 @@ def _complete_slice_after_implement(
 ) -> Any:
     import os
 
-    from hermes_orchestrator.llm_slice import execute_slice_critique_llm
-    from hermes_orchestrator.slice_diff import check_slice_diff_budget, collect_slice_diff_stats
-
     block = _resolve_slice_block(orch, run_id)
     runtime = orch._base_cfg().get("runtime") or {}
     timeout = float(runtime.get("request_timeout_seconds", 120))
@@ -230,21 +232,17 @@ def _complete_slice_after_implement(
     critique_verdicts = ["PASS"]
     critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
     if os.environ.get("HERMES_SLICE_P3_EVIDENCE", "1").lower() not in ("0", "false", "no"):
-        from hermes_orchestrator.performance_scan import run_ruff_perf
-        from hermes_orchestrator.security_scan import run_security_scan
-
-        sec = run_security_scan(ws)
-        perf_code, perf_log = run_ruff_perf(ws, timeout_seconds=timeout)
+        sec_exit, perf_exit = _complete_slice_p3_evidence(ws, timeout_seconds=timeout)
         critique_meta["phase3_evidence"] = {
-            "security_scan_exit": sec[0],
-            "performance_scan_exit": perf_code,
+            "security_scan_exit": sec_exit,
+            "performance_scan_exit": perf_exit,
         }
-        if sec[0] != 0 or perf_code != 0:
+        if sec_exit != 0 or perf_exit != 0:
             critique_verdicts = ["FAIL"]
     if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
         model = orch._selected_model_for_run(run_id)
         if model:
-            critique_verdicts = execute_slice_critique_llm(
+            critique_verdicts = _execute_slice_critique_llm(
                 plan=plan,
                 base_url=str(runtime.get("base_url", "http://localhost:11434")),
                 model_id=model,
@@ -261,7 +259,7 @@ def _complete_slice_after_implement(
         duration_ms=0,
     )
 
-    final_stats = collect_slice_diff_stats(ws, plan)
+    final_stats = _collect_slice_diff_stats(ws, plan)
     final_budget = check_slice_diff_budget(final_stats, block)
     if not final_budget.ok:
         verify_ok = False

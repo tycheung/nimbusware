@@ -3,8 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.workflow_profiles import workflow_profile_path
+from nimbusware_config.workflow_read import load_yaml, workflow_profile_path
 
 
 def workflow_profile_expected_path(repo_root: Path, profile: str) -> Path:

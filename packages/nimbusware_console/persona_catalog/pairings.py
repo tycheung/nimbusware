@@ -14,7 +14,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
-from nimbusware_console.persona_catalog.summary import (
+from nimbusware_console.persona_catalog.summary.build import (
     _persona_operator_summary_cell,
 )
 def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:

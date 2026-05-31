@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Callable, Mapping, Sequence
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +34,16 @@ def json_safe_yaml_fragment(raw: object) -> object:
     if isinstance(raw, list):
         return [json_safe_yaml_fragment(item) for item in raw]
     return str(raw)
+
+
+def mtime_iso_utc(path: Path) -> str | None:
+    try:
+        mtime_ns = int(path.stat().st_mtime_ns)
+    except OSError:
+        return None
+    return datetime.fromtimestamp(mtime_ns / 1e9, tz=timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ",
+    )
 
 
 def env_var_tri_state_summary(name: str) -> dict[str, Any]:
