@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
@@ -13,33 +11,10 @@ from nimbusware_console.pages.run_detail._imports_common import (
 )
 from nimbusware_console.pages.run_detail._imports_display_b import (
     run_escalated_actor_without_notes_caption,
-    run_escalated_delta_export_filename_slug,
-    run_escalated_delta_export_json,
-    run_escalated_delta_from_timeline,
-    run_escalated_delta_operator_metrics,
-    run_escalated_delta_operator_metrics_caption,
-    run_escalated_delta_operator_metrics_export_json,
-    run_escalated_delta_operator_metrics_table_rows,
-    run_escalated_delta_operator_metrics_table_rows_csv,
-    run_escalated_delta_summary_rows,
-    run_escalated_delta_table_rows_csv,
-    run_escalated_delta_transition_caption,
     run_escalated_event_id_caption,
     run_escalated_export_filename_slug,
     run_escalated_export_json,
     run_escalated_from_timeline,
-    run_escalated_history_distinct_actors_caption,
-    run_escalated_history_entry_count_caption,
-    run_escalated_history_export_filename_slug,
-    run_escalated_history_export_json,
-    run_escalated_history_from_timeline,
-    run_escalated_history_operator_metrics,
-    run_escalated_history_operator_metrics_caption,
-    run_escalated_history_operator_metrics_export_json,
-    run_escalated_history_operator_metrics_table_rows,
-    run_escalated_history_operator_metrics_table_rows_csv,
-    run_escalated_history_table_rows,
-    run_escalated_history_table_rows_csv,
     run_escalated_notes_preview_caption,
     run_escalated_occurred_at_caption,
     run_escalated_operator_metrics,
@@ -51,22 +26,12 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     run_escalated_reason_summary_caption,
     run_escalated_summary_rows,
     run_escalated_summary_rows_csv,
-    self_refinement_marker_history_entry_count_caption,
-    self_refinement_marker_history_export_filename_slug,
-    self_refinement_marker_history_export_json,
-    self_refinement_marker_history_from_timeline,
-    self_refinement_marker_history_operator_metrics,
-    self_refinement_marker_history_operator_metrics_caption,
-    self_refinement_marker_history_operator_metrics_export_json,
-    self_refinement_marker_history_operator_metrics_table_rows,
-    self_refinement_marker_history_operator_metrics_table_rows_csv,
-    self_refinement_marker_history_table_rows,
-    self_refinement_marker_history_table_rows_csv,
 )
 
 
-
 def _render_run_escalated(run_id: str, data: dict) -> None:
+    _re = run_escalated_from_timeline(data)
+    _re_rows = run_escalated_summary_rows(_re)
     with st.expander("Run escalated (from timeline)", expanded=False):
         if not _re_rows:
             st.caption(
@@ -181,5 +146,3 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
                 )
             with st.expander("Raw run_escalated JSON", expanded=False):
                 st.json(_re)
-    _re_hist = run_escalated_history_from_timeline(data)
-    _re_hist_rows = run_escalated_history_table_rows(_re_hist)

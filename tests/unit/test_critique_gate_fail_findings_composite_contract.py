@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from datetime import datetime, timezone
@@ -25,6 +24,7 @@ from hermes_orchestrator.llm_plan import (
 )
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_universal_critique import effective_universal_critique
+from nimbusware_env import find_repo_root
 
 if TYPE_CHECKING:
     from hermes_store.memory import InMemoryEventStore

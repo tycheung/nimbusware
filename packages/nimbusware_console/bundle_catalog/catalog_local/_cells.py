@@ -1,13 +1,7 @@
 from __future__ import annotations
 
-import csv
 import json
-import re
-from collections import Counter
-from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
-from io import StringIO
-from pathlib import Path
 from typing import Any
 
 _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")

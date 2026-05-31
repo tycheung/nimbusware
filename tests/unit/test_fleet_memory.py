@@ -9,7 +9,10 @@ import pytest
 
 from agent_core.models import EventType
 from hermes_memory.fleet_index import rebuild_fleet_memory_index
-from hermes_memory.fleet_sync import pull_fleet_memory_from_canonical, push_fleet_memory_to_canonical
+from hermes_memory.fleet_sync import (
+    pull_fleet_memory_from_canonical,
+    push_fleet_memory_to_canonical,
+)
 from hermes_memory.org_scope import (
     fleet_scope_hash,
     memory_namespace_for_repo,
@@ -22,7 +25,6 @@ from hermes_memory.store import InMemoryMemoryChunkStore
 from hermes_memory.sync_cli import main as sync_cli_main
 from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_iam.context import set_auth_context
-from nimbusware_iam.models import AuthContext
 from nimbusware_iam.store import InMemoryIamStore
 
 
@@ -165,6 +167,7 @@ def test_enterprise_fleet_memory_api(
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
+
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
 

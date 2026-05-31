@@ -7,12 +7,16 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 
+from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
-from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
+from nimbusware_api.schemas.openapi import (
+    PROBLEM_RESPONSE_404,
+    PROBLEM_RESPONSE_422,
+    PROBLEM_RESPONSE_500,
+)
 from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
-from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
 
 router = APIRouter(prefix="/custom-agents", tags=["custom-agents"])
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -13,13 +14,13 @@ pytest.importorskip("pytest_benchmark")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 
+from fastapi.testclient import TestClient  # noqa: E402
+
 from agent_core.models import (  # noqa: E402
     EventType,
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
 )
-from fastapi.testclient import TestClient  # noqa: E402
-
 from hermes_orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 
@@ -36,13 +37,16 @@ def _seed_preflight_runs(client: TestClient, count: int) -> None:
         r = client.post("/v1/runs", json={"workflow_profile": "default"})
         run_id = UUID(r.json()["run_id"])
         store.append(
-            run_id,
             ModelPreflightPassedEvent(
                 event_type=EventType.MODEL_PREFLIGHT_PASSED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
                 payload=ModelPreflightPassedPayload(
+                    provider="ollama",
                     validated_model_id="llama3.1:8b",
+                    context_tokens=8192,
                     p95_latency_ms=50 + i,
-                    health_latency_ms=40 + i,
                     checks_passed=["runtime_reachable"],
                 ),
             ),

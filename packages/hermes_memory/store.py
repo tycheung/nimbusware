@@ -4,36 +4,20 @@
 
 from __future__ import annotations
 
-
-
+from collections.abc import Iterator
 from contextlib import contextmanager
-
 from dataclasses import dataclass
-
 from datetime import datetime, timezone
-
-from typing import Any, Iterator, Protocol, runtime_checkable
-
+from typing import Any, Protocol, runtime_checkable
 from uuid import UUID, uuid4
 
-
-
 import psycopg
-
 from psycopg.rows import dict_row
-
 from psycopg.types.json import Jsonb
 
-
-
 from hermes_memory.models import EmbeddingMode, MemoryChunkRecord
-
 from nimbusware_iam.constants import DEFAULT_TENANT_ID
-
 from nimbusware_iam.context import resolve_store_tenant_id
-
-
-
 
 
 @dataclass(frozen=True)

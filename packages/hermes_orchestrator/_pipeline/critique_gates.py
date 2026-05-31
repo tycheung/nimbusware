@@ -1,5 +1,3 @@
-"""Critique gate failure emitters and hard-block helpers."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline.critique_gates_helpers import CritiqueGateHelpersMixin

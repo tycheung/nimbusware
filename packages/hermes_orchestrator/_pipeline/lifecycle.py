@@ -1,5 +1,3 @@
-"""Preflight start, plan stage, and writer verifier pass entrypoints."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403

@@ -13,6 +13,7 @@ from nimbusware_console.components.operator_metrics import (
 from nimbusware_console.run_escalated._common import _stringify
 from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
 
+
 def run_escalated_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:
@@ -130,7 +131,6 @@ def run_escalated_delta_from_timeline(
     return raw if isinstance(raw, dict) else None
 
 
-# Order matches ``run_escalated_timeline_delta`` in runs (latest vs prior escalation).
 _RUN_ESCALATED_DELTA_FIELDS: tuple[tuple[str, str], ...] = (
     ("previous_event_id", "Previous event id"),
     ("current_event_id", "Current event id"),

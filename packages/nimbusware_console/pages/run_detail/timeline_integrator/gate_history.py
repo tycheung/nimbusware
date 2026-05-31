@@ -1,27 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (
-    integrator_gate_compatibility_ranking_caption,
-    integrator_gate_compatibility_ranking_table_rows,
-    integrator_gate_delta_bundle_changed_caption,
-    integrator_gate_delta_export_filename_slug,
-    integrator_gate_delta_export_json,
-    integrator_gate_delta_from_timeline,
-    integrator_gate_delta_operator_metrics,
-    integrator_gate_delta_operator_metrics_caption,
-    integrator_gate_delta_operator_metrics_export_json,
-    integrator_gate_delta_operator_metrics_table_rows_csv,
-    integrator_gate_delta_operator_table_rows,
-    integrator_gate_delta_summary_rows,
-    integrator_gate_delta_summary_rows_csv,
-    integrator_gate_delta_transition_caption,
-    integrator_gate_delta_verdict_changed_caption,
-    integrator_gate_from_timeline,
     integrator_gate_history_distinct_bundles_caption,
     integrator_gate_history_entry_count_caption,
     integrator_gate_history_export_filename_slug,
@@ -38,23 +20,12 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
     integrator_gate_history_table_rows,
     integrator_gate_history_table_rows_csv,
     integrator_gate_history_verdict_tally_caption,
-    integrator_gate_latest_bundle_id_caption,
-    integrator_gate_latest_export_filename_slug,
-    integrator_gate_latest_export_json,
-    integrator_gate_latest_metrics_table_rows,
-    integrator_gate_latest_operator_metrics,
-    integrator_gate_latest_operator_metrics_caption,
-    integrator_gate_latest_operator_metrics_export_json,
-    integrator_gate_latest_operator_metrics_table_rows_csv,
-    integrator_gate_latest_score_margin_caption,
-    integrator_gate_latest_summary_rows_csv,
-    integrator_gate_latest_tag_overlap_caption,
-    integrator_gate_summary_rows,
 )
 
 
-
 def _render_integrator_gate_history(run_id: str, data: dict) -> None:
+    _ig_hist = integrator_gate_history_from_timeline(data)
+    _ig_hist_rows = integrator_gate_history_table_rows(_ig_hist)
     with st.expander("Integrator gate history (from timeline)", expanded=False):
         if not _ig_hist_rows:
             st.caption(
@@ -192,5 +163,3 @@ def _render_integrator_gate_history(run_id: str, data: dict) -> None:
                 st.json(_ig_hist_metrics)
             with st.expander("Raw integrator_gate_history JSON", expanded=False):
                 st.json(_ig_hist)
-    _ig_delta = integrator_gate_delta_from_timeline(data)
-    _ig_delta_rows = integrator_gate_delta_summary_rows(_ig_delta)

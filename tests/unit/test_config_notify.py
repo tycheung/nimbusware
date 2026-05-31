@@ -84,6 +84,7 @@ def test_enterprise_config_notify_status_api(
     monkeypatch.setenv("NIMBUSWARE_CONFIG_NOTIFY", "1")
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
+
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
 

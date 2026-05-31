@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -13,6 +12,7 @@ from nimbusware_console.run_escalated.rows import (
     run_escalated_export_filename_slug,
     run_escalated_history_export_filename_slug,
 )
+
 
 def run_escalated_operator_metrics(
     summary: Mapping[str, Any] | None,

@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError
-
-from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
 from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
+from nimbusware_client.http import HTTPError
+from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
 
 _SS_EDIT_AGENT = "nimbusware_edit_agent_id"
 _SS_PROMPT_DRAFT = "nimbusware_prompt_draft"
 
 
-from nimbusware_client.http import admin_headers, api_base, patch_response
+from nimbusware_client.http import admin_headers, patch_response
 
 
 def load_registry_local(repo_root: Path) -> CustomAgentRegistry:

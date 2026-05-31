@@ -12,6 +12,7 @@ from nimbusware_console.security_scan_on_verify._helpers import (
     _stringify,
 )
 
+
 def security_scan_on_verify_summary_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:

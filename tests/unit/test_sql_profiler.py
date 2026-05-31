@@ -1,7 +1,6 @@
 """SQL profiler (PZ-6)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
@@ -13,6 +12,7 @@ from hermes_orchestrator.sql_profiler import (
     run_sql_profiler_summary,
     scan_sql_query_hotspots,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_record_sql_query_session_counter() -> None:

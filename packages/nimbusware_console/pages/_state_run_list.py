@@ -1,5 +1,3 @@
-"""Run list query-param sync, fetch, and display."""
-
 from __future__ import annotations
 
 import nimbusware_console.pages._state_run_list_qp as _state_run_list_qp

@@ -1,8 +1,7 @@
-"""Bundle integrator gate emission."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class IntegratorOptionalStagesMixin:
     def _emit_bundle_integrator_gate(self, run_id: UUID) -> None:

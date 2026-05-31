@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 import re
@@ -10,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+
+from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -21,12 +22,12 @@ os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEAR
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from nimbusware_api.app import app  # noqa: E402
 from hermes_orchestrator.ingress import (  # noqa: E402
     assert_persona_shelves_valid,
     assert_taxonomy_keys_resolve,
 )
 from hermes_orchestrator.registry import RoleRegistry  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
 _TAXONOMY_KEY_ERROR_PREFIX = "Unknown role taxonomy_key:"
 _SHELVES_FNF_PREFIX = "missing persona catalog shelves:"

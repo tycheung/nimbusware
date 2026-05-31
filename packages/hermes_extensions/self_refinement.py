@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from hermes_extensions.personas import PersonaShelf
 from agent_core.yaml_io import load_yaml
+from hermes_extensions.personas import PersonaShelf
 
 
 @dataclass(frozen=True)

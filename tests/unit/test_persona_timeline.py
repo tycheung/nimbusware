@@ -1,12 +1,14 @@
 """Timeline persona_assignment read-model (P1-b)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
+from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
+from hermes_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.materializer import ConfigMaterializer
@@ -17,9 +19,7 @@ from nimbusware_console.persona_assignment_display import (
     persona_assignment_from_timeline,
     persona_assignment_summary_rows,
 )
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_env import find_repo_root
 
 
 def test_persona_assignment_from_run_created_metadata_normalizes_ids() -> None:

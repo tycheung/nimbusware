@@ -1,8 +1,7 @@
-"""Critique gate helpers, findings, and hard-block checks."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class CritiqueGateHelpersMixin:
     @staticmethod

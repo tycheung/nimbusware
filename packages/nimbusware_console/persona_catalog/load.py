@@ -1,18 +1,9 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    table_rows_csv,
-)
-import csv
-import json
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+
 
 def load_persona_shelves_catalog(repo_root: Path) -> dict[str, Any]:
     from nimbusware_config.persist import load_persona_shelf

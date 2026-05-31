@@ -1,7 +1,6 @@
 """Agent evaluator LLM branch without mandatory HERMES_USE_LLM (§14 #15)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -12,6 +11,7 @@ from hermes_orchestrator.workflow_agent_evaluator import (
     agent_evaluator_llm_branch_effective,
     persona_coverage_critique_llm_branch_effective,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

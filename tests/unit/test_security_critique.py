@@ -1,11 +1,8 @@
 """Security Critic stage."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
-from unittest.mock import patch
-from uuid import UUID
 
 import pytest
 
@@ -23,6 +20,7 @@ from hermes_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_security_scan_tools_failed_detects_ruff() -> None:

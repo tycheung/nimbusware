@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
 
 import streamlit as st
 
@@ -14,13 +13,13 @@ from nimbusware_console.pages.run_detail._imports_common import (
     timezone,
 )
 from nimbusware_console.pages.run_detail._imports_display_b import (
-    preflight_history_from_timeline,
     scraper_fetch_artifacts_caption,
     scraper_fetch_failure_reason_caption,
     scraper_fetch_fetches_export_filename_slug,
     scraper_fetch_fetches_export_json,
     scraper_fetch_fetches_table_rows,
     scraper_fetch_fetches_table_rows_csv,
+    scraper_fetch_from_timeline,
     scraper_fetch_operator_metrics,
     scraper_fetch_operator_metrics_caption,
     scraper_fetch_operator_metrics_export_json,
@@ -29,12 +28,15 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     scraper_fetch_outcome_caption,
     scraper_fetch_summary_export_filename_slug,
     scraper_fetch_summary_export_json,
+    scraper_fetch_summary_rows,
     scraper_fetch_summary_rows_csv,
 )
 
 
 def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> None:
     _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _sf = scraper_fetch_from_timeline(data)
+    _sf_rows = scraper_fetch_summary_rows(_sf)
     with st.expander("Scraper fetch (from timeline)", expanded=False):
         if not _sf_rows:
             st.caption(
@@ -177,4 +179,3 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                 )
             with st.expander("Raw scraper_fetch JSON", expanded=False):
                 st.json(_sf)
-    _pf = preflight_history_from_timeline(data)

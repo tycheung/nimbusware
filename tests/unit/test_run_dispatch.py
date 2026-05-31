@@ -1,7 +1,6 @@
 """Run dispatch queue boundary ."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import json
 import os
@@ -19,6 +18,7 @@ from hermes_orchestrator.run_dispatch import (
     set_run_queue,
 )
 from hermes_orchestrator.run_worker import run_worker_loop
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

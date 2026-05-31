@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
+
 
 def render_faiss_drilldown_panel(*, repo_root: Path) -> None:
         with st.expander("Operator drill-down (fo142)", expanded=False):

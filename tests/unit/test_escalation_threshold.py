@@ -1,7 +1,6 @@
 """Escalation YAML: cumulative findings threshold."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from hermes_orchestrator.escalation_threshold import (
     load_escalate_after_cumulative_high_severity_findings,
     load_escalate_after_cumulative_stage_failures,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

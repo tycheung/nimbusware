@@ -1,7 +1,6 @@
 """POST /v1/runs/{id}/lifecycle/slice API."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 import shutil
@@ -9,6 +8,8 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
+from nimbusware_env import find_repo_root
 
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("HERMES_MICRO_SLICE_COUNT", "1")

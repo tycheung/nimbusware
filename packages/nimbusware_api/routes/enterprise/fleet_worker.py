@@ -6,12 +6,12 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from hermes_orchestrator.fleet_worker import (
     collect_fleet_worker_metrics,
     fleet_redis_worker_enabled,
     fleet_worker_health_snapshot,
 )
+from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_env.edition import enterprise_feature_enabled
 
 router = APIRouter(prefix="/enterprise/fleet-worker", tags=["enterprise"])

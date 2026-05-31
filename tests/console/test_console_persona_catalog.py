@@ -1,8 +1,10 @@
 """Console persona shelves helper (follow-on 32 §14 #14)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
+
 import pytest
+
+from nimbusware_env import find_repo_root
 
 pytestmark = pytest.mark.slow
 

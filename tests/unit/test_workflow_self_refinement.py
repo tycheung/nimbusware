@@ -1,7 +1,6 @@
 """§14 #17: workflow YAML can opt in to self_refinement stage marker."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -10,6 +9,7 @@ from hermes_orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

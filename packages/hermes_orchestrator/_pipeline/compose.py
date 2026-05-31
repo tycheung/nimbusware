@@ -1,5 +1,3 @@
-"""Compose ``RunOrchestrator`` with patch-friendly pipeline module globals."""
-
 from __future__ import annotations
 
 import functools

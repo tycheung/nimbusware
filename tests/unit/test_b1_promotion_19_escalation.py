@@ -1,11 +1,11 @@
 """B2 promotion proof for §14 #19 — escalation policy breadth metrics."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 from hermes_orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -27,6 +27,7 @@ def test_escalation_policy_breadth_malformed_yaml(tmp_path: Path) -> None:
 
 def test_anti_deadlock_escalation_includes_policy_breadth_metadata() -> None:
     from unittest.mock import patch
+
     from hermes_orchestrator.pipeline import make_dev_orchestrator
 
     orch, mem = make_dev_orchestrator(repo_root=ROOT)

@@ -12,6 +12,19 @@ from urllib.parse import urlencode
 
 import streamlit as st
 
+from nimbusware_console.memory_display import (
+    memory_indexed_timeline_summary,
+    memory_policy_from_run_summary,
+    memory_policy_table_rows,
+    memory_retrieval_timeline_summary,
+)
+from nimbusware_console.micro_slice_packet_display import (
+    latest_slice_context_packet_from_timeline,
+)
+from nimbusware_console.phase3_critique_display import (
+    phase3_critique_caption,
+    phase3_critique_table_rows,
+)
 from nimbusware_console.prune_status_display import (
     load_prune_status,
     prune_scraper_artifact_prune_workflow_caption,
@@ -132,19 +145,6 @@ from nimbusware_console.scraper_fetch_display import (
     scraper_fetch_summary_rows,
     scraper_fetch_summary_rows_csv,
 )
-from nimbusware_console.micro_slice_packet_display import (
-    latest_slice_context_packet_from_timeline,
-)
-from nimbusware_console.memory_display import (
-    memory_indexed_timeline_summary,
-    memory_policy_from_run_summary,
-    memory_policy_table_rows,
-    memory_retrieval_timeline_summary,
-)
-from nimbusware_console.phase3_critique_display import (
-    phase3_critique_caption,
-    phase3_critique_table_rows,
-)
 from nimbusware_console.security_scan_on_verify_display import (
     security_scan_category_severity_caption,
     security_scan_finding_event_ids_caption,
@@ -214,8 +214,8 @@ from nimbusware_console.self_refinement_display import (
     self_refinement_marker_window_caption,
     self_refinement_markers_per_minute_caption,
     self_refinement_phase_d_signal_caption,
-    self_refinement_prior_gate_verdict_caption,
     self_refinement_policy_attempt_caption,
+    self_refinement_prior_gate_verdict_caption,
     self_refinement_session_caption,
     self_refinement_snapshot_from_compare_paste,
     self_refinement_stage_name_caption,

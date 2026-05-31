@@ -1,7 +1,6 @@
 """GET /v1/preflight-history fleet aggregation."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from datetime import datetime, timezone
@@ -10,6 +9,8 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+
+from nimbusware_env import find_repo_root
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")

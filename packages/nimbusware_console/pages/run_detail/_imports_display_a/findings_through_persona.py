@@ -11,7 +11,6 @@ from nimbusware_console.findings_display import (
     findings_table_rows,
     findings_table_rows_csv,
 )
-
 from nimbusware_console.integrator_gate_display import (
     integrator_gate_compatibility_ranking_caption,
     integrator_gate_compatibility_ranking_table_rows,
@@ -58,7 +57,6 @@ from nimbusware_console.integrator_gate_display import (
     integrator_gate_latest_tag_overlap_caption,
     integrator_gate_summary_rows,
 )
-
 from nimbusware_console.integrator_threshold_explainer import (
     integrator_threshold_explainer_export_json,
     integrator_threshold_explainer_operator_metrics,
@@ -77,7 +75,6 @@ from nimbusware_console.integrator_threshold_explainer import (
     integrator_threshold_project_tags_caption,
     integrator_threshold_thresholds_yaml_version_caption,
 )
-
 from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_agent_evaluator_yaml,
@@ -88,7 +85,6 @@ from nimbusware_console.integrator_workflow_apply import (
     prepare_integrator_gate_apply,
     workflow_yaml_write_enabled,
 )
-
 from nimbusware_console.integrator_workflow_preview import (
     full_workflow_merge_added_top_level_caption,
     full_workflow_merge_attention_export_filename_slug,
@@ -130,7 +126,6 @@ from nimbusware_console.integrator_workflow_preview import (
     list_workflow_profile_keys,
     parse_full_workflow_yaml_paste,
 )
-
 from nimbusware_console.persona_assignment_display import (
     persona_assignment_caption,
     persona_assignment_from_timeline,
@@ -138,7 +133,6 @@ from nimbusware_console.persona_assignment_display import (
     persona_assignment_timeline_export_json,
     persona_assignment_timeline_table_rows_csv,
 )
-
 from nimbusware_console.persona_catalog import (
     critique_pairings_critic_counts_all_export_json,
     critique_pairings_critic_counts_all_table_rows,

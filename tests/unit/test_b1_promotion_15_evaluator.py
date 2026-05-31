@@ -1,9 +1,7 @@
 """B1 promotion proof for §14 #15 — production LLM evaluator on workflow YAML."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
-import os
 from pathlib import Path
 
 import pytest
@@ -14,6 +12,7 @@ from hermes_orchestrator.workflow_agent_evaluator import (
     agent_evaluator_production_default_on,
     parse_agent_evaluator_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

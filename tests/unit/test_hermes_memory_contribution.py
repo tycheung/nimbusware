@@ -1,5 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import uuid4
@@ -7,14 +6,11 @@ from uuid import uuid4
 from agent_core.models import EventType
 from hermes_memory import InMemoryMemoryChunkStore
 from hermes_memory.contribution import maybe_rebuild_memory_index_for_run
-from hermes_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
 from hermes_memory.embeddings import deterministic_embed, embed_text
+from hermes_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_store.memory import InMemoryEventStore
-from nimbusware_console.memory_display import (
-    memory_policy_from_run_summary,
-    memory_retrieval_timeline_summary,
-)
+from nimbusware_env import find_repo_root
 
 
 def test_embed_text_deterministic_stable() -> None:

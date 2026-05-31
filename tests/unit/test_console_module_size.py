@@ -1,12 +1,9 @@
-"""Console module size guard — no modules may exceed 400 lines."""
-
 from __future__ import annotations
 
 from pathlib import Path
 
 _CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
 
-# Empty: batch 3 splits cleared the allowlist (May 2026).
 _ALLOWLIST_OVER_400: frozenset[str] = frozenset()
 
 
@@ -25,7 +22,6 @@ def test_no_console_module_over_400_lines() -> None:
 
 
 def test_console_module_size_allowlist_is_current() -> None:
-    """Allowlist must match modules still >400 lines (no stale entries)."""
     still_large = {
         path.relative_to(_CONSOLE_ROOT).as_posix()
         for path in _CONSOLE_ROOT.rglob("*.py")

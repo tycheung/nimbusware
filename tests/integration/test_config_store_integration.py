@@ -1,18 +1,18 @@
 """Postgres config document integration (requires ``NIMBUSWARE_DATABASE_URL``)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
 
 import pytest
 
+from hermes_extensions.personas import PersonaShelf
 from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import PostgresConfigStore
-from hermes_extensions.personas import PersonaShelf
+from nimbusware_env import find_repo_root
 
 pytestmark = pytest.mark.integration
 

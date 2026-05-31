@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os
 from datetime import datetime, timezone
-from pathlib import Path
 from uuid import UUID, uuid4
 
 import pytest

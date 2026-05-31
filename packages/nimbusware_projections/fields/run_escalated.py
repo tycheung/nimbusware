@@ -1,5 +1,3 @@
-"""Run escalated projection field metadata."""
-
 from __future__ import annotations
 
 RUN_ESCALATED_ROW_KEYS: tuple[str, ...] = (

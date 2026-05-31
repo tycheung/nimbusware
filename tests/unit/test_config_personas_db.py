@@ -11,13 +11,13 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
+from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
+from hermes_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
-from hermes_store.memory import InMemoryEventStore
 
 
 @pytest.fixture

@@ -1,5 +1,3 @@
-"""Shared timeline projections for API and console."""
-
 from nimbusware_projections.builders.agent_evaluator import agent_evaluator_timeline_summary
 from nimbusware_projections.builders.integrator_gate import (
     integrator_gate_timeline_delta,
@@ -11,8 +9,8 @@ from nimbusware_projections.builders.maker_progress import (
     maker_progress_from_events,
     strip_operator_fields,
 )
-from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_projections.builders.persona_assignment import persona_assignment_timeline_summary
+from nimbusware_projections.builders.preflight import preflight_timeline_summary
 from nimbusware_projections.builders.run_escalated import (
     run_escalated_timeline_delta,
     run_escalated_timeline_entries,
@@ -40,11 +38,6 @@ from nimbusware_projections.builders.universal_critique import (
     universal_critique_timeline_entries,
     universal_critique_timeline_summary,
 )
-from nimbusware_projections.run_summary import (
-    RUN_LIST_FILTER_STATUSES,
-    build_run_summary,
-    run_has_started,
-)
 from nimbusware_projections.fields.agent_evaluator import AGENT_EVALUATOR_SUMMARY_KEYS
 from nimbusware_projections.fields.integrator_gate import (
     INTEGRATOR_GATE_DISPLAY_FIELDS,
@@ -57,6 +50,11 @@ from nimbusware_projections.fields.run_escalated import (
 from nimbusware_projections.fields.scraper_fetch import SCRAPER_FETCH_ROW_KEYS
 from nimbusware_projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
 from nimbusware_projections.fields.self_refinement import SELF_REFINEMENT_SUMMARY_KEYS
+from nimbusware_projections.run_summary import (
+    RUN_LIST_FILTER_STATUSES,
+    build_run_summary,
+    run_has_started,
+)
 
 __all__ = [
     "AGENT_EVALUATOR_SUMMARY_KEYS",

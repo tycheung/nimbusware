@@ -1,8 +1,8 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
+from hermes_orchestrator.micro_slice import parse_slice_plan
 from hermes_orchestrator.workflow_memory import (
     memory_effective_metadata,
     memory_query_from_slice_plan,
@@ -10,7 +10,7 @@ from hermes_orchestrator.workflow_memory import (
     parse_memory_workflow_block,
     run_memory_retrieval_enabled,
 )
-from hermes_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_env import find_repo_root
 
 
 def test_parse_memory_workflow_block_defaults() -> None:

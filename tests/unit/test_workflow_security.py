@@ -1,7 +1,6 @@
 """Workflow-driven security scan metadata flag."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from unittest.mock import patch
@@ -10,6 +9,7 @@ import pytest
 
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from nimbusware_env import find_repo_root
 
 
 def test_security_scan_env_forces_true(monkeypatch: pytest.MonkeyPatch) -> None:

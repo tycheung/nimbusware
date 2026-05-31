@@ -1,9 +1,10 @@
 """Console facade structure and import shim contracts (Phase 4)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
+
+from nimbusware_env import find_repo_root
 
 
 def test_app_entry_is_thin_facade() -> None:

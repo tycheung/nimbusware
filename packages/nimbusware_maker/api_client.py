@@ -6,10 +6,14 @@ from nimbusware_client import HTTPError
 from nimbusware_client.http import (
     admin_headers,
     delete,
-    get_json as _get_json,
-    post_json as _post_json,
     problem_message,
     user_headers,
+)
+from nimbusware_client.http import (
+    get_json as _get_json,
+)
+from nimbusware_client.http import (
+    post_json as _post_json,
 )
 
 __all__ = [

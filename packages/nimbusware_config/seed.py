@@ -1,6 +1,9 @@
 """Bootstrap Postgres config from repo ``configs/`` (gitops / tests)."""
 from __future__ import annotations
+
 from pathlib import Path
+
+from hermes_orchestrator.merge import load_yaml
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,
@@ -18,7 +21,8 @@ from nimbusware_config.keys import (
     NS_WORKFLOWS,
 )
 from nimbusware_config.protocol import ConfigStore
-from hermes_orchestrator.merge import load_yaml
+
+
 def seed_t2_policy_documents_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]:
     """Load T2 policy YAML into ``hermes_config_document``."""
     repo = repo_root.resolve()

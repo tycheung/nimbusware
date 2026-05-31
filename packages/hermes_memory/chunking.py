@@ -6,9 +6,8 @@ from typing import Any
 from uuid import UUID
 
 from agent_core.models import EventType, Verdict
-from hermes_store.protocol import serialized_event_from_row
-
 from hermes_memory.models import MemoryChunkDraft
+from hermes_store.protocol import serialized_event_from_row
 
 _MAX_EXCERPT_CHARS = 2000
 def run_index_contribution_enabled(metadata: object) -> bool:

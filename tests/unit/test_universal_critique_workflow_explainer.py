@@ -1,7 +1,6 @@
 """Unit tests for universal critique workflow explainer."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import json
 from pathlib import Path
@@ -38,6 +37,7 @@ from nimbusware_console.universal_critique_workflow_explainer import (
     universal_critique_yaml_top_level_mapping_child_count_caption,
     universal_critique_yaml_top_level_nonempty_count_caption,
 )
+from nimbusware_env import find_repo_root
 
 
 @pytest.fixture()

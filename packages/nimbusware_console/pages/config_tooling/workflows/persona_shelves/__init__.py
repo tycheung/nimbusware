@@ -1,5 +1,3 @@
-"""``persona_shelves`` config tooling section."""
-
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 from nimbusware_console.pages.config_tooling.workflows.persona_shelves.catalog_panel import (
     _render_persona_catalog_panel,

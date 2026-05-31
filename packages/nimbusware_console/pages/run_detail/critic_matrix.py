@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone

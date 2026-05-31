@@ -1,7 +1,6 @@
 """LLM plan stage: schema validation + deterministic stub fallback."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from unittest.mock import patch
@@ -18,6 +17,7 @@ from hermes_orchestrator.llm_plan import (
 )
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_store.memory import InMemoryEventStore
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"

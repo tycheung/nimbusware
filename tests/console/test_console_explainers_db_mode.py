@@ -1,7 +1,6 @@
 """Console explainers read workflow/T2 config from materializer in DB mode (P0-h)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -23,6 +22,7 @@ from nimbusware_console.security_scan_metadata_workflow_explainer import (
 from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_workflow_explainer_payload,
 )
+from nimbusware_env import find_repo_root
 
 
 def _db_materializer(root: Path, tmp_path: Path) -> ConfigMaterializer:

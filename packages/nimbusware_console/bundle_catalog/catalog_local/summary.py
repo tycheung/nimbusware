@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -18,6 +15,7 @@ from nimbusware_console.bundle_catalog.catalog_local._cells import (
 from nimbusware_console.bundle_catalog.catalog_local._constants import (
     _LOCAL_CATALOG_RELPATH,
 )
+
 
 def bundle_catalog_local_summary(repo_root: Path) -> dict[str, Any]:
     path = repo_root / "configs" / "bundles" / "catalog.yaml"

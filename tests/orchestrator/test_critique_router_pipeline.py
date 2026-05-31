@@ -1,8 +1,10 @@
 """§14 #16: critique pairings drive plan stub + create_run taxonomy validation."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
+
 import pytest
+
+from nimbusware_env import find_repo_root
 
 pytestmark = pytest.mark.slow
 

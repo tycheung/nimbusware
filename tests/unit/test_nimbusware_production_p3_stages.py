@@ -1,7 +1,6 @@
 """PZ-8: Phase 3 critic stages enabled on nimbusware_production."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
@@ -10,13 +9,9 @@ from unittest.mock import patch
 import pytest
 
 from hermes_orchestrator.network_resilience_critique import NETWORK_RESILIENCE_CRITIQUE_STAGE
-from hermes_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
-from hermes_orchestrator.workflow_refactor import (
-    parse_refactor_workflow_block,
-    refactor_stage_effective,
-)
 from hermes_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_STAGE
 from hermes_orchestrator.pipeline import make_dev_orchestrator
+from hermes_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
 from hermes_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
 from hermes_orchestrator.workflow_network_resilience_critique import (
     network_resilience_critique_effective,
@@ -30,6 +25,7 @@ from hermes_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_nimbusware_production_yaml_enables_p3_blocks() -> None:

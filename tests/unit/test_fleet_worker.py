@@ -12,7 +12,6 @@ from hermes_orchestrator.fleet_worker import (
     collect_fleet_worker_metrics,
     evaluate_backpressure,
     fleet_redis_worker_enabled,
-    fleet_worker_health_snapshot,
     read_worker_heartbeat,
 )
 from hermes_orchestrator.run_dispatch import InMemoryRunQueue, RedisRunQueue, RunDispatchTask
@@ -111,6 +110,7 @@ def test_enterprise_fleet_worker_health_api(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
+
     from hermes_orchestrator.run_dispatch import set_run_queue
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
@@ -136,8 +136,9 @@ def test_worker_heartbeat_includes_fleet_metrics(
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("HERMES_RUN_DISPATCH", "redis")
     monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
-    from hermes_orchestrator.run_worker import _write_worker_heartbeat
     from datetime import datetime, timezone
+
+    from hermes_orchestrator.run_worker import _write_worker_heartbeat
 
     fake = _FakeRedis()
     q = RedisRunQueue("redis://example", client=fake)

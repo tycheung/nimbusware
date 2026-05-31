@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from hermes_extensions.custom_agents import CustomAgentRegistry
+from hermes_extensions.personas import PersonaShelf
+from hermes_orchestrator.merge import load_yaml
+from hermes_orchestrator.registry import RoleRegistry
 from nimbusware_config.flags import config_from_db_enabled
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
@@ -25,11 +29,11 @@ from nimbusware_config.keys import (
     NS_WORKFLOWS,
 )
 from nimbusware_config.protocol import ConfigStore
-from hermes_extensions.custom_agents import CustomAgentRegistry
-from nimbusware_config.store import InMemoryConfigStore, PostgresConfigStore, _maybe_publish_config_notify
-from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_config.store import (
+    InMemoryConfigStore,
+    PostgresConfigStore,
+    _maybe_publish_config_notify,
+)
 
 
 class ConfigMaterializer:

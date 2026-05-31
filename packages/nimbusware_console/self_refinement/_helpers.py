@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import csv
 import json
-import re
-from collections.abc import Mapping, Sequence
 from datetime import datetime
-from io import StringIO
 from typing import Any
 
-# Order matches ``self_refinement_timeline_summary`` in runs (human-facing first).
 _SELF_REFINEMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("version", "Version"),
     ("description", "Description"),

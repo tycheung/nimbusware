@@ -1,10 +1,8 @@
 """Network/Resilience Critic stage."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -14,9 +12,10 @@ from hermes_orchestrator.network_resilience_critique import (
 )
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_network_resilience_critique import (
-    parse_network_resilience_critique_workflow_block,
     network_resilience_critique_effective,
+    parse_network_resilience_critique_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_scan_summary_failed() -> None:

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
 
 import streamlit as st
 
@@ -14,8 +13,6 @@ from nimbusware_console.pages.run_detail._imports_common import (
     timezone,
 )
 from nimbusware_console.pages.run_detail._imports_display_b import (
-    scraper_fetch_from_timeline,
-    scraper_fetch_summary_rows,
     universal_critique_fail_stage_rows_csv,
     universal_critique_from_timeline,
     universal_critique_timeline_export_filename_slug,
@@ -209,5 +206,3 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                     )
             with st.expander("Raw universal_critique JSON", expanded=False):
                 st.json(_uc_tl)
-    _sf = scraper_fetch_from_timeline(data)
-    _sf_rows = scraper_fetch_summary_rows(_sf)

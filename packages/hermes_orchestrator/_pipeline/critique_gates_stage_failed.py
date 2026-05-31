@@ -1,8 +1,7 @@
-"""Emit stage.failed on critique gate FAIL (per stage)."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class CritiqueGateStageFailedMixin:
     def _maybe_emit_stage_failed_for_implementation_critique_gate_fail(

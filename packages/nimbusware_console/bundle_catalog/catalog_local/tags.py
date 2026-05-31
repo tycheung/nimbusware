@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -19,6 +16,7 @@ from nimbusware_console.bundle_catalog.catalog_local.rollup_without_tags import 
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
 )
+
 
 def bundle_catalog_distinct_tags_sample(
     repo_root: Path,

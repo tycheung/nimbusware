@@ -3,7 +3,10 @@ The allowlist is defined in ``packages/hermes_store/schema/postgres.sql`` (const
 ``event_store_type_allowed``). ``tests/test_allowed_event_types.py`` asserts parity.
 """
 from __future__ import annotations
+
 from agent_core.models import EventType
+
+
 def allowed_event_type_values() -> tuple[str, ...]:
     return tuple(sorted(e.value for e in EventType))
 def assert_event_type_registered(event_type: str) -> None:

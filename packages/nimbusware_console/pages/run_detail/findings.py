@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-from typing import Any
-
-from nimbusware_client.http import HTTPError
 import streamlit as st
 
-from nimbusware_client.http import get_json
-
+from nimbusware_client.http import HTTPError, get_json
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (

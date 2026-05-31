@@ -1,5 +1,3 @@
-"""Sequential and parallel writer stage dispatch."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403

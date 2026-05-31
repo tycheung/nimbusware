@@ -3,13 +3,12 @@ from __future__ import annotations
 import csv
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from io import StringIO
 from typing import Any
 
 from hermes_extensions.phase2 import agent_evaluator_score_band
 
-# Order matches ``agent_evaluator_timeline_summary`` in runs (session fields only).
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (
     ("persona_id", "Persona id"),
     ("stage_name", "Stage name"),

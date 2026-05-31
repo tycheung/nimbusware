@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import Any
 
 from nimbusware_console.security_scan_on_verify.latest import (
     security_scan_on_verify_summary_rows,
 )
+
 
 def security_scan_metadata_timeline_workflow_alignment_caption(
     *,

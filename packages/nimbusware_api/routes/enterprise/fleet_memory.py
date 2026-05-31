@@ -9,11 +9,6 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import StoreDep
-from nimbusware_api.errors import problem
-from nimbusware_api.routes.enterprise.core import EnterpriseDep
-from nimbusware_env.edition import enterprise_feature_enabled
-from nimbusware_iam.context import get_auth_context
 from hermes_memory.factory import build_memory_chunk_store
 from hermes_memory.fleet_index import rebuild_fleet_memory_index
 from hermes_memory.fleet_sync import (
@@ -23,6 +18,11 @@ from hermes_memory.fleet_sync import (
 )
 from hermes_memory.org_scope import fleet_scope_hash, resolve_fleet_scope
 from hermes_memory.search import format_memory_excerpt, search_fleet_memory
+from nimbusware_api.deps import StoreDep
+from nimbusware_api.errors import problem
+from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_env.edition import enterprise_feature_enabled
+from nimbusware_iam.context import get_auth_context
 
 router = APIRouter(prefix="/enterprise/fleet-memory", tags=["enterprise"])
 

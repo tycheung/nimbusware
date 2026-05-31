@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import csv
 import json
-import re
 from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
-
 
 from nimbusware_console.run_list_pagination_display.run_detail_summary import (
     run_detail_summary_export_filename_slug,

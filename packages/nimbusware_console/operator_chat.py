@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import json
 import uuid
-from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError
-
 from nimbusware_client.http import (
+    HTTPError,
     api_base,
     get_response,
     post_response,

@@ -9,9 +9,9 @@ from typing import Any
 
 from nimbusware_console.self_refinement._helpers import (
     _SELF_REFINEMENT_FIELDS,
-    _parse_iso_utc,
     _stringify,
 )
+
 
 def self_refinement_summary_rows(sr: Mapping[str, Any] | None) -> list[dict[str, str]]:
     if not sr:

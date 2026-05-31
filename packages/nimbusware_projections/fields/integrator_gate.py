@@ -1,5 +1,3 @@
-"""Integrator gate field metadata — shared by API and console."""
-
 from __future__ import annotations
 
 INTEGRATOR_GATE_ROW_KEYS: tuple[str, ...] = (

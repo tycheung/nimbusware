@@ -1,22 +1,18 @@
 from __future__ import annotations
 
-import pytest
-
 from nimbusware_env.env_flags import (
     env_bool,
-    env_default_on,
+    env_falsy,
     env_force_off,
     env_force_on,
-    env_falsy,
     env_truthy,
     env_truthy_raw,
     hermes_preflight_latency_sample_count,
     hermes_run_bandit_enabled,
-    hermes_run_perf_scan_enabled,
     hermes_run_semgrep_enabled,
+    hermes_skip_preflight_enabled,
     hermes_slice_auto_advance_enabled,
     hermes_slice_implement_mode,
-    hermes_skip_preflight_enabled,
     hermes_use_llm_explicitly_off,
     nimbusware_config_from_db_enabled,
 )

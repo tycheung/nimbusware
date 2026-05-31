@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -23,7 +22,6 @@ from agent_core.models import (
 )
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.llm_plan import append_gate_decision_event
-from hermes_orchestrator.network_resilience_scan import run_network_resilience_scan_summary
 from hermes_orchestrator.ollama_chat import ollama_chat_json
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts

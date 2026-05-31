@@ -1,7 +1,6 @@
 """§14 #16: create_run rejects incomplete critique pairings ."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import shutil
 from pathlib import Path
@@ -10,7 +9,6 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.critique_routing import (
     assert_critique_coverage_complete,
@@ -18,6 +16,8 @@ from hermes_orchestrator.critique_routing import (
 )
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_api.app import app
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

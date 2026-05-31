@@ -2,17 +2,10 @@ from __future__ import annotations
 
 import csv
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from io import StringIO
-from pathlib import Path
 from typing import Any
 
-from nimbusware_console.bundle_catalog.catalog_local._cells import (
-    _bundle_search_hit_cell,
-)
 
 def bundle_search_hits_from_blob(blob: Mapping[str, Any] | None) -> list[dict[str, Any]]:
     if not isinstance(blob, Mapping):

@@ -5,6 +5,12 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 
+from hermes_extensions.catalog import (
+    bundle_faiss_index_ready,
+    bundle_faiss_index_sync_state,
+    search_bundles,
+    validate_bundle_catalog_content,
+)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
@@ -25,12 +31,6 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_503,
 )
 from nimbusware_config.persist import load_bundle_catalog_dict, persist_bundle_catalog_dict
-from hermes_extensions.catalog import (
-    bundle_faiss_index_ready,
-    bundle_faiss_index_sync_state,
-    search_bundles,
-    validate_bundle_catalog_content,
-)
 
 router = APIRouter(prefix="/bundles", tags=["bundles"])
 

@@ -5,6 +5,7 @@ from typing import Any
 
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
 
+
 def render_faiss_status_panel(
     repo_root: Path,
     *,

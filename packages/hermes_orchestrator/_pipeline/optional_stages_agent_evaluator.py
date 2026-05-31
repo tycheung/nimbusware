@@ -1,8 +1,7 @@
-"""Optional agent-evaluator stage emission."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class AgentEvaluatorOptionalStagesMixin:
     def _maybe_emit_agent_evaluator_stage(self, run_id: UUID) -> None:
@@ -51,8 +50,8 @@ class AgentEvaluatorOptionalStagesMixin:
                     run_id=run_id,
                     config_materializer=self._config_materializer,
                 )
-        from nimbusware_config.persist import load_persona_shelf
         from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
+        from nimbusware_config.persist import load_persona_shelf
 
         rows = self._store.list_run_events(str(run_id))
         pa_for_eval: dict[str, Any] | None = None
@@ -70,7 +69,7 @@ class AgentEvaluatorOptionalStagesMixin:
             shelf=shelf,
         )
         ae_meta["evaluation"] = rules_eval
-        evaluation_branch: Literal["rules", "rules_with_llm_policy"] = "rules"
+        evaluation_branch: Literal[rules, rules_with_llm_policy] = "rules"
         production_scoring_mode = "rules"
         if agent_evaluator_llm_branch_effective(block):
             model = self._selected_model_for_run(run_id)

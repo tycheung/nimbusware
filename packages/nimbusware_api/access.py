@@ -7,7 +7,7 @@ from fastapi import HTTPException
 
 from nimbusware_api.errors import problem
 from nimbusware_env.edition import is_enterprise
-from nimbusware_iam.context import get_auth_context, resolve_store_tenant_id
+from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_maker.workspace import project_id_from_run_created_metadata
 
 

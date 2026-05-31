@@ -3,7 +3,6 @@ from __future__ import annotations
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
-
 def _render_persona_catalog_panel(repo_root: Path) -> None:
     if st.button("Load persona shelves", key="hermes_persona_load_btn"):
         try:

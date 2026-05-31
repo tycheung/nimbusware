@@ -1,7 +1,6 @@
 """§14 #16: parse and merge ``universal_critique`` workflow knobs."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from hermes_orchestrator.workflow_universal_critique import (
     env_over_yaml,
     parse_universal_critique_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

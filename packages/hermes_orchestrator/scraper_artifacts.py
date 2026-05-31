@@ -155,7 +155,6 @@ def _scraper_artifact_inventory_primary(
     from hermes_orchestrator.scraper_object_store import (
         _file_backend_root,
         object_store_list_artifacts,
-        object_store_local_mirror_enabled,
         object_store_url,
     )
 

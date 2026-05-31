@@ -1,5 +1,3 @@
-"""Optional security/performance/network/refactor critique stages."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
@@ -155,9 +153,6 @@ class OptionalCritiqueMixin:
         )
         if not network_resilience_critique_effective(block):
             return False
-        producer = "backend_writer" if block.backend_only else self._security_critique_producer_for_run(
-            sg_snapshot,
-        )
         if block.backend_only and "backend_writer" not in self._critique_router.known_producer_keys():
             return False
         ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()

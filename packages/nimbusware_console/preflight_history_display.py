@@ -9,9 +9,6 @@ from typing import Any
 
 from hermes_orchestrator.preflight_histogram import build_histogram, empty_histogram
 
-# Order mirrors the operator-readable layout of the rendered table; the API
-# helper ``preflight_timeline_summary`` returns these keys (and may return
-# ``None`` values when those keys were omitted from the preflight projection).
 _PREFLIGHT_FIELDS: tuple[tuple[str, str], ...] = (
     ("validated_model_id", "Validated model id"),
     ("provider", "Provider"),

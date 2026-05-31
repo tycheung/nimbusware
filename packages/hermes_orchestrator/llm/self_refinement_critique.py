@@ -8,26 +8,23 @@ from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from agent_core.models import (
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
     EventType,
-    GateDecisionEmittedEvent,
     GateDecisionEmittedPayload,
-    RequiredFixArtifact,
     Severity,
     StageStartedEvent,
     StageStartedPayload,
     Verdict,
 )
 from hermes_extensions.phase2 import UniversalCritiqueRouter
-from hermes_orchestrator.ollama_chat import ollama_chat_json
-from hermes_orchestrator.registry import RoleRegistry
-from hermes_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from hermes_store.protocol import EventStore
 from hermes_orchestrator.llm.common import *  # noqa: F403
+from hermes_orchestrator.registry import RoleRegistry
+from hermes_store.protocol import EventStore
+
 
 def _ollama_chat_json(*args: object, **kwargs: object) -> object:
     import hermes_orchestrator.llm_plan as _patch

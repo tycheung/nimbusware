@@ -1,20 +1,18 @@
 """B2 promotion proof for §14 #17 — YAML-first ungated self-refinement."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_self_refinement import (
+    parse_self_refinement_workflow_block,
     self_refinement_production_ungated_effective,
     self_refinement_ungated_loop_effective,
-    parse_self_refinement_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

@@ -30,7 +30,7 @@ def _split_explainer(
         body = header + extra_imports + ("\n" if extra_imports and not extra_imports.endswith("\n") else "") + chunk
         (pkg / filename).write_text(body, encoding="utf-8")
 
-    init = f'"""Workflow explainer package for ``{module}``."""\n\n'
+    init = ""
     for name in init_imports:
         init += f"from nimbusware_console.{module}.{name} import *  # noqa: F403\n"
     (pkg / "__init__.py").write_text(init, encoding="utf-8")

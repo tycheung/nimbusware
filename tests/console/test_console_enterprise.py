@@ -130,6 +130,7 @@ def test_enterprise_fleet_dashboard_api(
     monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
+
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
 

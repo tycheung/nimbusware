@@ -1,7 +1,6 @@
 """Escalation on first verifier failure (policy YAML)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from unittest.mock import patch
@@ -9,6 +8,7 @@ from unittest.mock import patch
 from agent_core.models import EventType
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.verifier_escalation import load_escalate_on_first_verifier_failure
+from nimbusware_env import find_repo_root
 
 
 def test_load_escalate_on_first_verifier_failure_default() -> None:

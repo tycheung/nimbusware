@@ -1,7 +1,6 @@
 """Agent evaluator rules loop v1 (P1-c / §14 #15)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import UUID
@@ -9,11 +8,6 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_api.deps import get_orchestrator, get_store
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
 from hermes_extensions.personas import PersonaShelf
 from hermes_extensions.phase2 import (
     AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
@@ -23,6 +17,12 @@ from hermes_extensions.phase2 import (
 )
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 from hermes_store.memory import InMemoryEventStore
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_env import find_repo_root
 
 
 def _minimal_shelf() -> PersonaShelf:

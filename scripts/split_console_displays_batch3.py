@@ -34,7 +34,7 @@ def _split_explainer(
         (pkg / filename).write_text(body, encoding="utf-8")
 
     mod = rel_module.replace("/", ".")
-    init = f'"""Console helpers for ``{rel_module}``."""\n\n'
+    init = ""
     for name in init_imports:
         init += f"from nimbusware_console.{mod}.{name} import *  # noqa: F403\n"
     (pkg / "__init__.py").write_text(init, encoding="utf-8")
@@ -95,7 +95,7 @@ def _split_timeline_sections(
         arg_names = [p.split(":")[0].strip().split("=")[0].strip() for p in render_params.split(",")]
         calls.append(f"    {func_name}({', '.join(arg_names)})")
 
-    init = f'"""``{src.stem}`` timeline sections."""\n\n' + "\n".join(imports) + "\n\n"
+    init = "\n".join(imports) + "\n\n"
     init += f"def {render_name}({render_params}) -> None:\n" + "\n".join(calls) + "\n"
     (pkg / "__init__.py").write_text(init, encoding="utf-8")
     src.write_text(
@@ -114,7 +114,6 @@ def _split_imports_facade(src_rel: str, split_line: int, parts: tuple[str, str])
     (pkg / f"{parts[0]}.py").write_text("".join(lines[: split_line - 1]), encoding="utf-8")
     (pkg / f"{parts[1]}.py").write_text("".join(lines[split_line - 1 :]), encoding="utf-8")
     facade = (
-        f'"""Re-export run-detail display imports."""\n\n'
         f"import nimbusware_console.pages.run_detail.{stem}.{parts[0]} as _a\n"
         f"import nimbusware_console.pages.run_detail.{stem}.{parts[1]} as _b\n\n"
         "globals().update({k: v for k, v in vars(_a).items() if not k.startswith('__')})\n"
@@ -218,9 +217,7 @@ def split_timeline_and_config_pages() -> None:
             ("summary_panel.py", "_render_catalog_summary_panel", 20, 149),
             ("rollups_panel.py", "_render_catalog_rollups_panel", 149, 421),
         ),
-        init_template='''"""``catalog_search`` config tooling section."""
-
-from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
+        init_template='''from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
 from nimbusware_console.pages.config_tooling.bundles.catalog_search.rollups_panel import (
     _render_catalog_rollups_panel,
 )
@@ -253,9 +250,7 @@ def render_bundle_catalog_search_section() -> None:
             ("critique_panel.py", "_render_critique_pairings_panel", 15, 205),
             ("catalog_panel.py", "_render_persona_catalog_panel", 205, 9999),
         ),
-        init_template='''"""``persona_shelves`` config tooling section."""
-
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+        init_template='''from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 from nimbusware_console.pages.config_tooling.workflows.persona_shelves.catalog_panel import (
     _render_persona_catalog_panel,
 )

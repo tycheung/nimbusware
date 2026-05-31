@@ -1,5 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import uuid4
@@ -13,6 +12,7 @@ from hermes_extensions.bundle_memory import (
     extract_bundle_outcomes_from_event_rows,
 )
 from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_env import find_repo_root
 
 
 def test_build_bundle_outcome_metadata() -> None:

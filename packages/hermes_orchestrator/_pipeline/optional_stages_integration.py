@@ -1,8 +1,7 @@
-"""Optional integration-adapter writer stage emission."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class IntegrationOptionalStagesMixin:
     def _maybe_emit_integration_adapter_writer_stage(self, run_id: UUID) -> None:

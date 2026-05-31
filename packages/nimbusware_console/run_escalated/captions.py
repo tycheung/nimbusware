@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import csv
-import json
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 from nimbusware_console.run_escalated._common import _stringify
+
 
 def run_escalated_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,

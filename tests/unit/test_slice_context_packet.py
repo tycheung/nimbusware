@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from agent_core.models.slice_packet import SliceContextPacket
 from hermes_orchestrator.micro_slice import parse_slice_plan
 from hermes_orchestrator.slice_context_packet import build_slice_context_packet
 from hermes_orchestrator.slice_gate import run_slice_gate_chain

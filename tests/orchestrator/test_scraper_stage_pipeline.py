@@ -1,7 +1,6 @@
 """Optional scraper fetch stage (workflow YAML + outbound HTTP)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -13,6 +12,7 @@ from agent_core.models import EventType
 from hermes_executor.fetch import EgressResponseTooLarge
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
+from nimbusware_env import find_repo_root
 
 _DEFAULT_CFG = ScraperFetchConfig(
     enabled=True,

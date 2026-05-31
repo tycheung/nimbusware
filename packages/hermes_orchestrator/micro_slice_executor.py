@@ -22,7 +22,6 @@ from hermes_orchestrator.llm_slice import (
     execute_slice_replan_llm,
 )
 from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
-from hermes_orchestrator.slice_implement import execute_slice_implement
 from hermes_orchestrator.slice_diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
@@ -30,6 +29,7 @@ from hermes_orchestrator.slice_diff import (
     subdivide_slice_plan,
 )
 from hermes_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
+from hermes_orchestrator.slice_implement import execute_slice_implement
 from hermes_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 

@@ -1,5 +1,3 @@
-"""Micro-slice plan/gate recording and slice pass dispatch."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
@@ -47,7 +45,7 @@ class MicroSliceMixin:
         """Run per-slice gate chain and append pass/fail stage events."""
         from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from hermes_orchestrator.slice_context_packet import build_slice_context_packet
-        from hermes_orchestrator.slice_gate import SliceGateChainResult, run_slice_gate_chain
+        from hermes_orchestrator.slice_gate import run_slice_gate_chain
         from hermes_orchestrator.workflow_memory import (
             memory_settings_from_run_metadata,
             pinned_generation_for_scope,

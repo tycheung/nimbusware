@@ -12,6 +12,10 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from nimbusware_env.admin_token import (
+    require_non_default_admin_token_for_host,
+    using_default_admin_token,
+)
 from nimbusware_env.desktop_common import (
     pick_webview_gui,
     repo_root,
@@ -21,10 +25,6 @@ from nimbusware_env.desktop_common import (
     terminate_process,
 )
 from nimbusware_env.dotenv import load_dotenv
-from nimbusware_env.admin_token import (
-    require_non_default_admin_token_for_host,
-    using_default_admin_token,
-)
 from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps, linux_desktop_manual_hint
 
 _PROCS: list[subprocess.Popen[object]] = []

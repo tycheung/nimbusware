@@ -1,7 +1,6 @@
 """Integration Adapter Writer stub pipeline stage (§14 #13)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -18,6 +17,7 @@ from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
+from nimbusware_env import find_repo_root
 
 
 def _write_profile(tmp_path: Path, name: str, body: str) -> None:
@@ -55,7 +55,6 @@ integration_adapter_writer:
 
 
 def test_pipeline_emits_stub_stage() -> None:
-    from pathlib import Path as _Path
 
     root = find_repo_root(start=Path(__file__).resolve().parents[2])
     orch, mem = make_dev_orchestrator(repo_root=root)
@@ -124,7 +123,6 @@ def test_emit_live_integration_adapter_writer_stage_direct() -> None:
 
 
 def test_pipeline_emits_live_stage() -> None:
-    from pathlib import Path as _Path
 
     root = find_repo_root(start=Path(__file__).resolve().parents[2])
     orch, mem = make_dev_orchestrator(repo_root=root)

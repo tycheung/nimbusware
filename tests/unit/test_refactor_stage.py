@@ -1,10 +1,8 @@
 """Refactorer + refactor critique."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -14,6 +12,7 @@ from hermes_orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_refactor_workflow_block() -> None:

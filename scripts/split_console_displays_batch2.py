@@ -32,7 +32,7 @@ def _split_explainer(
         ) + chunk
         (pkg / filename).write_text(body, encoding="utf-8")
 
-    init = f'"""Console display helpers for ``{module}``."""\n\n'
+    init = ""
     for name in init_imports:
         init += f"from nimbusware_console.{module}.{name} import *  # noqa: F403\n"
     (pkg / "__init__.py").write_text(init, encoding="utf-8")
@@ -68,7 +68,7 @@ def _split_submodule(
         ) + chunk
         (subpkg / filename).write_text(body, encoding="utf-8")
 
-    init = f'"""``{package}.{submodule}`` subpackage."""\n\n'
+    init = ""
     for name in init_imports:
         init += (
             f"from nimbusware_console.{package}.{submodule}.{name} import *  # noqa: F403\n"

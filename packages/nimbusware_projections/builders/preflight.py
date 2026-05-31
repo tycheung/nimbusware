@@ -1,5 +1,3 @@
-"""Build preflight timeline projection from run events."""
-
 from __future__ import annotations
 
 from typing import Any

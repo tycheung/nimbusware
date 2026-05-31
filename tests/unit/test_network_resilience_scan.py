@@ -1,7 +1,6 @@
 """Network/resilience static scan + SQL budget."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
@@ -11,6 +10,7 @@ from hermes_orchestrator.network_resilience_scan import (
     run_network_resilience_scan_summary,
     scan_http_resilience_heuristic,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_scan_http_resilience_clean_repo() -> None:

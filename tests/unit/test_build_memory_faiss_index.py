@@ -1,7 +1,6 @@
 """Tests for ``scripts/build_memory_faiss_index.py``."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import importlib.util
 import subprocess
@@ -9,12 +8,12 @@ import sys
 from pathlib import Path
 from uuid import uuid4
 
-import numpy as np
 import pytest
 
 from hermes_memory import InMemoryMemoryChunkStore, rebuild_memory_index
 from hermes_memory.faiss_index import memory_faiss_index_ready
 from hermes_memory.models import MemoryChunkRecord
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

@@ -67,9 +67,9 @@ def test_deterministic_chunk_id_matches_indexer(tmp_path, monkeypatch) -> None:
     chunks = store.list_chunks_for_scope(scope)
     finding_row = next(r for r in rows if r["event_type"] == EventType.FINDING_CREATED.value)
     pl = finding_row["payload"]
-    from hermes_memory.chunking import _finding_excerpt
-
     from uuid import UUID
+
+    from hermes_memory.chunking import _finding_excerpt
 
     expected_finding = deterministic_chunk_id(
         repo_scope_hash=scope,

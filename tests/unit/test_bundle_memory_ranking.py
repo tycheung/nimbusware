@@ -1,5 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import uuid4
@@ -11,6 +10,7 @@ from hermes_extensions.bundle_memory import (
 )
 from hermes_extensions.bundle_memory_models import BundleSuccessStats
 from hermes_extensions.catalog import apply_bundle_memory_ranking, search_bundles
+from nimbusware_env import find_repo_root
 
 
 def test_apply_bundle_memory_ranking_promotes_high_success_bundle(monkeypatch) -> None:

@@ -9,7 +9,6 @@ from uuid import UUID
 from hermes_memory.org_scope import resolve_fleet_scope
 from hermes_memory.remote_store import (
     FileFleetMemoryCanonicalStore,
-    FleetMemoryBundle,
     bundle_from_store_rows,
     import_bundle_to_memory_store,
     resolve_canonical_store_root,

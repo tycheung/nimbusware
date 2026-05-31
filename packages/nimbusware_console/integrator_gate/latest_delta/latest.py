@@ -1,27 +1,14 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    table_rows_csv,
-)
-import csv
-import json
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
 from nimbusware_console.integrator_gate._helpers import (
-    _INTEGRATOR_GATE_FIELDS,
     _optional_float,
     _stringify,
-    integrator_gate_from_timeline,
-    integrator_gate_history_from_timeline,
 )
-from nimbusware_console.integrator_gate.history import (
-    integrator_gate_history_operator_metrics,
-)
+
+
 def _string_tag_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []

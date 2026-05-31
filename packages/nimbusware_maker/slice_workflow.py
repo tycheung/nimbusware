@@ -13,6 +13,18 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
+from nimbusware_maker.approval import (
+    STAGE_PLAN_APPROVED,
+    STAGE_SLICE_APPLIED,
+    STAGE_SLICE_PENDING,
+    STAGE_SLICE_SKIPPED,
+    STAGE_WORKSPACE_REVERTED,
+    STAGE_WORKSPACE_SNAPSHOT,
+    has_plan_approved,
+    last_approved_snapshot_from_rows,
+    pending_slice_from_rows,
+    slice_is_resolved,
+)
 from nimbusware_maker.slice_engine import (
     SlicePlan,
     _collect_slice_diff_stats,
@@ -30,18 +42,6 @@ from nimbusware_maker.slice_engine import (
     micro_slice_count_for_run,
     parse_slice_plan,
     slice_implement_mode,
-)
-from nimbusware_maker.approval import (
-    STAGE_PLAN_APPROVED,
-    STAGE_SLICE_APPLIED,
-    STAGE_SLICE_PENDING,
-    STAGE_SLICE_SKIPPED,
-    STAGE_WORKSPACE_REVERTED,
-    STAGE_WORKSPACE_SNAPSHOT,
-    has_plan_approved,
-    last_approved_snapshot_from_rows,
-    pending_slice_from_rows,
-    slice_is_resolved,
 )
 from nimbusware_maker.slice_preview import preview_note_for_scoped_mode, unified_diff_from_edits
 from nimbusware_maker.workspace import resolve_run_workspace

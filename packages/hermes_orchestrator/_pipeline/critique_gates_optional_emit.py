@@ -1,8 +1,7 @@
-"""Optional universal-critique stage emitters."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class CritiqueGateOptionalEmitMixin:
     def _emit_test_writer_critique_optional(

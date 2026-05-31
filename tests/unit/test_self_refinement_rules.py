@@ -1,26 +1,25 @@
 """Self-refinement rules loop v1 (P2-a / §14 #17)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
-from pathlib import Path
 import os
+from pathlib import Path
 from unittest.mock import patch
 from uuid import UUID
 
-import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_api.app import app
-from nimbusware_api.deps import get_orchestrator, get_store
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
 from hermes_extensions.personas import PersonaShelf
 from hermes_extensions.self_refinement import SelfRefinementEvaluator
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 from hermes_orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
 from hermes_store.memory import InMemoryEventStore
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_env import find_repo_root
 
 
 def _minimal_shelf(*, probation_status: str | None = None, with_profile: bool = True) -> PersonaShelf:

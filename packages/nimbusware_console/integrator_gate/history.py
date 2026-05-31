@@ -1,10 +1,5 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    table_rows_csv,
-)
 import csv
 import json
 import re
@@ -12,11 +7,17 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+)
 from nimbusware_console.integrator_gate._helpers import (
     _format_tag_list_sample,
     _optional_float,
     _stringify,
 )
+
+
 def integrator_gate_history_table_rows(history: list[dict[str, Any]]) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for i, g in enumerate(history, start=1):

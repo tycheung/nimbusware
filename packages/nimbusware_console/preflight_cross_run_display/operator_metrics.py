@@ -6,10 +6,11 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-
 from nimbusware_console.preflight_cross_run_display.trend import (
     preflight_cross_run_trend_export_filename_slug,
 )
+
+
 def preflight_cross_run_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:

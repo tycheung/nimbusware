@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -18,6 +15,7 @@ from nimbusware_console.bundle_catalog.catalog_local._cells import (
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
 )
+
 
 def bundle_catalog_bundles_without_id_rollup(repo_root: Path) -> dict[str, Any]:
     summary = bundle_catalog_local_summary(repo_root)

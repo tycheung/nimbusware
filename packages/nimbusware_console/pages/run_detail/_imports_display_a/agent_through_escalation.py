@@ -9,8 +9,8 @@ from nimbusware_console.agent_evaluator_display import (
     agent_evaluator_from_timeline,
     agent_evaluator_operator_metrics,
     agent_evaluator_operator_metrics_caption,
-    agent_evaluator_operator_metrics_export_json,
     agent_evaluator_operator_metrics_export_filename_slug,
+    agent_evaluator_operator_metrics_export_json,
     agent_evaluator_operator_metrics_table_rows,
     agent_evaluator_operator_metrics_table_rows_csv,
     agent_evaluator_session_caption,
@@ -19,7 +19,6 @@ from nimbusware_console.agent_evaluator_display import (
     agent_evaluator_timeline_export_json,
     agent_evaluator_timeline_table_rows_csv,
 )
-
 from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_auto_create_env_gate_caption,
     agent_evaluator_auto_promote_env_gate_caption,
@@ -44,17 +43,6 @@ from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_yaml_raw_type_caption,
     agent_evaluator_yaml_true_bool_count_caption,
 )
-
-from nimbusware_console.bundle_catalog_editor import (
-    bundle_editor_patch_payload,
-    bundle_editor_validation_issues,
-)
-
-from nimbusware_console.bundle_memory_display import (
-    bundle_memory_analytics_from_store,
-    bundle_memory_caption,
-)
-
 from nimbusware_console.bundle_catalog import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     bundle_catalog_bundle_count_caption,
@@ -176,12 +164,18 @@ from nimbusware_console.bundle_catalog import (
     bundle_search_top_hit_preview_caption,
     run_bundle_catalog_search,
 )
-
+from nimbusware_console.bundle_catalog_editor import (
+    bundle_editor_patch_payload,
+    bundle_editor_validation_issues,
+)
+from nimbusware_console.bundle_memory_display import (
+    bundle_memory_analytics_from_store,
+    bundle_memory_caption,
+)
 from nimbusware_console.console_theme import (
     streamlit_theme_defaults_caption,
     streamlit_white_label_deferred_caption,
 )
-
 from nimbusware_console.critic_matrix_display import (
     critic_matrix_export_filename_slug,
     critic_matrix_export_json,
@@ -193,7 +187,6 @@ from nimbusware_console.critic_matrix_display import (
     critic_matrix_rows_from_events,
     critic_matrix_table_rows_csv,
 )
-
 from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_policy_export_filename_slug,
     escalation_policy_yaml_age_caption,

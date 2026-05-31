@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from uuid import uuid4
 
 import httpx
 import pytest
@@ -95,6 +94,7 @@ def test_enterprise_fleet_ollama_sli_api(
         tmp_path / "sli.json",
     )
     from fastapi.testclient import TestClient
+
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
 

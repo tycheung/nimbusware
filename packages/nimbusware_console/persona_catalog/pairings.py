@@ -1,22 +1,17 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    table_rows_csv,
-)
-import csv
 import json
-import re
 from collections.abc import Mapping, Sequence
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
-from nimbusware_console.persona_catalog.summary.build import (
-    _persona_operator_summary_cell,
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+    table_rows_csv,
 )
+
+
 def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
     import yaml
 
@@ -121,7 +116,7 @@ def persona_probation_other_by_shelf_export_json(
 def persona_probation_other_by_shelf_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return field_value_table_rows_csv(rows)
+    return table_rows_csv(rows, _PROBATION_OTHER_BY_SHELF_CSV_COLUMNS)
 
 
 def persona_probation_other_export_filename_slug() -> str:
@@ -288,7 +283,7 @@ def critique_pairings_critic_counts_export_json(
 def critique_pairings_critic_counts_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return field_value_table_rows_csv(rows)
+    return table_rows_csv(rows, _CRITIQUE_PAIRINGS_CRITIC_COUNTS_CSV_COLUMNS)
 
 
 def critique_pairings_critic_counts_all_export_json(
@@ -364,6 +359,6 @@ def critique_pairings_producer_keys_all_table_rows_csv(
 def critique_pairings_producer_keys_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return field_value_table_rows_csv(rows)
+    return table_rows_csv(rows, _CRITIQUE_PAIRINGS_PRODUCER_KEYS_CSV_COLUMNS)
 
 

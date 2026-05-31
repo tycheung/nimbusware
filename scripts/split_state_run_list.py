@@ -26,9 +26,7 @@ keys_import = (
 )
 
 common_header = (
-    '''"""Run list helpers."""
-
-from __future__ import annotations
+    '''from __future__ import annotations
 
 import csv
 import io
@@ -52,20 +50,16 @@ from nimbusware_console.settings import API_BASE
 )
 
 (ROOT / "packages/nimbusware_console/pages/_state_run_list_qp.py").write_text(
-    common_header.replace('"""Run list helpers."""', '"""Run list query-param sync and defaults."""')
-    + qp_body,
+    common_header + qp_body,
     encoding="utf-8",
 )
 
 (ROOT / "packages/nimbusware_console/pages/_state_run_list_render.py").write_text(
-    common_header.replace('"""Run list helpers."""', '"""Run list fetch, CSV export, and display."""')
-    + render_body,
+    common_header + render_body,
     encoding="utf-8",
 )
 
-facade = '''"""Run list query-param sync, fetch, and display."""
-
-from __future__ import annotations
+facade = '''from __future__ import annotations
 
 import nimbusware_console.pages._state_run_list_qp as _state_run_list_qp
 import nimbusware_console.pages._state_run_list_render as _state_run_list_render

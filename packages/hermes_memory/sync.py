@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from hermes_memory.manifest import default_memory_index_dir, read_manifest
 from hermes_memory.faiss_index import memory_faiss_index_ready
+from hermes_memory.manifest import default_memory_index_dir, read_manifest
 
 
 def memory_index_sync_state(repo_root: Path) -> dict[str, Any]:
@@ -56,7 +56,7 @@ def memory_sync_manifest_stub(repo_root: Path) -> dict[str, Any]:
         try:
             from hermes_memory.remote_store import resolve_canonical_store_root
 
-            root = resolve_canonical_store_root()
+            resolve_canonical_store_root()
             remote_sync = "configured"
         except ValueError:
             remote_sync = "not_configured"

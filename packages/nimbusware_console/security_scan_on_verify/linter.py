@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.security_scan_on_verify._helpers import _stringify
-
 _LINTER_EXIT_FIELDS: tuple[tuple[str, str], ...] = (
     ("Ruff", "security_scan_ruff_exit"),
     ("Bandit", "security_scan_bandit_exit"),

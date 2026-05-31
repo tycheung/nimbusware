@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import csv
 import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
 

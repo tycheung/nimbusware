@@ -1,18 +1,16 @@
 """B1 promotion proof for §14 #13 — Integration Adapter Writer target I/O."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
-import json
 from pathlib import Path
 
-from agent_core.models import EventType
 from hermes_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
 from hermes_orchestrator.integration_adapter_writer_stage import INTEGRATION_ADAPTER_WRITER_STAGE
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_target_adapter_integration_writes_state_and_sync(tmp_path: Path) -> None:

@@ -46,6 +46,3 @@ def memory_policy_table_rows(policy: Mapping[str, Any] | None) -> list[dict[str,
         if key in policy:
             rows.append({"field": key, "value": str(policy[key])})
     return rows
-
-
-# memory timeline helpers live in ``hermes_memory.timeline`` (re-exported above).

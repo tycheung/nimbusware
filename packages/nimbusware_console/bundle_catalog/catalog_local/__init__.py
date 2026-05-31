@@ -9,8 +9,8 @@ from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _mtime_iso_utc_ns,
 )
 from nimbusware_console.bundle_catalog.catalog_local._constants import (
-    BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     _LOCAL_CATALOG_RELPATH,
+    BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
 )
 from nimbusware_console.bundle_catalog.catalog_local.faiss_helpers import (
     _bundle_faiss_mtime_observability,

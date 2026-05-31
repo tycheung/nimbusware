@@ -1,7 +1,6 @@
 """Bundle catalog write API (§14 #12 catalog edit path)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 import shutil
@@ -9,6 +8,8 @@ from pathlib import Path
 
 import yaml
 from fastapi.testclient import TestClient
+
+from nimbusware_env import find_repo_root
 
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")

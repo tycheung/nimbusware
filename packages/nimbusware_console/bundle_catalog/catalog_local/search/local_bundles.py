@@ -2,10 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
 from typing import Any
@@ -13,6 +10,10 @@ from typing import Any
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_search_hit_cell,
 )
+from nimbusware_console.bundle_catalog.catalog_local.search.metrics import (
+    _BUNDLE_LOCAL_CSV_COLUMNS,
+)
+
 
 def bundle_catalog_local_bundles(repo_root: Path) -> list[dict[str, Any]]:
     path = repo_root / "configs" / "bundles" / "catalog.yaml"

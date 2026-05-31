@@ -13,7 +13,6 @@ from agent_core.models import (
     MemoryRetrievalEmittedEvent,
     MemoryRetrievalEmittedPayload,
 )
-
 from hermes_memory.indexer import RebuildIndexResult
 from hermes_memory.models import MemoryRetrievalHit
 

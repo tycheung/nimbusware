@@ -1,22 +1,21 @@
 """§14 #17: self-refinement probation→promoted auto path + timeline metadata."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import shutil
 from pathlib import Path
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 import yaml
 
 from agent_core.models import EventType
-from nimbusware_api.routes.runs import self_refinement_timeline_summary
-from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
 from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.workflow_self_refinement import parse_self_refinement_workflow_block
+from nimbusware_api.routes.runs import self_refinement_timeline_summary
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

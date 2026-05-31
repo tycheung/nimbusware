@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    FIELD_VALUE_COLUMNS,
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    sequence_export_json,
-    table_rows_csv,
-)
 from collections.abc import Mapping, Sequence
 from typing import Any
+
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+)
 
 
 def security_scan_metadata_workflow_explainer_operator_metrics(

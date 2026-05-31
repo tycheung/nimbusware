@@ -1,19 +1,17 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    table_rows_csv,
-)
 import csv
 import json
-import re
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from io import StringIO
-from pathlib import Path
 from typing import Any
+
+from nimbusware_console.components.operator_metrics import (
+    mapping_export_json,
+    mapping_to_sorted_table_rows,
+)
+
 
 def persona_catalog_operator_summary(catalog: Mapping[str, Any]) -> dict[str, Any]:
     summary: dict[str, Any] = {
@@ -216,6 +214,9 @@ def persona_catalog_operator_summary_export_json(
     summary: Mapping[str, Any] | None,
 ) -> str:
     return mapping_export_json(summary)
+
+
+_PERSONA_OPERATOR_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
 def _persona_operator_summary_cell(value: Any) -> str:

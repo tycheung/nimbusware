@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-import csv
 import json
-import re
 from collections import Counter
-from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
-from io import StringIO
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _mtime_iso_utc_ns,
 )
+
 
 def _bundle_faiss_mtime_observability(sync: Mapping[str, Any]) -> dict[str, bool]:
     cat_ns = sync.get("catalog_mtime_ns")

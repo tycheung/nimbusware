@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 import re
@@ -11,6 +10,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+
+from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -23,10 +24,10 @@ os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEAR
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from nimbusware_api.app import app  # noqa: E402
 from hermes_orchestrator.ingress import assert_known_workflow  # noqa: E402
 from hermes_orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
 from hermes_orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402
+from nimbusware_api.app import app  # noqa: E402
 
 _VALUE_ERROR_PREFIX = "invalid workflow_profile: "
 _FILE_NOT_FOUND_PREFIX = "unknown workflow_profile (no file): "

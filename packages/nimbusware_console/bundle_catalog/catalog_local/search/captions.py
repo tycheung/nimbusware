@@ -1,18 +1,12 @@
 from __future__ import annotations
 
-import csv
-import json
-import re
-from collections import Counter
-from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
-from io import StringIO
-from pathlib import Path
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.bundle_catalog.catalog_local._cells import (
-    _bundle_search_hit_cell,
+from nimbusware_console.bundle_catalog.catalog_local._constants import (
+    BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
 )
+
 
 def bundle_search_top_hit_preview_caption(
     search_payload: Mapping[str, Any] | None,

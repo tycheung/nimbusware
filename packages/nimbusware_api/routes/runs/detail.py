@@ -9,6 +9,11 @@ from fastapi import HTTPException, Response
 from fastapi.routing import APIRouter
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
+from hermes_memory.timeline import (
+    memory_indexed_timeline_summary,
+    memory_retrieval_timeline_summary,
+)
+from hermes_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
@@ -40,12 +45,7 @@ from nimbusware_api.schemas.openapi import (
     format_run_timeline_link_header,
 )
 from nimbusware_api.schemas.runs import RunDetailResponse, RunTimelineResponse
-from hermes_memory.timeline import (
-    memory_indexed_timeline_summary,
-    memory_retrieval_timeline_summary,
-)
 from nimbusware_projections.run_summary import build_run_summary
-from hermes_store.protocol import serialized_event_from_row
 
 router = APIRouter()
 

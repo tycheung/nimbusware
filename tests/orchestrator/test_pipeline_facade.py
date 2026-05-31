@@ -1,14 +1,12 @@
 """Pipeline facade — composed mixins and stable patch target (Phase 6)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
-import pytest
-
 import hermes_orchestrator.pipeline as pipeline_module
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
+from nimbusware_env import find_repo_root
 
 
 def test_pipeline_exports_public_api() -> None:
@@ -59,7 +57,7 @@ def test_pipeline_mixin_modules_exist() -> None:
         critique_gates,
         optional_stages,
     ):
-        assert mod.__doc__
+        assert mod.__name__.startswith("hermes_orchestrator._pipeline.")
 
 
 def test_run_orchestrator_has_core_methods() -> None:

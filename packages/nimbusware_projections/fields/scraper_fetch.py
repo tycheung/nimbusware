@@ -1,5 +1,3 @@
-"""Scraper fetch projection field metadata."""
-
 from __future__ import annotations
 
 SCRAPER_FETCH_ROW_KEYS: tuple[str, ...] = (

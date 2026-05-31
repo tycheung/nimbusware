@@ -1,5 +1,3 @@
-"""Self-refinement projection field metadata."""
-
 from __future__ import annotations
 
 SELF_REFINEMENT_SUMMARY_KEYS: tuple[str, ...] = (

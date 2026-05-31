@@ -9,6 +9,7 @@ from typing import Any
 
 from nimbusware_console.security_scan_on_verify._helpers import _stringify
 
+
 def security_scan_on_verify_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:

@@ -2,21 +2,20 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
-from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
+from hermes_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID
 from nimbusware_iam.context import resolve_store_tenant_id, set_auth_context
 from nimbusware_iam.crypto import hash_api_key
-from nimbusware_iam.models import AuthContext
 from nimbusware_iam.store import InMemoryIamStore
-from hermes_store.memory import InMemoryEventStore
 
 
 def test_individual_skips_iam_enforcement(monkeypatch: pytest.MonkeyPatch) -> None:

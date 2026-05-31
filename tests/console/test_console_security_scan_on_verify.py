@@ -1,6 +1,7 @@
 """Console security scan on verify display helper (follow-on 40 §14 #18)."""
 
 from __future__ import annotations
+
 import pytest
 
 pytestmark = pytest.mark.slow

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime, timezone
 from typing import Any
 
-from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
 from nimbusware_console.self_refinement.marker_history import self_refinement_from_timeline
+
 
 def self_refinement_snapshot_from_compare_paste(
     parsed: Mapping[str, Any],

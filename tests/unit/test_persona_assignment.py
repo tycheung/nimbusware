@@ -1,20 +1,20 @@
 """Persona assignment at run creation (P1 / §3B.3)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
+from hermes_orchestrator.ingress import assert_persona_assignment_valid
+from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
+from hermes_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.ingress import assert_persona_assignment_valid
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_env import find_repo_root
 
 
 def test_create_run_freezes_persona_assignment_metadata() -> None:

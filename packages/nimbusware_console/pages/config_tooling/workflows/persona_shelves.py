@@ -1,1 +1,0 @@
-from nimbusware_console.pages.config_tooling.workflows.persona_shelves import render_workflows_persona_shelves_section

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from nimbusware_client.http import HTTPError
 import streamlit as st
 
-from nimbusware_client.http import get_json, post_json
+from nimbusware_client.http import HTTPError, post_json
 from nimbusware_console.components.ui_errors import render_api_error
 
 

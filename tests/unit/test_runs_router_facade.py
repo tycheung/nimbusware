@@ -1,10 +1,8 @@
 """Runs router facade — route surface and import shim contracts (Phase 3)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
-from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +13,7 @@ from fastapi.testclient import TestClient
 import nimbusware_api.routes.runs as runs_module
 from nimbusware_api.app import app
 from nimbusware_api.facade import build_v1_router
+from nimbusware_env import find_repo_root
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
 

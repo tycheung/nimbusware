@@ -5,8 +5,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from hermes_orchestrator.verifiers import run_ruff_check
-
 _N_PLUS_ONE_PATTERNS = (
     re.compile(
         r"for\s+\w+\s+in\s+.+:\s*\n(?:.*\n){0,8}.*"

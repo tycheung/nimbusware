@@ -6,13 +6,15 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from uuid import UUID
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def main(argv: list[str] | None = None) -> int:
-    from hermes_memory.fleet_sync import pull_fleet_memory_from_canonical, push_fleet_memory_to_canonical
+    from hermes_memory.fleet_sync import (
+        pull_fleet_memory_from_canonical,
+        push_fleet_memory_to_canonical,
+    )
     from hermes_memory.org_scope import require_fleet_memory_feature
     from hermes_memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
 

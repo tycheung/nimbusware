@@ -1,11 +1,11 @@
 """Scoped pytest helper for micro-slices."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 from hermes_orchestrator.verifiers import run_pytest_targets
+from nimbusware_env import find_repo_root
 
 
 def test_run_pytest_targets_on_existing_test() -> None:

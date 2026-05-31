@@ -1,53 +1,13 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    FIELD_VALUE_COLUMNS,
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    sequence_export_json,
-    table_rows_csv,
-)
-import csv
-import hashlib
-import json
-import os
 import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 from hermes_extensions.personas import ALLOWED_SHELVES
-from hermes_extensions.phase2 import ModuleIntegrator
-from hermes_orchestrator.integrator_gate import (
-    integrator_gate_workflow_enabled,
-    load_bundle_tags_for_bundle_id,
-    load_integrator_gate_emit_enabled,
-    parse_integrator_gate_min_score_to_pass,
-    parse_integrator_gate_project_tags,
-)
 
-# Top-level keys allowed when pasting a full workflow profile (union of shipped profiles).
-_FULL_WORKFLOW_MAPPING_KEYS: frozenset[str] = frozenset(
-    {
-        "finding_fix_strictness",
-        "network_egress",
-        "scraper_fetch",
-        "agent_evaluator",
-        "integration_adapter_writer",
-        "integrator_gate",
-        "self_refinement",
-        "universal_critique",
-        "escalation",
-    },
-)
-ALLOWED_FULL_WORKFLOW_ROOT_KEYS: frozenset[str] = frozenset(
-    _FULL_WORKFLOW_MAPPING_KEYS | {"version", "security_scan_metadata_on_verify"},
-)
-# Top-level keys allowed when pasting a full workflow profile (union of shipped profiles).
 _FULL_WORKFLOW_MAPPING_KEYS: frozenset[str] = frozenset(
     {
         "finding_fix_strictness",

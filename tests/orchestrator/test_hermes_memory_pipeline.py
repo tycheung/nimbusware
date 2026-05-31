@@ -1,5 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import uuid4
@@ -8,6 +7,7 @@ from agent_core.models import EventType
 from hermes_memory import InMemoryMemoryChunkStore, rebuild_memory_index
 from hermes_orchestrator.micro_slice import parse_slice_plan
 from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_env import find_repo_root
 
 
 def _sample_rows() -> list[dict]:

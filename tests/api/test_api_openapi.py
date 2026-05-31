@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
-import pytest
 from fastapi.testclient import TestClient
+
 
 def test_openapi_info_description_present(client: TestClient) -> None:
     spec = client.app.openapi()

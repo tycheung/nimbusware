@@ -1,5 +1,3 @@
-"""Session-state keys for run list, detail, and workflow caches."""
-
 from __future__ import annotations
 
 _RUN_LIST_QP_KEYS = frozenset({

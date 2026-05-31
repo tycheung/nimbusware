@@ -93,7 +93,7 @@ def execute_slice_replan_llm(
     try:
         data = ollama_chat_json(
             base_url=base_url,
-            model=model,
+            model=model_id,
             messages=[
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},

@@ -1,13 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (
-    integrator_gate_compatibility_ranking_caption,
-    integrator_gate_compatibility_ranking_table_rows,
     integrator_gate_delta_bundle_changed_caption,
     integrator_gate_delta_export_filename_slug,
     integrator_gate_delta_export_json,
@@ -21,40 +17,12 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
     integrator_gate_delta_summary_rows_csv,
     integrator_gate_delta_transition_caption,
     integrator_gate_delta_verdict_changed_caption,
-    integrator_gate_from_timeline,
-    integrator_gate_history_distinct_bundles_caption,
-    integrator_gate_history_entry_count_caption,
-    integrator_gate_history_export_filename_slug,
-    integrator_gate_history_export_json,
-    integrator_gate_history_failure_reason_caption,
-    integrator_gate_history_from_timeline,
-    integrator_gate_history_latest_margin_caption,
-    integrator_gate_history_metrics_table_rows,
-    integrator_gate_history_operator_metrics,
-    integrator_gate_history_operator_metrics_caption,
-    integrator_gate_history_operator_metrics_export_json,
-    integrator_gate_history_operator_metrics_table_rows_csv,
-    integrator_gate_history_score_range_caption,
-    integrator_gate_history_table_rows,
-    integrator_gate_history_table_rows_csv,
-    integrator_gate_history_verdict_tally_caption,
-    integrator_gate_latest_bundle_id_caption,
-    integrator_gate_latest_export_filename_slug,
-    integrator_gate_latest_export_json,
-    integrator_gate_latest_metrics_table_rows,
-    integrator_gate_latest_operator_metrics,
-    integrator_gate_latest_operator_metrics_caption,
-    integrator_gate_latest_operator_metrics_export_json,
-    integrator_gate_latest_operator_metrics_table_rows_csv,
-    integrator_gate_latest_score_margin_caption,
-    integrator_gate_latest_summary_rows_csv,
-    integrator_gate_latest_tag_overlap_caption,
-    integrator_gate_summary_rows,
 )
 
 
-
 def _render_integrator_gate_delta(run_id: str, data: dict) -> None:
+    _ig_delta = integrator_gate_delta_from_timeline(data)
+    _ig_delta_rows = integrator_gate_delta_summary_rows(_ig_delta)
     with st.expander("Integrator gate delta (latest vs prior)", expanded=False):
         if not _ig_delta_rows:
             st.caption(

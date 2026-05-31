@@ -1,5 +1,3 @@
-"""Run creation, ingress validation, and run.created event."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
@@ -41,8 +39,8 @@ class CreateRunMixin:
             config_materializer=mat,
         )
         if business_area_persona_id or development_role_persona_id:
-            from nimbusware_config.persist import load_persona_shelf
             from hermes_orchestrator.ingress import assert_persona_assignment_valid
+            from nimbusware_config.persist import load_persona_shelf
 
             shelf = load_persona_shelf(self._repo_root, materializer=mat)
             assert_persona_assignment_valid(
@@ -83,12 +81,12 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
-        from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
         from hermes_orchestrator.workflow_memory import (
             memory_effective_metadata,
             parse_memory_workflow_block,
             resolve_memory_index_version,
         )
+        from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 
         ms_block = parse_micro_slice_workflow_block(
             self._repo_root,

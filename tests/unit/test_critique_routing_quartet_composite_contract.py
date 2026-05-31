@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -18,6 +17,7 @@ from hermes_orchestrator.critique_routing import (
     taxonomy_keys_for_run_lifecycle,
 )
 from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_env import find_repo_root
 
 # Builder helpers (no fixtures beyond pytest built-ins)
 

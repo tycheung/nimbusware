@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+from nimbusware_console.memory_display import (
+    memory_indexed_timeline_summary,
+    memory_policy_from_run_summary,
+    memory_policy_table_rows,
+    memory_retrieval_timeline_summary,
+)
+from nimbusware_console.micro_slice_packet_display import (
+    latest_slice_context_packet_from_timeline,
+)
 from nimbusware_console.persona_editor import (
     build_patch_request,
     diff_summary,
@@ -18,7 +27,10 @@ from nimbusware_console.persona_editor import (
     persona_editor_validation_table_rows,
     persona_list_field_line_counts_caption,
 )
-
+from nimbusware_console.phase3_critique_display import (
+    phase3_critique_caption,
+    phase3_critique_table_rows,
+)
 from nimbusware_console.preflight_cross_run_display import (
     fetch_preflight_history,
     preflight_cross_run_checks_passed_coverage_caption,
@@ -45,7 +57,6 @@ from nimbusware_console.preflight_cross_run_display import (
     preflight_history_response_sli_caption,
     preflight_pairs_from_history_response,
 )
-
 from nimbusware_console.preflight_history_display import (
     preflight_history_checks_passed_caption,
     preflight_history_context_tokens_caption,
@@ -70,7 +81,6 @@ from nimbusware_console.preflight_history_display import (
     preflight_history_summary_rows_csv,
     preflight_history_validated_model_caption,
 )
-
 from nimbusware_console.prune_status_display import (
     load_prune_status,
     prune_scraper_artifact_prune_workflow_caption,
@@ -97,7 +107,6 @@ from nimbusware_console.prune_status_display import (
     prune_status_summary_rows_csv,
     prune_status_wrote_at_caption,
 )
-
 from nimbusware_console.run_escalated_display import (
     run_escalated_actor_without_notes_caption,
     run_escalated_delta_export_filename_slug,
@@ -139,7 +148,6 @@ from nimbusware_console.run_escalated_display import (
     run_escalated_summary_rows,
     run_escalated_summary_rows_csv,
 )
-
 from nimbusware_console.run_list_pagination_display import (
     run_detail_summary_export_filename_slug,
     run_detail_summary_export_json,
@@ -174,7 +182,6 @@ from nimbusware_console.run_list_pagination_display import (
     timeline_events_table_rows,
     timeline_events_table_rows_csv,
 )
-
 from nimbusware_console.scraper_fetch_display import (
     scraper_fetch_artifacts_caption,
     scraper_fetch_failure_reason_caption,
@@ -194,7 +201,6 @@ from nimbusware_console.scraper_fetch_display import (
     scraper_fetch_summary_rows,
     scraper_fetch_summary_rows_csv,
 )
-
 from nimbusware_console.security_scan_metadata_workflow_explainer import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
@@ -217,23 +223,6 @@ from nimbusware_console.security_scan_metadata_workflow_explainer import (
     security_scan_metadata_yaml_effective_mismatch_caption,
     security_scan_metadata_yaml_raw_type_caption,
 )
-
-from nimbusware_console.micro_slice_packet_display import (
-    latest_slice_context_packet_from_timeline,
-)
-
-from nimbusware_console.memory_display import (
-    memory_indexed_timeline_summary,
-    memory_policy_from_run_summary,
-    memory_policy_table_rows,
-    memory_retrieval_timeline_summary,
-)
-
-from nimbusware_console.phase3_critique_display import (
-    phase3_critique_caption,
-    phase3_critique_table_rows,
-)
-
 from nimbusware_console.security_scan_on_verify_display import (
     security_scan_category_severity_caption,
     security_scan_finding_event_ids_caption,
@@ -277,7 +266,6 @@ from nimbusware_console.security_scan_on_verify_display import (
     security_scan_snippet_length_caption,
     security_scan_snippet_line_count_caption,
 )
-
 from nimbusware_console.self_refinement_display import (
     self_refinement_auto_promote_caption,
     self_refinement_description_length_caption,
@@ -304,22 +292,21 @@ from nimbusware_console.self_refinement_display import (
     self_refinement_marker_window_caption,
     self_refinement_markers_per_minute_caption,
     self_refinement_phase_d_signal_caption,
-    self_refinement_prior_gate_verdict_caption,
     self_refinement_policy_attempt_caption,
+    self_refinement_prior_gate_verdict_caption,
     self_refinement_session_caption,
     self_refinement_snapshot_from_compare_paste,
     self_refinement_stage_name_caption,
     self_refinement_summary_rows,
     self_refinement_timeline_metrics_table_rows,
     self_refinement_timeline_operator_metrics,
-    self_refinement_timeline_operator_metrics_export_json,
     self_refinement_timeline_operator_metrics_export_filename_slug,
+    self_refinement_timeline_operator_metrics_export_json,
     self_refinement_timeline_operator_metrics_table_rows_csv,
     self_refinement_timeline_policy_version_caption,
     self_refinement_ungated_loop_caption,
     self_refinement_version_attempt_caption,
 )
-
 from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_explainer_export_json,
     self_refinement_explainer_table_rows,
@@ -346,7 +333,6 @@ from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_would_emit_after_env_caption,
     self_refinement_would_emit_marker_caption,
 )
-
 from nimbusware_console.universal_critique_timeline_display import (
     universal_critique_fail_stage_rows_csv,
     universal_critique_from_timeline,
@@ -364,7 +350,6 @@ from nimbusware_console.universal_critique_timeline_display import (
     universal_critique_timeline_stage_rows,
     universal_critique_timeline_stage_rows_csv,
 )
-
 from nimbusware_console.universal_critique_workflow_explainer import (
     universal_critique_default_enabled_caption,
     universal_critique_enabled_stages_caption,

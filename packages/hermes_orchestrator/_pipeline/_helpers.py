@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from __future__ import annotations
-
 import asyncio
 import hashlib
 import os
@@ -16,7 +14,6 @@ from uuid import UUID, uuid4
 
 import httpx
 
-from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
 from agent_core.models import (
     EventType,
     FindingCreatedEvent,
@@ -62,6 +59,7 @@ from hermes_orchestrator.critique_routing import (
     load_critique_router,
     taxonomy_keys_for_run_lifecycle,
 )
+from hermes_orchestrator.escalation_execution import append_run_escalated
 from hermes_orchestrator.escalation_threshold import (
     load_auto_escalate_after_cumulative_findings,
     load_escalate_after_cumulative_gate_failures,
@@ -116,8 +114,17 @@ from hermes_orchestrator.llm_plan import (
     execute_test_writer_critique_llm,
 )
 from hermes_orchestrator.merge import load_yaml, policy_snapshot_from_files
+from hermes_orchestrator.network_resilience_critique import (
+    emit_stub_network_resilience_critique_panel,
+    execute_network_resilience_critique_llm,
+)
+from hermes_orchestrator.network_resilience_scan import run_network_resilience_scan_summary
 from hermes_orchestrator.outbound_http import egress_checked_get_for_run
 from hermes_orchestrator.parallel_writers import WriterStageResult, run_parallel_writer_group
+from hermes_orchestrator.performance_critique import (
+    emit_stub_performance_critique_panel,
+    execute_performance_critique_llm,
+)
 from hermes_orchestrator.persona_coverage_critique import (
     emit_stub_persona_coverage_critique_panel,
     execute_persona_coverage_critique_llm,
@@ -125,6 +132,7 @@ from hermes_orchestrator.persona_coverage_critique import (
 from hermes_orchestrator.persona_shelf_auto_create import try_auto_create_persona_if_missing
 from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
 from hermes_orchestrator.preflight import run_model_preflight
+from hermes_orchestrator.refactor_stage import emit_refactor_stage_and_critique
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.run_dispatch import (
     RunDispatchTask,
@@ -134,7 +142,6 @@ from hermes_orchestrator.run_dispatch import (
 )
 from hermes_orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
 from hermes_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
-from hermes_orchestrator.escalation_execution import append_run_escalated
 from hermes_orchestrator.security_critique import (
     emit_stub_security_critique_panel,
     execute_security_critique_llm,
@@ -167,38 +174,28 @@ from hermes_orchestrator.workflow_escalation import parse_escalation_workflow_bl
 from hermes_orchestrator.workflow_integration_adapter_writer import (
     parse_integration_adapter_writer_workflow_block,
 )
+from hermes_orchestrator.workflow_network_resilience_critique import (
+    network_resilience_critique_effective,
+    network_resilience_critique_llm_branch_effective,
+    parse_network_resilience_critique_workflow_block,
+)
 from hermes_orchestrator.workflow_parallel_writers import (
     parallel_writers_enabled,
     test_writer_llm_body_enabled,
     test_writer_llm_stub_fallback,
     test_writer_stage_enabled,
 )
-from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
-from hermes_orchestrator.performance_critique import (
-    emit_stub_performance_critique_panel,
-    execute_performance_critique_llm,
-)
-from hermes_orchestrator.network_resilience_critique import (
-    emit_stub_network_resilience_critique_panel,
-    execute_network_resilience_critique_llm,
-)
-from hermes_orchestrator.network_resilience_scan import run_network_resilience_scan_summary
-from hermes_orchestrator.refactor_stage import emit_refactor_stage_and_critique
-from hermes_orchestrator.workflow_network_resilience_critique import (
-    parse_network_resilience_critique_workflow_block,
-    network_resilience_critique_effective,
-    network_resilience_critique_llm_branch_effective,
-)
 from hermes_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
     performance_critique_llm_branch_effective,
 )
+from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
 from hermes_orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )
+from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from hermes_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
@@ -219,6 +216,8 @@ from hermes_orchestrator.workflow_universal_critique import (
 )
 from hermes_store.memory import InMemoryEventStore
 from hermes_store.protocol import EventStore, serialized_event_from_row
+from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
+
 
 def _coerce_samples_ms(raw: Any) -> list[int] | None:
     """Coerce ``evidence['health_latency_samples_ms']`` for payload persistence.

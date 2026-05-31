@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_client.http import HTTPError
-
-from nimbusware_client.http import admin_token_headers, get_json, patch_response
-
+from nimbusware_client.http import HTTPError, admin_token_headers, get_json, patch_response
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 

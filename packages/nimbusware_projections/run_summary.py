@@ -1,5 +1,3 @@
-"""Run list summary projection from replayed event rows."""
-
 from __future__ import annotations
 
 from typing import Any

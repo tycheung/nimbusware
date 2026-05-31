@@ -10,7 +10,6 @@ from hermes_orchestrator.security_semgrep import run_semgrep_scan
 from hermes_orchestrator.verifiers import run_bandit, run_mypy, run_ruff_check
 from nimbusware_env.env_flags import hermes_run_perf_scan_enabled
 
-
 SECURITY_SCAN_CATEGORIES: tuple[str, ...] = (
     "ruff",
     "bandit",

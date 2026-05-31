@@ -6,6 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from hermes_orchestrator.merge import atomic_write_yaml
 from nimbusware_config.keys import (
     KEY_CRITIQUE_PAIRINGS,
     KEY_CUSTOM_AGENTS_REGISTRY,
@@ -22,7 +23,6 @@ from nimbusware_config.keys import (
     NS_WORKFLOWS,
 )
 from nimbusware_config.protocol import ConfigStore
-from hermes_orchestrator.merge import atomic_write_yaml
 
 PathFn = Callable[[Path], Path]
 

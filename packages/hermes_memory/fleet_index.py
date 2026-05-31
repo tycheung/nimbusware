@@ -9,7 +9,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from hermes_memory.chunking import chunks_from_event_rows
-from hermes_memory.embeddings import embed_text, embedding_model_id_for_mode
+from hermes_memory.embeddings import embedding_model_id_for_mode
 from hermes_memory.event_scan import fetch_event_rows_for_memory_index
 from hermes_memory.faiss_index import build_memory_faiss_index
 from hermes_memory.indexer import RebuildIndexResult, _drafts_to_records

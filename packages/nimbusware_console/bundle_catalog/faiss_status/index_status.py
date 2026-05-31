@@ -1,32 +1,18 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    table_rows_csv,
-)
 import json
-import re
-from collections import Counter
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_faiss_index_status_cell,
-    _bundle_faiss_readiness_summary_cell,
 )
-from nimbusware_console.bundle_catalog.catalog_local.faiss_helpers import (
-    _bundle_faiss_mtime_observability,
-    _bundle_order_duplicate_id_signals,
-    _bundle_order_list_length,
-    _catalog_bundle_row_counts,
-    _catalog_nonempty_stripped_id_set,
-    _file_size_mtime,
-    _parse_bundle_order_string_ids,
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_to_sorted_table_rows,
 )
+
 
 def bundle_faiss_index_stale_caption(repo_root: Path) -> str | None:
     status = bundle_faiss_index_status(repo_root)

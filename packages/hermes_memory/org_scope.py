@@ -6,7 +6,6 @@ import hashlib
 from uuid import UUID
 
 from nimbusware_env.edition import is_enterprise, require_enterprise_feature
-from nimbusware_iam.constants import DEFAULT_TENANT_ID
 from nimbusware_iam.context import resolve_store_tenant_id
 
 _FLEET_SCOPE_PREFIX = "fleet"
@@ -19,7 +18,7 @@ def fleet_scope_hash(
 ) -> str:
     """Stable org/fleet scope id for cross-repo retrieval within a tenant."""
     slug = org_slug.strip().lower() or "default"
-    raw = f"{_FLEET_SCOPE_PREFIX}:{tenant_id}:{slug}".encode("utf-8")
+    raw = f"{_FLEET_SCOPE_PREFIX}:{tenant_id}:{slug}".encode()
     return hashlib.sha256(raw).hexdigest()[:16]
 
 

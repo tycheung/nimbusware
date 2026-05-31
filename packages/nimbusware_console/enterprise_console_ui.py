@@ -6,7 +6,6 @@ from typing import Any
 import streamlit as st
 
 from nimbusware_client.http import HTTPError
-
 from nimbusware_console.enterprise_console import (
     SS_API_KEY,
     SS_EDITION_MANIFEST,

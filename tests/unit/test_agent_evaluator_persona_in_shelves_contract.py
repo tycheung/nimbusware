@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import re
 import shutil
@@ -11,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _REAL_PERSONAS_DIR = _REPO_ROOT / "configs" / "personas"

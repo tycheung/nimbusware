@@ -1,1 +1,0 @@
-from nimbusware_console.pages.config_tooling.bundles.catalog_search import render_bundle_catalog_search_section

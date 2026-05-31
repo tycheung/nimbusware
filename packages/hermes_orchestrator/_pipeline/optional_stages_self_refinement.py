@@ -1,8 +1,7 @@
-"""Self-refinement stage marker and ungated loop."""
-
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+
 
 class SelfRefinementOptionalStagesMixin:
     def _maybe_continue_ungated_self_refinement_loop(self, run_id: UUID) -> None:
@@ -88,8 +87,8 @@ class SelfRefinementOptionalStagesMixin:
             return
 
         bounded = (description or "")[:2000]
-        from nimbusware_config.persist import load_persona_shelf
         from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
+        from nimbusware_config.persist import load_persona_shelf
 
         pa_for_eval: dict[str, Any] | None = None
         for row in rows:
@@ -112,10 +111,10 @@ class SelfRefinementOptionalStagesMixin:
             gate_decision == "hold" or ungated_loop
         )
         signal = "phase_d_kickoff" if attempt == 1 else "phase_d_iteration"
-        orchestration_branch: Literal["rules", "rules_with_llm_critique"] = "rules"
+        orchestration_branch: Literal[rules, rules_with_llm_critique] = "rules"
         llm_critique_attempted = False
         llm_critique_verdict: Verdict | None = None
-        llm_gate_decision: Literal["proceed", "hold"] | None = None
+        llm_gate_decision: Literal[proceed, hold] | None = None
         llm_critique_summary: str | None = None
         prior_gate_verdict: str | None = None
         for row in rows:

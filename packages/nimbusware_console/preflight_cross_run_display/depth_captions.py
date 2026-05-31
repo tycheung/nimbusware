@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-import csv
-import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
-
 
 from nimbusware_console.preflight_cross_run_display.trend import (
     preflight_cross_run_trend_summary,
 )
+
+
 def _cross_run_row_usable_p95_ms(r: Mapping[str, Any]) -> bool:
     v = r.get("p95_latency_ms")
     return isinstance(v, int) and not isinstance(v, bool) and v >= 0

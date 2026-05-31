@@ -1,16 +1,16 @@
 """Micro-slice planning and budgets."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 from hermes_orchestrator.micro_slice import (
+    micro_slice_timeline_summary,
     parse_slice_plan,
     validate_diff_budget,
-    micro_slice_timeline_summary,
 )
 from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+from nimbusware_env import find_repo_root
 
 
 def test_parse_slice_plan() -> None:

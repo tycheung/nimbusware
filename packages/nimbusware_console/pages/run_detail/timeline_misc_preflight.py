@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
 
 import streamlit as st
 
@@ -19,6 +18,7 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     preflight_history_event_id_caption,
     preflight_history_export_filename_slug,
     preflight_history_export_json,
+    preflight_history_from_timeline,
     preflight_history_histogram_mode_caption,
     preflight_history_histogram_payload,
     preflight_history_latency_samples_table_rows,
@@ -40,6 +40,7 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
 
 def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> None:
     _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _pf = preflight_history_from_timeline(data)
     _pf_rows = preflight_history_summary_rows(_pf)
     with st.expander("Preflight history (from timeline)", expanded=False):
         if not _pf_rows:

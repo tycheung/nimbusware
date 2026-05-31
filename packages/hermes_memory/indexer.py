@@ -17,7 +17,6 @@ from hermes_memory.models import EmbeddingMode, MemoryChunkRecord
 from hermes_memory.repo_scope import repo_scope_hash, resolve_repo_root
 from hermes_memory.store import MemoryChunkStore
 
-
 _CHUNK_ID_NAMESPACE = UUID("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
 

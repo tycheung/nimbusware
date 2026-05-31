@@ -7,7 +7,6 @@ from typing import Any
 from uuid import UUID, uuid5
 
 from agent_core.models import EventType
-from nimbusware_config.persist import load_persona_shelf, persist_persona_shelf
 from hermes_extensions.personas import ALLOWED_SHELVES, normalize_entry
 from hermes_orchestrator.persona_catalog_audit import (
     append_persona_shelf_updated_event,
@@ -15,6 +14,7 @@ from hermes_orchestrator.persona_catalog_audit import (
 )
 from hermes_orchestrator.workflow_agent_evaluator import AgentEvaluatorAutoCreatePersonaBlock
 from hermes_store.protocol import EventStore
+from nimbusware_config.persist import load_persona_shelf, persist_persona_shelf
 
 _ORCH_RESERVED_PERSONA_IDS = frozenset({"default"})
 _AUTO_CREATE_CORR_NAMESPACE = UUID("00000000-0000-5000-8000-000000000003")

@@ -1,14 +1,14 @@
 """Roles registry materialization parity (P0-c)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
+from hermes_orchestrator.registry import RoleRegistry
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_env import find_repo_root
 
 
 def test_db_registry_matches_yaml_seed() -> None:

@@ -2,7 +2,13 @@ from __future__ import annotations
 
 import httpx
 
-from nimbusware_client.http import admin_headers, admin_token_headers, api_base, get_json, user_headers
+from nimbusware_client.http import (
+    admin_headers,
+    admin_token_headers,
+    api_base,
+    get_json,
+    user_headers,
+)
 
 
 def test_api_base_default(monkeypatch) -> None:

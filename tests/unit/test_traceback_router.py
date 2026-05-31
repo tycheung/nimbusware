@@ -1,13 +1,13 @@
 """Traceback / log taxonomy hints → registry ``role_id``."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 from uuid import UUID
 
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.traceback_router import suggest_owner_role_from_verifier_log
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

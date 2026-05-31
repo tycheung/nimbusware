@@ -1,7 +1,6 @@
 """Automatic micro-slice execution via lifecycle verify."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import os
 from pathlib import Path
@@ -11,6 +10,7 @@ import pytest
 from hermes_orchestrator.micro_slice import micro_slice_timeline_summary
 from hermes_orchestrator.micro_slice_executor import micro_slice_count_for_run
 from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_env import find_repo_root
 
 
 @pytest.fixture(autouse=True)

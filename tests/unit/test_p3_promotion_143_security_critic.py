@@ -2,16 +2,15 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
 from hermes_orchestrator.llm_plan import IMPLEMENTATION_CRITIQUE_STAGE
 from hermes_orchestrator.pipeline import make_dev_orchestrator
 from hermes_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
+from nimbusware_env import find_repo_root
 
 
 def test_security_gate_fail_skips_implementation_critique(monkeypatch: pytest.MonkeyPatch) -> None:

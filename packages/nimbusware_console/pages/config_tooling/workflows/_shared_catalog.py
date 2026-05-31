@@ -12,14 +12,6 @@ from urllib.parse import urlencode
 
 import streamlit as st
 
-from nimbusware_console.bundle_catalog_editor import (
-    bundle_editor_patch_payload,
-    bundle_editor_validation_issues,
-)
-from nimbusware_console.bundle_memory_display import (
-    bundle_memory_analytics_from_store,
-    bundle_memory_caption,
-)
 from nimbusware_console.bundle_catalog import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     bundle_catalog_bundle_count_caption,
@@ -140,4 +132,12 @@ from nimbusware_console.bundle_catalog import (
     bundle_search_query_length_caption,
     bundle_search_top_hit_preview_caption,
     run_bundle_catalog_search,
+)
+from nimbusware_console.bundle_catalog_editor import (
+    bundle_editor_patch_payload,
+    bundle_editor_validation_issues,
+)
+from nimbusware_console.bundle_memory_display import (
+    bundle_memory_analytics_from_store,
+    bundle_memory_caption,
 )

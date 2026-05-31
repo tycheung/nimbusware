@@ -1,11 +1,11 @@
 """micro_slice workflow validates against known stage graph."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 from hermes_orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
+from nimbusware_env import find_repo_root
 
 
 def test_micro_slice_workflow_profile_validates() -> None:

@@ -1,10 +1,7 @@
-"""Optional scraper fetch stage (egress-checked HTTP)."""
-
 from __future__ import annotations
 
-from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
-
 from hermes_orchestrator._pipeline._helpers import *  # noqa: F403
+from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
 
 
 class PipelineScraperMixin:

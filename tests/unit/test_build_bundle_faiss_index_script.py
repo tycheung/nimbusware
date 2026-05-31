@@ -1,10 +1,11 @@
 """CLI tests for ``scripts/build_bundle_faiss_index.py``."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import subprocess
 from pathlib import Path
+
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

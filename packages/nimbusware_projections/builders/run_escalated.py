@@ -1,11 +1,8 @@
-"""Run escalated timeline builders — shared by API and console."""
-
 from __future__ import annotations
 
 from typing import Any
 
 from agent_core.models import EventType
-from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_ROW_KEYS
 
 
 def run_escalated_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:

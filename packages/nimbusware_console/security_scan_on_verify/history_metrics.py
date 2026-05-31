@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
 
-from nimbusware_console.security_scan_on_verify._helpers import _stringify
 
 def security_scan_category_severity_caption(
     summary: Mapping[str, Any] | None,

@@ -10,6 +10,7 @@ from typing import Any
 
 from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
 
+
 def self_refinement_from_timeline(
     timeline_body: Mapping[str, Any] | None,
 ) -> dict[str, Any] | None:

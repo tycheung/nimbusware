@@ -1,7 +1,6 @@
 """OpenAPI 5xx Problem+JSON fragments and uncaught exception handler."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import asyncio
 import os
@@ -10,6 +9,8 @@ from pathlib import Path
 import pytest
 from fastapi import Request
 from fastapi.testclient import TestClient
+
+from nimbusware_env import find_repo_root
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")

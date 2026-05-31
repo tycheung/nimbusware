@@ -1,26 +1,10 @@
 from __future__ import annotations
 
-from nimbusware_console.components.operator_metrics import (
-    FIELD_VALUE_COLUMNS,
-    field_value_table_rows_csv,
-    mapping_export_json,
-    mapping_to_sorted_table_rows,
-    sequence_export_json,
-    table_rows_csv,
-)
-import csv
-import hashlib
 import json
 import os
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
 from pathlib import Path
 from typing import Any
 
-import yaml
-
-from hermes_extensions.personas import ALLOWED_SHELVES
 from hermes_extensions.phase2 import ModuleIntegrator
 from hermes_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
@@ -29,13 +13,12 @@ from hermes_orchestrator.integrator_gate import (
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,
 )
-
-from nimbusware_console.integrator_preview.merge import full_workflow_merge_diff
 from nimbusware_console.integrator_preview.parse import (
     parse_integrator_gate_yaml_fragment,
-    validate_full_workflow_document,
     validate_integrator_gate_block,
 )
+
+
 def preview_effective_min_score_to_pass(
     repo_root: Path,
     workflow_profile: str | None,

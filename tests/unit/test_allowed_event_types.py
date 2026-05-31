@@ -1,10 +1,10 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import re
 from pathlib import Path
 
 from hermes_store.allowed_types import allowed_event_type_values
+from nimbusware_env import find_repo_root
 
 _SCHEMA_SQL = (
     find_repo_root(start=Path(__file__).resolve().parents[1])

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import csv
-import json
-from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
+from nimbusware_console.self_refinement._helpers import _parse_iso_utc
+from nimbusware_console.self_refinement.latest import _TIMELINE_DESC_PREVIEW_MAX
+
 
 def self_refinement_timeline_operator_metrics(
     sr: Mapping[str, Any] | None,

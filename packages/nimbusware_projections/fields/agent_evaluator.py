@@ -1,5 +1,3 @@
-"""Agent evaluator projection field metadata."""
-
 from __future__ import annotations
 
 AGENT_EVALUATOR_SUMMARY_KEYS: tuple[str, ...] = (

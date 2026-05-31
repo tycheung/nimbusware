@@ -32,7 +32,6 @@ key_names = sorted(
 )
 
 keys_content = (
-    '"""Session-state keys for run list, detail, and workflow caches."""\n\n'
     "from __future__ import annotations\n\n"
     + keys_block_a
     + keys_block_b
@@ -47,9 +46,7 @@ pagination_block = text.split(
 )[1].split(")\nfrom nimbusware_console.settings import API_BASE")[0]
 
 key_import = ",\n    ".join(key_names)
-run_list_content = f'''"""Run list query-param sync, fetch, and display."""
-
-from __future__ import annotations
+run_list_content = f'''from __future__ import annotations
 
 import csv
 import io
@@ -76,9 +73,7 @@ from nimbusware_console.settings import API_BASE
     encoding="utf-8",
 )
 
-facade = '''"""Console page session state — keys, run list, and workflow caches."""
-
-from __future__ import annotations
+facade = '''from __future__ import annotations
 
 import nimbusware_console.pages._state_keys as _state_keys
 import nimbusware_console.pages._state_run_list as _state_run_list

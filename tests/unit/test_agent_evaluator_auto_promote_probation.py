@@ -1,7 +1,6 @@
 """§14 #15: agent-evaluator probation→promoted auto path + timeline metadata."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import shutil
 from pathlib import Path
@@ -11,7 +10,6 @@ import pytest
 import yaml
 
 from agent_core.models import EventType
-from nimbusware_api.routes.runs import agent_evaluator_timeline_summary
 from hermes_extensions.personas import PersonaShelf
 from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
 from hermes_orchestrator.persona_shelf_auto_create import (
@@ -28,6 +26,8 @@ from hermes_orchestrator.workflow_agent_evaluator import (
     parse_agent_evaluator_workflow_block,
 )
 from hermes_store.memory import InMemoryEventStore
+from nimbusware_api.routes.runs import agent_evaluator_timeline_summary
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

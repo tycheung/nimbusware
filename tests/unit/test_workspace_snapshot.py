@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_maker.workspace_snapshot import create_workspace_snapshot, restore_workspace_snapshot
+from nimbusware_maker.workspace_snapshot import (
+    create_workspace_snapshot,
+    restore_workspace_snapshot,
+)
 
 
 def test_snapshot_roundtrip(tmp_path: Path) -> None:

@@ -16,6 +16,7 @@ from agent_core.models import (
 from agent_core.yaml_io import atomic_write_yaml, dump_yaml, load_yaml
 from hermes_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
 
+
 def _merge_finding_strictness(
     layers: list[dict[str, Any] | None],
 ) -> FindingFixStrictnessSettings:

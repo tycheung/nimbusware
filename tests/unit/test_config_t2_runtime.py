@@ -1,10 +1,14 @@
 """Runtime loaders use materialized T2 config (P0-g2)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
+from hermes_orchestrator.critique_routing import load_critique_router
+from hermes_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
+from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
+from hermes_orchestrator.workflow_escalation import parse_escalation_workflow_block
+from hermes_store.memory import InMemoryEventStore
 from nimbusware_config.keys import (
     KEY_CRITIQUE_PAIRINGS,
     KEY_INTEGRATOR_THRESHOLDS,
@@ -14,11 +18,7 @@ from nimbusware_config.keys import (
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.critique_routing import load_critique_router
-from hermes_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.workflow_escalation import parse_escalation_workflow_block
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_env import find_repo_root
 
 
 def _seed_minimal_run_store(root: Path, tmp_path: Path) -> ConfigMaterializer:

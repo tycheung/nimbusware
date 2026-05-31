@@ -5,18 +5,17 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import ProjectStoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.user import UserDep
-from nimbusware_env.edition import is_enterprise
-from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from nimbusware_api.user import UserDep
+from nimbusware_env.edition import is_enterprise
+from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_maker.models import ATTACH_TEMPLATE, PROJECT_TEMPLATES
 
 router = APIRouter(prefix="/projects", tags=["projects"])

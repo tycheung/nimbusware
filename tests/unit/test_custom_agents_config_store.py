@@ -1,15 +1,15 @@
 """Custom agents Postgres config store."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
+from hermes_extensions.custom_agents import CustomAgent
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
+from nimbusware_env import find_repo_root
 
 
 def test_custom_agents_roundtrip_via_materializer() -> None:

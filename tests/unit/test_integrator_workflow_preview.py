@@ -1,7 +1,6 @@
 """Unit tests for integrator workflow preview helpers."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -14,6 +13,7 @@ from nimbusware_console.integrator_workflow_preview import (
     parse_synthetic_tags_json,
     validate_integrator_gate_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

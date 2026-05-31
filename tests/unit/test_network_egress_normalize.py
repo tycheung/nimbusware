@@ -1,7 +1,11 @@
 """§6.3A domain allowlist normalization (IDN / punycode, IPs, suffix form)."""
 from __future__ import annotations
+
 import pytest
+
 from hermes_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
+
+
 def test_ipv4_canonical() -> None:
     assert normalize_domain_allowlist_entry(" 192.168.001.010 ") == "192.168.1.10"
 def test_ipv6_compressed_no_zone() -> None:

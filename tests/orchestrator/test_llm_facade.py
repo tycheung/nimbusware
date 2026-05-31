@@ -16,7 +16,7 @@ def test_llm_plan_shim_re_exports_package() -> None:
 
 
 def test_llm_submodules_exist() -> None:
-    from hermes_orchestrator.llm import plan_stage, implementation_critique
+    from hermes_orchestrator.llm import implementation_critique, plan_stage
 
     assert hasattr(plan_stage, "execute_plan_stage_llm")
     assert hasattr(implementation_critique, "execute_implementation_critique_llm")

@@ -3,7 +3,6 @@ from __future__ import annotations
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
-
 def _render_critique_pairings_panel(repo_root: Path) -> None:
     _cp_sum = critique_pairings_operator_summary(repo_root)
     _cp_metrics = critique_pairings_operator_summary_operator_metrics(_cp_sum)

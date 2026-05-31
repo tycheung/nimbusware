@@ -1,16 +1,16 @@
 """T2 policy document materialization (P0-g1)."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 import pytest
 
+from hermes_orchestrator.merge import load_yaml
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.merge import load_yaml
+from nimbusware_env import find_repo_root
 
 
 def test_t2_getters_match_on_disk_after_seed() -> None:

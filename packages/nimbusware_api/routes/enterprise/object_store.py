@@ -6,8 +6,8 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from hermes_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_env.edition import enterprise_feature_enabled
 
 router = APIRouter(prefix="/enterprise/scraper-artifacts", tags=["enterprise"])

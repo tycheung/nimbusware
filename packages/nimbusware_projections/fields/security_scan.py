@@ -1,5 +1,3 @@
-"""Security scan on verify projection field metadata."""
-
 from __future__ import annotations
 
 SECURITY_SCAN_ROW_KEYS: tuple[str, ...] = (

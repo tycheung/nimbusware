@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -14,6 +13,7 @@ from hermes_orchestrator.pipeline import (
     make_dev_orchestrator,
 )
 from hermes_store.memory import InMemoryEventStore
+from nimbusware_env import find_repo_root
 
 # -- Part A -- ``default_paths`` shape + path-suffix wire-format (5 axes) ------
 

@@ -1,7 +1,6 @@
 """Unit tests for Streamlit theme / white-label captions."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -9,6 +8,7 @@ from nimbusware_console.console_theme import (
     streamlit_theme_defaults_caption,
     streamlit_white_label_deferred_caption,
 )
+from nimbusware_env import find_repo_root
 
 
 def test_streamlit_theme_defaults_caption_mentions_config_toml(tmp_path: Path) -> None:

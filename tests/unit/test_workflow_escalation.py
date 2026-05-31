@@ -1,7 +1,6 @@
 """§14 #19: workflow ``escalation`` block."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
@@ -9,6 +8,7 @@ from hermes_orchestrator.workflow_escalation import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

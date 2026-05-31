@@ -1,5 +1,4 @@
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import shutil
 from pathlib import Path
@@ -17,6 +16,7 @@ from hermes_extensions import (
 from hermes_extensions.phase2 import ModuleIntegrator, SecurityScanner, UniversalCritiqueRouter
 from hermes_orchestrator.ingress import assert_bundle_catalog_maps_resolve
 from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"

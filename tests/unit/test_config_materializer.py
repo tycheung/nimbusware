@@ -1,16 +1,16 @@
 """Unit tests for ``ConfigMaterializer``."""
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 from pathlib import Path
 
 import pytest
 
+from hermes_orchestrator.merge import load_yaml
 from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.store import InMemoryConfigStore
-from hermes_orchestrator.merge import load_yaml
+from nimbusware_env import find_repo_root
 
 
 def test_materializer_file_fallback_matches_disk(repo_root: Path) -> None:

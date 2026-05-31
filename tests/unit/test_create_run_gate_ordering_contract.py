@@ -2,7 +2,6 @@
 
 
 from __future__ import annotations
-from nimbusware_env import find_repo_root
 
 import re
 from collections.abc import Callable
@@ -11,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

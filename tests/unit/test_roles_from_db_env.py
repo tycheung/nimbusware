@@ -12,8 +12,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 import nimbusware_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
-from nimbusware_api.app import app
 from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_api.app import app
 from nimbusware_iam.store import InMemoryIamStore
 
 _FAKE_DB_URL = "postgresql://test:test@localhost/hermes"

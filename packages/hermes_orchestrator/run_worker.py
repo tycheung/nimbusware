@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
-from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
 from hermes_memory.factory import build_memory_chunk_store
 from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
@@ -19,6 +18,7 @@ from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.run_dispatch import RunQueuePort, get_run_queue
 from hermes_store.memory import InMemoryEventStore
 from hermes_store.postgres import PostgresEventStore
+from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 
 
 def build_worker_orchestrator() -> tuple[RunOrchestrator, threading.Event | None, threading.Thread | None]:
@@ -155,7 +155,10 @@ def _write_worker_heartbeat(
         "updated_at": datetime.now(timezone.utc).isoformat(),
     }
     try:
-        from hermes_orchestrator.fleet_worker import collect_fleet_worker_metrics, fleet_redis_worker_enabled
+        from hermes_orchestrator.fleet_worker import (
+            collect_fleet_worker_metrics,
+            fleet_redis_worker_enabled,
+        )
 
         if fleet_redis_worker_enabled():
             payload["fleet_metrics"] = collect_fleet_worker_metrics(queue)

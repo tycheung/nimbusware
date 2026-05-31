@@ -3,10 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
-from nimbusware_console.pages.config_tooling.bundles.faiss_readiness import (
-    render_faiss_readiness_section,
-)
-
 
 
 def _render_catalog_rollups_panel(repo_root: Path) -> None:
