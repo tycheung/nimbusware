@@ -432,6 +432,15 @@ def test_list_runs_status_created_excludes_running(client: TestClient) -> None:
     assert rid not in r_terminal.json()["run_ids"]
 
 
+def test_actions_retry_records_retry_stage(client: TestClient) -> None:
+    rid = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
+    r = client.post(f"/v1/runs/{rid}/actions/retry")
+    assert r.status_code == 200
+    assert r.json()["status"] == "retry_recorded"
+    types = [e["event_type"] for e in client.get(f"/v1/runs/{rid}/timeline").json()["events"]]
+    assert "stage.started" in types
+
+
 def test_actions_retry_invalid_run_id_path_422(client: TestClient) -> None:
     r = client.post("/v1/runs/not-a-uuid/actions/retry")
     assert r.status_code == 422

@@ -20,7 +20,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 
 ## CI subsets
 
-- **Default PR / local CI:** `pytest tests -m "not integration and not slow and not benchmark"` with `--cov-fail-under=70` (see `scripts/ci_check.ps1`).
+- **Default PR / local CI:** `pytest tests -m "not integration and not slow and not benchmark"` with `--cov-fail-under=72` (see `scripts/ci_check.ps1`).
 - Coverage omits Streamlit `pages/**`, Maker `ui/**`, desktop launcher modules, and `*_cli.py` entrypoints; library code including `*/services/**` stays in the denominator.
 - Fast API/auth/OpenAPI tests live in `tests/api/` without the blanket `slow` marker; orchestrator-heavy API suites stay `@pytest.mark.slow`.
 - Integration job: `-m integration`.

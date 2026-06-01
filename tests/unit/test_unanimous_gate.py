@@ -14,7 +14,12 @@ from hermes_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )
-from hermes_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
+from hermes_orchestrator.unanimous_gate import (
+    critic_verdict_payloads_for_stage,
+    failing_critics_from_gate_payload,
+    gate_decision_from_critic_verdicts,
+    recompute_gate_for_stage,
+)
 
 
 def _payload(
@@ -88,6 +93,31 @@ def test_out_of_domain_fail_ignored() -> None:
         enforce=True,
     )
     assert gate.verdict == Verdict.PASS
+
+
+def test_gate_skipped_when_enforce_false() -> None:
+    gate = gate_decision_from_critic_verdicts([], stage_name="verify", enforce=False)
+    assert gate.verdict == Verdict.PASS
+
+
+def test_recompute_gate_for_stage_from_events() -> None:
+    critic = _payload("22222222-2222-4222-8222-222222222202", verdict=Verdict.PASS)
+    events = [
+        {"event_type": "stage.started", "payload": {"stage_name": "verify"}},
+        {"event_type": "critic.verdict.emitted", "payload": critic.model_dump(mode="json")},
+    ]
+    row = recompute_gate_for_stage(events, "verify", enforce=True)
+    assert row["verdict"] == "PASS"
+
+
+def test_failing_critics_from_gate_payload() -> None:
+    rid = "22222222-2222-4222-8222-222222222202"
+    out = failing_critics_from_gate_payload({"failing_critics": [rid]})
+    assert out == [rid]
+
+
+def test_critic_verdict_payloads_for_stage_empty_without_start() -> None:
+    assert critic_verdict_payloads_for_stage([], "verify") == []
 
 
 def test_live_matrix_summary_reflects_fail_stage() -> None:

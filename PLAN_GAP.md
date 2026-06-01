@@ -48,7 +48,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
 | **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, config `_shared` barrels, coverage tests, Ollama hardening |
-| **Lane T** — Maturity 8.5 (fo520–fo545) | **~50%** | **Active** — T1–T3 shipped; [Lane T program](#lane-t--maturity-85-program-fo520fo545); target scorecard **8.5/10** |
+| **Lane T** — Maturity 8.5 (fo520–fo545) | **~67%** | **Active** — T1–T4 shipped; [Lane T program](#lane-t--maturity-85-program-fo520fo545); target scorecard **8.5/10** |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -1332,7 +1332,7 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 | **T1** UI services | fo520–fo525 | **Done** |
 | **T2** Mypy ratchet | fo526–fo531 | **Done** |
 | **T3** Run detail | fo532–fo534 | **Done** |
-| **T4** Coverage | fo535–fo537 | **Not started** (fo514 tests only) |
+| **T4** Coverage | fo535–fo537 | **Done** |
 | **T5** Product | fo538–fo541 | **Not started** (fo515 policy timestamp only) |
 | **T6** Sign-off | fo544–fo545 | **Not started** |
 
