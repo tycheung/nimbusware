@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -52,7 +53,9 @@ def merge_policy_into_routing(
         ),
     )
     out = dict(routing)
-    out["ollama_user_policy"] = updated.to_dict()
+    policy_doc: dict[str, Any] = dict(updated.to_dict())
+    policy_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    out["ollama_user_policy"] = policy_doc
     return out
 
 

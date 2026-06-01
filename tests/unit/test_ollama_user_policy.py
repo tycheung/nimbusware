@@ -18,6 +18,7 @@ def test_merge_policy_into_routing() -> None:
     merged = merge_policy_into_routing({}, allow_pull=True)
     assert merged["ollama_user_policy"]["allow_pull"] is True
     assert merged["ollama_user_policy"]["allow_delete"] is False
+    assert "updated_at" in merged["ollama_user_policy"]
 
 
 def test_assert_user_may_blocks() -> None:
