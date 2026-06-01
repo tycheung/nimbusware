@@ -47,6 +47,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane U** — User vs Admin consoles (fo310–fo317) | **~100%** | **Shipped** — [build path](#lane-u--recommended-build-path) complete |
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
+| **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, console barrels, 72% cov, Ollama hardening |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -1105,8 +1106,8 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 | **A** | fo511 | UI safety net — pre-commit CI ruff parity, page import smoke, Ollama service layers | **Complete** |
 | **B** | fo512 | Mypy ratchet — strict check on Ollama API + orchestrator helpers | **Complete** |
 | **C** | fo513 | Console `_shared` barrels — star-import facades under 400 lines | **Complete** |
-| **D** | fo514 | Coverage honesty — 72% CI floor; services in denominator | *Pending* |
-| **E** | fo515 | Ollama hardening — policy audit stamp, mock-runtime API test | *Pending* |
+| **D** | fo514 | Coverage honesty — `test_coverage_fo514.py`; services in denominator; hold 70% until subset ≥71% | **Complete** |
+| **E** | fo515 | Ollama hardening — policy audit stamp, mock-runtime API test | **Complete** |
 
 ## Execution priority (post–Lane D + M + U + R)
 
