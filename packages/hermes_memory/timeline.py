@@ -12,7 +12,8 @@ def memory_retrieval_timeline_entries(events: list[dict[str, Any]]) -> list[dict
     for ev in events:
         if ev.get("event_type") != EventType.MEMORY_RETRIEVAL_EMITTED.value:
             continue
-        pl = ev.get("payload") if isinstance(ev.get("payload"), dict) else {}
+        payload_raw = ev.get("payload")
+        pl: dict[str, Any] = payload_raw if isinstance(payload_raw, dict) else {}
         out.append(
             {
                 "stage_name": pl.get("stage_name"),
@@ -45,7 +46,8 @@ def memory_indexed_timeline_summary(events: list[dict[str, Any]]) -> dict[str, A
     if not indexed:
         return None
     last = indexed[-1]
-    pl = last.get("payload") if isinstance(last.get("payload"), dict) else {}
+    payload_raw = last.get("payload")
+    pl: dict[str, Any] = payload_raw if isinstance(payload_raw, dict) else {}
     return {
         "index_event_count": len(indexed),
         "chunks_added": pl.get("chunks_added"),

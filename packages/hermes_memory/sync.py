@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hermes_memory.faiss_index import memory_faiss_index_ready
 from hermes_memory.manifest import default_memory_index_dir, read_manifest
@@ -49,7 +49,7 @@ def memory_sync_manifest_stub(repo_root: Path) -> dict[str, Any]:
     manifest = read_manifest(index_dir)
     sync_path = index_dir / "sync_manifest.json"
     if sync_path.is_file():
-        return json.loads(sync_path.read_text(encoding="utf-8"))
+        return cast(dict[str, Any], json.loads(sync_path.read_text(encoding="utf-8")))
     state = memory_index_sync_state(repo_root)
     remote_sync = "not_configured"
     if fleet_memory_enabled():

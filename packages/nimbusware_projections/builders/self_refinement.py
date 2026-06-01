@@ -109,26 +109,26 @@ def self_refinement_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
             continue
         loop_signal_count += 1
         payload = ev.get("payload")
-        pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
-        if pl.get("signal") == "phase_d_iteration":
+        signal_pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+        if signal_pl.get("signal") == "phase_d_iteration":
             ungated_iteration_count += 1
         phase_d_signal = {
             "event_id": ev.get("event_id"),
             "occurred_at": ev.get("occurred_at"),
-            "phase": pl.get("phase"),
-            "signal": pl.get("signal"),
-            "attempt": pl.get("attempt"),
-            "max_iterations": pl.get("max_iterations"),
-            "gate_decision": pl.get("gate_decision"),
-            "evaluation_status": pl.get("evaluation_status"),
-            "loops_remaining": pl.get("loops_remaining"),
-            "iteration_progress_ratio": pl.get("iteration_progress_ratio"),
-            "should_continue": pl.get("should_continue"),
-            "orchestration_branch": pl.get("orchestration_branch"),
-            "llm_critique_enabled": pl.get("llm_critique_enabled"),
-            "llm_critique_attempted": pl.get("llm_critique_attempted"),
-            "llm_critique_verdict": pl.get("llm_critique_verdict"),
-            "llm_gate_decision": pl.get("llm_gate_decision"),
+            "phase": signal_pl.get("phase"),
+            "signal": signal_pl.get("signal"),
+            "attempt": signal_pl.get("attempt"),
+            "max_iterations": signal_pl.get("max_iterations"),
+            "gate_decision": signal_pl.get("gate_decision"),
+            "evaluation_status": signal_pl.get("evaluation_status"),
+            "loops_remaining": signal_pl.get("loops_remaining"),
+            "iteration_progress_ratio": signal_pl.get("iteration_progress_ratio"),
+            "should_continue": signal_pl.get("should_continue"),
+            "orchestration_branch": signal_pl.get("orchestration_branch"),
+            "llm_critique_enabled": signal_pl.get("llm_critique_enabled"),
+            "llm_critique_attempted": signal_pl.get("llm_critique_attempted"),
+            "llm_critique_verdict": signal_pl.get("llm_critique_verdict"),
+            "llm_gate_decision": signal_pl.get("llm_gate_decision"),
         }
     if loop_signal_count > 0:
         out["loop_signal_count"] = loop_signal_count

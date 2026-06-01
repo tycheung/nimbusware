@@ -19,7 +19,6 @@ def test_nimbusware_api_app_importable() -> None:
 
 def test_nimbusware_maker_app_importable() -> None:
     import nimbusware_maker.app  # noqa: F401
-
     from nimbusware_maker.ui import render_main
 
     assert callable(render_main)

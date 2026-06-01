@@ -242,9 +242,9 @@ def test_count_recent_runs_matches_list_filters() -> None:
 
 def test_list_recent_run_rows_cursor() -> None:
     store = InMemoryEventStore()
-    rid_a = _append_run_created(store)
-    rid_b = _append_run_created(store)
-    rid_c = _append_run_created(store)
+    _append_run_created(store)
+    _append_run_created(store)
+    _append_run_created(store)
 
     ordered = store.list_recent_run_ids(limit=10)
     head_run, head_seq = ordered[0], store.max_store_seq_for_run(str(ordered[0]))

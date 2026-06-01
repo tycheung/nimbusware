@@ -143,7 +143,7 @@ class BundleCatalog:
         if not idx_path.is_file() or not meta_path.is_file():
             return None
         try:
-            import faiss  # type: ignore[import-not-found]
+            import faiss
         except ImportError:
             return None
         index = faiss.read_index(str(idx_path))

@@ -145,12 +145,21 @@ branch = false
 omit = [
   "*/tests/*",
   "*/__main__.py",
+  "packages/**/*_cli.py",
+  "packages/nimbusware_api/cli.py",
+  "packages/nimbusware_config/cli.py",
+  "packages/nimbusware_maker/cli.py",
   "packages/nimbusware_console/pages/**",
   "packages/nimbusware_console/main.py",
   "packages/nimbusware_console/app.py",
   "packages/nimbusware_maker/ui/**",
   "packages/nimbusware_maker/main.py",
   "packages/nimbusware_maker/app.py",
+  "packages/nimbusware_env/launcher_app.py",
+  "packages/nimbusware_env/run_app.py",
+  "packages/nimbusware_env/desktop_common.py",
+  "packages/nimbusware_env/linux_desktop_deps.py",
+  "packages/nimbusware_env/admin_app.py",
 ]
 
 [tool.coverage.report]
@@ -185,22 +194,35 @@ packages = [
 ]
 mypy_path = "packages"
 
+# fo509 tranche A: strict-check smaller packages; keep ignore on heavy UI/orchestrator/API slices.
 [[tool.mypy.overrides]]
 module = [
   "hermes_orchestrator.*",
   "nimbusware_api.*",
-  "nimbusware_env.*",
-  "hermes_memory.*",
-  "nimbusware_config.*",
-  "nimbusware_projections.*",
-  "hermes_extensions.*",
-  "hermes_agent_tools.*",
 ]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = ["nimbusware_console.*", "nimbusware_maker.*"]
 ignore_errors = true
+
+# fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in nimbusware_env.
+[[tool.mypy.overrides]]
+module = [
+  "nimbusware_env.linux_desktop_deps",
+  "nimbusware_env.desktop_common",
+  "nimbusware_env.launcher_app",
+  "nimbusware_env.run_app",
+]
+disable_error_code = [
+  "attr-defined",
+  "unused-ignore",
+  "type-var",
+  "misc",
+  "call-overload",
+  "no-any-return",
+  "arg-type",
+]
 
 [[tool.mypy.overrides]]
 module = ["redis", "redis.*"]
@@ -212,4 +234,8 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["webview.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["faiss", "faiss.*"]
 ignore_missing_imports = true

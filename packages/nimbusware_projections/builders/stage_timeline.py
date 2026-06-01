@@ -7,7 +7,7 @@ from hermes_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )
-from hermes_orchestrator.llm_plan import (
+from hermes_orchestrator.llm.common import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
@@ -77,7 +77,8 @@ def parallel_writer_groups_timeline_summary(
         if not isinstance(sn_raw, str):
             continue
         sn = sn_raw.strip()
-        meta = ev.get("metadata") if isinstance(ev.get("metadata"), dict) else {}
+        stage_meta_raw = ev.get("metadata")
+        stage_meta: dict[str, Any] = stage_meta_raw if isinstance(stage_meta_raw, dict) else {}
         if et == EventType.STAGE_STARTED.value and sn in (
             "implementation",
             "test_writer",
@@ -85,10 +86,10 @@ def parallel_writer_groups_timeline_summary(
         ):
             stage_started[sn] = {
                 "occurred_at": ev.get("occurred_at"),
-                "dispatch_mode": meta.get("dispatch_mode"),
-                "body_mode": meta.get("body_mode"),
+                "dispatch_mode": stage_meta.get("dispatch_mode"),
+                "body_mode": stage_meta.get("body_mode"),
             }
-            dm = meta.get("dispatch_mode")
+            dm = stage_meta.get("dispatch_mode")
             if isinstance(dm, str) and dm.strip():
                 dispatch_mode = dm.strip().lower()
         elif et == EventType.STAGE_PASSED.value and sn in (
@@ -99,8 +100,8 @@ def parallel_writer_groups_timeline_summary(
             stage_passed[sn] = {
                 "duration_ms": pl.get("duration_ms"),
                 "occurred_at": ev.get("occurred_at"),
-                "exit_code": meta.get("exit_code"),
-                "body_mode": meta.get("body_mode"),
+                "exit_code": stage_meta.get("exit_code"),
+                "body_mode": stage_meta.get("body_mode"),
             }
         elif et == EventType.STAGE_FAILED.value and sn in (
             "implementation",
@@ -109,9 +110,9 @@ def parallel_writer_groups_timeline_summary(
         ):
             stage_failed[sn] = {
                 "occurred_at": ev.get("occurred_at"),
-                "failure_reason": meta.get("failure_reason") or pl.get("reason_code"),
-                "exit_code": meta.get("exit_code"),
-                "body_mode": meta.get("body_mode"),
+                "failure_reason": stage_meta.get("failure_reason") or pl.get("reason_code"),
+                "exit_code": stage_meta.get("exit_code"),
+                "body_mode": stage_meta.get("body_mode"),
             }
 
     out: list[dict[str, Any]] = []

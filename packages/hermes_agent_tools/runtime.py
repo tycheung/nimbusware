@@ -160,17 +160,19 @@ def execute_slice_implement_agent(
 
     steps: list[AgentStep] = []
     use_llm = (
-        llm_base_url
-        and llm_model_id
+        llm_base_url is not None
+        and llm_model_id is not None
         and os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
     )
-    if use_llm:
+    if use_llm and llm_base_url is not None and llm_model_id is not None:
+        base_url = llm_base_url
+        model_id = llm_model_id
         try:
             steps = _steps_from_llm(
                 workspace=ws,
                 plan=plan,
-                base_url=llm_base_url,
-                model_id=llm_model_id,
+                base_url=base_url,
+                model_id=model_id,
                 timeout_seconds=timeout_seconds,
                 system_prompt=llm_system_prompt,
             )
@@ -184,8 +186,8 @@ def execute_slice_implement_agent(
         edits = execute_slice_implement_llm(
             plan=plan,
             workspace=ws,
-            base_url=llm_base_url,
-            model_id=llm_model_id,
+            base_url=base_url,
+            model_id=model_id,
             timeout_seconds=timeout_seconds,
             system_prompt=llm_system_prompt,
         )
@@ -215,14 +217,20 @@ def execute_slice_implement_agent(
         if not result.ok:
             exit_code = max(exit_code, 1)
 
-    if not touched and use_llm is False:
-        from hermes_orchestrator.slice_implement import execute_slice_implement
-
-        return execute_slice_implement(
-            ws,
-            plan,
-            timeout_seconds=timeout_seconds,
+    if not touched and not use_llm:
+        from hermes_orchestrator.slice_implement import (
+            execute_slice_implement,
+            slice_implement_mode,
         )
+
+        if slice_implement_mode() == "agent":
+            pass
+        else:
+            return execute_slice_implement(
+                ws,
+                plan,
+                timeout_seconds=timeout_seconds,
+            )
 
     return SliceImplementResult(
         mode="agent",

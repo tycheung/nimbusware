@@ -117,6 +117,14 @@ class SelfRefinementEvaluator:
         }
 
 
+def _coerce_int(raw: object, default: int = 0) -> int:
+    if isinstance(raw, int) and not isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str) and raw.strip().isdigit():
+        return int(raw.strip())
+    return default
+
+
 def _coerce_max_iterations(raw: object, default: int = 3) -> int:
     if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 1:
         return raw
@@ -128,7 +136,7 @@ def _coerce_max_iterations(raw: object, default: int = 3) -> int:
 
 def self_refinement_policy_from_mapping(raw: dict[str, object]) -> SelfRefinementPolicy:
     return SelfRefinementPolicy(
-        version=int(raw.get("version", 0)),
+        version=_coerce_int(raw.get("version", 0)),
         enabled=bool(raw.get("enabled", False)),
         description=str(raw.get("description", "")).strip(),
         max_iterations=_coerce_max_iterations(raw.get("max_iterations")),

@@ -26,7 +26,7 @@ def build_memory_faiss_index(
     if not chunks:
         return 1
     try:
-        import faiss  # type: ignore[import-not-found]
+        import faiss
     except ImportError:
         return 1
 
@@ -55,7 +55,7 @@ def try_load_memory_faiss(
     if not memory_faiss_index_ready(index_dir):
         return None
     try:
-        import faiss  # type: ignore[import-not-found]
+        import faiss
     except ImportError:
         return None
     index = faiss.read_index(str(index_dir / "faiss.index"))

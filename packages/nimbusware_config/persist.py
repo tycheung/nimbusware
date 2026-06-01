@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hermes_extensions.custom_agents import CustomAgentRegistry, default_registry_path
 from hermes_extensions.personas import PersonaShelf
@@ -26,7 +26,7 @@ def load_persona_shelf(
     materializer: Any | None = None,
 ) -> PersonaShelf:
     if materializer is not None and getattr(materializer, "use_db", False):
-        return materializer.get_persona_shelf()
+        return cast(PersonaShelf, materializer.get_persona_shelf())
     path = repo_root / "configs" / "personas" / "shelves.yaml"
     return PersonaShelf(path)
 
@@ -51,7 +51,7 @@ def load_workflow_profile_dict(
     materializer: Any | None = None,
 ) -> dict[str, Any]:
     if materializer is not None and getattr(materializer, "use_db", False):
-        return materializer.get_workflow_profile_dict(profile)
+        return cast(dict[str, Any], materializer.get_workflow_profile_dict(profile))
     return load_yaml(workflow_profile_path(repo_root, profile))
 
 
@@ -61,7 +61,7 @@ def load_bundle_catalog_dict(
     materializer: Any | None = None,
 ) -> dict[str, Any]:
     if materializer is not None and getattr(materializer, "use_db", False):
-        return materializer.get_bundle_catalog()
+        return cast(dict[str, Any], materializer.get_bundle_catalog())
     path = repo_root / "configs" / "bundles" / "catalog.yaml"
     return load_yaml(path)
 
@@ -85,7 +85,7 @@ def load_custom_agent_registry(
     materializer: Any | None = None,
 ) -> CustomAgentRegistry:
     if materializer is not None and getattr(materializer, "use_db", False):
-        return materializer.get_custom_agent_registry()
+        return cast(CustomAgentRegistry, materializer.get_custom_agent_registry())
     return CustomAgentRegistry.load(default_registry_path(repo_root))
 
 

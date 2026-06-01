@@ -209,11 +209,11 @@ def agent_evaluator_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
                             coverage_summary = sm.strip()
         if ev.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
             continue
-        pl = ev.get("payload")
-        if not isinstance(pl, dict):
+        gate_payload = ev.get("payload")
+        if not isinstance(gate_payload, dict):
             continue
-        if pl.get("stage_name") == "agent_evaluator.critique":
-            v = pl.get("verdict")
+        if gate_payload.get("stage_name") == "agent_evaluator.critique":
+            v = gate_payload.get("verdict")
             if v is not None:
                 gate_verdict = str(v).strip().upper()
     if gate_verdict:

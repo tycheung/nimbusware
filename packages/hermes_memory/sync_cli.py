@@ -38,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = p.parse_args(argv)
     conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+    memory_store: PostgresMemoryChunkStore | InMemoryMemoryChunkStore
     if conninfo:
         memory_store = PostgresMemoryChunkStore(conninfo)
     else:

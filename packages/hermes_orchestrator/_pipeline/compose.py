@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import functools
+import types
+from inspect import getattr_static
+
 from hermes_orchestrator._pipeline.base import RunOrchestratorBase
 from hermes_orchestrator._pipeline.create_run import CreateRunMixin
 from hermes_orchestrator._pipeline.critique_gates import CritiqueGatesMixin
@@ -25,10 +29,54 @@ _MIXINS = (
 )
 
 
+def _pipeline_module_globals() -> dict[str, object]:
+    import hermes_orchestrator.pipeline as pipeline_module
+
+    return pipeline_module.__dict__
+
+
+def _bind_function(fn: types.FunctionType) -> types.FunctionType:
+    """Wrap mixin callables so names resolve via ``hermes_orchestrator.pipeline``."""
+
+    @functools.wraps(fn)
+    def wrapper(*args: object, **kwargs: object) -> object:
+        fn_globals = fn.__globals__
+        pipeline_globals = _pipeline_module_globals()
+        snapshot = dict(fn_globals)
+        try:
+            fn_globals.clear()
+            fn_globals.update(pipeline_globals)
+            return fn(*args, **kwargs)
+        finally:
+            fn_globals.clear()
+            fn_globals.update(snapshot)
+
+    return wrapper  # type: ignore[return-value]
+
+
+def _rebind_descriptor(name: str, attr: object, cls: type) -> None:
+    if isinstance(attr, staticmethod):
+        fn = attr.__func__
+        setattr(cls, name, staticmethod(_bind_function(fn)))
+        return
+    if isinstance(attr, classmethod):
+        fn = attr.__func__
+        setattr(cls, name, classmethod(_bind_function(fn)))
+        return
+    if isinstance(attr, property):
+        fget = _bind_function(attr.fget) if attr.fget is not None else None
+        fset = _bind_function(attr.fset) if attr.fset is not None else None
+        fdel = _bind_function(attr.fdel) if attr.fdel is not None else None
+        setattr(cls, name, property(fget, fset, fdel))
+        return
+    if isinstance(attr, types.FunctionType):
+        setattr(cls, name, _bind_function(attr))
+
+
 def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
-    """Build ``RunOrchestrator`` from mixins in explicit MRO order."""
+    """Build ``RunOrchestrator``; mixin methods resolve helpers via ``pipeline``."""
     del _pipeline_globals
-    return type(
+    composed: type = type(
         "RunOrchestrator",
         _MIXINS,
         {
@@ -37,3 +85,17 @@ def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
             ),
         },
     )
+    for base in composed.__mro__:
+        if base in {object, composed}:
+            continue
+        for name in base.__dict__:
+            if name == "__init__" or (
+                name.startswith("__") and name.endswith("__")
+            ):
+                continue
+            try:
+                raw = getattr_static(base, name)
+            except AttributeError:
+                continue
+            _rebind_descriptor(name, raw, composed)
+    return composed

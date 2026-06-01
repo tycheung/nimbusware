@@ -36,6 +36,8 @@ def parse_notify_payload(payload: str | None) -> ConfigDocumentUpdated | None:
     ver = raw.get("version")
     if not isinstance(ns, str) or not isinstance(key, str):
         return None
+    if isinstance(ver, bool) or not isinstance(ver, (int, str)):
+        return None
     try:
         version = int(ver)
     except (TypeError, ValueError):

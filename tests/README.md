@@ -20,8 +20,8 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 
 ## CI subsets
 
-- Default PR CI: `pytest tests -m "not integration and not slow and not benchmark"` with `--cov-fail-under=65`
-- Coverage omits Streamlit page modules (`nimbusware_console/pages/**`, `nimbusware_maker/ui/**`) — UI is exercised via `tests/console/` and e2e smoke; core packages remain in the denominator (Lane S / fo504).
+- Default PR CI: `pytest tests -m "not integration and not slow and not benchmark"` with `--cov-fail-under=70`
+- Coverage omits Streamlit pages, Maker UI, desktop launcher apps (`nimbusware_env/*_app.py`, `desktop_common.py`, `linux_desktop_deps.py`), and CLI entrypoints (`*_cli.py`, package `cli.py`) — exercised via console/e2e/manual smoke; core library code stays in the denominator (fo504 / fo510).
 - Fast API/auth/OpenAPI tests live in `tests/api/` without the blanket `slow` marker; orchestrator-heavy API suites stay `@pytest.mark.slow`
 - Integration job: `-m integration`
 - Weekly slow: `-m slow`

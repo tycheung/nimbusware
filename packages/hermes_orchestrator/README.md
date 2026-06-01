@@ -30,7 +30,7 @@ Orchestrator tests live under `tests/orchestrator/` and `tests/unit/test_*slice*
 ## Adding a pipeline stage
 
 1. **Mixin module** — Add `packages/hermes_orchestrator/_pipeline/<stage>.py` with a `*Mixin` class. Import symbols from `_helpers` **explicitly** (no star imports), matching existing mixins such as `create_run.py` or `pipeline_scraper.py`.
-2. **Register in `compose.py`** — Import the mixin and append it to `_MIXINS` (order matters for MRO). `build_run_orchestrator_class` composes the final class directly from mixins; each mixin must import required helpers explicitly.
+2. **Register in `compose.py`** — Import the mixin and append it to `_MIXINS` (order matters for MRO). `build_run_orchestrator_class` wraps mixin methods so runtime lookups resolve via `hermes_orchestrator.pipeline` (stable `unittest.mock.patch` target).
 3. **`_helpers` exports** — Shared types, event helpers, and policy parsers live in `_pipeline/_helpers.py`. If a mixin needs a new symbol, add or re-export it there.
 4. **Export guard** — `tests/unit/test_pipeline_helpers_exports.py` asserts required `_helpers` symbols exist and that mixin modules do not star-import `_helpers`.
 
@@ -38,6 +38,6 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 
 ## Refactor notes
 
-- **No global rebinding in compose:** `compose.py` no longer mutates mixin function globals. Keep mixins self-contained and import shared symbols from `_helpers` explicitly.
+- **Compose-time patch seam:** `compose.py` binds mixin method globals to `pipeline` during each call so tests can patch `hermes_orchestrator.pipeline.*` without star-import barrels in mixins. Mixins still import from `_helpers` explicitly at module level.
 - After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.
