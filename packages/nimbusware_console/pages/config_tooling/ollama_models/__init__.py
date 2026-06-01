@@ -1,5 +1,3 @@
-"""Admin Console — Ollama model inventory, pull/delete, and Maker user policy."""
-
 from __future__ import annotations
 
 import streamlit as st

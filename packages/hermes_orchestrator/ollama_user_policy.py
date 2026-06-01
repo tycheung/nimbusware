@@ -1,5 +1,3 @@
-"""User-facing Ollama model management policy (stored in model-routing.yaml)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

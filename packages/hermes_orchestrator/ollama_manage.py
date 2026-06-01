@@ -1,5 +1,3 @@
-"""Ollama model list / pull / delete helpers for API and consoles."""
-
 from __future__ import annotations
 
 import json

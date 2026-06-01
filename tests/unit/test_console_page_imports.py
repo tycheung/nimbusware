@@ -1,5 +1,3 @@
-"""Import smoke for Streamlit page entrypoints (catches missing ``st``, syntax errors)."""
-
 from __future__ import annotations
 
 import importlib

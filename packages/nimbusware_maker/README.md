@@ -11,7 +11,9 @@ Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/
 
 | Module | Role |
 |--------|------|
-| `slice_workflow.py` | Approval UX orchestration (events, pending slice, revert) |
+| `ui/` | Streamlit panels (home, build, review, progress, settings + Ollama models) |
+| `services/` | Testable `/v1` helpers (e.g. `services/ollama.py`) without Streamlit |
+| `slice_workflow/` | Approval UX orchestration (events, pending slice, revert) |
 | `slice_engine.py` | **Sole** module-level import site for `hermes_orchestrator` slice execution |
 | `api_client.py` | HTTP via `nimbusware_client` (no direct `httpx`) |
 | `workspace*.py` | Run workspace paths and snapshot restore |

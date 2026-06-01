@@ -47,7 +47,7 @@ Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-wo
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
-Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map), [PLAN_GAP.md](PLAN_GAP.md) (sprint board), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout + Lane R status).
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [tests/README.md](tests/README.md) (CI subsets), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout).
 
 ## Hermes orchestration (what the engine does)
 
@@ -64,7 +64,7 @@ Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map), [PLAN_GAP.md](
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-Configs live under [`configs/`](configs/) (workflows, personas, roles, model-routing, bundles). With Postgres, operator edits persist to `hermes_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
+Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles). With Postgres, operator edits persist to `hermes_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
 
 ## Repository layout
 
@@ -189,7 +189,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
 - Project picker backed by `hermes_project` (`GET/POST /v1/projects` — **no admin token**; `DELETE` is admin-only)
-- Per-project run history and **Settings** tab (model presets, auto-advance hint)
+- Per-project run history and **Settings** tab (Ollama model list, policy-gated pull/delete/routing when admin allows, readiness presets, auto-advance hint)
 
 **Build**
 
@@ -224,6 +224,7 @@ Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher
 
 **Configuration & search**
 
+- **Ollama models** — installed-model search, admin pull/delete, Maker user policy toggles (`ollama_user_policy` in `configs/model-routing.yaml`)
 - Operator chat — start runs, steer workflow from the UI
 - Custom agents — CRUD + system prompt editor (Postgres registry in DB mode)
 - Bundle catalog search (local + API parity), FAISS index status, catalog editor
@@ -350,16 +351,16 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 Layout and CI subsets: [`tests/README.md`](tests/README.md).
 
 ```bash
+# Matches GitHub CI (ruff, mypy, bandit, pytest, 70% coverage on library code):
+./scripts/ci_check.ps1   # Windows
+./scripts/ci_check.sh    # Linux/macOS
+
 poetry run pytest tests/ -q
-# CI-style unit subset (no Postgres integration, no slow tests):
-poetry run pytest tests/ -q -m "not integration and not slow"
-# Optional fleet benchmarks:
+poetry run pytest tests/ -q -m "not integration and not slow and not benchmark"
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
-# Targeted guards (import graph, env_flags, admin token):
-poetry run pytest tests/unit/test_import_graph.py tests/unit/test_env_flags.py tests/unit/test_admin_token.py -q
 ```
 
-Install optional local hooks: `pip install pre-commit && pre-commit install` (runs ruff + whitespace checks).
+Optional hooks: `pip install pre-commit && pre-commit install` (ruff, format, CI-parity `ruff check packages tests`, `compileall`, mypy on `packages/`).
 
 Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). Gates script: `scripts/run_integration_like_ci.ps1` / `.sh`.
 

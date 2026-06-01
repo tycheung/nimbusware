@@ -1,5 +1,3 @@
-"""Workflow config tooling facade — star re-exports from split submodules."""
-
 from __future__ import annotations
 
 from nimbusware_console.pages.config_tooling.workflows._shared_catalog import *  # noqa: F403

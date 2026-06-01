@@ -11,10 +11,24 @@ FastAPI control plane for runs, timelines, bundles, config, and Enterprise IAM.
 
 | Area | Path |
 |------|------|
-| User routes | `routes/runs/`, `routes/bundles.py`, … |
+| User routes | `routes/runs/`, `routes/bundles.py`, `routes/ollama.py`, … |
 | Admin / Enterprise | `routes/enterprise/` |
 | Schemas + OpenAPI | `schemas/` |
 | Timeline read models | `read_models/` (thin wrappers over `nimbusware_projections`) |
 | Run list summary | `nimbusware_projections.run_summary` (`build_run_summary`) |
 
 Errors use Problem+JSON (`nimbusware_api.errors.problem`). Edition gating via `nimbusware_env.edition`.
+
+### Ollama model management
+
+| Method | Path | Access |
+|--------|------|--------|
+| `GET` | `/platform/ollama/models` | User |
+| `POST` | `/platform/ollama/pull` | User if `ollama_user_policy.allow_pull` |
+| `DELETE` | `/platform/ollama/models/{name}` | User if `allow_delete` |
+| `PATCH` | `/platform/ollama/routing/primary` | User if `allow_update_routing` |
+| `PATCH` | `/admin/ollama/user-policy` | Admin |
+| `POST` | `/admin/ollama/pull` | Admin |
+| `DELETE` | `/admin/ollama/models/{name}` | Admin |
+
+Policy defaults live in `configs/model-routing.yaml` (`ollama_user_policy`). Implementation: `hermes_orchestrator.ollama_manage`, `ollama_user_policy`; persistence via `nimbusware_config.persist`.

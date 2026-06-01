@@ -1,5 +1,3 @@
-"""Ollama model management API schemas."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
@@ -29,7 +27,7 @@ class OllamaModelsResponse(BaseModel):
 
 
 class OllamaPullRequest(BaseModel):
-    model: str = Field(..., min_length=1, description="Ollama model tag to pull")
+    model: str = Field(..., min_length=1)
 
 
 class OllamaPullResponse(BaseModel):

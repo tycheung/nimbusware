@@ -22,6 +22,7 @@ Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `p
 - Depends on: `agent_core`, `hermes_store`, `hermes_extensions`, `hermes_memory`, `hermes_executor`
 - Must **not** import `nimbusware_api` (use `nimbusware_projections` for read models)
 - Extensions must **not** import orchestrator at module level (see `tests/unit/test_import_graph.py`)
+- **Ollama inventory:** `ollama_manage.py` (list/pull/delete against runtime), `ollama_user_policy.py` (`ollama_user_policy` in `model-routing.yaml`)
 
 ## Testing
 

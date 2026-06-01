@@ -32,7 +32,7 @@ Repo root and API base helpers live in `settings.py` (`repo_root()`, `API_BASE`)
 3. **Enterprise dashboard** — when fleet mode is active (`enterprise_console_ui.py`)
 4. **Run list** — `pages/run_list.py` (pagination, filters, CSV export)
 5. **Run detail** — `pages/run_detail/` (summary, timeline, findings, actions)
-6. **Config tooling** — `pages/config_tooling/` (bundles + workflows)
+6. **Config tooling** — `pages/config_tooling/` (Ollama models, bundles, workflows)
 7. **Preflight fleet** — `pages/preflight_fleet.py`
 
 Run list session state and query-param sync are centralized in `pages/_state.py` (facade over `_state_keys.py`, `_state_run_list_qp.py`, `_state_run_list_render.py`).
@@ -48,7 +48,8 @@ nimbusware_console/
 ├── pages/                   # Streamlit sections
 │   ├── run_list.py
 │   ├── run_detail/          # per-run panels + timeline sections
-│   ├── config_tooling/      # bundles + workflows tooling
+│   ├── config_tooling/      # Ollama models, bundles, workflows tooling
+│   ├── services/            # testable /v1 clients (no Streamlit)
 │   ├── _state*.py           # run-list session / query-param state
 │   └── preflight_fleet.py
 ├── *\_display.py            # read-only caption/table/export helpers (top-level)
@@ -69,8 +70,9 @@ nimbusware_console/
 |------|--------|------|
 | Run list | `pages/run_list.py` | Paginated run table, filters, exports |
 | Run detail | `pages/run_detail/` | Summary, timeline, findings, critic matrix, actions |
+| Config — Ollama | `pages/config_tooling/ollama_models/` | Model search, admin pull/delete, Maker policy toggles |
 | Config — bundles | `pages/config_tooling/bundles/` | Local catalog search, rollups, FAISS readiness |
-| Config — workflows | `pages/config_tooling/workflows/` | Bundle/persona editors, integrator (fo131–fo140), prune |
+| Config — workflows | `pages/config_tooling/workflows/` | Bundle/persona editors, integrator, prune |
 | Integrator sections | `workflows/integrator/` | Preview, apply, per-knob explainers (10 section modules) |
 
 **Run detail timeline** is split into focused renderers:
@@ -85,8 +87,9 @@ nimbusware_console/
 
 **Config tooling shared imports:**
 
-- Workflows: `pages/config_tooling/workflows/_shared.py` → `_shared_{session,catalog,displays,explainers,integrator}.py`
-- Bundles: `pages/config_tooling/bundles/_shared.py` (re-exports workflow shared)
+- Workflows: `workflows/_shared.py` star-imports `_shared_{session,catalog,displays,explainers,integrator}.py`
+- Bundles: `bundles/_shared.py` star-imports `workflows._shared`
+- HTTP: `services/ollama.py` (used by `ollama_models/` panel)
 
 ### Display helpers (`*_display.py` and packages)
 

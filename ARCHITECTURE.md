@@ -42,8 +42,8 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants + API keys (`maker_user` / `maker_admin`) |
-| `nimbusware_maker` | User product UI |
-| `nimbusware_console` | Admin Console (config, fleet, deep timeline) |
+| `nimbusware_maker` | User product UI (`ui/` Streamlit; `services/` testable HTTP helpers) |
+| `nimbusware_console` | Admin Console (config, fleet, deep timeline; `services/` HTTP helpers) |
 | `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
 
 ## Editions
@@ -74,6 +74,6 @@ See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=70` on the default unit subset (library code; CLI/desktop entrypoints omitted per `pyproject.toml`; `*/services/**` stays in denominator; fo514 added targeted tests — ratchet to 71% when green).
+**Coverage:** CI enforces `--cov-fail-under=70` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

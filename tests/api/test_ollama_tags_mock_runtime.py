@@ -1,5 +1,3 @@
-"""Ollama list endpoint against a mock /api/tags response."""
-
 from __future__ import annotations
 
 import json

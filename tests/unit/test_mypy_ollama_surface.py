@@ -1,5 +1,3 @@
-"""Guard: Ollama API/orchestrator/service modules stay on strict mypy override list."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Maker Settings — Ollama model list and policy-gated actions."""
-
 from __future__ import annotations
 
 import streamlit as st
