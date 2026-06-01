@@ -43,7 +43,8 @@ def ollama_reachable(host: str | None = None, *, timeout_s: float = 2.0) -> bool
     try:
         req = urllib.request.Request(f"{base}/api/tags", method="GET")
         with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-            return 200 <= resp.status < 300
+            status = int(resp.status)
+            return 200 <= status < 300
     except (urllib.error.URLError, TimeoutError, OSError):
         return False
 

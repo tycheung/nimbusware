@@ -202,6 +202,19 @@ module = [
 ]
 ignore_errors = true
 
+# fo512: strict-check Ollama management surface (overrides package-level ignore).
+[[tool.mypy.overrides]]
+module = [
+  "nimbusware_api.schemas.ollama",
+  "nimbusware_api.routes.ollama",
+  "nimbusware_api.errors",
+  "hermes_orchestrator.ollama_manage",
+  "hermes_orchestrator.ollama_user_policy",
+  "nimbusware_console.services.ollama",
+  "nimbusware_maker.services.ollama",
+]
+ignore_errors = false
+
 [[tool.mypy.overrides]]
 module = ["nimbusware_console.*", "nimbusware_maker.*"]
 ignore_errors = true
