@@ -21,6 +21,8 @@ def test_build_v1_router_includes_core_routes() -> None:
     assert "/runs/{run_id}/timeline" in paths
     assert "/preflight-history" in paths
     assert "/platform/edition" in paths
+    assert "/platform/ollama/models" in paths
+    assert "/admin/ollama/user-policy" in paths
 
 
 def test_build_v1_router_includes_enterprise_routes() -> None:

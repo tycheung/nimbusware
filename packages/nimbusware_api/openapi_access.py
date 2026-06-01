@@ -41,6 +41,9 @@ _ADMIN_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("GET", re.compile(r"^/v1/enterprise/config-notify/")),
     ("GET", re.compile(r"^/v1/enterprise/scraper-artifacts/")),
     ("GET", re.compile(r"^/v1/enterprise/status$")),
+    ("PATCH", re.compile(r"^/v1/admin/ollama/")),
+    ("POST", re.compile(r"^/v1/admin/ollama/")),
+    ("DELETE", re.compile(r"^/v1/admin/ollama/")),
 )
 
 _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
@@ -53,6 +56,9 @@ _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/maker/")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/workspace/revert$")),
     ("GET", re.compile(r"^/v1/platform/")),
+    ("POST", re.compile(r"^/v1/platform/ollama/pull$")),
+    ("DELETE", re.compile(r"^/v1/platform/ollama/models/")),
+    ("PATCH", re.compile(r"^/v1/platform/ollama/routing/")),
     ("GET", re.compile(r"^/v1/personas$")),
     ("GET", re.compile(r"^/v1/bundles/search$")),
     ("GET", re.compile(r"^/v1/bundles/catalog")),

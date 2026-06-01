@@ -27,6 +27,17 @@ def _load_model_routing(repo_root: Path) -> dict[str, Any]:
     return loaded if isinstance(loaded, dict) else {}
 
 
+def _primary_model_id(models: dict[str, Any]) -> str:
+    primary = models.get("primary")
+    if isinstance(primary, dict):
+        pid = primary.get("id")
+        if isinstance(pid, str) and pid.strip():
+            return pid.strip()
+    if isinstance(primary, str) and primary.strip():
+        return primary.strip()
+    return ""
+
+
 def _check_repo_root(repo_root: Path) -> dict[str, Any]:
     required = [
         repo_root / "configs" / "model-routing.yaml",
@@ -63,7 +74,7 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         routing = _load_model_routing(repo_root)
         runtime = routing.get("runtime") if isinstance(routing.get("runtime"), dict) else {}
         models = routing.get("models") if isinstance(routing.get("models"), dict) else {}
-        primary = str(models.get("primary") or "unknown")
+        primary = _primary_model_id(models) or "unknown"
         return {
             "status": "degraded",
             "message": "Preflight skipped (HERMES_SKIP_PREFLIGHT) — model checks not run",
@@ -77,7 +88,7 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
     models = routing.get("models") if isinstance(routing.get("models"), dict) else {}
     base_url = str(runtime.get("base_url") or "http://localhost:11434")
     health_path = str(runtime.get("health_endpoint") or "/api/tags")
-    primary = str(models.get("primary") or "")
+    primary = _primary_model_id(models)
     timeout = float(runtime.get("request_timeout_seconds") or 10.0)
     url = base_url.rstrip("/") + health_path
 

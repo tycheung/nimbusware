@@ -21,6 +21,12 @@ preflight:
     - runtime_reachable
     - model_available
 
+# Maker users may pull/delete models or change primary routing only when enabled here.
+ollama_user_policy:
+  allow_pull: false
+  allow_delete: false
+  allow_update_routing: false
+
 models:
   primary:
     id: llama3.1:8b
