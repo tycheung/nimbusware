@@ -13,7 +13,6 @@ from agent_core.models.events_payloads import (
     CriticVerdictEmittedPayload,
     FindingClosedPayload,
     FindingCreatedPayload,
-    FindingFixStrictnessSettings,
     FindingRoutedPayload,
     GateDecisionEmittedPayload,
     GateOverriddenPayload,

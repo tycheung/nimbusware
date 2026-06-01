@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EffectiveUniversalCritique,
     EventStore,
@@ -9,7 +10,6 @@ from hermes_orchestrator._pipeline._helpers import (
     Path,
     RoleRegistry,
     RunCreatedEvent,
-    UUID,
     effective_universal_critique,
     load_critique_router,
     load_yaml,
@@ -18,7 +18,6 @@ from hermes_orchestrator._pipeline._helpers import (
     validate_event_dict,
     workflow_profile_from_run_created_rows,
 )
-
 
 
 class RunOrchestratorBase:

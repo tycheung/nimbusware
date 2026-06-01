@@ -2,49 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_console.pages.config_tooling.workflows._shared_integrator import (
-    ALLOW_WORKFLOW_YAML_WRITE_ENV,
-    apply_full_workflow_yaml,
-    full_workflow_merge_added_top_level_caption,
-    full_workflow_merge_attention_export_filename_slug,
-    full_workflow_merge_attention_export_json,
-    full_workflow_merge_attention_operator_metrics,
-    full_workflow_merge_attention_operator_metrics_caption,
-    full_workflow_merge_attention_operator_metrics_export_filename_slug,
-    full_workflow_merge_attention_operator_metrics_export_json,
-    full_workflow_merge_attention_operator_metrics_table_rows,
-    full_workflow_merge_attention_operator_metrics_table_rows_csv,
-    full_workflow_merge_attention_rows,
-    full_workflow_merge_attention_table_rows_csv,
-    full_workflow_merge_changed_top_level_caption,
-    full_workflow_merge_diff,
-    full_workflow_merge_diff_audit_fingerprint_caption,
-    full_workflow_merge_diff_export_filename_slug,
-    full_workflow_merge_diff_export_json,
-    full_workflow_merge_diff_operator_metrics,
-    full_workflow_merge_diff_operator_metrics_caption,
-    full_workflow_merge_diff_operator_metrics_export_filename_slug,
-    full_workflow_merge_diff_operator_metrics_export_json,
-    full_workflow_merge_diff_operator_metrics_table_rows,
-    full_workflow_merge_diff_operator_metrics_table_rows_csv,
-    full_workflow_merge_diff_table_rows,
-    full_workflow_merge_diff_table_rows_csv,
-    full_workflow_merge_disk_only_top_level_caption,
-    full_workflow_merge_overview_caption,
-    full_workflow_merge_paste_only_top_level_caption,
-    full_workflow_merge_pasted_top_level_caption,
-    full_workflow_merge_removed_top_level_caption,
-    full_workflow_merge_subtree_added_fields_caption,
-    full_workflow_merge_subtree_changed_fields_caption,
-    full_workflow_merge_subtree_overview_caption,
-    full_workflow_merge_subtree_removed_fields_caption,
-    full_workflow_merge_top_level_churn_count_caption,
-    full_workflow_merge_unchanged_top_level_caption,
-    full_workflow_merge_unchanged_with_churn_caption,
-    parse_full_workflow_yaml_paste,
-    prepare_full_workflow_apply,
-)
-from nimbusware_console.pages.config_tooling.workflows._shared_session import rl
+import streamlit as st
+
+from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
 def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str | None) -> None:

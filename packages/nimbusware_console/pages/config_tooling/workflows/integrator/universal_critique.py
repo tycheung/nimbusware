@@ -2,37 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import streamlit as st
+
 from nimbusware_console.components.explainer_panel import render_explainer_export_downloads
 from nimbusware_console.components.workflow_explainer_helpers import (
     render_workflow_explainer_metrics_panel,
 )
-from nimbusware_console.pages.config_tooling.workflows._shared_displays_b import universal_critique_snapshot_from_compare_paste
-from nimbusware_console.pages.config_tooling.workflows._shared_explainers import (
-    universal_critique_default_enabled_caption,
-    universal_critique_enabled_stages_caption,
-    universal_critique_env_override_deltas,
-    universal_critique_env_override_summary_caption,
-    universal_critique_explainer_export_json,
-    universal_critique_explainer_table_rows,
-    universal_critique_explainer_table_rows_csv,
-    universal_critique_export_filename_slug,
-    universal_critique_workflow_explainer_operator_metrics,
-    universal_critique_workflow_explainer_operator_metrics_caption,
-    universal_critique_workflow_explainer_operator_metrics_export_filename_slug,
-    universal_critique_workflow_explainer_operator_metrics_table_rows,
-    universal_critique_workflow_explainer_payload,
-    universal_critique_workflow_vs_timeline_rows,
-    universal_critique_workflow_yaml_bytes_caption,
-    universal_critique_workflow_yaml_relpath_caption,
-    universal_critique_yaml_enabled_bucket_caption,
-    universal_critique_yaml_present_caption,
-    universal_critique_yaml_stage_keys_caption,
-    universal_critique_yaml_top_level_enabled_false_count_caption,
-    universal_critique_yaml_top_level_enabled_true_count_caption,
-    universal_critique_yaml_top_level_list_child_count_caption,
-    universal_critique_yaml_top_level_mapping_child_count_caption,
-    universal_critique_yaml_top_level_nonempty_count_caption,
-)
+from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
 def render_universal_critique_section(*, repo_root: Path, workflow_profile: str | None) -> None:

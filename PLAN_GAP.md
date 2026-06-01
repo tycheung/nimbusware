@@ -18,11 +18,11 @@
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
-| **Hold (regression-only)** | **Shipped (M / U / R hold)** | **Optional depth / Lane D polish** |
+| **Hold (regression-only)** | **Shipped (M / U / R hold)** | **Lane S (fo500–fo506) + optional depth** |
 |----------------------------|------------------------------|-------------------------------------|
-| Individual: full `pytest tests/` green without enterprise deps | Hold regressions on fo300–fo317 and fo400–fo407 follow-on | Desktop `run_app` / E2E CI matrix (PZ-1) |
-| §14 rows; fo150–fo207; fo143–fo146 | Optional: `env_flags` migration, console modules >400 lines | Richer LLM critics / non-stub refactor apply |
-| Gates (`_round_gates.ps1`); [`tests/README.md`](tests/README.md) | Import-graph + admin-token guards | OIDC / K8s / external SLI (Lane D ops) |
+| Individual: full `pytest tests/` green without enterprise deps | Hold regressions on fo300–fo317 and fo400–fo407 follow-on | [Lane S](#lane-s--stabilization--maturity-fo500fo506) — CI gates, import hygiene, guards |
+| §14 rows; fo150–fo207; fo143–fo146 | Import-graph + admin-token guards | `env_flags` migration, richer LLM critics |
+| Gates (`_round_gates.ps1`); [`tests/README.md`](tests/README.md) | — | OIDC / K8s / external SLI (Lane D ops) |
 
 | Document | Role |
 |----------|------|
@@ -46,6 +46,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane M** — Maker product (fo300–fo308) | **~98%** | **Shipped** — [build path](#lane-m--recommended-build-path) complete; hold regressions |
 | **Lane U** — User vs Admin consoles (fo310–fo317) | **~100%** | **Shipped** — [build path](#lane-u--recommended-build-path) complete |
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
+| **Lane S** — Stabilization & maturity (fo500–fo506) | **~5%** | **Active** — [Lane S](#lane-s--stabilization--maturity-fo500fo506); green CI + systematic hardening |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -962,14 +963,144 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 | Merge Maker + Admin apps | Keep separate packages (Lane U) |
 | Big-bang orchestrator rewrite | Mixin compose stays; document first |
 
+## Lane S — Stabilization & maturity (fo500–fo506)
+
+**Status:** **~5% — active** (June 2026).  
+**Depends on:** [Lane R](#lane-r--maintainability-refactor-fo400fo407) complete.  
+**Goal:** Restore trustworthy CI feedback loops, then systematically reduce import-barrel debt, expand architectural guards, and ratchet coverage — without changing product behavior.
+
+**Maturity audit (June 2026):** Overall **~7.6/10** — architecture **8/10**, effective type safety **7/10** (star-import barrels + ruff surface), tests **7.5/10**, CI hygiene **6.5/10** until fo500 green.
+
+### Epic queue (fo500–fo506)
+
+| Order | Epic | Track | Outcome | Primary touches |
+|-------|------|-------|---------|-----------------|
+| 1 | **fo500** | **S0** — Green CI | `ruff check`, `mypy`, `--cov-fail-under=65` pass on default unit job | `agent_core/models/events_*.py`, `pyproject.toml` per-file ignores for facades, pipeline `Literal` aliases |
+| 2 | **fo501** | **S1** — Import hygiene | Star imports only in documented facades; consumers import from explicit barrels or submodules | `workflows/_shared.py`, `bundles/_shared.py`, `hermes_orchestrator/llm/**`, `scripts/explicit_*` |
+| 3 | **fo502** | **S2** — Guard expansion | Size/facade guards for Maker, config, store; optional `import-linter` / `deptry` | `tests/unit/test_*module_size*`, `test_maker_facade.py`, `test_store_contract.py` |
+| 4 | **fo503** | **S3** — Targeted splits | Logic-heavy modules under limits (not 800-line barrels) | `_pipeline/lifecycle.py`, `routes/personas.py`, `apply_full_profile.py`, `slice_workflow.py` |
+| 5 | **fo504** | **S4** — Coverage ratchet | +5%/quarter on CI subset; per-package floors for core packages | `tests/unit/`, `tests/console/`, `.github/workflows/ci.yml` |
+| 6 | **fo505** | **S5** — Orchestrator simplify | Replace `_bind_function` global rebinding when tests allow | `hermes_orchestrator/_pipeline/compose.py`, README stage guide |
+| 7 | **fo506** | **S6** — Product / ops depth | On request: E2E matrix, full RFC 7807, Lane D ops | `tests/e2e/`, `nimbusware_api/errors.py`, Lane D backlog |
+
+### Lane S — recommended build path
+
+**Critical path:** **S0 → S1 → S2 → S4** (green CI before new splits; guards before ratchet).
+
+#### Phase S0 — Green CI (fo500)
+
+| Deliverable | Notes |
+|-------------|--------|
+| Fix refactor-split import debris | e.g. `events_foundation.py` unused imports after `events.py` split |
+| Facade re-export ruff policy | `F401`/`F811` per-file ignores for explicit barrels (`openapi.py`, `scraper_artifacts.py`, `_shared*.py`) — **never** `ruff check --fix` repo-wide |
+| Pipeline annotation fixes | Module-level `Literal[...]` type aliases (avoid inline `Literal["x"]` + ruff `UP037`/`F821` conflict) |
+| Coverage floor | Meet `--cov-fail-under=65` or document interim floor with ratchet plan |
+| `./scripts/ci_check.ps1` green | Mirrors `.github/workflows/ci.yml` unit job |
+
+**Exit:** GitHub **unit** job passes ruff + mypy + bandit + pytest cov on every push.
+
+#### Phase S1 — Import hygiene (fo501)
+
+| Deliverable | Notes |
+|-------------|--------|
+| Bundle page consumers | 8 files: explicit submodule imports or documented star-from-barrel |
+| `hermes_orchestrator/llm/*` | `scripts/explicit_llm_imports.py` (mirror pipeline pass) |
+| Delete `persona_catalog/summary.py` shim | Use `persona_catalog.summary` package directly |
+| Barrel shrink strategy | New symbols imported at call site; stop growing 800-line `_shared.py` |
+| `scripts/sync_bundles_shared.py` | Regenerate `bundles/_shared.py` when `workflows/_shared.py` changes |
+
+**Exit:** Star imports only in facades covered by `test_module_integrity.py` / `test_display_facade_exports.py`.
+
+#### Phase S2 — Guard expansion (fo502)
+
+| Deliverable | Notes |
+|-------------|--------|
+| `test_maker_module_size.py` | 400-line cap on `nimbusware_maker` |
+| `test_maker_facade.py` | Mirror `test_console_facade.py` |
+| `test_store_contract.py` | `EventStore` protocol + allowlist parity tests |
+| `test_config_module_size.py` | 450-line cap on `nimbusware_config` |
+| Optional dependency DAG linter | `import-linter` or `deptry` beyond AST prefix rules |
+
+**Exit:** No package >10% over size limit without allowlist drift test failure.
+
+#### Phase S3 — Targeted splits (fo503)
+
+| Module | ~LOC | Split strategy |
+|--------|-----:|----------------|
+| `_pipeline/lifecycle.py` | 472 | Extract start / plan / verify transition groups |
+| `routes/personas.py` | 437 | Handlers vs serialization helpers |
+| `integrator/apply_full_profile.py` | 434 | One module per apply block |
+| `nimbusware_maker/slice_workflow.py` | 444 | Plan vs implement vs approval panels |
+
+**Exit:** Allowlists for logic modules empty; barrels may remain allowlisted.
+
+#### Phase S4 — Coverage ratchet (fo504)
+
+| Deliverable | Notes |
+|-------------|--------|
+| CI subset floor | 65% → 70% → 75% (+5%/quarter) |
+| Thin packages | `hermes_store`, `nimbusware_iam`, `nimbusware_maker` UI smoke tests |
+| Console workflows | Named tests for config_tooling integrator paths |
+
+**Exit:** CI cov artifact shows monotonic increase; no package without any dedicated test module.
+
+#### Phase S5 — Orchestrator simplify (fo505, optional)
+
+| Deliverable | Notes |
+|-------------|--------|
+| Document “add a pipeline stage” | `hermes_orchestrator/README.md` |
+| Reduce `_bind_function` usage | Explicit `PipelineContext` or constructor injection when parity tests allow |
+
+**Exit:** New stage authors need no global-patch mental model.
+
+#### Phase S6 — Product / ops depth (fo506, on request)
+
+Cross-ref [Optional depth](#optional-depth-on-request), [Lane D polish](#lane-d--ops-polish-non-blocking), PZ-1 E2E matrix.
+
+### Lane S — dependency graph
+
+```text
+Lane R complete
+      │
+      ▼
+S0 (fo500) green CI ──► S1 (fo501) import hygiene
+      │                        │
+      └──────────┬─────────────┘
+                 ▼
+          S2 (fo502) guards ──► S3 (fo503) targeted splits
+                 │
+                 └──► S4 (fo504) coverage ratchet ──► S5 (fo505) optional
+```
+
+### Lane S — progress tracker
+
+| Phase | Epic | Status |
+|-------|------|--------|
+| S0 | fo500 | **In progress** — `events_foundation.py` F401 fix; facade `F401`/`F811` ignores; pipeline `Literal` aliases; workflow consumers on `_shared` barrel |
+| S1 | fo501 | **Not started** |
+| S2 | fo502 | **Not started** |
+| S3 | fo503 | **Not started** |
+| S4 | fo504 | **Not started** |
+| S5 | fo505 | **Not started** |
+| S6 | fo506 | **Backlog** |
+
+### Lane S — exit criteria
+
+- [ ] GitHub **unit** job green (ruff, mypy, bandit, pytest 65% cov)
+- [ ] `./scripts/ci_check.ps1` green on clean clone
+- [ ] Star imports confined to documented facades
+- [ ] Maker + store + config under size/facade guards
+- [ ] Coverage floor ≥70% on CI subset (after S4 tranche 1)
+
 ## Execution priority (post–Lane D + M + U + R)
 
 1. **Hold** — gates **478**; unit suite green (`pytest tests/`).
-2. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
-3. **Optional** — further console splits, `env_flags` migration, [Optional depth](#optional-depth-on-request), or [Lane D polish](#lane-d--ops-polish-non-blocking) when product asks.
-4. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
+2. **Active Lane S** — fo500 green CI first, then fo501–fo504 per [build path](#lane-s--recommended-build-path).
+3. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
+4. **Optional** — fo505–fo506, `env_flags` migration, [Optional depth](#optional-depth-on-request), or [Lane D polish](#lane-d--ops-polish-non-blocking) when product asks.
+5. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
 
-**Per-cycle default (May 2026 onward):** regression hold on shipped lanes; optional polish slices (Lane R remainder, `env_flags`, >400-line modules) only when requested.
+**Per-cycle default (June 2026 onward):** regression hold on shipped lanes; **Lane S** stabilization slices when CI or maturity gaps appear.
 
 ## Phase 4 — Memory and optimization (shipped)
 

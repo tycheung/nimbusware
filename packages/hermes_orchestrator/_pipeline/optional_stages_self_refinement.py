@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    _SELF_REFINEMENT_MAX_ITER_REASON,
+    _SELF_REFINEMENT_POLICY_STAGE,
+    UUID,
     Any,
     EventType,
     Literal,
@@ -12,10 +15,7 @@ from hermes_orchestrator._pipeline._helpers import (
     StageFailedPayload,
     StageStartedEvent,
     StageStartedPayload,
-    UUID,
     Verdict,
-    _SELF_REFINEMENT_MAX_ITER_REASON,
-    _SELF_REFINEMENT_POLICY_STAGE,
     _last_self_refinement_loop_should_continue,
     _persona_id_from_assignment_slot,
     _self_refinement_auto_promote_env_disabled,
@@ -36,6 +36,8 @@ from hermes_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 
+_SelfRefinementOrchestrationBranch = Literal["rules", "rules_with_llm_critique"]
+_LlmGateDecision = Literal["proceed", "hold"]
 
 
 class SelfRefinementOptionalStagesMixin:
@@ -146,10 +148,10 @@ class SelfRefinementOptionalStagesMixin:
             gate_decision == "hold" or ungated_loop
         )
         signal = "phase_d_kickoff" if attempt == 1 else "phase_d_iteration"
-        orchestration_branch: Literal[rules, rules_with_llm_critique] = "rules"
+        orchestration_branch: _SelfRefinementOrchestrationBranch = "rules"
         llm_critique_attempted = False
         llm_critique_verdict: Verdict | None = None
-        llm_gate_decision: Literal[proceed, hold] | None = None
+        llm_gate_decision: _LlmGateDecision | None = None
         llm_critique_summary: str | None = None
         prior_gate_verdict: str | None = None
         for row in rows:

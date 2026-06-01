@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
-    EventType,
     UUID,
+    EventType,
     Verdict,
     append_run_escalated,
     datetime,
@@ -18,7 +18,6 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     workflow_profile_from_run_created_rows,
 )
-
 
 
 class EscalationMixin:

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EventType,
     Path,
-    UUID,
     emit_refactor_stage_and_critique,
     emit_stub_network_resilience_critique_panel,
     emit_stub_performance_critique_panel,
@@ -28,7 +28,6 @@ from hermes_orchestrator._pipeline._helpers import (
     security_critique_llm_branch_effective,
     stage_graph_node_lookup,
 )
-
 
 
 class OptionalCritiqueMixin:

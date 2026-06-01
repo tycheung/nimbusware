@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EventType,
     Path,
@@ -10,7 +11,6 @@ from hermes_orchestrator._pipeline._helpers import (
     StagePassedPayload,
     StageStartedEvent,
     StageStartedPayload,
-    UUID,
     WriterStageResult,
     asyncio,
     datetime,
@@ -24,7 +24,6 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
-
 
 
 class WritersMixin:

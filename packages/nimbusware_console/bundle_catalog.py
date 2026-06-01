@@ -1,10 +1,10 @@
 from nimbusware_console.bundle_catalog import (
-    BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS,
     _BUNDLE_CATALOG_LOCAL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS,
     _BUNDLE_SEARCH_HITS_CSV_COLUMNS,
     _LARGE_FAISS_INDEX_BYTES,
     _LOCAL_CATALOG_RELPATH,
+    BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
     _bundle_catalog_local_summary_cell,
     _bundle_faiss_index_status_cell,
     _bundle_faiss_mtime_observability,

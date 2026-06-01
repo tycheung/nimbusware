@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     AgentEvaluator,
     Any,
     EventType,
     Literal,
-    UUID,
     _agent_evaluator_auto_create_env_disabled,
     _agent_evaluator_auto_promote_env_disabled,
     agent_evaluator_llm_branch_effective,
@@ -25,6 +25,7 @@ from hermes_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 
+_AgentEvaluatorBranch = Literal["rules", "rules_with_llm_policy"]
 
 
 class AgentEvaluatorOptionalStagesMixin:
@@ -93,7 +94,7 @@ class AgentEvaluatorOptionalStagesMixin:
             shelf=shelf,
         )
         ae_meta["evaluation"] = rules_eval
-        evaluation_branch: Literal[rules, rules_with_llm_policy] = "rules"
+        evaluation_branch: _AgentEvaluatorBranch = "rules"
         production_scoring_mode = "rules"
         if agent_evaluator_llm_branch_effective(block):
             model = self._selected_model_for_run(run_id)

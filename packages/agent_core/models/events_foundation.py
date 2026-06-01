@@ -1,20 +1,12 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Annotated, Any, TypeAlias
 from uuid import UUID
 
 from pydantic import (
     AfterValidator,
-    BaseModel,
-    ConfigDict,
-    Field,
-    TypeAdapter,
-    ValidationInfo,
-    field_validator,
-    model_validator,
 )
 
 # Logical JSON contract for metadata (documentation + typing). Floats must be finite

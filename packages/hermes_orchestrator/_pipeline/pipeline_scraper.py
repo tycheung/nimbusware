@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EgressResponseTooLarge,
     EventType,
@@ -11,11 +12,9 @@ from hermes_orchestrator._pipeline._helpers import (
     StagePassedPayload,
     StageStartedEvent,
     StageStartedPayload,
-    UUID,
     datetime,
     egress_checked_get_for_run,
     hashlib,
-    hermes_outbound_fetch_enabled,
     httpx,
     load_scraper_fetch_config,
     time,
@@ -24,7 +23,6 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
-
 from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
 
 

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, model_validator
 
-from agent_core.models.events_foundation import EventType, RoleId, Severity, Verdict
+from agent_core.models.events_foundation import RoleId, Severity, Verdict
 
 
 class BasePayload(BaseModel):

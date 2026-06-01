@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EventType,
     FindingCreatedEvent,
@@ -18,7 +19,6 @@ from hermes_orchestrator._pipeline._helpers import (
     RunStartedEvent,
     RunStartedPayload,
     Severity,
-    UUID,
     _coerce_samples_ms,
     datetime,
     emit_stub_implementation_critique_panel,
@@ -43,7 +43,6 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
-
 
 
 class LifecycleMixin:

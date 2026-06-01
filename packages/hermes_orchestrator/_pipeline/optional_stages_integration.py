@@ -10,7 +10,6 @@ from hermes_orchestrator._pipeline._helpers import (
 )
 
 
-
 class IntegrationOptionalStagesMixin:
     def _maybe_emit_integration_adapter_writer_stage(self, run_id: UUID) -> None:
         rows = self._store.list_run_events(str(run_id))

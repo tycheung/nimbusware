@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     EffectiveUniversalCritique,
     EventType,
     StageStartedEvent,
     StageStartedPayload,
-    UUID,
     datetime,
     emit_stub_frontend_writer_critique_panel,
     emit_stub_module_integrator_critique_panel,
@@ -20,7 +20,6 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
-
 
 
 class CritiqueGateOptionalEmitMixin:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EventType,
     Path,
@@ -10,12 +11,10 @@ from hermes_orchestrator._pipeline._helpers import (
     StagePassedPayload,
     StageStartedEvent,
     StageStartedPayload,
-    UUID,
     datetime,
     timezone,
     uuid4,
 )
-
 
 
 class MicroSliceMixin:

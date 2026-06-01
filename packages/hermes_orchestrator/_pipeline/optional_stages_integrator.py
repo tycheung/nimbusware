@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline._helpers import (
+    UUID,
     Any,
     EventType,
     GateDecisionEmittedEvent,
     GateDecisionEmittedPayload,
-    UUID,
     Verdict,
     datetime,
     effective_integrator_min_score_to_pass,
@@ -21,7 +21,6 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
-
 
 
 class IntegratorOptionalStagesMixin:

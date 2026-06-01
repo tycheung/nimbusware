@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import streamlit as st
+
 from nimbusware_console.components.explainer_panel import (
     render_explainer_export_downloads,
     render_operator_metrics_explainer,
@@ -9,31 +11,7 @@ from nimbusware_console.components.explainer_panel import (
 from nimbusware_console.components.workflow_explainer_helpers import (
     render_workflow_explainer_metrics_panel,
 )
-from nimbusware_console.pages.config_tooling.workflows._shared_displays_b import self_refinement_snapshot_from_compare_paste
-from nimbusware_console.pages.config_tooling.workflows._shared_explainers import (
-    self_refinement_explainer_export_json,
-    self_refinement_explainer_table_rows,
-    self_refinement_explainer_table_rows_csv,
-    self_refinement_export_filename_slug,
-    self_refinement_marker_merge_compare_export_filename_slug,
-    self_refinement_marker_merge_compare_export_json,
-    self_refinement_marker_merge_compare_snapshot,
-    self_refinement_marker_merge_compare_table_rows_csv,
-    self_refinement_marker_merge_vs_timeline_rows,
-    self_refinement_merged_description_preview_caption,
-    self_refinement_merged_version_caption,
-    self_refinement_policy_yaml_disk_version_caption,
-    self_refinement_policy_yaml_file_bytes_caption,
-    self_refinement_ungated_loop_env_gate_caption,
-    self_refinement_workflow_explainer_operator_metrics,
-    self_refinement_workflow_explainer_operator_metrics_caption,
-    self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
-    self_refinement_workflow_explainer_operator_metrics_table_rows,
-    self_refinement_workflow_explainer_payload,
-    self_refinement_workflow_yaml_raw_type_caption,
-    self_refinement_would_emit_after_env_caption,
-    self_refinement_would_emit_marker_caption,
-)
+from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
 def render_self_refinement_section(*, repo_root: Path, workflow_profile: str | None) -> None:

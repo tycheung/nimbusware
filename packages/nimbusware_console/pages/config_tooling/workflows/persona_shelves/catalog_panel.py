@@ -1,37 +1,8 @@
 from __future__ import annotations
 
-from nimbusware_console.pages.config_tooling.workflows._shared_displays_a import (
-    filter_persona_catalog_flat_rows,
-    load_persona_shelves_catalog,
-    persona_catalog_allowed_tool_filter_caption,
-    persona_catalog_display_name_duplicates_operator_caption,
-    persona_catalog_display_name_length_caption,
-    persona_catalog_distinct_allowed_tools,
-    persona_catalog_empty_id_operator_caption,
-    persona_catalog_flat_export_filename_slug,
-    persona_catalog_flat_rows,
-    persona_catalog_flat_rows_csv,
-    persona_catalog_flat_rows_export_json,
-    persona_catalog_operator_summary,
-    persona_catalog_operator_summary_export_json,
-    persona_catalog_operator_summary_operator_metrics,
-    persona_catalog_operator_summary_operator_metrics_caption,
-    persona_catalog_operator_summary_operator_metrics_export_filename_slug,
-    persona_catalog_operator_summary_operator_metrics_export_json,
-    persona_catalog_operator_summary_operator_metrics_table_rows,
-    persona_catalog_operator_summary_operator_metrics_table_rows_csv,
-    persona_catalog_operator_summary_table_rows_csv,
-    persona_catalog_persona_id_duplicates_operator_caption,
-    persona_catalog_persona_id_length_caption,
-    persona_catalog_probation_breakdown_caption,
-    persona_catalog_without_capability_profile_caption,
-    persona_catalog_without_instructions_caption,
-    persona_probation_other_by_shelf_export_json,
-    persona_probation_other_by_shelf_table_rows_csv,
-    persona_probation_other_examples_by_shelf_table_rows,
-    persona_probation_other_export_filename_slug,
-)
-from nimbusware_console.pages.config_tooling.workflows._shared_session import rl
+import streamlit as st
+
+from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 
 
 def _render_persona_catalog_panel(repo_root: Path) -> None:

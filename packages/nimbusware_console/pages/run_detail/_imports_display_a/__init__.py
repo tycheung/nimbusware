@@ -209,7 +209,6 @@ from nimbusware_console.pages.run_detail._imports_display_a.agent_through_escala
     streamlit_theme_defaults_caption,
     streamlit_white_label_deferred_caption,
 )
-
 from nimbusware_console.pages.run_detail._imports_display_a.findings_through_persona import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_agent_evaluator_yaml,

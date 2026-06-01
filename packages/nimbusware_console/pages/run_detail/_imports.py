@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 from nimbusware_console.pages.run_detail._imports_common import (
     Any,
     Path,
@@ -8,7 +11,6 @@ from nimbusware_console.pages.run_detail._imports_common import (
     timezone,
     urlencode,
 )
-
 from nimbusware_console.pages.run_detail._imports_display_a import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
@@ -393,7 +395,6 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
     streamlit_white_label_deferred_caption,
     workflow_yaml_write_enabled,
 )
-
 from nimbusware_console.pages.run_detail._imports_display_b import (
     annotations,
     build_patch_request,
@@ -743,8 +744,5 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     universal_critique_yaml_top_level_mapping_child_count_caption,
     universal_critique_yaml_top_level_nonempty_count_caption,
 )
-
-import os
-from pathlib import Path
 
 _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
