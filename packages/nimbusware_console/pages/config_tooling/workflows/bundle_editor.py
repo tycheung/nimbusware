@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from nimbusware_client.http import HTTPError, admin_token_headers, get_json, patch_response
 from nimbusware_console.components.ui_errors import render_api_error
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_catalog import bundle_editor_patch_payload, bundle_editor_validation_issues
 
 
 def render_workflows_bundle_editor_section() -> None:

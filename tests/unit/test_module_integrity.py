@@ -8,6 +8,7 @@ _REPO = Path(__file__).resolve().parents[2]
 
 _MIN_LINES: dict[str, int] = {
     "packages/hermes_orchestrator/_pipeline/_helpers.py": 200,
+    "packages/agent_core/models/events_foundation.py": 50,
     "packages/nimbusware_console/pages/config_tooling/_common.py": 5,
     "packages/nimbusware_console/pages/run_detail/_imports_display_b.py": 50,
 }

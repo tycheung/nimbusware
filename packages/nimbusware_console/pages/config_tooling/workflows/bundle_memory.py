@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_catalog import bundle_memory_analytics_from_store, bundle_memory_caption
 
 
 def render_workflows_bundle_memory_section() -> None:

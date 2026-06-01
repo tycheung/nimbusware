@@ -1,4 +1,4 @@
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_displays_a import persona_catalog_taxonomy_scope_frozen_caption
 from nimbusware_console.pages.config_tooling.workflows.persona_shelves.catalog_panel import (
     _render_persona_catalog_panel,
 )

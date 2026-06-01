@@ -7,6 +7,8 @@ Do not run repo-wide `ruff check --fix`; use this script instead for re-exports.
 from __future__ import annotations
 
 import ast
+import importlib
+import os
 import re
 import sys
 from pathlib import Path
@@ -137,6 +139,25 @@ def explicitize_file(path: Path, *, dry_run: bool = False) -> bool:
         body += "\n"
     if future_lines and new_blocks:
         body += "\n"
+    if new_blocks:
+        seen: set[str] = set()
+        deduped_blocks: list[str] = []
+        for block in new_blocks:
+            block_names = re.findall(r"^\s{4}(\w+),?\s*$", block, re.MULTILINE)
+            unique: list[str] = []
+            for n in block_names:
+                if n not in seen:
+                    seen.add(n)
+                    unique.append(n)
+            if not unique:
+                continue
+            mod_match = re.match(r"from ([\w.]+) import \(", block.split("\n", 1)[0])
+            if not mod_match:
+                deduped_blocks.append(block)
+                continue
+            joined = ",\n    ".join(unique)
+            deduped_blocks.append(f"from {mod_match.group(1)} import (\n    {joined},\n)")
+        new_blocks = deduped_blocks
     body += "\n".join(new_blocks)
     if new_blocks:
         body += "\n"
@@ -155,9 +176,20 @@ def explicitize_file(path: Path, *, dry_run: bool = False) -> bool:
 def _console_targets() -> list[Path]:
     console = PACKAGES / "nimbusware_console"
     targets: list[Path] = []
+    thin_shim_paths = (
+        "persona_catalog/summary.py",
+        "integrator_gate/latest_delta.py",
+        "integrator_preview/merge.py",
+        "bundle_catalog/catalog_local/search.py",
+        "bundle_catalog/faiss_status/drilldown.py",
+    )
+    for rel in thin_shim_paths:
+        path = console / rel
+        if path.is_file() and " import *  # noqa: F403" in path.read_text(encoding="utf-8"):
+            targets.append(path)
     for path in console.rglob("__init__.py"):
         rel = path.relative_to(console).as_posix()
-        if rel.startswith("pages/run_detail") or rel.startswith("pages/config_tooling"):
+        if rel.startswith("pages/"):
             continue
         if " import *  # noqa: F403" in path.read_text(encoding="utf-8"):
             targets.append(path)

@@ -1,6 +1,32 @@
 from __future__ import annotations
 
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_displays_b import (
+    load_prune_status,
+    prune_scraper_artifact_prune_workflow_caption,
+    prune_status_age_since_wrote_at_caption,
+    prune_status_base_dir_caption,
+    prune_status_dry_run_caption,
+    prune_status_export_json,
+    prune_status_freshness_caption,
+    prune_status_max_age_days_caption,
+    prune_status_object_store_prune_caption,
+    prune_status_operator_metrics,
+    prune_status_operator_metrics_caption,
+    prune_status_operator_metrics_export_filename_slug,
+    prune_status_operator_metrics_export_json,
+    prune_status_operator_metrics_table_rows,
+    prune_status_operator_metrics_table_rows_csv,
+    prune_status_pattern_filter_caption,
+    prune_status_pruned_outcome_caption,
+    prune_status_retention_alert_caption,
+    prune_status_retention_execution_caption,
+    prune_status_retention_policy_caption,
+    prune_status_schema_version_caption,
+    prune_status_summary_rows,
+    prune_status_summary_rows_csv,
+    prune_status_wrote_at_caption,
+)
+from nimbusware_console.pages.config_tooling.workflows._shared_session import _resolve_prune_status_path
 
 
 def render_workflows_prune_section() -> None:

@@ -26,3 +26,9 @@ Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `p
 ## Testing
 
 Orchestrator tests live under `tests/orchestrator/` and `tests/unit/test_*slice*`, `test_*critique*`.
+
+## Refactor notes
+
+- Pipeline mixins intentionally `from _helpers import *` — guarded by `tests/unit/test_pipeline_helpers_exports.py`.
+- After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
+- Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.

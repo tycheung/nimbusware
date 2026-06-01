@@ -11,4 +11,4 @@ poetry run bandit -r packages -lll -q
 poetry run pytest tests -q -m "not integration and not slow and not benchmark" `
   --cov=packages `
   --cov-report=term-missing:skip-covered `
-  --cov-fail-under=60
+  --cov-fail-under=65

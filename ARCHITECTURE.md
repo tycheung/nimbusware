@@ -59,12 +59,21 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 - `hermes_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
 - Legacy `packages/hermes_{api,console,config,env}/` shims removed (Lane R-B).
 
-## Refactor lane
+## Refactor playbook
 
-See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for console decomposition and coverage gates.
+See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for the full program. Day-to-day workflow:
 
-Local CI mirror: `./scripts/ci_check.sh` or `scripts/ci_check.ps1` (Ruff, Mypy, Bandit, pytest with `--cov-fail-under=60`).
+| Step | Command / guard |
+|------|-----------------|
+| Local CI | `./scripts/ci_check.ps1` or `scripts/ci_check.sh` |
+| After display package splits | `poetry run python scripts/explicit_star_imports.py` |
+| After package `__init__` export changes | `poetry run python scripts/sync_display_facade.py` |
+| Run detail import barrels | `poetry run python scripts/explicit_run_detail_imports.py` |
+| Facade contract | `tests/unit/test_display_facade_exports.py` |
+| Module splits (orchestrator/API/events) | `scripts/split_oversized_modules.py` (one-off; prefer manual follow-up) |
 
-Module size guards: `tests/unit/test_console_module_size.py` (400 lines), `tests/unit/test_package_module_size.py` (orchestrator/API/memory), `tests/unit/test_module_integrity.py` (anti-gutted facades).
+**Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-Display packages use explicit re-exports (`scripts/explicit_star_imports.py`); avoid repo-wide `ruff check --fix`, which strips re-export imports.
+**Coverage:** CI enforces `--cov-fail-under=65` on the default unit subset.
+
+**Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

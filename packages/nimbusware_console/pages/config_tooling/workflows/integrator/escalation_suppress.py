@@ -6,7 +6,39 @@ from nimbusware_console.components.explainer_panel import render_explainer_expor
 from nimbusware_console.components.workflow_explainer_helpers import (
     render_workflow_explainer_metrics_panel,
 )
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_explainers import (
+    escalation_policy_export_filename_slug,
+    escalation_policy_yaml_age_caption,
+    escalation_policy_yaml_anti_deadlock_min_progress_caption,
+    escalation_policy_yaml_anti_deadlock_shape_caption,
+    escalation_policy_yaml_deadlock_minutes_caption,
+    escalation_policy_yaml_file_bytes_caption,
+    escalation_policy_yaml_key_count_caption,
+    escalation_policy_yaml_keys_all_export_json,
+    escalation_policy_yaml_keys_all_table_rows,
+    escalation_policy_yaml_keys_all_table_rows_csv,
+    escalation_policy_yaml_keys_sample_caption,
+    escalation_policy_yaml_max_retries_caption,
+    escalation_policy_yaml_mtime_caption,
+    escalation_policy_yaml_relpath_caption,
+    escalation_policy_yaml_top_level_kinds_caption,
+    escalation_policy_yaml_top_level_kinds_export_json,
+    escalation_policy_yaml_top_level_kinds_table_rows,
+    escalation_policy_yaml_top_level_kinds_table_rows_csv,
+    escalation_policy_yaml_verification_shape_caption,
+    escalation_policy_yaml_version_caption,
+    escalation_suppress_explainer_export_json,
+    escalation_suppress_explainer_table_rows,
+    escalation_suppress_explainer_table_rows_csv,
+    escalation_suppress_export_filename_slug,
+    escalation_suppress_flag_caption,
+    escalation_suppress_workflow_explainer_operator_metrics,
+    escalation_suppress_workflow_explainer_operator_metrics_caption,
+    escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug,
+    escalation_suppress_workflow_explainer_operator_metrics_table_rows,
+    escalation_suppress_workflow_explainer_payload,
+    escalation_yaml_key_present_caption,
+)
 
 
 def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str | None) -> None:

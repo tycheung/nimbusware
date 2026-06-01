@@ -6,7 +6,26 @@ from nimbusware_console.components.explainer_panel import render_explainer_expor
 from nimbusware_console.components.workflow_explainer_helpers import (
     render_workflow_explainer_metrics_panel,
 )
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_explainers import (
+    security_scan_metadata_effective_enabled_caption,
+    security_scan_metadata_env_gate_caption,
+    security_scan_metadata_explainer_export_json,
+    security_scan_metadata_explainer_table_rows,
+    security_scan_metadata_explainer_table_rows_csv,
+    security_scan_metadata_export_filename_slug,
+    security_scan_metadata_mapping_key_count_caption,
+    security_scan_metadata_workflow_explainer_operator_metrics,
+    security_scan_metadata_workflow_explainer_operator_metrics_caption,
+    security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug,
+    security_scan_metadata_workflow_explainer_operator_metrics_table_rows,
+    security_scan_metadata_workflow_explainer_payload,
+    security_scan_metadata_workflow_yaml_file_bytes_caption,
+    security_scan_metadata_workflow_yaml_relpath_caption,
+    security_scan_metadata_workflow_yaml_string_key_count_caption,
+    security_scan_metadata_workflow_yaml_version_caption,
+    security_scan_metadata_yaml_effective_mismatch_caption,
+    security_scan_metadata_yaml_raw_type_caption,
+)
 
 
 def render_security_scan_section(*, repo_root: Path, workflow_profile: str | None) -> None:

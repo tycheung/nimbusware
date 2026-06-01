@@ -1,6 +1,29 @@
 from __future__ import annotations
 
-from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.pages.config_tooling.workflows._shared_displays_a import (
+    critique_pairings_critic_counts_all_export_json,
+    critique_pairings_critic_counts_all_table_rows,
+    critique_pairings_critic_counts_all_table_rows_csv,
+    critique_pairings_critic_counts_export_json,
+    critique_pairings_critic_counts_table_rows,
+    critique_pairings_critic_counts_table_rows_csv,
+    critique_pairings_export_filename_slug,
+    critique_pairings_operator_summary,
+    critique_pairings_operator_summary_export_json,
+    critique_pairings_operator_summary_operator_metrics,
+    critique_pairings_operator_summary_operator_metrics_caption,
+    critique_pairings_operator_summary_operator_metrics_export_filename_slug,
+    critique_pairings_operator_summary_operator_metrics_export_json,
+    critique_pairings_operator_summary_operator_metrics_table_rows,
+    critique_pairings_operator_summary_operator_metrics_table_rows_csv,
+    critique_pairings_producer_keys_all_export_json,
+    critique_pairings_producer_keys_all_table_rows,
+    critique_pairings_producer_keys_all_table_rows_csv,
+    critique_pairings_producer_keys_export_json,
+    critique_pairings_producer_keys_table_rows,
+    critique_pairings_producer_keys_table_rows_csv,
+    persona_catalog_critique_pairings_total_caption,
+)
 
 
 def _render_critique_pairings_panel(repo_root: Path) -> None:
