@@ -4,7 +4,7 @@ from typing import Any
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, get_json
+from nimbusware_client.http import HTTPError
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.run_detail._imports_common import datetime, json, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_b import (
@@ -19,12 +19,13 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     timeline_events_table_rows,
     timeline_events_table_rows_csv,
 )
+from nimbusware_console.services import runs as runs_svc
 
 
 def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] | None:
     if st.button("Load timeline") and run_id.strip():
         try:
-            data = get_json(f"/runs/{run_id.strip()}/timeline", timeout=30.0)
+            data = runs_svc.fetch_timeline(run_id)
         except HTTPError as exc:
             render_api_error(exc)
             return None

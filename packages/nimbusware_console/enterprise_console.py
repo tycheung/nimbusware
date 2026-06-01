@@ -4,11 +4,10 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_client.http import get_json
 from nimbusware_console.preflight_cross_run_display import (
     preflight_history_response_sli_caption,
 )
-from nimbusware_iam.constants import API_KEY_HEADER
+from nimbusware_console.services import enterprise as enterprise_svc
 
 SS_API_KEY = "hermes_enterprise_api_key"
 SS_TENANT_KEYS = "hermes_enterprise_tenant_api_keys"
@@ -17,94 +16,15 @@ SS_IAM_ME = "hermes_enterprise_iam_me"
 SS_EDITION_MANIFEST = "hermes_enterprise_edition_manifest"
 
 
-def build_enterprise_headers(api_key: str | None) -> dict[str, str]:
-    if api_key is None or not str(api_key).strip():
-        return {}
-    return {API_KEY_HEADER: str(api_key).strip()}
-
-
-def is_enterprise_edition_manifest(manifest: Mapping[str, Any] | None) -> bool:
-    if not isinstance(manifest, Mapping):
-        return False
-    return str(manifest.get("edition", "")).strip().lower() == "enterprise"
-
-
-def enterprise_console_feature_enabled(manifest: Mapping[str, Any] | None) -> bool:
-    if not is_enterprise_edition_manifest(manifest):
-        return False
-    features = manifest.get("features")
-    if not isinstance(features, Mapping):
-        return False
-    block = features.get("enterprise_console")
-    if not isinstance(block, Mapping):
-        return False
-    return str(block.get("status", "")).strip().lower() == "enabled"
-
-
-def _enterprise_get(
-    path: str,
-    *,
-    api_key: str | None,
-    params: dict[str, Any] | None = None,
-    timeout: float = 30.0,
-) -> dict[str, Any]:
-    suffix = path if path.startswith("/") else f"/{path}"
-    return get_json(
-        suffix,
-        params=params,
-        headers=build_enterprise_headers(api_key),
-        timeout=timeout,
-    )
-
-
-def fetch_platform_edition(*, timeout: float = 15.0) -> dict[str, Any]:
-    return get_json("/platform/edition", timeout=timeout)
-
-
-def fetch_iam_me(*, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
-    return _enterprise_get("/enterprise/iam/me", api_key=api_key, timeout=timeout)
-
-
-def fetch_tenants(*, api_key: str, timeout: float = 15.0) -> dict[str, Any]:
-    return _enterprise_get("/enterprise/tenants", api_key=api_key, timeout=timeout)
-
-
-def fetch_fleet_memory_status(
-    *,
-    api_key: str,
-    timeout: float = 30.0,
-) -> dict[str, Any]:
-    return _enterprise_get(
-        "/enterprise/fleet-memory/status",
-        api_key=api_key,
-        timeout=timeout,
-    )
-
-
-def fetch_fleet_preflight_aggregate(
-    *,
-    api_key: str,
-    limit: int = 10,
-    timeout: float = 30.0,
-) -> dict[str, Any]:
-    return _enterprise_get(
-        "/enterprise/fleet-ollama-sli/preflight-aggregate",
-        api_key=api_key,
-        params={"limit": max(1, min(50, int(limit))), "include_metrics_export": 1},
-        timeout=timeout,
-    )
-
-
-def fetch_fleet_worker_health(
-    *,
-    api_key: str,
-    timeout: float = 30.0,
-) -> dict[str, Any]:
-    return _enterprise_get(
-        "/enterprise/fleet-worker/health",
-        api_key=api_key,
-        timeout=timeout,
-    )
+build_enterprise_headers = enterprise_svc.build_enterprise_headers
+is_enterprise_edition_manifest = enterprise_svc.is_enterprise_edition_manifest
+enterprise_console_feature_enabled = enterprise_svc.enterprise_console_feature_enabled
+fetch_platform_edition = enterprise_svc.fetch_platform_edition
+fetch_iam_me = enterprise_svc.fetch_iam_me
+fetch_tenants = enterprise_svc.fetch_tenants
+fetch_fleet_memory_status = enterprise_svc.fetch_fleet_memory_status
+fetch_fleet_preflight_aggregate = enterprise_svc.fetch_fleet_preflight_aggregate
+fetch_fleet_worker_health = enterprise_svc.fetch_fleet_worker_health
 
 
 def tenant_select_options(tenants_body: Mapping[str, Any] | None) -> list[tuple[str, str]]:

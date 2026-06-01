@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, admin_token_headers, get_json, patch_response
+from nimbusware_client.http import HTTPError
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.services import config_editors as cfg_svc
 
 
 def render_workflows_bundle_editor_section() -> None:
@@ -20,10 +21,7 @@ def render_workflows_bundle_editor_section() -> None:
         )
         if st.button("Reload bundle catalog from API", key="hermes_bundle_edit_reload"):
             try:
-                st.session_state["hermes_bundle_edit_catalog"] = get_json(
-                    "/bundles/catalog",
-                    timeout=10.0,
-                )
+                st.session_state["hermes_bundle_edit_catalog"] = cfg_svc.load_bundle_catalog()
                 st.success("Loaded bundle catalog from API.")
             except HTTPError as _bc_exc:
                 render_api_error(_bc_exc)
@@ -71,13 +69,11 @@ def render_workflows_bundle_editor_section() -> None:
                     tags_text=str(st.session_state.get("hermes_bundle_edit_tags", "")),
                 )
                 try:
-                    _bc_patch = patch_response(
-                        f"/bundles/catalog/bundles/{_bc_sel}",
+                    st.session_state["hermes_bundle_edit_catalog"] = cfg_svc.patch_bundle(
+                        _bc_sel,
                         _payload,
-                        headers=admin_token_headers(_bc_admin),
-                        timeout=15.0,
+                        _bc_admin,
                     )
-                    st.session_state["hermes_bundle_edit_catalog"] = _bc_patch.json()
                     st.success("Bundle catalog updated.")
                 except HTTPError as _bc_patch_exc:
                     st.error(f"PATCH failed: {_bc_patch_exc}")

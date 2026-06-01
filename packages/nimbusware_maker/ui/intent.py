@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_maker.api_client import get_json, post_json
 from nimbusware_maker.intent import CLARIFYING_QUESTIONS
+from nimbusware_maker.services import projects as projects_svc
+from nimbusware_maker.services import runs as runs_svc
 
 
 def _project_options(projects: list[dict]) -> dict[str, str]:
@@ -17,7 +18,7 @@ def _project_options(projects: list[dict]) -> dict[str, str]:
 def render_intent_wizard() -> None:
     st.subheader("Describe what you want")
     try:
-        listing = get_json("/projects")
+        listing = projects_svc.list_projects()
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Projects API unavailable: {exc}")
         return
@@ -72,8 +73,7 @@ def render_intent_wizard() -> None:
             st.error("Enter a business prompt first.")
             return
         try:
-            run = post_json(
-                "/runs",
+            run = runs_svc.create_run(
                 {
                     "workflow_profile": project.get("default_workflow_profile", "micro_slice"),
                     "project_id": project_id,

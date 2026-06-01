@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_maker.api_client import get_json, post_json
 from nimbusware_maker.runs import list_runs_for_project
+from nimbusware_maker.services import platform as platform_svc
+from nimbusware_maker.services import projects as projects_svc
 
 
 def _status_emoji(status: str) -> str:
@@ -12,7 +13,7 @@ def _status_emoji(status: str) -> str:
 
 def render_readiness_strip() -> dict:
     try:
-        readiness = get_json("/platform/readiness")
+        readiness = platform_svc.fetch_readiness()
     except Exception as exc:  # noqa: BLE001 — show plain-language error in UI
         st.error(f"Could not reach the API readiness endpoint: {exc}")
         return {}
@@ -49,7 +50,7 @@ def render_readiness_strip() -> dict:
 def render_projects_panel() -> None:
     st.subheader("Projects")
     try:
-        listing = get_json("/projects")
+        listing = projects_svc.list_projects()
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Projects API unavailable: {exc}")
         return
@@ -114,8 +115,7 @@ def render_projects_panel() -> None:
         submitted = st.form_submit_button("Create project")
         if submitted:
             try:
-                created = post_json(
-                    "/projects",
+                created = projects_svc.create_project(
                     {
                         "name": name,
                         "workspace_path": workspace_path,

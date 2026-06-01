@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, get_json
+from nimbusware_client.http import HTTPError
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (
@@ -18,12 +18,13 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
     findings_table_rows,
     findings_table_rows_csv,
 )
+from nimbusware_console.services import runs as runs_svc
 
 
 def render_run_detail_findings(run_id: str) -> None:
     if st.button("Load findings") and run_id.strip():
         try:
-            _find_body = get_json(f"/runs/{run_id.strip()}/findings", timeout=30.0)
+            _find_body = runs_svc.fetch_findings(run_id)
             st.subheader("Findings")
             _find_list = findings_list_from_response(_find_body)
             if not _find_list:

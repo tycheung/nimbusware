@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, get_json
+from nimbusware_client.http import HTTPError
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_b import (
@@ -17,12 +17,13 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     run_detail_summary_operator_metrics_table_rows,
     run_detail_summary_operator_metrics_table_rows_csv,
 )
+from nimbusware_console.services import runs as runs_svc
 
 
 def render_run_detail_summary(run_id: str) -> None:
     if st.button("Load run summary") and run_id.strip():
         try:
-            data = get_json(f"/runs/{run_id.strip()}", timeout=30.0)
+            data = runs_svc.fetch_run(run_id)
             st.subheader("Summary")
             c1m, c2m, c3m = st.columns(3)
             c1m.metric("Events", data.get("event_count", "—"))

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_maker.api_client import get_json, post_json
 from nimbusware_maker.intent import CLARIFYING_QUESTIONS
 from nimbusware_maker.onboarding import SESSION_WIZARD_STEP, is_onboarded, mark_onboarded
+from nimbusware_maker.services import platform as platform_svc
+from nimbusware_maker.services import projects as projects_svc
+from nimbusware_maker.services import runs as runs_svc
 
 
 def render_first_run_wizard() -> bool:
@@ -44,7 +46,7 @@ def render_first_run_wizard() -> bool:
     if step == 2:
         st.markdown("**Step 2 of 4 — Local readiness**")
         try:
-            readiness = get_json("/platform/readiness")
+            readiness = platform_svc.fetch_readiness()
             status = str(readiness.get("status") or "unknown")
             st.info(f"Platform status: {status.replace('_', ' ')}")
             checks = readiness.get("checks")
@@ -123,8 +125,7 @@ def render_first_run_wizard() -> bool:
             clarifications = []
         if st.button("Finish setup", type="primary"):
             try:
-                project = post_json(
-                    "/projects",
+                project = projects_svc.create_project(
                     {
                         "name": project_cfg.get("name", "My app"),
                         "workspace_path": project_cfg.get("workspace_path", "."),
@@ -132,8 +133,7 @@ def render_first_run_wizard() -> bool:
                         "default_workflow_profile": "micro_slice",
                     },
                 )
-                run = post_json(
-                    "/runs",
+                run = runs_svc.create_run(
                     {
                         "workflow_profile": "micro_slice",
                         "project_id": project.get("project_id"),

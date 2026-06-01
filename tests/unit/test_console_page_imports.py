@@ -12,12 +12,19 @@ os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token-for-import-smoke")
 
 
-_PAGE_MODULES: tuple[str, ...] = (
+_CONSOLE_PAGE_MODULES: tuple[str, ...] = (
+    "nimbusware_console.main",
+    "nimbusware_console.operator_chat",
+    "nimbusware_console.enterprise_console_ui",
+    "nimbusware_console.custom_agents_ui",
     "nimbusware_console.pages.config_tooling",
     "nimbusware_console.pages.config_tooling.ollama_models",
     "nimbusware_console.pages.run_list",
     "nimbusware_console.pages.preflight_fleet",
     "nimbusware_console.pages.run_detail",
+)
+
+_PAGE_MODULES: tuple[str, ...] = _CONSOLE_PAGE_MODULES + (
     "nimbusware_maker.ui",
     "nimbusware_maker.ui.settings",
     "nimbusware_maker.ui.ollama_models",

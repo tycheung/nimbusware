@@ -8,13 +8,8 @@ from typing import Any
 
 import streamlit as st
 
-from nimbusware_client.http import (
-    HTTPError,
-    api_base,
-    get_response,
-    post_response,
-    user_headers,
-)
+from nimbusware_client.http import HTTPError, api_base
+from nimbusware_console.services import operator_chat as chat_svc
 
 _SS_CHAT_MESSAGES = "nimbusware_chat_messages"
 _SS_CHAT_THREAD = "nimbusware_chat_thread"
@@ -94,13 +89,7 @@ def _start_run(workflow_profile: str) -> str:
     if _SS_MEMORY_CONTRIB in st.session_state:
         payload["memory_index_contribution"] = bool(st.session_state[_SS_MEMORY_CONTRIB])
     try:
-        resp = post_response(
-            "/runs",
-            payload=payload,
-            headers=user_headers(),
-            timeout=30.0,
-            raise_for_status=False,
-        )
+        resp = chat_svc.create_run(payload)
         if resp.status_code >= 400:
             return f"Run failed ({resp.status_code}): {resp.text[:500]}"
         data = resp.json()
@@ -113,12 +102,7 @@ def _start_run(workflow_profile: str) -> str:
 
 def _fetch_timeline_summary(run_id: str) -> str:
     try:
-        resp = get_response(
-            f"/runs/{run_id}/timeline",
-            headers=user_headers(),
-            timeout=30.0,
-            raise_for_status=False,
-        )
+        resp = chat_svc.fetch_timeline_response(run_id)
         if resp.status_code >= 400:
             return f"Timeline fetch failed ({resp.status_code})."
         data = resp.json()

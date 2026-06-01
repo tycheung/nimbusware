@@ -7,13 +7,13 @@ from nimbusware_client.http import (
     Response,
     admin_token_headers,
     delete_response,
-    get_json,
     patch_response,
     post_response,
     put_response,
 )
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.services import config_editors as cfg_svc
 
 
 def render_workflows_persona_editor_section() -> None:
@@ -31,10 +31,7 @@ def render_workflows_persona_editor_section() -> None:
         )
         if st.button("Reload from API", key="hermes_persona_edit_reload_btn"):
             try:
-                st.session_state["hermes_persona_edit_catalog"] = get_json(
-                    "/personas",
-                    timeout=10.0,
-                )
+                st.session_state["hermes_persona_edit_catalog"] = cfg_svc.load_persona_shelves()
                 st.success("Loaded persona catalog from API.")
             except HTTPError as _exc:
                 render_api_error(_exc)

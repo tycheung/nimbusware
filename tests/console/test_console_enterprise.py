@@ -113,7 +113,7 @@ def test_fetch_platform_edition_uses_client(monkeypatch) -> None:
         return {"edition": "enterprise"}
 
     monkeypatch.setattr(
-        "nimbusware_console.enterprise_console.get_json",
+        "nimbusware_console.services.enterprise.get_json",
         _fake_get_json,
     )
     from nimbusware_console.enterprise_console import fetch_platform_edition

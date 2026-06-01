@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_maker.api_client import get_json
+from nimbusware_maker.services import runs as runs_svc
 
 
 def _status_color(status: str) -> str:
@@ -28,8 +28,7 @@ def render_progress_panel(*, simple_mode: bool = True) -> None:
 
     st.session_state["maker_active_run_id"] = run_id.strip()
     try:
-        path = f"/runs/{run_id.strip()}/maker-progress?simple={str(simple_mode).lower()}"
-        progress = get_json(path)
+        progress = runs_svc.fetch_maker_progress(run_id.strip(), simple=simple_mode)
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Could not load progress: {exc}")
         return

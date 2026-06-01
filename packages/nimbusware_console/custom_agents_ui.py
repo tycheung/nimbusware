@@ -12,7 +12,7 @@ _SS_EDIT_AGENT = "nimbusware_edit_agent_id"
 _SS_PROMPT_DRAFT = "nimbusware_prompt_draft"
 
 
-from nimbusware_client.http import admin_headers, patch_response
+from nimbusware_console.services import custom_agents as agents_svc
 
 
 def load_registry_local(repo_root: Path) -> CustomAgentRegistry:
@@ -66,23 +66,20 @@ def render_custom_agents_sidebar(repo_root: Path) -> str | None:
 
 
 def _save_prompt(repo_root: Path, agent: CustomAgent, prompt: str) -> None:
-    headers = admin_headers()
-    if headers:
+    from nimbusware_client.http import admin_headers
+
+    if admin_headers():
         try:
-            resp = patch_response(
-                f"/custom-agents/{agent.id}",
+            agents_svc.patch_custom_agent(
+                agent.id,
                 {
                     "display_name": agent.display_name,
                     "system_prompt": prompt,
                     "description": agent.description,
                     "bound_role_id": agent.bound_role_id,
                 },
-                headers=headers,
-                timeout=30.0,
-                raise_for_status=False,
             )
-            if resp.status_code < 400:
-                return
+            return
         except HTTPError:
             pass
     reg = load_registry_local(repo_root)

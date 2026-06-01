@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_maker.api_client import get_json, post_json
+from nimbusware_maker.services import runs as runs_svc
 
 
 def render_approval_panel() -> None:
@@ -20,7 +20,7 @@ def render_approval_panel() -> None:
     st.session_state["maker_active_run_id"] = rid
 
     try:
-        state = get_json(f"/runs/{rid}/maker/pending")
+        state = runs_svc.fetch_pending(rid)
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Could not load approval state: {exc}")
         return
@@ -29,7 +29,7 @@ def render_approval_panel() -> None:
         st.markdown("**Step 1:** Approve the plan before any slice changes.")
         if st.button("Approve plan", type="primary"):
             try:
-                post_json(f"/runs/{rid}/maker/plan/approve", {})
+                runs_svc.approve_plan(rid)
                 st.success("Plan approved.")
                 st.rerun()
             except Exception as exc:  # noqa: BLE001
@@ -41,7 +41,7 @@ def render_approval_panel() -> None:
         st.markdown("**Step 2:** Prepare the next slice for review.")
         if st.button("Prepare next slice"):
             try:
-                body = post_json(f"/runs/{rid}/maker/slices/prepare", {})
+                body = runs_svc.prepare_slice(rid)
                 if body.get("status") == "all_slices_done":
                     st.success("All planned slices are done.")
                 else:
@@ -53,7 +53,7 @@ def render_approval_panel() -> None:
             st.caption(f"Last snapshot: {state['last_snapshot'].get('snapshot_id')}")
             if st.button("Revert workspace to last approved snapshot"):
                 try:
-                    rev = post_json(f"/runs/{rid}/workspace/revert", {})
+                    rev = runs_svc.revert_workspace(rid)
                     st.success(f"Reverted {len(rev.get('paths_restored', []))} file(s).")
                 except Exception as exc:  # noqa: BLE001
                     st.error(f"Revert failed: {exc}")
@@ -74,10 +74,7 @@ def render_approval_panel() -> None:
     with col_apply:
         if st.button("Apply slice", type="primary"):
             try:
-                result = post_json(
-                    f"/runs/{rid}/maker/slices/apply",
-                    {"slice_id": slice_id},
-                )
+                result = runs_svc.apply_slice(rid, {"slice_id": slice_id})
                 gate = "passed" if result.get("gate_passed") else "did not pass"
                 st.success(f"Applied — gate {gate}.")
                 st.rerun()
@@ -86,7 +83,7 @@ def render_approval_panel() -> None:
     with col_skip:
         if st.button("Skip slice"):
             try:
-                post_json(f"/runs/{rid}/maker/slices/skip", {"slice_id": slice_id})
+                runs_svc.skip_slice(rid, {"slice_id": slice_id})
                 st.success("Slice skipped.")
                 st.rerun()
             except Exception as exc:  # noqa: BLE001
@@ -94,7 +91,7 @@ def render_approval_panel() -> None:
     with col_revert:
         if st.button("Revert workspace"):
             try:
-                rev = post_json(f"/runs/{rid}/workspace/revert", {})
+                rev = runs_svc.revert_workspace(rid)
                 st.success(f"Reverted {len(rev.get('paths_restored', []))} file(s).")
             except Exception as exc:  # noqa: BLE001
                 st.error(f"Revert failed: {exc}")

@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, get_response
+from nimbusware_client.http import HTTPError
 from nimbusware_console.pages._state_keys import (
     _DF_LIST_KEY,
     _DF_LIST_SEL_SIG,
@@ -42,6 +42,7 @@ from nimbusware_console.run_list_pagination_display import (
     run_list_summaries_sparse_caption,
     run_list_workflow_profile_filter_caption,
 )
+from nimbusware_console.services import runs as runs_svc
 from nimbusware_console.settings import API_BASE
 
 
@@ -266,7 +267,7 @@ def _render_run_list(data: dict[str, Any], *, include_summary: bool) -> None:
 def _run_list_fetch_and_display() -> bool:
     params = _build_run_list_params()
     try:
-        r = get_response("/runs", params=params, timeout=15.0)
+        r = runs_svc.fetch_runs_list(params=params)
         _run_list_qp_push(params)
         data = r.json()
         _hdrs = r.headers

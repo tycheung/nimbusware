@@ -3,7 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
-from nimbusware_maker.api_client import get_json
+from nimbusware_maker.services import platform as platform_svc
 from nimbusware_maker.ui.ollama_models import render_ollama_models_panel
 
 
@@ -19,7 +19,7 @@ def render_settings_panel() -> None:
     )
 
     try:
-        readiness = get_json("/platform/readiness")
+        readiness = platform_svc.fetch_readiness()
     except Exception as exc:  # noqa: BLE001
         st.warning(f"Could not load readiness presets: {exc}")
         return

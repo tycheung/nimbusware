@@ -86,13 +86,9 @@ def test_legacy_hermes_shim_packages_removed() -> None:
 
 
 def test_enterprise_console_uses_shared_http_client() -> None:
-    path = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "nimbusware_console"
-        / "enterprise_console.py"
-    )
-    text = path.read_text(encoding="utf-8")
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
+    service_path = root / "services" / "enterprise.py"
+    text = service_path.read_text(encoding="utf-8")
     assert "import httpx" not in text
     assert "nimbusware_client.http" in text
 

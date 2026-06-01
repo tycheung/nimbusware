@@ -61,7 +61,7 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 
 ## Refactor playbook
 
-See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for the full program. Day-to-day workflow:
+See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for the refactor program and [Lane T](PLAN_GAP.md#lane-t--maturity-85-program-fo520fo545) for the active **8.5 maturity** queue. Day-to-day workflow:
 
 | Step | Command / guard |
 |------|-----------------|

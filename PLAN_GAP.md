@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Reevaluation (May 2026, post–Lane D + Lane M planning):** Normative contract in [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md); **this file** is the sprint board.
+**Reevaluation (June 2026):** Normative contract in [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md); **this file** is the sprint board. **Active program:** [Lane T](#lane-t--maturity-85-program-fo520fo545) (maturity **7.8 → 8.5**).
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -47,7 +47,8 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane U** — User vs Admin consoles (fo310–fo317) | **~100%** | **Shipped** — [build path](#lane-u--recommended-build-path) complete |
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
-| **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, console barrels, 72% cov, Ollama hardening |
+| **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, config `_shared` barrels, coverage tests, Ollama hardening |
+| **Lane T** — Maturity 8.5 (fo520–fo545) | **~17%** | **Active** — T1 shipped; [Lane T program](#lane-t--maturity-85-program-fo520fo545); target scorecard **8.5/10** |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -56,8 +57,9 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 
 | Test surface | Status |
 |--------------|--------|
-| **`_round_gates.ps1` (CI parity subset)** | **1752 passed** — CI parity subset (June 2026) |
-| **Full `pytest tests/`** | **2397 passed**, 19 skipped (~3 min; see [test health](#test-health-may-2026)) |
+| **`_round_gates.ps1` (CI parity subset)** | See [test health](#test-health-june-2026) |
+| **CI unit job (`ci_check.ps1`)** | **~1,808 passed**, 4 skipped, **~71%** cov (June 2026) |
+| **Full `pytest tests/`** | Run locally with integration/slow markers as needed |
 | **E2E `e2e_smoke.py`** | **app + full profiles** on configured host |
 
 ### Normative ↔ sprint alignment
@@ -107,11 +109,13 @@ Legend: **Shipped** = epic exit criteria met in code + tests; **Polish** = works
 
 **Optional v2 (also shipped):** `micro_slice_executor` auto chain, `llm_slice`, `POST …/lifecycle/slice`, config-store `custom_agents/registry`.
 
-### Test health (May 2026)
+### Test health (June 2026)
 
-Last full `pytest tests/`: **2397 passed**, 0 failed, 19 skipped (~3 min).
+**Default CI / `ci_check.ps1`:** `pytest tests -m "not integration and not slow and not benchmark"` — **~1,808 passed**, 4 skipped, **~71%** coverage on `packages/` (Streamlit `pages/**` and Maker `ui/**` omitted).
 
-Gates (`_round_gates.ps1`): **478 passed**. Desktop smoke uses ephemeral API port when `NIMBUSWARE_API_PORT` unset (May 2026). Optional: stabilize `tests/e2e` desktop path in CI.
+**Full tree:** run `poetry run pytest tests/` locally for integration (`-m integration`) and slow suites.
+
+Desktop smoke uses ephemeral API port when `NIMBUSWARE_API_PORT` unset. Optional: stabilize `tests/e2e` desktop path in CI (fo541).
 
 ### What Hermes is today
 
@@ -970,7 +974,7 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 **Depends on:** [Lane R](#lane-r--maintainability-refactor-fo400fo407) complete.  
 **Goal:** Keep CI feedback trustworthy, then reduce import-barrel debt, tighten typing/lint rigor, and ratchet coverage — without changing product behavior.
 
-**Maturity audit (June 2026 refresh):** Overall **~7.8/10** — architecture **8/10**, effective type safety **6.5/10** (broad mypy ignores), tests **7.8/10**, CI hygiene **7.5/10** (green ruff/mypy/bandit + 1752-test subset).
+**Maturity audit (June 2026 refresh):** Overall **~7.8/10** — architecture **8.5/10**, effective type safety **6.5/10** (broad mypy ignores; Ollama island strict), tests **7.5/10**, CI hygiene **8.5/10** (green ruff/mypy/bandit + ~1,808-test subset @ 70% floor). **Target:** [Lane T](#lane-t--maturity-85-program-fo520fo545) → **8.5/10**.
 
 ### Epic queue (fo500–fo506)
 
@@ -1097,9 +1101,9 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 - [x] Maker + store + config under size/facade guards
 - [x] Coverage floor ≥70% on CI subset (fo510) — **70%+** with CLI entrypoints omitted from denominator
 
-## Maturity depth (fo511–fo520) — post–Lane S
+## Maturity depth (fo511–fo515) — post–Lane S
 
-**Goal:** Close UI/type/coverage gaps from June 2026 maturity review without product behavior changes.
+**Goal:** Close UI/type/coverage gaps from June 2026 maturity review without product behavior changes. **Superseded for active work by** [Lane T](#lane-t--maturity-85-program-fo520fo545).
 
 | Track | Epic | Theme | Status |
 |-------|------|-------|--------|
@@ -1109,21 +1113,268 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 | **D** | fo514 | Coverage honesty — `test_coverage_fo514.py`; services in denominator; hold 70% until subset ≥71% | **Complete** |
 | **E** | fo515 | Ollama hardening — policy audit stamp, mock-runtime API test | **Complete** |
 
+---
+
+## Lane T — Maturity 8.5 program (fo520–fo545)
+
+**Status:** **Active** (June 2026) — primary engineering program after fo511–fo515.  
+**Depends on:** [Lane S](#lane-s--stabilization--maturity-fo500fo506) + [Maturity depth fo511–fo515](#maturity-depth-fo511fo520--postlane-s) complete.  
+**Goal:** Raise holistic codebase maturity from **~7.8/10 → 8.5/10** without reopening normative product scope (§14, Lane M/U shipped features).
+
+### Target scorecard (8.5 exit)
+
+| Dimension | Baseline (Jun 2026) | 8.5 target | Primary epics |
+|-----------|---------------------|------------|---------------|
+| Architecture & boundaries | 8.5 | **≥8.5** (hold) | Regression-only; no new cross-layer imports |
+| CI & quality gates | 8.5 | **≥8.5** | fo520, fo537–fo539, fo544 |
+| Testing depth | 7.5 | **≥8.5** | fo520–fo525, fo534, fo540 |
+| Type safety | 6.5 | **≥8.0** | fo526–fo531 (API strict, orchestrator wedge) |
+| Maintainability | 8.0 | **≥8.5** | fo532–fo534, services pattern fo521–fo524 |
+| Security & ops | 7.5 | **≥8.0** | fo538–fo539, fo541 |
+| Product completeness | 8.0 | **≥8.0** (hold) | fo538 async Ollama pull |
+| Documentation | 8.0 | **≥8.5** | fo545 |
+
+**Overall exit:** Independent reviewer (or internal checklist in fo544) rates **≥8.5** on the dimensions above; `./scripts/ci_check.ps1` green; no console module &gt;400 lines without allowlist; `nimbusware_api.*` off blanket `ignore_errors`.
+
+### Baseline metrics (lock at T0)
+
+| Metric | Value (Jun 2026) | Notes |
+|--------|------------------|-------|
+| CI unit tests | **~1,808** passed (subset) | `-m "not integration and not slow and not benchmark"` |
+| Coverage (library subset) | **~71%** measured / **70%** floor | `pyproject.toml` omit: Streamlit `pages/**`, Maker `ui/**`, CLI/desktop |
+| Mypy strict islands | Ollama API + `ollama_*` + `services.ollama` | `test_mypy_ollama_surface.py` guard |
+| Mypy ignored | `hermes_orchestrator.*`, `nimbusware_api.*`, consoles, maker UI | fo509 tranche A |
+| Console &gt;400 lines | `pages/run_detail/_imports.py` (**~745**) | Only remaining config-style mega-barrel |
+| `services/` modules | **2** (`console` + `maker` Ollama) | Pattern to generalize |
+| UI import smoke | 8 modules | `test_console_page_imports.py` |
+| Pre-commit | ruff + format + CI-parity ruff + compileall + mypy | `.pre-commit-config.yaml` |
+
+### Epic queue (fo520–fo545)
+
+| Order | Epic | Track | Outcome |
+|-------|------|-------|---------|
+| 1 | **fo520** | **T1** — Import smoke | All Admin + Maker `render_*` entrypoints importable under test env |
+| 2 | **fo521** | **T1** — Console run services | `services/runs.py` — list, summary, timeline, findings, actions HTTP |
+| 3 | **fo522** | **T1** — Console config services | `services/config_editors.py` — persona/bundle catalog PATCH flows |
+| 4 | **fo523** | **T1** — Console ops services | `services/operator_chat.py`, `services/custom_agents.py`, `services/enterprise.py` |
+| 5 | **fo524** | **T1** — Maker services | `services/{projects,approval,progress,home}.py` — all `get_json`/`post_json` out of `ui/` |
+| 6 | **fo525** | **T1** — Service tests + wire-up | Unit tests per service; panels call services only (no direct `nimbusware_client` in `ui/`) |
+| 7 | **fo526** | **T2** — API schemas strict | Remove `nimbusware_api.schemas.*` + `errors` + `deps` from blanket ignore |
+| 8 | **fo527** | **T2** — API platform routes | Strict: `platform`, `projects`, `preflight`, `ollama`, `bundles` (read paths) |
+| 9 | **fo528** | **T2** — API runs read | Strict: `runs/list`, `runs/detail`, `runs/maker_progress` |
+| 10 | **fo529** | **T2** — API runs write | Strict: `runs/create`, `runs/lifecycle`, `runs/maker_approval`, `actions` |
+| 11 | **fo530** | **T2** — Orchestrator wedge | Strict: `preflight`, `merge`, `ollama_*`, `workflow_profiles` helpers (not `_pipeline/*`) |
+| 12 | **fo531** | **T2** — Mypy guards | `test_mypy_api_surface.py`, `test_mypy_orchestrator_wedge.py`; shrink `ignore_errors` list in `pyproject.toml` |
+| 13 | **fo532** | **T3** — Run detail audit | Map `_imports.py` symbol groups → existing `_imports_*` submodules |
+| 14 | **fo533** | **T3** — Run detail barrel | Replace `_imports.py` explicit list with star-import facade (&lt;30 lines) |
+| 15 | **fo534** | **T3** — Allowlist drain | `test_console_module_size.py` allowlist **empty** for logic modules |
+| 16 | **fo535** | **T4** — Cov stability | Document 2 green weeks at **≥71.5%** before ratchet |
+| 17 | **fo536** | **T4** — Cov 72% | `--cov-fail-under=72` in `ci_check.ps1`, `ci.yml`, `tests/README.md` |
+| 18 | **fo537** | **T4** — Package floors | Optional CI job or local script: `hermes_store`, `nimbusware_config`, `nimbusware_projections` ≥85% |
+| 19 | **fo538** | **T5** — Async Ollama pull | `POST …/pull` → job id; `GET …/pull/{job_id}`; console/Maker poll UI |
+| 20 | **fo539** | **T5** — Policy audit | `config.document.updated` or ops event when `ollama_user_policy` changes (who/when) |
+| 21 | **fo540** | **T5** — Enterprise tests | Expand `test_enterprise_iam` + materializer Postgres paths for config NOTIFY |
+| 22 | **fo541** | **T5** — E2E matrix (optional) | Weekly workflow: `e2e_smoke` + desktop smoke (PZ-1 remainder) |
+| 23 | **fo544** | **T6** — Scorecard review | Re-run maturity table; update this section progress tracker |
+| 24 | **fo545** | **T6** — Doc exit | `README.md`, `ARCHITECTURE.md`, package READMEs reflect 8.5 gates |
+
+### Lane T — dependency graph
+
+```text
+fo511–fo515 complete
+        │
+        ▼
+T1 (fo520–fo525) UI services + import smoke ──┬──► T3 (fo532–fo534) run_detail barrel
+        │                                        │
+        ├──► T2 (fo526–fo531) mypy ratchet ──────┼──► T4 (fo535–fo537) coverage ratchet
+        │                                        │
+        └──► T5 (fo538–fo541) product hardening ◄┘
+                        │
+                        ▼
+                 T6 (fo544–fo545) 8.5 sign-off
+```
+
+**Critical path:** **T1 → T2 (API tranche) → T4** — UI testability and API typing before raising coverage; **T3** parallel once T1 patterns exist; **T5** after T4 stable.
+
+---
+
+### Phase T1 — UI services plane (fo520–fo525)
+
+**Problem:** Streamlit panels embed HTTP calls; coverage omits `pages/**` and `ui/**`; regressions (e.g. missing `import streamlit`) slip through.
+
+**Pattern (canonical):**
+
+```text
+nimbusware_{console,maker}/services/<domain>.py   # httpx via nimbusware_client; typed dict returns
+nimbusware_{console,maker}/ui/<panel>.py        # Streamlit only; calls services
+tests/unit/test_<pkg>_services_<domain>.py      # mock get_json/post_json; no Streamlit
+```
+
+| Deliverable | Module(s) | Replaces HTTP in |
+|-------------|-----------|------------------|
+| Import smoke expansion | `tests/unit/test_console_page_imports.py`, `test_maker_page_imports.py` | — |
+| Run detail/list | `nimbusware_console/services/runs.py` | `pages/run_list.py`, `run_detail/{summary,timeline_core,findings,actions}.py` |
+| Config editors | `nimbusware_console/services/config_editors.py` | `workflows/{persona_editor,bundle_editor}.py` |
+| Operator + agents | `services/operator_chat.py`, `services/custom_agents.py` | `operator_chat.py`, `custom_agents_ui.py` |
+| Enterprise fleet | `services/enterprise.py` | `enterprise_console.py` |
+| Maker core | `nimbusware_maker/services/{projects,runs,approval,progress}.py` | `ui/{home,intent,approval,progress}.py` |
+| Guard: no raw client in UI | `tests/unit/test_ui_no_direct_http.py` | AST: `ui/` must not import `nimbusware_client.http` except `api_client.py` |
+
+**fo520 — Import smoke (detailed):**
+
+| Package | Modules to import in tests |
+|---------|---------------------------|
+| `nimbusware_console` | `main`, `operator_chat`, `enterprise_console_ui`, `custom_agents_ui`, `pages.run_list`, `pages.run_detail`, `pages.config_tooling`, `pages.preflight_fleet` (if exists) |
+| `nimbusware_maker` | `ui`, `ui.{home,intent,approval,progress,settings,wizard,ollama_models}` |
+
+Env stubs: `NIMBUSWARE_REPO_ROOT`, `HERMES_SKIP_PREFLIGHT=1`, `NIMBUSWARE_ADMIN_TOKEN` (console tests).
+
+**Exit T1:** Every panel with HTTP has a matching `services/*` module + unit tests; `test_ui_no_direct_http` passes; import smoke covers all `render_*` entrypoints in `main.py` / `ui/__init__.py`.
+
+---
+
+### Phase T2 — Mypy ratchet (fo526–fo531)
+
+**Problem:** `ignore_errors = true` on entire `nimbusware_api.*` and `hermes_orchestrator.*` hides real typing debt.
+
+**Strategy:** Add **narrower** `[[tool.mypy.overrides]]` blocks with `ignore_errors = false` **after** the blanket ignore (mypy uses most specific match). Expand `test_mypy_*_surface.py` guards each tranche.
+
+| Tranche | Epic | Modules | Est. effort |
+|---------|------|---------|-------------|
+| A | fo526 | `nimbusware_api.schemas.*`, `errors.py`, `admin.py`, `user.py`, `access.py`, `deps.py` | 1–2 days |
+| B | fo527 | `routes/platform.py`, `projects.py`, `preflight.py`, `ollama.py`, `bundles.py` (GET), `scraper_artifacts.py` | 2–3 days |
+| C | fo528 | `routes/runs/list.py`, `detail.py`, `maker_progress.py` | 2 days |
+| D | fo529 | `routes/runs/create.py`, `lifecycle.py`, `maker_approval.py`, `actions.py`, `personas*.py`, `custom_agents.py` | 3–4 days |
+| E | fo530 | `hermes_orchestrator.{preflight,merge,ollama_*,workflow_profiles}.py` (explicit list) | 2–3 days |
+| F | fo531 | Remove `nimbusware_api.*` from blanket ignore; keep `hermes_orchestrator._pipeline.*` ignored only | 1 day |
+
+**Do not** strict-type `_pipeline/*` mixins in Lane T (defer to post-8.5); document in `hermes_orchestrator/README.md`.
+
+**Exit T2:** `poetry run mypy packages` green with `ignore_errors` only for: `nimbusware_console.*`, `nimbusware_maker.*`, `hermes_orchestrator._pipeline.*`, desktop `nimbusware_env` subprocess modules.
+
+---
+
+### Phase T3 — Run detail barrel (fo532–fo534)
+
+**Problem:** `pages/run_detail/_imports.py` (~745 lines) is the last explicit re-export monolith (config tooling fixed in fo513).
+
+**Current submodules (use for split):**
+
+| Submodule | Role |
+|-----------|------|
+| `_imports_common.py` | Shared types/paths |
+| `_imports_display_a.py` + `/_imports_display_a/` | Findings → escalation displays |
+| `_imports_display_b.py` | Remaining display re-exports |
+| `_imports_tail.py` | Tail symbols |
+| `_imports.py` | **Monolithic explicit import list** ← replace |
+
+**fo533 target file:**
+
+```python
+# pages/run_detail/_imports.py (target <25 lines)
+from nimbusware_console.pages.run_detail._imports_common import *  # noqa: F403
+from nimbusware_console.pages.run_detail._imports_display_a import *  # noqa: F403
+from nimbusware_console.pages.run_detail._imports_display_b import *  # noqa: F403
+from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
+```
+
+**fo532:** Run `scripts/explicit_run_detail_imports.py` (or extend) to verify no missing symbols before cutover.
+
+**Exit T3:** `_imports.py` ≤30 lines; `test_console_module_size_allowlist_is_current` has **zero** entries (or only documented exceptions); `tests/console/test_run_detail*.py` green.
+
+---
+
+### Phase T4 — Coverage ratchet (fo535–fo537)
+
+**Problem:** Measured **~71%** but floor **70%** — headroom exists but UI omission caps signal.
+
+| Step | Epic | Action |
+|------|------|--------|
+| Stabilize | fo535 | Require **≥71.5%** on 2 consecutive `ci_check` runs on `main` before ratchet |
+| Ratchet | fo536 | `--cov-fail-under=72` → later **75%** (Q+1) |
+| Package floors | fo537 | `scripts/coverage_package_floors.py` — fail if `hermes_store` &lt;85%, `nimbusware_config` &lt;85%, `nimbusware_projections` &lt;85% |
+| Guard | — | `test_coverage_fo514.py` + extend; never add Streamlit to global denominator until T1 exit |
+
+**Exit T4:** CI at **72%** global floor; package floors script in `ci_check` or separate workflow; measured ≥72.5% at sign-off.
+
+---
+
+### Phase T5 — Product & integration hardening (fo538–fo541)
+
+| Epic | Design | API / UI |
+|------|--------|----------|
+| **fo538** Async Ollama pull | Background thread or subprocess poll; in-memory job table (or `.cache/ollama_pull_jobs.json` for single-node) | `POST /platform/ollama/pull` → `{job_id}`; `GET /platform/ollama/pull/{job_id}`; Admin may bypass wait |
+| **fo539** Policy audit | On `PATCH /admin/ollama/user-policy`, emit `config.document.updated` (existing NOTIFY path) + include `updated_at` + optional admin identity header | Materializer refresh; console shows last change |
+| **fo540** Enterprise Postgres | Add integration tests: IAM bootstrap + tenant key + config upsert + NOTIFY listener mock | `tests/integration/test_config_notify_integration.py` expand |
+| **fo541** E2E (optional) | `.github/workflows/e2e_smoke.yml` weekly; desktop smoke non-blocking | PZ-1 |
+
+**Exit T5:** fo538 + fo539 shipped with API tests; fo540 at least one new integration path green in CI.
+
+---
+
+### Phase T6 — 8.5 sign-off (fo544–fo545)
+
+| Checklist item | Verification |
+|----------------|--------------|
+| `./scripts/ci_check.ps1` green | ruff, mypy (new scope), bandit, pytest 72%+ |
+| Import smoke + service tests | T1 exit |
+| API mypy tranche F | T2 exit |
+| No console logic file &gt;400 lines | T3 exit |
+| README / ARCHITECTURE / tests/README | fo545 |
+| Maturity table in fo544 | All dimensions ≥ target |
+
+---
+
+### Lane T — progress tracker
+
+| Phase | Epics | Status |
+|-------|-------|--------|
+| **T1** UI services | fo520–fo525 | **Done** |
+| **T2** Mypy ratchet | fo526–fo531 | **Not started** (fo512 Ollama island only) |
+| **T3** Run detail | fo532–fo534 | **Not started** |
+| **T4** Coverage | fo535–fo537 | **Not started** (fo514 tests only) |
+| **T5** Product | fo538–fo541 | **Not started** (fo515 policy timestamp only) |
+| **T6** Sign-off | fo544–fo545 | **Not started** |
+
+### Lane T — recommended sprint order (6–8 weeks)
+
+| Week | Focus | Epics |
+|------|-------|-------|
+| 1 | Import smoke + `services/runs` + wire run list/detail | fo520, fo521, partial fo525 |
+| 2 | Remaining console services + Maker services | fo522–fo524, fo525 |
+| 3 | Mypy API schemas + platform routes | fo526–fo527 |
+| 4 | Mypy runs routes + orchestrator wedge | fo528–fo530 |
+| 5 | Run detail barrel + mypy guard cleanup | fo532–fo534, fo531 |
+| 6 | Coverage 72% + Ollama async pull | fo535–fo536, fo538 |
+| 7–8 | Policy audit, enterprise tests, sign-off | fo539–fo540, fo544–fo545 |
+
+### Lane T — explicit non-goals
+
+- Rewriting Streamlit or merging Maker + Admin apps
+- Strict-typing entire `hermes_orchestrator._pipeline.*` (post-8.5)
+- Repo-wide `ruff check --fix` (breaks re-export barrels)
+- Raising coverage by including `pages/**` in denominator before T1 complete
+- OIDC / K8s / external Prometheus (remain [Lane D polish](#lane-d--ops-polish-non-blocking))
+
+---
+
 ## Execution priority (post–Lane D + M + U + R)
 
-1. **Hold** — gates **478**; unit suite green (`pytest tests/`).
-2. **Hold Lane S** — fo500–fo508 complete; optional fo509–fo510 when prioritizing typing/coverage.
+1. **Active — [Lane T](#lane-t--maturity-85-program-fo520fo545)** — fo520–fo545 toward **8.5/10** (see sprint order above).
+2. **Hold** — `./scripts/ci_check.ps1` green; **~1,808** unit tests; regression on fo511–fo515.
 3. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
-4. **Optional** — `env_flags` migration, [Optional depth](#optional-depth-on-request), or [Lane D polish](#lane-d--ops-polish-non-blocking) when product asks.
+4. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
 5. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
 
-**Per-cycle default (June 2026 onward):** regression hold on shipped lanes; re-open **Lane S** immediately when CI or maturity gaps appear.
+**Per-cycle default (June 2026 onward):** Ship **Lane T** tranches with CI green each PR; hold normative product scope.
 
-### Next health epics (minimalist, June 2026)
+### Next health epics
 
-| Order | Epic | Outcome | Scope guard |
-|-------|------|---------|-------------|
-| — | **fo509–fo510** | **Done** — see progress tracker S9/S10 |
+| Order | Epic | Outcome |
+|-------|------|---------|
+| 1 | **fo520** | Full Admin/Maker import smoke |
+| 2 | **fo521–fo525** | UI `services/` plane |
+| 3 | **fo526–fo527** | First mypy API tranche |
 
 ## Phase 4 — Memory and optimization (shipped)
 

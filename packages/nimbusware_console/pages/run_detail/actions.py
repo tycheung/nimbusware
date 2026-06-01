@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_client.http import HTTPError, post_json
+from nimbusware_client.http import HTTPError
 from nimbusware_console.components.ui_errors import render_api_error
+from nimbusware_console.services import runs as runs_svc
 
 
 def render_run_detail_actions(run_id: str) -> None:
@@ -13,7 +14,7 @@ def render_run_detail_actions(run_id: str) -> None:
         if run_id.strip():
             if st.button("Record retry (stage.started retry)"):
                 try:
-                    st.success(post_json(f"/runs/{run_id.strip()}/actions/retry", {}, timeout=30.0))
+                    st.success(runs_svc.post_retry(run_id))
                 except HTTPError as exc:
                     render_api_error(exc)
             esc_actor = st.text_input("Escalate actor_id", value="human:operator")
@@ -24,12 +25,6 @@ def render_run_detail_actions(run_id: str) -> None:
                     body = {"actor_id": esc_actor, "reason_code": esc_reason}
                     if esc_notes.strip():
                         body["notes"] = esc_notes.strip()
-                    st.success(
-                        post_json(
-                            f"/runs/{run_id.strip()}/actions/escalate",
-                            body,
-                            timeout=30.0,
-                        ),
-                    )
+                    st.success(runs_svc.post_escalate(run_id, body))
                 except HTTPError as exc:
                     render_api_error(exc)
