@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Reevaluation (June 2026):** Normative contract in [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md); **this file** is the sprint board. **Active program:** [Lane T](#lane-t--maturity-85-program-fo520fo545) (maturity **7.8 → 8.5**).
+**Reevaluation (June 2026):** Normative contract in [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md); **this file** is the sprint board. **Lane T (fo520–fo545)** maturity program **signed off** at **~8.5/10** — hold regressions only.
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -48,7 +48,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
 | **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, config `_shared` barrels, coverage tests, Ollama hardening |
-| **Lane T** — Maturity 8.5 (fo520–fo545) | **~92%** | **Active** — T1–T5 shipped; T6 sign-off; [Lane T program](#lane-t--maturity-85-program-fo520fo545) |
+| **Lane T** — Maturity 8.5 (fo520–fo545) | **~100%** | **Sign-off** — T1–T6 complete; [Lane T program](#lane-t--maturity-85-program-fo520fo545) |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -1360,7 +1360,7 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 
 ## Execution priority (post–Lane D + M + U + R)
 
-1. **Active — [Lane T](#lane-t--maturity-85-program-fo520fo545)** — fo520–fo545 toward **8.5/10** (see sprint order above).
+1. **Hold — [Lane T](#lane-t--maturity-85-program-fo520fo545)** — fo520–fo545 **signed off**; regression-only.
 2. **Hold** — `./scripts/ci_check.ps1` green; **~1,808** unit tests; regression on fo511–fo515.
 3. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
 4. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
