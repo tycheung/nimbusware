@@ -388,4 +388,4 @@ Full list: [`.env.example`](.env.example).
 
 ## License
 
-See repository license file if present; otherwise treat as private/unlicensed until stated.
+MIT — see [LICENSE](LICENSE).

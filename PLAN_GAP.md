@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Reevaluation (June 2026):** Normative contract in [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md); **this file** is the sprint board. **Lane T (fo520–fo545)** maturity program **signed off** at **~8.5/10** — hold regressions only.
+**Active program (June 2026):** [Lane V — Production maturity (fo600–fo650)](#lane-v--production-maturity-fo600fo650) — external review backlog; CI green each phase. Normative product scope (§14, Lane M/U) remains **regression-only**.
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -15,6 +15,7 @@
 | **Enterprise** (`NIMBUSWARE_EDITION=enterprise`) | Lane **D** fo200–fo207 | **~92%** core / **~75%** ops polish | **Core shipped** — optional hardening below |
 | **Maker product** | Lane **M** fo300–fo308 | **~98%** | **Shipped** — see [Lane M](#lane-m--maker-product-fo300fo308); polish only |
 | **User vs Admin consoles** | Lane **U** fo310–fo317 | **~100%** | **Shipped** — see [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
+| **Production maturity** | Lane **V** fo600–fo650 | **In progress** | **Active** — [Lane V](#lane-v--production-maturity-fo600fo650) |
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
@@ -48,7 +49,8 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
 | **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, config `_shared` barrels, coverage tests, Ollama hardening |
-| **Lane T** — Maturity 8.5 (fo520–fo545) | **~100%** | **Sign-off** — T1–T6 complete; [Lane T program](#lane-t--maturity-85-program-fo520fo545) |
+| **Lane T** — Maturity program (fo520–fo545) | **~100%** | **Complete** — hold regressions; [Lane T program](#lane-t--maturity-program-fo520fo545) |
+| **Lane V** — Production maturity (fo600–fo650) | **Active** | **In progress** — [Lane V](#lane-v--production-maturity-fo600fo650) |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -78,7 +80,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 
 **Doc rule:** Local plan = **what** the product should do. **PLAN_GAP** = **what exists** and **optional polish**. When they disagree, trust the repo + test suite, then update both docs.
 
-### Feature completion matrix (May 2026 reevaluation)
+### Feature completion matrix
 
 Legend: **Shipped** = epic exit criteria met in code + tests; **Polish** = works, optional depth/ops; **Hold** = regression-only.
 
@@ -819,9 +821,7 @@ U-C (fo313) grow Maker              U-D (fo314–315) admin-only console
 
 **Status:** **~100% — complete** (May 2026).  
 **Depends on:** [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) shipped (~100%).  
-**Goal:** Raise maintainability from **~6.5/10 → ~8/10** without changing product behavior — decompose Admin Console monoliths, remove legacy shims, invert layering violations, add coverage gates.
-
-**Maturity audit (May 2026):** Architecture **8/10**, type safety **8.5/10**, tests **7.5/10**, console maintainability **~8/10** (god-module splits, shared `operator_metrics` / `explainer_panel`, explicit `run_detail` imports, zero direct `httpx` in console).
+**Goal:** Decompose Admin Console monoliths, remove legacy shims, invert layering violations, add coverage gates — without changing product behavior.
 
 ### Epic queue (fo400–fo407)
 
@@ -974,8 +974,6 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 **Depends on:** [Lane R](#lane-r--maintainability-refactor-fo400fo407) complete.  
 **Goal:** Keep CI feedback trustworthy, then reduce import-barrel debt, tighten typing/lint rigor, and ratchet coverage — without changing product behavior.
 
-**Maturity audit (June 2026, post–Lane T):** Overall **~8.5/10** — architecture **8.5/10**, type safety **~8.0/10** (strict API + orchestrator except `_pipeline` mixins), tests **~8.5/10** (CI subset **~1,850+** @ **72%** floor), CI hygiene **8.5/10**. [Lane T](#lane-t--maturity-85-program-fo520fo545) T1–T5 **shipped**; T6 sign-off checklist below.
-
 ### Epic queue (fo500–fo506)
 
 | Order | Epic | Track | Outcome | Primary touches |
@@ -1115,28 +1113,13 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 
 ---
 
-## Lane T — Maturity 8.5 program (fo520–fo545)
+## Lane T — Maturity program (fo520–fo545)
 
-**Status:** **Active** (June 2026) — primary engineering program after fo511–fo515.  
-**Depends on:** [Lane S](#lane-s--stabilization--maturity-fo500fo506) + [Maturity depth fo511–fo515](#maturity-depth-fo511fo520--postlane-s) complete.  
-**Goal:** Raise holistic codebase maturity from **~7.8/10 → 8.5/10** without reopening normative product scope (§14, Lane M/U shipped features).
+**Status:** **Complete** (June 2026) — hold regressions only.  
+**Depends on:** [Lane S](#lane-s--stabilization--maturity-fo500fo506) + [Maturity depth fo511–fo515](#maturity-depth-fo511fo515--postlane-s) complete.  
+**Goal:** UI services plane, mypy ratchet, run detail barrel, coverage 72%, async Ollama pull — without reopening normative product scope (§14, Lane M/U shipped features).
 
-### Target scorecard (8.5 exit)
-
-| Dimension | Baseline (Jun 2026) | 8.5 target | Primary epics |
-|-----------|---------------------|------------|---------------|
-| Architecture & boundaries | 8.5 | **≥8.5** (hold) | Regression-only; no new cross-layer imports |
-| CI & quality gates | 8.5 | **≥8.5** | fo520, fo537–fo539, fo544 |
-| Testing depth | 7.5 | **≥8.5** | fo520–fo525, fo534, fo540 |
-| Type safety | 6.5 | **≥8.0** | fo526–fo531 (API strict, orchestrator wedge) |
-| Maintainability | 8.0 | **≥8.5** | fo532–fo534, services pattern fo521–fo524 |
-| Security & ops | 7.5 | **≥8.0** | fo538–fo539, fo541 |
-| Product completeness | 8.0 | **≥8.0** (hold) | fo538 async Ollama pull |
-| Documentation | 8.0 | **≥8.5** | fo545 |
-
-**Overall exit:** Independent reviewer (or internal checklist in fo544) rates **≥8.5** on the dimensions above; `./scripts/ci_check.ps1` green; no console module &gt;400 lines without allowlist; `nimbusware_api.*` off blanket `ignore_errors`.
-
-### Baseline metrics (lock at T0)
+### Baseline metrics (T0 lock)
 
 | Metric | Value (Jun 2026) | Notes |
 |--------|------------------|-------|
@@ -1191,7 +1174,7 @@ T1 (fo520–fo525) UI services + import smoke ──┬──► T3 (fo532–fo5
         └──► T5 (fo538–fo541) product hardening ◄┘
                         │
                         ▼
-                 T6 (fo544–fo545) 8.5 sign-off
+                 T6 (fo544–fo545) doc exit
 ```
 
 **Critical path:** **T1 → T2 (API tranche) → T4** — UI testability and API typing before raising coverage; **T3** parallel once T1 patterns exist; **T5** after T4 stable.
@@ -1295,7 +1278,7 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 | Package floors | fo537 | `scripts/coverage_package_floors.py` — fail if `hermes_store` &lt;85%, `nimbusware_config` &lt;85%, `nimbusware_projections` &lt;85% |
 | Guard | — | `test_coverage_fo514.py` + extend; never add Streamlit to global denominator until T1 exit |
 
-**Exit T4:** CI at **72%** global floor; package floors script in `ci_check` or separate workflow; measured ≥72.5% at sign-off.
+**Exit T4:** CI at **72%** global floor; package floors script in `ci_check` or separate workflow.
 
 ---
 
@@ -1312,7 +1295,7 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 
 ---
 
-### Phase T6 — 8.5 sign-off (fo544–fo545)
+### Phase T6 — Doc exit (fo544–fo545)
 
 | Checklist item | Verification |
 |----------------|--------------|
@@ -1321,7 +1304,6 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 | API mypy tranche F | T2 exit |
 | No console logic file &gt;400 lines | T3 exit |
 | README / ARCHITECTURE / tests/README | fo545 |
-| Maturity table in fo544 | All dimensions ≥ target |
 
 ---
 
@@ -1334,47 +1316,184 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 | **T3** Run detail | fo532–fo534 | **Done** |
 | **T4** Coverage | fo535–fo537 | **Done** |
 | **T5** Product | fo538–fo541 | **Done** |
-| **T6** Sign-off | fo544–fo545 | **Done** |
-
-### Lane T — recommended sprint order (6–8 weeks)
-
-| Week | Focus | Epics |
-|------|-------|-------|
-| 1 | Import smoke + `services/runs` + wire run list/detail | fo520, fo521, partial fo525 |
-| 2 | Remaining console services + Maker services | fo522–fo524, fo525 |
-| 3 | Mypy API schemas + platform routes | fo526–fo527 |
-| 4 | Mypy runs routes + orchestrator wedge | fo528–fo530 |
-| 5 | Run detail barrel + mypy guard cleanup | fo532–fo534, fo531 |
-| 6 | Coverage 72% + Ollama async pull | fo535–fo536, fo538 |
-| 7–8 | Policy audit, enterprise tests, sign-off | fo539–fo540, fo544–fo545 |
+| **T6** Doc exit | fo544–fo545 | **Done** |
 
 ### Lane T — explicit non-goals
 
 - Rewriting Streamlit or merging Maker + Admin apps
-- Strict-typing entire `hermes_orchestrator._pipeline.*` (post-8.5)
+- Strict-typing entire `hermes_orchestrator._pipeline.*` (defer to [Lane V](#lane-v--production-maturity-fo600fo650))
 - Repo-wide `ruff check --fix` (breaks re-export barrels)
 - Raising coverage by including `pages/**` in denominator before T1 complete
-- OIDC / K8s / external Prometheus (remain [Lane D polish](#lane-d--ops-polish-non-blocking))
+- OIDC / K8s / external Prometheus (remain [Lane D polish](#lane-d--ops-polish-non-blocking) and [Lane V P5](#phase-v5--enterprise-ops-fo641fo650))
 
 ---
 
-## Execution priority (post–Lane D + M + U + R)
+## Lane V — Production maturity (fo600–fo650)
 
-1. **Hold — [Lane T](#lane-t--maturity-85-program-fo520fo545)** — fo520–fo545 **signed off**; regression-only.
-2. **Hold** — `./scripts/ci_check.ps1` green; **~1,808** unit tests; regression on fo511–fo515.
-3. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
-4. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
-5. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
+**Status:** **Active** (June 2026) — primary engineering program after [Lane T](#lane-t--maturity-program-fo520fo545).  
+**Depends on:** Lane T complete; normative product scope (§14, Lane M/U) regression-only.  
+**Source:** External codebase review (June 2026) — hygiene, quality ratchet, UI/integration safety, observability, packaging, enterprise ops.
 
-**Per-cycle default (June 2026 onward):** Ship **Lane T** tranches with CI green each PR; hold normative product scope.
+**Operating rule:** Ship one **phase** per PR cycle minimum; `./scripts/ci_check.ps1` green before merge; commit at phase boundary.
+
+### Lane V — dependency graph
+
+```text
+Lane T complete
+        │
+        ▼
+V0 (fo600–fo604) Hygiene ──► V1 (fo610–fo614) Quality ratchet
+        │                              │
+        ├──► V2 (fo620–fo624) UI + integration
+        │                              │
+        ├──► V3 (fo630–fo633) Observability
+        │                              │
+        ├──► V4 (fo635–fo638) Production packaging
+        │                              │
+        └──► V5 (fo641–fo650) Enterprise ops polish
+```
+
+---
+
+### Phase V0 — Hygiene (fo600–fo604)
+
+**Problem:** CI truth drift, broken e2e Postgres path, missing legal/supply-chain automation.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo600** | Single coverage floor **72%** across `ci.yml`, `ci_check.ps1`, `ci_check.sh` | `.github/workflows/ci.yml`, `scripts/ci_check.*` |
+| **fo601** | Fix `e2e-full` Postgres credentials to match `nimbusware` service | `.github/workflows/e2e_smoke.yml` |
+| **fo602** | Add `LICENSE` (MIT) + README pointer | repo root, `README.md` |
+| **fo603** | Dependabot for Poetry + GitHub Actions | `.github/dependabot.yml` |
+| **fo604** | `pip-audit` in CI (report CVEs; non-blocking → blocking when clean) | `.github/workflows/ci.yml`, `pyproject.toml` dev deps |
+
+**Exit V0:** `./scripts/ci_check.ps1` green; e2e-full Postgres apply succeeds; LICENSE present; dependabot configured.
+
+---
+
+### Phase V1 — Quality ratchet (fo610–fo614)
+
+**Problem:** `nimbusware_console.*` and `nimbusware_maker.*` blanket mypy ignore hides typed `services/` debt.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo610** | Mypy strict islands: `nimbusware_console.services.*`, `nimbusware_maker.services.*` | `pyproject.toml`, service modules |
+| **fo611** | `test_mypy_services_surface.py` guard | `tests/unit/` |
+| **fo612** | Fix typing in service modules until mypy green | `packages/*/services/` |
+| **fo613** | Document ratchet in `ARCHITECTURE.md` | repo root |
+| **fo614** | Hold: no new `per-file-ignores` without ADR note | `pyproject.toml` |
+
+**Exit V1:** `poetry run mypy packages` green with services strict; guard test passes.
+
+**Do not** strict-type `_pipeline/*` mixins in Lane V1 (defer to post-V1).
+
+---
+
+### Phase V2 — UI & integration safety (fo620–fo624)
+
+**Problem:** Streamlit `pages/**` and Maker `ui/**` omitted from coverage; integration suite thin vs unit volume; confusing production module names.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo620** | Rename `llm/test_writer_critique.py` → `llm/test_writer_role_critique.py` with re-export shim | `hermes_orchestrator/llm/` |
+| **fo621** | Expand `@pytest.mark.integration`: IAM scopes + event append + projection | `tests/integration/` |
+| **fo622** | Service-layer characterization tests for Maker + Console | `tests/unit/test_*_services_*.py` |
+| **fo623** | Document UI coverage policy (services in denominator; pages/ui optional floor) | `tests/README.md` |
+| **fo624** | Optional: UI import smoke expansion when touching panels | `test_*_page_imports.py` |
+
+**Exit V2:** ≥3 new integration tests green in CI integration job; rename shim preserves imports; service tests cover all `services/*.py` modules.
+
+---
+
+### Phase V3 — Observability (fo630–fo633)
+
+**Problem:** No request correlation; stdlib logging only; ops at scale needs trace context.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo630** | `X-Request-Id` middleware (accept or generate UUID); echo on response | `nimbusware_api/app.py` |
+| **fo631** | Include request id in `nimbusware_api.request` log lines | `nimbusware_api/app.py` |
+| **fo632** | API tests for request id header | `tests/api/test_request_id.py` |
+| **fo633** | ADR 005 or extend ADR 004 for correlation id | `docs/adr/` |
+
+**Exit V3:** Every API response includes `X-Request-Id`; access logs include same id; tests green.
+
+**Later (not V3):** OpenTelemetry, JSON log format via env flag, Prometheus `/metrics`.
+
+---
+
+### Phase V4 — Production packaging (fo635–fo638)
+
+**Problem:** Compose covers Postgres/Redis only; no container images for API/worker.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo635** | Multi-stage `Dockerfile` for API (`nimbusware-api`) | repo root |
+| **fo636** | `docker-compose.yml` profile `api` for API + Postgres | `docker-compose.yml` |
+| **fo637** | `docs/deploy/README.md` — build/run, env vars, secrets | `docs/deploy/` |
+| **fo638** | Optional worker image notes (Redis dispatch) | `docs/deploy/`, runbooks |
+
+**Exit V4:** `docker compose --profile api up` starts API against Postgres; deploy doc complete.
+
+**Non-goals:** Full Helm charts (→ V5 / Lane D polish).
+
+---
+
+### Phase V5 — Enterprise ops polish (fo641–fo650)
+
+**Problem:** OIDC, K8s templates, external SLI deferred from Lane D.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo641** | K8s reference manifests (Deployment + Service + Secret) | `docs/deploy/k8s/` |
+| **fo642** | OIDC integration design doc (API-key remains; IdP for console) | `docs/deploy/oidc.md` |
+| **fo643** | External SLI runbook cross-link from README | `README.md`, `scripts/fleet_ollama_sli_runbook.md` |
+| **fo644** | SBOM generation in release workflow (optional) | `.github/workflows/` |
+| **fo645–fo650** | Hold — product decisions; no scope creep | PLAN_GAP only |
+
+**Exit V5:** Reference K8s + OIDC design shipped as docs; Lane D ops polish tracked, not blocking Individual.
+
+---
+
+### Lane V — progress tracker
+
+| Phase | Epics | Status |
+|-------|-------|--------|
+| **V0** Hygiene | fo600–fo604 | **Done** |
+| **V1** Quality ratchet | fo610–fo614 | **In progress** |
+| **V2** UI + integration | fo620–fo624 | Pending |
+| **V3** Observability | fo630–fo633 | Pending |
+| **V4** Packaging | fo635–fo638 | Pending |
+| **V5** Enterprise ops | fo641–fo650 | Pending |
+
+### Lane V — explicit non-goals
+
+- Rewriting Streamlit or merging Maker + Admin apps
+- Strict-typing entire `hermes_orchestrator._pipeline.*` in V1
+- Repo-wide `ruff check --fix` (breaks re-export barrels)
+- Raising coverage by including `pages/**` in denominator before V2 service tests land
+- Reopening §14 rows or Lane M/U product scope
+
+---
+
+## Execution priority (post–Lane D + M + U + R + T)
+
+1. **Active — [Lane V](#lane-v--production-maturity-fo600fo650)** — fo600–fo650; CI green each phase.
+2. **Hold — [Lane T](#lane-t--maturity-program-fo520fo545)** — fo520–fo545 complete; regression-only.
+3. **Hold** — `./scripts/ci_check.ps1` green; regression on fo511–fo515.
+4. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
+5. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
+6. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
+
+**Per-cycle default (June 2026 onward):** Ship **Lane V** phases with CI green each phase; hold normative product scope.
 
 ### Next health epics
 
 | Order | Epic | Outcome |
 |-------|------|---------|
-| 1 | **fo520** | Full Admin/Maker import smoke |
-| 2 | **fo521–fo525** | UI `services/` plane |
-| 3 | **fo526–fo527** | First mypy API tranche |
+| 1 | **fo600–fo604** | V0 hygiene — CI alignment, e2e fix, LICENSE, dependabot, pip-audit |
+| 2 | **fo610–fo614** | V1 services mypy ratchet |
+| 3 | **fo620–fo624** | V2 integration + module rename |
 
 ## Phase 4 — Memory and optimization (shipped)
 
