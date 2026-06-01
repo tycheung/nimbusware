@@ -59,6 +59,7 @@ def test_admin_patch_user_policy(client: TestClient) -> None:
     body = r.json()
     assert body["allow_pull"] is True
     assert body["allow_update_routing"] is True
+    assert body.get("updated_at")
     with (
         patch("nimbusware_api.routes.ollama.ollama_reachable", return_value=True),
         patch("nimbusware_api.routes.ollama.list_installed_models", return_value=[]),
@@ -73,10 +74,31 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
         json={"allow_pull": True, "allow_delete": False, "allow_update_routing": False},
         headers=ADMIN_HEADERS,
     )
-    with patch("nimbusware_api.routes.ollama.pull_model") as pull:
+    with patch("nimbusware_api.routes.ollama.start_pull_job") as start_job:
+        from hermes_orchestrator.ollama_pull_jobs import PullJob
+
+        start_job.return_value = PullJob(job_id="job-1", model="tiny", host="http://127.0.0.1:11434")
         r = client.post("/v1/platform/ollama/pull", json={"model": "tiny"})
     assert r.status_code == 200
-    pull.assert_called_once()
+    assert r.json()["job_id"] == "job-1"
+    assert r.json()["status"] == "accepted"
+    start_job.assert_called_once()
+
+
+def test_get_ollama_pull_job_status(client: TestClient) -> None:
+    from hermes_orchestrator.ollama_pull_jobs import PullJob, reset_pull_jobs_for_tests
+
+    reset_pull_jobs_for_tests()
+    with patch("nimbusware_api.routes.ollama.get_pull_job") as get_job:
+        get_job.return_value = PullJob(
+            job_id="job-1",
+            model="tiny",
+            host="http://127.0.0.1:11434",
+            status="succeeded",
+        )
+        r = client.get("/v1/platform/ollama/pull/job-1")
+    assert r.status_code == 200
+    assert r.json()["status"] == "succeeded"
 
 
 def test_filter_query_param(client: TestClient) -> None:

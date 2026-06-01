@@ -13,6 +13,7 @@ from hermes_orchestrator.ollama_manage import (
     pull_model,
     runtime_base_url_from_routing,
 )
+from hermes_orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
 from hermes_orchestrator.ollama_user_policy import (
     assert_user_may,
     merge_policy_into_routing,
@@ -26,10 +27,12 @@ from nimbusware_api.schemas.ollama import (
     OllamaModelEntry,
     OllamaModelsResponse,
     OllamaPrimaryRoutingRequest,
+    OllamaPullJobStatusResponse,
     OllamaPullRequest,
     OllamaPullResponse,
     OllamaUserPolicyBody,
 )
+from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
 
 router = APIRouter(tags=["platform", "ollama"])
@@ -63,9 +66,26 @@ def _load_routing(orch: OrchDep) -> dict[str, Any]:
     return load_model_routing_dict(orch.repo_root, materializer=mat)
 
 
+def _publish_routing_notify() -> None:
+    try:
+        from nimbusware_config.flags import config_notify_enabled
+        from nimbusware_config.notify import get_config_notify_hub
+
+        if config_notify_enabled():
+            get_config_notify_hub().publish_local(
+                namespace=NS_POLICY,
+                document_key=KEY_MODEL_ROUTING,
+                version=1,
+            )
+    except ImportError:
+        return
+
+
 def _save_routing(orch: OrchDep, routing: dict[str, Any]) -> None:
     mat = _materializer(orch)
     persist_model_routing_dict(orch.repo_root, routing, materializer=mat)
+    if mat is None or not getattr(mat, "use_db", False):
+        _publish_routing_notify()
 
 
 def _models_response(
@@ -120,14 +140,26 @@ def post_ollama_pull(body: OllamaPullRequest, orch: OrchDep) -> OllamaPullRespon
     except PermissionError:
         raise _policy_forbidden("pull") from None
     base = runtime_base_url_from_routing(routing)
-    try:
-        pull_model(body.model, host=base)
-    except OllamaManageError as exc:
+    job = start_pull_job(model=body.model.strip(), host=base)
+    return OllamaPullResponse(model=body.model.strip(), status="accepted", job_id=job.job_id)
+
+
+@router.get("/platform/ollama/pull/{job_id}", response_model=OllamaPullJobStatusResponse)
+def get_ollama_pull_job(job_id: str) -> OllamaPullJobStatusResponse:
+    job = get_pull_job(job_id.strip())
+    if job is None:
         raise HTTPException(
-            status_code=502,
-            detail=problem("ollama_pull_failed", str(exc)),
-        ) from exc
-    return OllamaPullResponse(model=body.model.strip())
+            status_code=404,
+            detail=problem("pull_job_not_found", "Unknown Ollama pull job", details={"job_id": job_id}),
+        )
+    return OllamaPullJobStatusResponse(
+        job_id=job.job_id,
+        model=job.model,
+        status=job.status,
+        error=job.error,
+        created_at=job.created_at,
+        finished_at=job.finished_at,
+    )
 
 
 @router.delete("/platform/ollama/models/{model_name}", response_model=OllamaDeleteResponse)
@@ -187,7 +219,13 @@ def patch_ollama_user_policy(
         allow_update_routing=body.allow_update_routing,
     )
     _save_routing(orch, merged)
-    return OllamaUserPolicyBody(**policy_from_routing(merged).to_dict())
+    policy_doc = merged.get("ollama_user_policy")
+    body_kwargs = (
+        dict(policy_doc)
+        if isinstance(policy_doc, dict)
+        else policy_from_routing(merged).to_dict()
+    )
+    return OllamaUserPolicyBody(**body_kwargs)
 
 
 @router.post("/admin/ollama/pull", response_model=OllamaPullResponse)

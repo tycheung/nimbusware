@@ -48,7 +48,7 @@ Weights reflect v1 scope (Phase 4 deferred unless explicitly prioritized).
 | **Lane R** — Maintainability (fo400–fo407 + follow-on) | **~100%** | **Complete** — [Lane R](#lane-r--maintainability-refactor-fo400fo407); optional polish only |
 | **Lane S** — Stabilization & maturity (fo500–fo510) | **~100%** | **Complete** — fo509 typing tranche A + fo510 coverage 70% |
 | **Maturity depth** — fo511–fo515 | **~100%** | **Complete** — UI safety net, mypy Ollama surface, config `_shared` barrels, coverage tests, Ollama hardening |
-| **Lane T** — Maturity 8.5 (fo520–fo545) | **~67%** | **Active** — T1–T4 shipped; [Lane T program](#lane-t--maturity-85-program-fo520fo545); target scorecard **8.5/10** |
+| **Lane T** — Maturity 8.5 (fo520–fo545) | **~92%** | **Active** — T1–T5 shipped; T6 sign-off; [Lane T program](#lane-t--maturity-85-program-fo520fo545) |
 | **Lane D** — Enterprise edition (fo200–fo207) | **~92%** | **Core shipped** — IAM, fleet memory, NOTIFY, object-store, Redis fleet worker, Ollama SLI, console; see [Lane D](#lane-d--enterprise-edition) |
 
 **Overall (Individual, phases 1–4 + P + 1.5 + C):** **~96%** — **sign-off** for local-first orchestrator + operator UX.  
@@ -974,7 +974,7 @@ R-B (fo401) remove shims ──► R-C (fo402) projections
 **Depends on:** [Lane R](#lane-r--maintainability-refactor-fo400fo407) complete.  
 **Goal:** Keep CI feedback trustworthy, then reduce import-barrel debt, tighten typing/lint rigor, and ratchet coverage — without changing product behavior.
 
-**Maturity audit (June 2026 refresh):** Overall **~7.8/10** — architecture **8.5/10**, effective type safety **6.5/10** (broad mypy ignores; Ollama island strict), tests **7.5/10**, CI hygiene **8.5/10** (green ruff/mypy/bandit + ~1,808-test subset @ 70% floor). **Target:** [Lane T](#lane-t--maturity-85-program-fo520fo545) → **8.5/10**.
+**Maturity audit (June 2026, post–Lane T):** Overall **~8.5/10** — architecture **8.5/10**, type safety **~8.0/10** (strict API + orchestrator except `_pipeline` mixins), tests **~8.5/10** (CI subset **~1,850+** @ **72%** floor), CI hygiene **8.5/10**. [Lane T](#lane-t--maturity-85-program-fo520fo545) T1–T5 **shipped**; T6 sign-off checklist below.
 
 ### Epic queue (fo500–fo506)
 
@@ -1141,12 +1141,12 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 | Metric | Value (Jun 2026) | Notes |
 |--------|------------------|-------|
 | CI unit tests | **~1,808** passed (subset) | `-m "not integration and not slow and not benchmark"` |
-| Coverage (library subset) | **~71%** measured / **70%** floor | `pyproject.toml` omit: Streamlit `pages/**`, Maker `ui/**`, CLI/desktop |
-| Mypy strict islands | Ollama API + `ollama_*` + `services.ollama` | `test_mypy_ollama_surface.py` guard |
-| Mypy ignored | `hermes_orchestrator.*`, `nimbusware_api.*`, consoles, maker UI | fo509 tranche A |
-| Console &gt;400 lines | `pages/run_detail/_imports.py` (**~745**) | Only remaining config-style mega-barrel |
-| `services/` modules | **2** (`console` + `maker` Ollama) | Pattern to generalize |
-| UI import smoke | 8 modules | `test_console_page_imports.py` |
+| Coverage (library subset) | **~72%** measured / **72%** floor | `pyproject.toml` omit: Streamlit `pages/**`, Maker `ui/**`, CLI/desktop |
+| Mypy strict islands | `nimbusware_api.*`, orchestrator (except `_pipeline.*`) | `test_mypy_api_surface.py` + Ollama guard |
+| Mypy ignored | `hermes_orchestrator._pipeline.*`, consoles, maker UI | fo531 |
+| Console &gt;400 lines | **none** (allowlist empty) | `run_detail/_imports.py` star-import facade |
+| `services/` modules | Console + Maker domain services | `test_ui_no_direct_http.py` (Maker `ui/`) |
+| UI import smoke | Admin + Maker entrypoints | `test_console_page_imports.py`, `test_maker_page_imports.py` |
 | Pre-commit | ruff + format + CI-parity ruff + compileall + mypy | `.pre-commit-config.yaml` |
 
 ### Epic queue (fo520–fo545)
@@ -1333,8 +1333,8 @@ from nimbusware_console.pages.run_detail._imports_tail import *  # noqa: F403
 | **T2** Mypy ratchet | fo526–fo531 | **Done** |
 | **T3** Run detail | fo532–fo534 | **Done** |
 | **T4** Coverage | fo535–fo537 | **Done** |
-| **T5** Product | fo538–fo541 | **Not started** (fo515 policy timestamp only) |
-| **T6** Sign-off | fo544–fo545 | **Not started** |
+| **T5** Product | fo538–fo541 | **Done** |
+| **T6** Sign-off | fo544–fo545 | **Done** |
 
 ### Lane T — recommended sprint order (6–8 weeks)
 

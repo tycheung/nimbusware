@@ -7,6 +7,7 @@ class OllamaUserPolicyBody(BaseModel):
     allow_pull: bool = False
     allow_delete: bool = False
     allow_update_routing: bool = False
+    updated_at: str | None = None
 
 
 class OllamaModelEntry(BaseModel):
@@ -33,6 +34,16 @@ class OllamaPullRequest(BaseModel):
 class OllamaPullResponse(BaseModel):
     model: str
     status: str = "pulled"
+    job_id: str | None = None
+
+
+class OllamaPullJobStatusResponse(BaseModel):
+    job_id: str
+    model: str
+    status: str
+    error: str | None = None
+    created_at: str | None = None
+    finished_at: str | None = None
 
 
 class OllamaDeleteResponse(BaseModel):
