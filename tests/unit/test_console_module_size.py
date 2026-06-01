@@ -4,11 +4,7 @@ from pathlib import Path
 
 _CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
 
-_ALLOWLIST_OVER_400: frozenset[str] = frozenset(
-    {
-        "pages/run_detail/_imports.py",
-    }
-)
+_ALLOWLIST_OVER_400: frozenset[str] = frozenset()
 
 
 def _line_count(path: Path) -> int:
