@@ -7,8 +7,6 @@ _CONSOLE_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_c
 _ALLOWLIST_OVER_400: frozenset[str] = frozenset(
     {
         "pages/run_detail/_imports.py",
-        "pages/config_tooling/workflows/_shared.py",
-        "pages/config_tooling/bundles/_shared.py",
     }
 )
 

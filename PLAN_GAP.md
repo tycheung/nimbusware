@@ -1104,7 +1104,7 @@ S0 (fo500) green CI ──► S1 (fo501) import hygiene
 |-------|------|-------|--------|
 | **A** | fo511 | UI safety net — pre-commit CI ruff parity, page import smoke, Ollama service layers | **Complete** |
 | **B** | fo512 | Mypy ratchet — strict check on Ollama API + orchestrator helpers | **Complete** |
-| **C** | fo513 | Console `_shared` barrels — star-import facades under 400 lines | *Pending* |
+| **C** | fo513 | Console `_shared` barrels — star-import facades under 400 lines | **Complete** |
 | **D** | fo514 | Coverage honesty — 72% CI floor; services in denominator | *Pending* |
 | **E** | fo515 | Ollama hardening — policy audit stamp, mock-runtime API test | *Pending* |
 
