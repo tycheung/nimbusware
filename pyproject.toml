@@ -194,22 +194,23 @@ packages = [
 ]
 mypy_path = "packages"
 
-# fo509 tranche A: strict-check smaller packages; keep ignore on heavy UI/orchestrator/API slices.
+# fo531: strict-check API + orchestrator except pipeline mixins (Lane T T2).
 [[tool.mypy.overrides]]
-module = [
-  "hermes_orchestrator.*",
-  "nimbusware_api.*",
-]
+module = ["hermes_orchestrator._pipeline.*"]
 ignore_errors = true
 
-# fo512: strict-check Ollama management surface (overrides package-level ignore).
+# fo512 / fo526–fo530: explicit strict islands (documented in test_mypy_*_surface.py).
 [[tool.mypy.overrides]]
 module = [
+  "nimbusware_api.*",
   "nimbusware_api.schemas.ollama",
   "nimbusware_api.routes.ollama",
   "nimbusware_api.errors",
   "hermes_orchestrator.ollama_manage",
   "hermes_orchestrator.ollama_user_policy",
+  "hermes_orchestrator.preflight",
+  "hermes_orchestrator.merge",
+  "hermes_orchestrator.workflow_profiles",
   "nimbusware_console.services.ollama",
   "nimbusware_maker.services.ollama",
 ]
