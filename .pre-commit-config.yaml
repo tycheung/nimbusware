@@ -12,9 +12,23 @@ repos:
     hooks:
       - id: ruff
         args: [--fix]
+        files: ^(packages|tests)/
       - id: ruff-format
+        files: ^(packages|tests)/
   - repo: local
     hooks:
+      - id: ci-ruff-parity
+        name: ruff check (CI parity, no fix)
+        entry: poetry run ruff check packages tests
+        language: system
+        pass_filenames: false
+        files: ^(packages|tests)/
+      - id: python-compileall
+        name: compileall packages
+        entry: poetry run python -m compileall -q packages
+        language: system
+        pass_filenames: false
+        files: ^packages/.*\.py$
       - id: mypy-packages
         name: mypy (packages)
         entry: poetry run mypy packages

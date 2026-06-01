@@ -2,42 +2,10 @@
 
 from __future__ import annotations
 
-from urllib.parse import quote
-
 import streamlit as st
 
-from nimbusware_client.http import (
-    admin_headers,
-    delete_response,
-    get_json,
-    patch_response,
-    post_json,
-    user_headers,
-)
 from nimbusware_console.pages.config_tooling.ollama_models._format import format_size
-
-
-def _load_models(*, query: str) -> dict:
-    path = "/platform/ollama/models"
-    if query.strip():
-        path = f"{path}?q={quote(query.strip())}"
-    return get_json(path)
-
-
-def _save_user_policy(*, allow_pull: bool, allow_delete: bool, allow_update_routing: bool) -> dict:
-    payload = {
-        "allow_pull": allow_pull,
-        "allow_delete": allow_delete,
-        "allow_update_routing": allow_update_routing,
-    }
-    resp = patch_response(
-        "/admin/ollama/user-policy",
-        payload,
-        headers={**user_headers(), **admin_headers()},
-        timeout=30.0,
-    )
-    body = resp.json()
-    return body if isinstance(body, dict) else payload
+from nimbusware_console.services import ollama as ollama_svc
 
 
 def render_ollama_models_section() -> None:
@@ -57,7 +25,7 @@ def render_ollama_models_section() -> None:
     )
 
     try:
-        data = _load_models(query=query)
+        data = ollama_svc.list_models(query=query)
     except Exception as exc:  # noqa: BLE001
         st.error(f"Could not load Ollama models: {exc}")
         return
@@ -98,7 +66,7 @@ def render_ollama_models_section() -> None:
             )
         if st.button("Save user policy", key="ollama_save_user_policy"):
             try:
-                saved = _save_user_policy(
+                saved = ollama_svc.save_user_policy(
                     allow_pull=allow_pull,
                     allow_delete=allow_delete,
                     allow_update_routing=allow_routing,
@@ -120,12 +88,7 @@ def render_ollama_models_section() -> None:
     )
     if st.button("Pull model", key="ollama_admin_pull_btn") and pull_name.strip():
         try:
-            post_json(
-                "/admin/ollama/pull",
-                {"model": pull_name.strip()},
-                headers={**user_headers(), **admin_headers()},
-                timeout=600.0,
-            )
+            ollama_svc.admin_pull_model(pull_name.strip())
             st.success(f"Pulled {pull_name.strip()}")
             st.rerun()
         except Exception as exc:  # noqa: BLE001
@@ -154,11 +117,7 @@ def render_ollama_models_section() -> None:
             st.caption(f"Size: {size}" + (f" · modified {modified}" if modified else ""))
             if st.button(f"Delete {name}", key=f"ollama_del_{name}"):
                 try:
-                    delete_response(
-                        f"/admin/ollama/models/{quote(name, safe='')}",
-                        headers={**user_headers(), **admin_headers()},
-                        timeout=120.0,
-                    )
+                    ollama_svc.admin_delete_model(name)
                     st.success(f"Deleted {name}")
                     st.rerun()
                 except Exception as exc:  # noqa: BLE001
