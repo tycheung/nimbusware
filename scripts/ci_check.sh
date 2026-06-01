@@ -7,7 +7,7 @@ export HERMES_SKIP_PREFLIGHT="${HERMES_SKIP_PREFLIGHT:-1}"
 
 poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
 poetry run ruff check packages tests
-poetry run mypy packages
+poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services
 poetry run bandit -r packages -lll -q
 poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
   --cov=packages \

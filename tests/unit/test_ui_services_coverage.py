@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
+from nimbusware_console import enterprise_console as ent_ui
 from nimbusware_console.services import config_editors as cfg_svc
 from nimbusware_console.services import custom_agents as agents_svc
 from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_console.services import operator_chat as chat_svc
 from nimbusware_maker.services import platform as platform_svc
 from nimbusware_maker.services import projects as projects_svc
-from nimbusware_console import enterprise_console as ent_ui
 
 
 def test_operator_chat_create_run() -> None:
@@ -31,11 +31,14 @@ def test_config_editors_bundle_and_persona() -> None:
         get_json.return_value = {"bundles": []}
         assert cfg_svc.load_bundle_catalog() == {"bundles": []}
         get_json.assert_called_with("/bundles/catalog", timeout=10.0)
+        get_json.return_value = {"personas": []}
+        assert cfg_svc.load_persona_shelves() == {"personas": []}
 
     with patch("nimbusware_console.services.config_editors.patch_response") as patch_resp:
         patch_resp.return_value = MagicMock(json=lambda: {"ok": True})
         out = cfg_svc.patch_bundle("b1", {"name": "x"}, "tok")
         assert out == {"ok": True}
+        cfg_svc.patch_persona("p1", {"name": "y"}, "tok")
 
     with patch("nimbusware_console.services.config_editors.delete_response") as delete:
         cfg_svc.delete_persona("p1", "tok")
@@ -67,6 +70,22 @@ def test_enterprise_fetch_with_api_key() -> None:
         enterprise_svc.fetch_tenants(api_key="secret")
     headers = get_json.call_args.kwargs.get("headers") or get_json.call_args[1].get("headers")
     assert headers is not None
+
+    with patch("nimbusware_console.services.enterprise.get_json") as get_json:
+        get_json.return_value = {"edition": "enterprise"}
+        assert enterprise_svc.fetch_platform_edition()["edition"] == "enterprise"
+
+    with patch("nimbusware_console.services.enterprise.get_json") as get_json:
+        get_json.return_value = {"tenant_id": "t1"}
+        enterprise_svc.fetch_fleet_memory_status(api_key="k")
+        enterprise_svc.fetch_fleet_preflight_aggregate(api_key="k", limit=3)
+        enterprise_svc.fetch_fleet_worker_health(api_key="k")
+    assert get_json.call_count == 3
+
+
+def test_enterprise_build_headers_empty() -> None:
+    assert enterprise_svc.build_enterprise_headers(None) == {}
+    assert enterprise_svc.build_enterprise_headers("  ") == {}
 
 
 def test_enterprise_console_pure_helpers() -> None:
@@ -102,3 +121,41 @@ def test_maker_platform_and_projects() -> None:
         post_json.return_value = {"project_id": "p1"}
         out = projects_svc.create_project({"name": "App"})
         assert out["project_id"] == "p1"
+
+
+def test_console_runs_service() -> None:
+    from nimbusware_console.services import runs as runs_svc
+
+    with patch("nimbusware_console.services.runs.get_json") as get_json:
+        get_json.return_value = {"run_id": "r1"}
+        assert runs_svc.fetch_run("r1")["run_id"] == "r1"
+        runs_svc.fetch_timeline("r1")
+        runs_svc.fetch_findings("r1")
+    with patch("nimbusware_console.services.runs.get_response") as get_resp:
+        get_resp.return_value = MagicMock(status_code=200)
+        runs_svc.fetch_runs_list(params={"limit": 5})
+    assert get_resp.call_args.kwargs["params"] == {"limit": 5}
+    with patch("nimbusware_console.services.runs.post_json") as post_json:
+        post_json.return_value = {"ok": True}
+        runs_svc.post_retry("r1")
+        runs_svc.post_escalate("r1", {"reason": "stuck"})
+    assert post_json.call_count == 2
+
+
+def test_maker_runs_service() -> None:
+    from nimbusware_maker.services import runs as maker_runs_svc
+
+    with patch("nimbusware_maker.services.runs.post_json") as post_json:
+        post_json.return_value = {"run_id": "r2"}
+        assert maker_runs_svc.create_run({"workflow_profile": "micro_slice"})["run_id"] == "r2"
+        maker_runs_svc.approve_plan("r2")
+        maker_runs_svc.prepare_slice("r2")
+        maker_runs_svc.apply_slice("r2", {"slice_id": "s1"})
+        maker_runs_svc.skip_slice("r2", {"slice_id": "s1"})
+        maker_runs_svc.revert_workspace("r2")
+    assert post_json.call_count == 6
+    with patch("nimbusware_maker.services.runs.get_json") as get_json:
+        get_json.return_value = {"pending": True}
+        assert maker_runs_svc.fetch_pending("r2")["pending"] is True
+        get_json.return_value = {"progress": 1}
+        maker_runs_svc.fetch_maker_progress("r2", simple=False)

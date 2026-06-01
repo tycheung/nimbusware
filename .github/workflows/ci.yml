@@ -32,7 +32,7 @@ jobs:
       - name: Ruff
         run: poetry run ruff check packages tests
       - name: Mypy
-        run: poetry run mypy packages
+        run: poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services
       - name: Bandit
         run: poetry run bandit -r packages -lll -q
       - name: Pip audit

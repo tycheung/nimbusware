@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from hermes_orchestrator.ollama_chat import OllamaLlmJson, extract_ollama_usage, ollama_chat_json
-from hermes_orchestrator.security_semgrep import run_semgrep_scan, semgrep_enabled
-from nimbusware_config.listener import config_notify_listener_enabled, listener_status, start_config_notify_listener
+from hermes_orchestrator.security_semgrep import run_semgrep_scan
+from nimbusware_config.listener import (
+    config_notify_listener_enabled,
+    listener_status,
+    start_config_notify_listener,
+)
 from nimbusware_config.notify import ConfigNotifyHub, encode_notify_payload
 
 

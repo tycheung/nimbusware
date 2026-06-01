@@ -221,6 +221,16 @@ ignore_errors = false
 module = ["nimbusware_console.*", "nimbusware_maker.*"]
 ignore_errors = true
 
+# fo610 (Lane V1): strict services plane — must follow blanket UI ignore above.
+[[tool.mypy.overrides]]
+module = [
+  "nimbusware_console.services",
+  "nimbusware_console.services.*",
+  "nimbusware_maker.services",
+  "nimbusware_maker.services.*",
+]
+ignore_errors = false
+
 # fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in nimbusware_env.
 [[tool.mypy.overrides]]
 module = [

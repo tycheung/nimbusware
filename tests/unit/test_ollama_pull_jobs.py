@@ -3,7 +3,11 @@ from __future__ import annotations
 import time
 from unittest.mock import patch
 
-from hermes_orchestrator.ollama_pull_jobs import get_pull_job, reset_pull_jobs_for_tests, start_pull_job
+from hermes_orchestrator.ollama_pull_jobs import (
+    get_pull_job,
+    reset_pull_jobs_for_tests,
+    start_pull_job,
+)
 
 
 def test_start_pull_job_completes_successfully() -> None:

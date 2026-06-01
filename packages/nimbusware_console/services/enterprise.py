@@ -86,7 +86,7 @@ def is_enterprise_edition_manifest(manifest: Mapping[str, Any] | None) -> bool:
 
 
 def enterprise_console_feature_enabled(manifest: Mapping[str, Any] | None) -> bool:
-    if not is_enterprise_edition_manifest(manifest):
+    if manifest is None or not is_enterprise_edition_manifest(manifest):
         return False
     features = manifest.get("features")
     if not isinstance(features, Mapping):
