@@ -9,7 +9,6 @@ _ALLOWLIST_OVER_400: frozenset[str] = frozenset(
         "pages/run_detail/_imports.py",
         "pages/config_tooling/workflows/_shared.py",
         "pages/config_tooling/bundles/_shared.py",
-        "pages/config_tooling/workflows/integrator/apply_full_profile.py",
     }
 )
 

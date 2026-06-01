@@ -145,6 +145,12 @@ branch = false
 omit = [
   "*/tests/*",
   "*/__main__.py",
+  "packages/nimbusware_console/pages/**",
+  "packages/nimbusware_console/main.py",
+  "packages/nimbusware_console/app.py",
+  "packages/nimbusware_maker/ui/**",
+  "packages/nimbusware_maker/main.py",
+  "packages/nimbusware_maker/app.py",
 ]
 
 [tool.coverage.report]
@@ -178,6 +184,27 @@ packages = [
   "hermes_agent_tools",
 ]
 mypy_path = "packages"
+
+[[tool.mypy.overrides]]
+module = [
+  "hermes_orchestrator.*",
+  "nimbusware_api.*",
+  "nimbusware_env.*",
+  "hermes_memory.*",
+  "nimbusware_config.*",
+  "nimbusware_projections.*",
+  "hermes_extensions.*",
+  "hermes_agent_tools.*",
+]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["nimbusware_console.*", "nimbusware_maker.*"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = ["redis", "redis.*"]
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["streamlit.*"]

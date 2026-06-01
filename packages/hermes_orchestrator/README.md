@@ -27,8 +27,17 @@ Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `p
 
 Orchestrator tests live under `tests/orchestrator/` and `tests/unit/test_*slice*`, `test_*critique*`.
 
+## Adding a pipeline stage
+
+1. **Mixin module** — Add `packages/hermes_orchestrator/_pipeline/<stage>.py` with a `*Mixin` class. Import symbols from `_helpers` **explicitly** (no star imports), matching existing mixins such as `create_run.py` or `pipeline_scraper.py`.
+2. **Register in `compose.py`** — Import the mixin and append it to `_MIXINS` (order matters for MRO). `build_run_orchestrator_class` rebinds every mixin method through `_bind_function` so calls see `pipeline.py` globals.
+3. **`_helpers` exports** — Shared types, event helpers, and policy parsers live in `_pipeline/_helpers.py`. If a mixin needs a new symbol, add or re-export it there.
+4. **Export guard** — `tests/unit/test_pipeline_helpers_exports.py` asserts required `_helpers` symbols exist and that mixin modules do not star-import `_helpers`.
+
+For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split implementation modules and re-export a single composed mixin class.
+
 ## Refactor notes
 
-- Pipeline mixins intentionally `from _helpers import *` — guarded by `tests/unit/test_pipeline_helpers_exports.py`.
+- **`_bind_function` / global rebinding (current limitation):** `compose.py` temporarily patches each mixin function's `__globals__` to match `pipeline.py` so legacy methods resolve helpers from the facade module. New stage authors must understand this indirection. **fo505** future work: replace rebinding with explicit `PipelineContext` or constructor injection when parity tests allow.
 - After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.

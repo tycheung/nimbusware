@@ -11,11 +11,11 @@ def _persona_slot_public(raw: object) -> dict[str, str] | None:
         pid = raw.strip()
         return {"id": pid} if pid else None
     if isinstance(raw, dict):
-        pid = raw.get("id")
-        if pid is None:
-            pid = raw.get("persona_id")
-        if pid is not None:
-            sid = str(pid).strip()
+        pid_raw: object | None = raw.get("id")
+        if pid_raw is None:
+            pid_raw = raw.get("persona_id")
+        if pid_raw is not None:
+            sid = str(pid_raw).strip()
             if sid:
                 out: dict[str, str] = {"id": sid}
                 dn = raw.get("display_name")

@@ -190,3 +190,22 @@ def delete_response(
 
 def delete(path: str, *, timeout: float = 15.0, headers: dict[str, str] | None = None) -> None:
     delete_response(path, timeout=timeout, headers=headers)
+
+
+__all__ = [
+    "ADMIN_TOKEN_HEADER",
+    "HTTPError",
+    "Response",
+    "admin_headers",
+    "admin_token_headers",
+    "api_base",
+    "delete",
+    "delete_response",
+    "get_json",
+    "get_response",
+    "patch_response",
+    "post_json",
+    "post_response",
+    "problem_message",
+    "user_headers",
+]

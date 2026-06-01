@@ -1,3 +1,4 @@
+# fo501: allowed star-from-barrel — bundles/_shared re-exports workflows/_shared
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
 from nimbusware_console.pages.config_tooling.bundles.catalog_search.rollups_panel import (
     _render_catalog_rollups_panel,
