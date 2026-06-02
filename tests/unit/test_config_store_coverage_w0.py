@@ -1,5 +1,3 @@
-"""Unit tests for nimbusware_config store helpers and Postgres store (mocked)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

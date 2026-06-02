@@ -1,5 +1,3 @@
-"""Unit tests for cross-run preflight trend helpers."""
-
 from __future__ import annotations
 
 import json

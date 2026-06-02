@@ -1,5 +1,3 @@
-"""Postgres + in-memory IAM stores."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -1,6 +1,3 @@
-"""Unit tests for the fo127 PersonaShelf schema extension."""
-
-
 from __future__ import annotations
 
 from pathlib import Path

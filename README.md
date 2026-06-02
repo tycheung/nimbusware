@@ -355,7 +355,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 Layout and CI subsets: [`tests/README.md`](tests/README.md).
 
 ```bash
-# Matches GitHub CI (ruff, mypy, bandit, pytest, 70% coverage on library code):
+# Matches GitHub CI (ruff, mypy, bandit, pip-audit, package coverage floors, pytest, 75% coverage on library code):
 ./scripts/ci_check.ps1   # Windows
 ./scripts/ci_check.sh    # Linux/macOS
 

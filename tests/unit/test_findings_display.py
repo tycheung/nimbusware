@@ -1,5 +1,3 @@
-"""Unit tests for run findings display helpers (§14 #11)."""
-
 from __future__ import annotations
 
 import json

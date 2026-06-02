@@ -1,5 +1,3 @@
-"""Unit tests for run list pagination operator captions (§14 #3)."""
-
 from __future__ import annotations
 
 import json

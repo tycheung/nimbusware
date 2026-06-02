@@ -1,6 +1,3 @@
-"""Unit tests for the fo127 Streamlit persona editor helpers."""
-
-
 from __future__ import annotations
 
 from hermes_extensions.personas import (

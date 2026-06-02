@@ -1,5 +1,3 @@
-"""Unit tests for ``bundle_faiss_index_sync_state``."""
-
 from __future__ import annotations
 
 import time

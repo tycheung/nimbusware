@@ -1,5 +1,3 @@
-"""Postgres LISTEN worker for config freshness."""
-
 from __future__ import annotations
 
 import logging

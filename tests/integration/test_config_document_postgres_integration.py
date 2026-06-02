@@ -1,5 +1,3 @@
-"""Postgres config document upsert (Lane W3 fo732)."""
-
 from __future__ import annotations
 
 import os

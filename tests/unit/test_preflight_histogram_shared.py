@@ -1,6 +1,3 @@
-"""Tests for the shared `hermes_orchestrator.preflight_histogram` module."""
-
-
 from __future__ import annotations
 
 from hermes_orchestrator import preflight_cli, preflight_histogram

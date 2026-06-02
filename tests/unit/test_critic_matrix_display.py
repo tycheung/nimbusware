@@ -1,5 +1,3 @@
-"""Unit tests for critic matrix display helpers (§14 #11)."""
-
 from __future__ import annotations
 
 import json

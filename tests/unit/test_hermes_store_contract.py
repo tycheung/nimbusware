@@ -1,5 +1,3 @@
-"""Unit tests for hermes_store protocol helpers and allowed_types (no Postgres)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

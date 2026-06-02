@@ -1,5 +1,3 @@
-"""Unit tests for self-refinement workflow explainer."""
-
 from __future__ import annotations
 
 import json

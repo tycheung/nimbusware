@@ -1,5 +1,3 @@
-"""Unit tests for hermes_store InMemoryEventStore (no Postgres)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone

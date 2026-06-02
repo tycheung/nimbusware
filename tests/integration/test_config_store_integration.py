@@ -1,5 +1,3 @@
-"""Postgres config document integration (requires ``NIMBUSWARE_DATABASE_URL``)."""
-
 from __future__ import annotations
 
 import os

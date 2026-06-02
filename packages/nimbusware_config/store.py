@@ -1,5 +1,3 @@
-"""Postgres and in-memory configuration stores."""
-
 from __future__ import annotations
 
 import hashlib

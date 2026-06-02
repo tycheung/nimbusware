@@ -1,5 +1,3 @@
-"""Focused smoke tests to ratchet CI coverage toward 70% (fo510)."""
-
 from __future__ import annotations
 
 from pathlib import Path

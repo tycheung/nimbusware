@@ -61,7 +61,7 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 
 ## Refactor playbook
 
-See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo407) for the refactor program. **Lane T (fo520–fo545)** shipped: UI `services/` plane, mypy ratchet (API strict, `_pipeline` mixins ignored), `run_detail/_imports` star facade, **72%** CI coverage floor, async Ollama pull jobs. Day-to-day workflow:
+See [PLAN_GAP.md § Lane W](PLAN_GAP.md#lane-w--sustainability-fo701fo750) for the sustainability program. **Lane T (fo520–fo545)** shipped: UI `services/` plane, mypy ratchet (API strict, `_pipeline` mixins ignored), `run_detail/_imports` star facade, **75%** CI coverage floor, async Ollama pull jobs. Day-to-day workflow:
 
 | Step | Command / guard |
 |------|-----------------|
