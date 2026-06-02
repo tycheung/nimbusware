@@ -78,3 +78,11 @@ memory:
   retrieval_k: 5
   excerpt_max_chars: 2000
   embedding_mode: deterministic
+
+research:
+  enabled: false
+  domain_enabled: true
+  code_enabled: true
+
+stitch:
+  enabled: false

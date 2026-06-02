@@ -19,7 +19,25 @@ from agent_core.models import (
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.llm.common import *  # noqa: F403
 from hermes_orchestrator.registry import RoleRegistry
+from hermes_research.planner_context import planner_research_context_from_events
 from hermes_store.protocol import EventStore
+
+
+def _plan_stage_user_prompt(store: EventStore, run_id: UUID) -> str:
+    base = "Evaluate the plan stage for a generic software delivery plan."
+    rows = store.list_run_events(str(run_id))
+    research_ctx = planner_research_context_from_events(rows)
+    if not research_ctx.strip():
+        return base
+    return f"{research_ctx.strip()}\n\n{base}"
+
+
+def _plan_evidence_refs(store: EventStore, run_id: UUID, *, prefix: str) -> list[str]:
+    refs = [prefix]
+    rows = store.list_run_events(str(run_id))
+    if planner_research_context_from_events(rows).strip():
+        refs.append("research://briefs-merged")
+    return refs
 
 
 def _ollama_chat_json(*args: object, **kwargs: object) -> object:
@@ -48,6 +66,7 @@ def emit_stub_plan_stage(
         ),
     )
     critic_payloads: list[CriticVerdictEmittedPayload] = []
+    evidence_refs = _plan_evidence_refs(store, run_id, prefix="stub://mvp")
     for critic_role in critic_roles:
         payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
@@ -55,7 +74,7 @@ def emit_stub_plan_stage(
             severity=Severity.LOW,
             owner_role=planner,
             is_in_domain=True,
-            evidence_refs=["stub://mvp"],
+            evidence_refs=evidence_refs,
         )
         store.append(
             CriticVerdictEmittedEvent(
@@ -159,7 +178,7 @@ def execute_plan_stage_llm(
         "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
         "validation_steps, acceptance_criteria. Prefer PASS for a generic plan."
     )
-    user = "Evaluate the plan stage for a generic software delivery plan."
+    user = _plan_stage_user_prompt(store, run_id)
     try:
         data = _ollama_chat_json(
             base_url=base_url,
@@ -198,6 +217,14 @@ def execute_plan_stage_llm(
         verdict = _parse_verdict(c.verdict)
         severity = _parse_severity(c.severity)
         evidence_refs = list(c.evidence_refs) if c.evidence_refs else []
+        if not evidence_refs:
+            evidence_refs = _plan_evidence_refs(store, run_id, prefix="llm://plan")
+        elif not any(r.startswith("research://") for r in evidence_refs):
+            evidence_refs = _plan_evidence_refs(
+                store,
+                run_id,
+                prefix=evidence_refs[0],
+            )
         fixes = _fixes_from_llm(c.required_fixes)
         payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
@@ -205,7 +232,7 @@ def execute_plan_stage_llm(
             severity=severity,
             owner_role=planner,
             is_in_domain=c.is_in_domain,
-            evidence_refs=evidence_refs or ["llm://plan"],
+            evidence_refs=evidence_refs,
             required_fixes=fixes,
         )
         critic_payloads.append(payload)

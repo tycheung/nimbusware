@@ -42,6 +42,19 @@ integrator_gate:
 # Optional ``self_refinement:policy`` marker after verify when repo policy or this block enables.
 self_refinement:
   enabled: false
+# P1 research (fo510–515): emit briefs before plan when enabled or ``HERMES_RESEARCH=1``.
+research:
+  enabled: false
+  domain_enabled: true
+  code_enabled: true
+  max_brief_sources: 20
+  pattern_index_contribution: true
+# P1 stitch (fo520+): frozen on run.created; stages land in later epics.
+stitch:
+  enabled: false
+  max_files: 40
+  max_loc: 2500
+  max_new_dependencies: 10
 # Post-verify critique panels (§14 #16). Env ``HERMES_*`` overrides each flag when non-empty.
 # Optional ``default_enabled: true`` turns on panels whose per-stage ``enabled`` is omitted.
 universal_critique:

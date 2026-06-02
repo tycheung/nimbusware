@@ -195,6 +195,7 @@ from hermes_orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )
+from hermes_orchestrator.workflow_research import parse_research_workflow_block
 from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from hermes_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,

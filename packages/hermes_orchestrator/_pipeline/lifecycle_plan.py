@@ -18,6 +18,7 @@ class LifecyclePlanMixin:
         )
 
     def execute_plan_stage(self, run_id: UUID) -> None:
+        self._maybe_emit_research_stages(run_id)
         if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
             base = self._base_cfg()
             runtime = base.get("runtime") or {}

@@ -12,6 +12,7 @@ from hermes_orchestrator._pipeline.lifecycle import LifecycleMixin
 from hermes_orchestrator._pipeline.micro_slice import MicroSliceMixin
 from hermes_orchestrator._pipeline.optional_critique import OptionalCritiqueMixin
 from hermes_orchestrator._pipeline.optional_stages import OptionalStagesMixin
+from hermes_orchestrator._pipeline.optional_stages_research import ResearchOptionalStagesMixin
 from hermes_orchestrator._pipeline.pipeline_scraper import PipelineScraperMixin
 from hermes_orchestrator._pipeline.writers import WritersMixin
 
@@ -25,6 +26,7 @@ _MIXINS = (
     OptionalCritiqueMixin,
     EscalationMixin,
     OptionalStagesMixin,
+    ResearchOptionalStagesMixin,
     RunOrchestratorBase,
 )
 
@@ -83,6 +85,7 @@ class RunOrchestrator(
     OptionalCritiqueMixin,
     EscalationMixin,
     OptionalStagesMixin,
+    ResearchOptionalStagesMixin,
     RunOrchestratorBase,
 ):
     """MVP run lifecycle: create → preflight → plan stage → writer loop."""
