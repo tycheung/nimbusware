@@ -444,3 +444,32 @@ class MemoryRetrievalEmittedPayload(BasePayload):
     retrieval_k: int = Field(ge=0, le=20)
     repo_scope_hash: str = Field(min_length=8, max_length=64)
     generation_id: str | None = Field(default=None, max_length=64)
+
+
+class ResearchBriefSourcePayload(BasePayload):
+    url: str = Field(min_length=1, max_length=2048)
+    license: str = Field(min_length=1, max_length=64)
+    trust_tier: Literal["high", "medium", "low"] = "medium"
+
+
+class ResearchBriefEmittedPayload(BasePayload):
+    brief_kind: Literal["domain", "code"]
+    domain_tag: str = Field(min_length=1, max_length=120)
+    summary: str = Field(min_length=1, max_length=8000)
+    artifact_id: str = Field(min_length=1, max_length=128)
+    sources: list[ResearchBriefSourcePayload] = Field(default_factory=list, max_length=20)
+
+
+class ResearchPatternIndexedPayload(BasePayload):
+    pattern_id: str = Field(min_length=1, max_length=128)
+    repo_url: str = Field(min_length=1, max_length=2048)
+    paths: list[str] = Field(default_factory=list, max_length=40)
+    license: str = Field(min_length=1, max_length=64)
+    embedding_ref: str = Field(min_length=1, max_length=128)
+
+
+class DomainCriticProposedPayload(BasePayload):
+    critic_template: str = Field(min_length=1, max_length=256)
+    allowed_domains: list[str] = Field(default_factory=list, max_length=16)
+    blocking_authority: Literal["ADVISORY", "BLOCKING"] = "ADVISORY"
+    evidence_refs: list[str] = Field(default_factory=list, max_length=16)

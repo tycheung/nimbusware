@@ -88,7 +88,10 @@ CREATE TABLE IF NOT EXISTS event_store (
     'persona.shelf.updated',
     'self_refinement.loop.signalled',
     'memory.indexed',
-    'memory.retrieval.emitted'
+    'memory.retrieval.emitted',
+    'research.brief.emitted',
+    'research.pattern.indexed',
+    'domain.critic.proposed'
   ))
 );
 
@@ -167,7 +170,10 @@ INSERT INTO hermes_roles_registry (taxonomy_key, role_id, display_name) VALUES
   ('product_reference_critic', '22222222-2222-4222-8222-222222222202'::uuid, 'Product Reference Critic'),
   ('domain_critic', '33333333-3333-4333-8333-333333333303'::uuid, 'Domain Critic'),
   ('backend_writer', '44444444-4444-4444-8444-444444444404'::uuid, 'Backend Writer'),
-  ('test_writer', '55555555-5555-4555-8555-555555555505'::uuid, 'Test Writer')
+  ('test_writer', '55555555-5555-4555-8555-555555555505'::uuid, 'Test Writer'),
+  ('domain_researcher', '12121212-1212-4212-8212-121212121201'::uuid, 'Domain Researcher'),
+  ('code_researcher', '13131313-1313-4313-8313-131313131301'::uuid, 'Code Researcher'),
+  ('stitcher', '14141414-1414-4414-8414-141414141401'::uuid, 'Stitcher')
 ON CONFLICT (taxonomy_key) DO NOTHING;
 
 -- =============================================================================

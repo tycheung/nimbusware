@@ -11,6 +11,7 @@ from agent_core.models.events_payloads import (
     DEFAULT_FINDING_FIX_STRICTNESS,
     FINDING_FIX_STRICTNESS_CONTEXT_KEY,
     CriticVerdictEmittedPayload,
+    DomainCriticProposedPayload,
     FindingClosedPayload,
     FindingCreatedPayload,
     FindingRoutedPayload,
@@ -24,6 +25,8 @@ from agent_core.models.events_payloads import (
     ModelSelectedFallbackPayload,
     ModelSelectedPrimaryPayload,
     PersonaShelfUpdatedPayload,
+    ResearchBriefEmittedPayload,
+    ResearchPatternIndexedPayload,
     RunCompletedPayload,
     RunCreatedPayload,
     RunEscalatedPayload,
@@ -190,6 +193,21 @@ class MemoryRetrievalEmittedEvent(BaseHermesEvent):
     payload: MemoryRetrievalEmittedPayload
 
 
+class ResearchBriefEmittedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.RESEARCH_BRIEF_EMITTED]
+    payload: ResearchBriefEmittedPayload
+
+
+class ResearchPatternIndexedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.RESEARCH_PATTERN_INDEXED]
+    payload: ResearchPatternIndexedPayload
+
+
+class DomainCriticProposedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.DOMAIN_CRITIC_PROPOSED]
+    payload: DomainCriticProposedPayload
+
+
 HermesEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -215,6 +233,9 @@ HermesEventUnion: TypeAlias = (
     | SelfRefinementLoopSignalledEvent
     | MemoryIndexedEvent
     | MemoryRetrievalEmittedEvent
+    | ResearchBriefEmittedEvent
+    | ResearchPatternIndexedEvent
+    | DomainCriticProposedEvent
 )
 
 HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]

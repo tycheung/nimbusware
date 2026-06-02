@@ -52,3 +52,12 @@ roles:
   - taxonomy_key: code_quality_critic
     role_id: "20202020-2020-4202-8202-202020202002"
     display_name: Code Quality Critic
+  - taxonomy_key: domain_researcher
+    role_id: "12121212-1212-4212-8212-121212121201"
+    display_name: Domain Researcher
+  - taxonomy_key: code_researcher
+    role_id: "13131313-1313-4313-8313-131313131301"
+    display_name: Code Researcher
+  - taxonomy_key: stitcher
+    role_id: "14141414-1414-4414-8414-141414141401"
+    display_name: Stitcher

@@ -32,3 +32,15 @@ pairings:
   agent_evaluator:
     - persona_coverage_critic
     - agent_evaluator_critic
+  domain_researcher:
+    - persona_coverage_critic
+    - domain_critic
+    - product_reference_critic
+  code_researcher:
+    - security_critic
+    - domain_critic
+    - product_reference_critic
+  stitcher:
+    - security_critic
+    - refactor_critic
+    - domain_critic

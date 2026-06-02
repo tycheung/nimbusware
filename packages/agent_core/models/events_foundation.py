@@ -82,6 +82,9 @@ class EventType(str, Enum):
     SELF_REFINEMENT_LOOP_SIGNALLED = "self_refinement.loop.signalled"
     MEMORY_INDEXED = "memory.indexed"
     MEMORY_RETRIEVAL_EMITTED = "memory.retrieval.emitted"
+    RESEARCH_BRIEF_EMITTED = "research.brief.emitted"
+    RESEARCH_PATTERN_INDEXED = "research.pattern.indexed"
+    DOMAIN_CRITIC_PROPOSED = "domain.critic.proposed"
 
 
 RoleId: TypeAlias = UUID
