@@ -20,4 +20,4 @@ class OptionalStagesMixin(
     SelfRefinementOptionalStagesMixin,
     IntegratorOptionalStagesMixin,
 ):
-    """Composed optional pipeline stages (fo131–fo140)."""
+    """Composed optional pipeline stages (agent evaluator, self-refinement, scraper)."""

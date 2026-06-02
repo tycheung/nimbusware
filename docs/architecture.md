@@ -11,7 +11,7 @@
 | Orchestration | `hermes_orchestrator` | Run pipeline, critics, gates, dispatch (`runtime_bootstrap` wires API + worker) |
 | Projections | `nimbusware_projections` | Shared timeline/list builders and field metadata |
 | API | `nimbusware_api` | FastAPI `/v1` control plane |
-| Maker | `nimbusware_maker` | Streamlit product UI (projects, builds, review) |
+| Maker | `nimbusware_maker` | Streamlit product UI — `GET/POST/PATCH /projects`, maker progress, slice approval/revert |
 | Admin Console | `nimbusware_console` | Streamlit ops/dev control plane |
 | Config | `nimbusware_config` | Versioned Postgres documents + materializer |
 | Memory | `hermes_memory` | Retrieval index (repo or fleet scope) |

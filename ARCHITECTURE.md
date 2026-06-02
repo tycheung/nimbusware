@@ -51,7 +51,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants + API keys (`maker_user` / `maker_admin`) |
-| `nimbusware_maker` | User product UI (`ui/` Streamlit; `services/` testable HTTP helpers) |
+| `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
 | `nimbusware_console` | Admin Console (config, fleet, deep timeline; `services/` HTTP helpers) |
 | `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
 
