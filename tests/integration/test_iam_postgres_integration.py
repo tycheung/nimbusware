@@ -1,4 +1,4 @@
-"""IAM store against live Postgres (Lane V2 fo621)."""
+"""IAM store against live Postgres."""
 
 from __future__ import annotations
 

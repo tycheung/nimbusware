@@ -1,4 +1,4 @@
-"""Enterprise IAM scope wiring on Postgres (Lane V2 fo621)."""
+"""Enterprise IAM scope wiring on Postgres."""
 
 from __future__ import annotations
 

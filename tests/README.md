@@ -18,6 +18,10 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - Mark slow suites with `@pytest.mark.slow`; integration with `@pytest.mark.integration`.
 - Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `nimbusware_env.admin_token` instead of hardcoding dev token strings.
 
+## Postgres adapter coverage
+
+`packages/hermes_store/postgres.py` is **omitted from the unit-test coverage denominator** (`pyproject.toml` `[tool.coverage.run] omit`). It is exercised only via `@pytest.mark.integration` tests (for example `tests/integration/test_event_store_postgres_integration.py`, config/IAM/projection integration modules). Do not add unit tests that mock Postgres solely to inflate coverage on that module; extend integration tests when changing the adapter.
+
 ## CI subsets
 
 - **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `ruff format --check`, mypy (`scripts/mypy_ci_targets.py`: tranches B–E, UI packages under narrowed ignores, API pilot), bandit (`pyproject.toml` config), `pip-audit`, package coverage floors, pytest @ 75%.

@@ -1,4 +1,4 @@
-"""NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16)."""
+"""``NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Coverage ratchet toward 75% CI floor (Lane W4 fo740)."""
+"""Coverage ratchet toward the CI global floor."""
 
 from __future__ import annotations
 

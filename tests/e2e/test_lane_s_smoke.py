@@ -1,4 +1,4 @@
-"""Lane S smoke: product entry modules import without network I/O."""
+"""Product entry modules import without network I/O."""
 
 from __future__ import annotations
 

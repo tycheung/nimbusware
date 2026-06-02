@@ -1,4 +1,4 @@
-"""Event append + projection read path on Postgres (Lane V2 fo621)."""
+"""Event append and projection read path on Postgres."""
 
 from __future__ import annotations
 
