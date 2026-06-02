@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from nimbusware_maker.onboarding import is_onboarded, mark_onboarded, onboarding_flag_path
+from nimbusware_maker.readiness_smoke import readiness_smoke_ok
 
 
 class _FakeSession:
@@ -28,3 +29,31 @@ def test_mark_onboarded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None
     mark_onboarded(session)
     assert is_onboarded(session)
     assert onboarding_flag_path().is_file()
+
+
+def test_readiness_smoke_ok_accepts_ready_and_degraded() -> None:
+    assert readiness_smoke_ok({"status": "ready"})[0]
+    assert readiness_smoke_ok({"status": "degraded"})[0]
+    ok, msg = readiness_smoke_ok({"status": "not_ready"})
+    assert not ok
+    assert "not ready" in msg.lower()
+
+
+def test_preview_diff_for_plan_lists_targets(tmp_path: Path) -> None:
+    from hermes_orchestrator.micro_slice import SlicePlan
+    from nimbusware_maker.slice_engine import preview_diff_for_plan
+
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    target = "packages/demo/app.py"
+    (ws / "packages/demo").mkdir(parents=True)
+    (ws / "packages/demo/app.py").write_text("print('hi')\n", encoding="utf-8")
+    plan = SlicePlan(
+        slice_id="s1",
+        rationale="demo",
+        target_paths=(target,),
+        acceptance_criteria=("tests pass",),
+    )
+    text = preview_diff_for_plan(ws, plan)
+    assert "Scoped implement" in text or target in text
+    assert "bytes" in text or "demo" in text

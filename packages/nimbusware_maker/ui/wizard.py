@@ -4,6 +4,7 @@ import streamlit as st
 
 from nimbusware_maker.intent import CLARIFYING_QUESTIONS
 from nimbusware_maker.onboarding import SESSION_WIZARD_STEP, is_onboarded, mark_onboarded
+from nimbusware_maker.readiness_smoke import readiness_smoke_ok
 from nimbusware_maker.services import platform as platform_svc
 from nimbusware_maker.services import projects as projects_svc
 from nimbusware_maker.services import runs as runs_svc
@@ -74,8 +75,19 @@ def render_first_run_wizard() -> bool:
                 st.rerun()
         with cols[1]:
             if st.button("Next", type="primary"):
-                st.session_state[SESSION_WIZARD_STEP] = 3
-                st.rerun()
+                try:
+                    readiness = platform_svc.fetch_readiness()
+                except Exception as exc:  # noqa: BLE001
+                    st.error(
+                        f"Cannot reach the API ({exc}). Start it with: poetry run nimbusware-api",
+                    )
+                else:
+                    ok, msg = readiness_smoke_ok(readiness)
+                    if not ok:
+                        st.error(msg)
+                    else:
+                        st.session_state[SESSION_WIZARD_STEP] = 3
+                        st.rerun()
         return True
 
     if step == 3:

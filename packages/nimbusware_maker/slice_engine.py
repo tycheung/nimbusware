@@ -37,6 +37,7 @@ __all__ = [
     "execute_slice_implement",
     "micro_slice_count_for_run",
     "parse_slice_plan",
+    "preview_diff_for_plan",
     "slice_implement_mode",
 ]
 
@@ -104,3 +105,27 @@ def _complete_slice_p3_evidence(
     sec = run_security_scan(workspace)
     perf_code, _perf_log = run_ruff_perf(workspace, timeout_seconds=timeout_seconds)
     return sec[0], perf_code
+
+
+def preview_diff_for_plan(workspace: Path, plan: SlicePlan, *, max_chars: int = 12000) -> str:
+    """Unified diff or scope summary for slice prepare (scoped/stub/agent)."""
+    from nimbusware_maker.slice_preview import preview_note_for_scoped_mode
+
+    stats = _collect_slice_diff_stats(workspace, plan)
+    unified = str(stats.unified_diff or "")
+    if unified.strip():
+        return unified[:max_chars]
+    lines = [preview_note_for_scoped_mode(plan.target_paths)]
+    for rel in plan.target_paths[:20]:
+        norm = str(rel).replace("\\", "/").lstrip("/")
+        fp = workspace / norm
+        if fp.is_file():
+            try:
+                lines.append(f"  {norm} ({fp.stat().st_size} bytes)")
+            except OSError:
+                lines.append(f"  {norm} (unreadable)")
+        else:
+            lines.append(f"  {norm} (not present yet)")
+    if len(plan.target_paths) > 20:
+        lines.append(f"  … and {len(plan.target_paths) - 20} more paths")
+    return "\n".join(lines)[:max_chars]

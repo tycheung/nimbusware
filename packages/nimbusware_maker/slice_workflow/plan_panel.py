@@ -15,9 +15,10 @@ from nimbusware_maker.slice_engine import (
     _execute_slice_implement_llm,
     _plan_one_slice,
     micro_slice_count_for_run,
+    preview_diff_for_plan,
     slice_implement_mode,
 )
-from nimbusware_maker.slice_preview import preview_note_for_scoped_mode, unified_diff_from_edits
+from nimbusware_maker.slice_preview import unified_diff_from_edits
 from nimbusware_maker.slice_workflow._shared import completed_slice_count, emit_maker_stage
 from nimbusware_maker.workspace import resolve_run_workspace
 
@@ -72,7 +73,7 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
         if proposed_edits:
             diff_unified = unified_diff_from_edits(ws, proposed_edits)
     if not diff_unified:
-        diff_unified = preview_note_for_scoped_mode(plan.target_paths)
+        diff_unified = preview_diff_for_plan(ws, plan)
 
     pending_meta = {
         "slice_id": plan.slice_id,
