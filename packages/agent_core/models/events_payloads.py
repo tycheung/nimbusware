@@ -473,3 +473,20 @@ class DomainCriticProposedPayload(BasePayload):
     allowed_domains: list[str] = Field(default_factory=list, max_length=16)
     blocking_authority: Literal["ADVISORY", "BLOCKING"] = "ADVISORY"
     evidence_refs: list[str] = Field(default_factory=list, max_length=16)
+
+
+class StitchPlanEmittedPayload(BasePayload):
+    target_paths: list[str] = Field(default_factory=list, max_length=40)
+    source_manifest_id: str = Field(min_length=1, max_length=128)
+    wiring_delta_summary: str = Field(min_length=1, max_length=4000)
+
+
+class StitchAppliedPayload(BasePayload):
+    snapshot_ref: str = Field(min_length=1, max_length=256)
+    files_added: list[str] = Field(default_factory=list, max_length=40)
+    deps_added: list[str] = Field(default_factory=list, max_length=20)
+
+
+class StitchFailedPayload(BasePayload):
+    reason_code: str = Field(min_length=1, max_length=64)
+    rollback_snapshot_ref: str | None = Field(default=None, max_length=256)

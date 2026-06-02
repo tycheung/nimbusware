@@ -55,6 +55,8 @@ stitch:
   max_files: 40
   max_loc: 2500
   max_new_dependencies: 10
+  license_allowlist: [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause]
+  require_refactor_pass: true
 # Post-verify critique panels (§14 #16). Env ``HERMES_*`` overrides each flag when non-empty.
 # Optional ``default_enabled: true`` turns on panels whose per-stage ``enabled`` is omitted.
 universal_critique:

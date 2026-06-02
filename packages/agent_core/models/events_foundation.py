@@ -85,6 +85,9 @@ class EventType(str, Enum):
     RESEARCH_BRIEF_EMITTED = "research.brief.emitted"
     RESEARCH_PATTERN_INDEXED = "research.pattern.indexed"
     DOMAIN_CRITIC_PROPOSED = "domain.critic.proposed"
+    STITCH_PLAN_EMITTED = "stitch.plan.emitted"
+    STITCH_APPLIED = "stitch.applied"
+    STITCH_FAILED = "stitch.failed"
 
 
 RoleId: TypeAlias = UUID

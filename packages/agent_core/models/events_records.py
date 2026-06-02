@@ -37,6 +37,9 @@ from agent_core.models.events_payloads import (
     StageFailedPayload,
     StagePassedPayload,
     StageStartedPayload,
+    StitchAppliedPayload,
+    StitchFailedPayload,
+    StitchPlanEmittedPayload,
 )
 
 
@@ -208,6 +211,21 @@ class DomainCriticProposedEvent(BaseHermesEvent):
     payload: DomainCriticProposedPayload
 
 
+class StitchPlanEmittedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.STITCH_PLAN_EMITTED]
+    payload: StitchPlanEmittedPayload
+
+
+class StitchAppliedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.STITCH_APPLIED]
+    payload: StitchAppliedPayload
+
+
+class StitchFailedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.STITCH_FAILED]
+    payload: StitchFailedPayload
+
+
 HermesEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -236,6 +254,9 @@ HermesEventUnion: TypeAlias = (
     | ResearchBriefEmittedEvent
     | ResearchPatternIndexedEvent
     | DomainCriticProposedEvent
+    | StitchPlanEmittedEvent
+    | StitchAppliedEvent
+    | StitchFailedEvent
 )
 
 HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]

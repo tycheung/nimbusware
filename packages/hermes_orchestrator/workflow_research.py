@@ -16,12 +16,17 @@ class ResearchWorkflowBlock:
     pattern_index_contribution: bool = True
 
 
+_DEFAULT_LICENSE_ALLOWLIST = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause")
+
+
 @dataclass(frozen=True)
 class StitchWorkflowBlock:
     enabled: bool = False
     max_files: int = 40
     max_loc: int = 2500
     max_new_dependencies: int = 10
+    license_allowlist: tuple[str, ...] = _DEFAULT_LICENSE_ALLOWLIST
+    require_refactor_pass: bool = True
 
 
 def _coerce_bool(value: object, *, default: bool) -> bool:
@@ -68,11 +73,19 @@ def parse_stitch_workflow_block(
     raw = wf.get("stitch")
     if not isinstance(raw, dict):
         return StitchWorkflowBlock()
+    license_raw = raw.get("license_allowlist")
+    licenses: tuple[str, ...] = _DEFAULT_LICENSE_ALLOWLIST
+    if isinstance(license_raw, list):
+        cleaned = [str(x).strip() for x in license_raw if str(x).strip()]
+        if cleaned:
+            licenses = tuple(cleaned)
     return StitchWorkflowBlock(
         enabled=_coerce_bool(raw.get("enabled"), default=False),
         max_files=max(1, int(raw.get("max_files", 40) or 40)),
         max_loc=max(1, int(raw.get("max_loc", 2500) or 2500)),
         max_new_dependencies=max(0, int(raw.get("max_new_dependencies", 10) or 10)),
+        license_allowlist=licenses,
+        require_refactor_pass=_coerce_bool(raw.get("require_refactor_pass"), default=True),
     )
 
 
@@ -92,4 +105,6 @@ def stitch_effective_metadata(block: StitchWorkflowBlock) -> dict[str, Any]:
         "max_files": block.max_files,
         "max_loc": block.max_loc,
         "max_new_dependencies": block.max_new_dependencies,
+        "license_allowlist": list(block.license_allowlist),
+        "require_refactor_pass": block.require_refactor_pass,
     }
