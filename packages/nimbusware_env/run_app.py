@@ -26,6 +26,7 @@ from nimbusware_env.desktop_common import (
 )
 from nimbusware_env.dotenv import load_dotenv
 from nimbusware_env.linux_desktop_deps import ensure_linux_desktop_deps, linux_desktop_manual_hint
+from nimbusware_maker.quick_mode import apply_quick_mode_env
 
 _PROCS: list[subprocess.Popen[object]] = []
 
@@ -134,9 +135,12 @@ def start_servers(
     api_port: int | None = None,
     streamlit_port: int | None = None,
     ui_mode: str | None = None,
+    quick_mode: bool = False,
 ) -> tuple[str, str, dict[str, str]]:
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
+    if quick_mode:
+        apply_quick_mode_env()
 
     require_non_default_admin_token_for_host(api_host)
 
@@ -182,6 +186,7 @@ def run_desktop(
     window_title: str | None = None,
     smoke_test: bool = False,
     ui_mode: str | None = None,
+    quick_mode: bool = False,
 ) -> int:
     repo = (root or repo_root()).resolve()
     mode = _resolve_ui_mode(ui=ui_mode)
@@ -224,6 +229,7 @@ def run_desktop(
             api_port=api_port,
             streamlit_port=streamlit_port,
             ui_mode=mode,
+            quick_mode=quick_mode,
         )
     except (TimeoutError, RuntimeError, FileNotFoundError) as exc:
         _log(f"ERROR: {exc}")
@@ -315,6 +321,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Start API + Streamlit, verify health, exit (no GUI window).",
     )
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="In-memory store + stub critics + quick_local workflow (fo461).",
+    )
     args = parser.parse_args(argv)
     ui_mode = "admin" if (args.console or args.admin) else "maker"
     return run_desktop(
@@ -326,6 +337,7 @@ def main(argv: list[str] | None = None) -> int:
         window_title=args.title,
         smoke_test=args.smoke,
         ui_mode=ui_mode,
+        quick_mode=args.quick,
     )
 
 

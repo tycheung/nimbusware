@@ -1,0 +1,51 @@
+# Solo dev quick mode (fo461): in-memory store, stub critics, tight single-package slice.
+version: 1
+slice:
+  enabled: true
+  max_files: 1
+  max_loc: 80
+  allowed_globs:
+    - "**/*.py"
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: slice.gate
+    depends_on: [slice.test]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+  implementation:
+    stub: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false
+
+self_refinement:
+  enabled: false
+
+memory:
+  retrieval_enabled: false
+  index_contribution: false
+
+research:
+  enabled: false
+
+stitch:
+  enabled: false
+
+preflight:
+  required: false
