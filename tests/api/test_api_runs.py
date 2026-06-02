@@ -6,7 +6,8 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-pytestmark = pytest.mark.slow
+_SLOW = pytest.mark.slow
+
 
 def test_create_run_invalid_idempotency_key_422(client: TestClient) -> None:
     r = client.post(
@@ -432,6 +433,7 @@ def test_list_runs_status_created_excludes_running(client: TestClient) -> None:
     assert rid not in r_terminal.json()["run_ids"]
 
 
+@_SLOW
 def test_actions_retry_records_retry_stage(client: TestClient) -> None:
     rid = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
     r = client.post(f"/v1/runs/{rid}/actions/retry")
@@ -469,6 +471,7 @@ def test_execute_role_requires_admin_token(client: TestClient) -> None:
     assert ok.status_code == 200
 
 
+@_SLOW
 def test_lifecycle_start_and_plan(client: TestClient) -> None:
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
     s = client.post(f"/v1/runs/{run_id}/lifecycle/start")
@@ -488,6 +491,7 @@ def test_create_run_rejects_invalid_stage_graph(client: TestClient) -> None:
     assert r.json().get("code") in ("validation_error", "invalid_request")
 
 
+@_SLOW
 def test_timeline_includes_stage_graph_summary(client: TestClient) -> None:
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
     tl = client.get(f"/v1/runs/{run_id}/timeline").json()
@@ -498,6 +502,7 @@ def test_timeline_includes_stage_graph_summary(client: TestClient) -> None:
     assert "plan" in (sg.get("ordered_stage_names") or [])
 
 
+@_SLOW
 def test_timeline_parallel_writer_groups_after_writer_pass(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -517,6 +522,7 @@ def test_timeline_parallel_writer_groups_after_writer_pass(client: TestClient) -
     assert groups[0].get("dispatch_mode") == "sequential"
 
 
+@_SLOW
 def test_timeline_parallel_dispatch_mode_when_enabled(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -537,6 +543,7 @@ def test_timeline_parallel_dispatch_mode_when_enabled(client: TestClient) -> Non
     assert "frontend_writer" in (groups[0].get("stages") or [])
 
 
+@_SLOW
 def test_timeline_parallel_stage_details_include_test_writer_failure(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -568,6 +575,7 @@ def test_timeline_parallel_stage_details_include_test_writer_failure(client: Tes
     assert tw.get("body_mode") == "subprocess"
 
 
+@_SLOW
 def test_timeline_parallel_stage_details_include_test_writer_body_mode_stub(
     client: TestClient,
 ) -> None:
@@ -601,6 +609,7 @@ def test_timeline_parallel_stage_details_include_test_writer_body_mode_stub(
     assert tw.get("body_mode") == "stub"
 
 
+@_SLOW
 def test_lifecycle_verify_returns_dispatch_queued(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -612,6 +621,7 @@ def test_lifecycle_verify_returns_dispatch_queued(client: TestClient) -> None:
         assert body.get("dispatch") == "queued"
 
 
+@_SLOW
 def test_timeline_agent_evaluator_coverage_gate(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -630,6 +640,7 @@ def test_timeline_agent_evaluator_coverage_gate(client: TestClient) -> None:
     assert ae.get("critique_gate_verdict") == "FAIL"
 
 
+@_SLOW
 def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> None:
     from unittest.mock import patch
 
@@ -649,6 +660,7 @@ def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> Non
     assert live["summary"]["pass_count"] >= 1
 
 
+@_SLOW
 def test_timeline_universal_critique_effective_from_run_created(client: TestClient) -> None:
     run_id = client.post(
         "/v1/runs",

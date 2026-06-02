@@ -23,9 +23,9 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — ruff, mypy (`services/` only), bandit, `pip-audit`, package coverage floors (`scripts/coverage_package_floors.py`), then pytest (fo701).
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=72` (see `.github/workflows/ci.yml`).
 - Coverage omits Streamlit `pages/**`, Maker `ui/**`, desktop launcher modules, `*_cli.py` entrypoints, and `hermes_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
-- Fast API/auth/OpenAPI tests live in `tests/api/` without the blanket `slow` marker; orchestrator-heavy API suites stay `@pytest.mark.slow`.
-- Integration job: `-m integration`.
-- Weekly slow: `-m slow`.
+- **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency in `tests/api/test_api_runs.py` run on every PR (fo730).
+- **Integration job:** `-m integration` (event append, config documents, IAM, projections).
+- **Weekly slow:** `-m slow`.
 
 ## UI coverage policy (Lane V2)
 
