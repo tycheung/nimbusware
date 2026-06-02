@@ -96,7 +96,8 @@ CREATE TABLE IF NOT EXISTS event_store (
     'stitch.dependency.checked',
     'stitch.plan.emitted',
     'stitch.applied',
-    'stitch.failed'
+    'stitch.failed',
+    'hardware.profile.detected'
   ))
 );
 

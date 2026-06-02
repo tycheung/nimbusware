@@ -25,6 +25,7 @@ packages = [
   { include = "nimbusware_maker", from = "packages" },
   { include = "nimbusware_client", from = "packages" },
   { include = "hermes_agent_tools", from = "packages" },
+  { include = "nimbusware_hw", from = "packages" },
 ]
 
 [tool.poetry.dependencies]

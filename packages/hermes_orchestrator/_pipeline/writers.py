@@ -295,6 +295,14 @@ class WritersMixin:
             )
         if not runners:
             return self._run_writers_sequential(run_id, sg_snapshot, workspace=workspace)
+        from hermes_orchestrator.workflow_parallel_writers import (
+            max_parallel_writer_stages_from_governor,
+        )
+        from nimbusware_env.env_flags import env_force_on
+
+        cap = max_parallel_writer_stages_from_governor()
+        if not env_force_on("HERMES_PARALLEL_WRITERS") and cap is not None and len(runners) > cap:
+            runners = runners[:cap]
         results = asyncio.run(run_parallel_writer_group(runners))
         impl = next(
             (r for r in results if r.stage_name == "implementation"),

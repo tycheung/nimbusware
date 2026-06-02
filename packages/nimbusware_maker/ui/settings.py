@@ -4,6 +4,7 @@ import streamlit as st
 
 from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
 from nimbusware_maker.services import platform as platform_svc
+from nimbusware_maker.ui.hardware_settings import render_hardware_settings_panel
 from nimbusware_maker.ui.ollama_models import render_ollama_models_panel
 
 
@@ -30,6 +31,8 @@ def render_settings_panel() -> None:
     if not isinstance(presets, dict):
         return
 
+    st.divider()
+    render_hardware_settings_panel()
     st.divider()
     render_ollama_models_panel()
     st.divider()

@@ -175,8 +175,24 @@ def _available_memory_gb() -> float | None:
     return None
 
 
+def _tier_memory_message(tier: str, avail: float) -> str:
+    if tier == "weak":
+        return f"Low-tier machine ({avail:.1f} GB free) — use quick_local or Fast preset"
+    if tier == "medium":
+        return f"Medium tier ({avail:.1f} GB free) — micro_slice recommended"
+    return f"Strong tier ({avail:.1f} GB free) — full production profile OK"
+
+
 def _check_memory() -> dict[str, Any]:
-    avail = _available_memory_gb()
+    try:
+        from nimbusware_hw.cache import get_cached_profile
+
+        profile = get_cached_profile()
+        avail = profile.ram_available_gb
+        tier = profile.tier
+    except ImportError:
+        avail = _available_memory_gb()
+        tier = "medium" if (avail or 0) >= 8 else "weak"
     if avail is None:
         return {
             "status": "degraded",
@@ -185,19 +201,22 @@ def _check_memory() -> dict[str, Any]:
     if avail < 4.0:
         return {
             "status": "fail",
-            "message": f"Low available RAM ({avail:.1f} GB) — try the Fast preset",
+            "message": _tier_memory_message("weak", avail),
             "available_gb": round(avail, 2),
+            "hardware_tier": tier,
         }
-    if avail < 8.0:
+    if tier == "weak" or avail < 8.0:
         return {
             "status": "degraded",
-            "message": f"Tight RAM ({avail:.1f} GB) — Fast preset recommended",
+            "message": _tier_memory_message(tier, avail),
             "available_gb": round(avail, 2),
+            "hardware_tier": tier,
         }
     return {
         "status": "ok",
-        "message": f"{avail:.1f} GB RAM available",
+        "message": _tier_memory_message(tier, avail),
         "available_gb": round(avail, 2),
+        "hardware_tier": tier,
     }
 
 

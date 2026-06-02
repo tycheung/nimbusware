@@ -90,6 +90,7 @@ class EventType(str, Enum):
     STITCH_PLAN_EMITTED = "stitch.plan.emitted"
     STITCH_APPLIED = "stitch.applied"
     STITCH_FAILED = "stitch.failed"
+    HARDWARE_PROFILE_DETECTED = "hardware.profile.detected"
 
 
 RoleId: TypeAlias = UUID

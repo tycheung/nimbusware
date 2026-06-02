@@ -268,6 +268,11 @@ class CreateRunMixin:
                 wf_path,
                 run_policy_overrides,
             )
+        from nimbusware_hw.cache import get_cached_profile
+        from nimbusware_hw.governor import governor_for_profile
+
+        hw_profile = get_cached_profile()
+        resource_governor = governor_for_profile(hw_profile).to_metadata()
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -283,6 +288,8 @@ class CreateRunMixin:
                     "domain_allowlist_normalized": True,
                     "network_egress_domain_count": len(snapshot.network_egress.domain_allowlist),
                 },
+                "hardware_profile": hw_profile.model_dump_public(),
+                "resource_governor": resource_governor,
                 "critique_coverage": critique_coverage,
                 "stage_graph": stage_graph_snapshot,
                 "universal_critique_effective": universal_critique_effective,
