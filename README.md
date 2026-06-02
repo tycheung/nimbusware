@@ -47,7 +47,7 @@ Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-wo
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
-Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [tests/README.md](tests/README.md) (CI subsets @ **72%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [tests/README.md](tests/README.md) (CI subsets @ **75%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
 
 ## Hermes orchestration (what the engine does)
 
@@ -87,7 +87,7 @@ packages/
   nimbusware_env/       Edition gate, env_flags, desktop runners
 configs/                Workflow YAML, personas, bundles (seed / gitops review)
 scripts/                Install, FAISS build, workers, e2e smoke, runbooks
-tests/                  Pytest suite (~2,436 tests; unit/api/console/orchestrator/integration)
+tests/                  Pytest suite (~2,774 tests; unit/api/console/orchestrator/integration)
 ```
 
 Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
@@ -317,7 +317,7 @@ docker compose --profile fleet up -d redis
 
 Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
 
-Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md).
+Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) (API Deployment probes + resource limits in [`docs/deploy/k8s/`](docs/deploy/k8s/)). OIDC design: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags.
 
 ## Enterprise setup sketch
 

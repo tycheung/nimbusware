@@ -1,0 +1,27 @@
+name: SBOM
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry cyclonedx-bom
+      - name: Export SBOM
+        run: |
+          poetry export -f requirements.txt --without-hashes -o requirements.txt
+          cyclonedx-py requirements -i requirements.txt -o sbom.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cdx.json

@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Active program (June 2026):** [Lane W — Sustainability (fo701–fo750)](#lane-w--sustainability-fo701fo750) — post–external-review engineering; CI green each phase. Normative product scope (§14, Lane M/U) remains **regression-only**. [Lane V](#lane-v--production-maturity-fo600fo650) is **complete** (regression-only).
+**Active program (June 2026):** [Lane W — Sustainability (fo701–fo750)](#lane-w--sustainability-fo701fo750) is **complete** (regression-only). Normative product scope (§14, Lane M/U) remains **regression-only**.
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -16,7 +16,7 @@
 | **Maker product** | Lane **M** fo300–fo308 | **~98%** | **Shipped** — see [Lane M](#lane-m--maker-product-fo300fo308); polish only |
 | **User vs Admin consoles** | Lane **U** fo310–fo317 | **~100%** | **Shipped** — see [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 | **Production maturity** | Lane **V** fo600–fo650 | **~100%** | **Complete** — [Lane V](#lane-v--production-maturity-fo600fo650); regression-only |
-| **Sustainability** | Lane **W** fo701–fo750 | **In progress** | **Active** — [Lane W](#lane-w--sustainability-fo701fo750) |
+| **Sustainability** | Lane **W** fo701–fo750 | **~100%** | **Complete** — [Lane W](#lane-w--sustainability-fo701fo750); regression-only |
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
@@ -1624,8 +1624,8 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 | **W2** Typing tranche B | fo720–fo724 | **Done** |
 | **W3** Test pyramid | fo730–fo734 | **Done** |
 | **W4** Coverage honesty | fo740–fo742 | **Done** |
-| **W5** Enterprise ops | fo745–fo750 | **Pending** |
-| **W6** Comment + doc hygiene | fo751–fo753 | **Pending** |
+| **W5** Enterprise ops | fo745–fo750 | **Done** |
+| **W6** Comment + doc hygiene | fo751–fo753 | **Done** |
 
 ### Lane W — explicit non-goals
 
@@ -1639,7 +1639,7 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 
 ## Execution priority (post–Lane D + M + U + R + T + V)
 
-1. **Active — [Lane W](#lane-w--sustainability-fo701fo750)** — fo701–fo753; CI green each phase.
+1. **Hold — [Lane W](#lane-w--sustainability-fo701fo750)** — fo701–fo753 complete; CI green; regression-only.
 2. **Hold — [Lane T](#lane-t--maturity-program-fo520fo545)** — fo520–fo545 complete; regression-only.
 3. **Hold** — `./scripts/ci_check.ps1` green; regression on fo511–fo515.
 4. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.

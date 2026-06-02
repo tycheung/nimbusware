@@ -16,6 +16,14 @@ OIDC is a **console login** concern, not a replacement for API keys in v1.
 3. Console maps IdP groups → local role (`maker_admin` vs read-only).
 4. Console stores a short-lived session cookie; backend calls still use server-side API key or token vault — **never** embed IdP tokens in Streamlit state sent to browsers for API calls.
 
+## Implementation checklist (Lane W5 fo746)
+
+- [ ] Register OIDC client with redirect URI for Admin Console (`NIMBUSWARE_ADMIN_CONSOLE_URL/oauth/callback`).
+- [ ] Configure `NIMBUSWARE_OIDC_ISSUER`, `NIMBUSWARE_OIDC_CLIENT_ID`, `NIMBUSWARE_OIDC_CLIENT_SECRET` (or PKCE public client).
+- [ ] Map IdP groups claim → `maker_admin` vs read-only console session.
+- [ ] Keep API calls on server-side `X-Nimbusware-Api-Key` / admin token — do not forward IdP access tokens to `/v1`.
+- [ ] Document session TTL and logout in runbook.
+
 ## Non-goals (V5)
 
 - Full OIDC middleware inside FastAPI (defer until product prioritizes).
