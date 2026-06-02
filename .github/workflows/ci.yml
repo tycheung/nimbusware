@@ -37,9 +37,15 @@ jobs:
         run: poetry run bandit -r packages -lll -q
       - name: Pip audit
         run: poetry run pip-audit
-        continue-on-error: true
       - name: Pytest unit
-        run: poetry run pytest tests -q -m "not integration and not slow and not benchmark" --cov=packages --cov-report=term-missing:skip-covered --cov-fail-under=72
+        run: |
+          poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
+            --cov=packages \
+            --cov-report=term-missing:skip-covered \
+            --cov-report=json:.ci_coverage.json \
+            --cov-fail-under=72
+          poetry run python scripts/coverage_package_floors.py --report .ci_coverage.json
+          rm -f .ci_coverage.json
         env:
           HERMES_SKIP_PREFLIGHT: "1"
 

@@ -29,9 +29,9 @@ repos:
         language: system
         pass_filenames: false
         files: ^packages/.*\.py$
-      - id: mypy-packages
-        name: mypy (packages)
-        entry: poetry run mypy packages
+      - id: mypy-services
+        name: mypy (services, CI parity fo701)
+        entry: poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services
         language: system
         pass_filenames: false
-        files: ^packages/
+        files: ^packages/(nimbusware_console/services|nimbusware_maker/services)/

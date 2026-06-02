@@ -76,6 +76,8 @@ See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo
 
 **Coverage:** CI enforces `--cov-fail-under=72` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
 
-**Typing (Lane V1):** `nimbusware_{console,maker}.services.*` are strict mypy islands (`test_mypy_services_surface.py`); UI packages remain ignored except `services/`.
+**Typing (Lane V1 / W0):** `nimbusware_{console,maker}.services.*` are strict mypy islands (`test_mypy_services_surface.py`); UI packages remain ignored except `services/`. Pre-commit and GitHub CI run the **same** mypy scope (services only — fo701).
+
+**CI parity (Lane W0):** `ci_check.*` runs ruff, mypy (services), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

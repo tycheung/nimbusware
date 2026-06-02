@@ -50,6 +50,7 @@ pip-wheel-metadata/
 .pytype/
 .coverage
 .coverage.*
+.ci_coverage.json
 coverage.xml
 htmlcov/
 .tox/
