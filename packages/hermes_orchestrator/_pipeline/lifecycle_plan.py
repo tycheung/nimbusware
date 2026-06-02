@@ -35,7 +35,10 @@ class LifecyclePlanMixin:
                         model_id=model,
                         timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                     )
-                    return
                 except Exception:
-                    pass
-        self._execute_plan_stage_stub(run_id)
+                    self._execute_plan_stage_stub(run_id)
+            else:
+                self._execute_plan_stage_stub(run_id)
+        else:
+            self._execute_plan_stage_stub(run_id)
+        self._maybe_emit_stitch_stages(run_id)

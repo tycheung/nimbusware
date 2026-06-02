@@ -27,6 +27,8 @@ from hermes_store.protocol import EventStore
 
 REFACTOR_STAGE = "refactor"
 REFACTOR_CRITIQUE_STAGE = "refactor.critique"
+REFACTOR_POST_STITCH_STAGE = "refactor.post_stitch"
+REFACTOR_POST_STITCH_CRITIQUE_STAGE = "refactor.post_stitch.critique"
 _REFACTOR_CRITIC = "refactor_critic"
 _CODE_QUALITY_CRITIC = "code_quality_critic"
 
@@ -142,6 +144,107 @@ def emit_refactor_stage_and_critique(
     gate = gate_decision_from_critic_verdicts(
         critic_payloads,
         stage_name=REFACTOR_CRITIQUE_STAGE,
+        unanimous_pass_required=True,
+        enforce=unanimous_gate_enforce or force_fail,
+    )
+    append_gate_decision_event(store, run_id=run_id, payload=gate)
+    return str(gate.verdict).upper() == "FAIL"
+
+
+def refactor_post_stitch_gate_failed(events: list[dict[str, Any]]) -> bool:
+    for row in events:
+        if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+            continue
+        payload = row.get("payload") or {}
+        if payload.get("stage_name") != REFACTOR_POST_STITCH_CRITIQUE_STAGE:
+            continue
+        if str(payload.get("verdict") or "").upper() == "FAIL":
+            return True
+    return False
+
+
+def emit_refactor_post_stitch_stage_and_critique(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    unanimous_gate_enforce: bool = False,
+    force_fail: bool = False,
+) -> bool:
+    """Mandatory normalization after stitch.applied. Returns True if gate FAIL."""
+    tax_keys = critique_router.pairing_for("refactorer")
+    if len(tax_keys) < 2:
+        return False
+    owner = registry.resolve("refactorer")
+    now = datetime.now(timezone.utc)
+
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=now,
+            metadata={"refactor": {"post_stitch": True, "mode": "stub_proposal"}},
+            payload=StageStartedPayload(stage_name=REFACTOR_POST_STITCH_STAGE, attempt=1),
+        ),
+    )
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={"refactor": {"post_stitch": True}},
+            payload=StagePassedPayload(
+                stage_name=REFACTOR_POST_STITCH_STAGE,
+                duration_ms=0,
+            ),
+        ),
+    )
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StageStartedPayload(
+                stage_name=REFACTOR_POST_STITCH_CRITIQUE_STAGE,
+                attempt=1,
+            ),
+        ),
+    )
+
+    critic_payloads: list[CriticVerdictEmittedPayload] = []
+    for tax_key in tax_keys:
+        critic_role = registry.resolve(tax_key)
+        fail = force_fail and tax_key in (_REFACTOR_CRITIC, _CODE_QUALITY_CRITIC)
+        verdict = Verdict.FAIL if fail else Verdict.PASS
+        fixes = [_REFACTOR_FAIL_FIX] if verdict == Verdict.FAIL else []
+        payload = CriticVerdictEmittedPayload(
+            critic_role=critic_role,
+            verdict=verdict,
+            severity=Severity.LOW if verdict == Verdict.PASS else Severity.MEDIUM,
+            owner_role=owner,
+            is_in_domain=True,
+            evidence_refs=[f"refactor://post_stitch/{tax_key}"],
+            required_fixes=fixes,
+        )
+        critic_payloads.append(payload)
+        store.append(
+            CriticVerdictEmittedEvent(
+                event_type=EventType.CRITIC_VERDICT_EMITTED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                actor_role=critic_role,
+                payload=payload,
+            ),
+        )
+
+    gate = gate_decision_from_critic_verdicts(
+        critic_payloads,
+        stage_name=REFACTOR_POST_STITCH_CRITIQUE_STAGE,
         unanimous_pass_required=True,
         enforce=unanimous_gate_enforce or force_fail,
     )

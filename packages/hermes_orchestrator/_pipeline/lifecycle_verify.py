@@ -16,6 +16,7 @@ from hermes_orchestrator._pipeline._helpers import (
     os,
     parallel_group_members,
     parallel_writers_enabled,
+    refactor_post_stitch_gate_failed,
     run_dispatch_enabled,
     run_security_scan,
     security_scan_metadata_on_verify_enabled,
@@ -202,6 +203,9 @@ class LifecycleVerifyMixin:
                 run_id,
                 workflow_profile=wf_prof,
             )
+        post_stitch_gate_fail = refactor_post_stitch_gate_failed(
+            self._store.list_run_events(str(run_id)),
+        )
         impl_llm = eff.impl_llm
         stub_impl = eff.impl_stub
         emitted_impl_llm = False
@@ -227,6 +231,7 @@ class LifecycleVerifyMixin:
             and not performance_gate_fail
             and not network_gate_fail
             and not refactor_gate_fail
+            and not post_stitch_gate_fail
             and not emitted_impl_llm
             and stub_impl
         ):
@@ -237,7 +242,13 @@ class LifecycleVerifyMixin:
                 run_id=run_id,
             )
         self._maybe_emit_stage_failed_for_implementation_critique_gate_fail(run_id, eff)
-        if security_gate_fail or performance_gate_fail or network_gate_fail or refactor_gate_fail:
+        if (
+            security_gate_fail
+            or performance_gate_fail
+            or network_gate_fail
+            or refactor_gate_fail
+            or post_stitch_gate_fail
+        ):
             return
         rows_post_impl = self._store.list_run_events(str(run_id))
         if not self._critique_impl_hard_block_gate_fail(rows_post_impl, eff):

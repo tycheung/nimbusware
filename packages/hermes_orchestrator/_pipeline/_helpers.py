@@ -132,7 +132,11 @@ from hermes_orchestrator.persona_coverage_critique import (
 from hermes_orchestrator.persona_shelf_auto_create import try_auto_create_persona_if_missing
 from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
 from hermes_orchestrator.preflight import run_model_preflight
-from hermes_orchestrator.refactor_stage import emit_refactor_stage_and_critique
+from hermes_orchestrator.refactor_stage import (
+    emit_refactor_post_stitch_stage_and_critique,
+    emit_refactor_stage_and_critique,
+    refactor_post_stitch_gate_failed,
+)
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_orchestrator.run_dispatch import (
     RunDispatchTask,
@@ -195,7 +199,10 @@ from hermes_orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )
-from hermes_orchestrator.workflow_research import parse_research_workflow_block
+from hermes_orchestrator.workflow_research import (
+    parse_research_workflow_block,
+    parse_stitch_workflow_block,
+)
 from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from hermes_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
