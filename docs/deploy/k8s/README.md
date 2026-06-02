@@ -4,8 +4,8 @@ Not production-hardened — starting point for Enterprise ops.
 
 ## Apply order
 
-1. Create namespace and secrets (`api-secrets.yaml` — fill DSN and admin token).
-2. `kubectl apply -f postgres.yaml` (or use managed Postgres and skip).
+1. Provision Postgres (managed service recommended — no `postgres.yaml` in this repo).
+2. Create namespace and secrets (`api-secrets.yaml` — fill DSN and admin token).
 3. Run `scripts/apply_event_store.sh` against the DSN once.
 4. `kubectl apply -f api-deployment.yaml`
 

@@ -4,6 +4,6 @@ Allowlisted tools exposed to slice implement agent mode (file reads, bounded she
 
 ## Consumers
 
-`hermes_orchestrator` agent-mode slices; contract tests under `tests/agent_tools/`.
+`hermes_orchestrator` agent-mode slices; contract tests under `tests/unit/test_agent_tools.py` and `tests/unit/test_agent_tools_runtime_coverage.py`.
 
 Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
