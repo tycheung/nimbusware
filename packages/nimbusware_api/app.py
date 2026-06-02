@@ -7,27 +7,21 @@ load_dotenv()
 
 import logging
 import os
-import threading
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
-from hermes_memory.factory import build_memory_chunk_store
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.registry import RoleRegistry
-from hermes_orchestrator.registry_db import load_registry_from_postgres
 from hermes_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
-from hermes_store.memory import InMemoryEventStore
-from hermes_store.postgres import PostgresEventStore
+from hermes_orchestrator.runtime_bootstrap import (
+    api_config_from_db_enabled,
+    build_runtime_orchestrator,
+)
 from nimbusware_api.errors import problem
 from nimbusware_api.facade import build_v1_router
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
-from nimbusware_config import ConfigMaterializer
 from nimbusware_iam.middleware import enterprise_iam_middleware
 from nimbusware_iam.store import PostgresIamStore, build_iam_store
 from nimbusware_maker.store import build_project_store
@@ -48,59 +42,24 @@ _OPENAPI_APP_DESCRIPTION = (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
-    base, _ = default_paths(repo)
     url = os.environ.get("NIMBUSWARE_DATABASE_URL")
-    roles_from_db = os.environ.get("NIMBUSWARE_ROLES_FROM_DB", "").lower() in ("1", "true", "yes")
-    use_db_config = os.environ.get("NIMBUSWARE_CONFIG_FROM_DB", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    ) and os.environ.get("NIMBUSWARE_CONFIG_FROM_FILES", "").strip().lower() not in (
-        "1",
-        "true",
-        "yes",
+    runtime = build_runtime_orchestrator(
+        roles_from_db=None,
+        use_materializer_registry=False,
+        config_from_db=api_config_from_db_enabled(),
     )
-    materializer: ConfigMaterializer | None = None
-    if use_db_config and url:
-        materializer = ConfigMaterializer(repo, use_db=True)
-    if url and roles_from_db:
-        registry = load_registry_from_postgres(url)
-    else:
-        registry = RoleRegistry.from_yaml(repo / "configs" / "roles.yaml")
-    if url:
-        app.state.store = PostgresEventStore(url)
-    else:
-        app.state.store = InMemoryEventStore()
+    app.state.store = runtime.store
     app.state.iam_store = build_iam_store(url)
     app.state.project_store = build_project_store(url)
     if url and isinstance(app.state.iam_store, PostgresIamStore):
         app.state.iam_store.ensure_default_tenant()
-    app.state.config_materializer = materializer
-    notify_stop: threading.Event | None = None
-    notify_thread: threading.Thread | None = None
-    if materializer is not None and url:
-        from nimbusware_config import (
-            config_notify_listener_enabled,
-            get_config_notify_hub,
-            start_config_notify_listener,
-        )
-
-        if config_notify_listener_enabled():
-            hub = get_config_notify_hub()
-            hub.register(materializer)
-            notify_stop = threading.Event()
-            notify_thread = start_config_notify_listener(url, hub, notify_stop)
-            app.state.config_notify_hub = hub
-    app.state.orchestrator = RunOrchestrator(
-        app.state.store,
-        registry,
-        repo_root=repo,
-        base_config_path=base,
-        config_materializer=materializer,
-        memory_chunk_store=build_memory_chunk_store(url),
-        bundle_outcome_store=build_bundle_outcome_store(url),
-    )
+    app.state.config_materializer = runtime.materializer
+    if runtime.config_notify_hub is not None:
+        app.state.config_notify_hub = runtime.config_notify_hub
+    app.state.orchestrator = runtime.orchestrator
+    notify_stop = runtime.notify_stop
+    notify_thread = runtime.notify_thread
+    materializer = runtime.materializer
     if run_dispatch_enabled():
         app.state.run_queue = get_run_queue()
     else:

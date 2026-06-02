@@ -11,56 +11,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
-from hermes_extensions.bundle_memory_factory import build_bundle_outcome_store
-from hermes_memory.factory import build_memory_chunk_store
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.registry import RoleRegistry
+from hermes_orchestrator.pipeline import RunOrchestrator
 from hermes_orchestrator.run_dispatch import RunQueuePort, get_run_queue
-from hermes_store.memory import InMemoryEventStore
-from hermes_store.postgres import PostgresEventStore
-from nimbusware_config import ConfigMaterializer, config_from_db_enabled
+from hermes_orchestrator.runtime_bootstrap import build_runtime_orchestrator
 
 
 def build_worker_orchestrator() -> tuple[
     RunOrchestrator, threading.Event | None, threading.Thread | None
 ]:
-    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
-    base, _ = default_paths(repo)
-    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
-    use_db_config = config_from_db_enabled()
-    materializer: ConfigMaterializer | None = None
-    notify_stop: threading.Event | None = None
-    notify_thread: threading.Thread | None = None
-    if use_db_config and url:
-        materializer = ConfigMaterializer(repo, use_db=True)
-        registry = materializer.get_role_registry()
-        from nimbusware_config import (
-            config_notify_listener_enabled,
-            get_config_notify_hub,
-            start_config_notify_listener,
-        )
-
-        if config_notify_listener_enabled():
-            hub = get_config_notify_hub()
-            hub.register(materializer)
-            notify_stop = threading.Event()
-            notify_thread = start_config_notify_listener(url, hub, notify_stop)
-    else:
-        registry = RoleRegistry.from_yaml(repo / "configs" / "roles.yaml")
-    if url:
-        store = PostgresEventStore(url)
-    else:
-        store = InMemoryEventStore()
-    orch = RunOrchestrator(
-        store,
-        registry,
-        repo_root=repo,
-        base_config_path=base,
-        config_materializer=materializer,
-        memory_chunk_store=build_memory_chunk_store(url),
-        bundle_outcome_store=build_bundle_outcome_store(url),
+    runtime = build_runtime_orchestrator(
+        roles_from_db=False,
+        use_materializer_registry=True,
     )
-    return orch, notify_stop, notify_thread
+    return runtime.orchestrator, runtime.notify_stop, runtime.notify_thread
 
 
 def run_worker_loop(

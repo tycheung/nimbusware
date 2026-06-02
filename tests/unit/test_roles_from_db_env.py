@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+import hermes_orchestrator.runtime_bootstrap as _runtime_bootstrap
 import nimbusware_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
 from hermes_orchestrator.registry import RoleRegistry
 from nimbusware_api.app import app
@@ -59,20 +60,27 @@ def _run_lifespan(
         monkeypatch.delenv("NIMBUSWARE_ROLES_FROM_DB", raising=False)
     else:
         monkeypatch.setenv("NIMBUSWARE_ROLES_FROM_DB", roles_from_db)
+    monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_DB", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
     with (
         patch.object(
-            _APP_MODULE,
+            _runtime_bootstrap,
             "load_registry_from_postgres",
             return_value=_SENTINEL_REGISTRY,
         ) as mock_db_loader,
         patch.object(
-            _APP_MODULE,
+            _runtime_bootstrap,
             "PostgresEventStore",
         ) as mock_postgres_store,
         patch.object(
             _APP_MODULE,
             "build_iam_store",
             return_value=InMemoryIamStore(),
+        ),
+        patch.object(
+            _APP_MODULE,
+            "build_project_store",
+            return_value=MagicMock(),
         ),
     ):
         with TestClient(app):
