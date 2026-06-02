@@ -1,7 +1,24 @@
 version: 1
+# Persona scope fields (plan §3E): scope_in / scope_out / defers_to / terminology_disambiguation
+# keep each role narrow — defer overlapping work to the listed roles instead of half-doing it.
 business_area:
   - id: commerce
     display_name: Commerce
+    # Example (uncomment when authoring):
+    # capability_profile: Product catalog, checkout flows, merchant-facing rules
+    # boundary_statement: Does not own payment capture, tax engine, or infra
+    # scope_in: [checkout UX requirements, catalog invariants]
+    # scope_out: [PCI implementation, database migrations, ML recommendations]
+    # defers_to: [finance_expert, backend_engineer, security_engineer]
+    # terminology_disambiguation:
+    #   - term: validation
+    #     meaning_in_role: Business rules on cart and SKU data before checkout
 development_role:
   - id: backend_engineer
     display_name: Backend engineer
+    # scope_in: [REST API handlers, service layer, repository patterns]
+    # scope_out: [CSS, ML training, raw Terraform]
+    # defers_to: [frontend_engineer, test_engineer, security_engineer]
+    # terminology_disambiguation:
+    #   - term: normalization
+    #     meaning_in_role: Schema and API shape consistency — not feature scaling

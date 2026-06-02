@@ -90,6 +90,16 @@ class SelfRefinementEvaluator:
                 gaps.append(f"boundary_statement_missing:{sid}")
             else:
                 out["boundary_statement_len"] = len(boundary.strip())
+            scope_in = entry.get("scope_in")
+            if not isinstance(scope_in, list) or not scope_in:
+                gaps.append(f"scope_in_missing:{sid}")
+            else:
+                out["scope_in_count"] = len(scope_in)
+            scope_out = entry.get("scope_out")
+            if not isinstance(scope_out, list) or not scope_out:
+                gaps.append(f"scope_out_missing:{sid}")
+            else:
+                out["scope_out_count"] = len(scope_out)
             coverage[field] = out
 
         _slot_eval(

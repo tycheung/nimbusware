@@ -34,8 +34,12 @@ def _minimal_shelf(
     if with_profile:
         ba["capability_profile"] = "Commerce domain expertise"
         ba["boundary_statement"] = "No payment processing"
+        ba["scope_in"] = ["catalog rules", "checkout requirements"]
+        ba["scope_out"] = ["payment capture", "database migrations"]
         dr["capability_profile"] = "Backend API design"
         dr["boundary_statement"] = "No infra provisioning"
+        dr["scope_in"] = ["HTTP APIs", "service layer"]
+        dr["scope_out"] = ["frontend CSS", "ML training"]
     if probation_status is not None:
         ba["probation_status"] = probation_status
         dr["probation_status"] = probation_status
@@ -103,6 +107,26 @@ def test_self_refinement_evaluator_v2_gap_missing_profile_and_boundary() -> None
     assert out["promotion_ready"] is False
     assert any("capability_profile_missing" in g for g in out["gaps"])
     assert any("boundary_statement_missing" in g for g in out["gaps"])
+
+
+def test_self_refinement_evaluator_gap_missing_scope_lists() -> None:
+    shelf = _minimal_shelf(probation_status="promoted", with_profile=False)
+    for row in shelf.raw["business_area"]:
+        row["capability_profile"] = "Commerce"
+        row["boundary_statement"] = "No payments"
+    for row in shelf.raw["development_role"]:
+        row["capability_profile"] = "API"
+        row["boundary_statement"] = "No infra"
+    out = SelfRefinementEvaluator().evaluate(
+        persona_assignment={
+            "business_area": {"id": "commerce"},
+            "development_role": {"id": "backend_engineer"},
+        },
+        shelf=shelf,
+    )
+    assert out["promotion_ready"] is False
+    assert any("scope_in_missing" in g for g in out["gaps"])
+    assert any("scope_out_missing" in g for g in out["gaps"])
 
 
 def test_self_refinement_marker_increments_attempt() -> None:

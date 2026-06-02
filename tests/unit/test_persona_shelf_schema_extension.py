@@ -51,6 +51,33 @@ def test_legacy_minimal_entry_still_loads(tmp_path: Path) -> None:
 # Axis 2: full-payload entry (all fo127 fields) accepts + round-trips
 
 
+def test_scope_and_terminology_fields_accepted(tmp_path: Path) -> None:
+    entry = {
+        "id": "backend_engineer",
+        "display_name": "Backend",
+        "scope_in": ["HTTP APIs"],
+        "scope_out": ["ML feature scaling"],
+        "defers_to": ["security_engineer"],
+        "terminology_disambiguation": [
+            {"term": "normalization", "meaning_in_role": "Schema shape — not ML scaling"},
+        ],
+    }
+    shelf = PersonaShelf(_shelf_with_entry(tmp_path, entry, shelf="development_role"))
+    shelf.validate_structure()
+    [out] = shelf.to_public_catalog()["development_role"]
+    assert out["scope_in"] == ["HTTP APIs"]
+    assert out["terminology_disambiguation"][0]["term"] == "normalization"
+
+
+def test_terminology_disambiguation_requires_meaning_in_role(tmp_path: Path) -> None:
+    bad = {
+        "id": "commerce",
+        "terminology_disambiguation": [{"term": "validation"}],
+    }
+    with pytest.raises(ValueError, match="meaning_in_role"):
+        PersonaShelf(_shelf_with_entry(tmp_path, bad)).validate_structure()
+
+
 def test_full_entry_with_all_optional_fields_accepted(tmp_path: Path) -> None:
     full = {
         "id": "commerce",
@@ -58,6 +85,8 @@ def test_full_entry_with_all_optional_fields_accepted(tmp_path: Path) -> None:
         "instructions": "Validate refund flows.",
         "capability_profile": "Knows PCI scope basics.",
         "boundary_statement": "Defers GPU perf to others.",
+        "scope_in": ["checkout rules"],
+        "scope_out": ["infra provisioning"],
         "allowed_tools": ["bundle_search"],
         "success_metrics": ["Plan covers refunds"],
         "probation_status": "promoted",

@@ -5,4 +5,6 @@ auto_promote_probation: false
 description: >
   Operator-facing description of the intended self-refinement loop. No new
   event_type values are emitted until a dedicated migration updates EventType
-  and the PostgreSQL CHECK allowlist in lockstep.
+  and the PostgreSQL CHECK allowlist in lockstep. Personas must pass narrow-scope
+  checks (scope_in, scope_out, capability_profile, boundary_statement) per plan §3E
+  before probation clears.

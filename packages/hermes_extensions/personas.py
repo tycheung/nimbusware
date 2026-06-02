@@ -8,6 +8,10 @@ optimistic-concurrency on the new write API:
  - ``instructions`` str (≤ 8000 chars, NFC-normalized)
  - ``capability_profile`` str (≤ 2000)
  - ``boundary_statement`` str (≤ 2000)
+ - ``scope_in`` list[str] (≤ 30; what this persona owns — plan §3E.3)
+ - ``scope_out`` list[str] (≤ 30; explicit non-goals / other roles' jobs)
+ - ``defers_to`` list[str] (≤ 20; role or persona ids to hand off to)
+ - ``terminology_disambiguation`` list[{term, meaning_in_role}] (≤ 25; overloaded terms)
  - ``allowed_tools`` list[str] (≤ 50 entries; each ≤ 100 chars)
  - ``success_metrics`` list[str] (≤ 20 entries; each ≤ 200 chars)
  - ``probation_status`` Literal["probation", "promoted", "shelved"]
@@ -36,6 +40,13 @@ PERSONA_ALLOWED_TOOLS_MAX_ENTRIES = 50
 PERSONA_ALLOWED_TOOL_MAX_CHARS = 100
 PERSONA_SUCCESS_METRICS_MAX_ENTRIES = 20
 PERSONA_SUCCESS_METRIC_MAX_CHARS = 200
+PERSONA_SCOPE_LIST_MAX_ENTRIES = 30
+PERSONA_SCOPE_ENTRY_MAX_CHARS = 200
+PERSONA_DEFERS_TO_MAX_ENTRIES = 20
+PERSONA_DEFERS_TO_ENTRY_MAX_CHARS = 100
+PERSONA_TERMINOLOGY_MAX_ENTRIES = 25
+PERSONA_TERM_MAX_CHARS = 80
+PERSONA_TERM_MEANING_MAX_CHARS = 300
 
 
 def _validate_optional_str(
@@ -89,6 +100,44 @@ def _validate_optional_str_list(
     return out
 
 
+def _validate_terminology_disambiguation(
+    value: Any,
+    *,
+    where: str,
+) -> list[dict[str, str]] | None:
+    if value is None:
+        return None
+    if not isinstance(value, list):
+        raise ValueError(f"{where}: 'terminology_disambiguation' must be a list when present")
+    if len(value) > PERSONA_TERMINOLOGY_MAX_ENTRIES:
+        raise ValueError(
+            f"{where}: 'terminology_disambiguation' has {len(value)} entries "
+            f"(cap is {PERSONA_TERMINOLOGY_MAX_ENTRIES})",
+        )
+    out: list[dict[str, str]] = []
+    for i, item in enumerate(value):
+        if not isinstance(item, dict):
+            raise ValueError(f"{where}: terminology_disambiguation[{i}] must be a mapping")
+        term = item.get("term")
+        meaning = item.get("meaning_in_role")
+        if not isinstance(term, str) or not term.strip():
+            raise ValueError(f"{where}: terminology_disambiguation[{i}].term must be a non-empty string")
+        if not isinstance(meaning, str) or not meaning.strip():
+            raise ValueError(
+                f"{where}: terminology_disambiguation[{i}].meaning_in_role must be a non-empty string",
+            )
+        term_n = unicodedata.normalize("NFC", term.strip())
+        meaning_n = unicodedata.normalize("NFC", meaning.strip())
+        if len(term_n) > PERSONA_TERM_MAX_CHARS:
+            raise ValueError(f"{where}: terminology_disambiguation[{i}].term exceeds max length")
+        if len(meaning_n) > PERSONA_TERM_MEANING_MAX_CHARS:
+            raise ValueError(
+                f"{where}: terminology_disambiguation[{i}].meaning_in_role exceeds max length",
+            )
+        out.append({"term": term_n, "meaning_in_role": meaning_n})
+    return out
+
+
 def collect_persona_entry_validation_errors(
     entry: Mapping[str, Any],
     *,
@@ -122,6 +171,28 @@ def _validate_entry_optional_fields(entry: Mapping[str, Any], *, where: str) -> 
         max_chars=PERSONA_BOUNDARY_STATEMENT_MAX_CHARS,
         where=where,
     )
+    _validate_optional_str_list(
+        entry.get("scope_in"),
+        field="scope_in",
+        max_entries=PERSONA_SCOPE_LIST_MAX_ENTRIES,
+        per_entry_max_chars=PERSONA_SCOPE_ENTRY_MAX_CHARS,
+        where=where,
+    )
+    _validate_optional_str_list(
+        entry.get("scope_out"),
+        field="scope_out",
+        max_entries=PERSONA_SCOPE_LIST_MAX_ENTRIES,
+        per_entry_max_chars=PERSONA_SCOPE_ENTRY_MAX_CHARS,
+        where=where,
+    )
+    _validate_optional_str_list(
+        entry.get("defers_to"),
+        field="defers_to",
+        max_entries=PERSONA_DEFERS_TO_MAX_ENTRIES,
+        per_entry_max_chars=PERSONA_DEFERS_TO_ENTRY_MAX_CHARS,
+        where=where,
+    )
+    _validate_terminology_disambiguation(entry.get("terminology_disambiguation"), where=where)
     _validate_optional_str_list(
         entry.get("allowed_tools"),
         field="allowed_tools",
@@ -167,10 +238,26 @@ def normalize_entry(entry: Mapping[str, Any]) -> dict[str, Any]:
         v = entry.get(str_field)
         if v is not None:
             out[str_field] = unicodedata.normalize("NFC", str(v))
-    for list_field in ("allowed_tools", "success_metrics"):
+    for list_field in ("allowed_tools", "success_metrics", "scope_in", "scope_out", "defers_to"):
         v = entry.get(list_field)
         if isinstance(v, list):
             out[list_field] = [unicodedata.normalize("NFC", str(item)) for item in v]
+    term_raw = entry.get("terminology_disambiguation")
+    if isinstance(term_raw, list):
+        normalized_terms: list[dict[str, str]] = []
+        for item in term_raw:
+            if isinstance(item, dict):
+                t = item.get("term")
+                m = item.get("meaning_in_role")
+                if isinstance(t, str) and isinstance(m, str) and t.strip() and m.strip():
+                    normalized_terms.append(
+                        {
+                            "term": unicodedata.normalize("NFC", t.strip()),
+                            "meaning_in_role": unicodedata.normalize("NFC", m.strip()),
+                        },
+                    )
+        if normalized_terms:
+            out["terminology_disambiguation"] = normalized_terms
     ps = entry.get("probation_status")
     if ps is not None:
         out["probation_status"] = str(ps)
@@ -283,6 +370,10 @@ class PersonaShelf:
                 "instructions",
                 "capability_profile",
                 "boundary_statement",
+                "scope_in",
+                "scope_out",
+                "defers_to",
+                "terminology_disambiguation",
                 "allowed_tools",
                 "success_metrics",
                 "probation_status",
