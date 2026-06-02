@@ -21,4 +21,13 @@ class ProjectStore(Protocol):
 
     def list(self, *, tenant_id: UUID | None = None) -> list[ProjectRecord]: ...
 
+    def update(
+        self,
+        project_id: UUID,
+        *,
+        name: str | None = None,
+        workspace_path: str | None = None,
+        default_workflow_profile: str | None = None,
+    ) -> ProjectRecord: ...
+
     def delete(self, project_id: UUID) -> bool: ...

@@ -11,3 +11,9 @@ def list_projects() -> dict[str, Any]:
 
 def create_project(payload: dict[str, Any]) -> dict[str, Any]:
     return post_json("/projects", payload)
+
+
+def update_project(project_id: str, payload: dict[str, Any]) -> dict[str, Any]:
+    from nimbusware_maker.api_client import patch_json
+
+    return patch_json(f"/projects/{project_id}", payload)

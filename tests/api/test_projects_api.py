@@ -40,6 +40,37 @@ def test_projects_crud(client: TestClient, tmp_path: Path) -> None:
     assert client.get(f"/v1/projects/{project_id}").status_code == 404
 
 
+def test_projects_patch(client: TestClient, tmp_path: Path) -> None:
+    ws = tmp_path / "app-a"
+    ws.mkdir()
+    create = client.post(
+        "/v1/projects",
+        json={"name": "Alpha", "workspace_path": str(ws), "template": "attach"},
+    )
+    project_id = create.json()["project_id"]
+    ws2 = tmp_path / "app-b"
+    ws2.mkdir()
+    patched = client.patch(
+        f"/v1/projects/{project_id}",
+        json={"name": "Beta", "workspace_path": str(ws2)},
+    )
+    assert patched.status_code == 200
+    body = patched.json()
+    assert body["name"] == "Beta"
+    assert body["workspace_path"] == str(ws2.resolve())
+
+
+def test_projects_patch_empty_body_422(client: TestClient, tmp_path: Path) -> None:
+    ws = tmp_path / "empty-patch"
+    ws.mkdir()
+    project_id = client.post(
+        "/v1/projects",
+        json={"name": "X", "workspace_path": str(ws), "template": "attach"},
+    ).json()["project_id"]
+    r = client.patch(f"/v1/projects/{project_id}", json={})
+    assert r.status_code == 422
+
+
 def test_create_run_with_project_id(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "proj-run"
     ws.mkdir()

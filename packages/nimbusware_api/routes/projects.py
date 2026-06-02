@@ -42,6 +42,12 @@ class ProjectCreateRequest(BaseModel):
     default_workflow_profile: str = Field(default="micro_slice", min_length=1, max_length=120)
 
 
+class ProjectUpdateRequest(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    workspace_path: str | None = Field(default=None, min_length=1, max_length=4096)
+    default_workflow_profile: str | None = Field(default=None, min_length=1, max_length=120)
+
+
 def _to_response(record: object) -> ProjectResponse:
     data = record.to_dict()  # type: ignore[attr-defined]
     return ProjectResponse(**data)
@@ -91,6 +97,42 @@ def create_project(
             default_workflow_profile=body.default_workflow_profile,
             tenant_id=resolve_store_tenant_id(),
         )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+    return _to_response(record)
+
+
+@router.patch(
+    "/{project_id}",
+    response_model=ProjectResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def update_project(
+    project_id: UUID,
+    body: ProjectUpdateRequest,
+    store: ProjectStoreDep,
+    _user: UserDep,
+) -> ProjectResponse:
+    if body.name is None and body.workspace_path is None and body.default_workflow_profile is None:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "at least one field required"),
+        )
+    try:
+        record = store.update(
+            project_id,
+            name=body.name,
+            workspace_path=body.workspace_path,
+            default_workflow_profile=body.default_workflow_profile,
+        )
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("project_not_found", f"Unknown project id: {project_id}"),
+        ) from None
     except ValueError as exc:
         raise HTTPException(
             status_code=422,

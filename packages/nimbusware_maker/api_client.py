@@ -22,6 +22,7 @@ __all__ = [
     "admin_post_json",
     "api_base",
     "get_json",
+    "patch_json",
     "post_json",
     "user_headers",
 ]
@@ -35,6 +36,14 @@ def api_base() -> str:
 
 def get_json(path: str) -> dict[str, Any]:
     return _get_json(path)
+
+
+def patch_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:
+    from nimbusware_client.http import request_response
+
+    response = request_response("PATCH", path, json=payload)
+    body = response.json()
+    return body if isinstance(body, dict) else {}
 
 
 def post_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:

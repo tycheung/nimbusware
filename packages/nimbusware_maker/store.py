@@ -81,6 +81,43 @@ class InMemoryProjectStore:
             rows = [r for r in rows if r.tenant_id == tenant_id]
         return sorted(rows, key=lambda r: r.created_at, reverse=True)
 
+    def update(
+        self,
+        project_id: UUID,
+        *,
+        name: str | None = None,
+        workspace_path: str | None = None,
+        default_workflow_profile: str | None = None,
+    ) -> ProjectRecord:
+        existing = self._projects.get(project_id)
+        if existing is None:
+            raise KeyError("project_not_found")
+        name_n = name.strip() if name is not None else existing.name
+        if not name_n:
+            raise ValueError("project name required")
+        ws_raw = workspace_path if workspace_path is not None else existing.workspace_path
+        ws = _resolve_workspace_path(ws_raw)
+        if existing.template == "attach" and not ws.is_dir():
+            raise ValueError(f"workspace_path is not a directory: {ws}")
+        profile = (
+            default_workflow_profile.strip()
+            if default_workflow_profile is not None
+            else existing.default_workflow_profile
+        )
+        if not profile:
+            raise ValueError("default_workflow_profile required")
+        updated = ProjectRecord(
+            project_id=existing.project_id,
+            name=name_n,
+            workspace_path=str(ws),
+            template=existing.template,
+            default_workflow_profile=profile,
+            created_at=existing.created_at,
+            tenant_id=existing.tenant_id,
+        )
+        self._projects[project_id] = updated
+        return updated
+
     def delete(self, project_id: UUID) -> bool:
         return self._projects.pop(project_id, None) is not None
 
@@ -177,6 +214,50 @@ class PostgresProjectStore:
                     )
                 rows = cur.fetchall()
         return [_row_to_record(r) for r in rows]
+
+    def update(
+        self,
+        project_id: UUID,
+        *,
+        name: str | None = None,
+        workspace_path: str | None = None,
+        default_workflow_profile: str | None = None,
+    ) -> ProjectRecord:
+        existing = self.get(project_id)
+        if existing is None:
+            raise KeyError("project_not_found")
+        name_n = name.strip() if name is not None else existing.name
+        if not name_n:
+            raise ValueError("project name required")
+        ws_raw = workspace_path if workspace_path is not None else existing.workspace_path
+        ws = _resolve_workspace_path(ws_raw)
+        if existing.template == "attach" and not ws.is_dir():
+            raise ValueError(f"workspace_path is not a directory: {ws}")
+        profile = (
+            default_workflow_profile.strip()
+            if default_workflow_profile is not None
+            else existing.default_workflow_profile
+        )
+        if not profile:
+            raise ValueError("default_workflow_profile required")
+        with psycopg.connect(self._conninfo) as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(
+                    """
+                    UPDATE nimbusware_project
+                    SET name = %s,
+                        workspace_path = %s,
+                        default_workflow_profile = %s
+                    WHERE project_id = %s
+                    RETURNING project_id, tenant_id, name, workspace_path,
+                              template, default_workflow_profile, created_at
+                    """,
+                    (name_n, str(ws), profile, project_id),
+                )
+                row = cur.fetchone()
+            conn.commit()
+        assert row is not None
+        return _row_to_record(row)
 
     def delete(self, project_id: UUID) -> bool:
         with psycopg.connect(self._conninfo) as conn:

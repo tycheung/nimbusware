@@ -190,7 +190,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 **Home & onboarding**
 
 - First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
-- Project picker backed by `nimbusware_project` (`GET/POST /v1/projects` — **no admin token**; `DELETE` is admin-only)
+- Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (Ollama model list, policy-gated pull/delete/routing when admin allows, readiness presets, auto-advance hint)
 
 **Build**
@@ -257,7 +257,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | User |
 | **Maker progress** | `GET /runs/{id}/maker-progress` | User |
 | **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
-| **Projects** | `GET/POST /projects` | User |
+| **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
 | **Platform** | `GET /platform/edition`, `GET /platform/readiness` | User |
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
