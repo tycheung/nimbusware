@@ -1,18 +1,3 @@
-"""Unit tests for ``nimbusware_console.prune_status_display``.
-
-Pure unit (no subprocess, no Streamlit, no filesystem races) so they run fast and
-deterministically. Seven axes (cf. plan):
-
-1. ``load_prune_status(None)`` → ``None``.
-2. ``load_prune_status(non_existent_path)`` → ``None`` (no raise).
-3. ``load_prune_status(invalid_json_path)`` → ``None`` (no raise).
-4. ``load_prune_status(valid_json_path)`` → parsed dict.
-5. ``prune_status_summary_rows(None)`` → ``[]``.
-6. ``prune_status_summary_rows(full_dict)`` → 10 rows in stable order.
-7. ``prune_status_freshness_caption`` covers fresh, stale, missing-``wrote_at``,
- and ``status is None`` branches.
-"""
-
 from __future__ import annotations
 
 import json

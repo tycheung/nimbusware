@@ -1,15 +1,3 @@
-"""Integration tests for persona write API.
-
-Fourteen axes split across all four HTTP verbs + cross-cutting validation:
-POST happy / duplicate-409 / idempotency replay / 422 length-cap,
-PATCH happy / 409 version-skew / 422 length-cap / empty-patch,
-PUT happy / 404, DELETE happy / 409, unknown shelf 422, reserved persona_id 422,
-and read-after-write through ``GET /v1/personas``.
-
-All cases run against an in-memory store and a tmp-path shelves.yaml so the real
-repo's persona catalog is never touched.
-"""
-
 from __future__ import annotations
 
 import os

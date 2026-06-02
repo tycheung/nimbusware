@@ -61,7 +61,7 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 
 ## Refactor playbook
 
-See [PLAN_GAP.md § Lane W](PLAN_GAP.md#lane-w--sustainability-fo701fo750) for the sustainability program. **Lane T (fo520–fo545)** shipped: UI `services/` plane, mypy ratchet (API strict, `_pipeline` mixins ignored), `run_detail/_imports` star facade, **75%** CI coverage floor, async Ollama pull jobs. Day-to-day workflow:
+See [PLAN_GAP.md § Lane X](PLAN_GAP.md#lane-x--signal--hardening-fo760fo789) for the current hardening program. **Lane T (fo520–fo545)** shipped: UI `services/` plane, mypy ratchet (API strict, `_pipeline` mixins ignored), `run_detail/_imports` star facade, **75%** CI coverage floor, async Ollama pull jobs. Day-to-day workflow:
 
 | Step | Command / guard |
 |------|-----------------|
@@ -78,6 +78,6 @@ See [PLAN_GAP.md § Lane W](PLAN_GAP.md#lane-w--sustainability-fo701fo750) for t
 
 **Typing (Lane V1 / W0 / W2 / X1):** `nimbusware_{console,maker}.services.*`, tranche B (`nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools`), plus API pilot modules (`nimbusware_api/routes/ollama.py`, `nimbusware_api/schemas/ollama.py`, `nimbusware_api/errors.py`) are checked in CI parity. UI packages remain ignored except `services/` (`_pipeline.*` remains excluded).
 
-**CI parity (Lane W0/X1):** `ci_check.*` runs ruff (+ advisory formatter check), mypy (services + tranche B + API pilot), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
+**CI parity (Lane X0/X1):** `ci_check.*` runs ruff (+ advisory formatter check), mypy (services + tranche B + API pilot), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

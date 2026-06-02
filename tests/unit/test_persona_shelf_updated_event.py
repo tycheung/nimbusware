@@ -1,10 +1,3 @@
-"""Unit tests for ``PersonaShelfUpdatedEvent`` + payload.
-
-Eight axes: happy payload, shelf Literal, persona_id min length, version
-monotonicity, fields_changed cap, envelope adapter round-trip, in-memory store
-fidelity, and the allowed-types registry includes ``persona.shelf.updated``.
-"""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

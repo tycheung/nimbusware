@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Active program (June 2026):** [Lane X — Signal & hardening (fo760–fo789)](#lane-x--signal--hardening-fo760fo789) is **active**. [Lane W](#lane-w--sustainability-fo701fo750) is complete (regression-only). Normative product scope (§14, Lane M/U) remains **regression-only**.
+**Active program (June 2026):** [Lane X — Signal & hardening (fo760–fo789)](#lane-x--signal--hardening-fo760fo789) is **complete** (regression-only). [Lane W](#lane-w--sustainability-fo701fo750) is complete (regression-only). Normative product scope (§14, Lane M/U) remains **regression-only**.
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -17,7 +17,7 @@
 | **User vs Admin consoles** | Lane **U** fo310–fo317 | **~100%** | **Shipped** — see [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 | **Production maturity** | Lane **V** fo600–fo650 | **~100%** | **Complete** — [Lane V](#lane-v--production-maturity-fo600fo650); regression-only |
 | **Sustainability** | Lane **W** fo701–fo750 | **~100%** | **Complete** — [Lane W](#lane-w--sustainability-fo701fo750); regression-only |
-| **Signal & hardening** | Lane **X** fo760–fo789 | **In progress** | **Active** — [Lane X](#lane-x--signal--hardening-fo760fo789) |
+| **Signal & hardening** | Lane **X** fo760–fo789 | **~100%** | **Complete** — [Lane X](#lane-x--signal--hardening-fo760fo789); regression-only |
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
@@ -1640,7 +1640,7 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 
 ## Lane X — Signal & hardening (fo760–fo789)
 
-**Status:** **Active** (June 2026) — follow-on engineering program after [Lane W](#lane-w--sustainability-fo701fo750).  
+**Status:** **Complete** (June 2026) — follow-on engineering program after [Lane W](#lane-w--sustainability-fo701fo750).  
 **Depends on:** Lane W complete; normative product scope regression-only.  
 **Source:** Post-Lane-W quality review — CI signal parity, API typing ratchet, PR-test blind spots, enterprise release hardening, and repo-wide comment/doc cleanup.
 
@@ -1748,7 +1748,7 @@ X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratc
 | **X1** API typing ratchet | fo764–fo768 | **Done** |
 | **X2** PR test signal | fo769–fo773 | **Done** |
 | **X3** Enterprise release hardening | fo774–fo778 | **Done** |
-| **X4** Repo-wide doc/comment hygiene | fo779–fo789 | **Pending** |
+| **X4** Repo-wide doc/comment hygiene | fo779–fo789 | **Done** |
 
 ### Lane X — explicit non-goals
 
@@ -1761,7 +1761,7 @@ X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratc
 
 ## Execution priority (post–Lane D + M + U + R + T + V)
 
-1. **Active — [Lane X](#lane-x--signal--hardening-fo760fo789)** — fo760–fo789; ship phase-by-phase with CI green and phase commits.
+1. **Hold — [Lane X](#lane-x--signal--hardening-fo760fo789)** — fo760–fo789 complete; regression-only.
 2. **Hold — [Lane W](#lane-w--sustainability-fo701fo750)** — fo701–fo753 complete; regression-only.
 3. **Hold — [Lane T](#lane-t--maturity-program-fo520fo545)** — fo520–fo545 complete; regression-only.
 4. **Hold** — `./scripts/ci_check.ps1` green; regression on fo511–fo515.

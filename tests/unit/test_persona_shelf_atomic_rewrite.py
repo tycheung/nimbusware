@@ -1,10 +1,3 @@
-"""Unit tests for ``dump_yaml`` and ``atomic_write_yaml`` helpers.
-
-Six axes: round-trip, atomic tmp + replace pattern, parent-dir auto-create,
-simulated ``os.replace`` failure leaves original file intact, back-to-back
-writes, and the PersonaShelf.write_entry → atomic_write_yaml pipeline.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
