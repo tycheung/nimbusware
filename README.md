@@ -47,7 +47,7 @@ Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-wo
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
-Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [tests/README.md](tests/README.md) (CI subsets @ **75%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [CONTRIBUTING.md](CONTRIBUTING.md) (CI and conventions), [SECURITY.md](SECURITY.md) (secrets and production), [tests/README.md](tests/README.md) (CI subsets @ **75%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
 
 ## Hermes orchestration (what the engine does)
 
