@@ -9,7 +9,9 @@ from nimbusware_maker.ui.ollama_models import render_ollama_models_panel
 
 def render_settings_panel() -> None:
     st.subheader("Settings")
-    st.caption("Workspace preferences for this machine. Admin-only routing lives in the Admin Console.")
+    st.caption(
+        "Workspace preferences for this machine. Admin-only routing lives in the Admin Console."
+    )
 
     enabled = hermes_slice_auto_advance_enabled()
     auto_advance = "1" if enabled else "0"

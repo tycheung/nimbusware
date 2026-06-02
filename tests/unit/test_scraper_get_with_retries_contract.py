@@ -1,6 +1,5 @@
 """_scraper_get_with_retries`` direct contract."""
 
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -48,8 +47,12 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
         patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a1,
     ):
         result_a1 = orch_a1._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1, backoff_seconds=0.5), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1, backoff_seconds=0.5),
+            None,
         )
     assert result_a1 == (resp_mock, 1), (
         "A1: first attempt succeeds -> returns (resp, 1); attempt counter is 1-indexed (not 0)"
@@ -65,8 +68,12 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
         patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a2,
     ):
         result_a2 = orch_a2._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=3, backoff_seconds=0.5), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=3, backoff_seconds=0.5),
+            None,
         )
     assert result_a2 == (resp_mock, 2), (
         "A2: OSError then success -> (resp, 2); attempt counter advances correctly"
@@ -84,8 +91,12 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
         patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a3,
     ):
         result_a3 = orch_a3._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=5, backoff_seconds=0.5), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=5, backoff_seconds=0.5),
+            None,
         )
     assert result_a3 == (resp_mock, 3), (
         "A3: 2 retryable failures then success -> (resp, 3); loop terminates on success "
@@ -107,8 +118,12 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
         patch("hermes_orchestrator.pipeline.time.sleep"),
     ):
         orch_a4._scraper_get_with_retries(  # noqa: SLF001
-            run_id_a4, "https://www.example.test/path", actor_a4,
-            sentinel_client, _make_cfg(max_attempts=1), 4096,
+            run_id_a4,
+            "https://www.example.test/path",
+            actor_a4,
+            sentinel_client,
+            _make_cfg(max_attempts=1),
+            4096,
         )
     call_a4 = egress_a4.call_args
     assert call_a4.kwargs == {
@@ -148,8 +163,12 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
         pytest.raises(PermissionError, match="denied"),
     ):
         orch_b1._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1, backoff_seconds=1.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1, backoff_seconds=1.0),
+            None,
         )
     assert egress_b1.call_count == 1 and sleep_b1.call_count == 0, (
         "B1: PermissionError with max_attempts=1 -> single call, no sleep"
@@ -165,8 +184,12 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
         pytest.raises(PermissionError, match="denied-wide"),
     ):
         orch_b2._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=5, backoff_seconds=1.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=5, backoff_seconds=1.0),
+            None,
         )
     assert egress_b2.call_count == 1 and sleep_b2.call_count == 0, (
         "B2: PermissionError with max_attempts=5 still single call, no sleep -- "
@@ -183,8 +206,12 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
         pytest.raises(EgressResponseTooLarge, match="too big"),
     ):
         orch_b3._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1, backoff_seconds=1.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1, backoff_seconds=1.0),
+            None,
         )
     assert egress_b3.call_count == 1 and sleep_b3.call_count == 0, (
         "B3: EgressResponseTooLarge with max_attempts=1 -> single call, no sleep"
@@ -200,8 +227,12 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
         pytest.raises(EgressResponseTooLarge, match="too big wide"),
     ):
         orch_b4._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=5, backoff_seconds=1.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=5, backoff_seconds=1.0),
+            None,
         )
     assert egress_b4.call_count == 1 and sleep_b4.call_count == 0, (
         "B4: EgressResponseTooLarge with max_attempts=5 still single call, no sleep -- "
@@ -234,7 +265,12 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
         pytest.raises(RuntimeError) as exc_c1,
     ):
         orch_c1._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(), None, cfg, None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            cfg,
+            None,
         )
     assert str(exc_c1.value) == "net 2", (
         "C1: OSError exhaustion -> RuntimeError uses LAST exception's message (last_err wins)"
@@ -251,7 +287,12 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
         pytest.raises(RuntimeError) as exc_c2,
     ):
         orch_c2._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(), None, cfg, None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            cfg,
+            None,
         )
     assert str(exc_c2.value) == "rt 2", (
         "C2: RuntimeError exhaustion -> outer RuntimeError carries inner's message"
@@ -270,7 +311,12 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
         pytest.raises(RuntimeError) as exc_c3,
     ):
         orch_c3._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(), None, cfg, None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            cfg,
+            None,
         )
     assert str(exc_c3.value) == "v 2", (
         "C3: ValueError exhaustion -> RuntimeError (ValueError is retry-eligible, not reraised)"
@@ -286,7 +332,12 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
         pytest.raises(RuntimeError) as exc_c4,
     ):
         orch_c4._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(), None, cfg, None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            cfg,
+            None,
         )
     assert str(exc_c4.value) == "c 2", (
         "C4: httpx.ConnectError + httpx.ReadTimeout exhaustion -> RuntimeError; "
@@ -316,8 +367,12 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
         pytest.raises(RuntimeError, match="^c$"),
     ):
         orch_d1._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=3, backoff_seconds=0.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=3, backoff_seconds=0.0),
+            None,
         )
     assert sleep_d1.call_count == 0, (
         "D1: backoff_seconds=0.0 -> time.sleep NEVER called (guard ``> 0`` blocks)"
@@ -336,8 +391,12 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
         pytest.raises(RuntimeError, match="^c$"),
     ):
         orch_d23._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=3, backoff_seconds=0.5), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=3, backoff_seconds=0.5),
+            None,
         )
     assert sleep_d23.call_args_list == [((0.5,), {}), ((0.5,), {})], (
         "D2: backoff_seconds=0.5 with 3 attempts -> sleep called exactly 2x with 0.5 "
@@ -358,8 +417,12 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
         pytest.raises(RuntimeError) as exc_d4,
     ):
         orch_d4._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1, backoff_seconds=0.0), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1, backoff_seconds=0.0),
+            None,
         )
     assert len(str(exc_d4.value)) == 2000 and str(exc_d4.value) == "x" * 2000, (
         "D4: 5000-char OSError message truncated to exactly 2000 via str(last_err)[:2000]"
@@ -375,8 +438,12 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
         patch("hermes_orchestrator.pipeline.time.sleep"),
     ):
         orch_d5a._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1), None,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1),
+            None,
         )
     assert "max_response_bytes" not in egress_d5a.call_args.kwargs, (
         "D5a: max_response_bytes=None -> kwarg EXCLUDED from fetch_kw (conditional add guard)"
@@ -391,8 +458,12 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
         patch("hermes_orchestrator.pipeline.time.sleep"),
     ):
         orch_d5b._scraper_get_with_retries(  # noqa: SLF001
-            uuid4(), "https://www.example.test/", uuid4(),
-            None, _make_cfg(max_attempts=1), 8192,
+            uuid4(),
+            "https://www.example.test/",
+            uuid4(),
+            None,
+            _make_cfg(max_attempts=1),
+            8192,
         )
     assert egress_d5b.call_args.kwargs.get("max_response_bytes") == 8192, (
         "D5b: max_response_bytes=8192 -> kwarg INCLUDED in fetch_kw with exact value"

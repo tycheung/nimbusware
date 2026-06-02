@@ -1,6 +1,5 @@
 """Composite contract tests for critique_routing."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -88,10 +87,7 @@ class TestPartADefaultPathComposition:
         ``configs/personas``) would silently break config loading.
         """
         result = default_critique_pairings_path(_REPO_ROOT)
-        assert (
-            result
-            == _REPO_ROOT / "configs" / "personas" / "critique_pairings.yaml"
-        )
+        assert result == _REPO_ROOT / "configs" / "personas" / "critique_pairings.yaml"
         assert result.parts[-3:] == (
             "configs",
             "personas",
@@ -196,13 +192,9 @@ class TestPartBLoadCritiqueRouter:
         }
         for producer, expected in _repo_pairings.items():
             paired = router.pairing_for(producer)
-            assert sorted(paired) == sorted(expected), (
-                f"producer {producer!r} pairing drift"
-            )
+            assert sorted(paired) == sorted(expected), f"producer {producer!r} pairing drift"
 
-    def test_b2_empty_pairings_yaml_returns_empty_router(
-        self, tmp_path: Path
-    ) -> None:
+    def test_b2_empty_pairings_yaml_returns_empty_router(self, tmp_path: Path) -> None:
         """B2: YAML without a ``pairings`` key -> empty router; default critics fall back.
 
         ``UniversalCritiqueRouter.from_yaml`` returns ``cls({})`` when
@@ -219,9 +211,7 @@ class TestPartBLoadCritiqueRouter:
             paired = router.pairing_for(producer)
             assert tuple(paired) == _CANONICAL_DEFAULT_CRITICS
 
-    def test_b3_missing_file_propagates_filenotfounderror(
-        self, tmp_path: Path
-    ) -> None:
+    def test_b3_missing_file_propagates_filenotfounderror(self, tmp_path: Path) -> None:
         """B3: KEY DIVERGENCE -- missing file -> ``FileNotFoundError`` propagates.
 
         ``load_critique_router`` does NOT wrap or swallow exceptions
@@ -233,9 +223,7 @@ class TestPartBLoadCritiqueRouter:
         with pytest.raises(FileNotFoundError):
             load_critique_router(tmp_path)
 
-    def test_b4_non_dict_yaml_root_propagates_valueerror(
-        self, tmp_path: Path
-    ) -> None:
+    def test_b4_non_dict_yaml_root_propagates_valueerror(self, tmp_path: Path) -> None:
         """B4: KEY DIVERGENCE -- non-dict YAML root -> ``ValueError`` propagates.
 
         ``load_yaml`` raises ``ValueError("YAML root must be a
@@ -249,9 +237,7 @@ class TestPartBLoadCritiqueRouter:
         with pytest.raises(ValueError, match="YAML root must be a mapping"):
             load_critique_router(tmp_path)
 
-    def test_b5_path_composition_wiring_via_from_yaml(
-        self, tmp_path: Path
-    ) -> None:
+    def test_b5_path_composition_wiring_via_from_yaml(self, tmp_path: Path) -> None:
         """B5: ``load_critique_router`` passes the canonical path to ``from_yaml``.
 
         Pin that ``load_critique_router(repo_root)`` invokes
@@ -355,21 +341,19 @@ class TestPartCProducerSuffixFilter:
         registry = RoleRegistry.from_mapping(
             {
                 # NOT filtered (no `_critic` suffix):
-                "critic": _uuid(20),            # no underscore
-                "critic_helper": _uuid(21),     # contains, not endswith
-                "x_critic_y": _uuid(22),        # contains, not endswith
-                "criticism_team": _uuid(23),    # different word entirely
+                "critic": _uuid(20),  # no underscore
+                "critic_helper": _uuid(21),  # contains, not endswith
+                "x_critic_y": _uuid(22),  # contains, not endswith
+                "criticism_team": _uuid(23),  # different word entirely
                 # Filtered (endswith `_critic`):
-                "_critic": _uuid(30),           # bare suffix
+                "_critic": _uuid(30),  # bare suffix
                 "super_critic": _uuid(31),
                 "planner_critic": _uuid(32),
                 "domain_critic": _uuid(33),
             }
         )
         result = registry_producer_taxonomy_keys(registry)
-        assert result == frozenset(
-            {"critic", "critic_helper", "x_critic_y", "criticism_team"}
-        )
+        assert result == frozenset({"critic", "critic_helper", "x_critic_y", "criticism_team"})
         # Cross-check: every filtered key has the suffix.
         for filtered_key in {"_critic", "super_critic", "planner_critic", "domain_critic"}:
             assert filtered_key not in result
@@ -406,9 +390,7 @@ class TestPartDLifecycleUnionSorted:
         ``list.extend`` would produce 3 + 3*2 = 9 entries with
         duplicates; set-union dedup correctly yields 5 unique keys.
         """
-        result = taxonomy_keys_for_run_lifecycle(
-            _canonical_registry(), _canonical_router()
-        )
+        result = taxonomy_keys_for_run_lifecycle(_canonical_registry(), _canonical_router())
         assert result == [
             "backend_writer",
             "domain_critic",
@@ -455,9 +437,7 @@ class TestPartDLifecycleUnionSorted:
         unknown producers would silently drop default critic coverage
         for any newly-added producer role.
         """
-        registry = RoleRegistry.from_mapping(
-            {"unknown_producer": _uuid(100)}
-        )
+        registry = RoleRegistry.from_mapping({"unknown_producer": _uuid(100)})
         empty_router = UniversalCritiqueRouter({})
 
         result = taxonomy_keys_for_run_lifecycle(registry, empty_router)
@@ -521,11 +501,7 @@ class TestPartDLifecycleUnionSorted:
         assert len(result_a) == 2
 
         # (b) External critic name appearing only in pairings (not in registry).
-        external_router = UniversalCritiqueRouter(
-            {"planner": ["external_critic_xyz"]}
-        )
+        external_router = UniversalCritiqueRouter({"planner": ["external_critic_xyz"]})
         external_registry = RoleRegistry.from_mapping({"planner": _uuid(50)})
-        result_b = taxonomy_keys_for_run_lifecycle(
-            external_registry, external_router
-        )
+        result_b = taxonomy_keys_for_run_lifecycle(external_registry, external_router)
         assert result_b == ["external_critic_xyz", "planner"]

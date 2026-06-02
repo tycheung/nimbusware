@@ -11,7 +11,12 @@ _CONSOLE = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_consol
 
 def _facade_paths() -> list[Path]:
     paths: list[Path] = []
-    for pattern in ("*_display.py", "*_explainer.py", "bundle_catalog.py", "integrator_workflow_preview.py"):
+    for pattern in (
+        "*_display.py",
+        "*_explainer.py",
+        "bundle_catalog.py",
+        "integrator_workflow_preview.py",
+    ):
         paths.extend(_CONSOLE.glob(pattern))
     return sorted(paths)
 
@@ -84,7 +89,9 @@ def test_display_facades_match_package_init_imports() -> None:
         _, imported = _facade_import_names(facade)
         if sorted(imported) != init_names:
             stale.append(facade.name)
-    assert not stale, "Re-run: poetry run python scripts/sync_display_facade.py\n" + "\n".join(stale)
+    assert not stale, "Re-run: poetry run python scripts/sync_display_facade.py\n" + "\n".join(
+        stale
+    )
 
 
 def test_display_facades_have_explicit_imports() -> None:

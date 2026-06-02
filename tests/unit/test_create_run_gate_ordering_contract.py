@@ -1,6 +1,5 @@
 """RunOrchestrator.create_run`` cross-gate ordering meta-contract."""
 
-
 from __future__ import annotations
 
 import re
@@ -185,8 +184,7 @@ def test_create_run_gate_chain_pairwise_short_circuit_priority_matrix(
     recorder would fire. Both branches are caught.
     """
     pairs = [
-        (_GATE_EXCEPTIONS[i], _GATE_EXCEPTIONS[i + 1])
-        for i in range(len(_GATE_EXCEPTIONS) - 1)
+        (_GATE_EXCEPTIONS[i], _GATE_EXCEPTIONS[i + 1]) for i in range(len(_GATE_EXCEPTIONS) - 1)
     ]
     for (n_name, n_class, n_msg), (np1_name, _np1_class, np1_msg) in pairs:
         np1_calls: list[str] = []

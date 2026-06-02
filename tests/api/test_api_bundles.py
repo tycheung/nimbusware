@@ -11,6 +11,7 @@ from nimbusware_api.app import app
 
 pytestmark = pytest.mark.slow
 
+
 def test_get_bundle_search_returns_hits(client: TestClient) -> None:
     r = client.get("/v1/bundles/search", params={"q": "auth", "k": 5})
     assert r.status_code == 200
@@ -46,11 +47,7 @@ def test_get_bundle_search_openapi_documents_200_example(client: TestClient) -> 
         .get("200", {})
     )
     assert isinstance(ok, dict)
-    ex = (
-        ok.get("content", {})
-        .get("application/json", {})
-        .get("example", {})
-    )
+    ex = ok.get("content", {}).get("application/json", {}).get("example", {})
     assert ex.get("query") == "auth"
     assert ex.get("k") == 5
     assert isinstance(ex.get("hits"), list) and ex["hits"]
@@ -105,7 +102,9 @@ def test_get_bundle_search_uses_db_materialized_catalog(client: TestClient) -> N
             self.repo_root = root
             self.config_materializer = _Mat()
 
-    app.dependency_overrides[get_orchestrator] = lambda: _Orch(Path(os.environ["NIMBUSWARE_REPO_ROOT"]))
+    app.dependency_overrides[get_orchestrator] = lambda: _Orch(
+        Path(os.environ["NIMBUSWARE_REPO_ROOT"])
+    )
     try:
         r = client.get("/v1/bundles/search", params={"q": "db", "k": 5})
         assert r.status_code == 200
@@ -139,11 +138,7 @@ def test_get_persona_shelves_openapi_documents_200_example(client: TestClient) -
         .get("200", {})
     )
     assert isinstance(ok, dict)
-    ex = (
-        ok.get("content", {})
-        .get("application/json", {})
-        .get("example", {})
-    )
+    ex = ok.get("content", {}).get("application/json", {}).get("example", {})
     assert ex.get("version") == 1
     assert isinstance(ex.get("business_area"), list) and ex["business_area"]
     assert ex["business_area"][0].get("id") == "commerce"
@@ -192,20 +187,18 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
             r = c.patch(
                 "/v1/personas/business_area/commerce",
                 json=patch_body,
-                headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
+                headers={
+                    "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+                },
             )
             assert r.status_code == 200, r.text
-            patched = next(
-                e for e in r.json()["business_area"] if e["id"] == "commerce"
-            )
+            patched = next(e for e in r.json()["business_area"] if e["id"] == "commerce")
             assert patched["instructions"] == "Refund policy required."
             assert patched["version"] == 2
 
             g = c.get("/v1/personas")
             assert g.status_code == 200
-            on_wire = next(
-                e for e in g.json()["business_area"] if e["id"] == "commerce"
-            )
+            on_wire = next(e for e in g.json()["business_area"] if e["id"] == "commerce")
             assert on_wire["instructions"] == "Refund policy required."
             assert on_wire["version"] == 2
     finally:
@@ -224,4 +217,3 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
     assert ev["payload"]["next_version"] == 2
     assert ev["payload"]["fields_changed"] == ["instructions"]
     assert ev["payload"]["actor"] == "alice"
-

@@ -1,6 +1,5 @@
 """_maybe_emit_critique_gate_fail_findings`` per-stage axes matrix."""
 
-
 from __future__ import annotations
 
 import os
@@ -65,12 +64,7 @@ def _append_critique_gate(
     fc_list = failing_critics or []
     ff_list = failing_finding_ids or []
     code = failure_reason_code
-    if (
-        verdict == Verdict.FAIL
-        and not fc_list
-        and not ff_list
-        and not (code or "").strip()
-    ):
+    if verdict == Verdict.FAIL and not fc_list and not ff_list and not (code or "").strip():
         code = "llm_gate_fail"
     mem.append(
         GateDecisionEmittedEvent(
@@ -119,11 +113,7 @@ def _append_prior_critique_fail_finding(
 
 
 def _findings_for(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    return [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == _FINDING_CREATED
-    ]
+    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _FINDING_CREATED]
 
 
 def _stage_names_of(findings: list[dict[str, Any]]) -> list[str | None]:
@@ -204,9 +194,8 @@ def test_maybe_emit_critique_gate_fail_findings_multi_stage_matrix_4_axis() -> N
         new_stages_a4 = [
             (f.get("metadata") or {}).get("stage_name")
             for f in findings_a4
-            if (f.get("payload") or {}).get("source_artifact") != (
-                f"critique_gate:{IMPLEMENTATION_CRITIQUE_STAGE}"
-            )
+            if (f.get("payload") or {}).get("source_artifact")
+            != (f"critique_gate:{IMPLEMENTATION_CRITIQUE_STAGE}")
             or (f.get("payload") or {}).get("category") == "critique"
         ]
         all_stages_a4 = set(_stage_names_of(findings_a4))
@@ -311,9 +300,7 @@ def test_maybe_emit_critique_gate_fail_findings_payload_shape_4_axis() -> None:
         orch_c._maybe_emit_critique_gate_fail_findings(rid_c, eff_c)  # noqa: SLF001
         findings_c = _findings_for(mem_c, rid_c)
         assert len(findings_c) == 3
-        by_stage = {
-            (f.get("metadata") or {}).get("stage_name"): f for f in findings_c
-        }
+        by_stage = {(f.get("metadata") or {}).get("stage_name"): f for f in findings_c}
 
         for stage_name in (
             IMPLEMENTATION_CRITIQUE_STAGE,
@@ -360,18 +347,10 @@ def test_maybe_emit_critique_gate_fail_findings_payload_shape_4_axis() -> None:
         for f in findings_c:
             pl = f.get("payload") or {}
             meta = f.get("metadata") or {}
-            assert (pl.get("category") or "").lower() == "critique", (
-                "C4: category invariant"
-            )
-            assert pl.get("severity") == Severity.LOW.value, (
-                "C4: severity invariant must be LOW"
-            )
-            assert pl.get("required_fixes") == [], (
-                "C4: required_fixes invariant must be empty list"
-            )
-            assert meta.get("critique_gate_fail_finding") is True, (
-                "C4: metadata flag invariant"
-            )
+            assert (pl.get("category") or "").lower() == "critique", "C4: category invariant"
+            assert pl.get("severity") == Severity.LOW.value, "C4: severity invariant must be LOW"
+            assert pl.get("required_fixes") == [], "C4: required_fixes invariant must be empty list"
+            assert meta.get("critique_gate_fail_finding") is True, "C4: metadata flag invariant"
 
 
 def test_critique_gate_fail_pure_helpers_direct_contract_4_axis() -> None:

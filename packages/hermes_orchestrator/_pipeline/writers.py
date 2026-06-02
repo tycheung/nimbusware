@@ -39,7 +39,6 @@ class WritersMixin:
             meta["dispatch_mode"] = dispatch_mode
         return meta or None
 
-
     def _run_writers_sequential(
         self,
         run_id: UUID,
@@ -108,7 +107,6 @@ class WritersMixin:
         ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
         return run_writer_verifier_bundle(ws)
 
-
     def _parallel_run_implementation(
         self,
         run_id: UUID,
@@ -150,7 +148,6 @@ class WritersMixin:
             verifier_exit_code=code,
             verifier_log=log,
         )
-
 
     def _parallel_run_test_writer(
         self,
@@ -249,7 +246,6 @@ class WritersMixin:
             verifier_log=log,
         )
 
-
     def _run_writers_parallel_dispatch(
         self,
         run_id: UUID,
@@ -306,7 +302,6 @@ class WritersMixin:
         )
         return impl.verifier_exit_code, impl.verifier_log
 
-
     def _parallel_run_frontend_writer_stub(
         self,
         run_id: UUID,
@@ -339,4 +334,3 @@ class WritersMixin:
             ),
         )
         return WriterStageResult(stage_name="frontend_writer")
-

@@ -67,7 +67,6 @@ class CritiqueGateOptionalEmitMixin:
                 run_id=run_id,
             )
 
-
     def _emit_planner_critique_optional(
         self,
         run_id: UUID,
@@ -110,7 +109,6 @@ class CritiqueGateOptionalEmitMixin:
                 self._critique_router,
                 run_id=run_id,
             )
-
 
     def _emit_frontend_writer_critique_optional(
         self,
@@ -162,7 +160,6 @@ class CritiqueGateOptionalEmitMixin:
                 run_id=run_id,
             )
 
-
     def _emit_module_integrator_critique_optional(
         self,
         run_id: UUID,
@@ -198,4 +195,3 @@ class CritiqueGateOptionalEmitMixin:
                 self._critique_router,
                 run_id=run_id,
             )
-

@@ -102,12 +102,10 @@ def bundle_faiss_readiness_summary_table_rows(
     return mapping_to_sorted_table_rows(summary, _bundle_faiss_readiness_summary_cell)
 
 
-
 def bundle_faiss_readiness_summary_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
 
 
 def bundle_faiss_readiness_summary_operator_metrics(
@@ -267,11 +265,7 @@ def bundle_faiss_readiness_missing_caption(
     missing = summ.get("missing")
     if not isinstance(missing, list) or not missing:
         return None
-    paths = [
-        str(p).strip()
-        for p in missing
-        if isinstance(p, str) and str(p).strip()
-    ]
+    paths = [str(p).strip() for p in missing if isinstance(p, str) and str(p).strip()]
     if not paths:
         return None
     limit = max_paths if max_paths > 0 else 3
@@ -318,5 +312,3 @@ def bundle_faiss_readiness_missing_paths_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return table_rows_csv(rows, _FAISS_READINESS_MISSING_PATHS_CSV_COLUMNS)
-
-

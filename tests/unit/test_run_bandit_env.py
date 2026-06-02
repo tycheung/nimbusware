@@ -1,6 +1,5 @@
 """HERMES_RUN_BANDIT`` env-layer string-arm contract (follow-on 66, §14 #18)."""
 
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -34,10 +34,9 @@ def _persona_create_event_replayed(
 ) -> bool:
     rid = str(persona_catalog_run_id(shelf, persona_id))
     for r in store.list_run_events(rid):
-        if (
-            r.get("event_type") == EventType.PERSONA_SHELF_UPDATED.value
-            and str(r.get("correlation_id") or "") == str(correlation_id)
-        ):
+        if r.get("event_type") == EventType.PERSONA_SHELF_UPDATED.value and str(
+            r.get("correlation_id") or ""
+        ) == str(correlation_id):
             return True
     return False
 

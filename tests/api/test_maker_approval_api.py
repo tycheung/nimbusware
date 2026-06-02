@@ -8,6 +8,7 @@ from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
 
+
 def test_maker_approval_flow(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "maker-ws"
     ws.mkdir()

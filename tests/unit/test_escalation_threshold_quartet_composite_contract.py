@@ -1,6 +1,5 @@
 """configs/escalation/policy.yaml`` quartet loader composite."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -125,7 +124,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
             f"A4 {name}: value `{raw}` is not a Python int -> "
             f"`isinstance(n, int)` is False -> returns None. Got {actual!r}. "
             "KEY DIVERGENCE vs load_anti_deadlock_settings whose "
-            "`int(...)` would coerce `\"2\"` -> 2 and raise on `null`. "
+            '`int(...)` would coerce `"2"` -> 2 and raise on `null`. '
             "A refactor swapping `isinstance` for `int(n)` would FLIP "
             "the str_two case (None -> 2) and raise TypeError on null"
         )
@@ -223,7 +222,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
         f'version: 1\nverification:\n  {_KEY_NOTICE}: "2"\n',
     )
     assert load_notice_escalate_at_cumulative_findings(b3_nonint_repo) is None, (
-        "B3(b): notice value is string `\"2\"` -> `isinstance(int)` "
+        'B3(b): notice value is string `"2"` -> `isinstance(int)` '
         "False -> None. KEY DIVERGENCE pin vs `int()`-coerce refactor"
     )
 
@@ -549,7 +548,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
     d4_stage = load_escalate_after_cumulative_stage_failures(d4_repo)
     d4_gate = load_escalate_after_cumulative_gate_failures(d4_repo)
     assert d4_notice is None, (
-        "D4(corrupted): notice key set to string `\"abc\"` -> notice "
+        'D4(corrupted): notice key set to string `"abc"` -> notice '
         f"loader returns None. Got {d4_notice!r}"
     )
     assert (d4_auto, d4_stage, d4_gate) == (2, 4, 5), (
@@ -593,8 +592,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
         load_escalate_after_cumulative_gate_failures(d5_repo),
     )
     assert forward == (11, 22, 33, 44), (
-        f"D5(forward): forward call order returns (11, 22, 33, 44), "
-        f"got {forward!r}"
+        f"D5(forward): forward call order returns (11, 22, 33, 44), got {forward!r}"
     )
     assert reverse == (44, 33, 22, 11), (
         f"D5(reverse): reverse call order returns (44, 33, 22, 11), "

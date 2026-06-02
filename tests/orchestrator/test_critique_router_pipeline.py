@@ -899,9 +899,7 @@ def test_critique_gate_fail_finding_emitted_once_when_enabled() -> None:
     orch._maybe_emit_critique_gate_fail_findings(rid, eff)
     orch._maybe_emit_critique_gate_fail_findings(rid, eff)
     findings = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == "finding.created"
+        r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "finding.created"
     ]
     assert len(findings) == 1
     meta = findings[0].get("metadata") or {}
@@ -930,9 +928,7 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
             "universal_critique_emit_finding_on_gate_fail",
         )
     orch._maybe_emit_critique_gate_fail_findings(rid, eff)
-    assert not any(
-        r.get("event_type") == "finding.created" for r in mem.list_run_events(str(rid))
-    )
+    assert not any(r.get("event_type") == "finding.created" for r in mem.list_run_events(str(rid)))
 
 
 @patch.dict(
@@ -1201,9 +1197,7 @@ def test_critique_gate_fail_finding_emitted_for_test_writer_stage_when_enabled()
     eff = effective_universal_critique(ROOT, "default")
     orch._maybe_emit_critique_gate_fail_findings(rid, eff)
     findings = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == "finding.created"
+        r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "finding.created"
     ]
     assert len(findings) == 1
     meta = findings[0].get("metadata") or {}
@@ -1230,9 +1224,7 @@ def test_critique_gate_fail_finding_emitted_for_planner_stage_when_enabled() -> 
     eff = effective_universal_critique(ROOT, "default")
     orch._maybe_emit_critique_gate_fail_findings(rid, eff)
     findings = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == "finding.created"
+        r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "finding.created"
     ]
     assert len(findings) == 1
     meta = findings[0].get("metadata") or {}
@@ -1255,9 +1247,7 @@ def test_universal_critique_router_from_yaml_ignores_non_string_keys(
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(
-        "pairings:\n"
-        "  1: [pc, dc]\n"
-        "  backend_writer: [product_reference_critic, domain_critic]\n",
+        "pairings:\n  1: [pc, dc]\n  backend_writer: [product_reference_critic, domain_critic]\n",
         encoding="utf-8",
     )
     router = UniversalCritiqueRouter.from_yaml(p)
@@ -1286,9 +1276,7 @@ def test_universal_critique_router_from_yaml_ignores_non_list_values(
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(
-        "pairings:\n"
-        "  planner: [planner_critic_a]\n"
-        '  backend_writer: "not_a_list"\n',
+        'pairings:\n  planner: [planner_critic_a]\n  backend_writer: "not_a_list"\n',
         encoding="utf-8",
     )
     router = UniversalCritiqueRouter.from_yaml(p)

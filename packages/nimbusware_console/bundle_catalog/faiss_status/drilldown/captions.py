@@ -47,5 +47,3 @@ def bundle_faiss_catalog_order_id_set_mismatch_caption(repo_root: Path) -> str |
 
 
 _FAISS_ID_SET_MISMATCH_CSV_COLUMNS: tuple[str, ...] = ("direction", "bundle_id")
-
-

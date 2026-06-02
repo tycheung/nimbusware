@@ -33,13 +33,9 @@ def agent_evaluator_workflow_explainer_operator_metrics(
         return metrics
     metrics["yaml_key_present"] = payload.get("agent_evaluator_yaml_key_present") is True
     metrics["yaml_parsed_enabled"] = payload.get("yaml_parsed_enabled") is True
-    metrics["llm_evaluation_enabled"] = (
-        payload.get("yaml_parsed_llm_evaluation_enabled") is True
-    )
+    metrics["llm_evaluation_enabled"] = payload.get("yaml_parsed_llm_evaluation_enabled") is True
     metrics["would_emit_stage_started"] = payload.get("would_emit_stage_started") is True
-    metrics["would_emit_llm_evaluation"] = (
-        payload.get("would_emit_llm_evaluation") is True
-    )
+    metrics["would_emit_llm_evaluation"] = payload.get("would_emit_llm_evaluation") is True
     env = payload.get("HERMES_AGENT_EVALUATOR")
     if isinstance(env, dict):
         metrics["env_forces_on"] = env.get("forces_on") is True

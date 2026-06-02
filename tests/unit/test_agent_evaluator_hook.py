@@ -155,9 +155,7 @@ def test_agent_evaluator_env_force_on_string_arm_contract(
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default")
         orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
-        assert _has_agent_eval_stage(mem.list_run_events(str(rid))), (
-            f"force_on raw={raw!r}"
-        )
+        assert _has_agent_eval_stage(mem.list_run_events(str(rid))), f"force_on raw={raw!r}"
 
 
 def test_agent_evaluator_env_kill_switch_string_arm_contract(
@@ -192,9 +190,7 @@ def test_agent_evaluator_env_kill_switch_string_arm_contract(
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("agent_evaluator_on")
         orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
-        assert not _has_agent_eval_stage(mem.list_run_events(str(rid))), (
-            f"kill_switch raw={raw!r}"
-        )
+        assert not _has_agent_eval_stage(mem.list_run_events(str(rid))), f"kill_switch raw={raw!r}"
 
 
 def test_agent_evaluator_env_fallthrough_to_yaml_string_arm_contract(

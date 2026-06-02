@@ -41,22 +41,16 @@ def _render_self_refinement_marker_history(run_id: str, data: dict) -> None:
                 "Chronological policy markers (bounded on the API; latest "
                 "summary matches **Self-refinement** above)."
             )
-            _sr_marker_hist_cap = (
-                self_refinement_marker_history_entry_count_caption(
-                    _sr_marker_hist,
-                )
+            _sr_marker_hist_cap = self_refinement_marker_history_entry_count_caption(
+                _sr_marker_hist,
             )
             if _sr_marker_hist_cap:
                 st.caption(_sr_marker_hist_cap)
-            _sr_marker_hist_metrics = (
-                self_refinement_marker_history_operator_metrics(
-                    _sr_marker_hist,
-                )
+            _sr_marker_hist_metrics = self_refinement_marker_history_operator_metrics(
+                _sr_marker_hist,
             )
-            _sr_marker_hist_metrics_cap = (
-                self_refinement_marker_history_operator_metrics_caption(
-                    _sr_marker_hist_metrics,
-                )
+            _sr_marker_hist_metrics_cap = self_refinement_marker_history_operator_metrics_caption(
+                _sr_marker_hist_metrics,
             )
             if _sr_marker_hist_metrics_cap:
                 st.caption(_sr_marker_hist_metrics_cap)
@@ -68,10 +62,8 @@ def _render_self_refinement_marker_history(run_id: str, data: dict) -> None:
             _sr_marker_hist_ts = datetime.now(timezone.utc).strftime(
                 "%Y%m%dT%H%M%SZ",
             )
-            _sr_marker_hist_slug = (
-                self_refinement_marker_history_export_filename_slug(
-                    run_id.strip(),
-                )
+            _sr_marker_hist_slug = self_refinement_marker_history_export_filename_slug(
+                run_id.strip(),
             )
             if _sr_marker_hist_metric_rows:
                 st.dataframe(
@@ -95,38 +87,26 @@ def _render_self_refinement_marker_history(run_id: str, data: dict) -> None:
                 ) = st.columns(2)
                 with _sr_marker_hist_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download self-refinement marker history "
-                            "operator metrics JSON"
-                        ),
+                        label=("Download self-refinement marker history operator metrics JSON"),
                         data=_sr_marker_hist_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_self_refinement_marker_history_operator_metrics_"
                             f"{_sr_marker_hist_slug}_{_sr_marker_hist_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_self_refinement_marker_history_"
-                            "operator_metrics_json"
-                        ),
+                        key=("hermes_dl_self_refinement_marker_history_operator_metrics_json"),
                     )
                 with _sr_marker_hist_metrics_dl_csv_col:
                     if _sr_marker_hist_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download self-refinement marker history "
-                                "operator metrics CSV"
-                            ),
+                            label=("Download self-refinement marker history operator metrics CSV"),
                             data=_sr_marker_hist_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_self_refinement_marker_history_operator_metrics_"
                                 f"{_sr_marker_hist_slug}_{_sr_marker_hist_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_self_refinement_marker_history_"
-                                "operator_metrics_csv"
-                            ),
+                            key=("hermes_dl_self_refinement_marker_history_operator_metrics_csv"),
                         )
             st.dataframe(_sr_marker_hist_rows, use_container_width=True)
             _sr_marker_hist_csv = self_refinement_marker_history_table_rows_csv(

@@ -148,10 +148,7 @@ def test_bundle_catalog_local_summary_export_json_and_csv(tmp_path: Path) -> Non
     assert csv_text.splitlines()[0] == "field,value"
     assert bundle_catalog_local_summary_table_rows({}) == []  # type: ignore[arg-type]
     assert bundle_catalog_local_summary_table_rows_csv([]) == ""
-    assert (
-        bundle_catalog_local_summary_export_filename_slug()
-        == "bundle_catalog_local_summary"
-    )
+    assert bundle_catalog_local_summary_export_filename_slug() == "bundle_catalog_local_summary"
 
 
 def test_bundle_catalog_local_summary_export_missing_catalog(tmp_path: Path) -> None:
@@ -166,9 +163,7 @@ def test_bundle_catalog_bundles_without_tags_rollup_mixed_fixture(tmp_path: Path
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b}\n",
         encoding="utf-8",
     )
     rollup = bundle_catalog_bundles_without_tags_rollup(tmp_path)
@@ -208,9 +203,7 @@ def test_bundle_catalog_bundles_without_tags_rollup_operator_metrics(
     catalog = tmp_path / "configs" / "bundles"
     catalog.mkdir(parents=True)
     (catalog / "catalog.yaml").write_text(
-        "bundles:\n"
-        "  - id: a\n    tags: [x]\n"
-        "  - id: b\n",
+        "bundles:\n  - id: a\n    tags: [x]\n  - id: b\n",
         encoding="utf-8",
     )
     rollup = bundle_catalog_bundles_without_tags_rollup(tmp_path)
@@ -260,9 +253,7 @@ def test_bundle_catalog_bundles_without_id_rollup_mixed_fixture(tmp_path: Path) 
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {title: no id}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {title: no id}\n",
         encoding="utf-8",
     )
     rollup = bundle_catalog_bundles_without_id_rollup(tmp_path)
@@ -300,9 +291,7 @@ def test_bundle_catalog_bundles_without_id_rollup_operator_metrics(tmp_path: Pat
     catalog = tmp_path / "configs" / "bundles"
     catalog.mkdir(parents=True)
     (catalog / "catalog.yaml").write_text(
-        "bundles:\n"
-        "  - id: a\n    tags: [x]\n"
-        "  - {title: no id}\n",
+        "bundles:\n  - id: a\n    tags: [x]\n  - {title: no id}\n",
         encoding="utf-8",
     )
     rollup = bundle_catalog_bundles_without_id_rollup(tmp_path)
@@ -390,10 +379,7 @@ def test_bundle_catalog_distinct_tags_sample_truncates_at_max_n(tmp_path: Path) 
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [auth, billing, cdn, dns, ecom]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [auth, billing, cdn, dns, ecom]\n",
         encoding="utf-8",
     )
     truncated = bundle_catalog_distinct_tags_sample(tmp_path, max_n=2)
@@ -456,10 +442,7 @@ def test_bundle_catalog_top_tag_counts_truncates_at_top_n(tmp_path: Path) -> Non
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [auth, billing, cdn, dns, ecom]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [auth, billing, cdn, dns, ecom]\n",
         encoding="utf-8",
     )
     truncated = bundle_catalog_top_tag_counts(tmp_path, top_n=2)
@@ -475,10 +458,7 @@ def test_bundle_catalog_top_tag_counts_ignores_non_string_entries(tmp_path: Path
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [auth, 123, true, '   ', billing]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [auth, 123, true, '   ', billing]\n",
         encoding="utf-8",
     )
     rows = bundle_catalog_top_tag_counts(tmp_path)
@@ -629,12 +609,7 @@ def test_bundle_catalog_bundle_ids_sample_truncates_at_max_n(tmp_path: Path) -> 
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: aaa\n"
-        "  - id: bbb\n"
-        "  - id: ccc\n"
-        "  - id: ddd\n",
+        "version: 1\nbundles:\n  - id: aaa\n  - id: bbb\n  - id: ccc\n  - id: ddd\n",
         encoding="utf-8",
     )
     assert bundle_catalog_bundle_ids_sample(tmp_path, max_n=2) == ["aaa", "bbb"]
@@ -718,37 +693,20 @@ def test_bundle_catalog_bundle_count_caption_mixed_tagged_untagged(tmp_path: Pat
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [auth]\n"
-        "  - id: b\n"
-        "  - id: c\n"
-        "    tags: []\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [auth]\n  - id: b\n  - id: c\n    tags: []\n",
         encoding="utf-8",
     )
-    assert (
-        bundle_catalog_bundle_count_caption(tmp_path)
-        == "Bundles: 3 (1 tagged, 2 untagged)."
-    )
+    assert bundle_catalog_bundle_count_caption(tmp_path) == "Bundles: 3 (1 tagged, 2 untagged)."
 
 
 def test_bundle_catalog_bundle_count_caption_all_tagged(tmp_path: Path) -> None:
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [auth]\n"
-        "  - id: b\n"
-        "    tags: [billing]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [auth]\n  - id: b\n    tags: [billing]\n",
         encoding="utf-8",
     )
-    assert (
-        bundle_catalog_bundle_count_caption(tmp_path)
-        == "Bundles: 2 (2 tagged, 0 untagged)."
-    )
+    assert bundle_catalog_bundle_count_caption(tmp_path) == "Bundles: 2 (2 tagged, 0 untagged)."
 
 
 def test_bundle_catalog_top_tag_caption_real_repo_non_empty_when_rows() -> None:
@@ -756,9 +714,7 @@ def test_bundle_catalog_top_tag_caption_real_repo_non_empty_when_rows() -> None:
     rows = bundle_catalog_top_tag_counts(repo_root, top_n=3)
     cap = bundle_catalog_top_tag_caption(repo_root)
     if rows:
-        expected = "Top tags: " + ", ".join(
-            f"{r['tag']} ({r['count']})" for r in rows
-        ) + "."
+        expected = "Top tags: " + ", ".join(f"{r['tag']} ({r['count']})" for r in rows) + "."
         assert cap == expected
     else:
         assert cap is None
@@ -794,13 +750,7 @@ def test_bundle_catalog_top_tag_caption_zero_usable_tags_returns_none(
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "  - id: b\n"
-        "    tags: []\n"
-        "  - id: c\n"
-        "    tags: ['   ']\n",
+        "version: 1\nbundles:\n  - id: a\n  - id: b\n    tags: []\n  - id: c\n    tags: ['   ']\n",
         encoding="utf-8",
     )
     assert bundle_catalog_top_tag_caption(tmp_path) is None
@@ -822,10 +772,7 @@ def test_bundle_catalog_top_tag_caption_three_tag_fixture_exact_caption(
         "    tags: [foo, bar, baz]\n",
         encoding="utf-8",
     )
-    assert (
-        bundle_catalog_top_tag_caption(tmp_path)
-        == "Top tags: foo (3), bar (2), baz (1)."
-    )
+    assert bundle_catalog_top_tag_caption(tmp_path) == "Top tags: foo (3), bar (2), baz (1)."
 
 
 def test_bundle_catalog_top_tag_caption_default_top_n_truncates_to_three(
@@ -868,10 +815,7 @@ def test_bundle_catalog_top_tag_caption_explicit_top_n_two(tmp_path: Path) -> No
         "    tags: [foo, bar, baz]\n",
         encoding="utf-8",
     )
-    assert (
-        bundle_catalog_top_tag_caption(tmp_path, top_n=2)
-        == "Top tags: foo (3), bar (2)."
-    )
+    assert bundle_catalog_top_tag_caption(tmp_path, top_n=2) == "Top tags: foo (3), bar (2)."
 
 
 def test_bundle_catalog_top_tag_caption_non_positive_top_n_returns_none(
@@ -940,12 +884,7 @@ def test_bundle_catalog_distinct_tag_count_caption_three_tag_fixture(
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [foo, bar]\n"
-        "  - id: b\n"
-        "    tags: [foo, baz]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [foo, bar]\n  - id: b\n    tags: [foo, baz]\n",
         encoding="utf-8",
     )
     assert bundle_catalog_distinct_tag_count_caption(tmp_path) == "Distinct tags: 3."
@@ -1057,10 +996,7 @@ def test_bundle_catalog_bundles_without_id_count_all_good_ids_yields_zero(
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: a\n    tags: [t]\n"
-        "  - id: b\n    tags: [t]\n",
+        "version: 1\nbundles:\n  - id: a\n    tags: [t]\n  - id: b\n    tags: [t]\n",
         encoding="utf-8",
     )
     assert bundle_catalog_bundles_without_id_count(tmp_path) == 0
@@ -1096,11 +1032,7 @@ def test_bundle_catalog_bundles_without_tags_caption_mixed_fixture(
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: tagged\n"
-        "    tags: [x]\n"
-        "  - id: untagged\n",
+        "version: 1\nbundles:\n  - id: tagged\n    tags: [x]\n  - id: untagged\n",
         encoding="utf-8",
     )
     cap = bundle_catalog_bundles_without_tags_caption(tmp_path)
@@ -1195,9 +1127,7 @@ def test_bundle_catalog_local_summary_operator_metrics_from_summary(
     catalog = tmp_path / "configs" / "bundles"
     catalog.mkdir(parents=True)
     (catalog / "catalog.yaml").write_text(
-        "bundles:\n"
-        "  - id: a\n    tags: [x, y]\n"
-        "  - id: b\n    tags: [y]\n",
+        "bundles:\n  - id: a\n    tags: [x, y]\n  - id: b\n    tags: [y]\n",
         encoding="utf-8",
     )
     summary = bundle_catalog_local_summary(tmp_path)
@@ -1394,11 +1324,7 @@ def test_bundle_catalog_top_tag_counts_export_json_and_csv(tmp_path: Path) -> No
     cat_dir = tmp_path / "configs" / "bundles"
     cat_dir.mkdir(parents=True)
     (cat_dir / "catalog.yaml").write_text(
-        "bundles:\n"
-        "  - id: a\n"
-        "    tags: [foo, bar, foo]\n"
-        "  - id: b\n"
-        "    tags: [foo, baz]\n",
+        "bundles:\n  - id: a\n    tags: [foo, bar, foo]\n  - id: b\n    tags: [foo, baz]\n",
         encoding="utf-8",
     )
     rows = bundle_catalog_top_tag_counts(tmp_path, top_n=5)

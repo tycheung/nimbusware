@@ -86,4 +86,3 @@ def _render_persona_assignment(run_id: str, data: dict) -> None:
                 )
             with st.expander("Raw persona_assignment JSON", expanded=False):
                 st.json(_pa)
-

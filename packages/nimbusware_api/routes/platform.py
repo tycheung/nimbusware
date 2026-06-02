@@ -19,4 +19,3 @@ def get_platform_edition() -> dict:
 @router.get("/platform/readiness")
 def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict:
     return build_platform_readiness(repo_root=orch.repo_root, store=store)
-

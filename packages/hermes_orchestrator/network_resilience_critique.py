@@ -231,8 +231,10 @@ def execute_network_resilience_critique_llm(
     critic_payloads: list[CriticVerdictEmittedPayload] = []
     for tax_key in tax_keys:
         critic_role = registry.resolve(tax_key)
-        verdict = Verdict.FAIL if fail_any and tax_key == _NETWORK_RESILIENCE_CRITIC else (
-            Verdict.FAIL if fail_any else Verdict.PASS
+        verdict = (
+            Verdict.FAIL
+            if fail_any and tax_key == _NETWORK_RESILIENCE_CRITIC
+            else (Verdict.FAIL if fail_any else Verdict.PASS)
         )
         if tax_key != _NETWORK_RESILIENCE_CRITIC:
             verdict = Verdict.PASS if not fail_any else Verdict.FAIL

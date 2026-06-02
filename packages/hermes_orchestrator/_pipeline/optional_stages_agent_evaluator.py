@@ -191,4 +191,3 @@ class AgentEvaluatorOptionalStagesMixin:
                     rules_eval=rules_eval,
                     unanimous_gate_enforce=eff.unanimous_gate_enforce,
                 )
-

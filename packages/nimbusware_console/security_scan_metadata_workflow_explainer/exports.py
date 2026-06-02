@@ -16,7 +16,6 @@ def security_scan_metadata_export_filename_slug() -> str:
     return "security_scan_metadata"
 
 
-
 def _security_scan_metadata_explainer_cell(value: Any) -> str:
     if value is None:
         return ""
@@ -45,6 +44,3 @@ def security_scan_metadata_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
-
-

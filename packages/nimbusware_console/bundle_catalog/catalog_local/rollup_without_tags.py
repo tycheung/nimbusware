@@ -42,10 +42,7 @@ def bundle_catalog_bundles_without_tags_count(repo_root: Path) -> int:
         if not isinstance(raw_tags, list):
             without += 1
             continue
-        usable = any(
-            isinstance(t, str) and t.strip()
-            for t in raw_tags
-        )
+        usable = any(isinstance(t, str) and t.strip() for t in raw_tags)
         if not usable:
             without += 1
     return without
@@ -120,10 +117,7 @@ def bundle_catalog_bundles_without_tags_rollup_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS},
             )
     return buf.getvalue()
 
@@ -228,11 +222,8 @@ def bundle_catalog_bundles_without_tags_rollup_operator_metrics_caption(
         bc = 0
     if not isinstance(without, int) or isinstance(without, bool):
         without = 0
-    return (
-        f"Bundles without tags rollup metrics: **{without}** untagged of **{bc}** bundle(s)."
-    )
+    return f"Bundles without tags rollup metrics: **{without}** untagged of **{bc}** bundle(s)."
 
 
 def bundle_catalog_bundles_without_tags_rollup_operator_metrics_export_filename_slug() -> str:
     return "bundle_catalog_bundles_without_tags_rollup_operator_metrics"
-

@@ -62,9 +62,7 @@ def escalation_policy_yaml_anti_deadlock_min_progress_caption(
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
     unit = "event" if raw == 1 else "events"
-    return (
-        f"Escalation policy anti_deadlock.min_progress_events: **{raw}** {unit}."
-    )
+    return f"Escalation policy anti_deadlock.min_progress_events: **{raw}** {unit}."
 
 
 def escalation_policy_yaml_anti_deadlock_shape_caption(
@@ -80,8 +78,7 @@ def escalation_policy_yaml_anti_deadlock_shape_caption(
     has_ad = payload.get("escalation_policy_yaml_has_anti_deadlock_mapping")
     if has_ad is True:
         return (
-            "Policy shape: top-level ``anti_deadlock`` mapping present "
-            "(progress / deadlock knobs)."
+            "Policy shape: top-level ``anti_deadlock`` mapping present (progress / deadlock knobs)."
         )
     if has_ad is False:
         return (
@@ -318,5 +315,3 @@ def escalation_policy_yaml_top_level_kinds_caption(
         f"Policy top-level kinds: {mapping_n} mapping(s), "
         f"{scalar_n} scalar(s), {list_n} list(s), {other_n} other."
     )
-
-

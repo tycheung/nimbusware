@@ -23,4 +23,3 @@ def _stringify(value: Any) -> str:
     if isinstance(value, (dict, list)):
         return json.dumps(value, ensure_ascii=False)
     return str(value)
-

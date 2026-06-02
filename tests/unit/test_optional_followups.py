@@ -33,10 +33,13 @@ def test_self_refinement_production_llm_without_global_use_llm() -> None:
     )
 
     os.environ.pop("HERMES_USE_LLM", None)
-    assert self_refinement_production_llm_critique_effective(
-        ROOT,
-        "nimbusware_production",
-    ) is True
+    assert (
+        self_refinement_production_llm_critique_effective(
+            ROOT,
+            "nimbusware_production",
+        )
+        is True
+    )
 
 
 def test_scan_n_plus_one_heuristic_clean_repo() -> None:

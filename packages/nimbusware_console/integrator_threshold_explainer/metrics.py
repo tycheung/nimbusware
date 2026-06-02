@@ -27,9 +27,7 @@ def integrator_threshold_explainer_operator_metrics(
         return metrics
     emission = payload.get("gate_event_emission")
     if isinstance(emission, Mapping):
-        metrics["would_emit_gate_event"] = (
-            emission.get("would_emit_integrator_gate_event") is True
-        )
+        metrics["would_emit_gate_event"] = emission.get("would_emit_integrator_gate_event") is True
         metrics["thresholds_yaml_exists"] = emission.get("thresholds_yaml_exists") is True
         metrics["env_forces_on"] = emission.get("forces_on") is True
         metrics["env_forces_off"] = emission.get("forces_off") is True
@@ -42,10 +40,7 @@ def integrator_threshold_explainer_operator_metrics(
         metrics["min_score_pipeline"] = float(pipe)
     if isinstance(preview, (int, float)) and not isinstance(preview, bool):
         metrics["min_score_preview"] = float(preview)
-    if (
-        metrics["min_score_pipeline"] is not None
-        and metrics["min_score_preview"] is not None
-    ):
+    if metrics["min_score_pipeline"] is not None and metrics["min_score_preview"] is not None:
         metrics["min_scores_agree"] = metrics["min_score_pipeline"] == metrics["min_score_preview"]
     wf_gate = payload.get("workflow_integrator_gate")
     if isinstance(wf_gate, Mapping):
@@ -121,8 +116,7 @@ def integrator_threshold_explainer_operator_metrics_caption(
     if metrics.get("would_emit_gate_event") is True:
         parts.append("gate **would emit**")
     elif metrics.get("would_emit_gate_event") is False and (
-        metrics.get("thresholds_yaml_exists") is True
-        or metrics.get("env_forces_off") is True
+        metrics.get("thresholds_yaml_exists") is True or metrics.get("env_forces_off") is True
     ):
         parts.append("gate **would not emit**")
     if metrics.get("env_forces_on") is True:

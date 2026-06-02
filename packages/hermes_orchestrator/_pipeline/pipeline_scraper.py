@@ -42,8 +42,7 @@ class PipelineScraperMixin:
         """
         if not hermes_outbound_fetch_enabled():
             msg = (
-                "Set HERMES_OUTBOUND_FETCH_ENABLED=1 to perform outbound GET "
-                "from the orchestrator"
+                "Set HERMES_OUTBOUND_FETCH_ENABLED=1 to perform outbound GET from the orchestrator"
             )
             raise RuntimeError(msg)
         return egress_checked_get_for_run(
@@ -56,7 +55,6 @@ class PipelineScraperMixin:
         )
 
     @staticmethod
-
     def _parse_content_length_header(resp: httpx.Response) -> int | None:
         raw = resp.headers.get("content-length")
         if raw is None:
@@ -67,7 +65,6 @@ class PipelineScraperMixin:
             return None
 
     @staticmethod
-
     def _scraper_stage_audit_metadata(
         host: str,
         http_status: int,
@@ -87,14 +84,12 @@ class PipelineScraperMixin:
         return {"scraper_fetch": inner}
 
     @staticmethod
-
     def _scraper_body_digest_and_snippet(content: bytes, snippet_max_bytes: int) -> dict[str, Any]:
         out: dict[str, Any] = {"body_sha256_hex": hashlib.sha256(content).hexdigest()}
         if snippet_max_bytes > 0:
             raw = content[:snippet_max_bytes]
             out["body_snippet_preview"] = raw.decode("utf-8", errors="replace")
         return out
-
 
     def _persist_scraper_response_artifact(
         self,
@@ -113,7 +108,6 @@ class PipelineScraperMixin:
             content,
             persist_cap,
         )
-
 
     def _scraper_get_with_retries(
         self,
@@ -154,7 +148,6 @@ class PipelineScraperMixin:
         msg = str(last_err)[:2000] if last_err else "scraper fetch failed"
         raise RuntimeError(msg)
 
-
     def _effective_scraper_budget_bytes(
         self,
         run_id: UUID,
@@ -173,7 +166,6 @@ class PipelineScraperMixin:
         if cfg.max_bytes is not None:
             caps.append(cfg.max_bytes)
         return min(caps) if caps else None
-
 
     def run_optional_scraper_fetch_stage(
         self,
@@ -359,4 +351,3 @@ class PipelineScraperMixin:
                 payload=StagePassedPayload(stage_name="scraper:fetch", duration_ms=0),
             ),
         )
-

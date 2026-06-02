@@ -1,6 +1,5 @@
 """NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract (fo70, §5 / §14 #16)."""
 
-
 from __future__ import annotations
 
 import sys
@@ -60,17 +59,21 @@ def _run_lifespan(
         monkeypatch.delenv("NIMBUSWARE_ROLES_FROM_DB", raising=False)
     else:
         monkeypatch.setenv("NIMBUSWARE_ROLES_FROM_DB", roles_from_db)
-    with patch.object(
-        _APP_MODULE,
-        "load_registry_from_postgres",
-        return_value=_SENTINEL_REGISTRY,
-    ) as mock_db_loader, patch.object(
-        _APP_MODULE,
-        "PostgresEventStore",
-    ) as mock_postgres_store, patch.object(
-        _APP_MODULE,
-        "build_iam_store",
-        return_value=InMemoryIamStore(),
+    with (
+        patch.object(
+            _APP_MODULE,
+            "load_registry_from_postgres",
+            return_value=_SENTINEL_REGISTRY,
+        ) as mock_db_loader,
+        patch.object(
+            _APP_MODULE,
+            "PostgresEventStore",
+        ) as mock_postgres_store,
+        patch.object(
+            _APP_MODULE,
+            "build_iam_store",
+            return_value=InMemoryIamStore(),
+        ),
     ):
         with TestClient(app):
             yield mock_db_loader, mock_postgres_store
@@ -142,7 +145,9 @@ def test_roles_from_db_env_compound_and_gate_contract(
        Blocks 1 and 3 would fail simultaneously.
     """
     with _run_lifespan(
-        monkeypatch, db_url=None, roles_from_db="1",
+        monkeypatch,
+        db_url=None,
+        roles_from_db="1",
     ) as (mdl, mps):
         pass
     assert mdl.call_count == 0, (
@@ -150,38 +155,39 @@ def test_roles_from_db_env_compound_and_gate_contract(
         f"(count={mdl.call_count}); url should short-circuit"
     )
     assert mps.call_count == 0, (
-        "url_absent_flag_on: PostgresEventStore unexpectedly called "
-        f"(count={mps.call_count})"
+        f"url_absent_flag_on: PostgresEventStore unexpectedly called (count={mps.call_count})"
     )
 
     with _run_lifespan(
-        monkeypatch, db_url=_FAKE_DB_URL, roles_from_db="1",
+        monkeypatch,
+        db_url=_FAKE_DB_URL,
+        roles_from_db="1",
     ) as (mdl, mps):
         pass
     assert mdl.call_count == 1, (
-        "url_present_flag_on: DB loader not called once "
-        f"(count={mdl.call_count})"
+        f"url_present_flag_on: DB loader not called once (count={mdl.call_count})"
     )
     assert mps.call_count == 1, (
-        "url_present_flag_on: PostgresEventStore not called once "
-        f"(count={mps.call_count})"
+        f"url_present_flag_on: PostgresEventStore not called once (count={mps.call_count})"
     )
 
     with _run_lifespan(
-        monkeypatch, db_url=None, roles_from_db=None,
+        monkeypatch,
+        db_url=None,
+        roles_from_db=None,
     ) as (mdl, mps):
         pass
     assert mdl.call_count == 0, (
-        "url_absent_flag_off: DB loader unexpectedly called "
-        f"(count={mdl.call_count})"
+        f"url_absent_flag_off: DB loader unexpectedly called (count={mdl.call_count})"
     )
     assert mps.call_count == 0, (
-        "url_absent_flag_off: PostgresEventStore unexpectedly called "
-        f"(count={mps.call_count})"
+        f"url_absent_flag_off: PostgresEventStore unexpectedly called (count={mps.call_count})"
     )
 
     with _run_lifespan(
-        monkeypatch, db_url=_FAKE_DB_URL, roles_from_db=None,
+        monkeypatch,
+        db_url=_FAKE_DB_URL,
+        roles_from_db=None,
     ) as (mdl, mps):
         pass
     assert mdl.call_count == 0, (

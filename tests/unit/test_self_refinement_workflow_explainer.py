@@ -31,9 +31,7 @@ from nimbusware_console.self_refinement_workflow_explainer import (
     self_refinement_would_emit_marker_caption,
 )
 
-_POLICY_AND_WORKFLOW_POLICY_TEXT = (
-    "version: 1\nenabled: false\ndescription: \"from disk policy\"\n"
-)
+_POLICY_AND_WORKFLOW_POLICY_TEXT = 'version: 1\nenabled: false\ndescription: "from disk policy"\n'
 
 
 def test_self_refinement_policy_yaml_file_bytes_caption(
@@ -65,9 +63,12 @@ def test_self_refinement_policy_yaml_disk_version_caption(
     assert "**1**" in cap
     assert self_refinement_policy_yaml_disk_version_caption(None) is None
     assert self_refinement_policy_yaml_disk_version_caption({"load_error": "x"}) is None
-    assert self_refinement_policy_yaml_disk_version_caption(
-        {"policy_yaml": {}},
-    ) is None
+    assert (
+        self_refinement_policy_yaml_disk_version_caption(
+            {"policy_yaml": {}},
+        )
+        is None
+    )
 
 
 def test_self_refinement_workflow_yaml_raw_type_caption(
@@ -117,9 +118,12 @@ def test_self_refinement_merged_description_preview_caption() -> None:
     assert "150 chars" in cap_trunc
     assert self_refinement_merged_description_preview_caption(None) is None
     assert self_refinement_merged_description_preview_caption({}) is None
-    assert self_refinement_merged_description_preview_caption(
-        {"merged_description_preview": ""},
-    ) is None
+    assert (
+        self_refinement_merged_description_preview_caption(
+            {"merged_description_preview": ""},
+        )
+        is None
+    )
 
 
 def test_self_refinement_would_emit_after_env_caption() -> None:
@@ -174,7 +178,7 @@ def repo_sr_workflow_only(tmp_path: Path) -> Path:
         "self_refinement:\n"
         "  enabled: true\n"
         "  version: 2\n"
-        "  description: \"from workflow\"\n",
+        '  description: "from workflow"\n',
         encoding="utf-8",
     )
     return tmp_path
@@ -189,10 +193,7 @@ def repo_sr_policy_and_workflow(tmp_path: Path) -> Path:
     )
     (tmp_path / "configs" / "workflows").mkdir(parents=True)
     (tmp_path / "configs" / "workflows" / "on.yaml").write_text(
-        "version: 1\n"
-        "self_refinement:\n"
-        "  enabled: true\n"
-        "  version: 9\n",
+        "version: 1\nself_refinement:\n  enabled: true\n  version: 9\n",
         encoding="utf-8",
     )
     return tmp_path
@@ -219,10 +220,7 @@ def test_would_emit_when_workflow_enables_even_if_policy_off(
 
 def test_workflow_description_overrides_policy(repo_sr_policy_and_workflow: Path) -> None:
     (repo_sr_policy_and_workflow / "configs" / "workflows" / "on.yaml").write_text(
-        "version: 1\n"
-        "self_refinement:\n"
-        "  enabled: true\n"
-        "  description: \"override desc\"\n",
+        'version: 1\nself_refinement:\n  enabled: true\n  description: "override desc"\n',
         encoding="utf-8",
     )
     out = self_refinement_workflow_explainer_payload(

@@ -80,18 +80,14 @@ def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
         "RunOrchestrator",
         _MIXINS,
         {
-            "__doc__": (
-                "MVP run lifecycle: create → preflight → plan stage → writer loop."
-            ),
+            "__doc__": ("MVP run lifecycle: create → preflight → plan stage → writer loop."),
         },
     )
     for base in composed.__mro__:
         if base in {object, composed}:
             continue
         for name in base.__dict__:
-            if name == "__init__" or (
-                name.startswith("__") and name.endswith("__")
-            ):
+            if name == "__init__" or (name.startswith("__") and name.endswith("__")):
                 continue
             try:
                 raw = getattr_static(base, name)

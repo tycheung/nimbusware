@@ -77,7 +77,9 @@ def test_try_auto_promote_with_self_refinement_actor(tmp_path: Path) -> None:
     )
     assert meta["auto_promote_probation_applied"] is True
     prid = str(persona_catalog_run_id("business_area", "commerce"))
-    ev = next(r for r in mem.list_run_events(prid) if r.get("event_type") == "persona.shelf.updated")
+    ev = next(
+        r for r in mem.list_run_events(prid) if r.get("event_type") == "persona.shelf.updated"
+    )
     assert (ev.get("payload") or {}).get("actor") == "system:self_refinement"
 
 

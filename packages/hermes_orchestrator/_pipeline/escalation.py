@@ -31,7 +31,6 @@ class EscalationMixin:
         )
         return block.suppress_automatic_escalation
 
-
     def _maybe_emit_anti_deadlock_escalation(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
@@ -59,7 +58,6 @@ class EscalationMixin:
             notes=f"stall_minutes={stall_minutes} min_progress_events={min_prog}",
         )
 
-
     def _maybe_escalate_after_cumulative_stage_failures(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
@@ -86,7 +84,6 @@ class EscalationMixin:
             reason_code="cumulative_stage_failures",
             notes=f"threshold={threshold} cumulative_stage_failed={n_failed}",
         )
-
 
     def _maybe_escalate_after_cumulative_gate_failures(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
@@ -121,7 +118,6 @@ class EscalationMixin:
             notes=f"threshold={threshold} cumulative_gate_failed={n_gate_fail}",
         )
 
-
     def _maybe_escalate_after_cumulative_high_severity_findings(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
@@ -152,12 +148,8 @@ class EscalationMixin:
             repo_root=self._repo_root,
             run_id=run_id,
             reason_code="cumulative_high_severity_findings",
-            notes=(
-                f"threshold={threshold} "
-                f"cumulative_high_severity_findings={high_n}"
-            ),
+            notes=(f"threshold={threshold} cumulative_high_severity_findings={high_n}"),
         )
-
 
     def _maybe_auto_escalate(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
@@ -181,7 +173,6 @@ class EscalationMixin:
             reason_code="cumulative_findings_threshold",
             notes=f"threshold={threshold} cumulative_findings={n_findings}",
         )
-
 
     def _maybe_notice_escalate_findings(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
@@ -210,7 +201,6 @@ class EscalationMixin:
             notes=f"notice_threshold={threshold} cumulative_findings={n_findings}",
         )
 
-
     def _maybe_escalate_verifier_failure_checkpoint(self, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
@@ -230,4 +220,3 @@ class EscalationMixin:
             reason_code="verifier_failure_checkpoint",
             notes="escalate_on_first_verifier_failure policy",
         )
-

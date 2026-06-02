@@ -101,10 +101,7 @@ def run_detail_summary_operator_metrics_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _RUN_DETAIL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _RUN_DETAIL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS},
             )
     return buf.getvalue()
 
@@ -131,5 +128,3 @@ def run_detail_summary_operator_metrics_caption(
 
 def run_detail_summary_operator_metrics_export_filename_slug() -> str:
     return "run_detail_summary_operator_metrics"
-
-

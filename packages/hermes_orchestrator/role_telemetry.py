@@ -185,9 +185,12 @@ def accumulate_event_row(
 
     if et in (EventType.STAGE_PASSED.value, EventType.STAGE_FAILED.value) and isinstance(pl, dict):
         stage_name = pl.get("stage_name")
-        role_key = _role_key_from_stage(
-            str(stage_name) if stage_name is not None else None,
-        ) or "stage"
+        role_key = (
+            _role_key_from_stage(
+                str(stage_name) if stage_name is not None else None,
+            )
+            or "stage"
+        )
         bucket = _bucket_for(buckets, role_key)
         bucket.event_count += 1
         if model_s:

@@ -29,10 +29,7 @@ def deterministic_chunk_id(
     excerpt: str,
 ) -> UUID:
     """Stable chunk id for identical source rows (replay / CI fixtures)."""
-    key = (
-        f"{repo_scope_hash}|{run_id}|{source_event_type}|"
-        f"{source_store_seq}|{excerpt.strip()}"
-    )
+    key = f"{repo_scope_hash}|{run_id}|{source_event_type}|{source_store_seq}|{excerpt.strip()}"
     return uuid5(NAMESPACE_URL, key)
 
 
@@ -117,8 +114,12 @@ def rebuild_memory_index(
         model_id=model_id,
     )
     index_dir = default_memory_index_dir(root)
-    manifest_relpath = str(index_dir.relative_to(root)) if index_dir.is_relative_to(root) else str(
-        index_dir,
+    manifest_relpath = (
+        str(index_dir.relative_to(root))
+        if index_dir.is_relative_to(root)
+        else str(
+            index_dir,
+        )
     )
     gen_row = memory_store.replace_generation(
         generation_id=gen_id,

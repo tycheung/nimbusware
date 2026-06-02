@@ -200,17 +200,25 @@ def test_security_scan_metadata_truthy_case_insensitive_strings_round_trip(
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"top_{name}",
-        ) is True, f"top:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"top_{name}",
+            )
+            is True
+        ), f"top:{raw}"
         _write_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"nested_{name}",
-        ) is True, f"nested:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"nested_{name}",
+            )
+            is True
+        ), f"nested:{raw}"
 
 
 def test_security_scan_metadata_truthy_whitespace_trimmed_strings_round_trip(
@@ -249,17 +257,25 @@ def test_security_scan_metadata_truthy_whitespace_trimmed_strings_round_trip(
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"top_{name}",
-        ) is True, f"top:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"top_{name}",
+            )
+            is True
+        ), f"top:{raw}"
         _write_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"nested_{name}",
-        ) is True, f"nested:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"nested_{name}",
+            )
+            is True
+        ), f"nested:{raw}"
 
 
 def test_security_scan_metadata_falsy_and_unknown_strings_round_trip(
@@ -307,14 +323,22 @@ def test_security_scan_metadata_falsy_and_unknown_strings_round_trip(
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"top_{name}",
-        ) is False, f"top:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"top_{name}",
+            )
+            is False
+        ), f"top:{raw}"
         _write_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
         )
-        assert parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, f"nested_{name}",
-        ) is False, f"nested:{raw}"
+        assert (
+            parse_security_scan_metadata_on_verify_workflow(
+                tmp_path,
+                f"nested_{name}",
+            )
+            is False
+        ), f"nested:{raw}"

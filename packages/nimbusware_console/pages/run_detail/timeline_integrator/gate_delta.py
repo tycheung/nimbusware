@@ -72,53 +72,35 @@ def _render_integrator_gate_delta(run_id: str, data: dict) -> None:
                     hide_index=True,
                 )
                 if _ig_d_op_rows:
-                    _ig_d_metrics_json = (
-                        integrator_gate_delta_operator_metrics_export_json(
-                            _ig_d_m,
-                        )
+                    _ig_d_metrics_json = integrator_gate_delta_operator_metrics_export_json(
+                        _ig_d_m,
                     )
-                    _ig_d_metrics_csv = (
-                        integrator_gate_delta_operator_metrics_table_rows_csv(
-                            _ig_d_op_rows,
-                        )
+                    _ig_d_metrics_csv = integrator_gate_delta_operator_metrics_table_rows_csv(
+                        _ig_d_op_rows,
                     )
-                    _ig_d_metrics_dl_json_col, _ig_d_metrics_dl_csv_col = (
-                        st.columns(2)
-                    )
+                    _ig_d_metrics_dl_json_col, _ig_d_metrics_dl_csv_col = st.columns(2)
                     with _ig_d_metrics_dl_json_col:
                         st.download_button(
-                            label=(
-                                "Download integrator gate delta "
-                                "operator metrics JSON"
-                            ),
+                            label=("Download integrator gate delta operator metrics JSON"),
                             data=_ig_d_metrics_json.encode("utf-8"),
                             file_name=(
                                 "hermes_integrator_gate_delta_operator_metrics_"
                                 f"{_ig_delta_slug}_{_ig_delta_ts}.json"
                             ),
                             mime="application/json",
-                            key=(
-                                "hermes_dl_integrator_gate_delta_"
-                                "operator_metrics_json"
-                            ),
+                            key=("hermes_dl_integrator_gate_delta_operator_metrics_json"),
                         )
                     with _ig_d_metrics_dl_csv_col:
                         if _ig_d_metrics_csv:
                             st.download_button(
-                                label=(
-                                    "Download integrator gate delta "
-                                    "operator metrics CSV"
-                                ),
+                                label=("Download integrator gate delta operator metrics CSV"),
                                 data=_ig_d_metrics_csv.encode("utf-8"),
                                 file_name=(
                                     "hermes_integrator_gate_delta_operator_metrics_"
                                     f"{_ig_delta_slug}_{_ig_delta_ts}.csv"
                                 ),
                                 mime="text/csv; charset=utf-8",
-                                key=(
-                                    "hermes_dl_integrator_gate_delta_"
-                                    "operator_metrics_csv"
-                                ),
+                                key=("hermes_dl_integrator_gate_delta_operator_metrics_csv"),
                             )
                 with st.expander(
                     "Raw integrator_gate_delta operator metrics JSON",
@@ -132,10 +114,7 @@ def _render_integrator_gate_delta(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download integrator gate delta CSV",
                     data=_ig_delta_csv.encode("utf-8"),
-                    file_name=(
-                        "hermes_integrator_gate_delta_"
-                        f"{_ig_delta_slug}_{_ig_delta_ts}.csv"
-                    ),
+                    file_name=(f"hermes_integrator_gate_delta_{_ig_delta_slug}_{_ig_delta_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_integrator_gate_delta_csv",
                 )
@@ -144,8 +123,7 @@ def _render_integrator_gate_delta(run_id: str, data: dict) -> None:
                     label="Download integrator gate delta JSON",
                     data=_ig_delta_json.encode("utf-8"),
                     file_name=(
-                        "hermes_integrator_gate_delta_"
-                        f"{_ig_delta_slug}_{_ig_delta_ts}.json"
+                        f"hermes_integrator_gate_delta_{_ig_delta_slug}_{_ig_delta_ts}.json"
                     ),
                     mime="application/json",
                     key="hermes_dl_integrator_gate_delta_json",

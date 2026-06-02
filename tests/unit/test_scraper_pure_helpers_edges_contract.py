@@ -1,6 +1,5 @@
 """_parse_content_length_header`` / ``_scraper_stage_audit_metadata`` /."""
 
-
 from __future__ import annotations
 
 import hashlib
@@ -190,7 +189,10 @@ def test_persist_scraper_response_artifact_5_axis(
     content_d1 = b"x" * 10
     expected_digest_d1 = hashlib.sha256(content_d1).hexdigest()
     out_d1 = orch._persist_scraper_response_artifact(  # noqa: SLF001
-        run_id_d1, 3, content_d1, 100,
+        run_id_d1,
+        3,
+        content_d1,
+        100,
     )
     expected_fname_d1 = f"url03_{expected_digest_d1[:32]}.bin"
     assert out_d1["artifact_relpath"].endswith(expected_fname_d1), (
@@ -202,7 +204,10 @@ def test_persist_scraper_response_artifact_5_axis(
     run_id_d2 = uuid4()
     content_d2 = b"abc"
     out_d2 = orch._persist_scraper_response_artifact(  # noqa: SLF001
-        run_id_d2, 0, content_d2, 100,
+        run_id_d2,
+        0,
+        content_d2,
+        100,
     )
     assert out_d2["artifact_bytes_written"] == 3, (
         "D2: content (3 bytes) under persist_cap (100) -> "
@@ -217,7 +222,10 @@ def test_persist_scraper_response_artifact_5_axis(
     run_id_d3 = uuid4()
     content_d3 = b"a" * 10
     out_d3 = orch._persist_scraper_response_artifact(  # noqa: SLF001
-        run_id_d3, 0, content_d3, 4,
+        run_id_d3,
+        0,
+        content_d3,
+        4,
     )
     assert out_d3["artifact_bytes_written"] == 4, (
         "D3: content (10 bytes) over persist_cap (4) -> artifact_bytes_written "
@@ -248,7 +256,10 @@ def test_persist_scraper_response_artifact_5_axis(
 
     run_id_d5 = uuid4()
     out_d5 = orch._persist_scraper_response_artifact(  # noqa: SLF001
-        run_id_d5, 1, b"data", 1024,
+        run_id_d5,
+        1,
+        b"data",
+        1024,
     )
     assert "\\" not in out_d5["artifact_relpath"], (
         "D5: artifact_relpath has NO backslash separators; pins the "

@@ -26,9 +26,7 @@ def _is_json_value(value: Any) -> bool:
     if isinstance(value, list):
         return all(_is_json_value(item) for item in value)
     if isinstance(value, dict):
-        return all(
-            isinstance(k, str) and _is_json_value(v) for k, v in value.items()
-        )
+        return all(isinstance(k, str) and _is_json_value(v) for k, v in value.items())
     return False
 
 
@@ -88,4 +86,3 @@ class EventType(str, Enum):
 
 RoleId: TypeAlias = UUID
 """Role Registry ``role_id`` on persisted paths (plan ?3, ?5, ?6.4). JSON wire: UUID string."""
-

@@ -340,9 +340,7 @@ class GateDecisionEmittedPayload(BasePayload):
     failing_finding_ids: list[UUID] = Field(default_factory=list)
     failure_reason_code: str | None = Field(
         default=None,
-        description=(
-            "For FAIL when no critic/finding ids apply yet (e.g. timeout, runner crash)."
-        ),
+        description=("For FAIL when no critic/finding ids apply yet (e.g. timeout, runner crash)."),
     )
 
     @model_validator(mode="after")
@@ -362,6 +360,7 @@ class GateDecisionEmittedPayload(BasePayload):
             "FAIL gate decision requires failing_critics, failing_finding_ids, "
             "or a non-empty failure_reason_code",
         )
+
 
 class PersonaShelfUpdatedPayload(BasePayload):
     """Audit record for a write through ``POST/PUT/PATCH/DELETE /v1/personas/...``.

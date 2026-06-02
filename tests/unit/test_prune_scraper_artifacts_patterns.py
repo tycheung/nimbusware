@@ -1,6 +1,5 @@
 """Library-level tests for ``prune_scraper_artifacts`` pattern filters."""
 
-
 from __future__ import annotations
 
 import os

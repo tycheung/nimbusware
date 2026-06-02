@@ -172,13 +172,9 @@ def agent_evaluator_yaml_key_present_caption(
         return "Agent evaluator: workflow YAML key **absent** on this profile."
     enabled = payload.get("yaml_parsed_enabled")
     if enabled is True:
-        return (
-            "Agent evaluator: workflow YAML key **present**, enabled=**true**."
-        )
+        return "Agent evaluator: workflow YAML key **present**, enabled=**true**."
     if enabled is False:
-        return (
-            "Agent evaluator: workflow YAML key **present**, enabled=**false**."
-        )
+        return "Agent evaluator: workflow YAML key **present**, enabled=**false**."
     return "Agent evaluator: workflow YAML key **present** (enabled not observable)."
 
 
@@ -257,5 +253,3 @@ def agent_evaluator_would_emit_caption(payload: Mapping[str, Any] | None) -> str
             "(env kill-switch or workflow YAML gate off)."
         )
     return None
-
-

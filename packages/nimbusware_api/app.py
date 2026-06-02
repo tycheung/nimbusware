@@ -52,10 +52,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     base, _ = default_paths(repo)
     url = os.environ.get("NIMBUSWARE_DATABASE_URL")
     roles_from_db = os.environ.get("NIMBUSWARE_ROLES_FROM_DB", "").lower() in ("1", "true", "yes")
-    use_db_config = (
-        os.environ.get("NIMBUSWARE_CONFIG_FROM_DB", "").strip().lower() in ("1", "true", "yes")
-        and os.environ.get("NIMBUSWARE_CONFIG_FROM_FILES", "").strip().lower()
-        not in ("1", "true", "yes")
+    use_db_config = os.environ.get("NIMBUSWARE_CONFIG_FROM_DB", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    ) and os.environ.get("NIMBUSWARE_CONFIG_FROM_FILES", "").strip().lower() not in (
+        "1",
+        "true",
+        "yes",
     )
     materializer: ConfigMaterializer | None = None
     if use_db_config and url:
@@ -159,9 +163,7 @@ app = FastAPI(
         },
         {
             "name": "personas",
-            "description": (
-                "Read-only persona shelf catalog (``configs/personas/shelves.yaml``)."
-            ),
+            "description": ("Read-only persona shelf catalog (``configs/personas/shelves.yaml``)."),
         },
         {
             "name": "preflight",
@@ -191,8 +193,7 @@ app = FastAPI(
         {
             "name": "scraper-artifacts",
             "description": (
-                "Read-only on-disk scraper artifact inventory under the configured "
-                "cache directory."
+                "Read-only on-disk scraper artifact inventory under the configured cache directory."
             ),
         },
     ],

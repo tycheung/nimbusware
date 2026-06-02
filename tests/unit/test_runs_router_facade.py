@@ -15,7 +15,9 @@ from nimbusware_api.app import app
 from nimbusware_api.facade import build_v1_router
 from nimbusware_env import find_repo_root
 
-os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
+os.environ.setdefault(
+    "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))
+)
 
 EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
     {
@@ -103,9 +105,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
 
 def test_v1_facade_includes_runs_routes() -> None:
     facade_runs = {
-        pair
-        for pair in _route_methods(build_v1_router())
-        if pair in EXPECTED_RUN_ROUTES
+        pair for pair in _route_methods(build_v1_router()) if pair in EXPECTED_RUN_ROUTES
     }
     assert facade_runs == EXPECTED_RUN_ROUTES
 

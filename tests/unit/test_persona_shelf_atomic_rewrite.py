@@ -60,7 +60,8 @@ def test_atomic_write_yaml_creates_parent_directory(tmp_path: Path) -> None:
 
 
 def test_atomic_write_yaml_failure_leaves_original_file(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     target = tmp_path / "shelves.yaml"
     atomic_write_yaml(target, PAYLOAD)

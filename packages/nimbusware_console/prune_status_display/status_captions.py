@@ -8,9 +8,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Any
 
-SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = (
-    ".github/workflows/scraper_artifact_prune.yml"
-)
+SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
 
 def prune_scraper_artifact_prune_workflow_caption() -> str:
@@ -290,5 +288,3 @@ def scraper_artifact_inventory_retention_alert_caption(
     if isinstance(exec_mode, str) and exec_mode.strip():
         parts.append(f"execution_mode={exec_mode.strip()}")
     return "Scraper retention alert: " + ", ".join(parts) + "."
-
-

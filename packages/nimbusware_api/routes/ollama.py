@@ -155,7 +155,9 @@ def get_ollama_pull_job(job_id: str) -> OllamaPullJobStatusResponse:
     if job is None:
         raise HTTPException(
             status_code=404,
-            detail=problem("pull_job_not_found", "Unknown Ollama pull job", details={"job_id": job_id}),
+            detail=problem(
+                "pull_job_not_found", "Unknown Ollama pull job", details={"job_id": job_id}
+            ),
         )
     return OllamaPullJobStatusResponse(
         job_id=job.job_id,
@@ -226,9 +228,7 @@ def patch_ollama_user_policy(
     _save_routing(orch, merged)
     policy_doc = merged.get("ollama_user_policy")
     body_kwargs = (
-        dict(policy_doc)
-        if isinstance(policy_doc, dict)
-        else policy_from_routing(merged).to_dict()
+        dict(policy_doc) if isinstance(policy_doc, dict) else policy_from_routing(merged).to_dict()
     )
     return OllamaUserPolicyBody(**body_kwargs)
 

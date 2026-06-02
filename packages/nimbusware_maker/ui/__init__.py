@@ -37,7 +37,9 @@ def render_main() -> None:
     mode = st.sidebar.radio("Mode", mode_options, index=0)
     simple_mode = mode == "Simple"
     if admin_unlocked and not simple_mode:
-        st.sidebar.caption("Advanced mode shows extra diagnostics. Admin Console has full ops tooling.")
+        st.sidebar.caption(
+            "Advanced mode shows extra diagnostics. Admin Console has full ops tooling."
+        )
 
     st.sidebar.caption(
         "Agent tools: set `HERMES_SLICE_IMPLEMENT=agent` and `HERMES_USE_LLM=1` for tool-using slices.",

@@ -1,6 +1,5 @@
 """GET /v1/runs`` RFC 5988 wire-format composite."""
 
-
 from __future__ import annotations
 
 import re
@@ -87,9 +86,7 @@ def test_link_header_trio_structural_shape_5_axis() -> None:
     assert detail_uris == {
         f"/v1/runs/{_CANONICAL_RUN_ID}/timeline",
         f"/v1/runs/{_CANONICAL_RUN_ID}/findings",
-    }, (
-        f"A2: detail URIs must equal exact child paths; got {detail_uris!r}"
-    )
+    }, f"A2: detail URIs must equal exact child paths; got {detail_uris!r}"
 
     timeline = format_run_timeline_link_header(_CANONICAL_RUN_ID)
     timeline_entries = _parse_link_entries(timeline)
@@ -129,10 +126,7 @@ def test_link_header_trio_structural_shape_5_axis() -> None:
     assert findings_uris == {
         f"/v1/runs/{_CANONICAL_RUN_ID}",
         f"/v1/runs/{_CANONICAL_RUN_ID}/timeline",
-    }, (
-        f"A4: findings URIs must equal parent + sibling timeline; got "
-        f"{findings_uris!r}"
-    )
+    }, f"A4: findings URIs must equal parent + sibling timeline; got {findings_uris!r}"
 
     for label, out in (
         ("detail", detail),
@@ -158,7 +152,7 @@ def test_link_header_trio_structural_shape_5_axis() -> None:
         for entry in entries:
             assert _RFC5988_ENTRY_RE.fullmatch(entry) is not None, (
                 f"A5 fn={label!r}: each entry must match "
-                f"``<URI>; rel=\"...\"`` (angle brackets + semicolon-space "
+                f'``<URI>; rel="..."`` (angle brackets + semicolon-space '
                 f"+ double-quoted rel); got {entry!r}"
             )
 
@@ -229,8 +223,7 @@ def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
 
     findings_str = format_run_findings_link_header(_CANONICAL_RUN_ID)
     assert "/findings" not in findings_str, (
-        f"B3: findings formatter must OMIT the ``/findings`` suffix. Got: "
-        f"{findings_str!r}"
+        f"B3: findings formatter must OMIT the ``/findings`` suffix. Got: {findings_str!r}"
     )
 
     for label, fn in (
@@ -246,10 +239,7 @@ def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
             f"divergent outputs: {call_one!r} vs {call_two!r}"
         )
 
-    assert (
-        RUN_DETAIL_LINK_HEADER["example"]
-        == format_run_detail_link_header(_CANONICAL_RUN_ID)
-    ), (
+    assert RUN_DETAIL_LINK_HEADER["example"] == format_run_detail_link_header(_CANONICAL_RUN_ID), (
         f"B5: ``RUN_DETAIL_LINK_HEADER['example']`` must equal "
         f"``format_run_detail_link_header({_CANONICAL_RUN_ID!r})`` "
         f"byte-for-byte. A refactor that changed the formatter shape "
@@ -258,18 +248,16 @@ def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
         f"{RUN_DETAIL_LINK_HEADER['example']!r} fn-output="
         f"{format_run_detail_link_header(_CANONICAL_RUN_ID)!r}"
     )
-    assert (
-        RUN_TIMELINE_LINK_HEADER["example"]
-        == format_run_timeline_link_header(_CANONICAL_RUN_ID)
+    assert RUN_TIMELINE_LINK_HEADER["example"] == format_run_timeline_link_header(
+        _CANONICAL_RUN_ID
     ), (
         f"B5: ``RUN_TIMELINE_LINK_HEADER['example']`` must equal "
         f"``format_run_timeline_link_header({_CANONICAL_RUN_ID!r})`` "
         f"byte-for-byte; example="
         f"{RUN_TIMELINE_LINK_HEADER['example']!r}"
     )
-    assert (
-        RUN_FINDINGS_LINK_HEADER["example"]
-        == format_run_findings_link_header(_CANONICAL_RUN_ID)
+    assert RUN_FINDINGS_LINK_HEADER["example"] == format_run_findings_link_header(
+        _CANONICAL_RUN_ID
     ), (
         f"B5: ``RUN_FINDINGS_LINK_HEADER['example']`` must equal "
         f"``format_run_findings_link_header({_CANONICAL_RUN_ID!r})`` "
@@ -394,10 +382,7 @@ def test_runs_list_query_string_base_and_offset_5_axis() -> None:
         has_escalation=None,
         cursor="abc",
     )
-    assert (
-        with_cursor_no_offset
-        == "limit=50&order=newest_first&include_summary=0&cursor=abc"
-    ), (
+    assert with_cursor_no_offset == "limit=50&order=newest_first&include_summary=0&cursor=abc", (
         f"C5: ``cursor`` MUST append AFTER the base 3-key prefix when "
         f"``offset=None`` (NOT before, NOT inserted at index 1). Got: "
         f"{with_cursor_no_offset!r}"
@@ -493,8 +478,7 @@ def test_runs_list_query_string_optional_appends_and_rename_5_axis() -> None:
         f"``?status=running``. Got: {with_status_only!r}"
     )
     assert "list_status=" not in with_status_only, (
-        f"D2: ``list_status=`` must NOT appear in the URL at all; got: "
-        f"{with_status_only!r}"
+        f"D2: ``list_status=`` must NOT appear in the URL at all; got: {with_status_only!r}"
     )
 
     with_esc_zero = _runs_list_query_string(
@@ -571,9 +555,7 @@ def test_runs_list_query_string_optional_appends_and_rename_5_axis() -> None:
         f"left as bare ``+`` which would be interpreted by parsers as a "
         f"space). Got: {with_special_chars!r}"
     )
-    assert (
-        "created_after=2020-01-01T00%3A00%3A00%2B00%3A00" in with_special_chars
-    ), (
+    assert "created_after=2020-01-01T00%3A00%3A00%2B00%3A00" in with_special_chars, (
         f"D4: ISO-8601 datetime with ``:`` and ``+`` must be fully "
         f"percent-encoded (``:`` -> ``%3A``, ``+`` -> ``%2B``). Pins "
         f"that the encoder is ``urllib.parse.urlencode`` (which uses "

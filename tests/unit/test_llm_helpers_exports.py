@@ -6,11 +6,7 @@ import ast
 from pathlib import Path
 
 _COMMON = (
-    Path(__file__).resolve().parents[2]
-    / "packages"
-    / "hermes_orchestrator"
-    / "llm"
-    / "common.py"
+    Path(__file__).resolve().parents[2] / "packages" / "hermes_orchestrator" / "llm" / "common.py"
 )
 
 _REQUIRED = frozenset(

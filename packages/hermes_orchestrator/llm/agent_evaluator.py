@@ -16,7 +16,9 @@ from hermes_store.protocol import EventStore
 
 def _ollama_chat_json(*args: object, **kwargs: object) -> object:
     import hermes_orchestrator.llm_plan as _patch
+
     return _patch.ollama_chat_json(*args, **kwargs)
+
 
 def execute_agent_evaluator_policy_llm(
     store: EventStore,
@@ -44,10 +46,7 @@ def execute_agent_evaluator_policy_llm(
         "Schema: status ok|needs_work|invalid, gaps string array, summary string. "
         "Complement rules evaluation; do not contradict obvious invalid shelf states."
     )
-    user = (
-        f"persona_id={pid!r}. rules_status={rules_status!r}. "
-        f"rules_gaps={gaps_list!r}"
-    )
+    user = f"persona_id={pid!r}. rules_status={rules_status!r}. rules_gaps={gaps_list!r}"
     try:
         data = _ollama_chat_json(
             base_url=base_url,

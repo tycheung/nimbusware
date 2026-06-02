@@ -25,15 +25,11 @@ def universal_critique_top_level_nonempty_count(uc: Mapping[str, Any]) -> int:
 
 
 def universal_critique_top_level_enabled_true_count(uc: Mapping[str, Any]) -> int:
-    return sum(
-        1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is True
-    )
+    return sum(1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is True)
 
 
 def universal_critique_top_level_enabled_false_count(uc: Mapping[str, Any]) -> int:
-    return sum(
-        1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is False
-    )
+    return sum(1 for v in uc.values() if isinstance(v, dict) and v.get("enabled") is False)
 
 
 def universal_critique_top_level_mapping_child_count(uc: Mapping[str, Any]) -> int:
@@ -49,6 +45,4 @@ def universal_critique_top_level_list_child_count(uc: Mapping[str, Any]) -> int:
 
 
 def universal_critique_top_level_enabled_unset_mapping_count(uc: Mapping[str, Any]) -> int:
-    return sum(
-        1 for v in uc.values() if isinstance(v, dict) and "enabled" not in v
-    )
+    return sum(1 for v in uc.values() if isinstance(v, dict) and "enabled" not in v)

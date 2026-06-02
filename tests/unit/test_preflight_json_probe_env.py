@@ -1,6 +1,5 @@
 """HERMES_PREFLIGHT_JSON_PROBE`` env-layer string-arm contract."""
 
-
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -61,12 +60,15 @@ def _mocked_httpx(*, probe_fails: bool = False) -> Iterator[None]:
             raise httpx.HTTPError("simulated probe failure")
         return _mock_response(_OLLAMA_POST_RESPONSE)
 
-    with patch(
-        "hermes_orchestrator.preflight.httpx.get",
-        return_value=_mock_response(_OLLAMA_TAGS_RESPONSE),
-    ), patch(
-        "hermes_orchestrator.preflight.httpx.post",
-        side_effect=post_side_effect,
+    with (
+        patch(
+            "hermes_orchestrator.preflight.httpx.get",
+            return_value=_mock_response(_OLLAMA_TAGS_RESPONSE),
+        ),
+        patch(
+            "hermes_orchestrator.preflight.httpx.post",
+            side_effect=post_side_effect,
+        ),
     ):
         yield
 
@@ -142,28 +144,18 @@ def test_preflight_json_probe_env_probe_arm_contract(
 
     with _mocked_httpx(probe_fails=False):
         _selected, ok_evidence, _used_primary = _call_preflight()
-    assert "json_probe_latency_ms" in ok_evidence, (
-        "ok_arm: json_probe_latency_ms missing"
-    )
-    assert "json_probe_error" not in ok_evidence, (
-        "ok_arm: json_probe_error unexpectedly present"
-    )
+    assert "json_probe_latency_ms" in ok_evidence, "ok_arm: json_probe_latency_ms missing"
+    assert "json_probe_error" not in ok_evidence, "ok_arm: json_probe_error unexpectedly present"
     ok_checks = ok_evidence["checks_passed"]
-    assert "structured_json_probe_ok" in ok_checks, (
-        "ok_arm: structured_json_probe_ok missing"
-    )
+    assert "structured_json_probe_ok" in ok_checks, "ok_arm: structured_json_probe_ok missing"
     assert "structured_json_probe_skipped_or_failed" not in ok_checks, (
         "ok_arm: structured_json_probe_skipped_or_failed leaked"
     )
 
     with _mocked_httpx(probe_fails=True):
         _selected, fail_evidence, _used_primary = _call_preflight()
-    assert "json_probe_latency_ms" in fail_evidence, (
-        "fail_arm: json_probe_latency_ms missing"
-    )
-    assert "json_probe_error" in fail_evidence, (
-        "fail_arm: json_probe_error missing"
-    )
+    assert "json_probe_latency_ms" in fail_evidence, "fail_arm: json_probe_latency_ms missing"
+    assert "json_probe_error" in fail_evidence, "fail_arm: json_probe_error missing"
     assert isinstance(fail_evidence["json_probe_error"], str), (
         f"fail_arm: json_probe_error wrong type "
         f"(got {type(fail_evidence['json_probe_error']).__name__})"
@@ -236,6 +228,5 @@ def test_preflight_json_probe_env_fail_closed_string_arm_contract(
             f"fail_closed raw={raw!r}: structured_json_probe_ok leaked"
         )
         assert "structured_json_probe_skipped_or_failed" not in checks, (
-            f"fail_closed raw={raw!r}: "
-            "structured_json_probe_skipped_or_failed leaked"
+            f"fail_closed raw={raw!r}: structured_json_probe_skipped_or_failed leaked"
         )

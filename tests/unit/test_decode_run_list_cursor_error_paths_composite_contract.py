@@ -1,6 +1,5 @@
 """_decode_run_list_cursor`` error-paths + ``invalid_cursor`` 422 composite."""
 
-
 from __future__ import annotations
 
 import base64
@@ -254,9 +253,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
     can fail in distinct ways -- five axes pin both classes per
     field and the ``str(...)`` wrapping behaviour around ``UUID``.
     """
-    cursor_c1 = _encode_for_cursor(
-        b'{"s": "abc", "r": "%s"}' % _SAMPLE_UUID_STR.encode()
-    )
+    cursor_c1 = _encode_for_cursor(b'{"s": "abc", "r": "%s"}' % _SAMPLE_UUID_STR.encode())
     with pytest.raises(ValueError) as exc_c1:
         _decode_run_list_cursor(cursor_c1)
     assert "invalid literal for int" in str(exc_c1.value), (
@@ -273,9 +270,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
         "for a LIST value -- same field, different exception class."
     )
 
-    cursor_c2 = _encode_for_cursor(
-        b'{"s": [1, 2], "r": "%s"}' % _SAMPLE_UUID_STR.encode()
-    )
+    cursor_c2 = _encode_for_cursor(b'{"s": [1, 2], "r": "%s"}' % _SAMPLE_UUID_STR.encode())
     with pytest.raises(TypeError) as exc_c2:
         _decode_run_list_cursor(cursor_c2)
     c2_msg = str(exc_c2.value)
@@ -406,9 +401,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
     )
 
     cursor_d4_keyerror = base64.urlsafe_b64encode(b"{}").decode().rstrip("=")
-    r_d4_key = client.get(
-        "/v1/runs", params={"cursor": cursor_d4_keyerror, "limit": 5}
-    )
+    r_d4_key = client.get("/v1/runs", params={"cursor": cursor_d4_keyerror, "limit": 5})
     assert r_d4_key.status_code == 422, (
         f"D4 KEY DIVERGENCE (KeyError arm): cursor decoding to "
         f"``{{}}`` must yield 422 (KeyError is NOT a ValueError "
@@ -417,14 +410,11 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
         f"body={r_d4_key.text!r}"
     )
     assert r_d4_key.json().get("code") == "invalid_cursor", (
-        f"D4 (KeyError): code must be ``invalid_cursor``; got "
-        f"{r_d4_key.json()!r}"
+        f"D4 (KeyError): code must be ``invalid_cursor``; got {r_d4_key.json()!r}"
     )
 
     cursor_d4_typeerror = base64.urlsafe_b64encode(b"5").decode().rstrip("=")
-    r_d4_type = client.get(
-        "/v1/runs", params={"cursor": cursor_d4_typeerror, "limit": 5}
-    )
+    r_d4_type = client.get("/v1/runs", params={"cursor": cursor_d4_typeerror, "limit": 5})
     assert r_d4_type.status_code == 422, (
         f"D4 KEY DIVERGENCE (TypeError arm): cursor decoding to "
         f"``5`` must yield 422 (TypeError is NOT a ValueError "
@@ -432,8 +422,7 @@ def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> Non
         f"body={r_d4_type.text!r}"
     )
     assert r_d4_type.json().get("code") == "invalid_cursor", (
-        f"D4 (TypeError): code must be ``invalid_cursor``; got "
-        f"{r_d4_type.json()!r}"
+        f"D4 (TypeError): code must be ``invalid_cursor``; got {r_d4_type.json()!r}"
     )
 
     r_d5_empty = client.get("/v1/runs", params={"cursor": "", "limit": 5})

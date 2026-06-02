@@ -72,7 +72,9 @@ def list_custom_agents(orch: OrchDep) -> CustomAgentListResponse:
     )
 
 
-@router.get("/{agent_id}", response_model=CustomAgentResponse, responses={404: PROBLEM_RESPONSE_404})
+@router.get(
+    "/{agent_id}", response_model=CustomAgentResponse, responses={404: PROBLEM_RESPONSE_404}
+)
 def get_custom_agent(agent_id: str, orch: OrchDep) -> CustomAgentResponse:
     agent = _registry(orch).get(agent_id)
     if agent is None:

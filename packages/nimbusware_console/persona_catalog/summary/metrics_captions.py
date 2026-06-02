@@ -133,9 +133,7 @@ def persona_catalog_without_instructions_caption(
         return None
     total = operator_summary.get("total_entries")
     if isinstance(total, int) and not isinstance(total, bool) and total > 0:
-        return (
-            f"Personas without instructions: **{raw}** of **{total}** catalog row(s)."
-        )
+        return f"Personas without instructions: **{raw}** of **{total}** catalog row(s)."
     return f"Personas without instructions: **{raw}** catalog row(s)."
 
 
@@ -151,9 +149,7 @@ def persona_catalog_without_capability_profile_caption(
         return None
     total = operator_summary.get("total_entries")
     if isinstance(total, int) and not isinstance(total, bool) and total > 0:
-        return (
-            f"Personas without capability_profile: **{raw}** of **{total}** row(s)."
-        )
+        return f"Personas without capability_profile: **{raw}** of **{total}** row(s)."
     return f"Personas without capability_profile: **{raw}** row(s)."
 
 
@@ -290,13 +286,14 @@ def persona_catalog_critique_pairings_total_caption(
         return None
     if critique_summary.get("has_critique_pairings_yaml") is not True:
         return None
-    if isinstance(critique_summary.get("load_error"), str) and str(
-        critique_summary.get("load_error"),
-    ).strip():
+    if (
+        isinstance(critique_summary.get("load_error"), str)
+        and str(
+            critique_summary.get("load_error"),
+        ).strip()
+    ):
         return None
     raw = critique_summary.get("critique_pairing_critic_role_entries_total")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
     return f"Critique pairings: **{raw}** critic-role entries across producers."
-
-

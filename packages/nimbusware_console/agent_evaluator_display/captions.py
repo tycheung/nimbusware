@@ -251,5 +251,3 @@ def agent_evaluator_timeline_export_filename_slug(run_id: str, *, max_len: int =
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-

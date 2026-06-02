@@ -51,7 +51,6 @@ class SelfRefinementOptionalStagesMixin:
                 break
             self._maybe_emit_self_refinement_stage_marker(run_id)
 
-
     def _maybe_emit_self_refinement_stage_marker(self, run_id: UUID) -> None:
         rows = self._store.list_run_events(str(run_id))
         if _self_refinement_max_iterations_exceeded(rows):
@@ -144,9 +143,7 @@ class SelfRefinementOptionalStagesMixin:
         gate_decision = "proceed" if (eval_status == "ok" or ungated_loop) else "hold"
         loops_remaining = max(0, int(max_iterations) - int(attempt))
         iteration_progress_ratio = min(1.0, float(attempt) / float(max_iterations))
-        should_continue = loops_remaining > 0 and (
-            gate_decision == "hold" or ungated_loop
-        )
+        should_continue = loops_remaining > 0 and (gate_decision == "hold" or ungated_loop)
         signal = "phase_d_kickoff" if attempt == 1 else "phase_d_iteration"
         orchestration_branch: _SelfRefinementOrchestrationBranch = "rules"
         llm_critique_attempted = False
@@ -166,11 +163,7 @@ class SelfRefinementOptionalStagesMixin:
                     str(verdict_raw).strip().upper() if verdict_raw is not None else None
                 )
         eval_gaps_raw = sr_eval.get("gaps")
-        eval_gaps = (
-            [str(g) for g in eval_gaps_raw]
-            if isinstance(eval_gaps_raw, list)
-            else []
-        )
+        eval_gaps = [str(g) for g in eval_gaps_raw] if isinstance(eval_gaps_raw, list) else []
         if (
             llm_critique_enabled
             and gate_decision == "hold"
@@ -203,9 +196,7 @@ class SelfRefinementOptionalStagesMixin:
                     llm_critique_attempted = True
                     llm_critique_verdict = Verdict(str(llm_result.get("verdict", "FAIL")))
                     gate_raw = str(llm_result.get("gate_decision", "hold")).strip().lower()
-                    llm_gate_decision = (
-                        "proceed" if gate_raw == "proceed" else "hold"
-                    )
+                    llm_gate_decision = "proceed" if gate_raw == "proceed" else "hold"
                     summary_raw = llm_result.get("summary")
                     if isinstance(summary_raw, str) and summary_raw.strip():
                         llm_critique_summary = summary_raw.strip()[:500]
@@ -309,4 +300,3 @@ class SelfRefinementOptionalStagesMixin:
                 ),
             ),
         )
-

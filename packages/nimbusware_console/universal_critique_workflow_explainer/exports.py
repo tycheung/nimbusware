@@ -15,7 +15,6 @@ def universal_critique_export_filename_slug() -> str:
     return "universal_critique"
 
 
-
 def _universal_critique_explainer_cell(value: Any) -> str:
     if value is None:
         return ""
@@ -40,6 +39,3 @@ def universal_critique_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
-
-

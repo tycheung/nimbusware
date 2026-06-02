@@ -35,10 +35,7 @@ def self_refinement_merged_description_preview_caption(
         len_hint = len(text)
     limit = max_chars if max_chars > 0 else 120
     shown = text if len(text) <= limit else text[:limit] + "…"
-    return (
-        f"Self-refinement merge preview: description ({len_hint} chars): "
-        f"`{shown}`."
-    )
+    return f"Self-refinement merge preview: description ({len_hint} chars): `{shown}`."
 
 
 def self_refinement_would_emit_after_env_caption(
@@ -134,5 +131,3 @@ def self_refinement_policy_yaml_disk_version_caption(
     if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
         return None
     return f"Self-refinement policy.yaml on-disk version: **{raw}**."
-
-

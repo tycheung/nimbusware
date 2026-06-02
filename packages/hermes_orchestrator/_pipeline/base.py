@@ -53,10 +53,8 @@ class RunOrchestratorBase:
         """Repository root frozen at construct time (configs, bundles catalog, …)."""
         return self._repo_root
 
-
     def _base_cfg(self) -> dict[str, Any]:
         return load_yaml(self._base_path)
-
 
     def policy_snapshot_for_run(self, run_id: UUID) -> dict[str, Any]:
         for row in self._store.list_run_events(str(run_id)):
@@ -71,14 +69,12 @@ class RunOrchestratorBase:
                 return snap.model_dump(mode="json")
         return {}
 
-
     def _strictness_context(self, run_id: UUID) -> dict[str, Any]:
         snap = self.policy_snapshot_for_run(run_id)
         fs = snap.get("finding_fix_strictness")
         if isinstance(fs, dict):
             return {"finding_fix_strictness": FindingFixStrictnessSettings.model_validate(fs)}
         return {}
-
 
     def _selected_model_for_run(self, run_id: UUID) -> str | None:
         for row in reversed(self._store.list_run_events(str(run_id))):
@@ -94,11 +90,9 @@ class RunOrchestratorBase:
                     return mid
         return None
 
-
     def _effective_universal_critique_for_run(self, run_id: UUID) -> EffectiveUniversalCritique:
         wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
         return effective_universal_critique(self._repo_root, wf)
-
 
     def _stage_graph_snapshot_for_run(self, run_id: UUID) -> dict[str, Any] | None:
         for row in self._store.list_run_events(str(run_id)):
@@ -109,4 +103,3 @@ class RunOrchestratorBase:
                 return stage_graph_from_run_created_metadata(meta)
             break
         return None
-

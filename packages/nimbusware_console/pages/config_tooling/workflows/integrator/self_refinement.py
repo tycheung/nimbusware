@@ -95,8 +95,7 @@ def render_self_refinement_section(*, repo_root: Path, workflow_profile: str | N
             {
                 "field": "policy.yaml top-level version (int, disk)",
                 "value": "—"
-                if _sr_expl.get("policy_yaml", {}).get("policy_yaml_top_level_version_int")
-                is None
+                if _sr_expl.get("policy_yaml", {}).get("policy_yaml_top_level_version_int") is None
                 else str(
                     _sr_expl.get("policy_yaml", {}).get("policy_yaml_top_level_version_int"),
                 ),

@@ -1,6 +1,5 @@
 """_maybe_emit_self_refinement_stage_marker`` direct contract."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -56,13 +55,16 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
     ) as loader_spy_a1:
         orch_a1._maybe_emit_self_refinement_stage_marker(rid_a1)  # noqa: SLF001
     assert loader_spy_a1.call_count == 1, (
-        f"A1: load_self_refinement_policy called EXACTLY ONCE; got "
-        f"{loader_spy_a1.call_count}"
+        f"A1: load_self_refinement_policy called EXACTLY ONCE; got {loader_spy_a1.call_count}"
     )
     assert loader_spy_a1.call_args is not None, "A1: loader was invoked"
     loader_path_a1 = loader_spy_a1.call_args.args[0]
-    assert Path(loader_path_a1).as_posix().endswith(
-        "configs/self_refinement/policy.yaml",
+    assert (
+        Path(loader_path_a1)
+        .as_posix()
+        .endswith(
+            "configs/self_refinement/policy.yaml",
+        )
     ), (
         f"A1: loader receives the policy.yaml path; got {loader_path_a1!r}. "
         "Pins the path-construction at pipeline.py:1451"
@@ -325,7 +327,9 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
         patch(
             "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
-                enabled=False, version=None, description="wf_custom",
+                enabled=False,
+                version=None,
+                description="wf_custom",
             ),
         ),
     ):
@@ -346,7 +350,9 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
         patch(
             "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
-                enabled=False, version=99, description="wf_desc",
+                enabled=False,
+                version=99,
+                description="wf_desc",
             ),
         ),
     ):
@@ -381,7 +387,9 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
         patch(
             "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
-                enabled=False, version=None, description=None,
+                enabled=False,
+                version=None,
+                description=None,
             ),
         ),
     ):
@@ -417,7 +425,9 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
         patch(
             "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
-                enabled=False, version=None, description=None,
+                enabled=False,
+                version=None,
+                description=None,
             ),
         ),
     ):
@@ -444,7 +454,9 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
         patch(
             "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
-                enabled=False, version=None, description=None,
+                enabled=False,
+                version=None,
+                description=None,
             ),
         ),
     ):
@@ -458,9 +470,7 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
         "would silently break consumers relying on repeated "
         f"'{_SR_STAGE}' markers (e.g., per-attempt iteration tracking)"
     )
-    attempts = [
-        (m.get("payload") or {}).get("attempt") for m in _sr_markers(mem_d5, rid_d5)
-    ]
+    attempts = [(m.get("payload") or {}).get("attempt") for m in _sr_markers(mem_d5, rid_d5)]
     assert attempts == [1, 2], f"D5: attempt counter increments; got {attempts!r}"
     assert EventType.STAGE_STARTED.value == _STAGE_STARTED, (
         "D5 sanity: EventType.STAGE_STARTED string value matches local constant"

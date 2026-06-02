@@ -56,14 +56,12 @@ def render_thresholds_section(*, repo_root: Path, workflow_profile: str | None) 
         _thr_ty = _thr_payload.get("thresholds_yaml")
         _thr_ver = (
             "—"
-            if not isinstance(_thr_ty, dict)
-            or _thr_ty.get("top_level_version_int") is None
+            if not isinstance(_thr_ty, dict) or _thr_ty.get("top_level_version_int") is None
             else str(_thr_ty.get("top_level_version_int"))
         )
         _thr_bytes = (
             "—"
-            if not isinstance(_thr_ty, dict)
-            or _thr_ty.get("thresholds_yaml_file_bytes") is None
+            if not isinstance(_thr_ty, dict) or _thr_ty.get("thresholds_yaml_file_bytes") is None
             else str(_thr_ty.get("thresholds_yaml_file_bytes"))
         )
         _thr_rows = [

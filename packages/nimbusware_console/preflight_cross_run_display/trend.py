@@ -45,11 +45,7 @@ def preflight_cross_run_trend_rows(
             base["validated_model_id"] = str(vm)
         raw_checks = pf.get("checks_passed")
         if isinstance(raw_checks, list):
-            n_checks = sum(
-                1
-                for item in raw_checks
-                if isinstance(item, str) and item.strip()
-            )
+            n_checks = sum(1 for item in raw_checks if isinstance(item, str) and item.strip())
             if n_checks > 0:
                 base["checks_passed_count"] = n_checks
         out.append(base)
@@ -133,5 +129,3 @@ def preflight_cross_run_trend_summary(rows: list[Mapping[str, Any]]) -> dict[str
         "with_integer_sample_count": with_sc_int,
         "with_sample_count_gt_one": with_sc_gt_one,
     }
-
-

@@ -224,9 +224,7 @@ def test_run_escalated_actor_without_notes_caption_none_without_actor() -> None:
 
 
 def test_run_escalated_actor_without_notes_caption_none_when_notes_non_string() -> None:
-    assert (
-        run_escalated_actor_without_notes_caption({"actor_id": "x", "notes": 1}) is None
-    )
+    assert run_escalated_actor_without_notes_caption({"actor_id": "x", "notes": 1}) is None
 
 
 def test_run_escalated_history_from_timeline() -> None:

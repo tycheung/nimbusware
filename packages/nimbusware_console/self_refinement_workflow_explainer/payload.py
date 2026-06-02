@@ -47,9 +47,7 @@ def self_refinement_workflow_explainer_payload(
                 if block is not None:
                     sr_workflow_yaml_raw_type = type(block).__name__
                 if isinstance(block, dict):
-                    sr_yaml_mapping_string_key_count = sum(
-                        1 for k in block if isinstance(k, str)
-                    )
+                    sr_yaml_mapping_string_key_count = sum(1 for k in block if isinstance(k, str))
                 sr_present = isinstance(block, dict) and bool(block)
         except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError) as exc:
             load_error = str(exc)
@@ -79,5 +77,3 @@ def self_refinement_workflow_explainer_payload(
         "marker_merge": marker,
         "HERMES_SELF_REFINEMENT_UNGATED_LOOP": _hermes_self_refinement_ungated_loop_env_summary(),
     }
-
-

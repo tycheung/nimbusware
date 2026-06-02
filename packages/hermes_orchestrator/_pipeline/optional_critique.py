@@ -41,7 +41,6 @@ class OptionalCritiqueMixin:
             return "frontend_writer"
         return "backend_writer"
 
-
     def _emit_security_critique_optional(
         self,
         run_id: UUID,
@@ -103,7 +102,6 @@ class OptionalCritiqueMixin:
             return str(pl.get("verdict", "")).upper() == "FAIL"
         return False
 
-
     def _emit_performance_critique_optional(
         self,
         run_id: UUID,
@@ -164,7 +162,6 @@ class OptionalCritiqueMixin:
             return str(pl.get("verdict", "")).upper() == "FAIL"
         return False
 
-
     def _emit_network_resilience_critique_optional(
         self,
         run_id: UUID,
@@ -180,7 +177,10 @@ class OptionalCritiqueMixin:
         )
         if not network_resilience_critique_effective(block):
             return False
-        if block.backend_only and "backend_writer" not in self._critique_router.known_producer_keys():
+        if (
+            block.backend_only
+            and "backend_writer" not in self._critique_router.known_producer_keys()
+        ):
             return False
         ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
         scan_summary = run_network_resilience_scan_summary(ws)
@@ -224,7 +224,6 @@ class OptionalCritiqueMixin:
             return str(pl.get("verdict", "")).upper() == "FAIL"
         return False
 
-
     def _emit_refactor_stage_optional(
         self,
         run_id: UUID,
@@ -253,4 +252,3 @@ class OptionalCritiqueMixin:
             unanimous_gate_enforce=eff.unanimous_gate_enforce,
             force_fail=force_fail,
         )
-

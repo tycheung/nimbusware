@@ -233,7 +233,6 @@ def persona_catalog_operator_summary_table_rows(
     return mapping_to_sorted_table_rows(summary, _persona_operator_summary_cell)
 
 
-
 def persona_catalog_operator_summary_table_rows_csv(
     summary: Mapping[str, Any] | None,
 ) -> str:
@@ -250,6 +249,3 @@ def persona_catalog_operator_summary_table_rows_csv(
     for r in rows:
         w.writerow(r)
     return buf.getvalue()
-
-
-

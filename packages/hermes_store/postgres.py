@@ -196,9 +196,7 @@ class PostgresEventStore:
             oldest = False
         ord_sql = "ASC" if oldest else "DESC"
         rid_ord = "ASC" if oldest else "DESC"
-        wf_clause = (
-            "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
-        )
+        wf_clause = "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
         pfx_like: str | None = None
         has_pfx = (
             workflow_profile is None
@@ -280,9 +278,7 @@ class PostgresEventStore:
             if oldest
             else "AND (r.mx < %(c_mx)s OR (r.mx = %(c_mx)s AND r.run_id < %(c_rid)s::uuid))"
         )
-        wf_clause = (
-            "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
-        )
+        wf_clause = "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
         pfx_like: str | None = None
         has_pfx = (
             workflow_profile is None
@@ -354,9 +350,7 @@ class PostgresEventStore:
         has_escalation: bool | None = None,
         list_status: str | None = None,
     ) -> int:
-        wf_clause = (
-            "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
-        )
+        wf_clause = "(%(wf)s::text IS NULL OR LOWER(TRIM(BOTH FROM rc.wf)) = LOWER(TRIM(BOTH FROM %(wf)s::text)))"
         pfx_like: str | None = None
         has_pfx = (
             workflow_profile is None

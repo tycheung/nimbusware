@@ -96,9 +96,7 @@ def _extract_routing(cfg: dict[str, Any]) -> dict[str, Any]:
     primary = (models.get("primary") or {}).get("id", "llama3.1:8b")
     fb_raw = models.get("fallbacks") or []
     fallbacks = [
-        str(x.get("id"))
-        for x in fb_raw
-        if isinstance(x, dict) and x.get("id") is not None
+        str(x.get("id")) for x in fb_raw if isinstance(x, dict) and x.get("id") is not None
     ]
     base_url = str(runtime.get("base_url", "http://localhost:11434"))
     health = str(runtime.get("health_endpoint", "/api/tags"))
@@ -145,10 +143,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--config",
         default=None,
-        help=(
-            "Path to model-routing YAML "
-            "(default: <repo_root>/configs/model-routing.yaml)."
-        ),
+        help=("Path to model-routing YAML (default: <repo_root>/configs/model-routing.yaml)."),
     )
     parser.add_argument(
         "--samples",
@@ -251,13 +246,20 @@ def main(argv: list[str] | None = None) -> int:
 
     routing = _extract_routing(cfg)
     timeout = args.timeout if args.timeout is not None else routing["request_timeout_seconds"]
-    samples_requested = args.samples if args.samples is not None else (
+    samples_requested = (
+        args.samples
+        if args.samples is not None
         # Reflect the env-var value verbatim (no clamping here) so the user
         # can see the gap between what they asked for vs what the orchestrator
         # used (reported separately via samples_used).
-        int(os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES", "1") or "1")
-        if (os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES") or "").strip().lstrip("-").isdigit()
-        else 1
+        else (
+            int(os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES", "1") or "1")
+            if (os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES") or "")
+            .strip()
+            .lstrip("-")
+            .isdigit()
+            else 1
+        )
     )
 
     result: dict[str, Any]

@@ -35,5 +35,3 @@ def _hermes_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
         "unset_follows_yaml": True,
         "unrecognised_value": True,
     }
-
-

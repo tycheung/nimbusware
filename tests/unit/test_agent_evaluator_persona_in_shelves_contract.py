@@ -1,6 +1,5 @@
 """assert_agent_evaluator_persona_in_shelves`` wrapper-level coverage closure."""
 
-
 from __future__ import annotations
 
 import re
@@ -72,10 +71,7 @@ def _write_workflow(
     wf_dir.mkdir(parents=True, exist_ok=True)
     persona_line = f"  persona_id: {persona_id}\n" if persona_id is not None else ""
     body = (
-        "version: 1\n"
-        "agent_evaluator:\n"
-        f"  enabled: {'true' if enabled else 'false'}\n"
-        f"{persona_line}"
+        f"version: 1\nagent_evaluator:\n  enabled: {'true' if enabled else 'false'}\n{persona_line}"
     )
     (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
 
@@ -125,37 +121,40 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
     _copy_real_personas(tmp_path)
 
     _write_workflow(tmp_path, "disabled_with_garbage", enabled=False, persona_id="nope")
-    assert (
-        assert_agent_evaluator_persona_in_shelves(tmp_path, "disabled_with_garbage")
-        is None
-    ), "enabled=False with non-shelf persona_id must short-circuit BEFORE persona check"
+    assert assert_agent_evaluator_persona_in_shelves(tmp_path, "disabled_with_garbage") is None, (
+        "enabled=False with non-shelf persona_id must short-circuit BEFORE persona check"
+    )
 
     _write_workflow(tmp_path, "default_persona", enabled=True, persona_id="default")
-    assert (
-        assert_agent_evaluator_persona_in_shelves(tmp_path, "default_persona") is None
-    ), "enabled=True + persona_id='default' must short-circuit on reserved-slug"
+    assert assert_agent_evaluator_persona_in_shelves(tmp_path, "default_persona") is None, (
+        "enabled=True + persona_id='default' must short-circuit on reserved-slug"
+    )
 
     _write_workflow(tmp_path, "shelf_commerce", enabled=True, persona_id=_SHELF_BUSINESS_AREA)
-    assert (
-        assert_agent_evaluator_persona_in_shelves(tmp_path, "shelf_commerce") is None
-    ), f"shelf-backed business_area {_SHELF_BUSINESS_AREA!r} must be accepted"
-
-    _write_workflow(
-        tmp_path, "shelf_backend", enabled=True, persona_id=_SHELF_DEVELOPMENT_ROLE,
+    assert assert_agent_evaluator_persona_in_shelves(tmp_path, "shelf_commerce") is None, (
+        f"shelf-backed business_area {_SHELF_BUSINESS_AREA!r} must be accepted"
     )
-    assert (
-        assert_agent_evaluator_persona_in_shelves(tmp_path, "shelf_backend") is None
-    ), f"shelf-backed development_role {_SHELF_DEVELOPMENT_ROLE!r} must be accepted"
 
     _write_workflow(
-        tmp_path, "unknown_persona", enabled=True, persona_id="no_such_persona",
+        tmp_path,
+        "shelf_backend",
+        enabled=True,
+        persona_id=_SHELF_DEVELOPMENT_ROLE,
+    )
+    assert assert_agent_evaluator_persona_in_shelves(tmp_path, "shelf_backend") is None, (
+        f"shelf-backed development_role {_SHELF_DEVELOPMENT_ROLE!r} must be accepted"
+    )
+
+    _write_workflow(
+        tmp_path,
+        "unknown_persona",
+        enabled=True,
+        persona_id="no_such_persona",
     )
     with pytest.raises(ValueError, match=re.escape(_VE_FRIENDLY_PREFIX)) as exc_info:
         assert_agent_evaluator_persona_in_shelves(tmp_path, "unknown_persona")
     msg = str(exc_info.value)
-    assert "got 'no_such_persona'" in msg, (
-        f"reject message {msg!r} missing got fragment"
-    )
+    assert "got 'no_such_persona'" in msg, f"reject message {msg!r} missing got fragment"
     assert "known=['backend_engineer', 'commerce']" in msg, (
         f"reject message {msg!r} missing sorted known-set fragment"
     )
@@ -163,11 +162,15 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
     short_circuit_repo = tmp_path / "short_circuit"
     short_circuit_repo.mkdir()
     _write_workflow(
-        short_circuit_repo, "default_no_shelves", enabled=True, persona_id="default",
+        short_circuit_repo,
+        "default_no_shelves",
+        enabled=True,
+        persona_id="default",
     )
     assert (
         assert_agent_evaluator_persona_in_shelves(
-            short_circuit_repo, "default_no_shelves",
+            short_circuit_repo,
+            "default_no_shelves",
         )
         is None
     ), (
@@ -218,7 +221,8 @@ def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_
         _write_workflow(case_repo, "deg_wf", enabled=True, persona_id="not_in_shelves")
         _write_shelves(case_repo, shelves_body)
         with pytest.raises(
-            ValueError, match=re.escape(_VE_FRIENDLY_PREFIX),
+            ValueError,
+            match=re.escape(_VE_FRIENDLY_PREFIX),
         ) as exc_info:
             assert_agent_evaluator_persona_in_shelves(case_repo, "deg_wf")
         msg = str(exc_info.value)
@@ -268,12 +272,8 @@ def test_assert_agent_evaluator_persona_in_shelves_workflow_cascade_no_op_unifor
         assert_agent_evaluator_persona_in_shelves(bare_repo, None)  # type: ignore[arg-type]
         is None
     )
-    assert (
-        assert_agent_evaluator_persona_in_shelves(bare_repo, "bad name") is None
-    )
-    assert (
-        assert_agent_evaluator_persona_in_shelves(bare_repo, "does-not-exist") is None
-    )
+    assert assert_agent_evaluator_persona_in_shelves(bare_repo, "bad name") is None
+    assert assert_agent_evaluator_persona_in_shelves(bare_repo, "does-not-exist") is None
 
     with_shelves_repo = tmp_path / "with_shelves"
     with_shelves_repo.mkdir()

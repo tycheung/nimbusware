@@ -6,7 +6,7 @@ from typing import Any
 RUN_LIST_LINK_HEADER: dict[str, Any] = {
     "description": (
         "RFC 5988 Web Linking: comma-separated entries when pagination applies. "
-        "``rel=\"next\"`` advances offset or keyset ``cursor``; ``rel=\"prev\"`` only for "
+        '``rel="next"`` advances offset or keyset ``cursor``; ``rel="prev"`` only for '
         "non-zero offset lists."
     ),
     "schema": {"type": "string"},
@@ -16,15 +16,15 @@ RUN_LIST_LINK_HEADER: dict[str, Any] = {
 # servers may omit the header; paths follow ``/v1`` prefix).
 RUN_DETAIL_LINK_HEADER: dict[str, Any] = {
     "description": (
-        "RFC 5988 Web Linking on **200**: comma-separated ``<``URL``>; rel=\"…\"`` entries for "
+        'RFC 5988 Web Linking on **200**: comma-separated ``<``URL``>; rel="…"`` entries for '
         "``timeline`` and ``findings`` child resources of this ``run_id`` (also set at runtime "
         "when the run exists). Clients can still derive URLs from ``/v1/runs/{run_id}/…`` "
         "templates if the header is stripped by a proxy."
     ),
     "schema": {"type": "string"},
     "example": (
-        "</v1/runs/11111111-1111-4111-8111-111111111111/timeline>; rel=\"timeline\", "
-        "</v1/runs/11111111-1111-4111-8111-111111111111/findings>; rel=\"findings\""
+        '</v1/runs/11111111-1111-4111-8111-111111111111/timeline>; rel="timeline", '
+        '</v1/runs/11111111-1111-4111-8111-111111111111/findings>; rel="findings"'
     ),
 }
 
@@ -32,8 +32,8 @@ RUN_DETAIL_LINK_HEADER: dict[str, Any] = {
 def format_run_detail_link_header(run_id: str) -> str:
     """RFC 5988 ``Link`` for ``GET /v1/runs/{run_id}`` (see ``RUN_DETAIL_LINK_HEADER``)."""
     return (
-        f"</v1/runs/{run_id}/timeline>; rel=\"timeline\", "
-        f"</v1/runs/{run_id}/findings>; rel=\"findings\""
+        f'</v1/runs/{run_id}/timeline>; rel="timeline", '
+        f'</v1/runs/{run_id}/findings>; rel="findings"'
     )
 
 
@@ -45,18 +45,15 @@ RUN_TIMELINE_LINK_HEADER: dict[str, Any] = {
     ),
     "schema": {"type": "string"},
     "example": (
-        "</v1/runs/11111111-1111-4111-8111-111111111111>; rel=\"run\", "
-        "</v1/runs/11111111-1111-4111-8111-111111111111/findings>; rel=\"findings\""
+        '</v1/runs/11111111-1111-4111-8111-111111111111>; rel="run", '
+        '</v1/runs/11111111-1111-4111-8111-111111111111/findings>; rel="findings"'
     ),
 }
 
 
 def format_run_timeline_link_header(run_id: str) -> str:
     """RFC 5988 ``Link`` for run timeline ``GET`` (see ``RUN_TIMELINE_LINK_HEADER``)."""
-    return (
-        f"</v1/runs/{run_id}>; rel=\"run\", "
-        f"</v1/runs/{run_id}/findings>; rel=\"findings\""
-    )
+    return f'</v1/runs/{run_id}>; rel="run", </v1/runs/{run_id}/findings>; rel="findings"'
 
 
 # Body schema and example come from ``response_model=RunTimelineResponse`` on the route.
@@ -126,17 +123,12 @@ RUN_FINDINGS_LINK_HEADER: dict[str, Any] = {
     ),
     "schema": {"type": "string"},
     "example": (
-        "</v1/runs/11111111-1111-4111-8111-111111111111>; rel=\"run\", "
-        "</v1/runs/11111111-1111-4111-8111-111111111111/timeline>; rel=\"timeline\""
+        '</v1/runs/11111111-1111-4111-8111-111111111111>; rel="run", '
+        '</v1/runs/11111111-1111-4111-8111-111111111111/timeline>; rel="timeline"'
     ),
 }
 
 
 def format_run_findings_link_header(run_id: str) -> str:
     """RFC 5988 ``Link`` for run findings ``GET`` (see ``RUN_FINDINGS_LINK_HEADER``)."""
-    return (
-        f"</v1/runs/{run_id}>; rel=\"run\", "
-        f"</v1/runs/{run_id}/timeline>; rel=\"timeline\""
-    )
-
-
+    return f'</v1/runs/{run_id}>; rel="run", </v1/runs/{run_id}/timeline>; rel="timeline"'

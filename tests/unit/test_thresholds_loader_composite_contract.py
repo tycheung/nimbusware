@@ -1,6 +1,5 @@
 """configs/integrator/thresholds.yaml`` loader composite."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -41,12 +40,7 @@ def _write_workflow_min_score(repo: Path, name: str, value: str) -> None:
     """
     wf_dir = repo / "configs" / "workflows"
     wf_dir.mkdir(parents=True, exist_ok=True)
-    body = (
-        "version: 1\n"
-        "integrator_gate:\n"
-        "  enabled: true\n"
-        f"  min_score_to_pass: {value}\n"
-    )
+    body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
     (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
 
 
@@ -192,10 +186,10 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
         assert actual is expected, (
             f"B3 KEY DIVERGENCE {name}: `{body}` -> Python `bool()` "
             "treats any non-empty string as truthy, so the literal "
-            f"string `\"false\"` / `\"no\"` / `\"off\"` resolves to True. "
+            f'string `"false"` / `"no"` / `"off"` resolves to True. '
             f"Expected {expected!r}, got {actual!r}. A refactor swapping "
             "`bool(...)` for `_coerce_yaml_bool(...)` (which only "
-            "accepts (\"1\", \"true\", \"yes\", \"on\") after "
+            'accepts ("1", "true", "yes", "on") after '
             "`.strip().lower()`) would flip every case in B3 to False. "
             "This axis catches any silent migration from Python `bool()` "
             "to the strict YAML coercer"

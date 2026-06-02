@@ -255,12 +255,7 @@ def test_full_workflow_merge_diff_requires_mappings() -> None:
 def test_prepare_full_workflow_merge_diff_lists_agent_evaluator_normalization(
     mini_workflow_repo: Path,
 ) -> None:
-    paste = (
-        "version: 99\n"
-        "agent_evaluator:\n"
-        "  enabled: true\n"
-        "  persona_id: '  x  '\n"
-    )
+    paste = "version: 99\nagent_evaluator:\n  enabled: true\n  persona_id: '  x  '\n"
     merged, before, errs = prepare_full_workflow_apply(
         mini_workflow_repo,
         profile_stem="demo",
@@ -620,14 +615,8 @@ def test_full_workflow_merge_subtree_overview_caption_none_for_bad_input() -> No
 
 def test_full_workflow_merge_subtree_overview_caption_none_when_subtree_block_missing() -> None:
     assert full_workflow_merge_subtree_overview_caption({}) is None
-    assert (
-        full_workflow_merge_subtree_overview_caption({"subtree_field_diffs": None})
-        is None
-    )
-    assert (
-        full_workflow_merge_subtree_overview_caption({"subtree_field_diffs": []})
-        is None
-    )
+    assert full_workflow_merge_subtree_overview_caption({"subtree_field_diffs": None}) is None
+    assert full_workflow_merge_subtree_overview_caption({"subtree_field_diffs": []}) is None
 
 
 def test_full_workflow_merge_subtree_overview_caption_all_zero_counts() -> None:
@@ -650,8 +639,7 @@ def test_full_workflow_merge_subtree_overview_caption_all_zero_counts() -> None:
         },
     )
     assert cap == (
-        "Subtree churn: integrator_gate (+0 / -0 / ~0 / =0), "
-        "agent_evaluator (+0 / -0 / ~0 / =0)"
+        "Subtree churn: integrator_gate (+0 / -0 / ~0 / =0), agent_evaluator (+0 / -0 / ~0 / =0)"
     )
 
 
@@ -675,8 +663,7 @@ def test_full_workflow_merge_subtree_overview_caption_mixed_counts() -> None:
         },
     )
     assert cap == (
-        "Subtree churn: integrator_gate (+1 / -2 / ~3 / =4), "
-        "agent_evaluator (+2 / -0 / ~1 / =2)"
+        "Subtree churn: integrator_gate (+1 / -2 / ~3 / =4), agent_evaluator (+2 / -0 / ~1 / =2)"
     )
 
 
@@ -694,8 +681,7 @@ def test_full_workflow_merge_subtree_overview_caption_only_integrator_gate_prese
         },
     )
     assert cap == (
-        "Subtree churn: integrator_gate (+1 / -0 / ~0 / =0), "
-        "agent_evaluator (+0 / -0 / ~0 / =0)"
+        "Subtree churn: integrator_gate (+1 / -0 / ~0 / =0), agent_evaluator (+0 / -0 / ~0 / =0)"
     )
 
 
@@ -714,8 +700,7 @@ def test_full_workflow_merge_subtree_overview_caption_non_list_fields_count_as_z
         },
     )
     assert cap == (
-        "Subtree churn: integrator_gate (+0 / -0 / ~0 / =1), "
-        "agent_evaluator (+0 / -0 / ~0 / =0)"
+        "Subtree churn: integrator_gate (+0 / -0 / ~0 / =1), agent_evaluator (+0 / -0 / ~0 / =0)"
     )
 
 
@@ -823,18 +808,9 @@ def test_full_workflow_merge_changed_top_level_caption_none_for_bad_input() -> N
 
 def test_full_workflow_merge_changed_top_level_caption_none_when_missing_or_non_list() -> None:
     assert full_workflow_merge_changed_top_level_caption({}) is None
-    assert (
-        full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": None})
-        is None
-    )
-    assert (
-        full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": "x"})
-        is None
-    )
-    assert (
-        full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": 42})
-        is None
-    )
+    assert full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": None}) is None
+    assert full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": "x"}) is None
+    assert full_workflow_merge_changed_top_level_caption({"changed_top_level_keys": 42}) is None
 
 
 def test_full_workflow_merge_changed_top_level_caption_none_when_empty_list() -> None:
@@ -861,9 +837,7 @@ def test_full_workflow_merge_changed_top_level_caption_sorted_alphabetically() -
             ],
         },
     )
-    assert cap == (
-        "Changed top-level keys: agent_evaluator, integrator_gate, self_refinement."
-    )
+    assert cap == ("Changed top-level keys: agent_evaluator, integrator_gate, self_refinement.")
 
 
 def test_full_workflow_merge_changed_top_level_caption_dedupes_and_strips() -> None:
@@ -911,18 +885,9 @@ def test_full_workflow_merge_added_top_level_caption_none_for_bad_input() -> Non
 
 def test_full_workflow_merge_added_top_level_caption_none_when_missing_or_non_list() -> None:
     assert full_workflow_merge_added_top_level_caption({}) is None
-    assert (
-        full_workflow_merge_added_top_level_caption({"added_top_level_keys": None})
-        is None
-    )
-    assert (
-        full_workflow_merge_added_top_level_caption({"added_top_level_keys": "x"})
-        is None
-    )
-    assert (
-        full_workflow_merge_added_top_level_caption({"added_top_level_keys": 42})
-        is None
-    )
+    assert full_workflow_merge_added_top_level_caption({"added_top_level_keys": None}) is None
+    assert full_workflow_merge_added_top_level_caption({"added_top_level_keys": "x"}) is None
+    assert full_workflow_merge_added_top_level_caption({"added_top_level_keys": 42}) is None
 
 
 def test_full_workflow_merge_added_top_level_caption_none_when_empty_list() -> None:
@@ -949,9 +914,7 @@ def test_full_workflow_merge_added_top_level_caption_sorted_alphabetically() -> 
             ],
         },
     )
-    assert cap == (
-        "Added top-level keys: agent_evaluator, escalation, self_refinement."
-    )
+    assert cap == ("Added top-level keys: agent_evaluator, escalation, self_refinement.")
 
 
 def test_full_workflow_merge_added_top_level_caption_dedupes_and_strips() -> None:
@@ -999,18 +962,9 @@ def test_full_workflow_merge_removed_top_level_caption_none_for_bad_input() -> N
 
 def test_full_workflow_merge_removed_top_level_caption_none_when_missing_or_non_list() -> None:
     assert full_workflow_merge_removed_top_level_caption({}) is None
-    assert (
-        full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": None})
-        is None
-    )
-    assert (
-        full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": "x"})
-        is None
-    )
-    assert (
-        full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": 42})
-        is None
-    )
+    assert full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": None}) is None
+    assert full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": "x"}) is None
+    assert full_workflow_merge_removed_top_level_caption({"removed_top_level_keys": 42}) is None
 
 
 def test_full_workflow_merge_removed_top_level_caption_none_when_empty_list() -> None:
@@ -1037,9 +991,7 @@ def test_full_workflow_merge_removed_top_level_caption_sorted_alphabetically() -
             ],
         },
     )
-    assert cap == (
-        "Removed top-level keys: agent_evaluator, escalation, self_refinement."
-    )
+    assert cap == ("Removed top-level keys: agent_evaluator, escalation, self_refinement.")
 
 
 def test_full_workflow_merge_removed_top_level_caption_dedupes_and_strips() -> None:
@@ -1085,9 +1037,7 @@ def test_full_workflow_merge_subtree_changed_fields_caption_none_for_bad_diff() 
     assert full_workflow_merge_subtree_changed_fields_caption({"error": "boom"}) is None
 
 
-def test_full_workflow_merge_subtree_changed_fields_caption_none_when_subtrees_missing() -> (
-    None
-):
+def test_full_workflow_merge_subtree_changed_fields_caption_none_when_subtrees_missing() -> None:
     assert full_workflow_merge_subtree_changed_fields_caption({}) is None
 
 
@@ -1147,9 +1097,7 @@ def test_full_workflow_merge_subtree_changed_fields_caption_both_blocks_sorted()
             },
         },
     )
-    assert cap == (
-        "Subtree changed fields: integrator_gate (a, z), agent_evaluator (b, m)."
-    )
+    assert cap == ("Subtree changed fields: integrator_gate (a, z), agent_evaluator (b, m).")
 
 
 def test_full_workflow_merge_subtree_changed_fields_caption_dedupes_and_strips() -> None:
@@ -1192,9 +1140,7 @@ def test_full_workflow_merge_subtree_changed_fields_caption_seven_keys_overflow(
             },
         },
     )
-    assert cap == (
-        "Subtree changed fields: integrator_gate (a, b, c, d, e, f (+1 more))."
-    )
+    assert cap == ("Subtree changed fields: integrator_gate (a, b, c, d, e, f (+1 more)).")
 
 
 def test_full_workflow_merge_subtree_removed_fields_caption_none_for_bad_diff() -> None:
@@ -1223,9 +1169,7 @@ def test_full_workflow_merge_subtree_removed_fields_caption_overflow() -> None:
             },
         },
     )
-    assert cap == (
-        "Subtree removed fields: agent_evaluator (a, b, c, d, e, f (+1 more))."
-    )
+    assert cap == ("Subtree removed fields: agent_evaluator (a, b, c, d, e, f (+1 more)).")
 
 
 def test_full_workflow_merge_subtree_added_fields_caption_none_for_bad_diff() -> None:
@@ -1296,12 +1240,7 @@ def test_prepare_full_workflow_merge_preserves_unmentioned_keys(
 def test_prepare_full_workflow_normalizes_agent_evaluator_block(
     mini_workflow_repo: Path,
 ) -> None:
-    paste = (
-        "version: 99\n"
-        "agent_evaluator:\n"
-        "  enabled: true\n"
-        "  persona_id: '  x  '\n"
-    )
+    paste = "version: 99\nagent_evaluator:\n  enabled: true\n  persona_id: '  x  '\n"
     merged, _b, errs = prepare_full_workflow_apply(
         mini_workflow_repo,
         profile_stem="demo",
@@ -1502,10 +1441,7 @@ def test_full_workflow_merge_attention_export_json_and_csv() -> None:
     assert csv_text.splitlines()[0] == "flag,keys"
     assert "legacy_key" in csv_text
     assert full_workflow_merge_attention_table_rows_csv([]) == ""
-    assert (
-        full_workflow_merge_attention_export_filename_slug()
-        == "full_workflow_merge_attention"
-    )
+    assert full_workflow_merge_attention_export_filename_slug() == "full_workflow_merge_attention"
 
 
 def test_full_workflow_merge_attention_export_empty_when_no_flags() -> None:

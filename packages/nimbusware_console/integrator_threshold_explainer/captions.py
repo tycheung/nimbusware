@@ -93,9 +93,7 @@ def integrator_threshold_paste_parse_caption(
         head = errs[:cap]
         rest = n - cap
         body = "; ".join(head) + f"; +{rest} more"
-    return (
-        f"Integrator threshold: pasted gate YAML has **{n}** parse {word}: {body}."
-    )
+    return f"Integrator threshold: pasted gate YAML has **{n}** parse {word}: {body}."
 
 
 def integrator_threshold_project_tags_caption(
@@ -113,5 +111,3 @@ def integrator_threshold_project_tags_caption(
         return "Integrator gate project_tags: **0** tag(s) on workflow profile."
     suffix = "tag" if n == 1 else "tags"
     return f"Integrator gate project_tags: **{n}** {suffix} on workflow profile."
-
-

@@ -86,9 +86,7 @@ def _catalog_response(orch: Any, raw: dict[str, Any]) -> BundleCatalogResponse:
             )
     wmap = raw.get("workflow_bundle_map")
     workflow_map = (
-        {str(k): str(v) for k, v in wmap.items() if v is not None}
-        if isinstance(wmap, dict)
-        else {}
+        {str(k): str(v) for k, v in wmap.items() if v is not None} if isinstance(wmap, dict) else {}
     )
     ver = raw.get("version")
     version = int(ver) if ver is not None else None
@@ -119,7 +117,11 @@ def _hit_from_row(row: dict[str, Any]) -> BundleSearchHit | None:
 @router.get(
     "/search",
     response_model=BundleSearchResponse,
-    responses={200: BUNDLE_SEARCH_RESPONSE_200, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+    responses={
+        200: BUNDLE_SEARCH_RESPONSE_200,
+        422: PROBLEM_RESPONSE_422,
+        500: PROBLEM_RESPONSE_500,
+    },
     summary="Search bundle catalog",
 )
 def get_bundle_search(

@@ -105,4 +105,3 @@ def security_scan_linter_nonzero_caption(summary: Mapping[str, Any] | None) -> s
         "verify** under Module Integrator (workflow + ``HERMES_ATTACH_SECURITY_SCAN_METADATA``)."
     )
     return " ".join(hints) + " " + tail
-

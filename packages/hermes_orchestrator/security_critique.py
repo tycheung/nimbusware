@@ -280,7 +280,9 @@ def execute_security_critique_llm(
     )
 
     critic_payloads: list[CriticVerdictEmittedPayload] = []
-    fixes = [_required_fix_for_tools(failing_tools or list(parsed.failing_tools))] if llm_fail else []
+    fixes = (
+        [_required_fix_for_tools(failing_tools or list(parsed.failing_tools))] if llm_fail else []
+    )
     for tax_key in tax_keys:
         critic_role = registry.resolve(tax_key)
         if tax_key == _SECURITY_CRITIC:

@@ -72,7 +72,9 @@ class InMemoryIamStore:
         digest = hash_api_key(plain)
         prefix = api_key_prefix(plain)
         roles = tuple(sorted({k.strip().lower() for k in (role_taxonomy_keys or []) if k.strip()}))
-        scopes = normalize_scopes(api_scopes if api_scopes is not None else list(DEFAULT_USER_SCOPES))
+        scopes = normalize_scopes(
+            api_scopes if api_scopes is not None else list(DEFAULT_USER_SCOPES)
+        )
         self.keys[key_id] = {
             "key_id": key_id,
             "tenant_id": tenant_id,

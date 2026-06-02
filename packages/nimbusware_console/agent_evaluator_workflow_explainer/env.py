@@ -102,5 +102,3 @@ def _would_emit_llm_evaluation(repo_root: Path, workflow_profile: str | None) ->
         return False
     block = parse_agent_evaluator_workflow_block(repo_root, workflow_profile)
     return block.llm_evaluation_enabled
-
-

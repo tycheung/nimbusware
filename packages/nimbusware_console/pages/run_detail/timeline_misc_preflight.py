@@ -81,14 +81,10 @@ def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> N
                 _pf_metrics_dl_json_col, _pf_metrics_dl_csv_col = st.columns(2)
                 with _pf_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download preflight history operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download preflight history operator metrics JSON"),
                         data=_pf_metrics_json.encode("utf-8"),
                         file_name=(
-                            "hermes_preflight_history_operator_metrics_"
-                            f"{_pf_slug}_{_pf_ts}.json"
+                            f"hermes_preflight_history_operator_metrics_{_pf_slug}_{_pf_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_preflight_history_operator_metrics_json",
@@ -96,14 +92,10 @@ def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> N
                 with _pf_metrics_dl_csv_col:
                     if _pf_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download preflight history operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download preflight history operator metrics CSV"),
                             data=_pf_metrics_csv.encode("utf-8"),
                             file_name=(
-                                "hermes_preflight_history_operator_metrics_"
-                                f"{_pf_slug}_{_pf_ts}.csv"
+                                f"hermes_preflight_history_operator_metrics_{_pf_slug}_{_pf_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
                             key="hermes_dl_preflight_history_operator_metrics_csv",
@@ -148,11 +140,7 @@ def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> N
             if _hist and _hist.get("count"):
                 _bars = [
                     {
-                        "bucket": (
-                            f"<={b['le_ms']}ms"
-                            if b["le_ms"] is not None
-                            else ">10000ms"
-                        ),
+                        "bucket": (f"<={b['le_ms']}ms" if b["le_ms"] is not None else ">10000ms"),
                         "count": b["count"],
                     }
                     for b in _hist["buckets"]
@@ -172,10 +160,7 @@ def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> N
                 st.download_button(
                     label="Download preflight timeline CSV",
                     data=_pf_csv.encode("utf-8"),
-                    file_name=(
-                        "hermes_preflight_timeline_"
-                        f"{_pf_slug}_{_pf_ts}.csv"
-                    ),
+                    file_name=(f"hermes_preflight_timeline_{_pf_slug}_{_pf_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_preflight_timeline_csv",
                 )
@@ -183,10 +168,7 @@ def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> N
                 st.download_button(
                     label="Download preflight timeline JSON",
                     data=_pf_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_preflight_timeline_"
-                        f"{_pf_slug}_{_pf_ts}.json"
-                    ),
+                    file_name=(f"hermes_preflight_timeline_{_pf_slug}_{_pf_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_preflight_timeline_json",
                 )

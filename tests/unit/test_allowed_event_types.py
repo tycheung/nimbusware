@@ -31,8 +31,7 @@ def _event_type_check_list_from_schema() -> set[str] | None:
 def test_event_types_match_schema_check_list() -> None:
     listed = _event_type_check_list_from_schema()
     assert listed is not None, (
-        "No CONSTRAINT event_store_type_allowed CHECK (event_type IN (...)) "
-        f"found in {_SCHEMA_SQL}"
+        f"No CONSTRAINT event_store_type_allowed CHECK (event_type IN (...)) found in {_SCHEMA_SQL}"
     )
     from_code = set(allowed_event_type_values())
     assert listed == from_code, (listed - from_code, from_code - listed)

@@ -25,9 +25,7 @@ def self_refinement_marker_merge_compare_snapshot(
 ) -> dict[str, Any]:
     return {
         "marker_merge": marker_merge if isinstance(marker_merge, Mapping) else None,
-        "timeline_self_refinement": (
-            timeline_sr if isinstance(timeline_sr, Mapping) else None
-        ),
+        "timeline_self_refinement": (timeline_sr if isinstance(timeline_sr, Mapping) else None),
     }
 
 

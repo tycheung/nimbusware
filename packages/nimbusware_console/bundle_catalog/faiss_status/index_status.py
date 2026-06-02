@@ -18,9 +18,7 @@ def bundle_faiss_index_stale_caption(repo_root: Path) -> str | None:
     status = bundle_faiss_index_status(repo_root)
     ready = status.get("ready")
     if ready is False:
-        return (
-            "FAISS index: **not ready** (missing faiss.index or bundle_order.json)."
-        )
+        return "FAISS index: **not ready** (missing faiss.index or bundle_order.json)."
     if ready is not True:
         return None
     stale = status.get("stale")
@@ -59,7 +57,6 @@ def bundle_faiss_index_status_table_rows(
     return mapping_to_sorted_table_rows(status, _bundle_faiss_index_status_cell)
 
 
-
 def bundle_faiss_index_status_export_json(
     status: Mapping[str, Any] | None,
 ) -> str:
@@ -72,5 +69,3 @@ def bundle_faiss_index_status_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
-

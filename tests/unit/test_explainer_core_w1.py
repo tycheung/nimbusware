@@ -49,9 +49,7 @@ _ALLOWED_EXPLAINER_PACKAGES = frozenset(
 def test_explainer_package_allowlist_frozen() -> None:
     root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
     found = {
-        p.name
-        for p in root.iterdir()
-        if p.is_dir() and p.name.endswith("_workflow_explainer")
+        p.name for p in root.iterdir() if p.is_dir() and p.name.endswith("_workflow_explainer")
     }
     assert found == _ALLOWED_EXPLAINER_PACKAGES, (
         "New *_workflow_explainer packages require allowlist update (fo714): "
@@ -72,4 +70,7 @@ def test_universal_critique_helpers_reexport_counts() -> None:
         _universal_critique_top_level_enabled_true_count,
     )
 
-    assert _universal_critique_top_level_enabled_true_count is universal_critique_top_level_enabled_true_count
+    assert (
+        _universal_critique_top_level_enabled_true_count
+        is universal_critique_top_level_enabled_true_count
+    )

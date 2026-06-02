@@ -51,9 +51,7 @@ def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
         out["load_error"] = "pairings is not a mapping"
         return out
     excluded_producers = {"agent_evaluator"}
-    keys = sorted(
-        str(k) for k in raw_p if isinstance(k, str) and str(k) not in excluded_producers
-    )
+    keys = sorted(str(k) for k in raw_p if isinstance(k, str) and str(k) not in excluded_producers)
     out["producer_taxonomy_key_count"] = len(keys)
     out["producer_taxonomy_keys"] = keys
     out["producer_taxonomy_keys_sample"] = keys[:12]
@@ -360,5 +358,3 @@ def critique_pairings_producer_keys_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return table_rows_csv(rows, _CRITIQUE_PAIRINGS_PRODUCER_KEYS_CSV_COLUMNS)
-
-

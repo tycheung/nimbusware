@@ -1,6 +1,5 @@
 """_workflow_suppresses_automatic_escalation`` cross-path suppress matrix."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

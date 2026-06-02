@@ -68,7 +68,8 @@ def test_emit_stub_security_critique_panel_pass() -> None:
     ]
     assert SECURITY_CRITIQUE_STAGE in stages
     gates = [
-        r for r in rows
+        r
+        for r in rows
         if r.get("event_type") == "gate.decision.emitted"
         and (r.get("payload") or {}).get("stage_name") == SECURITY_CRITIQUE_STAGE
     ]
@@ -100,7 +101,8 @@ def test_emit_stub_security_critique_panel_fail_on_dirty_scan() -> None:
     )
     rows = store.list_run_events(str(run_id))
     gates = [
-        r for r in rows
+        r
+        for r in rows
         if r.get("event_type") == "gate.decision.emitted"
         and (r.get("payload") or {}).get("stage_name") == SECURITY_CRITIQUE_STAGE
     ]

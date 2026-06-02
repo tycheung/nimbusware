@@ -1,6 +1,5 @@
 """load_yaml`` root-type contract + sibling-parser cascade."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -85,12 +84,9 @@ def test_load_yaml_dict_root_accept_arm_contract(tmp_path: Path) -> None:
         path = _write_yaml(tmp_path, body, name=f"accept_{i}.yaml")
         result = load_yaml(path)
         assert isinstance(result, dict), (
-            f"accept body={body!r}: result type "
-            f"{type(result).__name__} (should be dict)"
+            f"accept body={body!r}: result type {type(result).__name__} (should be dict)"
         )
-        assert result == expected, (
-            f"accept body={body!r}: expected {expected}, got {result}"
-        )
+        assert result == expected, f"accept body={body!r}: expected {expected}, got {result}"
 
 
 def test_load_yaml_non_dict_root_value_error_contract(tmp_path: Path) -> None:
@@ -139,8 +135,7 @@ def test_load_yaml_non_dict_root_value_error_contract(tmp_path: Path) -> None:
             f"{_VALUE_ERROR_PREFIX!r}, got {msg!r}"
         )
         assert str(path) in msg, (
-            f"reject body={body!r}: error message should include path "
-            f"{path!s}, got {msg!r}"
+            f"reject body={body!r}: error message should include path {path!s}, got {msg!r}"
         )
 
 
@@ -206,7 +201,8 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
         )
 
         sec_result = parse_security_scan_metadata_on_verify_workflow(
-            tmp_path, profile,
+            tmp_path,
+            profile,
         )
         assert sec_result is False, (
             f"{block_id} parser=parse_security_scan_metadata_on_verify_workflow: "

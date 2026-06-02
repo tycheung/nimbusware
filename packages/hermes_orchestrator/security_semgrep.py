@@ -36,7 +36,7 @@ def run_semgrep_scan(
         timeout=timeout_seconds,
     )
     out = (proc.stdout or "") + (proc.stderr or "")
-  # semgrep exits 1 when findings exist
+    # semgrep exits 1 when findings exist
     code = 0 if proc.returncode in (0, 1) else proc.returncode
     if proc.returncode == 1:
         code = 1

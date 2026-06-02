@@ -1,4 +1,5 @@
 """Self-refinement policy YAML ."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,6 +8,8 @@ from hermes_extensions import load_self_refinement_policy
 from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
+
+
 def test_load_self_refinement_policy() -> None:
     pol = load_self_refinement_policy(ROOT / "configs" / "self_refinement" / "policy.yaml")
     assert pol.version == 1

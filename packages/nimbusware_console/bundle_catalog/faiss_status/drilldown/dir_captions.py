@@ -127,5 +127,3 @@ def bundle_faiss_catalog_order_count_parity_caption(repo_root: Path) -> str | No
         f"Catalog vs bundle_order.json: **mismatch** — catalog has {cid} bundle row(s) with "
         f"non-empty ids, index lists {olen}. Rebuild the FAISS index."
     )
-
-

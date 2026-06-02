@@ -26,10 +26,7 @@ def test_production_default_on_without_env_kill() -> None:
 def test_create_run_freezes_production_critique_flags() -> None:
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("nimbusware_production")
-    created = next(
-        r for r in mem.list_run_events(str(rid))
-        if r["event_type"] == "run.created"
-    )
+    created = next(r for r in mem.list_run_events(str(rid)) if r["event_type"] == "run.created")
     uc = (created.get("metadata") or {}).get("universal_critique_effective") or {}
     assert uc.get("production_default_on") is True
     assert uc.get("impl_stub") is True

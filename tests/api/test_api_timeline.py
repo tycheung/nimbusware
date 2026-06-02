@@ -30,6 +30,7 @@ from agent_core.models import (  # noqa: E402
 
 pytestmark = pytest.mark.slow
 
+
 def test_create_run_and_timeline(client: TestClient) -> None:
     r = client.post("/v1/runs", json={"workflow_profile": "default"})
     assert r.status_code == 200
@@ -1059,4 +1060,3 @@ def test_timeline_preflight_summary_from_passed_event(client: TestClient) -> Non
     assert pf2["event_id"] == str(eid_second)
     assert pf2["validated_model_id"] == "qwen2.5-coder:14b"
     assert pf2["health_latency_samples_ms"] == [180, 190, 200, 210, 220]
-

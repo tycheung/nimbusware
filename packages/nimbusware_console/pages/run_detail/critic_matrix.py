@@ -40,10 +40,8 @@ def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
             _crit_metrics_json = critic_matrix_operator_metrics_export_json(
                 _crit_metrics,
             )
-            _crit_metrics_csv = (
-                critic_matrix_operator_metrics_table_rows_csv(
-                    _crit_metric_rows,
-                )
+            _crit_metrics_csv = critic_matrix_operator_metrics_table_rows_csv(
+                _crit_metric_rows,
             )
             (
                 _crit_metrics_dl_json_col,
@@ -54,8 +52,7 @@ def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
                     label="Download critic matrix operator metrics JSON",
                     data=_crit_metrics_json.encode("utf-8"),
                     file_name=(
-                        "hermes_critic_matrix_operator_metrics_"
-                        f"{_crit_slug}_{_crit_ts}.json"
+                        f"hermes_critic_matrix_operator_metrics_{_crit_slug}_{_crit_ts}.json"
                     ),
                     mime="application/json",
                     key="hermes_dl_critic_matrix_operator_metrics_json",
@@ -63,13 +60,10 @@ def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
             with _crit_metrics_dl_csv_col:
                 if _crit_metrics_csv:
                     st.download_button(
-                        label=(
-                            "Download critic matrix operator metrics CSV"
-                        ),
+                        label=("Download critic matrix operator metrics CSV"),
                         data=_crit_metrics_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_critic_matrix_operator_metrics_"
-                            f"{_crit_slug}_{_crit_ts}.csv"
+                            f"hermes_critic_matrix_operator_metrics_{_crit_slug}_{_crit_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_critic_matrix_operator_metrics_csv",
@@ -82,9 +76,7 @@ def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
             st.download_button(
                 label="Download critic matrix JSON",
                 data=_crit_json.encode("utf-8"),
-                file_name=(
-                    f"hermes_critic_matrix_{_crit_slug}_{_crit_ts}.json"
-                ),
+                file_name=(f"hermes_critic_matrix_{_crit_slug}_{_crit_ts}.json"),
                 mime="application/json",
                 key="hermes_dl_critic_matrix_json",
             )
@@ -93,9 +85,7 @@ def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
                 st.download_button(
                     label="Download critic matrix CSV",
                     data=_crit_csv.encode("utf-8"),
-                    file_name=(
-                        f"hermes_critic_matrix_{_crit_slug}_{_crit_ts}.csv"
-                    ),
+                    file_name=(f"hermes_critic_matrix_{_crit_slug}_{_crit_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_critic_matrix_csv",
                 )

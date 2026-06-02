@@ -138,5 +138,3 @@ def full_workflow_merge_subtree_added_fields_caption(
     if not parts:
         return None
     return "Subtree added fields: " + ", ".join(parts) + "."
-
-

@@ -37,9 +37,7 @@ def render_intent_wizard() -> None:
         "Project",
         options=list(options.keys()),
         format_func=lambda pid: options.get(str(pid), pid),
-        index=list(options.keys()).index(default_project)
-        if default_project in options
-        else 0,
+        index=list(options.keys()).index(default_project) if default_project in options else 0,
         key="maker_intent_project",
     )
     st.session_state["maker_active_project_id"] = project_id

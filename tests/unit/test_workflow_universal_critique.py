@@ -288,8 +288,7 @@ def test_coerce_yaml_bool_numeric_strict_one_via_parse(tmp_path: Path) -> None:
         _write_universal_critique_profile(
             repo,
             name,
-            "version: 1\nuniversal_critique:\n"
-            f"  implementation:\n    llm: {raw}\n",
+            f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
         )
         block = parse_universal_critique_workflow_block(repo, name)
         assert block.impl_llm is expected, name
@@ -333,8 +332,7 @@ def test_coerce_yaml_bool_truthy_case_insensitive_strings_via_parse(
         _write_universal_critique_profile(
             repo,
             name,
-            "version: 1\nuniversal_critique:\n"
-            f"  implementation:\n    llm: {raw}\n",
+            f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
         )
         block = parse_universal_critique_workflow_block(repo, name)
         assert block.impl_llm is True, f"impl.llm={raw}"
@@ -374,8 +372,7 @@ def test_coerce_yaml_bool_truthy_whitespace_trimmed_strings_via_parse(
         _write_universal_critique_profile(
             repo,
             name,
-            "version: 1\nuniversal_critique:\n"
-            f"  implementation:\n    llm: {raw}\n",
+            f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
         )
         block = parse_universal_critique_workflow_block(repo, name)
         assert block.impl_llm is True, f"impl.llm={raw}"
@@ -432,8 +429,7 @@ def test_coerce_yaml_bool_falsy_and_unknown_strings_via_parse(
         _write_universal_critique_profile(
             repo,
             name,
-            "version: 1\nuniversal_critique:\n"
-            f"  implementation:\n    llm: {raw}\n",
+            f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
         )
         block = parse_universal_critique_workflow_block(repo, name)
         assert block.impl_llm is False, f"impl.llm={raw}"
@@ -560,12 +556,7 @@ def _one_knob_on_yaml(stage: str, leaf: str) -> str:
     :class:`UniversalCritiqueWorkflowBlock` has the target field True and every
     other field False. Pairs with ``_WIRING_MAP`` for Parts A / C.
     """
-    return (
-        "version: 1\n"
-        "universal_critique:\n"
-        f"  {stage}:\n"
-        f"    {leaf}: true\n"
-    )
+    return f"version: 1\nuniversal_critique:\n  {stage}:\n    {leaf}: true\n"
 
 
 def _clear_all_wiring_envs(monkeypatch: pytest.MonkeyPatch) -> None:

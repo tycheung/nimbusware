@@ -98,4 +98,3 @@ def self_refinement_timeline_operator_metrics_export_filename_slug(
 
 
 _TIMELINE_DESC_PREVIEW_MAX = 240
-

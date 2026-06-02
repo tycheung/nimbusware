@@ -37,9 +37,7 @@ class CustomAgent:
             display_name=str(raw.get("display_name", raw["id"])).strip(),
             system_prompt=str(raw.get("system_prompt", "")),
             description=str(raw.get("description", "")).strip(),
-            bound_role_id=(
-                str(raw["bound_role_id"]).strip() if raw.get("bound_role_id") else None
-            ),
+            bound_role_id=(str(raw["bound_role_id"]).strip() if raw.get("bound_role_id") else None),
             version=int(raw.get("version", 1) or 1),
         )
 

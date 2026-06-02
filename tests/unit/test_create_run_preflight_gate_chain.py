@@ -1,6 +1,5 @@
 """RunOrchestrator.create_run`` pre-flight gate chain coverage."""
 
-
 from __future__ import annotations
 
 import os
@@ -18,7 +17,9 @@ _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 # tests/test_api.py:11-13 and tests/test_workflow_profile_path_propagation.py).
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
+os.environ.setdefault(
+    "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+)
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -100,7 +101,8 @@ def _write_shelves(tmp_path: Path, body: str) -> Path:
 
 
 def _make_create_run_raising(
-    exc_class: type[BaseException], msg: str,
+    exc_class: type[BaseException],
+    msg: str,
 ) -> Any:
     """Build a ``create_run`` replacement that raises ``exc_class(msg)``.
 
@@ -138,8 +140,7 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
     for known in _KNOWN_TAXONOMY_KEYS:
         result = assert_taxonomy_keys_resolve(reg, [known])
         assert result is None, (
-            f"assert_taxonomy_keys_resolve(reg, [{known!r}]) returned {result!r}; "
-            f"expected None"
+            f"assert_taxonomy_keys_resolve(reg, [{known!r}]) returned {result!r}; expected None"
         )
 
     # Empty-list arm: no-op loop, no exception.
@@ -151,7 +152,8 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
 
     for case_id, unknown_key in _UNKNOWN_TAXONOMY_KEYS:
         with pytest.raises(
-            KeyError, match=re.escape(_TAXONOMY_KEY_ERROR_PREFIX),
+            KeyError,
+            match=re.escape(_TAXONOMY_KEY_ERROR_PREFIX),
         ) as exc_info:
             assert_taxonomy_keys_resolve(reg, [unknown_key])
         msg = str(exc_info.value)
@@ -183,19 +185,18 @@ def test_assert_persona_shelves_valid_3_axis_wrapper_contract(tmp_path: Path) ->
     # Accept arm -- real repo's configs/personas/shelves.yaml.
     accept_result = assert_persona_shelves_valid(_REPO_ROOT)
     assert accept_result is None, (
-        f"assert_persona_shelves_valid({_REPO_ROOT}) returned {accept_result!r}; "
-        f"expected None"
+        f"assert_persona_shelves_valid({_REPO_ROOT}) returned {accept_result!r}; expected None"
     )
 
     # FNF arm -- tmp_path has no configs/personas/shelves.yaml file.
     with pytest.raises(
-        FileNotFoundError, match=re.escape(_SHELVES_FNF_PREFIX),
+        FileNotFoundError,
+        match=re.escape(_SHELVES_FNF_PREFIX),
     ) as fnf_info:
         assert_persona_shelves_valid(tmp_path)
     expected_path = tmp_path / "configs" / "personas" / "shelves.yaml"
     assert str(expected_path) in str(fnf_info.value), (
-        f"FileNotFoundError message {fnf_info.value!r} missing resolved path "
-        f"{expected_path!s}"
+        f"FileNotFoundError message {fnf_info.value!r} missing resolved path {expected_path!s}"
     )
 
     # ValueError arm -- 4 invalid YAML bodies, one per sub-path.
@@ -243,7 +244,8 @@ def test_create_run_http_exception_translation_matrix_contract(
                 _make_create_run_raising(exc_class, injected_msg),
             )
             r = client.post(
-                "/v1/runs", json={"workflow_profile": "default"},
+                "/v1/runs",
+                json={"workflow_profile": "default"},
             )
             assert r.status_code == 422, (
                 f"POST /v1/runs with patched {exc_class.__name__} returned "

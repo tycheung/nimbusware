@@ -1,6 +1,5 @@
 """_emit_bundle_integrator_gate`` direct contract composite."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -36,9 +35,7 @@ _EXPECTED_META_KEYS = {
 
 def _gate_rows(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
     """Return all ``gate.decision.emitted`` rows for the run in store order."""
-    return [
-        r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _GATE_EMITTED
-    ]
+    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _GATE_EMITTED]
 
 
 def _gate_meta(row: dict[str, Any]) -> dict[str, Any]:
@@ -229,9 +226,7 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
         f"list(bundle_tags); got {meta_b2.get('integrator_project_tags')!r}. "
         "Pins the `elif bundle_tags:` arm at pipeline.py:1507-1508"
     )
-    assert (
-        meta_b2["integrator_project_tags"] is not meta_b2["integrator_bundle_tags"]
-    ), (
+    assert meta_b2["integrator_project_tags"] is not meta_b2["integrator_bundle_tags"], (
         "B2 cross-cut: `list(bundle_tags)` makes a COPY (not alias); a "
         "refactor to `project_tags = bundle_tags` would still pass value "
         "equality but break this identity check, signalling shared-mutation risk"
@@ -330,8 +325,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
         "pipeline.py:1512-1513"
     )
     assert profile_c1["bundle_tags"] == ["auth", "rbac"], (
-        f"C1 cross-cut: profile.bundle_tags == catalog tags; got "
-        f"{profile_c1['bundle_tags']!r}"
+        f"C1 cross-cut: profile.bundle_tags == catalog tags; got {profile_c1['bundle_tags']!r}"
     )
 
     class_spy_c2, mi_c2 = _make_fake_mi_class(score=0.0, passes=False)
@@ -455,9 +449,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     ):
         orch_pass._emit_bundle_integrator_gate(rid_pass)  # noqa: SLF001
     pass_rows = _gate_rows(mem_pass, rid_pass)
-    assert len(pass_rows) == 1, (
-        f"D PASS setup: exactly 1 emit; got {len(pass_rows)}"
-    )
+    assert len(pass_rows) == 1, f"D PASS setup: exactly 1 emit; got {len(pass_rows)}"
     pass_payload = _gate_payload(pass_rows[0])
     pass_meta = _gate_meta(pass_rows[0])
 
@@ -469,9 +461,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     ):
         orch_fail._emit_bundle_integrator_gate(rid_fail)  # noqa: SLF001
     fail_rows = _gate_rows(mem_fail, rid_fail)
-    assert len(fail_rows) == 1, (
-        f"D FAIL setup: exactly 1 emit; got {len(fail_rows)}"
-    )
+    assert len(fail_rows) == 1, f"D FAIL setup: exactly 1 emit; got {len(fail_rows)}"
     fail_payload = _gate_payload(fail_rows[0])
     fail_meta = _gate_meta(fail_rows[0])
 

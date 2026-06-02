@@ -44,7 +44,6 @@ class MicroSliceMixin:
             ),
         )
 
-
     def record_micro_slice_gate(
         self,
         run_id: UUID,
@@ -80,10 +79,7 @@ class MicroSliceMixin:
         memory_hits: list[Any] = []
         memory_scope = ""
         memory_settings = memory_settings_from_run_metadata(run_meta)
-        if (
-            run_memory_retrieval_enabled(run_meta)
-            and self._memory_chunk_store is not None
-        ):
+        if run_memory_retrieval_enabled(run_meta) and self._memory_chunk_store is not None:
             memory_excerpt, memory_hits, memory_scope = retrieve_memory_excerpt_for_slice(
                 self._memory_chunk_store,
                 p,
@@ -112,7 +108,8 @@ class MicroSliceMixin:
                 query_digest=query_digest(
                     " ".join(
                         [p.slice_id, p.rationale, *p.target_paths],
-                    ).strip() or "failure fix gate security",
+                    ).strip()
+                    or "failure fix gate security",
                 ),
                 hits=memory_hits,
                 excerpt=memory_excerpt,
@@ -151,13 +148,11 @@ class MicroSliceMixin:
             )
         return gate
 
-
     def _micro_slice_enabled_for_run(self, run_id: UUID) -> bool:
         from hermes_orchestrator.micro_slice_executor import micro_slice_effective_from_rows
 
         rows = self._store.list_run_events(str(run_id))
         return micro_slice_effective_from_rows(rows) is not None
-
 
     def execute_micro_slice_pass(
         self,
@@ -168,4 +163,3 @@ class MicroSliceMixin:
         from hermes_orchestrator.micro_slice_executor import execute_micro_slice_pass
 
         return execute_micro_slice_pass(self, run_id, workspace=workspace)
-

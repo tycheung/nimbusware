@@ -1,6 +1,5 @@
 """_maybe_escalate_verifier_failure_checkpoint`` direct contract."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -29,11 +28,7 @@ _VERIFIER_NOTES_LITERAL = "escalate_on_first_verifier_failure policy"
 
 def _escalation_rows(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
     """Return ``run.escalated`` rows for the run, in store order."""
-    return [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == _RUN_ESCALATED
-    ]
+    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _RUN_ESCALATED]
 
 
 def _append_escalation(mem: InMemoryEventStore, rid: UUID, reason: str) -> None:
@@ -206,9 +201,9 @@ def test_verifier_failure_checkpoint_happy_path_and_literal_notes_5_axis() -> No
         return_value=True,
     ):
         orch_b4_repeat._maybe_escalate_verifier_failure_checkpoint(rid_b4_repeat)  # noqa: SLF001
-    repeat_notes = (
-        _escalation_rows(mem_b4_repeat, rid_b4_repeat)[0].get("payload") or {}
-    ).get("notes")
+    repeat_notes = (_escalation_rows(mem_b4_repeat, rid_b4_repeat)[0].get("payload") or {}).get(
+        "notes"
+    )
     assert repeat_notes == _VERIFIER_NOTES_LITERAL, (
         f"B4 invariance: a second fresh-orchestrator invocation yields the "
         f"IDENTICAL notes string `{_VERIFIER_NOTES_LITERAL}`; got "
@@ -344,8 +339,7 @@ def test_verifier_failure_checkpoint_cross_emitter_independence_with_anti_deadlo
         orch_d1._maybe_escalate_verifier_failure_checkpoint(rid_d1)  # noqa: SLF001
         orch_d1._maybe_emit_anti_deadlock_escalation(rid_d1)  # noqa: SLF001
     reasons_d1 = {
-        (r.get("payload") or {}).get("reason_code")
-        for r in _escalation_rows(mem_d1, rid_d1)
+        (r.get("payload") or {}).get("reason_code") for r in _escalation_rows(mem_d1, rid_d1)
     }
     assert reasons_d1 == {_VERIFIER_CHECKPOINT, _ANTI_DEADLOCK}, (
         f"D1: verifier then anti-deadlock emit both succeed; got reasons="
@@ -372,8 +366,7 @@ def test_verifier_failure_checkpoint_cross_emitter_independence_with_anti_deadlo
         orch_d2._maybe_emit_anti_deadlock_escalation(rid_d2)  # noqa: SLF001
         orch_d2._maybe_escalate_verifier_failure_checkpoint(rid_d2)  # noqa: SLF001
     reasons_d2 = {
-        (r.get("payload") or {}).get("reason_code")
-        for r in _escalation_rows(mem_d2, rid_d2)
+        (r.get("payload") or {}).get("reason_code") for r in _escalation_rows(mem_d2, rid_d2)
     }
     assert reasons_d2 == {_VERIFIER_CHECKPOINT, _ANTI_DEADLOCK}, (
         f"D2: anti-deadlock then verifier emit both succeed; got reasons="

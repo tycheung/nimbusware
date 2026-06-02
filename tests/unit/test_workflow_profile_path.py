@@ -1,6 +1,5 @@
 """workflow_profile_path`` 3-axis contract + cross-caller divergence."""
 
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -108,7 +107,9 @@ def _make_workflows_dir(tmp_path: Path) -> Path:
 
 
 def _write_profile(
-    tmp_path: Path, name: str, body: str = "version: 1\n",
+    tmp_path: Path,
+    name: str,
+    body: str = "version: 1\n",
 ) -> Path:
     """Write a minimal valid profile file under ``configs/workflows``.
 
@@ -166,8 +167,7 @@ def test_workflow_profile_path_accept_arm_normalizes_and_returns_path_contract(
             f"{type(result).__name__} (should be Path)"
         )
         assert result == expected, (
-            f"accept {case_id} input={profile_input!r}: expected "
-            f"{expected!s}, got {result!s}"
+            f"accept {case_id} input={profile_input!r}: expected {expected!s}, got {result!s}"
         )
         assert result.is_file(), (
             f"accept {case_id} input={profile_input!r}: result path "

@@ -28,4 +28,5 @@ def render_config_tooling_workflows_section() -> None:
     render_workflows_persona_editor_section()
     render_workflows_prune_section()
 
+
 __all__ = ["render_config_tooling_workflows_section"]

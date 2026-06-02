@@ -107,5 +107,3 @@ def agent_evaluator_workflow_explainer_payload(
         "would_emit_llm_evaluation": would_emit_llm,
         "load_error": load_error,
     }
-
-

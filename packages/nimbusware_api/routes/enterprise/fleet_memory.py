@@ -50,7 +50,9 @@ def fleet_memory_status(_gate: EnterpriseDep) -> dict[str, Any]:
     memory_store = build_memory_chunk_store(allow_in_memory=True)
     local_gen = None
     if memory_store is not None:
-        local_gen = memory_store.latest_generation(org_scope_hash=org_scope, tenant_id=ctx.tenant_id)
+        local_gen = memory_store.latest_generation(
+            org_scope_hash=org_scope, tenant_id=ctx.tenant_id
+        )
     remote = fleet_memory_remote_status(org_scope_hash=org_scope)
     return {
         "tenant_id": str(ctx.tenant_id),

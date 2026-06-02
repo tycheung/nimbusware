@@ -61,9 +61,7 @@ def test_cumulative_high_severity_findings_emits_single_escalation() -> None:
         orch._maybe_escalate_after_cumulative_high_severity_findings(rid)  # noqa: SLF001
         orch._maybe_escalate_after_cumulative_high_severity_findings(rid)  # noqa: SLF001
     esc = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r["event_type"] == EventType.RUN_ESCALATED.value
+        r for r in mem.list_run_events(str(rid)) if r["event_type"] == EventType.RUN_ESCALATED.value
     ]
     assert len(esc) == 1
     assert (esc[0].get("payload") or {}).get("reason_code") == "cumulative_high_severity_findings"

@@ -222,4 +222,3 @@ from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_suppress_workflow_explainer_payload,
     escalation_yaml_key_present_caption,
 )
-

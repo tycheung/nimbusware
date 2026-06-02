@@ -169,5 +169,3 @@ def _emit_integrator_gate_breakdown(
         "would_emit_integrator_gate_event": would_emit,
         "not_emit_reason": None if would_emit else reason,
     }
-
-

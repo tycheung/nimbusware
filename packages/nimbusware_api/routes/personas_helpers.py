@@ -87,15 +87,17 @@ def entry_version(entry: dict[str, Any] | None) -> int:
 
 
 def find_replayed_event(
-    store: Any, shelf: str, persona_id: str, idem_key: UUID,
+    store: Any,
+    shelf: str,
+    persona_id: str,
+    idem_key: UUID,
 ) -> bool:
     """Return ``True`` when an existing ``persona.shelf.updated`` row matches ``idem_key``."""
     rid = str(persona_catalog_run_id(shelf, persona_id))
     for r in store.list_run_events(rid):
-        if (
-            r.get("event_type") == EventType.PERSONA_SHELF_UPDATED.value
-            and str(r.get("correlation_id") or "") == str(idem_key)
-        ):
+        if r.get("event_type") == EventType.PERSONA_SHELF_UPDATED.value and str(
+            r.get("correlation_id") or ""
+        ) == str(idem_key):
             return True
     return False
 

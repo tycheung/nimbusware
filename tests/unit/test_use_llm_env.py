@@ -1,6 +1,5 @@
 """HERMES_USE_LLM`` env-layer string-arm contract."""
 
-
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -37,13 +36,13 @@ def _patched_execute(
     llm_kwargs: dict[str, Any] = (
         {"side_effect": Exception("simulated llm failure")} if llm_raises else {}
     )
-    with patch.object(
-        orch, "_selected_model_for_run", return_value=model_id
-    ), patch(
-        "hermes_orchestrator.pipeline.execute_plan_stage_llm", **llm_kwargs
-    ) as mock_llm, patch(
-        "hermes_orchestrator.pipeline.emit_stub_plan_stage",
-    ) as mock_stub:
+    with (
+        patch.object(orch, "_selected_model_for_run", return_value=model_id),
+        patch("hermes_orchestrator.pipeline.execute_plan_stage_llm", **llm_kwargs) as mock_llm,
+        patch(
+            "hermes_orchestrator.pipeline.emit_stub_plan_stage",
+        ) as mock_stub,
+    ):
         yield mock_llm, mock_stub
 
 
@@ -82,12 +81,10 @@ def test_use_llm_env_force_on_string_arm_contract(
         with _patched_execute(orch) as (mock_llm, mock_stub):
             orch.execute_plan_stage(rid)
         assert mock_llm.call_count == 1, (
-            f"force_on raw={raw!r}: LLM call count "
-            f"(expected 1, got {mock_llm.call_count})"
+            f"force_on raw={raw!r}: LLM call count (expected 1, got {mock_llm.call_count})"
         )
         assert mock_stub.call_count == 0, (
-            f"force_on raw={raw!r}: stub unexpectedly called "
-            f"(count={mock_stub.call_count})"
+            f"force_on raw={raw!r}: stub unexpectedly called (count={mock_stub.call_count})"
         )
 
 
@@ -131,15 +128,12 @@ def test_use_llm_env_fallback_arm_contract(
         f"llm_raises: LLM call count != 1 (count={mock_llm.call_count})"
     )
     assert mock_stub.call_count == 1, (
-        f"llm_raises: stub not called once after LLM raised "
-        f"(count={mock_stub.call_count})"
+        f"llm_raises: stub not called once after LLM raised (count={mock_stub.call_count})"
     )
 
     with _patched_execute(orch, llm_raises=False) as (mock_llm, mock_stub):
         orch.execute_plan_stage(rid)
-    assert mock_llm.call_count == 1, (
-        f"llm_ok: LLM call count != 1 (count={mock_llm.call_count})"
-    )
+    assert mock_llm.call_count == 1, f"llm_ok: LLM call count != 1 (count={mock_llm.call_count})"
     assert mock_stub.call_count == 0, (
         f"llm_ok: stub unexpectedly called (count={mock_stub.call_count})"
     )
@@ -197,10 +191,8 @@ def test_use_llm_env_fail_closed_string_arm_contract(
         with _patched_execute(orch) as (mock_llm, mock_stub):
             orch.execute_plan_stage(rid)
         assert mock_llm.call_count == 0, (
-            f"fail_closed raw={raw!r}: LLM unexpectedly called "
-            f"(count={mock_llm.call_count})"
+            f"fail_closed raw={raw!r}: LLM unexpectedly called (count={mock_llm.call_count})"
         )
         assert mock_stub.call_count == 1, (
-            f"fail_closed raw={raw!r}: stub not called once "
-            f"(count={mock_stub.call_count})"
+            f"fail_closed raw={raw!r}: stub not called once (count={mock_stub.call_count})"
         )

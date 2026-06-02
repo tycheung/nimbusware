@@ -1,6 +1,5 @@
 """Catalog loader defensive paths composite."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -38,9 +37,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     """
     a1_repo = tmp_path / "a1_catalog_absent"
     a1_repo.mkdir()
-    assert (
-        select_bundle_id_for_workflow(a1_repo, "default") == "auth-rbac-starter"
-    ), (
+    assert select_bundle_id_for_workflow(a1_repo, "default") == "auth-rbac-starter", (
         "A1: catalog.yaml absent -> `auth-rbac-starter` hardcoded fallback at "
         "pipeline-line 64-65. Today only covered indirectly via fo107 B3; "
         "this is the explicit direct pin"
@@ -49,9 +46,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     a2_repo = tmp_path / "a2_no_bundles_list"
     a2_repo.mkdir()
     _write_catalog(a2_repo, "version: 1\n")
-    assert (
-        select_bundle_id_for_workflow(a2_repo, "default") == "auth-rbac-starter"
-    ), (
+    assert select_bundle_id_for_workflow(a2_repo, "default") == "auth-rbac-starter", (
         "A2: catalog present but no `bundles` key -> final `auth-rbac-starter` "
         "fallback at line 75. Pins the loop-empty branch (bundles=[] yields "
         "`if bundles` False -> falls through)"
@@ -68,9 +63,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
         "  - id: real-bundle\n"
         "    tags: [a]\n",
     )
-    assert (
-        select_bundle_id_for_workflow(a3_repo, "custom_wf") == "real-bundle"
-    ), (
+    assert select_bundle_id_for_workflow(a3_repo, "custom_wf") == "real-bundle", (
         "A3: `workflow_bundle_map.custom_wf: null` -> `wmap[key] is not None` "
         "guard at line 70 short-circuits the wmap arm; falls through to "
         "first-bundle (`real-bundle`). Pins `is not None` vs truthy: a "
@@ -83,16 +76,9 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     a4_repo.mkdir()
     _write_catalog(
         a4_repo,
-        "version: 1\n"
-        "workflow_bundle_map:\n"
-        "  - a\n"
-        "  - b\n"
-        "bundles:\n"
-        "  - id: only-bundle\n",
+        "version: 1\nworkflow_bundle_map:\n  - a\n  - b\nbundles:\n  - id: only-bundle\n",
     )
-    assert (
-        select_bundle_id_for_workflow(a4_repo, "custom_wf") == "only-bundle"
-    ), (
+    assert select_bundle_id_for_workflow(a4_repo, "custom_wf") == "only-bundle", (
         "A4: `workflow_bundle_map` parsed as a list (not a dict) -> "
         "`isinstance(wmap, dict)` guard at line 68 skips the wmap arm; "
         "falls through to `bundles[0].id == only-bundle`. Pins the "
@@ -104,14 +90,9 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     a5a_repo.mkdir()
     _write_catalog(
         a5a_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - not-a-dict-string\n"
-        "  - also-string\n",
+        "version: 1\nbundles:\n  - not-a-dict-string\n  - also-string\n",
     )
-    assert (
-        select_bundle_id_for_workflow(a5a_repo, "default") == "auth-rbac-starter"
-    ), (
+    assert select_bundle_id_for_workflow(a5a_repo, "default") == "auth-rbac-starter", (
         "A5(a): `bundles[0]` is a string -> "
         "`isinstance(bundles[0], dict)` guard at line 73 short-circuits; "
         "falls through to `auth-rbac-starter` final fallback. Pins the "
@@ -124,13 +105,9 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     a5b_repo.mkdir()
     _write_catalog(
         a5b_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - tags: [a]\n",
+        "version: 1\nbundles:\n  - tags: [a]\n",
     )
-    assert (
-        select_bundle_id_for_workflow(a5b_repo, "default") == "auth-rbac-starter"
-    ), (
+    assert select_bundle_id_for_workflow(a5b_repo, "default") == "auth-rbac-starter", (
         "A5(b): `bundles[0]` is a dict but missing `id` -> "
         "`bundles[0].get('id')` returns None (falsy) -> the AND short-circuits; "
         "falls through to `auth-rbac-starter`. Pins the SECOND inner guard "
@@ -202,13 +179,11 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
     b5_repo.mkdir()
     _write_catalog(
         b5_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: real-bundle\n"
-        "    tags: [auth]\n",
+        "version: 1\nbundles:\n  - id: real-bundle\n    tags: [auth]\n",
     )
     assert load_bundle_tags_for_bundle_id(
-        b5_repo, "  real-bundle  ",
+        b5_repo,
+        "  real-bundle  ",
     ) == ["auth"], (
         "B5: caller passes `'  real-bundle  '` with leading/trailing "
         "whitespace; `bid = str(bundle_id).strip()` at line 96 normalizes "
@@ -232,9 +207,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     c1_repo.mkdir()
     _write_catalog(
         c1_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: tagless-bundle\n",
+        "version: 1\nbundles:\n  - id: tagless-bundle\n",
     )
     assert load_bundle_tags_for_bundle_id(c1_repo, "tagless-bundle") == [], (
         "C1: bundle entry exists without `tags` key -> `b.get('tags')` "
@@ -246,10 +219,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     c2a_repo.mkdir()
     _write_catalog(
         c2a_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: bad-tags-string\n"
-        "    tags: not-a-list-string\n",
+        "version: 1\nbundles:\n  - id: bad-tags-string\n    tags: not-a-list-string\n",
     )
     assert load_bundle_tags_for_bundle_id(c2a_repo, "bad-tags-string") == [], (
         "C2(a): `tags: not-a-list-string` -> string fails `isinstance(tags, "
@@ -277,10 +247,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     c2c_repo.mkdir()
     _write_catalog(
         c2c_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: bad-tags-int\n"
-        "    tags: 42\n",
+        "version: 1\nbundles:\n  - id: bad-tags-int\n    tags: 42\n",
     )
     assert load_bundle_tags_for_bundle_id(c2c_repo, "bad-tags-int") == [], (
         "C2(c): `tags: 42` (int) -> fails isinstance -> []. Pins the "
@@ -292,10 +259,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     c3_repo.mkdir()
     _write_catalog(
         c3_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: mixed\n"
-        '    tags: [42, "  billing  ", null, "stripe", ""]\n',
+        'version: 1\nbundles:\n  - id: mixed\n    tags: [42, "  billing  ", null, "stripe", ""]\n',
     )
     assert load_bundle_tags_for_bundle_id(c3_repo, "mixed") == [
         "42",
@@ -320,10 +284,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     c4_repo.mkdir()
     _write_catalog(
         c4_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: ws\n"
-        '    tags: ["  ", "", "\\t"]\n',
+        'version: 1\nbundles:\n  - id: ws\n    tags: ["  ", "", "\\t"]\n',
     )
     actual_c4 = load_bundle_tags_for_bundle_id(c4_repo, "ws")
     assert actual_c4 == [], (
@@ -371,7 +332,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
     d1_repo = tmp_path / "d1_catalog_absent"
     d1_repo.mkdir()
     assert load_bundle_title_for_bundle_id(d1_repo, "any") == "", (
-        "D1: catalog.yaml absent -> entry None at line 117 -> `\"\"` "
+        'D1: catalog.yaml absent -> entry None at line 117 -> `""` '
         "early-return. Mirrors B1 for the title loader"
     )
 
@@ -379,10 +340,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
     d2_repo.mkdir()
     _write_catalog(
         d2_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: other\n"
-        "    title: Other Bundle\n",
+        "version: 1\nbundles:\n  - id: other\n    title: Other Bundle\n",
     )
     assert load_bundle_title_for_bundle_id(d2_repo, "missing") == "", (
         "D2: catalog present, target bundle id `'missing'` not in list -> "
@@ -397,30 +355,24 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
     d3_repo.mkdir()
     _write_catalog(
         d3_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: titleless\n"
-        "    tags: [a]\n",
+        "version: 1\nbundles:\n  - id: titleless\n    tags: [a]\n",
     )
     assert load_bundle_title_for_bundle_id(d3_repo, "titleless") == "", (
         "D3: bundle entry exists without `title` key -> `b.get('title')` "
         "returns None -> `t is not None` guard at line 120 short-circuits "
-        "-> `\"\"`. Pins the no-title-key arm"
+        '-> `""`. Pins the no-title-key arm'
     )
 
     d4_repo = tmp_path / "d4_title_yaml_null"
     d4_repo.mkdir()
     _write_catalog(
         d4_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: nulled\n"
-        "    title: null\n",
+        "version: 1\nbundles:\n  - id: nulled\n    title: null\n",
     )
     assert load_bundle_title_for_bundle_id(d4_repo, "nulled") == "", (
         "D4: explicit YAML `title: null` -> `b.get('title')` returns "
         "Python None -> `t is not None` guard at line 120 short-circuits "
-        "-> `\"\"`. **CRITICAL PIN**: without the `is not None` guard, "
+        '-> `""`. **CRITICAL PIN**: without the `is not None` guard, '
         "`str(None).strip()` would return the literal string `'None'`, "
         "silently producing a misleading title. The guard catches None "
         "BEFORE the str() coercion runs"
@@ -430,14 +382,11 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
     d5_repo.mkdir()
     _write_catalog(
         d5_repo,
-        "version: 1\n"
-        "bundles:\n"
-        "  - id: ws_title\n"
-        '    title: "   "\n',
+        'version: 1\nbundles:\n  - id: ws_title\n    title: "   "\n',
     )
     assert load_bundle_title_for_bundle_id(d5_repo, "ws_title") == "", (
         "D5: `title: '   '` -> `t = '   '` is non-None -> "
-        "`str(t).strip()` collapses to `\"\"`. Pins the `.strip()` call "
+        '`str(t).strip()` collapses to `""`. Pins the `.strip()` call '
         "at line 120 (a refactor dropping `.strip()` would surface the "
         "raw whitespace string `'   '` as a valid title)"
     )

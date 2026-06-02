@@ -94,9 +94,7 @@ class LifecycleVerifyMixin:
         base_cfg = self._base_cfg()
         runtime_cfg = base_cfg.get("runtime") or {}
         writers_group = (
-            parallel_group_members(sg_snapshot, "writers")
-            if sg_snapshot and use_parallel
-            else []
+            parallel_group_members(sg_snapshot, "writers") if sg_snapshot and use_parallel else []
         )
         if writers_group:
             code, log = self._run_writers_parallel_dispatch(

@@ -57,5 +57,3 @@ def bundle_search_hits_table_rows_csv(hits: Sequence[Mapping[str, Any]]) -> str:
             },
         )
     return buf.getvalue()
-
-

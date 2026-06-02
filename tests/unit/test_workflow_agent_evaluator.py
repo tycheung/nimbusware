@@ -75,10 +75,14 @@ def test_parse_agent_evaluator_malformed_block_yields_defaults(
     Mirrors the malformed-block tests from follow-ons 52 / 53.
     """
     _write_agent_evaluator_profile(
-        tmp_path, "block_scalar", "version: 1\nagent_evaluator: true\n",
+        tmp_path,
+        "block_scalar",
+        "version: 1\nagent_evaluator: true\n",
     )
     _write_agent_evaluator_profile(
-        tmp_path, "block_list", "version: 1\nagent_evaluator: []\n",
+        tmp_path,
+        "block_list",
+        "version: 1\nagent_evaluator: []\n",
     )
     for name in ("block_scalar", "block_list"):
         block = parse_agent_evaluator_workflow_block(tmp_path, name)

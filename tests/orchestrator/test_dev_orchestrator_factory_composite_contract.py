@@ -1,6 +1,5 @@
 """default_paths`` + ``make_dev_orchestrator`` dev-factory composite."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -153,9 +152,7 @@ def test_default_paths_root_resolution_5_axis(tmp_path: Path) -> None:
         f"path that's absolute on most installs but could be relative under "
         f"unusual import setups. Got: {paths[0]!r}"
     )
-    assert paths[1].is_absolute(), (
-        f"B2: second path must also be absolute. Got: {paths[1]!r}"
-    )
+    assert paths[1].is_absolute(), f"B2: second path must also be absolute. Got: {paths[1]!r}"
 
     resolved_root = paths[0].parent.parent
     assert (resolved_root / "configs").is_dir(), (
@@ -385,8 +382,7 @@ def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
 
     fresh_root = tmp_path / "no_such_root"
     assert not fresh_root.exists(), (
-        f"D4 setup: ``tmp_path/no_such_root`` must NOT exist. Got "
-        f"exists={fresh_root.exists()}"
+        f"D4 setup: ``tmp_path/no_such_root`` must NOT exist. Got exists={fresh_root.exists()}"
     )
     paths_ne = default_paths(fresh_root)
     assert paths_ne[0] == fresh_root / "configs" / "model-routing.yaml", (

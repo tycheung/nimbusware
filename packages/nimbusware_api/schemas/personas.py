@@ -124,19 +124,24 @@ class PersonaShelfPatchRequest(BaseModel):
     expected_version: int = Field(..., ge=1)
     display_name: str | None = Field(default=None, max_length=200)
     instructions: str | None = Field(
-        default=None, max_length=PERSONA_INSTRUCTIONS_MAX_CHARS,
+        default=None,
+        max_length=PERSONA_INSTRUCTIONS_MAX_CHARS,
     )
     capability_profile: str | None = Field(
-        default=None, max_length=PERSONA_CAPABILITY_PROFILE_MAX_CHARS,
+        default=None,
+        max_length=PERSONA_CAPABILITY_PROFILE_MAX_CHARS,
     )
     boundary_statement: str | None = Field(
-        default=None, max_length=PERSONA_BOUNDARY_STATEMENT_MAX_CHARS,
+        default=None,
+        max_length=PERSONA_BOUNDARY_STATEMENT_MAX_CHARS,
     )
     allowed_tools: list[str] | None = Field(
-        default=None, max_length=PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,
+        default=None,
+        max_length=PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,
     )
     success_metrics: list[str] | None = Field(
-        default=None, max_length=PERSONA_SUCCESS_METRICS_MAX_ENTRIES,
+        default=None,
+        max_length=PERSONA_SUCCESS_METRICS_MAX_ENTRIES,
     )
     probation_status: ProbationStatus | None = Field(default=None)
     actor: str | None = Field(default=None, max_length=200)

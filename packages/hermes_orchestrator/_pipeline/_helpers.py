@@ -276,9 +276,7 @@ def _self_refinement_marker_count(rows: list[dict[str, Any]]) -> int:
 
 def _last_self_refinement_loop_should_continue(rows: list[dict[str, Any]]) -> bool:
     signals = [
-        r
-        for r in rows
-        if r.get("event_type") == EventType.SELF_REFINEMENT_LOOP_SIGNALLED.value
+        r for r in rows if r.get("event_type") == EventType.SELF_REFINEMENT_LOOP_SIGNALLED.value
     ]
     if not signals:
         return False

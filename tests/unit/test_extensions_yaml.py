@@ -78,11 +78,7 @@ def test_search_bundles_tag_match_without_faiss_index(tmp_path: Path) -> None:
     catp = tmp_path / "configs" / "bundles" / "catalog.yaml"
     catp.parent.mkdir(parents=True)
     catp.write_text(
-        "bundles:\n"
-        "  - id: zed-alpha\n"
-        "    tags: [zed]\n"
-        "  - id: zed-beta\n"
-        "    tags: [other]\n",
+        "bundles:\n  - id: zed-alpha\n    tags: [zed]\n  - id: zed-beta\n    tags: [other]\n",
         encoding="utf-8",
     )
     hits = search_bundles(tmp_path, "zed", k=5)

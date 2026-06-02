@@ -167,5 +167,3 @@ class IntegratorOptionalStagesMixin:
                 source_store_seq=store_seq,
             )
             self._bundle_outcome_store.append(persisted)
-
-

@@ -1,6 +1,5 @@
 """_parse_query_datetime`` calendar / time / chain composite."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -126,18 +125,12 @@ class TestPartAPreprocessingSemantics:
             ``str(value)`` -> ``.strip()`` -> ``.replace("Z","+00:00")``
             -> ``fromisoformat``.
         """
-        result = _parse_query_datetime(
-            "created_after", "  2020-01-01T00:00:00Z  "
-        )
+        result = _parse_query_datetime("created_after", "  2020-01-01T00:00:00Z  ")
         assert result == datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 
         # Also pin with tab/newline boundaries.
-        result_tabs = _parse_query_datetime(
-            "created_before", "\t2020-06-15T12:34:56Z\n"
-        )
-        assert result_tabs == datetime(
-            2020, 6, 15, 12, 34, 56, tzinfo=timezone.utc
-        )
+        result_tabs = _parse_query_datetime("created_before", "\t2020-06-15T12:34:56Z\n")
+        assert result_tabs == datetime(2020, 6, 15, 12, 34, 56, tzinfo=timezone.utc)
 
 
 # Part B -- invalid calendar matrix (5 axes)
@@ -264,24 +257,16 @@ class TestPartCInvalidTimeMatrix:
         digits map to ``microsecond`` (0..999999). Both a mid-range and
         the max-microsecond input succeed.
         """
-        result = _parse_query_datetime(
-            "created_after", "2020-01-01T00:00:00.123456"
-        )
+        result = _parse_query_datetime("created_after", "2020-01-01T00:00:00.123456")
         assert result is not None
-        assert result == datetime(
-            2020, 1, 1, 0, 0, 0, 123456, tzinfo=timezone.utc
-        )
+        assert result == datetime(2020, 1, 1, 0, 0, 0, 123456, tzinfo=timezone.utc)
         assert result.microsecond == 123456
 
         # Max microsecond -- 999999 boundary.
-        result_max = _parse_query_datetime(
-            "created_after", "2020-01-01T00:00:00.999999"
-        )
+        result_max = _parse_query_datetime("created_after", "2020-01-01T00:00:00.999999")
         assert result_max is not None
         assert result_max.microsecond == 999999
-        assert result_max == datetime(
-            2020, 1, 1, 0, 0, 0, 999999, tzinfo=timezone.utc
-        )
+        assert result_max == datetime(2020, 1, 1, 0, 0, 0, 999999, tzinfo=timezone.utc)
 
 
 # Part D -- error-message / exception-chain / field-interpolation (5 axes)

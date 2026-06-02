@@ -223,5 +223,3 @@ def _marker_preview(
         or None,
         "auto_promote_after_env": auto_promote and not auto_promote_env_off,
     }
-
-

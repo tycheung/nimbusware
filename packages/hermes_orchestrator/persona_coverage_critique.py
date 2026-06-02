@@ -95,11 +95,17 @@ def emit_stub_persona_coverage_critique_panel(
         critic_role = registry.resolve(tax_key)
         if tax_key == _PERSONA_COVERAGE_CRITIC:
             verdict = Verdict.FAIL if coverage_fail else Verdict.PASS
-            evidence = ["stub://persona_coverage_gap"] if coverage_fail else ["stub://persona_coverage_ok"]
+            evidence = (
+                ["stub://persona_coverage_gap"] if coverage_fail else ["stub://persona_coverage_ok"]
+            )
             fixes = [_COVERAGE_FAIL_FIX] if verdict == Verdict.FAIL else []
         elif tax_key == _AGENT_EVALUATOR_CRITIC:
             verdict = Verdict.PASS if not coverage_fail else Verdict.FAIL
-            evidence = ["stub://agent_evaluator_ok"] if not coverage_fail else ["stub://agent_evaluator_gap"]
+            evidence = (
+                ["stub://agent_evaluator_ok"]
+                if not coverage_fail
+                else ["stub://agent_evaluator_gap"]
+            )
             fixes = [_COVERAGE_FAIL_FIX] if verdict == Verdict.FAIL else []
         else:
             verdict = Verdict.PASS if not coverage_fail else Verdict.FAIL

@@ -172,10 +172,16 @@ def test_list_recent_run_rows_cursor_matches_offset_page(store: PostgresEventSto
             ),
         )
     first = store.list_recent_run_ids(
-        limit=1, offset=0, workflow_profile=wf, order="newest_first",
+        limit=1,
+        offset=0,
+        workflow_profile=wf,
+        order="newest_first",
     )
     second_off = store.list_recent_run_ids(
-        limit=1, offset=1, workflow_profile=wf, order="newest_first",
+        limit=1,
+        offset=1,
+        workflow_profile=wf,
+        order="newest_first",
     )
     assert len(first) == 1 and len(second_off) == 1
     mx0 = store.max_store_seq_for_run(str(first[0]))

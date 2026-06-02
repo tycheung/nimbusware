@@ -109,16 +109,8 @@ def run_sustained_health_probe(
     """Sequential health GET probes for fleet-wide sustained p95 SLI."""
     cfg = sustained_probe_config()
     n = samples if samples is not None else int(cfg["samples"])
-    interval = (
-        interval_seconds
-        if interval_seconds is not None
-        else float(cfg["interval_seconds"])
-    )
-    timeout = (
-        timeout_seconds
-        if timeout_seconds is not None
-        else float(cfg["timeout_seconds"])
-    )
+    interval = interval_seconds if interval_seconds is not None else float(cfg["interval_seconds"])
+    timeout = timeout_seconds if timeout_seconds is not None else float(cfg["timeout_seconds"])
     url = resolve_runtime_url(base_url=base_url)
     path = health_path or resolve_health_path()
     started = datetime.now(timezone.utc)

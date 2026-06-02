@@ -14,9 +14,13 @@ from fastapi.testclient import TestClient
 
 from nimbusware_env import find_repo_root
 
-os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
+os.environ.setdefault(
+    "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))
+)
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
+os.environ.setdefault(
+    "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+)
 
 from nimbusware_api.app import (  # noqa: E402
     app,
@@ -84,7 +88,9 @@ def test_http_exception_handler_emits_problem_json_with_type() -> None:
 def test_validation_handler_emits_problem_json_without_type() -> None:
     scope = {"type": "http", "method": "POST", "path": "/v1/runs", "headers": []}
     request = Request(scope)
-    exc = RequestValidationError(errors=[{"loc": ("body",), "msg": "field required", "type": "missing"}])
+    exc = RequestValidationError(
+        errors=[{"loc": ("body",), "msg": "field required", "type": "missing"}]
+    )
     response = asyncio.run(hermes_validation_handler(request, exc))
     assert response.status_code == 422
     assert response.media_type == "application/problem+json"

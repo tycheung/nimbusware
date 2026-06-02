@@ -19,7 +19,9 @@ def test_timeline_helpers_importable_from_read_models_submodules() -> None:
 
     assert integrator_gate_timeline_summary([]) is None
     assert universal_critique_timeline_summary([]) is None
-    assert _decode_run_list_cursor("eyJzIjoxLCJyIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIn0") == (
+    assert _decode_run_list_cursor(
+        "eyJzIjoxLCJyIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIn0"
+    ) == (
         1,
         __import__("uuid").UUID("11111111-1111-4111-8111-111111111111"),
     )

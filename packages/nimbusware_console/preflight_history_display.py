@@ -90,18 +90,14 @@ def preflight_history_histogram_mode_caption(
         return None
     raw_samples = summary.get("health_latency_samples_ms")
     if isinstance(raw_samples, list) and raw_samples:
-        samples = [
-            int(s) for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)
-        ]
+        samples = [int(s) for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)]
         if samples:
             n = len(samples)
             sc = summary.get("preflight_latency_sample_count")
             tail = ""
             if isinstance(sc, int) and not isinstance(sc, bool):
                 tail = f" Persisted sample_count={sc}."
-            return (
-                f"Histogram: **{n}** health latency sample(s) from timeline.{tail}"
-            )
+            return f"Histogram: **{n}** health latency sample(s) from timeline.{tail}"
     p95 = summary.get("p95_latency_ms")
     if isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0:
         return (
@@ -279,9 +275,7 @@ def preflight_history_operator_metrics(
     if not isinstance(summary, Mapping):
         return metrics
     p95 = summary.get("p95_latency_ms")
-    metrics["has_p95_latency"] = (
-        isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0
-    )
+    metrics["has_p95_latency"] = isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0
     sc = summary.get("preflight_latency_sample_count")
     if isinstance(sc, int) and not isinstance(sc, bool):
         metrics["sample_count"] = sc
@@ -294,9 +288,7 @@ def preflight_history_operator_metrics(
     raw_samples = summary.get("health_latency_samples_ms")
     if isinstance(raw_samples, list):
         metrics["health_latency_samples_count"] = sum(
-            1
-            for s in raw_samples
-            if isinstance(s, int) and not isinstance(s, bool)
+            1 for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)
         )
     vm = summary.get("validated_model_id")
     metrics["validated_model_present"] = vm is not None and str(vm).strip() != ""
@@ -379,10 +371,7 @@ def preflight_history_operator_metrics_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _PREFLIGHT_HISTORY_OPERATOR_METRICS_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _PREFLIGHT_HISTORY_OPERATOR_METRICS_CSV_COLUMNS},
             )
     return buf.getvalue()
 

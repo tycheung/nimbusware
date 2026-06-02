@@ -1,6 +1,5 @@
 """HERMES_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default."""
 
-
 from __future__ import annotations
 
 import pytest
@@ -54,12 +53,9 @@ def test_preflight_latency_samples_env_accept_arm_int_contract(
     for _name, raw, expected in cases:
         monkeypatch.setenv(_ENV_NAME, raw)
         result = _latency_sample_count()
-        assert result == expected, (
-            f"accept raw={raw!r}: expected {expected}, got {result!r}"
-        )
+        assert result == expected, f"accept raw={raw!r}: expected {expected}, got {result!r}"
         assert isinstance(result, int) and not isinstance(result, bool), (
-            f"accept raw={raw!r}: result type {type(result).__name__} "
-            f"(should be int, not bool)"
+            f"accept raw={raw!r}: result type {type(result).__name__} (should be int, not bool)"
         )
 
 
@@ -101,8 +97,7 @@ def test_preflight_latency_samples_env_clamp_lattice_and_path_convergence_contra
     monkeypatch.delenv(_ENV_NAME, raising=False)
     result = _latency_sample_count()
     assert result == _FLOOR, (
-        f"short_circuit env=delenv: expected {_FLOOR} via 'or \"1\"' "
-        f"short-circuit, got {result!r}"
+        f"short_circuit env=delenv: expected {_FLOOR} via 'or \"1\"' short-circuit, got {result!r}"
     )
     assert isinstance(result, int) and not isinstance(result, bool), (
         f"short_circuit env=delenv: result type {type(result).__name__}"
@@ -110,8 +105,7 @@ def test_preflight_latency_samples_env_clamp_lattice_and_path_convergence_contra
     monkeypatch.setenv(_ENV_NAME, "")
     result = _latency_sample_count()
     assert result == _FLOOR, (
-        f"short_circuit env='': expected {_FLOOR} via 'or \"1\"' "
-        f"short-circuit, got {result!r}"
+        f"short_circuit env='': expected {_FLOOR} via 'or \"1\"' short-circuit, got {result!r}"
     )
     assert isinstance(result, int) and not isinstance(result, bool), (
         f"short_circuit env='': result type {type(result).__name__}"
@@ -126,8 +120,7 @@ def test_preflight_latency_samples_env_clamp_lattice_and_path_convergence_contra
             f"int('') ValueError swallow, got {result!r}"
         )
         assert isinstance(result, int) and not isinstance(result, bool), (
-            f"empty_strip_swallow raw={raw!r}: result type "
-            f"{type(result).__name__}"
+            f"empty_strip_swallow raw={raw!r}: result type {type(result).__name__}"
         )
 
     junk_cases: list[str] = ["abc", "true", "yes", "on", "TRUE", "NO"]
@@ -231,8 +224,7 @@ def test_preflight_latency_samples_env_fail_swallow_string_arm_contract(
         monkeypatch.setenv(_ENV_NAME, raw)
         result = _latency_sample_count()
         assert result == _DEFAULT, (
-            f"fail_swallow raw={raw!r}: expected default {_DEFAULT}, "
-            f"got {result!r}"
+            f"fail_swallow raw={raw!r}: expected default {_DEFAULT}, got {result!r}"
         )
         assert _FLOOR <= result <= _CEILING, (
             f"fail_swallow raw={raw!r}: result {result!r} outside "

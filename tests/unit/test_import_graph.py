@@ -159,11 +159,7 @@ def test_maker_does_not_import_httpx_directly() -> None:
 
 def test_api_runs_use_projections_run_summary() -> None:
     api_runs = (
-        Path(__file__).resolve().parents[2]
-        / "packages"
-        / "nimbusware_api"
-        / "routes"
-        / "runs"
+        Path(__file__).resolve().parents[2] / "packages" / "nimbusware_api" / "routes" / "runs"
     )
     offenders: list[str] = []
     for path in sorted(api_runs.glob("*.py")):

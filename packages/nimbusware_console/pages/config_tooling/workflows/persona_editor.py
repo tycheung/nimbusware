@@ -152,15 +152,10 @@ def render_workflows_persona_editor_section() -> None:
                 "id": st.session_state["hermes_persona_edit_id"].strip(),
                 "display_name": st.session_state["hermes_persona_edit_display_name"].strip()
                 or None,
-                "instructions": st.session_state["hermes_persona_edit_instructions"]
+                "instructions": st.session_state["hermes_persona_edit_instructions"] or None,
+                "capability_profile": st.session_state["hermes_persona_edit_capability_profile"]
                 or None,
-                "capability_profile": st.session_state[
-                    "hermes_persona_edit_capability_profile"
-                ]
-                or None,
-                "boundary_statement": st.session_state[
-                    "hermes_persona_edit_boundary_statement"
-                ]
+                "boundary_statement": st.session_state["hermes_persona_edit_boundary_statement"]
                 or None,
                 "allowed_tools": _split_lines(
                     st.session_state["hermes_persona_edit_allowed_tools"],
@@ -170,9 +165,7 @@ def render_workflows_persona_editor_section() -> None:
                     st.session_state["hermes_persona_edit_success_metrics"],
                 )
                 or None,
-                "probation_status": st.session_state[
-                    "hermes_persona_edit_probation_status"
-                ],
+                "probation_status": st.session_state["hermes_persona_edit_probation_status"],
             }
             _diff = diff_summary(_snapshot, _edited) if _existing else []
             if _existing:
@@ -218,13 +211,9 @@ def render_workflows_persona_editor_section() -> None:
                     st.session_state["hermes_persona_edit_catalog"] = parsed["catalog"]
                     st.success(f"{label}: 2xx (catalog refreshed).")
                 elif parsed.get("version_conflict"):
-                    st.warning(
-                        f"{label}: 409 version conflict — reload from API and retry."
-                    )
+                    st.warning(f"{label}: 409 version conflict — reload from API and retry.")
                 else:
-                    st.error(
-                        f"{label}: {parsed['status']} {parsed['code']} — {parsed['message']}"
-                    )
+                    st.error(f"{label}: {parsed['status']} {parsed['code']} — {parsed['message']}")
 
             with _col_save:
                 if st.button(
@@ -302,9 +291,7 @@ def render_workflows_persona_editor_section() -> None:
                     elif _write_blocked:
                         pass
                     else:
-                        entry_body = {
-                            k: v for k, v in _edited.items() if v is not None
-                        }
+                        entry_body = {k: v for k, v in _edited.items() if v is not None}
                         entry_body["id"] = new_id
                         post_body = {"entry": entry_body, "actor": _actor}
                         try:

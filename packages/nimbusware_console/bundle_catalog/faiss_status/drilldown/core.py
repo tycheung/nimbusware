@@ -70,8 +70,10 @@ def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
         if oid_parse_err:
             id_set_err = oid_parse_err
         if ord_ids is not None:
-            bundle_order_json_distinct_id_count, bundle_order_json_has_duplicate_ids, (
-                bundle_order_json_duplicate_ids_sample
+            (
+                bundle_order_json_distinct_id_count,
+                bundle_order_json_has_duplicate_ids,
+                (bundle_order_json_duplicate_ids_sample),
             ) = _bundle_order_duplicate_id_signals(ord_ids)
     if cat_err is None and ord_err is None and meta_p.is_file():
         cat_set, cse = _catalog_nonempty_stripped_id_set(repo_root)
@@ -109,9 +111,7 @@ def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
         idx_subdir_count = sum(1 for p in idx_dir.iterdir() if p.is_dir())
     base["index_dir_regular_file_count"] = idx_file_count
     base["index_dir_subdirectory_count"] = idx_subdir_count
-    base["index_dir_listing_truncated"] = (
-        idx_file_count > 25 if idx_dir.is_dir() else None
-    )
+    base["index_dir_listing_truncated"] = idx_file_count > 25 if idx_dir.is_dir() else None
     _bo_fb = base.get("bundle_order_file")
     _bo_b = _bo_fb.get("bytes") if isinstance(_bo_fb, dict) else None
     base["bundle_order_json_file_bytes"] = (
@@ -155,5 +155,3 @@ def bundle_faiss_operator_drilldown_export_filename_slug(
     raw = str(name).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "repo"
     return slug[:max_len]
-
-

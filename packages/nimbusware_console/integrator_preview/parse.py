@@ -204,5 +204,3 @@ def validate_full_workflow_document(doc: dict[str, Any] | None) -> list[str]:
     if isinstance(ae, dict):
         errs.extend(validate_agent_evaluator_block(ae))
     return errs
-
-

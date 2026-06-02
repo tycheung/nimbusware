@@ -224,9 +224,7 @@ def self_refinement_phase_d_signal_caption(sr: Mapping[str, Any] | None) -> str 
             f"Self-refinement Phase D (rules gate): {signal.strip()} "
             f"(attempt {attempt}/{max_iterations}{gate_tail})."
         )
-    return (
-        f"Self-refinement Phase D (rules gate): {signal.strip()}{gate_tail}."
-    )
+    return f"Self-refinement Phase D (rules gate): {signal.strip()}{gate_tail}."
 
 
 def self_refinement_prior_gate_verdict_caption(sr: Mapping[str, Any] | None) -> str | None:
@@ -264,4 +262,3 @@ def self_refinement_ungated_loop_caption(sr: Mapping[str, Any] | None) -> str | 
     if isinstance(should_continue, bool):
         parts.append(f"should_continue={should_continue}")
     return "Self-refinement ungated progression: " + ", ".join(parts) + "."
-

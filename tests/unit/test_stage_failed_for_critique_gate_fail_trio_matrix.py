@@ -1,6 +1,5 @@
 """_maybe_emit_stage_failed_for_*_critique_gate_fail`` trio direct contracts."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -200,9 +199,9 @@ def test_stage_failed_for_critique_gate_fail_multi_stage_matrix_4_axis() -> None
         rid_a3,
         _make_eff(impl_stage_failed_on_gate_fail=True),
     )
-    assert (
-        len(_stage_failed_rows_for(mem_a3, rid_a3, "implementation_critique_gate_fail")) == 0
-    ), "A3: tw + pll FAIL gates must not cross-pollinate the impl emitter (stage-name filter)"
+    assert len(_stage_failed_rows_for(mem_a3, rid_a3, "implementation_critique_gate_fail")) == 0, (
+        "A3: tw + pll FAIL gates must not cross-pollinate the impl emitter (stage-name filter)"
+    )
 
     orch_a4, mem_a4 = make_dev_orchestrator()
     rid_a4 = orch_a4.create_run("default")
@@ -217,9 +216,9 @@ def test_stage_failed_for_critique_gate_fail_multi_stage_matrix_4_axis() -> None
         rid_a4,
         _make_eff(impl_stage_failed_on_gate_fail=True),
     )
-    assert (
-        len(_stage_failed_rows_for(mem_a4, rid_a4, "implementation_critique_gate_fail")) == 1
-    ), "A4: pre-seeded STAGE_FAILED must short-circuit (reason_code dedup)"
+    assert len(_stage_failed_rows_for(mem_a4, rid_a4, "implementation_critique_gate_fail")) == 1, (
+        "A4: pre-seeded STAGE_FAILED must short-circuit (reason_code dedup)"
+    )
 
 
 def test_stage_failed_for_critique_gate_fail_skip_branches_per_variant_4_axis_x_3() -> None:
@@ -232,9 +231,7 @@ def test_stage_failed_for_critique_gate_fail_skip_branches_per_variant_4_axis_x_
     B3 -- no gate row for THIS stage (FAIL gates for OTHER stages present)
     B4 -- last gate PASS (verdict suppression)
     """
-    variants: list[
-        tuple[str, str, str, str],
-    ] = [
+    variants: list[tuple[str, str, str, str],] = [
         (
             "impl",
             "impl_stage_failed_on_gate_fail",
@@ -382,9 +379,9 @@ def test_stage_failed_for_critique_gate_fail_helper_contracts_5_axis() -> None:
     assert m_resolve.call_count == 1, (
         "D1: eff=None must lazily resolve via _effective_universal_critique_for_run"
     )
-    assert (
-        len(_stage_failed_rows_for(mem_d1, rid_d1, "implementation_critique_gate_fail")) == 1
-    ), "D1: lazy-resolved eff with flag on must still emit"
+    assert len(_stage_failed_rows_for(mem_d1, rid_d1, "implementation_critique_gate_fail")) == 1, (
+        "D1: lazy-resolved eff with flag on must still emit"
+    )
 
     orch_d2, mem_d2 = make_dev_orchestrator()
     rid_d2 = orch_d2.create_run("default")
@@ -399,27 +396,27 @@ def test_stage_failed_for_critique_gate_fail_helper_contracts_5_axis() -> None:
         "D2: explicit eff must bypass _effective_universal_critique_for_run "
         "(short-circuit on `if eff is not None`)"
     )
-    assert (
-        len(_stage_failed_rows_for(mem_d2, rid_d2, "implementation_critique_gate_fail")) == 1
-    ), "D2: explicit eff with flag on must still emit"
+    assert len(_stage_failed_rows_for(mem_d2, rid_d2, "implementation_critique_gate_fail")) == 1, (
+        "D2: explicit eff with flag on must still emit"
+    )
 
     orch_d3, mem_d3 = make_dev_orchestrator()
     rid_d3 = orch_d3.create_run("default")
     _append_gate(mem_d3, rid_d3, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.PASS)
     _append_gate(mem_d3, rid_d3, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.FAIL)
     getattr(orch_d3, impl_method)(rid_d3, _make_eff(impl_stage_failed_on_gate_fail=True))
-    assert (
-        len(_stage_failed_rows_for(mem_d3, rid_d3, "implementation_critique_gate_fail")) == 1
-    ), "D3: LAST-wins -- PASS then FAIL means last verdict is FAIL -> emit"
+    assert len(_stage_failed_rows_for(mem_d3, rid_d3, "implementation_critique_gate_fail")) == 1, (
+        "D3: LAST-wins -- PASS then FAIL means last verdict is FAIL -> emit"
+    )
 
     orch_d4, mem_d4 = make_dev_orchestrator()
     rid_d4 = orch_d4.create_run("default")
     _append_gate(mem_d4, rid_d4, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.FAIL)
     _append_gate(mem_d4, rid_d4, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.PASS)
     getattr(orch_d4, impl_method)(rid_d4, _make_eff(impl_stage_failed_on_gate_fail=True))
-    assert (
-        len(_stage_failed_rows_for(mem_d4, rid_d4, "implementation_critique_gate_fail")) == 0
-    ), "D4: LAST-wins -- FAIL then PASS means last verdict is PASS -> suppress"
+    assert len(_stage_failed_rows_for(mem_d4, rid_d4, "implementation_critique_gate_fail")) == 0, (
+        "D4: LAST-wins -- FAIL then PASS means last verdict is PASS -> suppress"
+    )
 
     coercion_variants: list[str] = ["FAIL", "fail", "Fail", " FAIL "]
     for coerce_value in coercion_variants:

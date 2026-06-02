@@ -156,9 +156,7 @@ def test_histogram_mode_caption_legacy_p95_fallback() -> None:
 def test_histogram_mode_caption_none_when_no_histogram_signal() -> None:
     assert preflight_history_histogram_mode_caption(None) is None
     assert preflight_history_histogram_mode_caption({}) is None
-    assert (
-        preflight_history_histogram_mode_caption({"validated_model_id": "x"}) is None
-    )
+    assert preflight_history_histogram_mode_caption({"validated_model_id": "x"}) is None
 
 
 def test_checks_passed_caption() -> None:
@@ -267,9 +265,12 @@ def test_preflight_history_validated_model_caption() -> None:
     assert "llama3.1:8b" in cap
     assert preflight_history_validated_model_caption(None) is None
     assert preflight_history_validated_model_caption({}) is None
-    assert preflight_history_validated_model_caption(
-        {"validated_model_id": "   "},
-    ) is None
+    assert (
+        preflight_history_validated_model_caption(
+            {"validated_model_id": "   "},
+        )
+        is None
+    )
 
 
 def test_preflight_history_provider_caption() -> None:
@@ -278,9 +279,12 @@ def test_preflight_history_provider_caption() -> None:
     assert "ollama" in cap
     assert preflight_history_provider_caption(None) is None
     assert preflight_history_provider_caption({}) is None
-    assert preflight_history_provider_caption(
-        {"provider": "   "},
-    ) is None
+    assert (
+        preflight_history_provider_caption(
+            {"provider": "   "},
+        )
+        is None
+    )
     assert preflight_history_provider_caption({"provider": 1}) is None
 
 
@@ -299,12 +303,18 @@ def test_preflight_history_sample_count_caption() -> None:
     assert "samples" not in cap_one
     assert preflight_history_sample_count_caption(None) is None
     assert preflight_history_sample_count_caption({}) is None
-    assert preflight_history_sample_count_caption(
-        {"preflight_latency_sample_count": 0},
-    ) is None
-    assert preflight_history_sample_count_caption(
-        {"preflight_latency_sample_count": True},
-    ) is None
+    assert (
+        preflight_history_sample_count_caption(
+            {"preflight_latency_sample_count": 0},
+        )
+        is None
+    )
+    assert (
+        preflight_history_sample_count_caption(
+            {"preflight_latency_sample_count": True},
+        )
+        is None
+    )
 
 
 def test_preflight_history_context_tokens_caption() -> None:

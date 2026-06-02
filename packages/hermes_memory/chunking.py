@@ -10,6 +10,8 @@ from hermes_memory.models import MemoryChunkDraft
 from hermes_store.protocol import serialized_event_from_row
 
 _MAX_EXCERPT_CHARS = 2000
+
+
 def run_index_contribution_enabled(metadata: object) -> bool:
     """Default True unless ``metadata.memory.index_contribution`` is explicitly false."""
     if not isinstance(metadata, dict):

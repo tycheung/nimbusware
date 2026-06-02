@@ -410,10 +410,9 @@ def test_security_scan_linter_operator_metrics_export_json_and_csv() -> None:
     assert parsed["ok_count"] == 2
     csv_text = security_scan_linter_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0] == "field,value"
-    assert (
-        security_scan_linter_operator_metrics_export_filename_slug("run-abc")
-        == security_scan_on_verify_latest_export_filename_slug("run-abc")
-    )
+    assert security_scan_linter_operator_metrics_export_filename_slug(
+        "run-abc"
+    ) == security_scan_on_verify_latest_export_filename_slug("run-abc")
 
 
 def test_security_scan_linter_operator_metrics_export_non_mapping() -> None:
@@ -448,9 +447,12 @@ def test_security_scan_linter_operator_metrics_caption() -> None:
     assert cap is not None
     assert "observable=2" in cap
     assert "worst=Bandit exit 1" in cap
-    assert security_scan_linter_operator_metrics_caption(
-        {"observable_count": 0},
-    ) is None
+    assert (
+        security_scan_linter_operator_metrics_caption(
+            {"observable_count": 0},
+        )
+        is None
+    )
     assert security_scan_linter_operator_metrics_caption(None) is None
 
 
@@ -524,8 +526,9 @@ def test_security_scan_linter_operator_metrics_table_rows_both_ok_no_worst_rows(
     assert "Worst exit" not in by_field
 
 
-def test_security_scan_linter_operator_metrics_table_rows_single_failed_includes_worst_rows(
-) -> None:
+def test_security_scan_linter_operator_metrics_table_rows_single_failed_includes_worst_rows() -> (
+    None
+):
     metrics = security_scan_linter_operator_metrics(
         {"security_scan_ruff_exit": 0, "security_scan_bandit_exit": 2},
     )

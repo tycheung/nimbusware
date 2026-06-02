@@ -1,6 +1,5 @@
 """assert_bundle_catalog_maps_resolve`` wrapper-level + inner-helper coverage."""
 
-
 from __future__ import annotations
 
 import re
@@ -114,13 +113,13 @@ def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
 
     # FNF arm -- tmp_path has no configs/bundles/catalog.yaml.
     with pytest.raises(
-        FileNotFoundError, match=re.escape(_FNF_PREFIX),
+        FileNotFoundError,
+        match=re.escape(_FNF_PREFIX),
     ) as fnf_info:
         assert_bundle_catalog_maps_resolve(tmp_path)
     expected_path = tmp_path / "configs" / "bundles" / "catalog.yaml"
     assert str(expected_path) in str(fnf_info.value), (
-        f"FileNotFoundError message {fnf_info.value!r} missing resolved path "
-        f"{expected_path!s}"
+        f"FileNotFoundError message {fnf_info.value!r} missing resolved path {expected_path!s}"
     )
 
     # VE arm -- 3 invalid bodies, one per inner-helper reject sub-path.
@@ -173,9 +172,7 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
 
     # Error-truncation: 15 workflow_bundle_map entries all unknown ->
     # errors[:10] joined + "(+5 more)" suffix at [catalog.py:46-48].
-    trunc_entries = "\n".join(
-        f"  prof_{i:02d}: missing-bundle-{i}" for i in range(15)
-    )
+    trunc_entries = "\n".join(f"  prof_{i:02d}: missing-bundle-{i}" for i in range(15))
     trunc_body = f"bundles: [{{id: known-a}}]\nworkflow_bundle_map:\n{trunc_entries}\n"
     trunc_tmp = tmp_path / "reject_truncation"
     trunc_path = _write_catalog(trunc_tmp, trunc_body)

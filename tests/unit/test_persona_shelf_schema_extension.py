@@ -115,9 +115,7 @@ def test_allowed_tools_per_entry_length_cap_rejected(tmp_path: Path) -> None:
 def test_success_metrics_entry_count_cap_rejected(tmp_path: Path) -> None:
     bad = {
         "id": "commerce",
-        "success_metrics": [
-            f"metric_{i}" for i in range(PERSONA_SUCCESS_METRICS_MAX_ENTRIES + 1)
-        ],
+        "success_metrics": [f"metric_{i}" for i in range(PERSONA_SUCCESS_METRICS_MAX_ENTRIES + 1)],
     }
     shelf = PersonaShelf(_shelf_with_entry(tmp_path, bad))
     with pytest.raises(ValueError, match="success_metrics"):

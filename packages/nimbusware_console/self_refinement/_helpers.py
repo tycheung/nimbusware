@@ -57,4 +57,3 @@ def _parse_iso_utc(value: Any) -> datetime | None:
         return datetime.fromisoformat(candidate)
     except ValueError:
         return None
-

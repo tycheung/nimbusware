@@ -147,5 +147,3 @@ def bundle_faiss_index_dir_listing_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return table_rows_csv(rows, _FAISS_INDEX_DIR_LISTING_CSV_COLUMNS)
-
-

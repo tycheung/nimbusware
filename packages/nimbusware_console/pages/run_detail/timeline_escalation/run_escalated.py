@@ -34,14 +34,10 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
     _re_rows = run_escalated_summary_rows(_re)
     with st.expander("Run escalated (from timeline)", expanded=False):
         if not _re_rows:
-            st.caption(
-                "No run_escalated summary on this timeline (no run.escalated "
-                "events yet)."
-            )
+            st.caption("No run_escalated summary on this timeline (no run.escalated events yet).")
         else:
             st.caption(
-                "Latest run.escalated summary (same top-level run_escalated as "
-                "GET …/timeline)."
+                "Latest run.escalated summary (same top-level run_escalated as GET …/timeline)."
             )
             st.dataframe(_re_rows, use_container_width=True)
             _re_reason_cap = run_escalated_reason_summary_caption(_re)
@@ -83,22 +79,16 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
                 _re_metrics_json = run_escalated_operator_metrics_export_json(
                     _re_metrics,
                 )
-                _re_metrics_csv = (
-                    run_escalated_operator_metrics_table_rows_csv(
-                        _re_metric_rows,
-                    )
+                _re_metrics_csv = run_escalated_operator_metrics_table_rows_csv(
+                    _re_metric_rows,
                 )
                 _re_metrics_dl_json_col, _re_metrics_dl_csv_col = st.columns(2)
                 with _re_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download run escalated operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download run escalated operator metrics JSON"),
                         data=_re_metrics_json.encode("utf-8"),
                         file_name=(
-                            "hermes_run_escalated_operator_metrics_"
-                            f"{_re_slug}_{_re_ts}.json"
+                            f"hermes_run_escalated_operator_metrics_{_re_slug}_{_re_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_run_escalated_operator_metrics_json",
@@ -106,14 +96,10 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
                 with _re_metrics_dl_csv_col:
                     if _re_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download run escalated operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download run escalated operator metrics CSV"),
                             data=_re_metrics_csv.encode("utf-8"),
                             file_name=(
-                                "hermes_run_escalated_operator_metrics_"
-                                f"{_re_slug}_{_re_ts}.csv"
+                                f"hermes_run_escalated_operator_metrics_{_re_slug}_{_re_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
                             key="hermes_dl_run_escalated_operator_metrics_csv",
@@ -126,10 +112,7 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
                     st.download_button(
                         label="Download run escalated summary CSV",
                         data=_re_sum_csv.encode("utf-8"),
-                        file_name=(
-                            "hermes_run_escalated_summary_"
-                            f"{_re_slug}_{_re_ts}.csv"
-                        ),
+                        file_name=(f"hermes_run_escalated_summary_{_re_slug}_{_re_ts}.csv"),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_run_escalated_summary_csv",
                     )
@@ -137,10 +120,7 @@ def _render_run_escalated(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download run escalated summary JSON",
                     data=_re_sum_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_run_escalated_summary_"
-                        f"{_re_slug}_{_re_ts}.json"
-                    ),
+                    file_name=(f"hermes_run_escalated_summary_{_re_slug}_{_re_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_run_escalated_summary_json",
                 )

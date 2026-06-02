@@ -82,10 +82,7 @@ def escalation_policy_yaml_top_level_kinds_table_rows(
     other_n = _count("other")
     if (mapping_n + scalar_n + list_n + other_n) == 0:
         return []
-    return [
-        {"kind": kind, "count": str(_count(kind))}
-        for kind in _POLICY_KINDS_ORDER
-    ]
+    return [{"kind": kind, "count": str(_count(kind))} for kind in _POLICY_KINDS_ORDER]
 
 
 def escalation_policy_yaml_top_level_kinds_export_json(

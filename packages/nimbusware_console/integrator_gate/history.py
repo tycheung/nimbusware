@@ -163,9 +163,7 @@ def integrator_gate_history_distinct_bundles_caption(
     if not isinstance(dcnt, int) or isinstance(dcnt, bool) or dcnt < 0:
         return None
     suffix = "id" if dcnt == 1 else "ids"
-    return (
-        f"Integrator gate history: **{dcnt}** distinct bundle {suffix} in this view."
-    )
+    return f"Integrator gate history: **{dcnt}** distinct bundle {suffix} in this view."
 
 
 def integrator_gate_history_score_range_caption(
@@ -180,10 +178,7 @@ def integrator_gate_history_score_range_caption(
     smax = _optional_float(metrics.get("integrator_score_max"))
     if smin is None or smax is None:
         return None
-    return (
-        f"Integrator gate history score range: **{smin}** .. **{smax}** "
-        "(numeric rows only)."
-    )
+    return f"Integrator gate history score range: **{smin}** .. **{smax}** (numeric rows only)."
 
 
 def integrator_gate_history_latest_margin_caption(
@@ -197,10 +192,7 @@ def integrator_gate_history_latest_margin_caption(
     margin = _optional_float(metrics.get("latest_score_minus_min_pass"))
     if margin is None:
         return None
-    return (
-        f"Integrator gate history latest margin: **{margin}** "
-        "(score − min_pass on latest row)."
-    )
+    return f"Integrator gate history latest margin: **{margin}** (score − min_pass on latest row)."
 
 
 def integrator_gate_history_verdict_tally_caption(
@@ -286,7 +278,6 @@ def integrator_gate_history_metrics_table_rows(
     return rows
 
 
-
 def integrator_gate_history_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
@@ -305,6 +296,3 @@ def integrator_gate_history_operator_metrics_export_filename_slug(
     max_len: int = 36,
 ) -> str:
     return integrator_gate_history_export_filename_slug(run_id, max_len=max_len)
-
-
-

@@ -36,8 +36,7 @@ class CritiqueGateStageFailedMixin:
             return
         rows = self._store.list_run_events(str(run_id))
         if any(
-            (r.get("payload") or {}).get("reason_code")
-            == "implementation_critique_gate_fail"
+            (r.get("payload") or {}).get("reason_code") == "implementation_critique_gate_fail"
             for r in rows
             if r.get("event_type") == EventType.STAGE_FAILED.value
         ):
@@ -69,7 +68,6 @@ class CritiqueGateStageFailedMixin:
                 ),
             ),
         )
-
 
     def _maybe_emit_stage_failed_for_test_writer_critique_gate_fail(
         self,
@@ -120,7 +118,6 @@ class CritiqueGateStageFailedMixin:
             ),
         )
 
-
     def _maybe_emit_stage_failed_for_planner_critique_gate_fail(
         self,
         run_id: UUID,
@@ -170,7 +167,6 @@ class CritiqueGateStageFailedMixin:
             ),
         )
 
-
     def _maybe_emit_stage_failed_for_frontend_writer_critique_gate_fail(
         self,
         run_id: UUID,
@@ -202,7 +198,6 @@ class CritiqueGateStageFailedMixin:
                 ),
             ),
         )
-
 
     def _maybe_emit_stage_failed_for_module_integrator_critique_gate_fail(
         self,
@@ -238,4 +233,3 @@ class CritiqueGateStageFailedMixin:
                 ),
             ),
         )
-

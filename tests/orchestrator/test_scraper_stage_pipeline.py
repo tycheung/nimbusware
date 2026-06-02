@@ -39,13 +39,10 @@ def test_scraper_stage_skipped_when_workflow_disabled(monkeypatch: pytest.Monkey
     rid = orch.create_run("default")
     orch.run_optional_scraper_fetch_stage(rid)
     stages = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r["event_type"] == EventType.STAGE_STARTED.value
+        r for r in mem.list_run_events(str(rid)) if r["event_type"] == EventType.STAGE_STARTED.value
     ]
     assert not any(
-        str((r.get("payload") or {}).get("stage_name", "")).startswith("scraper:")
-        for r in stages
+        str((r.get("payload") or {}).get("stage_name", "")).startswith("scraper:") for r in stages
     )
 
 
@@ -113,9 +110,7 @@ def test_scraper_no_disk_artifact_when_persist_cap_none(
         orch.run_optional_scraper_fetch_stage(rid, client=client)
     evs = mem.list_run_events(str(rid))
     passed = [r for r in evs if r["event_type"] == EventType.STAGE_PASSED.value]
-    fetch0 = ((passed[-1].get("metadata") or {}).get("scraper_fetch") or {}).get("fetches", [{}])[
-        0
-    ]
+    fetch0 = ((passed[-1].get("metadata") or {}).get("scraper_fetch") or {}).get("fetches", [{}])[0]
     assert "artifact_relpath" not in fetch0
     assert "artifact_bytes_written" not in fetch0
 
@@ -290,9 +285,7 @@ def test_scraper_writes_artifact_when_configured(
         orch.run_optional_scraper_fetch_stage(rid, client=client)
     evs = mem.list_run_events(str(rid))
     passed = [r for r in evs if r["event_type"] == EventType.STAGE_PASSED.value]
-    fetch0 = ((passed[-1].get("metadata") or {}).get("scraper_fetch") or {}).get("fetches", [{}])[
-        0
-    ]
+    fetch0 = ((passed[-1].get("metadata") or {}).get("scraper_fetch") or {}).get("fetches", [{}])[0]
     assert fetch0.get("artifact_bytes_written") == len(body)
     assert fetch0.get("artifact_sha256")
     rel = fetch0.get("artifact_relpath")

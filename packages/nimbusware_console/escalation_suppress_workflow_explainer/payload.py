@@ -154,10 +154,7 @@ def escalation_suppress_workflow_explainer_payload(
                     escalation_policy_yaml_anti_deadlock_min_progress_events = raw_mpe
 
     escalation_policy_yaml_age_seconds: int | None = None
-    if (
-        escalation_policy_yaml_path_exists
-        and escalation_policy_yaml_load_error is None
-    ):
+    if escalation_policy_yaml_path_exists and escalation_policy_yaml_load_error is None:
         escalation_policy_yaml_age_seconds = _age_seconds_utc(
             escalation_policy_yaml_mtime_iso,
         )
@@ -210,5 +207,3 @@ def escalation_suppress_workflow_explainer_payload(
             "anti_deadlock_enabled",
         ),
     }
-
-

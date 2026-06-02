@@ -43,11 +43,7 @@ def test_anti_deadlock_escalation_includes_policy_breadth_metadata() -> None:
         ),
     ):
         orch._maybe_emit_anti_deadlock_escalation(rid)  # noqa: SLF001
-    esc = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == "run.escalated"
-    ]
+    esc = [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "run.escalated"]
     assert esc
     meta = esc[-1].get("metadata") or {}
     breadth = meta.get("escalation_policy_breadth") or {}

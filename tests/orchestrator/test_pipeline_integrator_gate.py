@@ -28,10 +28,7 @@ def _has_integrator_gate_event(events: list[dict[str, Any]]) -> bool:
     details that this helper does not return) to avoid mixing a behavioral
     slice with refactor noise outside follow-on 64's scope.
     """
-    return any(
-        r["event_type"] == EventType.GATE_DECISION_EMITTED.value
-        for r in events
-    )
+    return any(r["event_type"] == EventType.GATE_DECISION_EMITTED.value for r in events)
 
 
 def test_emit_integrator_gate_when_yaml_enabled_via_monkeypatch() -> None:
@@ -188,9 +185,7 @@ def test_emit_integrator_gate_env_force_on_string_arm_contract(
             return_value=False,
         ):
             orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
-        assert _has_integrator_gate_event(mem.list_run_events(str(rid))), (
-            f"force_on raw={raw!r}"
-        )
+        assert _has_integrator_gate_event(mem.list_run_events(str(rid))), f"force_on raw={raw!r}"
 
 
 def test_emit_integrator_gate_env_kill_switch_string_arm_contract(

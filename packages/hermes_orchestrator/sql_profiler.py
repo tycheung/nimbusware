@@ -83,9 +83,7 @@ def scan_sql_query_hotspots(
                 break
         if len(findings) >= max_findings:
             break
-        execute_lines = sum(
-            1 for line in text.splitlines() if _SQL_EXECUTE_LINE.search(line)
-        )
+        execute_lines = sum(1 for line in text.splitlines() if _SQL_EXECUTE_LINE.search(line))
         if execute_lines > 40:
             findings.append(f"{rel}: dense SQL execute surface ({execute_lines} lines)")
             if len(findings) >= max_findings:

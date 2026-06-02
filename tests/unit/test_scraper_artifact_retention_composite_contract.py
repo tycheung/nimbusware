@@ -1,6 +1,5 @@
 """Scraper artifact retention composite."""
 
-
 from __future__ import annotations
 
 import hashlib
@@ -19,6 +18,7 @@ from hermes_orchestrator.scraper_artifacts import prune_scraper_artifacts
 
 def _local_removed(*args: object, **kwargs: object) -> int:
     return int(prune_scraper_artifacts(*args, **kwargs)["local_removed"])  # type: ignore[arg-type]
+
 
 _VALUE_ERROR_MSG = "max_age_days must be >= 1"
 
@@ -310,12 +310,14 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     stale_c2.write_bytes(b"x")
     _set_mtime(stale_c2, days_ago=10)
     removed_c2 = _local_removed(
-        base_c2, max_age_days=7, now=now, dry_run=True,
+        base_c2,
+        max_age_days=7,
+        now=now,
+        dry_run=True,
     )
     assert removed_c2 == 1, "C2: dry_run counts as if removing"
     assert stale_c2.is_file(), (
-        "C2: dry_run preserves the file (the `if not dry_run: unlink` "
-        "guard at line 47-48)"
+        "C2: dry_run preserves the file (the `if not dry_run: unlink` guard at line 47-48)"
     )
     assert run_dir_c2.is_dir(), (
         "C2: dry_run SKIPS empty-dir cleanup via the line 50-51 early "
@@ -355,9 +357,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     assert not (base_c4 / "a" / "b" / "c").is_dir(), (
         "C4: deepest empty dir removed first via reverse-len sort"
     )
-    assert not (base_c4 / "a" / "b").is_dir(), (
-        "C4: middle dir removed AFTER its child was removed"
-    )
+    assert not (base_c4 / "a" / "b").is_dir(), "C4: middle dir removed AFTER its child was removed"
     assert not (base_c4 / "a").is_dir(), (
         "C4: top-level intermediate dir also cleaned up; the entire "
         "empty subtree collapses leaves-to-root. A forward-sort would "
@@ -379,7 +379,10 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     _set_mtime(stale_c5, days_ago=10)
     for _ in range(2):
         removed_dry = _local_removed(
-            base_c5, max_age_days=7, now=now, dry_run=True,
+            base_c5,
+            max_age_days=7,
+            now=now,
+            dry_run=True,
         )
         assert removed_dry == 1, "C5: dry_run idempotent count"
         assert stale_c5.is_file(), (
@@ -443,7 +446,10 @@ def test_persist_scraper_response_artifact_value_error_fallback_contract(
     expected_fname = f"url05_{expected_digest_full[:32]}.bin"
 
     happy = orch._persist_scraper_response_artifact(  # noqa: SLF001
-        run_id, 5, content, persist_cap,
+        run_id,
+        5,
+        content,
+        persist_cap,
     )
 
     original_relative_to = Path.relative_to
@@ -456,11 +462,13 @@ def test_persist_scraper_response_artifact_value_error_fallback_contract(
     expected_fname_fb = f"url05_{expected_digest_full[:32]}.bin"
     with patch.object(Path, "relative_to", _raise_value_error):
         fallback = orch._persist_scraper_response_artifact(  # noqa: SLF001
-            run_id_fb, 5, content, persist_cap,
+            run_id_fb,
+            5,
+            content,
+            persist_cap,
         )
     assert Path.relative_to is original_relative_to, (
-        "D control: patch.object scope-restored Path.relative_to after "
-        "the `with` block exited"
+        "D control: patch.object scope-restored Path.relative_to after the `with` block exited"
     )
 
     assert fallback["artifact_relpath"] == expected_fname_fb, (

@@ -21,4 +21,3 @@ class OptionalStagesMixin(
     IntegratorOptionalStagesMixin,
 ):
     """Composed optional pipeline stages (fo131–fo140)."""
-

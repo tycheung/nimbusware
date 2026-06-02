@@ -48,7 +48,9 @@ def bundle_outcome_metadata(record: BundleOutcomeRecord) -> dict[str, Any]:
     }
 
 
-def extract_bundle_outcomes_from_event_rows(rows: list[dict[str, Any]]) -> list[BundleOutcomeRecord]:
+def extract_bundle_outcomes_from_event_rows(
+    rows: list[dict[str, Any]],
+) -> list[BundleOutcomeRecord]:
     """Rebuild outcome records from integrator ``gate.decision.emitted`` rows."""
     wf_by_run: dict[UUID, str | None] = {}
     for row in rows:
@@ -87,7 +89,11 @@ def extract_bundle_outcomes_from_event_rows(rows: list[dict[str, Any]]) -> list[
         rid = UUID(str(row["run_id"]))
         verdict = str(pl.get("verdict", "")).upper() or Verdict.FAIL.value
         score = float(score_raw) if score_raw is not None else None
-        tags = [str(t) for t in project_tags if str(t).strip()] if isinstance(project_tags, list) else []
+        tags = (
+            [str(t) for t in project_tags if str(t).strip()]
+            if isinstance(project_tags, list)
+            else []
+        )
         out.append(
             BundleOutcomeRecord(
                 outcome_id=uuid4(),
@@ -97,7 +103,9 @@ def extract_bundle_outcomes_from_event_rows(rows: list[dict[str, Any]]) -> list[
                 project_tags=tuple(tags),
                 integrator_score=score,
                 verdict=verdict,
-                source_store_seq=int(row["store_seq"]) if row.get("store_seq") is not None else None,
+                source_store_seq=int(row["store_seq"])
+                if row.get("store_seq") is not None
+                else None,
             ),
         )
     return out
@@ -240,8 +248,12 @@ def _record_from_row(row: dict[str, Any]) -> BundleOutcomeRecord:
         bundle_id=str(row["bundle_id"]),
         workflow_profile=row.get("workflow_profile"),
         project_tags=tuple(str(t) for t in tags),
-        integrator_score=float(row["integrator_score"]) if row.get("integrator_score") is not None else None,
+        integrator_score=float(row["integrator_score"])
+        if row.get("integrator_score") is not None
+        else None,
         verdict=str(row["verdict"]),
-        source_store_seq=int(row["source_store_seq"]) if row.get("source_store_seq") is not None else None,
+        source_store_seq=int(row["source_store_seq"])
+        if row.get("source_store_seq") is not None
+        else None,
         recorded_at=row.get("created_at"),
     )

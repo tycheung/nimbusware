@@ -184,7 +184,8 @@ def write_integration_adapter_scaffold(
         "adapter_module_bytes": module_abs.stat().st_size,
         "adapter_readme_path": str(readme_rel).replace("\\", "/"),
         "adapter_generation_status": (
-            "target_integrated" if integration.get("target_integration_status") == "integrated"
+            "target_integrated"
+            if integration.get("target_integration_status") == "integrated"
             else "scaffold_written"
         ),
         "target_adapter_kind": kind,
@@ -207,10 +208,8 @@ def _sync_target_body(kind: str) -> str:
     if kind == "compatibility_shim":
         return (
             '        mapping_path = self._workspace_dir / "bundle_shim_map.json"\n'
-            "        payload = {\"mapped\": True, \"shim_mode\": \"bundle_compatibility\"}\n"
+            '        payload = {"mapped": True, "shim_mode": "bundle_compatibility"}\n'
             "        mapping_path.write_text(__import__('json').dumps(payload, indent=2), encoding='utf-8')\n"
             "        return payload\n"
         )
-    return (
-        '        return {"action": "noop", "kind": self.kind}\n'
-    )
+    return '        return {"action": "noop", "kind": self.kind}\n'

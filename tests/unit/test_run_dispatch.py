@@ -102,7 +102,6 @@ class _FakeRedis:
             return 1
         return 0
 
-
     def llen(self, _key: str) -> int:
         return len(self.pending)
 

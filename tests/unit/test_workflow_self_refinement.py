@@ -87,10 +87,14 @@ def test_parse_self_refinement_malformed_block_yields_defaults(
     (``test_parse_escalation_malformed_root_or_block_yields_defaults``).
     """
     _write_self_refinement_profile(
-        tmp_path, "block_scalar", "version: 1\nself_refinement: true\n",
+        tmp_path,
+        "block_scalar",
+        "version: 1\nself_refinement: true\n",
     )
     _write_self_refinement_profile(
-        tmp_path, "block_list", "version: 1\nself_refinement: []\n",
+        tmp_path,
+        "block_list",
+        "version: 1\nself_refinement: []\n",
     )
     for name in ("block_scalar", "block_list"):
         block = parse_self_refinement_workflow_block(tmp_path, name)

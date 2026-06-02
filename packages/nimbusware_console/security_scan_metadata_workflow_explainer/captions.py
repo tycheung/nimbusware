@@ -29,10 +29,7 @@ def security_scan_metadata_workflow_yaml_string_key_count_caption(
     raw = payload.get("workflow_yaml_top_level_string_key_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Security scan metadata workflow YAML top-level string keys: "
-        f"**{raw}**."
-    )
+    return f"Security scan metadata workflow YAML top-level string keys: **{raw}**."
 
 
 def security_scan_metadata_env_gate_caption(
@@ -138,8 +135,7 @@ def security_scan_metadata_effective_enabled_caption(
     y_label = "true" if yaml_parsed else "false"
     e_label = "true" if effective else "false"
     return (
-        "Security scan metadata: yaml_parsed_bool=**"
-        f"{y_label}**, effective_enabled=**{e_label}**."
+        f"Security scan metadata: yaml_parsed_bool=**{y_label}**, effective_enabled=**{e_label}**."
     )
 
 
@@ -171,5 +167,3 @@ def security_scan_metadata_yaml_effective_mismatch_caption(
         "``yaml_parsed_bool`` (workflow file only) differs from **effective_enabled** "
         "(YAML + ``HERMES_ATTACH_SECURITY_SCAN_METADATA``) — check env kill-switch / force-on."
     )
-
-

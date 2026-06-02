@@ -30,6 +30,7 @@ from nimbusware_projections.run_summary import RUN_LIST_FILTER_STATUSES, build_r
 
 router = APIRouter()
 
+
 @router.get(
     "/runs",
     response_model=RunListResponse,

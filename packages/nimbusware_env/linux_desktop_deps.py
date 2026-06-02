@@ -211,8 +211,7 @@ def linux_desktop_manual_hint() -> str:
     manager = linux_package_manager()
     if manager == "apt":
         return (
-            "sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 "
-            "libwebkit2gtk-4.1-0"
+            "sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 libwebkit2gtk-4.1-0"
         )
     if manager in ("dnf", "yum"):
         return "sudo dnf install -y python3-gobject gtk3 webkit2gtk4.1"

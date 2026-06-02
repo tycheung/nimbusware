@@ -76,10 +76,7 @@ def bundle_catalog_bundles_without_id_rollup_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS},
             )
     return buf.getvalue()
 
@@ -174,9 +171,7 @@ def bundle_catalog_bundles_without_id_rollup_operator_metrics_caption(
         bc = 0
     if not isinstance(without, int) or isinstance(without, bool):
         without = 0
-    return (
-        f"Bundles without id rollup metrics: **{without}** without id of **{bc}** bundle(s)."
-    )
+    return f"Bundles without id rollup metrics: **{without}** without id of **{bc}** bundle(s)."
 
 
 def bundle_catalog_bundles_without_id_rollup_operator_metrics_export_filename_slug() -> str:
@@ -218,4 +213,3 @@ def bundle_catalog_bundles_without_id_count(repo_root: Path) -> int:
         if not isinstance(raw_id, str) or not raw_id.strip():
             without += 1
     return without
-

@@ -39,11 +39,7 @@ def enterprise_status(_gate: EnterpriseDep) -> dict:
     """Enterprise feature readiness map."""
     features = {
         name: {
-            "status": (
-                "enabled"
-                if name in IMPLEMENTED_ENTERPRISE_FEATURES
-                else "planned"
-            ),
+            "status": ("enabled" if name in IMPLEMENTED_ENTERPRISE_FEATURES else "planned"),
             "epic": FEATURE_EPICS.get(name, ""),
         }
         for name in sorted(ENTERPRISE_FEATURES)

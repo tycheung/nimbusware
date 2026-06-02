@@ -16,9 +16,7 @@ def test_self_refinement_marker_emits_phase_d_loop_signal() -> None:
     with patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     rows = mem.list_run_events(str(rid))
-    phase_d = [
-        r for r in rows if r.get("event_type") == "self_refinement.loop.signalled"
-    ]
+    phase_d = [r for r in rows if r.get("event_type") == "self_refinement.loop.signalled"]
     assert len(phase_d) == 1
     payload = phase_d[0].get("payload") or {}
     assert payload.get("phase") == "D"
@@ -55,9 +53,7 @@ def test_self_refinement_marker_llm_critique_branch_when_hold() -> None:
             ):
                 orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     rows = mem.list_run_events(str(rid))
-    phase_d = [
-        r for r in rows if r.get("event_type") == "self_refinement.loop.signalled"
-    ]
+    phase_d = [r for r in rows if r.get("event_type") == "self_refinement.loop.signalled"]
     assert len(phase_d) == 1
     payload = phase_d[0].get("payload") or {}
     if payload.get("gate_decision") == "hold":

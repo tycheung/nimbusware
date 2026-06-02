@@ -4,9 +4,7 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
 
-SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = (
-    ".github/workflows/scraper_artifact_prune.yml"
-)
+SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
 
 from nimbusware_console.prune_status_display.status_captions import _parse_wrote_at
@@ -85,9 +83,7 @@ def prune_status_pruned_outcome_caption(
     else:
         dry_label = "unknown"
     suffix = "path" if pruned == 1 else "paths"
-    return (
-        f"Last prune: **{pruned}** {suffix} removed, dry_run=**{dry_label}**."
-    )
+    return f"Last prune: **{pruned}** {suffix} removed, dry_run=**{dry_label}**."
 
 
 def prune_status_base_dir_caption(
@@ -134,10 +130,6 @@ def prune_status_freshness_caption(
         hours = total_seconds // 3600
         age = f"{hours} hour{'s' if hours != 1 else ''}"
     stale_suffix = (
-        f" Stale (>{stale_after_hours}h)."
-        if total_seconds > stale_after_hours * 3600
-        else ""
+        f" Stale (>{stale_after_hours}h)." if total_seconds > stale_after_hours * 3600 else ""
     )
     return f"Last updated {age} ago.{stale_suffix}"
-
-

@@ -283,9 +283,7 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
             client.get.return_value = mock_resp
             orch.run_optional_scraper_fetch_stage(rid, client=client)
         evs = mem.list_run_events(str(rid))
-        assert not _outbound_fetch_disabled_event(evs), (
-            f"force_on_site2 raw={raw!r}"
-        )
+        assert not _outbound_fetch_disabled_event(evs), f"force_on_site2 raw={raw!r}"
 
 
 def test_outbound_fetch_env_fail_closed_string_arm_contract(
@@ -358,6 +356,4 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
         ):
             orch2.run_optional_scraper_fetch_stage(rid2)
         evs = mem2.list_run_events(str(rid2))
-        assert _outbound_fetch_disabled_event(evs), (
-            f"fail_closed_site2 raw={raw!r}"
-        )
+        assert _outbound_fetch_disabled_event(evs), f"fail_closed_site2 raw={raw!r}"

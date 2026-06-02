@@ -106,10 +106,7 @@ def render_run_list_section() -> None:
         if isinstance(_snap, dict) and (
             _snap.get("link")
             or _snap.get("next_cursor")
-            or (
-                isinstance(_snap.get("total"), int)
-                and not isinstance(_snap.get("total"), bool)
-            )
+            or (isinstance(_snap.get("total"), int) and not isinstance(_snap.get("total"), bool))
         ):
             with st.expander("Pagination (API)", expanded=False):
                 st.caption("RFC 5988 ``Link`` from the last successful list response (copy below).")
@@ -120,7 +117,9 @@ def render_run_list_section() -> None:
                 st.code(str(_snap.get("next_cursor") or ""), language=None)
                 _tot_snap = _snap.get("total")
                 if isinstance(_tot_snap, int) and not isinstance(_tot_snap, bool):
-                    st.caption(f"``total`` from the same JSON body: **{_tot_snap}** (server-reported).")
+                    st.caption(
+                        f"``total`` from the same JSON body: **{_tot_snap}** (server-reported)."
+                    )
 
         if _refresh:
             rl._run_list_fetch_and_display()

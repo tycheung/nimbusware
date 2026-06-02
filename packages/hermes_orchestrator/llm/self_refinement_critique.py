@@ -34,7 +34,9 @@ from hermes_store.protocol import EventStore
 
 def _ollama_chat_json(*args: object, **kwargs: object) -> object:
     import hermes_orchestrator.llm_plan as _patch
+
     return _patch.ollama_chat_json(*args, **kwargs)
+
 
 def emit_stub_self_refinement_critique_panel(
     store: EventStore,
@@ -192,5 +194,3 @@ def execute_self_refinement_critique_llm(
         "gate_decision": gate,
         "summary": summary,
     }
-
-

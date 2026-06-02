@@ -35,10 +35,7 @@ def test_production_ungated_effective_from_yaml() -> None:
 def test_create_run_freezes_ungated_flags() -> None:
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("self_refinement_production_ungated")
-    created = next(
-        r for r in mem.list_run_events(str(rid))
-        if r["event_type"] == "run.created"
-    )
+    created = next(r for r in mem.list_run_events(str(rid)) if r["event_type"] == "run.created")
     sr = (created.get("metadata") or {}).get("self_refinement_effective") or {}
     assert sr.get("production_ungated") is True
     assert sr.get("ungated_loop") is True

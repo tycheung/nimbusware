@@ -1,6 +1,5 @@
 """RoleRegistry loader failure-mode + contract parity."""
 
-
 from __future__ import annotations
 
 import hashlib
@@ -141,10 +140,7 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
     C5 -- two distinct file contents -> two distinct digests.
     """
     valid_uuid = str(uuid4())
-    c1_content = (
-        "roles:\n"
-        f"  - {{taxonomy_key: '  BackendWriter  ', role_id: '{valid_uuid}'}}\n"
-    )
+    c1_content = f"roles:\n  - {{taxonomy_key: '  BackendWriter  ', role_id: '{valid_uuid}'}}\n"
     reg_c1 = RoleRegistry.from_yaml(_write_yaml(tmp_path, c1_content, name="c1.yaml"))
     resolved_lower = reg_c1.resolve("backendwriter")
     resolved_messy = reg_c1.resolve("  BackendWriter  ")

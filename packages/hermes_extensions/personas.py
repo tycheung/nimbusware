@@ -291,18 +291,14 @@ class PersonaShelf:
                     out[k] = entry[k]
             raw_ver = entry.get("version")
             out["version"] = (
-                int(raw_ver)
-                if isinstance(raw_ver, int) and not isinstance(raw_ver, bool)
-                else 1
+                int(raw_ver) if isinstance(raw_ver, int) and not isinstance(raw_ver, bool) else 1
             )
             return out
 
         return {
             "version": ver,
             "business_area": [_project(p) for p in self.list_personas("business_area")],
-            "development_role": [
-                _project(p) for p in self.list_personas("development_role")
-            ],
+            "development_role": [_project(p) for p in self.list_personas("development_role")],
         }
 
     def write_entry(self, shelf: str, entry: Mapping[str, Any]) -> dict[str, Any]:

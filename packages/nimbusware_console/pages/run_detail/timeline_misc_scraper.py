@@ -80,10 +80,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                 _sf_metrics_dl_json_col, _sf_metrics_dl_csv_col = st.columns(2)
                 with _sf_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download scraper fetch operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download scraper fetch operator metrics JSON"),
                         data=_sf_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_scraper_fetch_operator_metrics_"
@@ -95,10 +92,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                 with _sf_metrics_dl_csv_col:
                     if _sf_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download scraper fetch operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download scraper fetch operator metrics CSV"),
                             data=_sf_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_scraper_fetch_operator_metrics_"
@@ -131,8 +125,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                         label="Download scraper fetches CSV",
                         data=_sf_fetch_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_scraper_fetch_fetches_"
-                            f"{_sf_fetch_slug}_{_sf_fetch_ts}.csv"
+                            f"hermes_scraper_fetch_fetches_{_sf_fetch_slug}_{_sf_fetch_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_scraper_fetch_fetches_csv",
@@ -142,8 +135,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                         label="Download scraper fetches JSON",
                         data=_sf_fetch_json.encode("utf-8"),
                         file_name=(
-                            "hermes_scraper_fetch_fetches_"
-                            f"{_sf_fetch_slug}_{_sf_fetch_ts}.json"
+                            f"hermes_scraper_fetch_fetches_{_sf_fetch_slug}_{_sf_fetch_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_scraper_fetch_fetches_json",
@@ -159,10 +151,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                 st.download_button(
                     label="Download scraper fetch summary CSV",
                     data=_sf_sum_csv.encode("utf-8"),
-                    file_name=(
-                        "hermes_scraper_fetch_summary_"
-                        f"{_sf_sum_slug}_{_sf_sum_ts}.csv"
-                    ),
+                    file_name=(f"hermes_scraper_fetch_summary_{_sf_sum_slug}_{_sf_sum_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_scraper_fetch_summary_csv",
                 )
@@ -170,10 +159,7 @@ def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> Non
                 st.download_button(
                     label="Download scraper fetch summary JSON",
                     data=_sf_sum_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_scraper_fetch_summary_"
-                        f"{_sf_sum_slug}_{_sf_sum_ts}.json"
-                    ),
+                    file_name=(f"hermes_scraper_fetch_summary_{_sf_sum_slug}_{_sf_sum_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_scraper_fetch_summary_json",
                 )

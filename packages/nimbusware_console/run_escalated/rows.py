@@ -23,8 +23,6 @@ def run_escalated_from_timeline(
     return raw if isinstance(raw, dict) else None
 
 
-
-
 def run_escalated_summary_rows(summary: Mapping[str, Any] | None) -> list[dict[str, str]]:
     if not summary:
         return []
@@ -40,20 +38,14 @@ def run_escalated_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
     return field_value_table_rows_csv(rows)
 
 
-
-
 def run_escalated_export_json(summary: Mapping[str, Any] | None) -> str:
     return mapping_export_json(summary)
-
-
 
 
 def run_escalated_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-
 
 
 def run_escalated_history_from_timeline(
@@ -65,8 +57,6 @@ def run_escalated_history_from_timeline(
     if not isinstance(raw, list):
         return []
     return [x for x in raw if isinstance(x, dict)]
-
-
 
 
 def run_escalated_history_table_rows(
@@ -99,12 +89,8 @@ _RUN_ESCALATED_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-
-
 def run_escalated_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
     return table_rows_csv(rows, _RUN_ESCALATED_HISTORY_CSV_COLUMNS)
-
-
 
 
 def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
@@ -112,14 +98,10 @@ def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> s
     return sequence_export_json(items)
 
 
-
-
 def run_escalated_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-
 
 
 def run_escalated_delta_from_timeline(
@@ -144,8 +126,6 @@ _RUN_ESCALATED_DELTA_FIELDS: tuple[tuple[str, str], ...] = (
 )
 
 
-
-
 def run_escalated_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[dict[str, str]]:
     if not isinstance(delta, Mapping):
         return []
@@ -161,17 +141,11 @@ def run_escalated_delta_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str
     return field_value_table_rows_csv(rows)
 
 
-
-
 def run_escalated_delta_export_json(delta: Mapping[str, Any] | None) -> str:
     return mapping_export_json(delta)
-
-
 
 
 def run_escalated_delta_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-

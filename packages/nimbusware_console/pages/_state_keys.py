@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-_RUN_LIST_QP_KEYS = frozenset({
-    "workflow_profile",
-    "workflow_profile_prefix",
-    "order",
-    "include_summary",
-    "has_escalation",
-    "offset",
-    "limit",
-    "created_after",
-    "created_before",
-    "status",
-    "cursor",
-})
+_RUN_LIST_QP_KEYS = frozenset(
+    {
+        "workflow_profile",
+        "workflow_profile_prefix",
+        "order",
+        "include_summary",
+        "has_escalation",
+        "offset",
+        "limit",
+        "created_after",
+        "created_before",
+        "status",
+        "cursor",
+    }
+)
 
 _SS_WF = "hermes_list_wf"
 _SS_PFX = "hermes_list_pfx"

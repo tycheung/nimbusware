@@ -26,7 +26,9 @@ from hermes_store.protocol import EventStore
 
 def _ollama_chat_json(*args: object, **kwargs: object) -> object:
     import hermes_orchestrator.llm_plan as _patch
+
     return _patch.ollama_chat_json(*args, **kwargs)
+
 
 def emit_stub_plan_stage(
     store: EventStore,
@@ -37,9 +39,7 @@ def emit_stub_plan_stage(
 ) -> None:
     """Deterministic PASS plan stage (same semantics as MVP stub in ``pipeline``)."""
     planner = registry.resolve("planner")
-    critic_roles = [
-        registry.resolve(tax_key) for tax_key in critique_router.pairing_for("planner")
-    ]
+    critic_roles = [registry.resolve(tax_key) for tax_key in critique_router.pairing_for("planner")]
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,
@@ -230,5 +230,3 @@ def execute_plan_stage_llm(
         llm_fallback_verdict=gv,
         failure_reason_code="llm_gate_fail" if gv == Verdict.FAIL else None,
     )
-
-

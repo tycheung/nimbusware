@@ -7,9 +7,7 @@ from datetime import datetime, timezone
 from io import StringIO
 from typing import Any
 
-SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = (
-    ".github/workflows/scraper_artifact_prune.yml"
-)
+SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
 from nimbusware_console.prune_status_display.status_captions import (
     _parse_wrote_at,
@@ -201,10 +199,7 @@ def prune_status_operator_metrics_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _PRUNE_STATUS_OPERATOR_METRICS_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _PRUNE_STATUS_OPERATOR_METRICS_CSV_COLUMNS},
             )
     return buf.getvalue()
 

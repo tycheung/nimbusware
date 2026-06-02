@@ -19,8 +19,8 @@ def _unit_tests_use_file_config(
 ) -> None:
     """Unit tests use on-disk ``configs/`` or ``tmp_path`` trees.
 
-    ``NIMBUSWARE_DATABASE_URL`` from ``.env`` applies only to ``@pytest.mark.integration``
-  tests (and tests that ``setenv`` Postgres explicitly mid-test).
+      ``NIMBUSWARE_DATABASE_URL`` from ``.env`` applies only to ``@pytest.mark.integration``
+    tests (and tests that ``setenv`` Postgres explicitly mid-test).
     """
     if request.node.get_closest_marker("integration") is not None:
         return

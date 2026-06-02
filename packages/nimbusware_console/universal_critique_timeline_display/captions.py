@@ -61,5 +61,3 @@ def universal_critique_timeline_fail_count_caption(
         f"Universal critique gates: **{fail_count}** FAIL of **{stage_count}** "
         "stage(s) on this timeline."
     )
-
-

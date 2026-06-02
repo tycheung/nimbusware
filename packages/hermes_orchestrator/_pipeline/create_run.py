@@ -172,7 +172,10 @@ class CreateRunMixin:
             }
         requirements_meta: dict[str, Any] | None = None
         if requirements is not None:
-            if not isinstance(requirements, dict) or not str(requirements.get("business_prompt", "")).strip():
+            if (
+                not isinstance(requirements, dict)
+                or not str(requirements.get("business_prompt", "")).strip()
+            ):
                 raise ValueError("requirements.business_prompt required when requirements is set")
             requirements_meta = dict(requirements)
         universal_critique_effective = {
@@ -266,20 +269,10 @@ class CreateRunMixin:
                     "memory_index_version": memory_meta.get("memory_index_version"),
                 },
                 "memory": memory_meta,
-                **(
-                    {"custom_agent": custom_agent_meta} if custom_agent_meta else {}
-                ),
-                **(
-                    {"project": project_meta} if project_meta else {}
-                ),
-                **(
-                    {"requirements": requirements_meta} if requirements_meta else {}
-                ),
-                **(
-                    {"maker_approval": {"enabled": True}}
-                    if requirements_meta is not None
-                    else {}
-                ),
+                **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
+                **({"project": project_meta} if project_meta else {}),
+                **({"requirements": requirements_meta} if requirements_meta else {}),
+                **({"maker_approval": {"enabled": True}} if requirements_meta is not None else {}),
                 **(
                     {
                         "persona_assignment": {
@@ -309,14 +302,12 @@ class CreateRunMixin:
         self._store.append(ev)
         return run_id
 
-
     def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]:
         for row in self._store.list_run_events(str(run_id)):
             if row.get("event_type") == EventType.RUN_CREATED.value:
                 meta = row.get("metadata") or {}
                 return dict(meta) if isinstance(meta, dict) else {}
         return {}
-
 
     def maybe_rebuild_memory_index(self, run_id: UUID) -> Any | None:
         """Rebuild repo memory index when this run contributes (Phase 4)."""
@@ -329,4 +320,3 @@ class CreateRunMixin:
             repo_root=self._repo_root,
             run_created_metadata=self._run_created_metadata(run_id),
         )
-

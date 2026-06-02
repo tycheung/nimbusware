@@ -1,6 +1,5 @@
 """Security-scan metadata sibling helpers composite."""
 
-
 from __future__ import annotations
 
 import json
@@ -194,9 +193,7 @@ class TestPartBExactKeyMatchingMatrix:
         key matches.
         """
         assert _finding_has_security_scan_metadata({"SECURITY_SCAN_EXIT": 1}) is False
-        assert (
-            _finding_has_security_scan_metadata({"Security_Scan_Snippet": ""}) is False
-        )
+        assert _finding_has_security_scan_metadata({"Security_Scan_Snippet": ""}) is False
         assert _finding_has_security_scan_metadata({"security_scan_EXIT": 1}) is False
 
         # Paired happy arm: exact lowercase succeeds.
@@ -210,15 +207,10 @@ class TestPartBExactKeyMatchingMatrix:
         guard does no fuzzy / prefix / strip matching on key names.
         """
         assert _finding_has_security_scan_metadata({"security_scan_exits": 1}) is False
-        assert (
-            _finding_has_security_scan_metadata({"security_scan_snippe": "..."})
-            is False
-        )
+        assert _finding_has_security_scan_metadata({"security_scan_snippe": "..."}) is False
         assert _finding_has_security_scan_metadata({" security_scan_exit": 1}) is False
         assert _finding_has_security_scan_metadata({"security_scan_exit ": 1}) is False
-        assert (
-            _finding_has_security_scan_metadata({"\tsecurity_scan_exit": 1}) is False
-        )
+        assert _finding_has_security_scan_metadata({"\tsecurity_scan_exit": 1}) is False
 
     def test_b3_both_keys_present_with_falsy_values(self) -> None:
         """B3: OR with BOTH keys present and BOTH values falsy still True.
@@ -345,9 +337,9 @@ class TestPartCSummaryOrderingFiltering:
                     payload={"finding_id": "f-1"},
                 )
             ]
-            assert (
-                security_scan_on_verify_timeline_summary(events) is None
-            ), f"event_type={et!r} should be filtered out"
+            assert security_scan_on_verify_timeline_summary(events) is None, (
+                f"event_type={et!r} should be filtered out"
+            )
 
     def test_c4_mixed_pass_through_keeps_out_none(self) -> None:
         """C4: every event passes event-type filter but every guard fails -> ``None``.
@@ -391,9 +383,7 @@ class TestPartCSummaryOrderingFiltering:
                 )
             ]
             result = security_scan_on_verify_timeline_summary(events)
-            assert result is not None, (
-                f"category={category!r} should NOT prevent summary"
-            )
+            assert result is not None, f"category={category!r} should NOT prevent summary"
             assert result["category"] == category
             assert result["severity"] == "low"
 
@@ -451,9 +441,7 @@ class TestPartDPayloadSourceReturnType:
                 )
             ]
             result = security_scan_on_verify_timeline_summary(events)
-            assert result is not None, (
-                f"payload={bad_payload!r} should still produce summary"
-            )
+            assert result is not None, f"payload={bad_payload!r} should still produce summary"
             assert result["finding_id"] is None
             assert result["category"] is None
             assert result["severity"] is None
@@ -482,9 +470,7 @@ class TestPartDPayloadSourceReturnType:
                 },
             )
         ]
-        assert (
-            security_scan_on_verify_timeline_summary(events_payload_only) is None
-        )
+        assert security_scan_on_verify_timeline_summary(events_payload_only) is None
 
         # Same with metadata explicitly None.
         events_meta_none = [
@@ -504,9 +490,7 @@ class TestPartDPayloadSourceReturnType:
                 "payload": {_EXIT_KEY: 1, _SNIPPET_KEY: "..."},
             }
         ]
-        assert (
-            security_scan_on_verify_timeline_summary(events_meta_missing) is None
-        )
+        assert security_scan_on_verify_timeline_summary(events_meta_missing) is None
 
     def test_d4_top_level_event_id_and_occurred_at_attribution(self) -> None:
         """D4: top-level ``event_id`` / ``occurred_at`` win over payload keys.

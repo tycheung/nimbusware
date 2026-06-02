@@ -34,8 +34,6 @@ def run_escalated_operator_metrics_caption(
 _RUN_ESCALATED_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
 
 
-
-
 def run_escalated_occurred_at_caption(summary: Mapping[str, Any] | None) -> str | None:
     if not isinstance(summary, Mapping):
         return None
@@ -48,8 +46,6 @@ def run_escalated_occurred_at_caption(summary: Mapping[str, Any] | None) -> str 
     return f"Run escalated at: {text}."
 
 
-
-
 def run_escalated_event_id_caption(summary: Mapping[str, Any] | None) -> str | None:
     if not isinstance(summary, Mapping):
         return None
@@ -60,8 +56,6 @@ def run_escalated_event_id_caption(summary: Mapping[str, Any] | None) -> str | N
     if not text:
         return None
     return f"Run escalated event_id: `{text}`."
-
-
 
 
 def run_escalated_reason_summary_caption(
@@ -84,8 +78,6 @@ def run_escalated_reason_summary_caption(
     return "Run escalated: " + ", ".join(parts) + "."
 
 
-
-
 def run_escalated_notes_preview_caption(
     summary: Mapping[str, Any] | None,
     *,
@@ -104,8 +96,6 @@ def run_escalated_notes_preview_caption(
     return f"Escalation notes: {text!r}."
 
 
-
-
 def run_escalated_actor_without_notes_caption(summary: Mapping[str, Any] | None) -> str | None:
     if not isinstance(summary, Mapping):
         return None
@@ -121,8 +111,6 @@ def run_escalated_actor_without_notes_caption(summary: Mapping[str, Any] | None)
         "Escalation **actor_id** is set but **notes** are empty — add operator context when "
         "correlating this **run.escalated** event with ``configs/escalation/policy.yaml``."
     )
-
-
 
 
 def run_escalated_policy_cross_ref_caption(
@@ -153,8 +141,6 @@ def run_escalated_policy_cross_ref_caption(
     return f"**policy_snapshot_id:** ``{sid}`` ({on_disk}). {tail}"
 
 
-
-
 def run_escalated_history_entry_count_caption(
     history: list[dict[str, Any]] | None,
 ) -> str | None:
@@ -163,8 +149,6 @@ def run_escalated_history_entry_count_caption(
     n = len(history)
     word = "escalation" if n == 1 else "escalations"
     return f"Run escalated history: **{n}** {word} in this timeline view."
-
-
 
 
 def run_escalated_history_distinct_actors_caption(
@@ -182,8 +166,6 @@ def run_escalated_history_distinct_actors_caption(
         return "Run escalated history: no distinct actor ids in this view."
     word = "actor" if dac == 1 else "actors"
     return f"Run escalated history: **{dac}** distinct {word} across **{ec}** escalation(s)."
-
-
 
 
 def run_escalated_history_operator_metrics_caption(
@@ -214,8 +196,6 @@ _RUN_ESCALATED_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-
-
 def run_escalated_delta_transition_caption(
     delta: Mapping[str, Any] | None,
 ) -> str | None:
@@ -235,8 +215,6 @@ def run_escalated_delta_transition_caption(
     if not parts:
         return None
     return "Run escalated delta: " + "; ".join(parts) + "."
-
-
 
 
 def run_escalated_delta_operator_metrics_caption(
@@ -268,5 +246,3 @@ _RUN_ESCALATED_DELTA_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
     "field",
     "value",
 )
-
-

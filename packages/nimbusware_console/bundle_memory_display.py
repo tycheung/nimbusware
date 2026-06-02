@@ -22,7 +22,9 @@ def bundle_success_stats_table_rows(
                 "last_verdict": stat.last_verdict or "",
             },
         )
-    rows.sort(key=lambda r: (-float(r["success_rate"]), -int(r["sample_count"]), str(r["bundle_id"])))
+    rows.sort(
+        key=lambda r: (-float(r["success_rate"]), -int(r["sample_count"]), str(r["bundle_id"]))
+    )
     return rows
 
 

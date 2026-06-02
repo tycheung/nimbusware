@@ -44,9 +44,7 @@ def security_scan_metadata_workflow_explainer_payload(
             workflow_yaml_file_bytes = file_bytes
             doc = disk_doc
             if isinstance(doc, dict):
-                workflow_yaml_top_level_string_key_count = sum(
-                    1 for k in doc if isinstance(k, str)
-                )
+                workflow_yaml_top_level_string_key_count = sum(1 for k in doc if isinstance(k, str))
                 vtop = doc.get("version")
                 if type(vtop) is int and not isinstance(vtop, bool):
                     workflow_yaml_top_level_version_int = vtop
@@ -89,9 +87,7 @@ def security_scan_metadata_workflow_explainer_payload(
         "security_scan_metadata_on_verify_yaml_key_present": yaml_key_present,
         "security_scan_metadata_on_verify_yaml_value": yaml_raw,
         "security_scan_metadata_on_verify_yaml_raw_type": yaml_raw_type,
-        "security_scan_metadata_on_verify_mapping_string_key_count": (
-            ssm_mapping_string_key_count
-        ),
+        "security_scan_metadata_on_verify_mapping_string_key_count": (ssm_mapping_string_key_count),
         "yaml_parsed_bool": yaml_parsed,
         "effective_enabled": effective,
         "security_scan_metadata_yaml_parsed_bool_matches_effective": (
@@ -100,5 +96,3 @@ def security_scan_metadata_workflow_explainer_payload(
         "HERMES_ATTACH_SECURITY_SCAN_METADATA": _hermes_attach_security_scan_metadata_env_summary(),
         "load_error": load_error,
     }
-
-

@@ -150,8 +150,7 @@ def _render_self_refinement(run_id: str, data: dict) -> None:
                         label="Download self-refinement operator metrics JSON",
                         data=_sr_metrics_json.encode("utf-8"),
                         file_name=(
-                            "hermes_self_refinement_operator_metrics_"
-                            f"{_sr_metrics_slug}_{_ts}.json"
+                            f"hermes_self_refinement_operator_metrics_{_sr_metrics_slug}_{_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_self_refinement_operator_metrics_json",
@@ -190,8 +189,8 @@ def _render_self_refinement(run_id: str, data: dict) -> None:
                 if _sr_expl_rows:
                     st.dataframe(_sr_expl_rows, use_container_width=True, hide_index=True)
                 _sr_expl_metrics = self_refinement_workflow_explainer_operator_metrics(_sr_expl)
-                _sr_expl_metrics_cap = (
-                    self_refinement_workflow_explainer_operator_metrics_caption(_sr_expl_metrics)
+                _sr_expl_metrics_cap = self_refinement_workflow_explainer_operator_metrics_caption(
+                    _sr_expl_metrics
                 )
                 if _sr_expl_metrics_cap:
                     st.caption(_sr_expl_metrics_cap)

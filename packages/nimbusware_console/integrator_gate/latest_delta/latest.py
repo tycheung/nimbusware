@@ -173,16 +173,12 @@ def integrator_gate_latest_tag_overlap_caption(
     project_n = metrics.get("integrator_project_tags_count")
     matched_n = metrics.get("integrator_matched_tags_count")
     if not all(
-        isinstance(x, int) and not isinstance(x, bool)
-        for x in (overlap, project_n, matched_n)
+        isinstance(x, int) and not isinstance(x, bool) for x in (overlap, project_n, matched_n)
     ):
         return None
     if project_n == 0 and matched_n == 0 and overlap == 0:
         return None
-    return (
-        f"Latest integrator gate tags: **{overlap}** matched of "
-        f"**{project_n}** project tag(s)."
-    )
+    return f"Latest integrator gate tags: **{overlap}** matched of **{project_n}** project tag(s)."
 
 
 def integrator_gate_latest_operator_metrics_caption(
@@ -313,5 +309,3 @@ def integrator_gate_latest_metrics_table_rows(
             },
         )
     return rows
-
-

@@ -40,9 +40,7 @@ def test_cumulative_gate_failures_emits_single_escalation() -> None:
         orch._maybe_escalate_after_cumulative_gate_failures(rid)
         orch._maybe_escalate_after_cumulative_gate_failures(rid)
     esc = [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r["event_type"] == EventType.RUN_ESCALATED.value
+        r for r in mem.list_run_events(str(rid)) if r["event_type"] == EventType.RUN_ESCALATED.value
     ]
     assert len(esc) == 1
     assert (esc[0].get("payload") or {}).get("reason_code") == "cumulative_gate_failures"

@@ -145,10 +145,14 @@ def apply_full_workflow_yaml(
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
     if not workflow_yaml_write_enabled():
-        return False, None, [
-            f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
-            "workflow YAML writes.",
-        ]
+        return (
+            False,
+            None,
+            [
+                f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
+                "workflow YAML writes.",
+            ],
+        )
     stem = str(profile_stem).strip()
     if stem != str(confirm_profile_stem).strip():
         return False, None, ["confirmation text must exactly match the selected profile stem."]
@@ -231,10 +235,14 @@ def apply_integrator_gate_yaml(
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
     if not workflow_yaml_write_enabled():
-        return False, None, [
-            f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
-            "workflow YAML writes.",
-        ]
+        return (
+            False,
+            None,
+            [
+                f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
+                "workflow YAML writes.",
+            ],
+        )
     stem = str(profile_stem).strip()
     if stem != str(confirm_profile_stem).strip():
         return False, None, ["confirmation text must exactly match the selected profile stem."]
@@ -258,10 +266,14 @@ def apply_agent_evaluator_yaml(
     confirm_profile_stem: str,
 ) -> tuple[bool, dict[str, Any] | None, list[str]]:
     if not workflow_yaml_write_enabled():
-        return False, None, [
-            f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
-            "workflow YAML writes.",
-        ]
+        return (
+            False,
+            None,
+            [
+                f"Set {ALLOW_WORKFLOW_YAML_WRITE_ENV}=1 (or true/yes/on) to allow "
+                "workflow YAML writes.",
+            ],
+        )
     stem = str(profile_stem).strip()
     if stem != str(confirm_profile_stem).strip():
         return False, None, ["confirmation text must exactly match the selected profile stem."]

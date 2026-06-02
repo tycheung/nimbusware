@@ -17,4 +17,3 @@ from nimbusware_console.pages.config_tooling._common import (  # noqa: E402
     _resolve_prune_status_path,
     rl,
 )
-

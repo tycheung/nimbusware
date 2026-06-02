@@ -1,6 +1,5 @@
 """RunOrchestrator.create_run`` construction-segment contract."""
 
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -63,9 +62,9 @@ def test_create_run_construction_metadata_4_axis_contract() -> None:
     orch_b, mem_b = make_dev_orchestrator()
     orch_b.create_run("default")
     row_b = _only_run_created_row(mem_b)
-    assert (
-        row_b["metadata"]["roles_registry"]["content_digest_sha256_16"] == stored_digest
-    ), "deterministic digest broken: two orchestrators on same repo produced different digests"
+    assert row_b["metadata"]["roles_registry"]["content_digest_sha256_16"] == stored_digest, (
+        "deterministic digest broken: two orchestrators on same repo produced different digests"
+    )
 
     assert md_a["policy_snapshot"]["domain_allowlist_normalized"] is True, (
         "domain_allowlist_normalized must be the literal True (line 187)"
@@ -85,9 +84,7 @@ def test_create_run_construction_metadata_4_axis_contract() -> None:
     )
     row_c = _only_run_created_row(mem_c)
     md_c = row_c["metadata"]
-    stored_domains_c = row_c["payload"]["policy_snapshot"]["network_egress"][
-        "domain_allowlist"
-    ]
+    stored_domains_c = row_c["payload"]["policy_snapshot"]["network_egress"]["domain_allowlist"]
     assert md_c["policy_snapshot"]["network_egress_domain_count"] == 2
     assert md_c["policy_snapshot"]["network_egress_domain_count"] == len(stored_domains_c), (
         f"metadata count {md_c['policy_snapshot']['network_egress_domain_count']} "
@@ -189,16 +186,12 @@ def test_create_run_run_policy_overrides_propagation_and_idempotency_lockout_3_a
     orch_none, mem_none = make_dev_orchestrator()
     orch_none.create_run("default", run_policy_overrides=None)
     row_none = _only_run_created_row(mem_none)
-    domains_none = row_none["payload"]["policy_snapshot"]["network_egress"][
-        "domain_allowlist"
-    ]
+    domains_none = row_none["payload"]["policy_snapshot"]["network_egress"]["domain_allowlist"]
 
     orch_empty, mem_empty = make_dev_orchestrator()
     orch_empty.create_run("default", run_policy_overrides={})
     row_empty = _only_run_created_row(mem_empty)
-    domains_empty = row_empty["payload"]["policy_snapshot"]["network_egress"][
-        "domain_allowlist"
-    ]
+    domains_empty = row_empty["payload"]["policy_snapshot"]["network_egress"]["domain_allowlist"]
     assert domains_none == domains_empty == [], (
         f"None vs empty-dict override should produce identical empty domain_allowlist; "
         f"got None->{domains_none!r} {{}}->{domains_empty!r}"
@@ -255,6 +248,5 @@ def test_create_run_run_policy_overrides_propagation_and_idempotency_lockout_3_a
     )
     count_c3 = rows_c3[0]["metadata"]["policy_snapshot"]["network_egress_domain_count"]
     assert count_c3 == 1, (
-        f"metadata count must also reflect call-1 alpha only (1), not call-2 beta; "
-        f"got {count_c3}"
+        f"metadata count must also reflect call-1 alpha only (1), not call-2 beta; got {count_c3}"
     )

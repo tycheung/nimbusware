@@ -87,20 +87,14 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
             _ss_cat_sev = security_scan_category_severity_caption(_ss)
             if _ss_cat_sev:
                 st.caption(_ss_cat_sev)
-            _ss_finding_metrics = (
-                security_scan_on_verify_latest_operator_metrics(_ss)
-            )
-            _ss_finding_metrics_cap = (
-                security_scan_on_verify_latest_operator_metrics_caption(
-                    _ss_finding_metrics,
-                )
+            _ss_finding_metrics = security_scan_on_verify_latest_operator_metrics(_ss)
+            _ss_finding_metrics_cap = security_scan_on_verify_latest_operator_metrics_caption(
+                _ss_finding_metrics,
             )
             if _ss_finding_metrics_cap:
                 st.caption(_ss_finding_metrics_cap)
-            _ss_finding_metric_rows = (
-                security_scan_on_verify_latest_operator_metrics_table_rows(
-                    _ss_finding_metrics,
-                )
+            _ss_finding_metric_rows = security_scan_on_verify_latest_operator_metrics_table_rows(
+                _ss_finding_metrics,
             )
             _ss_latest_ts = datetime.now(timezone.utc).strftime(
                 "%Y%m%dT%H%M%SZ",
@@ -130,38 +124,26 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
                 ) = st.columns(2)
                 with _ss_finding_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download security scan finding operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download security scan finding operator metrics JSON"),
                         data=_ss_finding_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_security_scan_finding_operator_metrics_"
                             f"{_ss_latest_slug}_{_ss_latest_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_security_scan_finding_operator_"
-                            "metrics_json"
-                        ),
+                        key=("hermes_dl_security_scan_finding_operator_metrics_json"),
                     )
                 with _ss_finding_metrics_dl_csv_col:
                     if _ss_finding_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download security scan finding operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download security scan finding operator metrics CSV"),
                             data=_ss_finding_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_security_scan_finding_operator_metrics_"
                                 f"{_ss_latest_slug}_{_ss_latest_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_security_scan_finding_operator_"
-                                "metrics_csv"
-                            ),
+                            key=("hermes_dl_security_scan_finding_operator_metrics_csv"),
                         )
             _ss_lint = security_scan_linter_nonzero_caption(_ss)
             if _ss_lint:
@@ -174,9 +156,7 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
                     use_container_width=True,
                     hide_index=True,
                 )
-                _ss_linter_summary = (
-                    security_scan_linter_status_summary_caption(_ss)
-                )
+                _ss_linter_summary = security_scan_linter_status_summary_caption(_ss)
                 if _ss_linter_summary:
                     st.caption(_ss_linter_summary)
                 _ss_worst = security_scan_linter_worst_status_caption(_ss)
@@ -197,10 +177,8 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
                 _ss_latest_ts = datetime.now(timezone.utc).strftime(
                     "%Y%m%dT%H%M%SZ",
                 )
-                _ss_latest_slug = (
-                    security_scan_on_verify_latest_export_filename_slug(
-                        run_id.strip(),
-                    )
+                _ss_latest_slug = security_scan_on_verify_latest_export_filename_slug(
+                    run_id.strip(),
                 )
                 _ss_linter_metrics = security_scan_linter_operator_metrics(_ss)
                 _ss_linter_metrics_cap = security_scan_linter_operator_metrics_caption(
@@ -208,10 +186,8 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
                 )
                 if _ss_linter_metrics_cap:
                     st.caption(_ss_linter_metrics_cap)
-                _ss_linter_metric_rows = (
-                    security_scan_linter_operator_metrics_table_rows(
-                        _ss_linter_metrics,
-                    )
+                _ss_linter_metric_rows = security_scan_linter_operator_metrics_table_rows(
+                    _ss_linter_metrics,
                 )
                 if _ss_linter_metric_rows:
                     st.dataframe(
@@ -219,53 +195,35 @@ def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> N
                         use_container_width=True,
                         hide_index=True,
                     )
-                    _ss_linter_metrics_json = (
-                        security_scan_linter_operator_metrics_export_json(
-                            _ss_linter_metrics,
-                        )
+                    _ss_linter_metrics_json = security_scan_linter_operator_metrics_export_json(
+                        _ss_linter_metrics,
                     )
-                    _ss_linter_metrics_csv = (
-                        security_scan_linter_operator_metrics_table_rows_csv(
-                            _ss_linter_metric_rows,
-                        )
+                    _ss_linter_metrics_csv = security_scan_linter_operator_metrics_table_rows_csv(
+                        _ss_linter_metric_rows,
                     )
-                    _ss_linter_metrics_dl_json_col, _ss_linter_metrics_dl_csv_col = (
-                        st.columns(2)
-                    )
+                    _ss_linter_metrics_dl_json_col, _ss_linter_metrics_dl_csv_col = st.columns(2)
                     with _ss_linter_metrics_dl_json_col:
                         st.download_button(
-                            label=(
-                                "Download security scan linter "
-                                "operator metrics JSON"
-                            ),
+                            label=("Download security scan linter operator metrics JSON"),
                             data=_ss_linter_metrics_json.encode("utf-8"),
                             file_name=(
                                 "hermes_security_scan_linter_operator_metrics_"
                                 f"{_ss_latest_slug}_{_ss_latest_ts}.json"
                             ),
                             mime="application/json",
-                            key=(
-                                "hermes_dl_security_scan_linter_"
-                                "operator_metrics_json"
-                            ),
+                            key=("hermes_dl_security_scan_linter_operator_metrics_json"),
                         )
                     with _ss_linter_metrics_dl_csv_col:
                         if _ss_linter_metrics_csv:
                             st.download_button(
-                                label=(
-                                    "Download security scan linter "
-                                    "operator metrics CSV"
-                                ),
+                                label=("Download security scan linter operator metrics CSV"),
                                 data=_ss_linter_metrics_csv.encode("utf-8"),
                                 file_name=(
                                     "hermes_security_scan_linter_operator_metrics_"
                                     f"{_ss_latest_slug}_{_ss_latest_ts}.csv"
                                 ),
                                 mime="text/csv; charset=utf-8",
-                                key=(
-                                    "hermes_dl_security_scan_linter_"
-                                    "operator_metrics_csv"
-                                ),
+                                key=("hermes_dl_security_scan_linter_operator_metrics_csv"),
                             )
                 with st.expander(
                     "Raw linter operator metrics JSON",

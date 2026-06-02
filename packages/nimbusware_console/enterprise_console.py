@@ -138,9 +138,7 @@ def fleet_sli_aggregate_caption(body: Mapping[str, Any] | None) -> str | None:
         base = None
     history = body.get("preflight_history")
     hist_cap = (
-        preflight_history_response_sli_caption(history)
-        if isinstance(history, Mapping)
-        else None
+        preflight_history_response_sli_caption(history) if isinstance(history, Mapping) else None
     )
     if base and hist_cap:
         return f"{base} {hist_cap}"

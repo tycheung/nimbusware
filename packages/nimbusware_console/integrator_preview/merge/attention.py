@@ -62,11 +62,7 @@ def full_workflow_merge_attention_rows(diff: Mapping[str, Any] | None) -> list[d
             },
         )
     changed = diff.get("changed_top_level_keys")
-    if (
-        isinstance(changed, list)
-        and "integrator_gate" in changed
-        and "agent_evaluator" in changed
-    ):
+    if isinstance(changed, list) and "integrator_gate" in changed and "agent_evaluator" in changed:
         rows.append(
             {
                 "flag": "Both integrator_gate and agent_evaluator change in one paste",
@@ -131,5 +127,3 @@ def full_workflow_merge_attention_rows(diff: Mapping[str, Any] | None) -> list[d
                 },
             )
     return rows
-
-

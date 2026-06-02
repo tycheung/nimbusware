@@ -8,7 +8,12 @@ from nimbusware_env import find_repo_root
 
 
 def test_app_entry_is_thin_facade() -> None:
-    path = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_maker" / "app.py"
+    path = (
+        find_repo_root(start=Path(__file__).resolve().parents[1])
+        / "packages"
+        / "nimbusware_maker"
+        / "app.py"
+    )
     text = path.read_text(encoding="utf-8")
     assert "from nimbusware_maker.ui import render_main" in text
     assert "st.set_page_config" in text
@@ -42,7 +47,12 @@ def test_wizard_section_export() -> None:
 
 
 def test_maker_ui_module_paths() -> None:
-    base = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_maker" / "ui"
+    base = (
+        find_repo_root(start=Path(__file__).resolve().parents[1])
+        / "packages"
+        / "nimbusware_maker"
+        / "ui"
+    )
     for name in (
         "home.py",
         "intent.py",

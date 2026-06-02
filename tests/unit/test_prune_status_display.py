@@ -326,10 +326,7 @@ def test_prune_scraper_artifact_prune_workflow_caption() -> None:
     cap = prune_scraper_artifact_prune_workflow_caption()
     assert SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH in cap
     assert "scraper_artifact_prune" in cap
-    assert (
-        SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH
-        == ".github/workflows/scraper_artifact_prune.yml"
-    )
+    assert SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH == ".github/workflows/scraper_artifact_prune.yml"
 
 
 def test_prune_status_dry_run_caption() -> None:
@@ -551,7 +548,4 @@ def test_prune_status_operator_metrics_export() -> None:
     csv_text = prune_status_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0].startswith("field")
     assert prune_status_operator_metrics_table_rows_csv([]) == ""
-    assert (
-        prune_status_operator_metrics_export_filename_slug()
-        == "prune_status_operator_metrics"
-    )
+    assert prune_status_operator_metrics_export_filename_slug() == "prune_status_operator_metrics"

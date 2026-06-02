@@ -138,10 +138,7 @@ def execute_slice_plan_llm(
         "Keep target_paths to at most 3 Python files under packages/. "
         "Prefer existing modules related to the requested change."
     )
-    user = (
-        f"Propose micro-slice #{slice_index} for this Hermes run. "
-        "Use slice_id like slice-{n}."
-    )
+    user = f"Propose micro-slice #{slice_index} for this Hermes run. Use slice_id like slice-{{n}}."
     if memory_excerpt.strip():
         user = f"{user}\n\nPrior failure memory (advisory):\n{memory_excerpt[:2000]}"
     if budget_feedback:

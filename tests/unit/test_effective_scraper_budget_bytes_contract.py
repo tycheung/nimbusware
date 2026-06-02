@@ -1,6 +1,5 @@
 """_effective_scraper_budget_bytes`` direct contract."""
 
-
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -50,9 +49,7 @@ def test_effective_scraper_budget_bytes_snapshot_type_guards_4_axis() -> None:
     snap_a2 = {"finding_fix_strictness": {}}
     with patch.object(orch_a2, "policy_snapshot_for_run", return_value=snap_a2):
         result_a2 = orch_a2._effective_scraper_budget_bytes(uuid4(), cfg)  # noqa: SLF001
-    assert result_a2 is None, (
-        "A2: snap dict missing network_egress key -> ne = None -> return None"
-    )
+    assert result_a2 is None, "A2: snap dict missing network_egress key -> ne = None -> return None"
 
     orch_a3, _ = make_dev_orchestrator()
     snap_a3 = {"network_egress": "not a dict"}
@@ -120,8 +117,7 @@ def test_effective_scraper_budget_bytes_value_guard_matrix_5_axis() -> None:
     with patch.object(orch_b5a, "policy_snapshot_for_run", return_value=_snap_with_pb(0)):
         result_b5a = orch_b5a._effective_scraper_budget_bytes(uuid4(), cfg)  # noqa: SLF001
     assert result_b5a == 0, (
-        "B5a: pb=0 must be ACCEPTED at the >= 0 boundary (inclusive); "
-        "result is 0 not None"
+        "B5a: pb=0 must be ACCEPTED at the >= 0 boundary (inclusive); result is 0 not None"
     )
 
     orch_b5b, _ = make_dev_orchestrator()
@@ -146,7 +142,8 @@ def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
     orch_c1, _ = make_dev_orchestrator()
     with patch.object(orch_c1, "policy_snapshot_for_run", return_value=snap_500):
         result_c1 = orch_c1._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=None),
+            uuid4(),
+            _make_cfg(max_bytes=None),
         )
     assert result_c1 == 500, (
         "C1: policy_b=500, cfg.max_bytes=None -> single-cap policy-only arm returns 500"
@@ -155,7 +152,8 @@ def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
     orch_c2, _ = make_dev_orchestrator()
     with patch.object(orch_c2, "policy_snapshot_for_run", return_value={}):
         result_c2 = orch_c2._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=2048),
+            uuid4(),
+            _make_cfg(max_bytes=2048),
         )
     assert result_c2 == 2048, (
         "C2: policy absent, cfg.max_bytes=2048 -> single-cap config-only arm returns 2048"
@@ -164,7 +162,8 @@ def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
     orch_c3, _ = make_dev_orchestrator()
     with patch.object(orch_c3, "policy_snapshot_for_run", return_value=snap_500):
         result_c3 = orch_c3._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=2048),
+            uuid4(),
+            _make_cfg(max_bytes=2048),
         )
     assert result_c3 == 500, (
         "C3: policy_b=500 < cfg.max_bytes=2048 -> min picks the stricter policy"
@@ -173,7 +172,8 @@ def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
     orch_c4, _ = make_dev_orchestrator()
     with patch.object(orch_c4, "policy_snapshot_for_run", return_value=snap_2048):
         result_c4 = orch_c4._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=500),
+            uuid4(),
+            _make_cfg(max_bytes=500),
         )
     assert result_c4 == 500, (
         "C4: cfg.max_bytes=500 < policy_b=2048 -> min picks cfg (order-invariant; "
@@ -196,17 +196,17 @@ def test_effective_scraper_budget_bytes_empty_caps_and_zero_budget_3_axis() -> N
     orch_d1, _ = make_dev_orchestrator()
     with patch.object(orch_d1, "policy_snapshot_for_run", return_value={}):
         result_d1 = orch_d1._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=None),
+            uuid4(),
+            _make_cfg(max_bytes=None),
         )
-    assert result_d1 is None, (
-        "D1: both caps absent -> caps == [] -> short-circuit to None"
-    )
+    assert result_d1 is None, "D1: both caps absent -> caps == [] -> short-circuit to None"
 
     orch_d2, _ = make_dev_orchestrator()
     snap_equal = {"network_egress": {"budget_bytes_per_run": 1024}}
     with patch.object(orch_d2, "policy_snapshot_for_run", return_value=snap_equal):
         result_d2 = orch_d2._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=1024),
+            uuid4(),
+            _make_cfg(max_bytes=1024),
         )
     assert result_d2 == 1024, (
         "D2: policy_b == cfg.max_bytes == 1024 -> min returns the shared value"
@@ -216,7 +216,8 @@ def test_effective_scraper_budget_bytes_empty_caps_and_zero_budget_3_axis() -> N
     snap_zero = {"network_egress": {"budget_bytes_per_run": 0}}
     with patch.object(orch_d3, "policy_snapshot_for_run", return_value=snap_zero):
         result_d3 = orch_d3._effective_scraper_budget_bytes(  # noqa: SLF001
-            uuid4(), _make_cfg(max_bytes=100),
+            uuid4(),
+            _make_cfg(max_bytes=100),
         )
     assert result_d3 == 0, (
         "D3: policy_b=0 admitted by >= 0 boundary AND min(0, 100) == 0 -> "

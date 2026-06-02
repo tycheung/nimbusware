@@ -80,9 +80,7 @@ def run_list_summaries_sparse_caption(data: Mapping[str, Any] | None) -> str | N
     if not isinstance(summaries, dict):
         return None
     n = len(raw_ids)
-    covered = sum(
-        1 for rid in raw_ids if isinstance(summaries.get(str(rid)), dict)
-    )
+    covered = sum(1 for rid in raw_ids if isinstance(summaries.get(str(rid)), dict))
     if covered >= n:
         return None
     return (
@@ -232,9 +230,7 @@ def run_list_page_vs_total_caption(data: Mapping[str, Any] | None) -> str | None
     if tot <= page_n:
         return None
     suffix = "run_id" if page_n == 1 else "run_ids"
-    return (
-        f"List page: **{page_n}** {suffix} on this page of **{tot}** total."
-    )
+    return f"List page: **{page_n}** {suffix} on this page of **{tot}** total."
 
 
 def run_list_keyset_next_page_caption(
@@ -271,5 +267,3 @@ def run_list_next_cursor_length_caption(data: Mapping[str, Any] | None) -> str |
         f"``next_cursor`` opaque token: **{n}** character(s) after trim "
         "(length only; use **Link** / repeat query params to fetch the next page)."
     )
-
-

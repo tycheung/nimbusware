@@ -34,17 +34,13 @@ def run_escalated_operator_metrics(
     rc = summary.get("reason_code")
     metrics["reason_code_present"] = rc is not None and str(rc).strip() != ""
     policy = summary.get("policy_snapshot_id")
-    metrics["policy_snapshot_id_present"] = (
-        policy is not None and str(policy).strip() != ""
-    )
+    metrics["policy_snapshot_id_present"] = policy is not None and str(policy).strip() != ""
     eid = summary.get("event_id")
     metrics["event_id_present"] = eid is not None and str(eid).strip() != ""
     sev = summary.get("severity")
     if isinstance(sev, str) and sev.strip():
         metrics["severity"] = sev.strip()
     return metrics
-
-
 
 
 def run_escalated_operator_metrics_table_rows(
@@ -66,8 +62,6 @@ def run_escalated_operator_metrics_table_rows(
         if metrics.get(key) is True:
             rows.append({"field": label, "value": "yes"})
     return rows
-
-
 
 
 def run_escalated_operator_metrics_caption(
@@ -106,16 +100,12 @@ def run_escalated_operator_metrics_table_rows_csv(
     return field_value_table_rows_csv(rows)
 
 
-
-
 def run_escalated_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return run_escalated_export_filename_slug(run_id, max_len=max_len)
-
-
 
 
 def run_escalated_history_operator_metrics(
@@ -149,8 +139,6 @@ def run_escalated_history_operator_metrics(
     return metrics
 
 
-
-
 def run_escalated_history_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
@@ -172,8 +160,6 @@ def run_escalated_history_operator_metrics_table_rows(
         },
     ]
     return rows
-
-
 
 
 def run_escalated_history_operator_metrics_caption(
@@ -210,16 +196,12 @@ def run_escalated_history_operator_metrics_table_rows_csv(
     return field_value_table_rows_csv(rows)
 
 
-
-
 def run_escalated_history_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return run_escalated_history_export_filename_slug(run_id, max_len=max_len)
-
-
 
 
 def run_escalated_delta_operator_metrics(
@@ -245,8 +227,6 @@ def run_escalated_delta_operator_metrics(
     }
 
 
-
-
 def run_escalated_delta_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
@@ -266,8 +246,6 @@ def run_escalated_delta_operator_metrics_table_rows(
         if isinstance(val, bool):
             rows.append({"field": label, "value": str(val).lower()})
     return rows
-
-
 
 
 def run_escalated_delta_operator_metrics_caption(

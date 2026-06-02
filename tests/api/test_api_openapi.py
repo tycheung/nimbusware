@@ -21,9 +21,7 @@ def test_openapi_problem_responses_include_problem_json_media_type(
 
 def test_openapi_get_run_documents_optional_link_header(client: TestClient) -> None:
     spec = client.app.openapi()
-    hdrs = (
-        spec["paths"]["/v1/runs/{run_id}"]["get"]["responses"]["200"].get("headers") or {}
-    )
+    hdrs = spec["paths"]["/v1/runs/{run_id}"]["get"]["responses"]["200"].get("headers") or {}
     assert "Link" in hdrs
     assert "schema" in hdrs["Link"]
 
@@ -77,16 +75,8 @@ def test_openapi_timeline_documents_agent_evaluator_in_200_example(client: TestC
 
 def test_openapi_timeline_and_findings_document_link_headers(client: TestClient) -> None:
     spec = client.app.openapi()
-    tl = (
-        spec["paths"]["/v1/runs/{run_id}/timeline"]["get"]["responses"]["200"]
-        .get("headers")
-        or {}
-    )
-    fd = (
-        spec["paths"]["/v1/runs/{run_id}/findings"]["get"]["responses"]["200"]
-        .get("headers")
-        or {}
-    )
+    tl = spec["paths"]["/v1/runs/{run_id}/timeline"]["get"]["responses"]["200"].get("headers") or {}
+    fd = spec["paths"]["/v1/runs/{run_id}/findings"]["get"]["responses"]["200"].get("headers") or {}
     assert "Link" in tl and "schema" in tl["Link"]
     assert "Link" in fd and "schema" in fd["Link"]
 
@@ -119,10 +109,7 @@ def test_openapi_preflight_history_documents_sli_fields(client: TestClient) -> N
     assert "export_schema_version" in export_props
     assert "export_window_consistent" in export_props
     params = (
-        spec.get("paths", {})
-        .get("/v1/preflight-history", {})
-        .get("get", {})
-        .get("parameters", [])
+        spec.get("paths", {}).get("/v1/preflight-history", {}).get("get", {}).get("parameters", [])
     )
     param_names = {p.get("name") for p in params if isinstance(p, dict)}
     assert "include_metrics_export" in param_names
@@ -133,15 +120,10 @@ def test_openapi_preflight_history_include_metrics_export_param_description(
 ) -> None:
     spec = client.app.openapi()
     params = (
-        spec.get("paths", {})
-        .get("/v1/preflight-history", {})
-        .get("get", {})
-        .get("parameters", [])
+        spec.get("paths", {}).get("/v1/preflight-history", {}).get("get", {}).get("parameters", [])
     )
     by_name = {
-        p.get("name"): p
-        for p in params
-        if isinstance(p, dict) and isinstance(p.get("name"), str)
+        p.get("name"): p for p in params if isinstance(p, dict) and isinstance(p.get("name"), str)
     }
     desc = by_name.get("include_metrics_export", {}).get("description", "")
     assert "export_schema_version" in desc
@@ -237,4 +219,3 @@ def test_openapi_documents_user_and_admin_access_tags(client: TestClient) -> Non
 
     lifecycle = spec["paths"]["/v1/runs/{run_id}/lifecycle/start"]["post"]
     assert lifecycle["tags"][0] == "admin"
-

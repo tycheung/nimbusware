@@ -118,7 +118,9 @@ def test_enterprise_fleet_ollama_sli_api(
         assert body["fleet_sli"]["sustained_p95_latency_ms"] == 99
 
 
-def test_cli_stdout_only(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+def test_cli_stdout_only(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_SAMPLES", "1")
     monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_INTERVAL_SEC", "0")

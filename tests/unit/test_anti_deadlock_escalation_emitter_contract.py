@@ -1,6 +1,5 @@
 """_maybe_emit_anti_deadlock_escalation`` direct contract."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -28,11 +27,7 @@ _ANTI_DEADLOCK = "anti_deadlock_insufficient_progress"
 
 def _escalation_rows(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
     """Return ``run.escalated`` rows for the run, in store order."""
-    return [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == _RUN_ESCALATED
-    ]
+    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _RUN_ESCALATED]
 
 
 def _append_escalation(mem: InMemoryEventStore, rid: UUID, reason: str) -> None:
@@ -432,8 +427,7 @@ def test_anti_deadlock_escalation_emit_shape_and_notes_5_axis() -> None:
         f"{payload_d2.get('reason_code')!r}"
     )
     assert payload_d2.get("actor_id") == "system:orchestrator", (
-        f"D2: payload.actor_id literal == `system:orchestrator`; got "
-        f"{payload_d2.get('actor_id')!r}"
+        f"D2: payload.actor_id literal == `system:orchestrator`; got {payload_d2.get('actor_id')!r}"
     )
 
     assert payload_d2.get("notes") == "stall_minutes=15 min_progress_events=3", (
@@ -473,9 +467,7 @@ def test_anti_deadlock_escalation_emit_shape_and_notes_5_axis() -> None:
         "orchestrator state into the escalation payload); got "
         f"{payload_d5.get('policy_snapshot_id')!r}"
     )
-    populated_keys = {
-        k for k, v in payload_d5.items() if v is not None and v != []
-    }
+    populated_keys = {k for k, v in payload_d5.items() if v is not None and v != []}
     assert populated_keys == {"actor_id", "reason_code", "notes"}, (
         f"D5: only `actor_id`, `reason_code`, `notes` are populated on the "
         f"emitted RunEscalatedPayload; got populated_keys={populated_keys!r}. "

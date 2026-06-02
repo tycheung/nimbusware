@@ -1,6 +1,5 @@
 """workflow_profile_path`` propagation trilogy."""
 
-
 from __future__ import annotations
 
 import os
@@ -20,7 +19,9 @@ _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 # the lifespan / preflight gating reads the expected values.
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
+os.environ.setdefault(
+    "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+)
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -120,8 +121,7 @@ def test_assert_known_workflow_propagating_caller_3_axis_contract() -> None:
     for case_id, name in _ACCEPT_PROFILES:
         result = assert_known_workflow(_REPO_ROOT, name)
         assert result is None, (
-            f"assert_known_workflow({name!r}) returned {result!r}; "
-            f"expected None (case={case_id})"
+            f"assert_known_workflow({name!r}) returned {result!r}; expected None (case={case_id})"
         )
 
     # ``.strip``-rescue: leading/trailing whitespace is stripped by
@@ -143,13 +143,13 @@ def test_assert_known_workflow_propagating_caller_3_axis_contract() -> None:
 
     for case_id, missing_name in _MISSING_VARIANTS:
         with pytest.raises(
-            FileNotFoundError, match=re.escape(_FILE_NOT_FOUND_PREFIX),
+            FileNotFoundError,
+            match=re.escape(_FILE_NOT_FOUND_PREFIX),
         ) as exc_info:
             assert_known_workflow(_REPO_ROOT, missing_name)
         msg = str(exc_info.value)
         assert repr(missing_name) in msg, (
-            f"FileNotFoundError message {msg!r} missing repr({missing_name!r}) "
-            f"(case={case_id})"
+            f"FileNotFoundError message {msg!r} missing repr({missing_name!r}) (case={case_id})"
         )
 
 
@@ -179,20 +179,19 @@ def test_run_orchestrator_create_run_propagates_workflow_profile_path_exceptions
             orch.create_run(invalid_name)
         msg = str(exc_info.value)
         assert repr(invalid_name) in msg, (
-            f"create_run({invalid_name!r}) ValueError {msg!r} missing repr "
-            f"(case={case_id})"
+            f"create_run({invalid_name!r}) ValueError {msg!r} missing repr (case={case_id})"
         )
 
     for case_id, missing_name in _MISSING_VARIANTS:
         orch, _mem = make_dev_orchestrator()
         with pytest.raises(
-            FileNotFoundError, match=re.escape(_FILE_NOT_FOUND_PREFIX),
+            FileNotFoundError,
+            match=re.escape(_FILE_NOT_FOUND_PREFIX),
         ) as exc_info:
             orch.create_run(missing_name)
         msg = str(exc_info.value)
         assert repr(missing_name) in msg, (
-            f"create_run({missing_name!r}) FileNotFoundError {msg!r} missing repr "
-            f"(case={case_id})"
+            f"create_run({missing_name!r}) FileNotFoundError {msg!r} missing repr (case={case_id})"
         )
 
     # Early-fail-order: bad profile must NOT append any events to the
@@ -239,7 +238,8 @@ def test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract
         with pytest.raises(ValueError, match=re.escape(_VALUE_ERROR_PREFIX)):
             caller(canonical_invalid)
         with pytest.raises(
-            FileNotFoundError, match=re.escape(_FILE_NOT_FOUND_PREFIX),
+            FileNotFoundError,
+            match=re.escape(_FILE_NOT_FOUND_PREFIX),
         ):
             caller(canonical_missing)
         # Sentinel: the per-caller raise above must have fired (no
@@ -250,7 +250,8 @@ def test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract
 
     with TestClient(app) as client:
         r_invalid = client.post(
-            "/v1/runs", json={"workflow_profile": canonical_invalid},
+            "/v1/runs",
+            json={"workflow_profile": canonical_invalid},
         )
         assert r_invalid.status_code == 422, (
             f"POST /v1/runs with invalid profile name returned "
@@ -264,11 +265,11 @@ def test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract
         )
 
         r_missing = client.post(
-            "/v1/runs", json={"workflow_profile": canonical_missing},
+            "/v1/runs",
+            json={"workflow_profile": canonical_missing},
         )
         assert r_missing.status_code == 422, (
-            f"POST /v1/runs with missing profile returned "
-            f"{r_missing.status_code}; expected 422"
+            f"POST /v1/runs with missing profile returned {r_missing.status_code}; expected 422"
         )
         body_missing = r_missing.json()
         assert body_missing.get("code") == "workflow_not_found", (

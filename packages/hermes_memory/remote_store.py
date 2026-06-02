@@ -83,7 +83,11 @@ class FileFleetMemoryCanonicalStore:
         scope_dir = self.root / org_scope_hash
         latest_path = scope_dir / "LATEST"
         if not latest_path.is_file():
-            gens = sorted(p.name for p in scope_dir.iterdir() if p.is_dir()) if scope_dir.is_dir() else []
+            gens = (
+                sorted(p.name for p in scope_dir.iterdir() if p.is_dir())
+                if scope_dir.is_dir()
+                else []
+            )
             if not gens:
                 return None
             generation_id = gens[-1]
@@ -117,9 +121,7 @@ class FileFleetMemoryCanonicalStore:
         scope_dir = self.root / org_scope_hash
         if not scope_dir.is_dir():
             return []
-        return sorted(
-            p.name for p in scope_dir.iterdir() if p.is_dir() and p.name != "LATEST"
-        )
+        return sorted(p.name for p in scope_dir.iterdir() if p.is_dir() and p.name != "LATEST")
 
 
 def bundle_from_store_rows(

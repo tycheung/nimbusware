@@ -131,8 +131,7 @@ def _render_agent_evaluator(run_id: str, data: dict) -> None:
                         label="Download agent evaluator operator metrics JSON",
                         data=_ae_metrics_json.encode("utf-8"),
                         file_name=(
-                            "hermes_agent_evaluator_operator_metrics_"
-                            f"{_ae_metrics_slug}_{_ts}.json"
+                            f"hermes_agent_evaluator_operator_metrics_{_ae_metrics_slug}_{_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_agent_evaluator_operator_metrics_json",

@@ -12,9 +12,13 @@ from fastapi.testclient import TestClient
 
 from nimbusware_env import find_repo_root
 
-os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1])))
+os.environ.setdefault(
+    "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))
+)
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
+os.environ.setdefault(
+    "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+)
 
 from agent_core.models import EventType  # noqa: E402
 from hermes_extensions.personas import PERSONA_INSTRUCTIONS_MAX_CHARS  # noqa: E402
@@ -22,7 +26,9 @@ from hermes_store.memory import InMemoryEventStore  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 from nimbusware_api.deps import get_orchestrator, get_store  # noqa: E402
 
-ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"}
+ADMIN_HEADERS = {
+    "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+}
 
 INITIAL_SHELVES: dict = {
     "version": 1,
@@ -174,7 +180,9 @@ def test_patch_updates_field_and_increments_version(
 ) -> None:
     body = {"expected_version": 1, "instructions": "New brief.", "actor": "alice"}
     r = client.patch(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 200, r.text
     entry = next(e for e in r.json()["business_area"] if e["id"] == "commerce")
@@ -192,7 +200,9 @@ def test_patch_updates_field_and_increments_version(
 def test_patch_version_conflict_returns_409(client: TestClient) -> None:
     body = {"expected_version": 99, "instructions": "wrong version"}
     r = client.patch(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 409
     assert r.json()["code"] == "persona_version_conflict"
@@ -207,7 +217,9 @@ def test_patch_length_cap_returns_422(client: TestClient) -> None:
         "instructions": "x" * (PERSONA_INSTRUCTIONS_MAX_CHARS + 1),
     }
     r = client.patch(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 422
 
@@ -218,7 +230,9 @@ def test_patch_length_cap_returns_422(client: TestClient) -> None:
 def test_patch_empty_body_returns_422(client: TestClient) -> None:
     body = {"expected_version": 1, "actor": "alice"}
     r = client.patch(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 422
     assert r.json()["code"] == "empty_patch"
@@ -228,7 +242,8 @@ def test_patch_empty_body_returns_422(client: TestClient) -> None:
 
 
 def test_put_replaces_entry_and_increments_version(
-    client: TestClient, in_memory_store: InMemoryEventStore,
+    client: TestClient,
+    in_memory_store: InMemoryEventStore,
 ) -> None:
     body = {
         "entry": {
@@ -239,7 +254,9 @@ def test_put_replaces_entry_and_increments_version(
         "expected_version": 1,
     }
     r = client.put(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 200, r.text
     entry = next(e for e in r.json()["business_area"] if e["id"] == "commerce")
@@ -254,7 +271,9 @@ def test_put_replaces_entry_and_increments_version(
 def test_put_unknown_persona_returns_404(client: TestClient) -> None:
     body = {"entry": {"id": "ghost", "display_name": "Ghost"}, "expected_version": 0}
     r = client.put(
-        "/v1/personas/business_area/ghost", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/ghost",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     assert r.status_code == 404
     assert r.json()["code"] == "persona_not_found"
@@ -264,7 +283,9 @@ def test_put_unknown_persona_returns_404(client: TestClient) -> None:
 
 
 def test_delete_removes_persona_and_emits_audit(
-    client: TestClient, fake_repo: Path, in_memory_store: InMemoryEventStore,
+    client: TestClient,
+    fake_repo: Path,
+    in_memory_store: InMemoryEventStore,
 ) -> None:
     r = client.delete(
         "/v1/personas/business_area/commerce",
@@ -318,7 +339,9 @@ def test_post_reserved_persona_id_returns_422(client: TestClient) -> None:
 def test_read_after_write_shows_updated_catalog(client: TestClient) -> None:
     body = {"expected_version": 1, "instructions": "Brief A."}
     client.patch(
-        "/v1/personas/business_area/commerce", json=body, headers=ADMIN_HEADERS,
+        "/v1/personas/business_area/commerce",
+        json=body,
+        headers=ADMIN_HEADERS,
     )
     r = client.get("/v1/personas")
     assert r.status_code == 200

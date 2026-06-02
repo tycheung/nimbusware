@@ -83,11 +83,7 @@ def integration_adapter_writer_fleet_manifest_count(repo_root: Path) -> int:
     manifest_dir = repo_root / ".hermes" / "integration_adapter_writer"
     if not manifest_dir.is_dir():
         return 0
-    return sum(
-        1
-        for path in manifest_dir.rglob("manifest.json")
-        if path.is_file()
-    )
+    return sum(1 for path in manifest_dir.rglob("manifest.json") if path.is_file())
 
 
 def integration_adapter_writer_workflow_explainer_payload(
@@ -116,9 +112,7 @@ def integration_adapter_writer_workflow_explainer_payload(
         },
         "effective_enabled": effective,
         "would_emit_stage_started": would_emit,
-        "scaffold_status": (
-            "stub_only" if block.stub_only else "live_adapter_recorded"
-        ),
+        "scaffold_status": ("stub_only" if block.stub_only else "live_adapter_recorded"),
         "fleet_workspace_manifest_count": integration_adapter_writer_fleet_manifest_count(
             repo_root,
         ),
@@ -185,9 +179,12 @@ def integration_adapter_writer_workflow_explainer_operator_metrics(
     status = payload.get("scaffold_status")
     if isinstance(status, str) and status.strip():
         metrics["scaffold_status"] = status.strip()
-    if isinstance(payload.get("workflow_yaml_path"), str) and str(
-        payload.get("workflow_yaml_path"),
-    ).strip():
+    if (
+        isinstance(payload.get("workflow_yaml_path"), str)
+        and str(
+            payload.get("workflow_yaml_path"),
+        ).strip()
+    ):
         metrics["workflow_yaml_path_present"] = True
     fcount = payload.get("fleet_workspace_manifest_count")
     if isinstance(fcount, int) and fcount >= 0:
@@ -266,8 +263,7 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_caption(
         else:
             emit_hint = ""
         return (
-            f"Integration Adapter Writer scaffold: **enabled**{kind_txt} — "
-            f"{stub_txt}{emit_hint}."
+            f"Integration Adapter Writer scaffold: **enabled**{kind_txt} — {stub_txt}{emit_hint}."
         )
     if metrics.get("yaml_key_present") is True:
         return "Integration Adapter Writer scaffold: YAML present but **disabled**."

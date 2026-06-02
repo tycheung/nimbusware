@@ -46,7 +46,9 @@ def persona_db_env(
     store.upsert(NS_PERSONAS, KEY_PERSONA_SHELVES, shelves)
     mat = ConfigMaterializer(tmp_path, store=store, use_db=True)
     monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_DB", "1")
-    monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD")
+    monkeypatch.setenv(
+        "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+    )
     monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
     return tmp_path, mat
 

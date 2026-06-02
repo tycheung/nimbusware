@@ -465,9 +465,7 @@ def test_bundle_faiss_index_large_file_caption_when_over_threshold(tmp_path: Pat
 def test_bundle_faiss_index_operator_drilldown_count_mismatch(tmp_path: Path) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -485,9 +483,7 @@ def test_bundle_faiss_index_operator_drilldown_id_set_parity_order_insensitive(
 ) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -503,9 +499,7 @@ def test_bundle_faiss_index_operator_drilldown_id_set_mismatch_same_count(
 ) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -523,9 +517,7 @@ def test_bundle_faiss_index_operator_drilldown_id_set_mismatch_same_count(
 def test_bundle_faiss_id_set_mismatch_export_json_and_csv(tmp_path: Path) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -570,9 +562,7 @@ def test_bundle_faiss_id_set_mismatch_table_rows_non_mapping() -> None:
 def test_bundle_faiss_catalog_order_id_set_mismatch_caption(tmp_path: Path) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -586,9 +576,7 @@ def test_bundle_faiss_catalog_order_id_set_mismatch_caption(tmp_path: Path) -> N
 def test_bundle_faiss_duplicate_id_export_json_and_csv(tmp_path: Path) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -647,9 +635,7 @@ def test_bundle_faiss_index_operator_drilldown_duplicate_bundle_order_ids(
 ) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -749,8 +735,7 @@ def test_bundle_faiss_catalog_order_id_set_mismatch_caption_none_when_sets_match
 ) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: x, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: x, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -792,9 +777,7 @@ def test_bundle_faiss_catalog_order_count_parity_caption_match(tmp_path: Path) -
 def test_bundle_faiss_catalog_order_count_parity_caption_mismatch(tmp_path: Path) -> None:
     (tmp_path / "configs" / "bundles" / "index").mkdir(parents=True)
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "version: 1\nbundles:\n"
-        "  - {id: a, tags: [t]}\n"
-        "  - {id: b, tags: [t]}\n",
+        "version: 1\nbundles:\n  - {id: a, tags: [t]}\n  - {id: b, tags: [t]}\n",
         encoding="utf-8",
     )
     idx = tmp_path / "configs" / "bundles" / "index"
@@ -962,5 +945,3 @@ def test_bundle_faiss_invoke_ps1_snippet_explicit(tmp_path: Path) -> None:
     assert "powershell" in s.lower()
     assert "build_bundle_faiss_index.ps1" in s
     assert str(tmp_path.resolve()) in s
-
-

@@ -188,9 +188,7 @@ def subdivide_slice_plan(
 
     return SlicePlan(
         slice_id=f"{plan.slice_id}-r{replan_attempt}",
-        rationale=(
-            f"{plan.rationale} [replan {replan_attempt}: {budget.message}]"
-        ).strip(),
+        rationale=(f"{plan.rationale} [replan {replan_attempt}: {budget.message}]").strip(),
         target_paths=tuple(new_paths),
         acceptance_criteria=plan.acceptance_criteria,
     )

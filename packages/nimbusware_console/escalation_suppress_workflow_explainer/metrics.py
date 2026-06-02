@@ -145,5 +145,3 @@ def escalation_suppress_workflow_explainer_operator_metrics_caption(
 
 def escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug() -> str:
     return "escalation_suppress_workflow_explainer_operator_metrics"
-
-

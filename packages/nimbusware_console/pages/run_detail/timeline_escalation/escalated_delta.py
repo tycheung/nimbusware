@@ -57,15 +57,11 @@ def _render_run_escalated_delta(run_id: str, data: dict) -> None:
                     use_container_width=True,
                     hide_index=True,
                 )
-                _re_delta_metrics_json = (
-                    run_escalated_delta_operator_metrics_export_json(
-                        _re_delta_metrics,
-                    )
+                _re_delta_metrics_json = run_escalated_delta_operator_metrics_export_json(
+                    _re_delta_metrics,
                 )
-                _re_delta_metrics_csv = (
-                    run_escalated_delta_operator_metrics_table_rows_csv(
-                        _re_delta_metric_rows,
-                    )
+                _re_delta_metrics_csv = run_escalated_delta_operator_metrics_table_rows_csv(
+                    _re_delta_metric_rows,
                 )
                 (
                     _re_delta_metrics_dl_json_col,
@@ -73,38 +69,26 @@ def _render_run_escalated_delta(run_id: str, data: dict) -> None:
                 ) = st.columns(2)
                 with _re_delta_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download run escalated delta operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download run escalated delta operator metrics JSON"),
                         data=_re_delta_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_run_escalated_delta_operator_metrics_"
                             f"{_re_delta_slug}_{_re_delta_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_run_escalated_delta_operator_"
-                            "metrics_json"
-                        ),
+                        key=("hermes_dl_run_escalated_delta_operator_metrics_json"),
                     )
                 with _re_delta_metrics_dl_csv_col:
                     if _re_delta_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download run escalated delta operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download run escalated delta operator metrics CSV"),
                             data=_re_delta_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_run_escalated_delta_operator_metrics_"
                                 f"{_re_delta_slug}_{_re_delta_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_run_escalated_delta_operator_"
-                                "metrics_csv"
-                            ),
+                            key=("hermes_dl_run_escalated_delta_operator_metrics_csv"),
                         )
             _re_delta_sum_rows = run_escalated_delta_summary_rows(_re_delta)
             _re_delta_csv = run_escalated_delta_table_rows_csv(_re_delta_sum_rows)
@@ -114,10 +98,7 @@ def _render_run_escalated_delta(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download run escalated delta CSV",
                     data=_re_delta_csv.encode("utf-8"),
-                    file_name=(
-                        "hermes_run_escalated_delta_"
-                        f"{_re_delta_slug}_{_re_delta_ts}.csv"
-                    ),
+                    file_name=(f"hermes_run_escalated_delta_{_re_delta_slug}_{_re_delta_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_run_escalated_delta_csv",
                 )
@@ -125,10 +106,7 @@ def _render_run_escalated_delta(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download run escalated delta JSON",
                     data=_re_delta_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_run_escalated_delta_"
-                        f"{_re_delta_slug}_{_re_delta_ts}.json"
-                    ),
+                    file_name=(f"hermes_run_escalated_delta_{_re_delta_slug}_{_re_delta_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_run_escalated_delta_json",
                 )

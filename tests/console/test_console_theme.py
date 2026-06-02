@@ -20,7 +20,7 @@ def test_streamlit_theme_defaults_caption_present_when_config_exists(
 ) -> None:
     cfg_dir = tmp_path / ".streamlit"
     cfg_dir.mkdir()
-    (cfg_dir / "config.toml").write_text("[theme]\nbase = \"light\"\n", encoding="utf-8")
+    (cfg_dir / "config.toml").write_text('[theme]\nbase = "light"\n', encoding="utf-8")
     cap = streamlit_theme_defaults_caption(repo_root=tmp_path)
     assert "present" in cap
     assert "primaryColor" in cap

@@ -15,7 +15,6 @@ def agent_evaluator_export_filename_slug() -> str:
     return "agent_evaluator"
 
 
-
 def _agent_evaluator_explainer_cell(value: Any) -> str:
     if value is None:
         return ""
@@ -40,6 +39,3 @@ def agent_evaluator_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
-
-

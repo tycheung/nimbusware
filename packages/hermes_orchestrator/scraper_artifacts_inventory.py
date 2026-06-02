@@ -51,7 +51,9 @@ def scraper_artifact_storage_backend_signals() -> dict[str, Any]:
         "object_store_delete_max_attempts": object_store_delete_max_attempts(),
         "object_store_prune_requested": _truthy_env("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")
         or primary,
-        "object_store_prune_effective": (ready and _truthy_env("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE"))
+        "object_store_prune_effective": (
+            ready and _truthy_env("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")
+        )
         or primary,
     }
 
@@ -213,9 +215,13 @@ def _scraper_artifact_inventory_local(
             stale_file_count += 1
             stale_bytes += st.st_size
         if len(entries) < cap:
-            mtime = datetime.fromtimestamp(st.st_mtime, tz=timezone.utc).isoformat().replace(
-                "+00:00",
-                "Z",
+            mtime = (
+                datetime.fromtimestamp(st.st_mtime, tz=timezone.utc)
+                .isoformat()
+                .replace(
+                    "+00:00",
+                    "Z",
+                )
             )
             entries.append(
                 {
@@ -232,14 +238,18 @@ def _scraper_artifact_inventory_local(
     out["retention_stale_bytes"] = stale_bytes
     if oldest_epoch is not None:
         out["oldest_mtime_iso"] = (
-            datetime.fromtimestamp(oldest_epoch, tz=timezone.utc).isoformat().replace(
+            datetime.fromtimestamp(oldest_epoch, tz=timezone.utc)
+            .isoformat()
+            .replace(
                 "+00:00",
                 "Z",
             )
         )
     if newest_epoch is not None:
         out["newest_mtime_iso"] = (
-            datetime.fromtimestamp(newest_epoch, tz=timezone.utc).isoformat().replace(
+            datetime.fromtimestamp(newest_epoch, tz=timezone.utc)
+            .isoformat()
+            .replace(
                 "+00:00",
                 "Z",
             )
@@ -250,5 +260,3 @@ def _scraper_artifact_inventory_local(
         retention_max_age_days=retention_max_age_days,
     )
     return out
-
-

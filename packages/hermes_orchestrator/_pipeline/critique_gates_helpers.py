@@ -22,13 +22,11 @@ from hermes_orchestrator._pipeline._helpers import (
 
 class CritiqueGateHelpersMixin:
     @staticmethod
-
     def _critique_gate_verdict_is_fail(gate_payload: dict[str, Any]) -> bool:
         verdict_raw = gate_payload.get("verdict")
         return verdict_raw == Verdict.FAIL or str(verdict_raw).strip().upper() == "FAIL"
 
     @staticmethod
-
     def _last_critique_gate_payload_for_stage(
         rows: list[dict[str, Any]],
         stage_name: str,
@@ -44,7 +42,6 @@ class CritiqueGateHelpersMixin:
         return last
 
     @staticmethod
-
     def _critique_gate_fail_finding_already_emitted(
         rows: list[dict[str, Any]],
         stage_name: str,
@@ -56,7 +53,6 @@ class CritiqueGateHelpersMixin:
             if meta.get("critique_gate_fail_finding") and meta.get("stage_name") == stage_name:
                 return True
         return False
-
 
     def _repro_steps_from_critique_gate(self, gate_pl: dict[str, Any]) -> list[str]:
         lines = [
@@ -73,7 +69,6 @@ class CritiqueGateHelpersMixin:
         if isinstance(ff, list) and ff:
             lines.append(f"failing_finding_ids={len(ff)} id(s)")
         return lines[:40]
-
 
     def _maybe_emit_critique_gate_fail_findings(
         self,
@@ -140,7 +135,6 @@ class CritiqueGateHelpersMixin:
             )
             rows = self._store.list_run_events(str(run_id))
 
-
     def _critique_impl_hard_block_gate_fail(
         self,
         rows: list[dict[str, Any]],
@@ -152,22 +146,16 @@ class CritiqueGateHelpersMixin:
         pl = self._last_critique_gate_payload_for_stage(rows, IMPLEMENTATION_CRITIQUE_STAGE)
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
-
     def _critique_tw_hard_block_gate_fail(
         self,
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
         """True when test_writer critique ran and last gate is FAIL with hard-block on."""
-        if not (
-            eff.tw_hard_block_on_gate_fail
-            and eff.tw_enabled
-            and (eff.tw_llm or eff.tw_stub)
-        ):
+        if not (eff.tw_hard_block_on_gate_fail and eff.tw_enabled and (eff.tw_llm or eff.tw_stub)):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, TEST_WRITER_CRITIQUE_STAGE)
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
-
 
     def _critique_pll_hard_block_gate_fail(
         self,
@@ -176,14 +164,11 @@ class CritiqueGateHelpersMixin:
     ) -> bool:
         """True when planner critique ran and last gate is FAIL with hard-block on."""
         if not (
-            eff.pll_hard_block_on_gate_fail
-            and eff.pll_enabled
-            and (eff.pll_llm or eff.pll_stub)
+            eff.pll_hard_block_on_gate_fail and eff.pll_enabled and (eff.pll_llm or eff.pll_stub)
         ):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, PLANNER_CRITIQUE_STAGE)
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
-
 
     def _critique_fw_hard_block_gate_fail(
         self,
@@ -195,7 +180,6 @@ class CritiqueGateHelpersMixin:
         pl = self._last_critique_gate_payload_for_stage(rows, FRONTEND_WRITER_CRITIQUE_STAGE)
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
-
     def _critique_mi_hard_block_gate_fail(
         self,
         rows: list[dict[str, Any]],
@@ -205,7 +189,6 @@ class CritiqueGateHelpersMixin:
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, MODULE_INTEGRATOR_CRITIQUE_STAGE)
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
-
 
     def _should_skip_critique_downstream_tail(
         self,
@@ -225,4 +208,3 @@ class CritiqueGateHelpersMixin:
             or self._critique_fw_hard_block_gate_fail(rows, eff)
             or self._critique_mi_hard_block_gate_fail(rows, eff)
         )
-

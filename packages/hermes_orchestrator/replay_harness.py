@@ -52,17 +52,11 @@ def replay_snapshot_for_hash(snapshot: dict[str, Any]) -> dict[str, Any]:
     summary = snapshot.get("summary")
     summary_out: dict[str, Any] | None = None
     if isinstance(summary, dict):
-        summary_out = {
-            k: v
-            for k, v in summary.items()
-            if k not in {"run_created_metadata"}
-        }
+        summary_out = {k: v for k, v in summary.items() if k not in {"run_created_metadata"}}
     memory_indexed = snapshot.get("memory_indexed")
     memory_indexed_out = None
     if isinstance(memory_indexed, dict):
-        memory_indexed_out = {
-            k: v for k, v in memory_indexed.items() if k != "generation_id"
-        }
+        memory_indexed_out = {k: v for k, v in memory_indexed.items() if k != "generation_id"}
     return {
         "run_id": snapshot.get("run_id"),
         "summary": summary_out,

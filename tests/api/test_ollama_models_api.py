@@ -77,7 +77,9 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
     with patch("nimbusware_api.routes.ollama.start_pull_job") as start_job:
         from hermes_orchestrator.ollama_pull_jobs import PullJob
 
-        start_job.return_value = PullJob(job_id="job-1", model="tiny", host="http://127.0.0.1:11434")
+        start_job.return_value = PullJob(
+            job_id="job-1", model="tiny", host="http://127.0.0.1:11434"
+        )
         r = client.post("/v1/platform/ollama/pull", json={"model": "tiny"})
     assert r.status_code == 200
     assert r.json()["job_id"] == "job-1"

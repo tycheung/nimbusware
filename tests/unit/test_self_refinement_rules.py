@@ -22,7 +22,9 @@ from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
 
 
-def _minimal_shelf(*, probation_status: str | None = None, with_profile: bool = True) -> PersonaShelf:
+def _minimal_shelf(
+    *, probation_status: str | None = None, with_profile: bool = True
+) -> PersonaShelf:
     ba: dict[str, object] = {"id": "commerce", "display_name": "Commerce", "version": 1}
     dr: dict[str, object] = {
         "id": "backend_engineer",

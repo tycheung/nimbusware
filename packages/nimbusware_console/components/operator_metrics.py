@@ -37,8 +37,7 @@ def mapping_to_sorted_table_rows(
         return []
     fmt = cell or json_cell
     return [
-        {"field": key, "value": fmt(data.get(key))}
-        for key in sorted(str(k) for k in data.keys())
+        {"field": key, "value": fmt(data.get(key))} for key in sorted(str(k) for k in data.keys())
     ]
 
 

@@ -50,9 +50,7 @@ def persona_editor_validation_blocking_caption(
         return None
     n = len(issues)
     word = "issue" if n == 1 else "issues"
-    return (
-        f"Persona editor: fix **{n}** validation {word} before Save / Replace / Create."
-    )
+    return f"Persona editor: fix **{n}** validation {word} before Save / Replace / Create."
 
 
 def persona_list_field_line_counts_caption(
@@ -86,10 +84,7 @@ def persona_editor_display_name_draft_caption(
     m = persona_field_metrics(display_name_raw)
     if not m["non_empty"]:
         return None
-    return (
-        f"display_name draft: **{m['char_len']}** char(s), "
-        f"**{m['utf8_bytes']}** UTF-8 byte(s)."
-    )
+    return f"display_name draft: **{m['char_len']}** char(s), **{m['utf8_bytes']}** UTF-8 byte(s)."
 
 
 def persona_editor_instructions_metrics_caption(
@@ -114,13 +109,11 @@ def persona_editor_multiline_field_metrics_caption(
     parts: list[str] = []
     if cp["non_empty"]:
         parts.append(
-            "capability_profile: "
-            f"{cp['char_len']} char(s), {cp['line_count']} line(s)",
+            f"capability_profile: {cp['char_len']} char(s), {cp['line_count']} line(s)",
         )
     if bs["non_empty"]:
         parts.append(
-            "boundary_statement: "
-            f"{bs['char_len']} char(s), {bs['line_count']} line(s)",
+            f"boundary_statement: {bs['char_len']} char(s), {bs['line_count']} line(s)",
         )
     if not parts:
         return None
@@ -219,10 +212,7 @@ def persona_editor_expected_version_caption(
     ver = snapshot.get("version")
     if not isinstance(ver, int) or isinstance(ver, bool) or ver < 1:
         return None
-    return (
-        f"Persona editor: saves use expected_version=**{ver}** "
-        f"(catalog version {ver})."
-    )
+    return f"Persona editor: saves use expected_version=**{ver}** (catalog version {ver})."
 
 
 def persona_editor_diff_summary_caption(

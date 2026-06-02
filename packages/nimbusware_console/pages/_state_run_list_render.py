@@ -50,10 +50,7 @@ def _run_list_payload_to_csv(data: dict[str, Any]) -> str:
     run_ids = data.get("run_ids") or []
     raw_sum = data.get("summaries")
     summaries: dict[str, Any] = raw_sum if isinstance(raw_sum, dict) else {}
-    use_extra = any(
-        isinstance(summaries.get(rid), dict) and summaries.get(rid)
-        for rid in run_ids
-    )
+    use_extra = any(isinstance(summaries.get(rid), dict) and summaries.get(rid) for rid in run_ids)
     buf = io.StringIO()
     if use_extra:
         fieldnames = (
@@ -173,9 +170,7 @@ def _render_run_list(data: dict[str, Any], *, include_summary: bool) -> None:
                     },
                 )
             table.append(row)
-        optional_present = [
-            k for k in _LIST_OPTIONAL_ORDER if any(k in r for r in table)
-        ]
+        optional_present = [k for k in _LIST_OPTIONAL_ORDER if any(k in r for r in table)]
         disp: list[dict[str, object]] = table
         if optional_present:
             if _SS_LIST_COLS not in st.session_state:

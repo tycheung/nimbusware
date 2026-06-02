@@ -39,4 +39,3 @@ class IntegrationOptionalStagesMixin:
                 block=block,
                 repo_root=self._repo_root,
             )
-

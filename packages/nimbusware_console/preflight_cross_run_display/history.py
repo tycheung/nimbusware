@@ -228,5 +228,3 @@ def preflight_history_response_sli_caption(body: Mapping[str, Any] | None) -> st
     if distinct_models is not None:
         parts.append(f"distinct_validated_model_ids={distinct_models}")
     return "Preflight history SLI: " + ", ".join(parts) + "."
-
-

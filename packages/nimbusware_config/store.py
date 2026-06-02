@@ -26,6 +26,7 @@ def _maybe_publish_config_notify(namespace: str, document_key: str, version: int
     except ImportError:
         return
 
+
 _NS = "namespace"
 _KEY = "document_key"
 

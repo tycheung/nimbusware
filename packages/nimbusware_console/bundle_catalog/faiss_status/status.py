@@ -101,9 +101,4 @@ def bundle_faiss_build_powershell_snippet_explicit(repo_root: Path) -> str:
 def bundle_faiss_invoke_ps1_snippet_explicit(repo_root: Path) -> str:
     root = repo_root.resolve()
     ps1 = root / "scripts" / "build_bundle_faiss_index.ps1"
-    return (
-        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{ps1}" '
-        f'-RepoRoot "{root}"'
-    )
-
-
+    return f'powershell -NoProfile -ExecutionPolicy Bypass -File "{ps1}" -RepoRoot "{root}"'

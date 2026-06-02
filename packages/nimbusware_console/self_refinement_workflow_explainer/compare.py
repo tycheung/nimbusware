@@ -102,5 +102,3 @@ def self_refinement_marker_merge_vs_timeline_rows(
             "timeline_self_refinement": no_tl,
         },
     ]
-
-

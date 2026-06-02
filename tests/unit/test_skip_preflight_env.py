@@ -1,6 +1,5 @@
 """HERMES_SKIP_PREFLIGHT`` env-layer string-arm contract (follow-on 67, §14 #1)."""
 
-
 from __future__ import annotations
 
 from typing import Any
@@ -114,12 +113,8 @@ def test_skip_preflight_env_skipped_tuple_shape_contract(
         assert type(used_primary) is bool and used_primary is True, (
             f"shape raw={raw!r}: used_primary"
         )
-        assert isinstance(evidence, dict), (
-            f"shape raw={raw!r}: evidence is dict"
-        )
-        assert set(evidence.keys()) == expected_keys, (
-            f"shape raw={raw!r}: evidence keys"
-        )
+        assert isinstance(evidence, dict), f"shape raw={raw!r}: evidence is dict"
+        assert set(evidence.keys()) == expected_keys, f"shape raw={raw!r}: evidence keys"
         for key, expected in _SKIPPED_EVIDENCE.items():
             actual = evidence[key]
             assert type(actual) is type(expected), (
@@ -196,6 +191,4 @@ def test_skip_preflight_env_fail_closed_string_arm_contract(
                     f"fail_closed raw={raw!r}: wrong message: {exc!s}"
                 )
             else:
-                pytest.fail(
-                    f"fail_closed raw={raw!r} did not raise PreflightError"
-                )
+                pytest.fail(f"fail_closed raw={raw!r} did not raise PreflightError")

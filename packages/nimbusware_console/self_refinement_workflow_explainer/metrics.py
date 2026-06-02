@@ -40,9 +40,7 @@ def self_refinement_workflow_explainer_operator_metrics(
     mm = payload.get("marker_merge")
     if isinstance(mm, dict):
         metrics["would_emit_marker"] = mm.get("would_emit_self_refinement_marker") is True
-        metrics["would_emit_marker_after_env"] = (
-            mm.get("would_emit_marker_after_env") is True
-        )
+        metrics["would_emit_marker_after_env"] = mm.get("would_emit_marker_after_env") is True
     merged = payload.get("merged_max_iterations")
     if isinstance(merged, int) and not isinstance(merged, bool) and merged >= 0:
         metrics["merged_max_iterations"] = merged
@@ -82,15 +80,16 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows(
         rows.append({"field": "Merged max iterations", "value": str(merged)})
     rows.extend(
         [
-        {
-            "field": "Ungated loop forces on",
-            "value": str(metrics.get("ungated_loop_forces_on", False)).lower(),
-        },
-        {
-            "field": "Ungated loop forces off",
-            "value": str(metrics.get("ungated_loop_forces_off", False)).lower(),
-        },
-    ])
+            {
+                "field": "Ungated loop forces on",
+                "value": str(metrics.get("ungated_loop_forces_on", False)).lower(),
+            },
+            {
+                "field": "Ungated loop forces off",
+                "value": str(metrics.get("ungated_loop_forces_off", False)).lower(),
+            },
+        ]
+    )
     merged_max = metrics.get("merged_max_iterations")
     if isinstance(merged_max, int) and not isinstance(merged_max, bool):
         rows.append({"field": "Merged max iterations", "value": str(merged_max)})
@@ -143,5 +142,3 @@ def self_refinement_workflow_explainer_operator_metrics_caption(
     if not parts:
         return None
     return "Self-refinement explainer metrics: " + ", ".join(parts) + "."
-
-

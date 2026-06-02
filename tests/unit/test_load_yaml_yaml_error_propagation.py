@@ -1,6 +1,5 @@
 """yaml.YAMLError`` propagation divergence at ``load_yaml``."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -80,11 +79,11 @@ def test_load_yaml_malformed_yaml_propagates_yaml_error_contract(
             load_yaml(path)
         exc = exc_info.value
         assert isinstance(exc, yaml.YAMLError), (
-            f"malformed {case_id}: expected yaml.YAMLError, got "
-            f"{type(exc).__name__}"
+            f"malformed {case_id}: expected yaml.YAMLError, got {type(exc).__name__}"
         )
         assert not isinstance(
-            exc, (OSError, ValueError, UnicodeDecodeError),
+            exc,
+            (OSError, ValueError, UnicodeDecodeError),
         ), (
             f"malformed {case_id}: {type(exc).__name__} should NOT "
             f"subclass the sibling-parser cascade-catchable tuple "
@@ -179,7 +178,8 @@ def test_load_yaml_malformed_yaml_propagates_through_sibling_parsers_contract(
 
         with pytest.raises(yaml.YAMLError) as sec_exc_info:
             parse_security_scan_metadata_on_verify_workflow(
-                tmp_path, profile,
+                tmp_path,
+                profile,
             )
         assert isinstance(sec_exc_info.value, yaml.YAMLError), (
             f"{case_id} parser=parse_security_scan_metadata_on_verify_workflow: "

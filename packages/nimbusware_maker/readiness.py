@@ -138,6 +138,7 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
 def _available_memory_gb() -> float | None:
     if sys.platform == "win32":
         try:
+
             class MEMORYSTATUSEX(ctypes.Structure):
                 _fields_ = [
                     ("dwLength", ctypes.c_ulong),

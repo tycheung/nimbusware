@@ -143,8 +143,7 @@ def test_snapshot_from_compare_paste_timeline_events_only() -> None:
 
 def test_snapshot_from_compare_paste_timeline_null_block() -> None:
     assert (
-        self_refinement_snapshot_from_compare_paste({"events": [], "self_refinement": None})
-        is None
+        self_refinement_snapshot_from_compare_paste({"events": [], "self_refinement": None}) is None
     )
 
 
@@ -349,10 +348,9 @@ def test_self_refinement_timeline_operator_metrics_export_json_and_csv() -> None
     assert parsed["description_char_len"] == 5
     csv_text = self_refinement_timeline_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0] == "field,value"
-    assert (
-        self_refinement_timeline_operator_metrics_export_filename_slug("run-abc")
-        == self_refinement_latest_export_filename_slug("run-abc")
-    )
+    assert self_refinement_timeline_operator_metrics_export_filename_slug(
+        "run-abc"
+    ) == self_refinement_latest_export_filename_slug("run-abc")
 
 
 def test_self_refinement_timeline_operator_metrics_export_absent() -> None:
@@ -538,10 +536,7 @@ def test_self_refinement_session_caption_two_markers() -> None:
         "first_marker_occurred_at": "2026-01-01T00:00:00Z",
         "last_marker_occurred_at": "2026-01-01T00:00:30Z",
     }
-    assert (
-        self_refinement_session_caption(sr)
-        == "Self-refinement: 2 markers across 30s (avg 30s)."
-    )
+    assert self_refinement_session_caption(sr) == "Self-refinement: 2 markers across 30s (avg 30s)."
 
 
 def test_self_refinement_session_caption_four_markers_uses_window_div_three() -> None:
@@ -550,10 +545,7 @@ def test_self_refinement_session_caption_four_markers_uses_window_div_three() ->
         "first_marker_occurred_at": "2026-01-01T00:00:00Z",
         "last_marker_occurred_at": "2026-01-01T00:00:30Z",
     }
-    assert (
-        self_refinement_session_caption(sr)
-        == "Self-refinement: 4 markers across 30s (avg 10s)."
-    )
+    assert self_refinement_session_caption(sr) == "Self-refinement: 4 markers across 30s (avg 10s)."
 
 
 def test_self_refinement_session_caption_none_when_window_unavailable_for_multi() -> None:
@@ -697,9 +689,7 @@ def test_self_refinement_marker_first_last_caption_first_last_when_differ() -> N
         "last_marker_occurred_at": "2026-01-01T00:00:30Z",
     }
     cap = self_refinement_marker_first_last_caption(sr)
-    assert cap == (
-        "Markers: first 2026-01-01T00:00:00Z, last 2026-01-01T00:00:30Z."
-    )
+    assert cap == ("Markers: first 2026-01-01T00:00:00Z, last 2026-01-01T00:00:30Z.")
 
 
 def test_self_refinement_marker_first_last_caption_strips_whitespace_in_raw_iso() -> None:
@@ -708,9 +698,7 @@ def test_self_refinement_marker_first_last_caption_strips_whitespace_in_raw_iso(
         "last_marker_occurred_at": " 2026-01-01T00:00:30Z ",
     }
     cap = self_refinement_marker_first_last_caption(sr)
-    assert cap == (
-        "Markers: first 2026-01-01T00:00:00Z, last 2026-01-01T00:00:30Z."
-    )
+    assert cap == ("Markers: first 2026-01-01T00:00:00Z, last 2026-01-01T00:00:30Z.")
 
 
 def test_self_refinement_marker_avg_interval_caption_none_for_non_mapping() -> None:

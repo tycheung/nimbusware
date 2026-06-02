@@ -69,9 +69,12 @@ def test_integrator_threshold_thresholds_yaml_version_caption(
     assert "**1**" in cap
     assert integrator_threshold_thresholds_yaml_version_caption(None) is None
     assert integrator_threshold_thresholds_yaml_version_caption({}) is None
-    assert integrator_threshold_thresholds_yaml_version_caption(
-        {"thresholds_yaml": {"exists": False}},
-    ) is None
+    assert (
+        integrator_threshold_thresholds_yaml_version_caption(
+            {"thresholds_yaml": {"exists": False}},
+        )
+        is None
+    )
 
 
 def test_integrator_threshold_min_score_agreement_caption_agrees() -> None:
@@ -251,17 +254,23 @@ def test_workflow_integrator_gate_project_tags_list_length(
 def test_integrator_threshold_project_tags_caption_none_for_bad_payload() -> None:
     assert integrator_threshold_project_tags_caption(None) is None
     assert integrator_threshold_project_tags_caption({}) is None
-    assert integrator_threshold_project_tags_caption(
-        {"workflow_integrator_gate": {"block_present": False}},
-    ) is None
-    assert integrator_threshold_project_tags_caption(
-        {
-            "workflow_integrator_gate": {
-                "block_present": True,
-                "project_tags_list_length": "two",
+    assert (
+        integrator_threshold_project_tags_caption(
+            {"workflow_integrator_gate": {"block_present": False}},
+        )
+        is None
+    )
+    assert (
+        integrator_threshold_project_tags_caption(
+            {
+                "workflow_integrator_gate": {
+                    "block_present": True,
+                    "project_tags_list_length": "two",
+                },
             },
-        },
-    ) is None
+        )
+        is None
+    )
 
 
 def test_integrator_threshold_project_tags_caption_zero_and_positive() -> None:
@@ -304,7 +313,7 @@ def test_integrator_threshold_project_tags_caption_from_payload(
 def test_thresholds_yaml_top_level_version_non_int_returns_none(tmp_path: Path) -> None:
     (tmp_path / "configs" / "integrator").mkdir(parents=True)
     (tmp_path / "configs" / "integrator" / "thresholds.yaml").write_text(
-        "version: \"1\"\nenabled: true\nmin_score_to_pass: 0.5\n",
+        'version: "1"\nenabled: true\nmin_score_to_pass: 0.5\n',
         encoding="utf-8",
     )
     out = integrator_threshold_explainer_payload(tmp_path, workflow_profile=None, pasted_yaml="")

@@ -1,6 +1,5 @@
 """RoleRegistry resolve + known_taxonomy_keys direct contracts."""
 
-
 from __future__ import annotations
 
 from uuid import UUID, uuid4
@@ -48,8 +47,7 @@ def test_resolve_strip_lower_input_symmetry_5_axis() -> None:
         "not a shared singleton"
     )
     assert uuid_a != uuid_b, (
-        "A5 precondition: the two test UUIDs must be distinct so the prior "
-        "assertion is non-trivial"
+        "A5 precondition: the two test UUIDs must be distinct so the prior assertion is non-trivial"
     )
 
 
@@ -163,8 +161,7 @@ def test_known_taxonomy_keys_frozenset_contract_3_axis() -> None:
     )
 
     assert keys == frozenset({"planner", "backend"}), (
-        "D2: known_taxonomy_keys must return the normalized lowercased + "
-        "stripped keys post-factory"
+        "D2: known_taxonomy_keys must return the normalized lowercased + stripped keys post-factory"
     )
 
     with pytest.raises(AttributeError):

@@ -136,5 +136,3 @@ def integrator_preview_payload(
         "passes_gate": passes,
         "validation_errors": all_errs,
     }
-
-

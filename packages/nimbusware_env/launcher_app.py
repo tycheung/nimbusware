@@ -252,7 +252,9 @@ class NimbuswareLauncherApp:
                     f"{detail}\n\nFull log:\n{log_file}",
                 ),
             )
-            self.root.after(0, lambda: self._append_log(f"ERROR: run.py exited (code {proc.returncode})"))
+            self.root.after(
+                0, lambda: self._append_log(f"ERROR: run.py exited (code {proc.returncode})")
+            )
 
         threading.Thread(target=_watch, daemon=True).start()
         self.status_label.configure(text="Starting Nimbusware...")

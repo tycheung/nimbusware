@@ -87,5 +87,3 @@ def bundle_catalog_local_export_filename_slug(
     )
 
     return bundle_faiss_operator_drilldown_export_filename_slug(repo_root, max_len=max_len)
-
-

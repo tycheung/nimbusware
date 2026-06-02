@@ -218,4 +218,3 @@ def bundle_catalog_bundle_count_caption(repo_root: Path) -> str | None:
     untagged = bundle_catalog_bundles_without_tags_count(repo_root)
     tagged = max(total - untagged, 0)
     return f"Bundles: {total} ({tagged} tagged, {untagged} untagged)."
-

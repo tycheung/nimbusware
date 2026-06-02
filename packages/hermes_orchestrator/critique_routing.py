@@ -101,12 +101,7 @@ def assert_critique_coverage_complete(snapshot: dict[str, Any]) -> None:
         raise ValueError(msg)
     errors = snapshot.get("pairing_errors")
     if isinstance(errors, list) and errors:
-        msg = (
-            "critique pairings invalid: "
-            + "; ".join(
-                f"{e.get('producer')!r}->{e.get('critic')!r}"
-                for e in errors
-                if isinstance(e, dict)
-            )
+        msg = "critique pairings invalid: " + "; ".join(
+            f"{e.get('producer')!r}->{e.get('critic')!r}" for e in errors if isinstance(e, dict)
         )
         raise ValueError(msg)

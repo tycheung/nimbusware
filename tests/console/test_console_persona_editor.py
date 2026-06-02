@@ -113,9 +113,12 @@ def test_persona_editor_probation_status_caption() -> None:
     assert "probation" in cap_prob
     assert persona_editor_probation_status_caption(None) is None
     assert persona_editor_probation_status_caption({}) is None
-    assert persona_editor_probation_status_caption(
-        {"probation_status": "unknown"},
-    ) is None
+    assert (
+        persona_editor_probation_status_caption(
+            {"probation_status": "unknown"},
+        )
+        is None
+    )
 
 
 def test_persona_editor_expected_version_caption() -> None:

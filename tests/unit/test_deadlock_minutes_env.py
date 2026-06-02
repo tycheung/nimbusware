@@ -1,6 +1,5 @@
 """HERMES_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -44,13 +43,9 @@ def _write_policy(
     elif deadlock_minutes == "__null__":
         deadlock_line = "deadlock_escalation_after_minutes: null\n"
     elif isinstance(deadlock_minutes, str):
-        deadlock_line = (
-            f'deadlock_escalation_after_minutes: "{deadlock_minutes}"\n'
-        )
+        deadlock_line = f'deadlock_escalation_after_minutes: "{deadlock_minutes}"\n'
     else:
-        deadlock_line = (
-            f"deadlock_escalation_after_minutes: {deadlock_minutes}\n"
-        )
+        deadlock_line = f"deadlock_escalation_after_minutes: {deadlock_minutes}\n"
     body = (
         "version: 1\n"
         f"{deadlock_line}"
@@ -154,16 +149,21 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
     )
 
     _write_policy(
-        tmp_path, enabled=True, min_progress=7, deadlock_minutes=None,
+        tmp_path,
+        enabled=True,
+        min_progress=7,
+        deadlock_minutes=None,
     )
     result = load_anti_deadlock_settings(tmp_path)
     assert result == (True, 0, 7), (
-        f"block_3_env_empty_no_yaml_key: expected (True, 0, 7) factory floor, "
-        f"got {result!r}"
+        f"block_3_env_empty_no_yaml_key: expected (True, 0, 7) factory floor, got {result!r}"
     )
 
     _write_policy(
-        tmp_path, enabled=True, min_progress=7, deadlock_minutes="__null__",
+        tmp_path,
+        enabled=True,
+        min_progress=7,
+        deadlock_minutes="__null__",
     )
     with pytest.raises(TypeError) as exc_info_null:
         load_anti_deadlock_settings(tmp_path)
@@ -175,7 +175,10 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
     )
 
     _write_policy(
-        tmp_path, enabled=True, min_progress=7, deadlock_minutes="abc",
+        tmp_path,
+        enabled=True,
+        min_progress=7,
+        deadlock_minutes="abc",
     )
     with pytest.raises(ValueError) as exc_info_str:
         load_anti_deadlock_settings(tmp_path)
@@ -188,7 +191,10 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
     )
 
     _write_policy(
-        tmp_path, enabled=True, min_progress=7, deadlock_minutes="__null__",
+        tmp_path,
+        enabled=True,
+        min_progress=7,
+        deadlock_minutes="__null__",
     )
     monkeypatch.setenv(_ENV_NAME, "60")
     result = load_anti_deadlock_settings(tmp_path)

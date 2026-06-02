@@ -76,7 +76,10 @@ def test_bundle_tag_and_title_loaders_use_materialized_catalog() -> None:
         "one",
         "two",
     ]
-    assert load_bundle_title_for_bundle_id(Path("."), "db-bundle", config_materializer=mat) == "DB Title"
+    assert (
+        load_bundle_title_for_bundle_id(Path("."), "db-bundle", config_materializer=mat)
+        == "DB Title"
+    )
 
 
 def test_parse_integrator_gate_project_tags_missing_returns_none(tmp_path: Path) -> None:
@@ -142,8 +145,7 @@ def test_parse_integrator_gate_project_tags_explicit_list(tmp_path: Path) -> Non
     wf_dir = tmp_path / "configs" / "workflows"
     wf_dir.mkdir(parents=True)
     (wf_dir / "tags.yaml").write_text(
-        "version: 1\nintegrator_gate:\n  enabled: true\n"
-        "  project_tags: [billing, stripe]\n",
+        "version: 1\nintegrator_gate:\n  enabled: true\n  project_tags: [billing, stripe]\n",
         encoding="utf-8",
     )
     assert parse_integrator_gate_project_tags(tmp_path, "tags") == ["billing", "stripe"]
@@ -226,7 +228,7 @@ def test_parse_integrator_gate_project_tags_filters_and_coerces_mixed_entries(
     _write_integrator_gate_profile(
         tmp_path,
         "mixed",
-        'version: 1\nintegrator_gate:\n  enabled: true\n'
+        "version: 1\nintegrator_gate:\n  enabled: true\n"
         '  project_tags: [42, "  billing  ", null, "stripe", ""]\n',
     )
     assert parse_integrator_gate_project_tags(tmp_path, "mixed") == [
@@ -250,10 +252,14 @@ def test_parse_integrator_gate_project_tags_malformed_block_returns_none(
     this test on purpose.
     """
     _write_integrator_gate_profile(
-        tmp_path, "block_scalar", "version: 1\nintegrator_gate: true\n",
+        tmp_path,
+        "block_scalar",
+        "version: 1\nintegrator_gate: true\n",
     )
     _write_integrator_gate_profile(
-        tmp_path, "block_list", "version: 1\nintegrator_gate: []\n",
+        tmp_path,
+        "block_list",
+        "version: 1\nintegrator_gate: []\n",
     )
     for name in ("block_scalar", "block_list"):
         assert parse_integrator_gate_project_tags(tmp_path, name) is None, name

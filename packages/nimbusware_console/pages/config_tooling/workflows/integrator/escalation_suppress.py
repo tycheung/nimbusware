@@ -94,8 +94,7 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
             {
                 "field": "policy.yaml deadlock_escalation_after_minutes (int)",
                 "value": "—"
-                if _es_expl.get("escalation_policy_yaml_deadlock_escalation_after_minutes")
-                is None
+                if _es_expl.get("escalation_policy_yaml_deadlock_escalation_after_minutes") is None
                 else str(
                     _es_expl.get("escalation_policy_yaml_deadlock_escalation_after_minutes"),
                 ),
@@ -115,8 +114,7 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
             {
                 "field": "policy.yaml anti_deadlock.min_progress_events (int)",
                 "value": "—"
-                if _es_expl.get("escalation_policy_yaml_anti_deadlock_min_progress_events")
-                is None
+                if _es_expl.get("escalation_policy_yaml_anti_deadlock_min_progress_events") is None
                 else str(
                     _es_expl.get("escalation_policy_yaml_anti_deadlock_min_progress_events"),
                 ),
@@ -209,11 +207,7 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
             st.caption(_es_keys_sample_caption)
         _es_key_count = _es_expl.get("escalation_policy_yaml_top_level_key_count")
         _es_keys_all_rows = escalation_policy_yaml_keys_all_table_rows(_es_expl)
-        if (
-            _es_keys_all_rows
-            and type(_es_key_count) is int
-            and _es_key_count > 12
-        ):
+        if _es_keys_all_rows and type(_es_key_count) is int and _es_key_count > 12:
             _es_keys_all_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             _es_keys_all_slug = escalation_policy_export_filename_slug()
             _es_keys_all_json = escalation_policy_yaml_keys_all_export_json(
@@ -227,9 +221,7 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
                 st.download_button(
                     label="Download escalation policy keys (full) JSON",
                     data=_es_keys_all_json.encode("utf-8"),
-                    file_name=(
-                        f"hermes_{_es_keys_all_slug}_keys_full_{_es_keys_all_ts}.json"
-                    ),
+                    file_name=(f"hermes_{_es_keys_all_slug}_keys_full_{_es_keys_all_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_escalation_policy_keys_full_json",
                 )
@@ -238,9 +230,7 @@ def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str
                     st.download_button(
                         label="Download escalation policy keys (full) CSV",
                         data=_es_keys_all_csv.encode("utf-8"),
-                        file_name=(
-                            f"hermes_{_es_keys_all_slug}_keys_full_{_es_keys_all_ts}.csv"
-                        ),
+                        file_name=(f"hermes_{_es_keys_all_slug}_keys_full_{_es_keys_all_ts}.csv"),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_escalation_policy_keys_full_csv",
                     )

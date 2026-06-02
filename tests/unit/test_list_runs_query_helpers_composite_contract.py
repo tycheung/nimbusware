@@ -1,6 +1,5 @@
 """GET /v1/runs`` query helpers composite."""
 
-
 from __future__ import annotations
 
 import base64
@@ -301,8 +300,7 @@ def test_sanitize_workflow_profile_prefix_regex_5_axis() -> None:
     for name, raw, expected in valid_cases:
         got = _sanitize_workflow_profile_prefix(raw)
         assert got == expected, (
-            f"C3 case={name!r} raw={raw!r}: expected stripped value {expected!r}, "
-            f"got {got!r}"
+            f"C3 case={name!r} raw={raw!r}: expected stripped value {expected!r}, got {got!r}"
         )
 
     invalid_leading: list[tuple[str, str]] = [
@@ -421,8 +419,7 @@ def test_parse_query_datetime_iso8601_tz_5_axis() -> None:
         f"Z={dt_with_z!r} offset={dt_with_offset!r}"
     )
     assert dt_with_z.tzinfo == timezone.utc, (
-        f"D2: result of Z-form parse must have ``tzinfo=UTC``; got "
-        f"{dt_with_z.tzinfo!r}"
+        f"D2: result of Z-form parse must have ``tzinfo=UTC``; got {dt_with_z.tzinfo!r}"
     )
 
     with pytest.raises(ValueError) as exc_a:
@@ -469,8 +466,7 @@ def test_parse_query_datetime_iso8601_tz_5_axis() -> None:
     aware = _parse_query_datetime("created_after", "2020-06-15T12:00:00+05:00")
     assert aware is not None
     assert aware.tzinfo == timezone.utc, (
-        f"D5: tz-aware result must be normalised to UTC tzinfo; got "
-        f"{aware.tzinfo!r}"
+        f"D5: tz-aware result must be normalised to UTC tzinfo; got {aware.tzinfo!r}"
     )
     assert (aware.year, aware.month, aware.day) == (2020, 6, 15)
     assert aware.hour == 7, (

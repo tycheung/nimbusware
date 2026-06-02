@@ -116,7 +116,9 @@ def memory_settings_from_run_metadata(metadata: object) -> MemoryWorkflowBlock:
     return MemoryWorkflowBlock(
         retrieval_enabled=_coerce_bool(mem.get("retrieval_enabled"), default=True),
         index_contribution=_coerce_bool(mem.get("index_contribution"), default=True),
-        retrieval_k=_env_or_metadata_int("HERMES_MEMORY_RETRIEVAL_K", mem.get("retrieval_k"), default=5, max_val=20),
+        retrieval_k=_env_or_metadata_int(
+            "HERMES_MEMORY_RETRIEVAL_K", mem.get("retrieval_k"), default=5, max_val=20
+        ),
         excerpt_max_chars=_env_or_metadata_int(
             "HERMES_MEMORY_EXCERPT_MAX_CHARS",
             mem.get("excerpt_max_chars"),

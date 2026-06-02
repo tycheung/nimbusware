@@ -31,9 +31,7 @@ def render_workflows_bundle_editor_section() -> None:
         else:
             _bc_bundles = _bc_catalog.get("bundles") or []
             _bc_ids = [
-                str(b.get("id", ""))
-                for b in _bc_bundles
-                if isinstance(b, dict) and b.get("id")
+                str(b.get("id", "")) for b in _bc_bundles if isinstance(b, dict) and b.get("id")
             ]
             _bc_sel = st.selectbox(
                 "Bundle",

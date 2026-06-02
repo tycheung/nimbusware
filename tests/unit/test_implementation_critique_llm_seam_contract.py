@@ -1,6 +1,5 @@
 """Implementation-critique LLM seam direct contract."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -149,8 +148,7 @@ def test_implementation_critique_llm_seam_path_matrix_5_axis() -> None:
         ):
             orch_a5.execute_writer_verifier_pass(rid_a5, workspace=_WS)
         assert m_llm.call_count == 1 and m_stub.call_count == 1, (
-            "A5: LLM returns False + impl_stub=True -> LLM + stub fallback "
-            "(AND-gated fallback)"
+            "A5: LLM returns False + impl_stub=True -> LLM + stub fallback (AND-gated fallback)"
         )
 
 
@@ -301,12 +299,8 @@ def test_implementation_critique_llm_seam_log_snippet_60_line_truncation_4_axis(
 
     log_60 = "\n".join(f"line{i}" for i in range(60))
     out_c3 = _run_with_log(log_60)
-    assert len(out_c3.splitlines()) == 60, (
-        "C3: exactly-60-line log must preserve all 60 lines"
-    )
-    assert out_c3.splitlines()[-1] == "line59", (
-        "C3: last line of 60-line snippet must be 'line59'"
-    )
+    assert len(out_c3.splitlines()) == 60, "C3: exactly-60-line log must preserve all 60 lines"
+    assert out_c3.splitlines()[-1] == "line59", "C3: last line of 60-line snippet must be 'line59'"
 
     log_100 = "\n".join(f"line{i}" for i in range(100))
     out_c4 = _run_with_log(log_100)

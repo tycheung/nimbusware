@@ -125,5 +125,3 @@ def bundle_search_filename_slug(query: str, *, max_len: int = 40) -> str:
 
 
 _BUNDLE_LOCAL_CSV_COLUMNS: tuple[str, ...] = ("id", "title", "tags")
-
-

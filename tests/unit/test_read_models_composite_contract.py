@@ -1,6 +1,5 @@
 """read_models.py`` composite direct contracts."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -187,7 +186,7 @@ def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
     )
 
     assert "unknown" not in RUN_LIST_FILTER_STATUSES, (
-        "A2: `\"unknown\"` MUST be excluded from RUN_LIST_FILTER_STATUSES "
+        'A2: `"unknown"` MUST be excluded from RUN_LIST_FILTER_STATUSES '
         "-- empty runs are intentionally outside the GET /v1/runs?status= "
         "filter set. A refactor adding 'unknown' would let API clients "
         "filter for runs that have NO events (data anomaly), which is "
@@ -195,7 +194,7 @@ def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
     )
     for status in ("created", "running", "terminal"):
         assert status in RUN_LIST_FILTER_STATUSES, (
-            f"A2: `\"{status}\"` MUST be present in RUN_LIST_FILTER_STATUSES "
+            f'A2: `"{status}"` MUST be present in RUN_LIST_FILTER_STATUSES '
             "-- it is the GET /v1/runs?status= filter set"
         )
 
@@ -285,8 +284,7 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         "would FLIP this from 'running' to that value"
     )
     assert b2_summary["latest_event_type"] == "stage.started", (
-        f"B2(latest): latest is STAGE_STARTED. Got "
-        f"{b2_summary['latest_event_type']!r}"
+        f"B2(latest): latest is STAGE_STARTED. Got {b2_summary['latest_event_type']!r}"
     )
 
     b3_store, b3_rid = _make_store_and_run()
@@ -299,8 +297,7 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         f"Got {b3_summary['status']!r}"
     )
     assert b3_summary["latest_event_type"] == "run.started", (
-        f"B3(latest): latest is RUN_STARTED. Got "
-        f"{b3_summary['latest_event_type']!r}"
+        f"B3(latest): latest is RUN_STARTED. Got {b3_summary['latest_event_type']!r}"
     )
 
     b4_store, b4_rid = _make_store_and_run()

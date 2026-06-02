@@ -43,7 +43,10 @@ def render_apply_integrator_gate_section(*, repo_root: Path, workflow_profile: s
                 st.warning(str(_me))
         _confirm = str(st.session_state.get("hermes_integrator_confirm_profile", "")).strip()
         _can_apply = bool(
-            _integrator_write_ok and workflow_profile and _confirm and _confirm == str(workflow_profile).strip(),
+            _integrator_write_ok
+            and workflow_profile
+            and _confirm
+            and _confirm == str(workflow_profile).strip(),
         )
         if st.button(
             "Apply merge to disk",

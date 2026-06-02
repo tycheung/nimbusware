@@ -205,5 +205,3 @@ def test_bundle_search_filename_slug_sanitizes() -> None:
 
 def test_bundle_search_filename_slug_empty_fallback() -> None:
     assert bundle_search_filename_slug("   @@  ") == "query"
-
-

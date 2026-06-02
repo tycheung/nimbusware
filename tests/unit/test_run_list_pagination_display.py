@@ -47,10 +47,7 @@ def test_run_list_pagination_link_caption() -> None:
 def test_run_list_response_pagination_caption_none_without_run_ids() -> None:
     assert run_list_response_pagination_caption(None, link_header_present=False) is None
     assert run_list_response_pagination_caption({}, link_header_present=False) is None
-    assert (
-        run_list_response_pagination_caption({"total": 3}, link_header_present=False)
-        is None
-    )
+    assert run_list_response_pagination_caption({"total": 3}, link_header_present=False) is None
 
 
 def test_run_list_response_pagination_caption_full() -> None:
@@ -171,9 +168,12 @@ def test_run_list_workflow_profile_filter_caption() -> None:
     )
     assert cap_pfx is not None
     assert "dev-" in cap_pfx
-    assert run_list_workflow_profile_filter_caption(
-        {"workflow_profile": "x", "workflow_profile_prefix": "y"},
-    ) is not None
+    assert (
+        run_list_workflow_profile_filter_caption(
+            {"workflow_profile": "x", "workflow_profile_prefix": "y"},
+        )
+        is not None
+    )
     assert "x" in (
         run_list_workflow_profile_filter_caption(
             {"workflow_profile": "x", "workflow_profile_prefix": "y"},

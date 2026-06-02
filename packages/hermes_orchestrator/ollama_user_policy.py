@@ -45,9 +45,7 @@ def merge_policy_into_routing(
         allow_pull=current.allow_pull if allow_pull is None else allow_pull,
         allow_delete=current.allow_delete if allow_delete is None else allow_delete,
         allow_update_routing=(
-            current.allow_update_routing
-            if allow_update_routing is None
-            else allow_update_routing
+            current.allow_update_routing if allow_update_routing is None else allow_update_routing
         ),
     )
     out = dict(routing)

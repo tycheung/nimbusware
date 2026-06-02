@@ -60,9 +60,7 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                     _bcat_without_tags_metric_rows,
                 )
             )
-            _bcat_without_tags_m_dl_json_col, _bcat_without_tags_m_dl_csv_col = (
-                st.columns(2)
-            )
+            _bcat_without_tags_m_dl_json_col, _bcat_without_tags_m_dl_csv_col = st.columns(2)
             with _bcat_without_tags_m_dl_json_col:
                 st.download_button(
                     label="Download bundles without tags rollup operator metrics JSON",
@@ -102,10 +100,8 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                 _bcat_without_json = bundle_catalog_bundles_without_tags_rollup_export_json(
                     _bcat_without_rollup,
                 )
-                _bcat_without_csv = (
-                    bundle_catalog_bundles_without_tags_rollup_table_rows_csv(
-                        _bcat_without_rows,
-                    )
+                _bcat_without_csv = bundle_catalog_bundles_without_tags_rollup_table_rows_csv(
+                    _bcat_without_rows,
                 )
                 _bcat_without_dl_json_col, _bcat_without_dl_csv_col = st.columns(2)
                 with _bcat_without_dl_json_col:
@@ -137,10 +133,8 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
             st.caption(_bcat_without_id_cap)
         if _bcat_without_id > 0:
             _bcat_without_id_rollup = bundle_catalog_bundles_without_id_rollup(repo_root)
-            _bcat_without_id_metrics = (
-                bundle_catalog_bundles_without_id_rollup_operator_metrics(
-                    _bcat_without_id_rollup,
-                )
+            _bcat_without_id_metrics = bundle_catalog_bundles_without_id_rollup_operator_metrics(
+                _bcat_without_id_rollup,
             )
             _bcat_without_id_metrics_cap = (
                 bundle_catalog_bundles_without_id_rollup_operator_metrics_caption(
@@ -182,8 +176,7 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                     label="Download bundles without id rollup operator metrics JSON",
                     data=_bcat_without_id_metrics_json.encode("utf-8"),
                     file_name=(
-                        f"hermes_{_bcat_without_id_metrics_slug}_"
-                        f"{_bcat_without_id_metrics_ts}.json"
+                        f"hermes_{_bcat_without_id_metrics_slug}_{_bcat_without_id_metrics_ts}.json"
                     ),
                     mime="application/json",
                     key="hermes_dl_bundle_catalog_bundles_without_id_rollup_metrics_json",
@@ -216,10 +209,8 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                 _bcat_without_id_json = bundle_catalog_bundles_without_id_rollup_export_json(
                     _bcat_without_id_rollup,
                 )
-                _bcat_without_id_csv = (
-                    bundle_catalog_bundles_without_id_rollup_table_rows_csv(
-                        _bcat_without_id_rows,
-                    )
+                _bcat_without_id_csv = bundle_catalog_bundles_without_id_rollup_table_rows_csv(
+                    _bcat_without_id_rows,
                 )
                 _bcat_without_id_dl_json_col, _bcat_without_id_dl_csv_col = st.columns(2)
                 with _bcat_without_id_dl_json_col:
@@ -266,9 +257,7 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                 st.download_button(
                     label="Download local catalog bundles JSON",
                     data=_loc_json.encode("utf-8"),
-                    file_name=(
-                        f"hermes_bundle_catalog_local_{_loc_slug}_{_loc_ts}.json"
-                    ),
+                    file_name=(f"hermes_bundle_catalog_local_{_loc_slug}_{_loc_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_bundle_catalog_local_json",
                 )
@@ -277,9 +266,7 @@ def _render_catalog_rollups_panel(repo_root: Path) -> None:
                     st.download_button(
                         label="Download local catalog bundles CSV",
                         data=_loc_csv.encode("utf-8"),
-                        file_name=(
-                            f"hermes_bundle_catalog_local_{_loc_slug}_{_loc_ts}.csv"
-                        ),
+                        file_name=(f"hermes_bundle_catalog_local_{_loc_slug}_{_loc_ts}.csv"),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_bundle_catalog_local_csv",
                     )

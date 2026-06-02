@@ -77,5 +77,3 @@ def full_workflow_merge_diff(
 
 _SUBTREE_CHANGED_KEYS_CAP = 12
 _SUBTREE_CHANGED_FIELDS_CAPTION_MAX_KEYS = 6
-
-

@@ -1,4 +1,5 @@
 """Bootstrap Postgres config from repo ``configs/`` (gitops / tests)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -43,6 +44,8 @@ def seed_t2_policy_documents_from_repo(repo_root: Path, store: ConfigStore) -> d
             store.upsert(ns, key, load_yaml(path))
             counts[ns] = counts.get(ns, 0) + 1
     return counts
+
+
 def seed_config_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]:
     """Load YAML files into ``hermes_config_document``; return upserted counts per namespace."""
     repo = repo_root.resolve()
@@ -80,6 +83,8 @@ def seed_config_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]
     for ns, n in t2.items():
         counts[ns] = counts.get(ns, 0) + n
     return counts
+
+
 def preview_seed_from_repo(
     repo_root: Path,
     *,
@@ -88,11 +93,13 @@ def preview_seed_from_repo(
     """List repo YAML paths that ``seed_config_from_repo`` would load (no store writes)."""
     repo = repo_root.resolve()
     out: list[dict[str, str]] = []
+
     def _add(ns: str, key: str, path: Path) -> None:
         if namespaces is not None and ns not in namespaces:
             return
         if path.is_file():
             out.append({"namespace": ns, "document_key": key, "path": str(path)})
+
     _add(NS_PERSONAS, KEY_PERSONA_SHELVES, repo / "configs" / "personas" / "shelves.yaml")
     _add(NS_ROLES, KEY_ROLE_REGISTRY, repo / "configs" / "roles.yaml")
     _add(NS_POLICY, KEY_MODEL_ROUTING, repo / "configs" / "model-routing.yaml")
@@ -126,6 +133,8 @@ def preview_seed_from_repo(
                     },
                 )
     return out
+
+
 def seed_policy_documents_from_repo(
     repo_root: Path,
     store: ConfigStore,

@@ -46,9 +46,7 @@ def test_prune_scraper_artifacts_dry_run_counts_without_deleting(tmp_path: Path)
     fresh.write_bytes(b"y")
 
     now = datetime.now(timezone.utc)
-    count = prune_scraper_artifacts(base, max_age_days=7, now=now, dry_run=True)[
-        "local_removed"
-    ]
+    count = prune_scraper_artifacts(base, max_age_days=7, now=now, dry_run=True)["local_removed"]
     assert count == 1
     assert stale.is_file()
     assert fresh.is_file()

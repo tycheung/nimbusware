@@ -95,7 +95,9 @@ def render_ollama_models_section() -> None:
     models = data.get("models")
     if not isinstance(models, list) or not models:
         if not reachable:
-            st.warning("Ollama is not reachable — start Ollama or check `configs/model-routing.yaml`.")
+            st.warning(
+                "Ollama is not reachable — start Ollama or check `configs/model-routing.yaml`."
+            )
         else:
             st.info("No installed models match your search.")
         return

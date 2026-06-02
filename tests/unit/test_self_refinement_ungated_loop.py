@@ -27,7 +27,7 @@ def test_self_refinement_ungated_loop_forces_proceed() -> None:
         if r.get("event_type") == "stage.started"
         and (r.get("payload") or {}).get("stage_name") == "self_refinement:policy"
     )
-    sr_meta = ((marker.get("metadata") or {}).get("self_refinement") or {})
+    sr_meta = (marker.get("metadata") or {}).get("self_refinement") or {}
     assert sr_meta.get("gate_decision") == "proceed"
     assert isinstance(sr_meta.get("loops_remaining"), int)
     assert isinstance(sr_meta.get("iteration_progress_ratio"), float)

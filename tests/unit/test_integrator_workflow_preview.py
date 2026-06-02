@@ -84,9 +84,7 @@ def mini_integrator_repo(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     (tmp_path / "configs" / "bundles" / "catalog.yaml").write_text(
-        "bundles:\n"
-        "  - id: demo-bundle\n"
-        "    tags: [auth, billing]\n",
+        "bundles:\n  - id: demo-bundle\n    tags: [auth, billing]\n",
         encoding="utf-8",
     )
     return tmp_path

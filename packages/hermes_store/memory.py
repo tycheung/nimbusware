@@ -183,9 +183,7 @@ class InMemoryEventStore:
             items = [
                 t
                 for t in items
-                if (
-                    (self._workflow_profile_for_run(t[0]) or "").strip().lower()
-                ).startswith(pfx)
+                if ((self._workflow_profile_for_run(t[0]) or "").strip().lower()).startswith(pfx)
             ]
         if created_after is not None:
             ca = (
@@ -194,9 +192,7 @@ class InMemoryEventStore:
                 else created_after.astimezone(timezone.utc)
             )
             items = [
-                t
-                for t in items
-                if (at := self._run_created_at(t[0])) is not None and at >= ca
+                t for t in items if (at := self._run_created_at(t[0])) is not None and at >= ca
             ]
         if created_before is not None:
             cb = (
@@ -205,9 +201,7 @@ class InMemoryEventStore:
                 else created_before.astimezone(timezone.utc)
             )
             items = [
-                t
-                for t in items
-                if (at := self._run_created_at(t[0])) is not None and at <= cb
+                t for t in items if (at := self._run_created_at(t[0])) is not None and at <= cb
             ]
         if has_escalation is not None:
             items = [t for t in items if self._run_has_escalation(t[0]) == has_escalation]

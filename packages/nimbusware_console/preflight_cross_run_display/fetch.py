@@ -28,5 +28,3 @@ def fetch_preflight_history(
     )
     body = response.json()
     return body if isinstance(body, dict) else {}
-
-

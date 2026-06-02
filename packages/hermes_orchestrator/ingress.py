@@ -126,16 +126,12 @@ def assert_persona_assignment_valid(
     if business_area_persona_id is not None:
         bid = str(business_area_persona_id).strip()
         if bid and shelf.find_entry("business_area", bid) is None:
-            msg = (
-                f"business_area_persona_id {bid!r} not found on business_area shelf"
-            )
+            msg = f"business_area_persona_id {bid!r} not found on business_area shelf"
             raise ValueError(msg)
     if development_role_persona_id is not None:
         did = str(development_role_persona_id).strip()
         if did and shelf.find_entry("development_role", did) is None:
-            msg = (
-                f"development_role_persona_id {did!r} not found on development_role shelf"
-            )
+            msg = f"development_role_persona_id {did!r} not found on development_role shelf"
             raise ValueError(msg)
 
 

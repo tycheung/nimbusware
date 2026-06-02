@@ -234,4 +234,3 @@ def security_scan_linter_operator_metrics_table_rows(
     if worst_exit is not None:
         rows.append({"field": "Worst exit", "value": str(worst_exit)})
     return rows
-

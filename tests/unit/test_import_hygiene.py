@@ -91,4 +91,6 @@ def test_star_import_f403_only_in_documented_facade_paths() -> None:
         if _star_import_allowed(rel):
             continue
         offenders.append(f"{rel}: star import with F403 at lines {star_lines}")
-    assert not offenders, "Star imports with F403 outside documented facades:\n" + "\n".join(offenders)
+    assert not offenders, "Star imports with F403 outside documented facades:\n" + "\n".join(
+        offenders
+    )

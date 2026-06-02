@@ -209,9 +209,13 @@ def object_store_list_artifacts(*, max_entries: int = 1000) -> list[dict[str, An
                 st = path.stat()
             except OSError:
                 continue
-            mtime = datetime.fromtimestamp(st.st_mtime, tz=timezone.utc).isoformat().replace(
-                "+00:00",
-                "Z",
+            mtime = (
+                datetime.fromtimestamp(st.st_mtime, tz=timezone.utc)
+                .isoformat()
+                .replace(
+                    "+00:00",
+                    "Z",
+                )
             )
             out.append(
                 {

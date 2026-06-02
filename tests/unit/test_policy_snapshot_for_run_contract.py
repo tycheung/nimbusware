@@ -1,6 +1,5 @@
 """RunOrchestrator.policy_snapshot_for_run`` READ-side contract."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -102,8 +101,7 @@ def test_policy_snapshot_for_run_empty_and_no_match_3_axis_contract() -> None:
         ),
     )
     assert orch_a3.policy_snapshot_for_run(rid_a3) == {}, (
-        "same run_id but no RUN_CREATED row should still yield {} "
-        "(event_type filter at line 543)"
+        "same run_id but no RUN_CREATED row should still yield {} (event_type filter at line 543)"
     )
 
 

@@ -30,7 +30,9 @@ def test_subdivide_slice_plan_reduces_file_count() -> None:
         loc_count=0,
         message="slice exceeds max_files (2): 4 files",
     )
-    stats = collect_slice_diff_stats(find_repo_root(start=Path(__file__).resolve().parents[1]), plan)
+    stats = collect_slice_diff_stats(
+        find_repo_root(start=Path(__file__).resolve().parents[1]), plan
+    )
     sub = subdivide_slice_plan(
         plan,
         budget=budget,

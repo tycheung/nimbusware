@@ -149,7 +149,7 @@ def test_explainer_workflow_yaml_top_level_version_non_int_returns_none(
     _write_profile(
         tmp_path,
         "v_bad",
-        "version: \"1\"\nescalation:\n  suppress_automatic_escalation: false\n",
+        'version: "1"\nescalation:\n  suppress_automatic_escalation: false\n',
     )
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
@@ -208,10 +208,7 @@ def test_explainer_escalation_policy_yaml_peek_when_present(tmp_path: Path) -> N
     assert sample == full_keys
     kinds = pl["escalation_policy_yaml_top_level_kinds"]
     assert kinds == {"mapping": 1, "scalar": 2, "list": 0, "other": 0}
-    assert (
-        sum(kinds.values())
-        == pl["escalation_policy_yaml_top_level_key_count"]
-    )
+    assert sum(kinds.values()) == pl["escalation_policy_yaml_top_level_key_count"]
     assert pl["escalation_policy_yaml_load_error"] is None
     assert pl["escalation_policy_yaml_has_verification_mapping"] is False
     assert pl["escalation_policy_yaml_has_anti_deadlock_mapping"] is False
@@ -228,9 +225,7 @@ def test_explainer_escalation_policy_yaml_scalar_retry_fields(tmp_path: Path) ->
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "version: 1\n"
-        "max_retries_per_stage: 5\n"
-        "deadlock_escalation_after_minutes: 12\n",
+        "version: 1\nmax_retries_per_stage: 5\ndeadlock_escalation_after_minutes: 12\n",
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
@@ -245,9 +240,7 @@ def test_explainer_escalation_policy_yaml_scalars_ignore_non_int(tmp_path: Path)
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "version: 1\n"
-        "max_retries_per_stage: true\n"
-        "deadlock_escalation_after_minutes: \"12\"\n",
+        'version: 1\nmax_retries_per_stage: true\ndeadlock_escalation_after_minutes: "12"\n',
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
@@ -263,10 +256,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_enabled_false(tmp_path: 
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "version: 2\n"
-        "anti_deadlock:\n"
-        "  enabled: false\n"
-        "  min_progress_events: 1\n",
+        "version: 2\nanti_deadlock:\n  enabled: false\n  min_progress_events: 1\n",
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
@@ -298,7 +288,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_non_
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "version: 1\nanti_deadlock:\n  min_progress_events: \"nope\"\n",
+        'version: 1\nanti_deadlock:\n  min_progress_events: "nope"\n',
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
@@ -351,22 +341,31 @@ def test_escalation_policy_yaml_deadlock_minutes_caption() -> None:
     assert cap1 is not None
     assert "minute." in cap1
     assert escalation_policy_yaml_deadlock_minutes_caption(None) is None
-    assert escalation_policy_yaml_deadlock_minutes_caption(
-        {"load_error": "bad"},
-    ) is None
-    assert escalation_policy_yaml_deadlock_minutes_caption(
-        {
-            "escalation_policy_yaml_path_exists": True,
-            "escalation_policy_yaml_load_error": "x",
-            "escalation_policy_yaml_deadlock_escalation_after_minutes": 1,
-        },
-    ) is None
-    assert escalation_policy_yaml_deadlock_minutes_caption(
-        {
-            "escalation_policy_yaml_path_exists": True,
-            "escalation_policy_yaml_deadlock_escalation_after_minutes": -1,
-        },
-    ) is None
+    assert (
+        escalation_policy_yaml_deadlock_minutes_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        escalation_policy_yaml_deadlock_minutes_caption(
+            {
+                "escalation_policy_yaml_path_exists": True,
+                "escalation_policy_yaml_load_error": "x",
+                "escalation_policy_yaml_deadlock_escalation_after_minutes": 1,
+            },
+        )
+        is None
+    )
+    assert (
+        escalation_policy_yaml_deadlock_minutes_caption(
+            {
+                "escalation_policy_yaml_path_exists": True,
+                "escalation_policy_yaml_deadlock_escalation_after_minutes": -1,
+            },
+        )
+        is None
+    )
 
 
 def test_escalation_policy_yaml_anti_deadlock_min_progress_caption() -> None:
@@ -504,11 +503,7 @@ def test_explainer_escalation_policy_yaml_top_level_kinds_mixed_types(
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "a: {x: 1}\n"
-        "b: 1\n"
-        "c: [1, 2]\n"
-        "d: null\n"
-        "e: hello\n",
+        "a: {x: 1}\nb: 1\nc: [1, 2]\nd: null\ne: hello\n",
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(
@@ -517,11 +512,7 @@ def test_explainer_escalation_policy_yaml_top_level_kinds_mixed_types(
     )
     kinds = pl["escalation_policy_yaml_top_level_kinds"]
     assert kinds == {"mapping": 1, "scalar": 3, "list": 1, "other": 0}
-    assert (
-        sum(kinds.values())
-        == pl["escalation_policy_yaml_top_level_key_count"]
-        == 5
-    )
+    assert sum(kinds.values()) == pl["escalation_policy_yaml_top_level_key_count"] == 5
 
 
 def test_escalation_policy_yaml_top_level_kinds_caption_none_for_non_mapping() -> None:
@@ -578,11 +569,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_mixed(
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
-        "a: {x: 1}\n"
-        "b: 1\n"
-        "c: [1, 2]\n"
-        "d: null\n"
-        "e: hello\n",
+        "a: {x: 1}\nb: 1\nc: [1, 2]\nd: null\ne: hello\n",
         encoding="utf-8",
     )
     pl = escalation_suppress_workflow_explainer_payload(
@@ -590,9 +577,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_mixed(
         workflow_profile="wf",
     )
     cap = escalation_policy_yaml_top_level_kinds_caption(pl)
-    assert cap == (
-        "Policy top-level kinds: 1 mapping(s), 3 scalar(s), 1 list(s), 0 other."
-    )
+    assert cap == ("Policy top-level kinds: 1 mapping(s), 3 scalar(s), 1 list(s), 0 other.")
 
 
 def test_escalation_policy_yaml_top_level_kinds_caption_mapping_only(
@@ -610,18 +595,14 @@ def test_escalation_policy_yaml_top_level_kinds_caption_mapping_only(
         workflow_profile="wf",
     )
     cap = escalation_policy_yaml_top_level_kinds_caption(pl)
-    assert cap == (
-        "Policy top-level kinds: 2 mapping(s), 0 scalar(s), 0 list(s), 0 other."
-    )
+    assert cap == ("Policy top-level kinds: 2 mapping(s), 0 scalar(s), 0 list(s), 0 other.")
 
 
 def test_escalation_policy_yaml_top_level_kinds_caption_accepts_bare_kinds_mapping() -> None:
     cap = escalation_policy_yaml_top_level_kinds_caption(
         {"mapping": 2, "scalar": 1, "list": 0, "other": 1},
     )
-    assert cap == (
-        "Policy top-level kinds: 2 mapping(s), 1 scalar(s), 0 list(s), 1 other."
-    )
+    assert cap == ("Policy top-level kinds: 2 mapping(s), 1 scalar(s), 0 list(s), 1 other.")
 
 
 def test_escalation_policy_yaml_top_level_kinds_caption_bare_zero_returns_none() -> None:
@@ -736,12 +717,18 @@ def test_escalation_policy_yaml_file_bytes_caption(tmp_path: Path) -> None:
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert escalation_policy_yaml_file_bytes_caption(None) is None
-    assert escalation_policy_yaml_file_bytes_caption(
-        {"escalation_policy_yaml_load_error": "bad"},
-    ) is None
-    assert escalation_policy_yaml_file_bytes_caption(
-        {"escalation_policy_yaml_path_exists": False},
-    ) is None
+    assert (
+        escalation_policy_yaml_file_bytes_caption(
+            {"escalation_policy_yaml_load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        escalation_policy_yaml_file_bytes_caption(
+            {"escalation_policy_yaml_path_exists": False},
+        )
+        is None
+    )
 
 
 def test_escalation_policy_yaml_age_caption(tmp_path: Path) -> None:
@@ -759,9 +746,12 @@ def test_escalation_policy_yaml_age_caption(tmp_path: Path) -> None:
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert escalation_policy_yaml_age_caption(None) is None
-    assert escalation_policy_yaml_age_caption(
-        {"escalation_policy_yaml_load_error": "bad"},
-    ) is None
+    assert (
+        escalation_policy_yaml_age_caption(
+            {"escalation_policy_yaml_load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_escalation_policy_yaml_mtime_caption_none_for_non_mapping() -> None:
@@ -972,10 +962,7 @@ def test_escalation_suppress_flag_caption_bare_when_raw_type_none() -> None:
         "suppress_automatic_escalation_effective": True,
         "suppress_automatic_escalation_yaml_raw_type": None,
     }
-    assert (
-        escalation_suppress_flag_caption(payload)
-        == "Suppress automatic escalation: True."
-    )
+    assert escalation_suppress_flag_caption(payload) == "Suppress automatic escalation: True."
 
 
 def test_escalation_suppress_flag_caption_bare_when_raw_type_empty_string() -> None:
@@ -984,10 +971,7 @@ def test_escalation_suppress_flag_caption_bare_when_raw_type_empty_string() -> N
         "suppress_automatic_escalation_effective": True,
         "suppress_automatic_escalation_yaml_raw_type": "   ",
     }
-    assert (
-        escalation_suppress_flag_caption(payload)
-        == "Suppress automatic escalation: True."
-    )
+    assert escalation_suppress_flag_caption(payload) == "Suppress automatic escalation: True."
 
 
 def test_escalation_suppress_flag_caption_freshly_written_workflow_prefix(
@@ -1115,10 +1099,7 @@ def test_escalation_policy_yaml_key_count_caption_emits_for_zero_when_file_prese
         "escalation_policy_yaml_path_exists": True,
         "escalation_policy_yaml_top_level_key_count": 0,
     }
-    assert (
-        escalation_policy_yaml_key_count_caption(payload)
-        == "Policy YAML top-level keys: 0."
-    )
+    assert escalation_policy_yaml_key_count_caption(payload) == "Policy YAML top-level keys: 0."
 
 
 def test_escalation_policy_yaml_key_count_caption_emits_for_positive_count() -> None:
@@ -1127,10 +1108,7 @@ def test_escalation_policy_yaml_key_count_caption_emits_for_positive_count() -> 
         "escalation_policy_yaml_path_exists": True,
         "escalation_policy_yaml_top_level_key_count": 4,
     }
-    assert (
-        escalation_policy_yaml_key_count_caption(payload)
-        == "Policy YAML top-level keys: 4."
-    )
+    assert escalation_policy_yaml_key_count_caption(payload) == "Policy YAML top-level keys: 4."
 
 
 def test_escalation_policy_yaml_key_count_caption_freshly_written_two_key_policy(
@@ -1190,8 +1168,7 @@ def test_escalation_policy_yaml_version_caption_emits_for_positive_version() -> 
         "escalation_policy_yaml_version": 3,
     }
     assert (
-        escalation_policy_yaml_version_caption(payload)
-        == "Escalation policy YAML version: **3**."
+        escalation_policy_yaml_version_caption(payload) == "Escalation policy YAML version: **3**."
     )
 
 
@@ -1315,9 +1292,7 @@ def test_escalation_policy_yaml_keys_sample_caption_single_entry() -> None:
     )
 
 
-def test_escalation_policy_yaml_keys_sample_caption_three_entries_order_preserved() -> (
-    None
-):
+def test_escalation_policy_yaml_keys_sample_caption_three_entries_order_preserved() -> None:
     payload = {
         "escalation_policy_yaml_load_error": None,
         "escalation_policy_yaml_path_exists": True,

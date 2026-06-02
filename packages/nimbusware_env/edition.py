@@ -79,10 +79,7 @@ def enterprise_feature_enabled(feature: str) -> bool:
 
 def require_enterprise_feature(feature: str) -> None:
     if not enterprise_feature_enabled(feature):
-        msg = (
-            f"Enterprise edition required for feature {feature!r} "
-            f"(set {ENV_EDITION}=enterprise)"
-        )
+        msg = f"Enterprise edition required for feature {feature!r} (set {ENV_EDITION}=enterprise)"
         raise EnterpriseFeatureDisabledError(msg)
 
 

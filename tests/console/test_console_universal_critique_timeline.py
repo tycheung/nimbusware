@@ -251,9 +251,12 @@ def test_universal_critique_fail_stage_rows_csv_and_timeline_json() -> None:
     assert "planner.critique" not in csv_text
     assert universal_critique_fail_stage_rows_csv([]) == ""
     all_pass = {"stages": [{"stage_name": "a.critique", "verdict": "PASS"}]}
-    assert universal_critique_fail_stage_rows_csv(
-        universal_critique_timeline_fail_stage_rows(all_pass),
-    ) == ""
+    assert (
+        universal_critique_fail_stage_rows_csv(
+            universal_critique_timeline_fail_stage_rows(all_pass),
+        )
+        == ""
+    )
     body = json.loads(universal_critique_timeline_export_json(summary))
     assert body["fail_count"] == 1
     assert json.loads(universal_critique_timeline_export_json(None)) == {}
@@ -348,20 +351,13 @@ def test_universal_critique_timeline_operator_metrics_export() -> None:
     csv_text = universal_critique_timeline_operator_metrics_table_rows_csv(rows)
     assert csv_text.startswith("field,value")
     assert universal_critique_timeline_operator_metrics_table_rows_csv([]) == ""
-    assert (
-        universal_critique_timeline_operator_metrics_export_filename_slug("R@un")
-        == "r_un"
-    )
+    assert universal_critique_timeline_operator_metrics_export_filename_slug("R@un") == "r_un"
 
 
 def test_universal_critique_unanimous_gate_caption() -> None:
+    assert universal_critique_unanimous_gate_caption({"unanimous_gate_effective": True}) is not None
     assert (
-        universal_critique_unanimous_gate_caption({"unanimous_gate_effective": True})
-        is not None
-    )
-    assert (
-        universal_critique_unanimous_gate_caption({"unanimous_gate_effective": False})
-        is not None
+        universal_critique_unanimous_gate_caption({"unanimous_gate_effective": False}) is not None
     )
 
 

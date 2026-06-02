@@ -45,9 +45,12 @@ def test_security_scan_metadata_workflow_yaml_relpath_caption(
     assert cap is not None
     assert "wf.yaml" in cap
     assert security_scan_metadata_workflow_yaml_relpath_caption(None) is None
-    assert security_scan_metadata_workflow_yaml_relpath_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        security_scan_metadata_workflow_yaml_relpath_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_workflow_yaml_version_caption(
@@ -62,15 +65,24 @@ def test_security_scan_metadata_workflow_yaml_version_caption(
     assert cap is not None
     assert "**2**" in cap
     assert security_scan_metadata_workflow_yaml_version_caption(None) is None
-    assert security_scan_metadata_workflow_yaml_version_caption(
-        {"load_error": "bad"},
-    ) is None
-    assert security_scan_metadata_workflow_yaml_version_caption(
-        {"workflow_yaml_top_level_version_int": 0},
-    ) is None
-    assert security_scan_metadata_workflow_yaml_version_caption(
-        {"workflow_yaml_top_level_version_int": True},
-    ) is None
+    assert (
+        security_scan_metadata_workflow_yaml_version_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        security_scan_metadata_workflow_yaml_version_caption(
+            {"workflow_yaml_top_level_version_int": 0},
+        )
+        is None
+    )
+    assert (
+        security_scan_metadata_workflow_yaml_version_caption(
+            {"workflow_yaml_top_level_version_int": True},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_workflow_yaml_string_key_count_caption(
@@ -87,9 +99,12 @@ def test_security_scan_metadata_workflow_yaml_string_key_count_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert security_scan_metadata_workflow_yaml_string_key_count_caption(None) is None
-    assert security_scan_metadata_workflow_yaml_string_key_count_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        security_scan_metadata_workflow_yaml_string_key_count_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_workflow_yaml_file_bytes_caption(
@@ -107,15 +122,24 @@ def test_security_scan_metadata_workflow_yaml_file_bytes_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert security_scan_metadata_workflow_yaml_file_bytes_caption(None) is None
-    assert security_scan_metadata_workflow_yaml_file_bytes_caption(
-        {"load_error": "bad"},
-    ) is None
-    assert security_scan_metadata_workflow_yaml_file_bytes_caption(
-        {"workflow_yaml_file_bytes": -1},
-    ) is None
-    assert security_scan_metadata_workflow_yaml_file_bytes_caption(
-        {"workflow_yaml_file_bytes": True},
-    ) is None
+    assert (
+        security_scan_metadata_workflow_yaml_file_bytes_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        security_scan_metadata_workflow_yaml_file_bytes_caption(
+            {"workflow_yaml_file_bytes": -1},
+        )
+        is None
+    )
+    assert (
+        security_scan_metadata_workflow_yaml_file_bytes_caption(
+            {"workflow_yaml_file_bytes": True},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_yaml_raw_type_caption() -> None:
@@ -126,9 +150,12 @@ def test_security_scan_metadata_yaml_raw_type_caption() -> None:
     assert "**dict**" in cap
     assert security_scan_metadata_yaml_raw_type_caption(None) is None
     assert security_scan_metadata_yaml_raw_type_caption({}) is None
-    assert security_scan_metadata_yaml_raw_type_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        security_scan_metadata_yaml_raw_type_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_effective_enabled_caption() -> None:
@@ -140,12 +167,18 @@ def test_security_scan_metadata_effective_enabled_caption() -> None:
     assert "effective_enabled=**false**" in cap
     assert security_scan_metadata_effective_enabled_caption(None) is None
     assert security_scan_metadata_effective_enabled_caption({}) is None
-    assert security_scan_metadata_effective_enabled_caption(
-        {"load_error": "bad yaml"},
-    ) is None
-    assert security_scan_metadata_effective_enabled_caption(
-        {"yaml_parsed_bool": "yes", "effective_enabled": True},
-    ) is None
+    assert (
+        security_scan_metadata_effective_enabled_caption(
+            {"load_error": "bad yaml"},
+        )
+        is None
+    )
+    assert (
+        security_scan_metadata_effective_enabled_caption(
+            {"yaml_parsed_bool": "yes", "effective_enabled": True},
+        )
+        is None
+    )
 
 
 def test_security_scan_metadata_env_gate_caption() -> None:
@@ -278,7 +311,7 @@ def test_explainer_workflow_yaml_top_level_version_non_int_returns_none(tmp_path
     _write_profile(
         tmp_path,
         "v_bad",
-        "version: \"1\"\nsecurity_scan_metadata_on_verify: false\n",
+        'version: "1"\nsecurity_scan_metadata_on_verify: false\n',
     )
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
@@ -451,9 +484,7 @@ def test_security_scan_metadata_explainer_table_rows_export_json_and_csv(
     fields = {r["field"] for r in rows}
     assert "effective_enabled" in fields
     assert "yaml_parsed_bool" in fields
-    env_row = next(
-        r for r in rows if r["field"] == "HERMES_ATTACH_SECURITY_SCAN_METADATA"
-    )
+    env_row = next(r for r in rows if r["field"] == "HERMES_ATTACH_SECURITY_SCAN_METADATA")
     assert '"unset_follows_yaml"' in env_row["value"]
     assert len(rows) == len(payload)
     parsed = json.loads(security_scan_metadata_explainer_export_json(payload))
@@ -512,9 +543,12 @@ def test_security_scan_metadata_explainer_metrics_effective_disabled_caption() -
 
 def test_security_scan_metadata_workflow_explainer_operator_metrics_export() -> None:
     m = security_scan_metadata_workflow_explainer_operator_metrics(None)
-    assert json.loads(
-        security_scan_metadata_workflow_explainer_operator_metrics_export_json(m),
-    ) == m
+    assert (
+        json.loads(
+            security_scan_metadata_workflow_explainer_operator_metrics_export_json(m),
+        )
+        == m
+    )
     assert (
         security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug()
         == "security_scan_metadata_workflow_explainer_operator_metrics"

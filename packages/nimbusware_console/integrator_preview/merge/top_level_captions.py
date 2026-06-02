@@ -225,9 +225,7 @@ def full_workflow_merge_unchanged_top_level_caption(
     unchanged_count = _count("unchanged_top_level_keys")
     if unchanged_count < 1:
         return None
-    return (
-        f"All top-level keys unchanged ({unchanged_count} keys; paste reproduces disk)."
-    )
+    return f"All top-level keys unchanged ({unchanged_count} keys; paste reproduces disk)."
 
 
 def full_workflow_merge_subtree_overview_caption(
@@ -254,5 +252,3 @@ def full_workflow_merge_subtree_overview_caption(
         unchanged = _count(block, "unchanged_keys")
         parts.append(f"{name} (+{added} / -{removed} / ~{changed} / ={unchanged})")
     return "Subtree churn: " + ", ".join(parts)
-
-

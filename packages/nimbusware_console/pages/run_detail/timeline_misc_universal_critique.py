@@ -51,17 +51,13 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
             if _uc_tl_fail_cap:
                 st.caption(_uc_tl_fail_cap)
             _uc_tl_metrics = universal_critique_timeline_operator_metrics(_uc_tl)
-            _uc_tl_metrics_cap = (
-                universal_critique_timeline_operator_metrics_caption(
-                    _uc_tl_metrics,
-                )
+            _uc_tl_metrics_cap = universal_critique_timeline_operator_metrics_caption(
+                _uc_tl_metrics,
             )
             if _uc_tl_metrics_cap:
                 st.caption(_uc_tl_metrics_cap)
-            _uc_tl_metric_rows = (
-                universal_critique_timeline_operator_metrics_table_rows(
-                    _uc_tl_metrics,
-                )
+            _uc_tl_metric_rows = universal_critique_timeline_operator_metrics_table_rows(
+                _uc_tl_metrics,
             )
             _uc_tl_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             _uc_tl_slug = universal_critique_timeline_export_filename_slug(
@@ -73,15 +69,11 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                     use_container_width=True,
                     hide_index=True,
                 )
-                _uc_tl_metrics_json = (
-                    universal_critique_timeline_operator_metrics_export_json(
-                        _uc_tl_metrics,
-                    )
+                _uc_tl_metrics_json = universal_critique_timeline_operator_metrics_export_json(
+                    _uc_tl_metrics,
                 )
-                _uc_tl_metrics_csv = (
-                    universal_critique_timeline_operator_metrics_table_rows_csv(
-                        _uc_tl_metric_rows,
-                    )
+                _uc_tl_metrics_csv = universal_critique_timeline_operator_metrics_table_rows_csv(
+                    _uc_tl_metric_rows,
                 )
                 (
                     _uc_tl_metrics_dl_json_col,
@@ -89,38 +81,26 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                 ) = st.columns(2)
                 with _uc_tl_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download universal critique operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download universal critique operator metrics JSON"),
                         data=_uc_tl_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_universal_critique_operator_metrics_"
                             f"{_uc_tl_slug}_{_uc_tl_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_universal_critique_operator_"
-                            "metrics_json"
-                        ),
+                        key=("hermes_dl_universal_critique_operator_metrics_json"),
                     )
                 with _uc_tl_metrics_dl_csv_col:
                     if _uc_tl_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download universal critique operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download universal critique operator metrics CSV"),
                             data=_uc_tl_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_universal_critique_operator_metrics_"
                                 f"{_uc_tl_slug}_{_uc_tl_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_universal_critique_operator_"
-                                "metrics_csv"
-                            ),
+                            key=("hermes_dl_universal_critique_operator_metrics_csv"),
                         )
             st.dataframe(_uc_tl_rows, use_container_width=True)
             _uc_tl_fail_rows = universal_critique_timeline_fail_stage_rows(_uc_tl)
@@ -152,8 +132,7 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                         label="Download universal critique all stages CSV",
                         data=_uc_stages_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_universal_critique_stages_"
-                            f"{_uc_tl_slug}_{_uc_tl_ts}.csv"
+                            f"hermes_universal_critique_stages_{_uc_tl_slug}_{_uc_tl_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_universal_critique_stages_csv",
@@ -163,8 +142,7 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                         label="Download universal critique FAIL stages CSV",
                         data=_uc_fail_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_universal_critique_fail_stages_"
-                            f"{_uc_tl_slug}_{_uc_tl_ts}.csv"
+                            f"hermes_universal_critique_fail_stages_{_uc_tl_slug}_{_uc_tl_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_universal_critique_fail_csv",
@@ -174,8 +152,7 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                         label="Download universal critique timeline JSON",
                         data=_uc_tl_json.encode("utf-8"),
                         file_name=(
-                            "hermes_universal_critique_timeline_"
-                            f"{_uc_tl_slug}_{_uc_tl_ts}.json"
+                            f"hermes_universal_critique_timeline_{_uc_tl_slug}_{_uc_tl_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_universal_critique_timeline_json",
@@ -187,8 +164,7 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                         label="Download universal critique all stages CSV",
                         data=_uc_stages_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_universal_critique_stages_"
-                            f"{_uc_tl_slug}_{_uc_tl_ts}.csv"
+                            f"hermes_universal_critique_stages_{_uc_tl_slug}_{_uc_tl_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_universal_critique_stages_csv",
@@ -198,8 +174,7 @@ def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: 
                         label="Download universal critique timeline JSON",
                         data=_uc_tl_json.encode("utf-8"),
                         file_name=(
-                            "hermes_universal_critique_timeline_"
-                            f"{_uc_tl_slug}_{_uc_tl_ts}.json"
+                            f"hermes_universal_critique_timeline_{_uc_tl_slug}_{_uc_tl_ts}.json"
                         ),
                         mime="application/json",
                         key="hermes_dl_universal_critique_timeline_json",

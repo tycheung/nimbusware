@@ -1,6 +1,5 @@
 """anti_deadlock.py`` pure-helpers composite."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -122,8 +121,7 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
         "`astimezone(UTC)` is an identity transform)"
     )
     assert a4_result is not None and a4_result.tzinfo is timezone.utc, (
-        "A4(tz): return value MUST be UTC-aware. Got tzinfo="
-        f"{a4_result.tzinfo!r}"
+        f"A4(tz): return value MUST be UTC-aware. Got tzinfo={a4_result.tzinfo!r}"
     )
 
     a5_invalid_dt = datetime(2026, 1, 1, 11, 0, tzinfo=timezone.utc)
@@ -178,8 +176,7 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
         "(wall-clock-PRESERVING)"
     )
     assert b1_result is not None and b1_result.tzinfo == timezone.utc, (
-        f"B1(tz): aware branch must return UTC tzinfo. Got "
-        f"{b1_result.tzinfo!r}"
+        f"B1(tz): aware branch must return UTC tzinfo. Got {b1_result.tzinfo!r}"
     )
 
     naive_dt = datetime(2026, 1, 1, 12, 0)
@@ -194,8 +191,7 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
         "or converting from local time"
     )
     assert b2_result is not None and b2_result.tzinfo == timezone.utc, (
-        f"B2(tz): naive branch must attach UTC tzinfo. Got "
-        f"{b2_result.tzinfo!r}"
+        f"B2(tz): naive branch must attach UTC tzinfo. Got {b2_result.tzinfo!r}"
     )
 
     b3_aware_dt = datetime(2026, 1, 1, 12, 0, tzinfo=_FIVE_HOURS)

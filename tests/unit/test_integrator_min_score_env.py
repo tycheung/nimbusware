@@ -1,6 +1,5 @@
 """HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` env-layer Pattern B + 3-layer precedence."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -33,10 +32,7 @@ def _write_workflow_min_score(tmp_path: Path, value: float | None) -> None:
     if value is None:
         body = "version: 1\nintegrator_gate:\n  enabled: true\n"
     else:
-        body = (
-            "version: 1\nintegrator_gate:\n"
-            f"  enabled: true\n  min_score_to_pass: {value}\n"
-        )
+        body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
     (wf_dir / f"{_PROFILE}.yaml").write_text(body, encoding="utf-8")
 
 
@@ -173,8 +169,7 @@ def test_integrator_min_score_env_three_layer_precedence_contract(
     monkeypatch.setenv(_ENV_NAME, "abc")
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.1), (
-        "block_5_env_invalid_with_wf: expected 0.1 (wf via fail-closed proof), "
-        f"got {actual!r}"
+        f"block_5_env_invalid_with_wf: expected 0.1 (wf via fail-closed proof), got {actual!r}"
     )
 
     _write_workflow_min_score(tmp_path, None)
@@ -243,6 +238,5 @@ def test_integrator_min_score_env_fail_closed_string_arm_contract(
         monkeypatch.setenv(_ENV_NAME, raw)
         actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
         assert actual == pytest.approx(0.1), (
-            f"fail_closed raw={raw!r}: env should fall through to wf=0.1, "
-            f"got {actual!r}"
+            f"fail_closed raw={raw!r}: env should fall through to wf=0.1, got {actual!r}"
         )

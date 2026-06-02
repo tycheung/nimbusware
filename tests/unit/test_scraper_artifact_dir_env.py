@@ -1,6 +1,5 @@
 """HERMES_SCRAPER_ARTIFACT_DIR`` Pattern B string-passthrough contract."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -63,16 +62,12 @@ def test_scraper_artifact_dir_env_accept_arm_passthrough_contract(
     for _name, raw, expected in cases:
         monkeypatch.setenv(_ENV_NAME, raw)
         result = resolve_scraper_artifact_base_dir(tmp_path)
-        assert result == expected, (
-            f"accept raw={raw!r}: expected {expected}, got {result}"
-        )
+        assert result == expected, f"accept raw={raw!r}: expected {expected}, got {result}"
         assert isinstance(result, Path), (
-            f"accept raw={raw!r}: result type {type(result).__name__} "
-            f"(should be Path)"
+            f"accept raw={raw!r}: result type {type(result).__name__} (should be Path)"
         )
         assert result.is_absolute(), (
-            f"accept raw={raw!r}: .resolve() should produce absolute "
-            f"path, got {result}"
+            f"accept raw={raw!r}: .resolve() should produce absolute path, got {result}"
         )
 
 
@@ -110,18 +105,14 @@ def test_scraper_artifact_dir_env_default_fallthrough_convergence_contract(
     monkeypatch.delenv(_ENV_NAME, raising=False)
     result = resolve_scraper_artifact_base_dir(tmp_path)
     expected = _default_for(tmp_path)
-    assert result == expected, (
-        f"env_absent raw=delenv: expected {expected}, got {result}"
-    )
+    assert result == expected, f"env_absent raw=delenv: expected {expected}, got {result}"
     assert isinstance(result, Path) and result.is_absolute(), (
         f"env_absent raw=delenv: type/absolute check failed for {result}"
     )
 
     monkeypatch.setenv(_ENV_NAME, "")
     result = resolve_scraper_artifact_base_dir(tmp_path)
-    assert result == expected, (
-        f"env_explicit_empty raw='': expected {expected}, got {result}"
-    )
+    assert result == expected, f"env_explicit_empty raw='': expected {expected}, got {result}"
     assert isinstance(result, Path) and result.is_absolute(), (
         f"env_explicit_empty raw='': type/absolute check failed for {result}"
     )
@@ -135,8 +126,7 @@ def test_scraper_artifact_dir_env_default_fallthrough_convergence_contract(
             f".strip()-reduces-to-empty fallthrough, got {result}"
         )
         assert isinstance(result, Path) and result.is_absolute(), (
-            f"strip_collapse raw={raw!r}: type/absolute check failed "
-            f"for {result}"
+            f"strip_collapse raw={raw!r}: type/absolute check failed for {result}"
         )
 
     monkeypatch.delenv(_ENV_NAME, raising=False)
@@ -144,8 +134,7 @@ def test_scraper_artifact_dir_env_default_fallthrough_convergence_contract(
     result = resolve_scraper_artifact_base_dir(alt_root)
     expected_alt = _default_for(alt_root)
     assert result == expected_alt, (
-        f"repo_root_plumbing: expected {expected_alt} (uses passed "
-        f"repo_root), got {result}"
+        f"repo_root_plumbing: expected {expected_alt} (uses passed repo_root), got {result}"
     )
     assert isinstance(result, Path) and result.is_absolute(), (
         f"repo_root_plumbing: type/absolute check failed for {result}"
@@ -160,8 +149,7 @@ def test_scraper_artifact_dir_env_default_fallthrough_convergence_contract(
         f"'..', got {result}"
     )
     assert isinstance(result, Path) and result.is_absolute(), (
-        f"default_resolve repo_root={dotdot_root}: type/absolute "
-        f"check failed for {result}"
+        f"default_resolve repo_root={dotdot_root}: type/absolute check failed for {result}"
     )
 
 
@@ -255,8 +243,7 @@ def test_scraper_artifact_dir_env_normalization_and_literal_path_contract(
             f"got {result.name!r}"
         )
         assert isinstance(result, Path) and result.is_absolute(), (
-            f"pattern_a_literal raw={raw!r}: type/absolute check "
-            f"failed for {result}"
+            f"pattern_a_literal raw={raw!r}: type/absolute check failed for {result}"
         )
 
     literal_cases: list[str] = ["5", "5.5", "abc", "1e2", "5x"]
@@ -269,6 +256,5 @@ def test_scraper_artifact_dir_env_normalization_and_literal_path_contract(
             f"(no int()/float() parsing, no fail-mode), got {result}"
         )
         assert isinstance(result, Path) and result.is_absolute(), (
-            f"literal_path raw={raw!r}: type/absolute check failed "
-            f"for {result}"
+            f"literal_path raw={raw!r}: type/absolute check failed for {result}"
         )

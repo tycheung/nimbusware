@@ -82,4 +82,3 @@ def retention_alert_level(
     ):
         return "stale_high"
     return "stale_present"
-

@@ -135,10 +135,7 @@ def validate_stage_graph(graph: StageGraph, known_stages: frozenset[str]) -> Non
             raise ValueError(msg)
         for dep in node.depends_on:
             if dep not in names:
-                msg = (
-                    f"stage_graph dependency {dep!r} not defined "
-                    f"for stage {node.stage_name!r}"
-                )
+                msg = f"stage_graph dependency {dep!r} not defined for stage {node.stage_name!r}"
                 raise ValueError(msg)
             if dep not in known_stages:
                 msg = f"unknown stage in depends_on: {dep!r}"

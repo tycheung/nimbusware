@@ -1,6 +1,5 @@
 """load_escalate_on_first_verifier_failure`` direct contract."""
 
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -39,14 +38,16 @@ def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
         load_escalate_on_first_verifier_failure(a2_root)
 
     a3_root = _write_policy(
-        tmp_path / "a3_no_verification", "version: 1\nmax_retries_per_stage: 3\n",
+        tmp_path / "a3_no_verification",
+        "version: 1\nmax_retries_per_stage: 3\n",
     )
     assert load_escalate_on_first_verifier_failure(a3_root) is False, (
         "A3: verification key missing -> ver=None -> isinstance(None, dict) False -> False"
     )
 
     a4_root = _write_policy(
-        tmp_path / "a4_verification_scalar", "verification: 'not a dict'\n",
+        tmp_path / "a4_verification_scalar",
+        "verification: 'not a dict'\n",
     )
     assert load_escalate_on_first_verifier_failure(a4_root) is False, (
         "A4: verification is a string scalar -> isinstance(str, dict) False -> False"

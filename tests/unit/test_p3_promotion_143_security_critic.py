@@ -1,6 +1,5 @@
 """fo143 promotion: security critique blocks downstream critique on gate FAIL."""
 
-
 from __future__ import annotations
 
 from pathlib import Path

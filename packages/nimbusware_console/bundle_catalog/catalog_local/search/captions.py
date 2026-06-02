@@ -155,5 +155,3 @@ def bundle_search_empty_hits_readiness_caption(
         "above; workflow "
         f"``{BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH}``."
     )
-
-

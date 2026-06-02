@@ -87,15 +87,10 @@ def preflight_cross_run_operator_metrics_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _PREFLIGHT_CROSS_RUN_OPERATOR_METRICS_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _PREFLIGHT_CROSS_RUN_OPERATOR_METRICS_CSV_COLUMNS},
             )
     return buf.getvalue()
 
 
 def preflight_cross_run_operator_metrics_export_filename_slug() -> str:
     return f"{preflight_cross_run_trend_export_filename_slug()}_operator_metrics"
-
-

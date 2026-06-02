@@ -66,8 +66,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                         [
                             {
                                 "bucket": "added_top_level",
-                                "keys": ", ".join(_diff_fw.get("added_top_level_keys", []))
-                                or "—",
+                                "keys": ", ".join(_diff_fw.get("added_top_level_keys", [])) or "—",
                             },
                             {
                                 "bucket": "removed_top_level",
@@ -96,8 +95,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                             },
                             {
                                 "bucket": "pasted_top_level",
-                                "keys": ", ".join(_diff_fw.get("pasted_top_level_keys", []))
-                                or "—",
+                                "keys": ", ".join(_diff_fw.get("pasted_top_level_keys", [])) or "—",
                             },
                         ],
                         use_container_width=True,
@@ -202,8 +200,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                                     label="Download merge attention operator metrics CSV",
                                     data=_att_fw_metrics_csv.encode("utf-8"),
                                     file_name=(
-                                        f"hermes_{_att_fw_metrics_slug}_"
-                                        f"{_att_fw_metrics_ts}.csv"
+                                        f"hermes_{_att_fw_metrics_slug}_{_att_fw_metrics_ts}.csv"
                                     ),
                                     mime="text/csv; charset=utf-8",
                                     key="hermes_dl_full_workflow_merge_attention_metrics_csv",
@@ -243,8 +240,8 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                         )
                         if _sub_overview_fw:
                             st.caption(_sub_overview_fw)
-                        _sub_changed_fields_fw = (
-                            full_workflow_merge_subtree_changed_fields_caption(_diff_fw)
+                        _sub_changed_fields_fw = full_workflow_merge_subtree_changed_fields_caption(
+                            _diff_fw
                         )
                         if _sub_changed_fields_fw:
                             st.caption(_sub_changed_fields_fw)
@@ -253,8 +250,8 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                         )
                         if _sub_added_fields_fw:
                             st.caption(_sub_added_fields_fw)
-                        _sub_removed_fields_fw = (
-                            full_workflow_merge_subtree_removed_fields_caption(_diff_fw)
+                        _sub_removed_fields_fw = full_workflow_merge_subtree_removed_fields_caption(
+                            _diff_fw
                         )
                         if _sub_removed_fields_fw:
                             st.caption(_sub_removed_fields_fw)
@@ -298,19 +295,15 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                 _diff_fw_metrics_json = full_workflow_merge_diff_operator_metrics_export_json(
                     _diff_fw_metrics,
                 )
-                _diff_fw_metrics_csv = (
-                    full_workflow_merge_diff_operator_metrics_table_rows_csv(
-                        _diff_fw_metric_rows,
-                    )
+                _diff_fw_metrics_csv = full_workflow_merge_diff_operator_metrics_table_rows_csv(
+                    _diff_fw_metric_rows,
                 )
                 _diff_fw_m_dl_json_col, _diff_fw_m_dl_csv_col = st.columns(2)
                 with _diff_fw_m_dl_json_col:
                     st.download_button(
                         label="Download merge diff operator metrics JSON",
                         data=_diff_fw_metrics_json.encode("utf-8"),
-                        file_name=(
-                            f"hermes_{_diff_fw_metrics_slug}_{_diff_fw_ts}.json"
-                        ),
+                        file_name=(f"hermes_{_diff_fw_metrics_slug}_{_diff_fw_ts}.json"),
                         mime="application/json",
                         key="hermes_dl_full_workflow_merge_diff_metrics_json",
                     )
@@ -319,9 +312,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                         st.download_button(
                             label="Download merge diff operator metrics CSV",
                             data=_diff_fw_metrics_csv.encode("utf-8"),
-                            file_name=(
-                                f"hermes_{_diff_fw_metrics_slug}_{_diff_fw_ts}.csv"
-                            ),
+                            file_name=(f"hermes_{_diff_fw_metrics_slug}_{_diff_fw_ts}.csv"),
                             mime="text/csv; charset=utf-8",
                             key="hermes_dl_full_workflow_merge_diff_metrics_csv",
                         )
@@ -335,10 +326,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                         st.download_button(
                             label="Download full-workflow merge diff JSON",
                             data=_diff_fw_json.encode("utf-8"),
-                            file_name=(
-                                f"hermes_{_diff_fw_slug}_"
-                                f"{_diff_fw_ts}.json"
-                            ),
+                            file_name=(f"hermes_{_diff_fw_slug}_{_diff_fw_ts}.json"),
                             mime="application/json",
                             key="hermes_dl_full_workflow_merge_diff_json",
                         )
@@ -347,10 +335,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                             st.download_button(
                                 label="Download full-workflow merge diff CSV",
                                 data=_diff_fw_csv.encode("utf-8"),
-                                file_name=(
-                                    f"hermes_{_diff_fw_slug}_"
-                                    f"{_diff_fw_ts}.csv"
-                                ),
+                                file_name=(f"hermes_{_diff_fw_slug}_{_diff_fw_ts}.csv"),
                                 mime="text/csv; charset=utf-8",
                                 key="hermes_dl_full_workflow_merge_diff_csv",
                             )

@@ -77,10 +77,7 @@ def universal_critique_yaml_top_level_nonempty_count_caption(
     raw = payload.get("universal_critique_yaml_top_level_nonempty_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Universal critique YAML top-level nonempty value count: "
-        f"**{raw}**."
-    )
+    return f"Universal critique YAML top-level nonempty value count: **{raw}**."
 
 
 def universal_critique_yaml_top_level_list_child_count_caption(
@@ -95,10 +92,7 @@ def universal_critique_yaml_top_level_list_child_count_caption(
     raw = payload.get("universal_critique_yaml_top_level_list_child_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Universal critique YAML top-level list child count: "
-        f"**{raw}**."
-    )
+    return f"Universal critique YAML top-level list child count: **{raw}**."
 
 
 def universal_critique_yaml_top_level_enabled_true_count_caption(
@@ -113,10 +107,7 @@ def universal_critique_yaml_top_level_enabled_true_count_caption(
     raw = payload.get("universal_critique_yaml_top_level_enabled_true_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Universal critique YAML top-level enabled: true count: "
-        f"**{raw}**."
-    )
+    return f"Universal critique YAML top-level enabled: true count: **{raw}**."
 
 
 def universal_critique_yaml_top_level_enabled_false_count_caption(
@@ -131,10 +122,7 @@ def universal_critique_yaml_top_level_enabled_false_count_caption(
     raw = payload.get("universal_critique_yaml_top_level_enabled_false_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Universal critique YAML top-level enabled: false count: "
-        f"**{raw}**."
-    )
+    return f"Universal critique YAML top-level enabled: false count: **{raw}**."
 
 
 def universal_critique_yaml_top_level_mapping_child_count_caption(
@@ -149,10 +137,7 @@ def universal_critique_yaml_top_level_mapping_child_count_caption(
     raw = payload.get("universal_critique_yaml_top_level_mapping_child_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
         return None
-    return (
-        "Universal critique YAML top-level mapping child count: "
-        f"**{raw}**."
-    )
+    return f"Universal critique YAML top-level mapping child count: **{raw}**."
 
 
 def universal_critique_workflow_yaml_bytes_caption(
@@ -278,5 +263,3 @@ def universal_critique_env_override_summary_caption(
         return "Universal critique: no env overrides differ from workflow YAML."
     word = "override" if n == 1 else "overrides"
     return f"Universal critique: **{n}** env {word} differ from workflow YAML."
-
-

@@ -67,15 +67,11 @@ def _render_security_scan_history(run_id: str, data: dict, _wf_pick: str) -> Non
                     use_container_width=True,
                     hide_index=True,
                 )
-                _ss_hist_metrics_json = (
-                    security_scan_history_operator_metrics_export_json(
-                        _ss_hist_metrics,
-                    )
+                _ss_hist_metrics_json = security_scan_history_operator_metrics_export_json(
+                    _ss_hist_metrics,
                 )
-                _ss_hist_metrics_csv = (
-                    security_scan_history_operator_metrics_table_rows_csv(
-                        _ss_hist_metric_rows,
-                    )
+                _ss_hist_metrics_csv = security_scan_history_operator_metrics_table_rows_csv(
+                    _ss_hist_metric_rows,
                 )
                 (
                     _ss_hist_metrics_dl_json_col,
@@ -83,38 +79,26 @@ def _render_security_scan_history(run_id: str, data: dict, _wf_pick: str) -> Non
                 ) = st.columns(2)
                 with _ss_hist_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download security scan history operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download security scan history operator metrics JSON"),
                         data=_ss_hist_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_security_scan_history_operator_metrics_"
                             f"{_ss_hist_slug}_{_ss_hist_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_security_scan_history_operator_"
-                            "metrics_json"
-                        ),
+                        key=("hermes_dl_security_scan_history_operator_metrics_json"),
                     )
                 with _ss_hist_metrics_dl_csv_col:
                     if _ss_hist_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download security scan history operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download security scan history operator metrics CSV"),
                             data=_ss_hist_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_security_scan_history_operator_metrics_"
                                 f"{_ss_hist_slug}_{_ss_hist_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_security_scan_history_operator_"
-                                "metrics_csv"
-                            ),
+                            key=("hermes_dl_security_scan_history_operator_metrics_csv"),
                         )
             st.dataframe(_ss_hist_rows, use_container_width=True)
             _ss_hist_csv = security_scan_history_table_rows_csv(_ss_hist_rows)
@@ -124,9 +108,7 @@ def _render_security_scan_history(run_id: str, data: dict, _wf_pick: str) -> Non
                 st.download_button(
                     label="Download security scan history CSV",
                     data=_ss_hist_csv.encode("utf-8"),
-                    file_name=(
-                        f"hermes_security_scan_history_{_ss_hist_slug}_{_ss_hist_ts}.csv"
-                    ),
+                    file_name=(f"hermes_security_scan_history_{_ss_hist_slug}_{_ss_hist_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_security_scan_history_csv",
                 )
@@ -134,9 +116,7 @@ def _render_security_scan_history(run_id: str, data: dict, _wf_pick: str) -> Non
                 st.download_button(
                     label="Download security scan history JSON",
                     data=_ss_hist_json.encode("utf-8"),
-                    file_name=(
-                        f"hermes_security_scan_history_{_ss_hist_slug}_{_ss_hist_ts}.json"
-                    ),
+                    file_name=(f"hermes_security_scan_history_{_ss_hist_slug}_{_ss_hist_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_security_scan_history_json",
                 )

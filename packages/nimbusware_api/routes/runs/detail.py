@@ -49,6 +49,7 @@ from nimbusware_projections.run_summary import build_run_summary
 
 router = APIRouter()
 
+
 @router.get(
     "/runs/{run_id}",
     response_model=RunDetailResponse,

@@ -1,6 +1,5 @@
 """RunOrchestrator.create_run`` post-gate idempotency contract."""
 
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -44,9 +43,7 @@ def test_create_run_idempotency_fresh_run_and_precedence_4_axis_contract() -> No
     orch, mem = make_dev_orchestrator()
     r1 = orch.create_run("default")
     r2 = orch.create_run("default")
-    assert r1 != r2, (
-        f"both-None calls should produce distinct run_ids; got r1={r1} r2={r2}"
-    )
+    assert r1 != r2, f"both-None calls should produce distinct run_ids; got r1={r1} r2={r2}"
     assert _count_run_created(mem) == 2
     assert _correlation_ids_in_store(mem) == [None, None]
 
@@ -144,8 +141,7 @@ def test_create_run_idempotency_distinctness_and_precedence_lockout_3_axis_contr
     r1 = orch.create_run("default", correlation_id=uuid4())
     r2 = orch.create_run("default", correlation_id=uuid4())
     assert r1 != r2, (
-        f"different correlation_id values should produce distinct run_ids; "
-        f"r1={r1} r2={r2}"
+        f"different correlation_id values should produce distinct run_ids; r1={r1} r2={r2}"
     )
     assert _count_run_created(mem) == 2
 

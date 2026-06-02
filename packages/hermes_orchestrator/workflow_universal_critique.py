@@ -130,9 +130,7 @@ def parse_universal_critique_workflow_block(
     root_d = root if isinstance(root, dict) else None
     default_enabled = _leaf_bool(root_d, "default_enabled") if root_d else False
     unanimous_gate_enforce = (
-        _leaf_bool(root_d, "unanimous_gate_enforce", default=default_enabled)
-        if root_d
-        else False
+        _leaf_bool(root_d, "unanimous_gate_enforce", default=default_enabled) if root_d else False
     )
     impl_d = impl if isinstance(impl, dict) else None
     tw_d = tw if isinstance(tw, dict) else None

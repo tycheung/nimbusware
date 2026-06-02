@@ -21,7 +21,9 @@ from hermes_store.postgres import PostgresEventStore
 from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 
 
-def build_worker_orchestrator() -> tuple[RunOrchestrator, threading.Event | None, threading.Thread | None]:
+def build_worker_orchestrator() -> tuple[
+    RunOrchestrator, threading.Event | None, threading.Thread | None
+]:
     repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     base, _ = default_paths(repo)
     url = os.environ.get("NIMBUSWARE_DATABASE_URL")

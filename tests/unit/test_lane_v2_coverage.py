@@ -20,7 +20,9 @@ _ROOT = __import__("pathlib").Path(__file__).resolve().parents[2]
 
 
 def _router() -> UniversalCritiqueRouter:
-    return UniversalCritiqueRouter.from_yaml(_ROOT / "configs" / "personas" / "critique_pairings.yaml")
+    return UniversalCritiqueRouter.from_yaml(
+        _ROOT / "configs" / "personas" / "critique_pairings.yaml"
+    )
 
 
 def test_request_log_includes_request_id(caplog: pytest.LogCaptureFixture) -> None:

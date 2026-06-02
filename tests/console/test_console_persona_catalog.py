@@ -238,9 +238,12 @@ def test_persona_catalog_without_instructions_caption() -> None:
     assert cap is not None
     assert "**2**" in cap
     assert "**5**" in cap
-    assert persona_catalog_without_instructions_caption(
-        {"without_instructions": 0, "total_entries": 5},
-    ) is None
+    assert (
+        persona_catalog_without_instructions_caption(
+            {"without_instructions": 0, "total_entries": 5},
+        )
+        is None
+    )
     assert persona_catalog_without_instructions_caption(None) is None
     assert persona_catalog_without_instructions_caption({}) is None
 
@@ -252,9 +255,12 @@ def test_persona_catalog_without_capability_profile_caption() -> None:
     assert cap is not None
     assert "capability_profile" in cap
     assert "**1**" in cap
-    assert persona_catalog_without_capability_profile_caption(
-        {"without_capability_profile": 0, "total_entries": 4},
-    ) is None
+    assert (
+        persona_catalog_without_capability_profile_caption(
+            {"without_capability_profile": 0, "total_entries": 4},
+        )
+        is None
+    )
     assert persona_catalog_without_capability_profile_caption(None) is None
 
 
@@ -268,9 +274,12 @@ def test_persona_catalog_critique_pairings_total_caption() -> None:
     else:
         assert cap is None
     assert persona_catalog_critique_pairings_total_caption(None) is None
-    assert persona_catalog_critique_pairings_total_caption(
-        {"has_critique_pairings_yaml": False},
-    ) is None
+    assert (
+        persona_catalog_critique_pairings_total_caption(
+            {"has_critique_pairings_yaml": False},
+        )
+        is None
+    )
 
 
 def test_persona_catalog_probation_breakdown_caption() -> None:
@@ -308,9 +317,12 @@ def test_persona_catalog_persona_id_duplicates_operator_caption() -> None:
     cap = persona_catalog_persona_id_duplicates_operator_caption(s)
     assert cap is not None
     assert "2" in cap
-    assert persona_catalog_persona_id_duplicates_operator_caption(
-        {"nonblank_persona_id_duplicate_row_count": 0},
-    ) is None
+    assert (
+        persona_catalog_persona_id_duplicates_operator_caption(
+            {"nonblank_persona_id_duplicate_row_count": 0},
+        )
+        is None
+    )
 
 
 def test_persona_catalog_display_name_duplicates_operator_caption() -> None:
@@ -467,14 +479,7 @@ def test_critique_pairings_operator_summary_per_producer_counts(tmp_path: Path) 
     d = tmp_path / "configs" / "personas"
     d.mkdir(parents=True)
     (d / "critique_pairings.yaml").write_text(
-        "version: 1\n"
-        "pairings:\n"
-        "  a:\n"
-        "    - x\n"
-        "  b:\n"
-        "    - u\n"
-        "    - v\n"
-        "    - w\n",
+        "version: 1\npairings:\n  a:\n    - x\n  b:\n    - u\n    - v\n    - w\n",
         encoding="utf-8",
     )
     s = critique_pairings_operator_summary(tmp_path)
@@ -566,8 +571,7 @@ def test_load_persona_shelves_catalog_operator_summary_matches_flat_count() -> N
     assert wps_by_shelf["business_area"] <= summary["business_area_count"]
     assert wps_by_shelf["development_role"] <= summary["development_role_count"]
     assert (
-        summary["with_instructions"] + summary["without_instructions"]
-        == summary["total_entries"]
+        summary["with_instructions"] + summary["without_instructions"] == summary["total_entries"]
     )
     woi_by_shelf = summary["without_instructions_by_shelf"]
     assert set(woi_by_shelf.keys()) == {"business_area", "development_role"}
@@ -786,9 +790,7 @@ def test_persona_catalog_operator_summary_with_instructions_by_shelf_mixed_shelv
     assert s["with_instructions"] + s["without_instructions"] == s["total_entries"]
 
 
-def test_persona_catalog_operator_summary_all_instructions_populated_zero_without() -> (
-    None
-):
+def test_persona_catalog_operator_summary_all_instructions_populated_zero_without() -> None:
     cat = {
         "version": 1,
         "business_area": [
@@ -828,9 +830,7 @@ def test_persona_catalog_operator_summary_without_instructions_by_shelf_split() 
     assert s["without_instructions"] == 2
 
 
-def test_persona_catalog_operator_summary_whitespace_none_instructions_count_without() -> (
-    None
-):
+def test_persona_catalog_operator_summary_whitespace_none_instructions_count_without() -> None:
     cat = {
         "version": 1,
         "business_area": [
@@ -884,8 +884,9 @@ def test_persona_catalog_operator_summary_with_boundary_statement_by_shelf_mixed
     )
 
 
-def test_persona_catalog_operator_summary_with_allowed_tools_and_success_metrics_by_shelf_mixed(
-) -> None:
+def test_persona_catalog_operator_summary_with_allowed_tools_and_success_metrics_by_shelf_mixed() -> (
+    None
+):
     cat = {
         "version": 1,
         "business_area": [
@@ -925,8 +926,9 @@ def test_persona_catalog_operator_summary_with_allowed_tools_and_success_metrics
     )
 
 
-def test_persona_catalog_operator_summary_non_list_allowed_tools_success_metrics_skip_per_shelf(
-) -> None:
+def test_persona_catalog_operator_summary_non_list_allowed_tools_success_metrics_skip_per_shelf() -> (
+    None
+):
     cat = {
         "version": 1,
         "business_area": [
@@ -1273,15 +1275,11 @@ def test_persona_catalog_operator_summary_other_examples_caps_at_ten() -> None:
     assert set(ba_ex) | set(dr_ex) == set(raw_values)
 
 
-def test_persona_catalog_operator_summary_other_examples_by_shelf_one_shelf_caps_at_ten() -> (
-    None
-):
+def test_persona_catalog_operator_summary_other_examples_by_shelf_one_shelf_caps_at_ten() -> None:
     letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     cat = {
         "version": 1,
-        "business_area": [
-            {"id": f"p{i}", "probation_status": letters[i]} for i in range(12)
-        ],
+        "business_area": [{"id": f"p{i}", "probation_status": letters[i]} for i in range(12)],
         "development_role": [{"id": "x", "probation_status": "probation"}],
     }
     s = persona_catalog_operator_summary(cat)
@@ -1374,9 +1372,7 @@ def test_critique_pairings_producer_keys_table_rows_real_repo() -> None:
     if full:
         assert len(all_rows) == len(full)
         assert all_rows == [
-            {"producer_key": str(k).strip()}
-            for k in full
-            if isinstance(k, str) and str(k).strip()
+            {"producer_key": str(k).strip()} for k in full if isinstance(k, str) and str(k).strip()
         ]
 
 
@@ -1506,9 +1502,12 @@ def test_critique_pairings_operator_summary_export_json(tmp_path: Path) -> None:
 
     missing = critique_pairings_operator_summary(tmp_path)
     assert missing["has_critique_pairings_yaml"] is False
-    assert json.loads(critique_pairings_operator_summary_export_json(missing))[
-        "has_critique_pairings_yaml"
-    ] is False
+    assert (
+        json.loads(critique_pairings_operator_summary_export_json(missing))[
+            "has_critique_pairings_yaml"
+        ]
+        is False
+    )
 
     cp_dir = tmp_path / "configs" / "personas"
     cp_dir.mkdir(parents=True)

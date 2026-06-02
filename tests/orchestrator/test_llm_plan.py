@@ -108,9 +108,7 @@ def test_llm_valid_json_records_critics() -> None:
             timeout_seconds=1.0,
         )
     critics = [
-        r
-        for r in store.list_run_events(str(run_id))
-        if r["event_type"] == "critic.verdict.emitted"
+        r for r in store.list_run_events(str(run_id)) if r["event_type"] == "critic.verdict.emitted"
     ]
     assert len(critics) == 2
     assert all((r.get("payload") or {}).get("evidence_refs") for r in critics)

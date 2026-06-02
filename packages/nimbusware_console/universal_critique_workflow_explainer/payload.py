@@ -123,5 +123,3 @@ def universal_critique_workflow_explainer_payload(
         "yaml_only": asdict(wf_block),
         "effective_with_env": asdict(eff),
     }
-
-

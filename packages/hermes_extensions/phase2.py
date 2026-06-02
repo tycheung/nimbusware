@@ -19,8 +19,7 @@ from hermes_store.protocol import EventStore
 class ModuleIntegratorPort(Protocol):
     """§3A.4 integration path + compatibility gate thresholds."""
 
-    def score_fit(self, bundle_id: str, project_profile: dict[str, Any]) -> float:
-        ...
+    def score_fit(self, bundle_id: str, project_profile: dict[str, Any]) -> float: ...
 
 
 class ModuleIntegrator:
@@ -72,8 +71,7 @@ class ModuleIntegrator:
 class AgentEvaluatorPort(Protocol):
     """§3B.3 Agent Evaluator lifecycle."""
 
-    def evaluate(self, persona_id: str) -> dict[str, Any]:
-        ...
+    def evaluate(self, persona_id: str) -> dict[str, Any]: ...
 
 
 AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD = 0.75
@@ -164,9 +162,7 @@ class AgentEvaluator:
 
         if gaps:
             status = "invalid"
-        elif pid == "default" and not (
-            isinstance(persona_assignment, dict) and persona_assignment
-        ):
+        elif pid == "default" and not (isinstance(persona_assignment, dict) and persona_assignment):
             status = "gap"
             gaps.append("no_persona_assignment_on_run")
         else:
@@ -226,8 +222,7 @@ class AgentEvaluator:
 class UniversalCritiquePort(Protocol):
     """§3B.5 universal critique pairings."""
 
-    def pairing_for(self, producer_role: str) -> list[str]:
-        ...
+    def pairing_for(self, producer_role: str) -> list[str]: ...
 
 
 class UniversalCritiqueRouter:

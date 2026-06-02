@@ -34,4 +34,3 @@ def test_llm_body_falls_back_to_stub_without_model() -> None:
         )
     assert code == 0
     assert mode == "stub"
-

@@ -57,10 +57,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
                 st.download_button(
                     label="Download timeline events operator metrics JSON",
                     data=_tl_metrics_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_timeline_events_operator_metrics_"
-                        f"{_tl_slug}_{_tl_ts}.json"
-                    ),
+                    file_name=(f"hermes_timeline_events_operator_metrics_{_tl_slug}_{_tl_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_timeline_events_operator_metrics_json",
                 )
@@ -70,8 +67,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
                         label="Download timeline events operator metrics CSV",
                         data=_tl_metrics_csv.encode("utf-8"),
                         file_name=(
-                            "hermes_timeline_events_operator_metrics_"
-                            f"{_tl_slug}_{_tl_ts}.csv"
+                            f"hermes_timeline_events_operator_metrics_{_tl_slug}_{_tl_ts}.csv"
                         ),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_timeline_events_operator_metrics_csv",
@@ -90,9 +86,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
             st.download_button(
                 label="Download timeline events JSON (subset)",
                 data=_tl_events_json.encode("utf-8"),
-                file_name=(
-                    f"hermes_timeline_events_{_tl_slug}_{_tl_ts}.json"
-                ),
+                file_name=(f"hermes_timeline_events_{_tl_slug}_{_tl_ts}.json"),
                 mime="application/json",
                 key="hermes_dl_timeline_events_json",
             )
@@ -101,9 +95,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
                 st.download_button(
                     label="Download timeline events CSV",
                     data=_tl_events_csv.encode("utf-8"),
-                    file_name=(
-                        f"hermes_timeline_events_{_tl_slug}_{_tl_ts}.csv"
-                    ),
+                    file_name=(f"hermes_timeline_events_{_tl_slug}_{_tl_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_timeline_events_csv",
                 )

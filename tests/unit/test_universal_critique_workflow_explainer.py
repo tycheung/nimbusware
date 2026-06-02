@@ -132,7 +132,7 @@ def test_explainer_top_level_scalar_leaf_counts_bool_and_string(tmp_path: Path) 
         "version: 2\n"
         "universal_critique:\n"
         "  hard_block: true\n"
-        "  note: \"watch\"\n"
+        '  note: "watch"\n'
         "  implementation:\n"
         "    enabled: false\n",
         encoding="utf-8",
@@ -206,9 +206,12 @@ def test_universal_critique_workflow_yaml_relpath_caption(
     assert cap is not None
     assert "stub.yaml" in cap
     assert universal_critique_workflow_yaml_relpath_caption(None) is None
-    assert universal_critique_workflow_yaml_relpath_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        universal_critique_workflow_yaml_relpath_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
     assert universal_critique_workflow_yaml_relpath_caption({}) is None
 
 
@@ -225,12 +228,18 @@ def test_universal_critique_yaml_top_level_nonempty_count_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert universal_critique_yaml_top_level_nonempty_count_caption(None) is None
-    assert universal_critique_yaml_top_level_nonempty_count_caption(
-        {"load_error": "bad"},
-    ) is None
-    assert universal_critique_yaml_top_level_nonempty_count_caption(
-        {"universal_critique_yaml_present": False},
-    ) is None
+    assert (
+        universal_critique_yaml_top_level_nonempty_count_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        universal_critique_yaml_top_level_nonempty_count_caption(
+            {"universal_critique_yaml_present": False},
+        )
+        is None
+    )
 
 
 def test_universal_critique_yaml_top_level_enabled_true_count_caption(
@@ -261,9 +270,12 @@ def test_universal_critique_yaml_top_level_enabled_false_count_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert universal_critique_yaml_top_level_enabled_false_count_caption(None) is None
-    assert universal_critique_yaml_top_level_enabled_false_count_caption(
-        {"universal_critique_yaml_present": False},
-    ) is None
+    assert (
+        universal_critique_yaml_top_level_enabled_false_count_caption(
+            {"universal_critique_yaml_present": False},
+        )
+        is None
+    )
 
 
 def test_universal_critique_yaml_top_level_mapping_child_count_caption(
@@ -279,9 +291,12 @@ def test_universal_critique_yaml_top_level_mapping_child_count_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert universal_critique_yaml_top_level_mapping_child_count_caption(None) is None
-    assert universal_critique_yaml_top_level_mapping_child_count_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        universal_critique_yaml_top_level_mapping_child_count_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_universal_critique_yaml_top_level_list_child_count_caption(
@@ -313,16 +328,25 @@ def test_universal_critique_workflow_yaml_bytes_caption(
     assert isinstance(raw, int)
     assert f"**{raw}**" in cap
     assert universal_critique_workflow_yaml_bytes_caption(None) is None
-    assert universal_critique_workflow_yaml_bytes_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        universal_critique_workflow_yaml_bytes_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
     assert universal_critique_workflow_yaml_bytes_caption({}) is None
-    assert universal_critique_workflow_yaml_bytes_caption(
-        {"universal_critique_workflow_yaml_bytes": -1},
-    ) is None
-    assert universal_critique_workflow_yaml_bytes_caption(
-        {"universal_critique_workflow_yaml_bytes": True},
-    ) is None
+    assert (
+        universal_critique_workflow_yaml_bytes_caption(
+            {"universal_critique_workflow_yaml_bytes": -1},
+        )
+        is None
+    )
+    assert (
+        universal_critique_workflow_yaml_bytes_caption(
+            {"universal_critique_workflow_yaml_bytes": True},
+        )
+        is None
+    )
 
 
 def test_universal_critique_yaml_present_caption() -> None:
@@ -341,9 +365,12 @@ def test_universal_critique_yaml_present_caption() -> None:
     assert "present" in cap_present
     assert "**2**" in cap_present
     assert universal_critique_yaml_present_caption(None) is None
-    assert universal_critique_yaml_present_caption(
-        {"load_error": "bad"},
-    ) is None
+    assert (
+        universal_critique_yaml_present_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
 
 
 def test_universal_critique_default_enabled_caption() -> None:
@@ -378,15 +405,21 @@ def test_universal_critique_yaml_enabled_bucket_caption() -> None:
     assert "**2** true" in cap
     assert "**1** false" in cap
     assert universal_critique_yaml_enabled_bucket_caption(None) is None
-    assert universal_critique_yaml_enabled_bucket_caption(
-        {"universal_critique_yaml_present": False},
-    ) is None
-    assert universal_critique_yaml_enabled_bucket_caption(
-        {
-            "universal_critique_yaml_present": True,
-            "load_error": "bad yaml",
-        },
-    ) is None
+    assert (
+        universal_critique_yaml_enabled_bucket_caption(
+            {"universal_critique_yaml_present": False},
+        )
+        is None
+    )
+    assert (
+        universal_critique_yaml_enabled_bucket_caption(
+            {
+                "universal_critique_yaml_present": True,
+                "load_error": "bad yaml",
+            },
+        )
+        is None
+    )
 
 
 def test_universal_critique_yaml_stage_keys_caption() -> None:
@@ -413,15 +446,21 @@ def test_universal_critique_yaml_stage_keys_caption() -> None:
     assert cap_trunc is not None
     assert "+2 more" in cap_trunc
     assert universal_critique_yaml_stage_keys_caption(None) is None
-    assert universal_critique_yaml_stage_keys_caption(
-        {"universal_critique_yaml_present": False},
-    ) is None
-    assert universal_critique_yaml_stage_keys_caption(
-        {
-            "universal_critique_yaml_present": True,
-            "load_error": "bad yaml",
-        },
-    ) is None
+    assert (
+        universal_critique_yaml_stage_keys_caption(
+            {"universal_critique_yaml_present": False},
+        )
+        is None
+    )
+    assert (
+        universal_critique_yaml_stage_keys_caption(
+            {
+                "universal_critique_yaml_present": True,
+                "load_error": "bad yaml",
+            },
+        )
+        is None
+    )
 
 
 def test_universal_critique_enabled_stages_caption() -> None:
@@ -438,9 +477,12 @@ def test_universal_critique_enabled_stages_caption() -> None:
     assert "enabled: true" in cap
     assert "enabled: false" in cap
     assert universal_critique_enabled_stages_caption(None) is None
-    assert universal_critique_enabled_stages_caption(
-        {"universal_critique_yaml_present": False},
-    ) is None
+    assert (
+        universal_critique_enabled_stages_caption(
+            {"universal_critique_yaml_present": False},
+        )
+        is None
+    )
 
 
 def test_explainer_enabled_true_counts_two_subtrees(tmp_path: Path) -> None:

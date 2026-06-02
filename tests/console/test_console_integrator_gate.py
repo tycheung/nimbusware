@@ -197,9 +197,12 @@ def test_integrator_gate_history_export_json_round_trip() -> None:
 
 
 def test_integrator_gate_history_export_filename_slug() -> None:
-    assert integrator_gate_history_export_filename_slug(
-        "00000000-0000-4000-8000-000000000001",
-    ) == "00000000-0000-4000-8000-000000000001"
+    assert (
+        integrator_gate_history_export_filename_slug(
+            "00000000-0000-4000-8000-000000000001",
+        )
+        == "00000000-0000-4000-8000-000000000001"
+    )
     assert integrator_gate_history_export_filename_slug("bad/id!") == "bad_id"
     assert integrator_gate_history_export_filename_slug("   ") == "run"
 
@@ -244,9 +247,12 @@ def test_integrator_gate_history_distinct_bundles_caption() -> None:
     assert "**2**" in cap
     assert integrator_gate_history_distinct_bundles_caption(None) is None
     assert integrator_gate_history_distinct_bundles_caption({}) is None
-    assert integrator_gate_history_distinct_bundles_caption(
-        {"gate_event_count": 0},
-    ) is None
+    assert (
+        integrator_gate_history_distinct_bundles_caption(
+            {"gate_event_count": 0},
+        )
+        is None
+    )
 
 
 def test_integrator_gate_history_score_range_caption() -> None:
@@ -262,12 +268,18 @@ def test_integrator_gate_history_score_range_caption() -> None:
     assert "numeric rows only" in cap
     assert integrator_gate_history_score_range_caption(None) is None
     assert integrator_gate_history_score_range_caption({}) is None
-    assert integrator_gate_history_score_range_caption(
-        {"gate_event_count": 0},
-    ) is None
-    assert integrator_gate_history_score_range_caption(
-        {"gate_event_count": 1},
-    ) is None
+    assert (
+        integrator_gate_history_score_range_caption(
+            {"gate_event_count": 0},
+        )
+        is None
+    )
+    assert (
+        integrator_gate_history_score_range_caption(
+            {"gate_event_count": 1},
+        )
+        is None
+    )
 
 
 def test_integrator_gate_history_latest_margin_caption() -> None:
@@ -281,12 +293,18 @@ def test_integrator_gate_history_latest_margin_caption() -> None:
     assert "**-0.2**" in cap
     assert "latest row" in cap
     assert integrator_gate_history_latest_margin_caption(None) is None
-    assert integrator_gate_history_latest_margin_caption(
-        {"gate_event_count": 0},
-    ) is None
-    assert integrator_gate_history_latest_margin_caption(
-        {"gate_event_count": 1},
-    ) is None
+    assert (
+        integrator_gate_history_latest_margin_caption(
+            {"gate_event_count": 0},
+        )
+        is None
+    )
+    assert (
+        integrator_gate_history_latest_margin_caption(
+            {"gate_event_count": 1},
+        )
+        is None
+    )
 
 
 def test_integrator_gate_history_operator_metrics_caption() -> None:
@@ -311,9 +329,12 @@ def test_integrator_gate_history_operator_metrics_caption() -> None:
     assert "**2**" in cap
     assert "FAIL=1" in cap
     assert "bundle" in cap.lower()
-    assert integrator_gate_history_operator_metrics_caption(
-        {"gate_event_count": 0},
-    ) is None
+    assert (
+        integrator_gate_history_operator_metrics_caption(
+            {"gate_event_count": 0},
+        )
+        is None
+    )
     assert integrator_gate_history_operator_metrics_caption(None) is None
 
 
@@ -371,9 +392,12 @@ def test_integrator_gate_delta_verdict_changed_caption() -> None:
     assert "**false**" in cap_f
     assert integrator_gate_delta_verdict_changed_caption(None) is None
     assert integrator_gate_delta_verdict_changed_caption({}) is None
-    assert integrator_gate_delta_verdict_changed_caption(
-        {"verdict_changed": 1},
-    ) is None
+    assert (
+        integrator_gate_delta_verdict_changed_caption(
+            {"verdict_changed": 1},
+        )
+        is None
+    )
 
 
 def test_integrator_gate_delta_bundle_changed_caption() -> None:
@@ -384,9 +408,12 @@ def test_integrator_gate_delta_bundle_changed_caption() -> None:
     assert cap_f is not None
     assert "**false**" in cap_f
     assert integrator_gate_delta_bundle_changed_caption(None) is None
-    assert integrator_gate_delta_bundle_changed_caption(
-        {"bundle_id_changed": 1},
-    ) is None
+    assert (
+        integrator_gate_delta_bundle_changed_caption(
+            {"bundle_id_changed": 1},
+        )
+        is None
+    )
 
 
 def test_integrator_gate_latest_bundle_id_caption() -> None:
@@ -470,10 +497,9 @@ def test_integrator_gate_history_operator_metrics_export_json_and_csv() -> None:
     assert parsed["verdict_counts"] == {"FAIL": 1, "PASS": 1}
     csv_text = integrator_gate_history_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0] == "field,value"
-    assert (
-        integrator_gate_history_operator_metrics_export_filename_slug("run-abc")
-        == integrator_gate_history_export_filename_slug("run-abc")
-    )
+    assert integrator_gate_history_operator_metrics_export_filename_slug(
+        "run-abc"
+    ) == integrator_gate_history_export_filename_slug("run-abc")
 
 
 def test_integrator_gate_history_operator_metrics_export_empty() -> None:
@@ -618,10 +644,9 @@ def test_integrator_gate_latest_operator_metrics_export_json_and_csv() -> None:
     assert parsed["latest_score_minus_min_pass"] == pytest.approx(0.2)
     csv_text = integrator_gate_latest_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0] == "field,value"
-    assert (
-        integrator_gate_latest_operator_metrics_export_filename_slug("run-abc")
-        == integrator_gate_latest_export_filename_slug("run-abc")
-    )
+    assert integrator_gate_latest_operator_metrics_export_filename_slug(
+        "run-abc"
+    ) == integrator_gate_latest_export_filename_slug("run-abc")
 
 
 def test_integrator_gate_latest_operator_metrics_export_absent() -> None:
@@ -668,10 +693,9 @@ def test_integrator_gate_delta_operator_metrics_export_json_and_csv() -> None:
     assert "FAIL" in str(parsed["verdict_transition"])
     csv_text = integrator_gate_delta_operator_metrics_table_rows_csv(rows)
     assert csv_text.splitlines()[0] == "field,value"
-    assert (
-        integrator_gate_delta_operator_metrics_export_filename_slug("run-abc")
-        == integrator_gate_delta_export_filename_slug("run-abc")
-    )
+    assert integrator_gate_delta_operator_metrics_export_filename_slug(
+        "run-abc"
+    ) == integrator_gate_delta_export_filename_slug("run-abc")
 
 
 def test_integrator_gate_delta_operator_metrics_export_absent() -> None:

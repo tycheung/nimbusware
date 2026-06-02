@@ -221,4 +221,3 @@ def self_refinement_marker_history_entry_count_caption(
     n = len(history)
     word = "marker" if n == 1 else "markers"
     return f"Self-refinement marker history: **{n}** {word} in this timeline view."
-

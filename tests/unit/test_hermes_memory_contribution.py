@@ -74,7 +74,9 @@ def test_maybe_rebuild_emits_memory_indexed(tmp_path, monkeypatch) -> None:
     )
     assert result is not None
     assert result.chunks_added >= 1
-    assert any(r["event_type"] == EventType.MEMORY_INDEXED.value for r in store.list_all_event_rows())
+    assert any(
+        r["event_type"] == EventType.MEMORY_INDEXED.value for r in store.list_all_event_rows()
+    )
 
 
 def test_create_run_pins_memory_index_version(tmp_path, monkeypatch) -> None:

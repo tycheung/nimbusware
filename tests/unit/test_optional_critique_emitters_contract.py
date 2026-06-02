@@ -1,6 +1,5 @@
 """_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional``."""
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -193,8 +192,7 @@ def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
             eff=eff_a6,
         )
         assert m_llm.call_count == 1 and m_stub.call_count == 1, (
-            "A6: LLM returns False + stub=True -> LLM + stub fallback "
-            "(AND-gated fallback)"
+            "A6: LLM returns False + stub=True -> LLM + stub fallback (AND-gated fallback)"
         )
 
 
@@ -422,12 +420,8 @@ def test_emit_test_writer_critique_optional_argument_propagation_5_axis() -> Non
         assert kw_c5["model_id"] == "custom-model:13b", (
             "C5: model_id must propagate from MODEL_SELECTED_PRIMARY payload"
         )
-        assert kw_c5["verifier_exit_code"] == 42, (
-            "C5: verifier_exit_code must propagate verbatim"
-        )
-        assert kw_c5["log_snippet"] == "LOG_X", (
-            "C5: log_snippet must propagate verbatim"
-        )
+        assert kw_c5["verifier_exit_code"] == 42, "C5: verifier_exit_code must propagate verbatim"
+        assert kw_c5["log_snippet"] == "LOG_X", "C5: log_snippet must propagate verbatim"
 
 
 def test_emit_planner_critique_optional_argument_propagation_5_axis() -> None:
@@ -535,9 +529,5 @@ def test_emit_planner_critique_optional_argument_propagation_5_axis() -> None:
         assert kw_d5["model_id"] == "custom-model:13b", (
             "D5: model_id must propagate from MODEL_SELECTED_PRIMARY (parallel to C5)"
         )
-        assert kw_d5["verifier_exit_code"] == 42, (
-            "D5: verifier_exit_code must propagate verbatim"
-        )
-        assert kw_d5["log_snippet"] == "LOG_X", (
-            "D5: log_snippet must propagate verbatim"
-        )
+        assert kw_d5["verifier_exit_code"] == 42, "D5: verifier_exit_code must propagate verbatim"
+        assert kw_d5["log_snippet"] == "LOG_X", "D5: log_snippet must propagate verbatim"

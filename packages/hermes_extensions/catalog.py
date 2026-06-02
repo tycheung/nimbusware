@@ -288,9 +288,7 @@ def bundle_faiss_index_sync_state(repo_root: Path) -> dict[str, Any]:
     if not ready:
         out["stale"] = None
         out["index_max_mtime_ns"] = None
-        out["catalog_mtime_ns"] = (
-            int(cat.stat().st_mtime_ns) if cat.is_file() else None
-        )
+        out["catalog_mtime_ns"] = int(cat.stat().st_mtime_ns) if cat.is_file() else None
         return out
     idx_m = max(int(faiss_p.stat().st_mtime_ns), int(meta_p.stat().st_mtime_ns))
     out["index_max_mtime_ns"] = idx_m

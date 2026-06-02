@@ -130,9 +130,7 @@ def agent_evaluator_operator_metrics(
             and isinstance(llm_band, str)
             and llm_band.strip()
         ):
-            metrics["llm_rules_score_agreement"] = (
-                rules_band.strip() == llm_band.strip()
-            )
+            metrics["llm_rules_score_agreement"] = rules_band.strip() == llm_band.strip()
     for key in (
         "auto_promote_requested",
         "auto_promote_applied",
@@ -305,10 +303,7 @@ def agent_evaluator_operator_metrics_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _AGENT_EVALUATOR_OPERATOR_METRICS_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _AGENT_EVALUATOR_OPERATOR_METRICS_CSV_COLUMNS},
             )
     return buf.getvalue()
 

@@ -45,7 +45,9 @@ def test_tool_grep_finds_line(tmp_path: Path) -> None:
     assert "inventory" in result.output
 
 
-def test_execute_slice_implement_agent_stub(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_execute_slice_implement_agent_stub(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("HERMES_SLICE_IMPLEMENT", "agent")
     assert slice_implement_mode() == "agent"
     ws = tmp_path / "proj"

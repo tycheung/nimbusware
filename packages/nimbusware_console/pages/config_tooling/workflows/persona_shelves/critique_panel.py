@@ -82,11 +82,7 @@ def _render_critique_pairings_panel(repo_root: Path) -> None:
                     )
         _cp_prod_key_count = _cp_sum.get("producer_taxonomy_key_count")
         _cp_prod_all_rows = critique_pairings_producer_keys_all_table_rows(_cp_sum)
-        if (
-            _cp_prod_all_rows
-            and type(_cp_prod_key_count) is int
-            and _cp_prod_key_count > 12
-        ):
+        if _cp_prod_all_rows and type(_cp_prod_key_count) is int and _cp_prod_key_count > 12:
             _cp_prod_all_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             _cp_prod_all_slug = critique_pairings_export_filename_slug()
             _cp_prod_all_json = critique_pairings_producer_keys_all_export_json(
@@ -170,9 +166,7 @@ def _render_critique_pairings_panel(repo_root: Path) -> None:
                 st.download_button(
                     label="Download critique pairings critic counts (full) JSON",
                     data=_cp_critic_all_json.encode("utf-8"),
-                    file_name=(
-                        f"hermes_{_cp_slug}_critic_counts_full_{_cp_ts}.json"
-                    ),
+                    file_name=(f"hermes_{_cp_slug}_critic_counts_full_{_cp_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_critique_pairings_critic_counts_full_json",
                 )
@@ -181,9 +175,7 @@ def _render_critique_pairings_panel(repo_root: Path) -> None:
                     st.download_button(
                         label="Download critique pairings critic counts (full) CSV",
                         data=_cp_critic_all_csv.encode("utf-8"),
-                        file_name=(
-                            f"hermes_{_cp_slug}_critic_counts_full_{_cp_ts}.csv"
-                        ),
+                        file_name=(f"hermes_{_cp_slug}_critic_counts_full_{_cp_ts}.csv"),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_critique_pairings_critic_counts_full_csv",
                     )
@@ -192,7 +184,5 @@ def _render_critique_pairings_panel(repo_root: Path) -> None:
             st.warning(f"Could not parse critique_pairings.yaml: {err}")
         else:
             with st.expander("critique_pairings.yaml (operator summary)", expanded=False):
-                st.caption(
-                    "JSON-safe snapshot of the frozen YAML (§14 #14); not an API payload."
-                )
+                st.caption("JSON-safe snapshot of the frozen YAML (§14 #14); not an API payload.")
                 st.json(_cp_sum)

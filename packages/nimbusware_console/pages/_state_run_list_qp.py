@@ -153,8 +153,6 @@ def _run_list_qp_push(params: dict[str, str | int]) -> None:
         st.query_params[str(k)] = str(v)
 
 
-
-
 def _build_run_list_params() -> dict[str, str | int]:
     off = int(st.session_state[_SS_OFF])
     order_val = str(st.session_state[_SS_ORDER])
@@ -214,9 +212,7 @@ def _store_list_snapshot(
         "next_cursor": data.get("next_cursor"),
         "total": total_snap,
         "link": (
-            link_header.strip()
-            if isinstance(link_header, str) and link_header.strip()
-            else ""
+            link_header.strip() if isinstance(link_header, str) and link_header.strip() else ""
         ),
     }
 
@@ -226,5 +222,3 @@ def _run_list_clear_query_params() -> None:
         if k in st.query_params:
             del st.query_params[k]
     st.session_state["_hermes_run_list_qp_snap"] = ()
-
-

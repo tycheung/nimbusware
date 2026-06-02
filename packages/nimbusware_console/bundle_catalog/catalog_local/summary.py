@@ -97,10 +97,7 @@ def bundle_catalog_local_summary_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS},
             )
     return buf.getvalue()
 
@@ -200,12 +197,8 @@ def bundle_catalog_local_summary_operator_metrics_caption(
         bc = 0
     if not isinstance(dtc, int) or isinstance(dtc, bool):
         dtc = 0
-    return (
-        f"Local catalog operator metrics: **{bc}** bundle(s), "
-        f"**{dtc}** distinct tag(s)."
-    )
+    return f"Local catalog operator metrics: **{bc}** bundle(s), **{dtc}** distinct tag(s)."
 
 
 def bundle_catalog_local_summary_operator_metrics_export_filename_slug() -> str:
     return "bundle_catalog_local_summary_operator_metrics"
-

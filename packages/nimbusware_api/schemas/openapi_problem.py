@@ -50,4 +50,3 @@ PROBLEM_RESPONSE_503: dict[str, Any] = {
     "description": "Server misconfiguration (e.g. admin token not set)",
     "content": _PROBLEM_JSON_CONTENT,
 }
-

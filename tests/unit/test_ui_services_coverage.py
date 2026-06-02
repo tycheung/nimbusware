@@ -99,7 +99,9 @@ def test_enterprise_console_pure_helpers() -> None:
         selected_tenant_slug="acme",
     )
     assert key == "tenant-key"
-    rows = ent_ui.fleet_memory_status_table_rows({"tenant_id": "t1", "remote": {"configured": True}})
+    rows = ent_ui.fleet_memory_status_table_rows(
+        {"tenant_id": "t1", "remote": {"configured": True}}
+    )
     assert any(r["field"] == "tenant_id" for r in rows)
     cap = ent_ui.fleet_worker_health_caption({"ok": True, "backpressure": "low"})
     assert cap and "ok=yes" in cap
@@ -107,7 +109,9 @@ def test_enterprise_console_pure_helpers() -> None:
         {"fleet_sli": {"combined_max_p95_latency_ms": 120, "sustained_export_present": True}},
     )
     assert sli and "combined_max_p95_ms=120" in sli
-    exported = ent_ui.fleet_dashboard_export_json(memory={"a": 1}, preflight_aggregate=None, worker=None)
+    exported = ent_ui.fleet_dashboard_export_json(
+        memory={"a": 1}, preflight_aggregate=None, worker=None
+    )
     assert '"fleet_memory"' in exported
     assert ent_ui.fleet_dashboard_export_filename_slug() == "enterprise_fleet_dashboard"
 

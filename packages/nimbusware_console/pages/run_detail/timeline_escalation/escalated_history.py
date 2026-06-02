@@ -29,8 +29,7 @@ def _render_run_escalated_history(run_id: str, data: dict) -> None:
     with st.expander("Run escalated history (from timeline)", expanded=False):
         if not _re_hist_rows:
             st.caption(
-                "No ``run_escalated_history`` on this timeline (no "
-                "run.escalated events recorded)."
+                "No ``run_escalated_history`` on this timeline (no run.escalated events recorded)."
             )
         else:
             st.caption(
@@ -66,15 +65,11 @@ def _render_run_escalated_history(run_id: str, data: dict) -> None:
                     use_container_width=True,
                     hide_index=True,
                 )
-                _re_hist_metrics_json = (
-                    run_escalated_history_operator_metrics_export_json(
-                        _re_hist_metrics,
-                    )
+                _re_hist_metrics_json = run_escalated_history_operator_metrics_export_json(
+                    _re_hist_metrics,
                 )
-                _re_hist_metrics_csv = (
-                    run_escalated_history_operator_metrics_table_rows_csv(
-                        _re_hist_metric_rows,
-                    )
+                _re_hist_metrics_csv = run_escalated_history_operator_metrics_table_rows_csv(
+                    _re_hist_metric_rows,
                 )
                 (
                     _re_hist_metrics_dl_json_col,
@@ -82,38 +77,26 @@ def _render_run_escalated_history(run_id: str, data: dict) -> None:
                 ) = st.columns(2)
                 with _re_hist_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download run escalated history operator "
-                            "metrics JSON"
-                        ),
+                        label=("Download run escalated history operator metrics JSON"),
                         data=_re_hist_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_run_escalated_history_operator_metrics_"
                             f"{_re_hist_slug}_{_re_hist_ts}.json"
                         ),
                         mime="application/json",
-                        key=(
-                            "hermes_dl_run_escalated_history_operator_"
-                            "metrics_json"
-                        ),
+                        key=("hermes_dl_run_escalated_history_operator_metrics_json"),
                     )
                 with _re_hist_metrics_dl_csv_col:
                     if _re_hist_metrics_csv:
                         st.download_button(
-                            label=(
-                                "Download run escalated history operator "
-                                "metrics CSV"
-                            ),
+                            label=("Download run escalated history operator metrics CSV"),
                             data=_re_hist_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_run_escalated_history_operator_metrics_"
                                 f"{_re_hist_slug}_{_re_hist_ts}.csv"
                             ),
                             mime="text/csv; charset=utf-8",
-                            key=(
-                                "hermes_dl_run_escalated_history_operator_"
-                                "metrics_csv"
-                            ),
+                            key=("hermes_dl_run_escalated_history_operator_metrics_csv"),
                         )
             st.dataframe(_re_hist_rows, use_container_width=True)
             _re_hist_csv = run_escalated_history_table_rows_csv(_re_hist_rows)
@@ -123,10 +106,7 @@ def _render_run_escalated_history(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download run escalated history CSV",
                     data=_re_hist_csv.encode("utf-8"),
-                    file_name=(
-                        "hermes_run_escalated_history_"
-                        f"{_re_hist_slug}_{_re_hist_ts}.csv"
-                    ),
+                    file_name=(f"hermes_run_escalated_history_{_re_hist_slug}_{_re_hist_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_run_escalated_history_csv",
                 )
@@ -134,10 +114,7 @@ def _render_run_escalated_history(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download run escalated history JSON",
                     data=_re_hist_json.encode("utf-8"),
-                    file_name=(
-                        "hermes_run_escalated_history_"
-                        f"{_re_hist_slug}_{_re_hist_ts}.json"
-                    ),
+                    file_name=(f"hermes_run_escalated_history_{_re_hist_slug}_{_re_hist_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_run_escalated_history_json",
                 )

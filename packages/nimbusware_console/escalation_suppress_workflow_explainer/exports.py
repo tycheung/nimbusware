@@ -19,7 +19,6 @@ def escalation_suppress_export_filename_slug() -> str:
     return "escalation_suppress"
 
 
-
 def _escalation_suppress_explainer_cell(value: Any) -> str:
     if value is None:
         return ""
@@ -44,6 +43,3 @@ def escalation_suppress_explainer_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
-
-
-

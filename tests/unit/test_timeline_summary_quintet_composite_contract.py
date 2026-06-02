@@ -1,6 +1,5 @@
 """Timeline-summary quintet composite."""
 
-
 from __future__ import annotations
 
 from typing import Any
@@ -350,9 +349,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     ]
     for name, stage_name, expected_persona in persona_cases:
         events = [
-            _stage_started_event(
-                event_id=_RID1, payload={"stage_name": stage_name, "attempt": 3}
-            ),
+            _stage_started_event(event_id=_RID1, payload={"stage_name": stage_name, "attempt": 3}),
         ]
         got = agent_evaluator_timeline_summary(events)
         assert got is not None, f"B3 case={name!r}: expected emission"
@@ -369,9 +366,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
         assert got["attempt"] == 3
 
     empty_suffix_events = [
-        _stage_started_event(
-            event_id=_RID2, payload={"stage_name": "agent_eval:", "attempt": 0}
-        ),
+        _stage_started_event(event_id=_RID2, payload={"stage_name": "agent_eval:", "attempt": 0}),
     ]
     got_empty = agent_evaluator_timeline_summary(empty_suffix_events)
     assert got_empty is not None, (
@@ -390,13 +385,9 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     assert got_empty["attempt"] == 0
 
     latest_wins_events = [
-        _stage_started_event(
-            event_id=_RID1, payload={"stage_name": "agent_eval:a", "attempt": 1}
-        ),
+        _stage_started_event(event_id=_RID1, payload={"stage_name": "agent_eval:a", "attempt": 1}),
         _stage_started_event(event_id=_RID2, payload="non-dict-payload-oops"),
-        _stage_started_event(
-            event_id=_RID3, payload={"stage_name": "agent_eval:c", "attempt": 2}
-        ),
+        _stage_started_event(event_id=_RID3, payload={"stage_name": "agent_eval:c", "attempt": 2}),
     ]
     got_latest = agent_evaluator_timeline_summary(latest_wins_events)
     assert got_latest is not None
@@ -448,9 +439,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         "marker_count",
         "first_marker_occurred_at",
         "last_marker_occurred_at",
-    }, (
-        f"C1: emitted summary must have exactly 9 keys; got {set(got_sr.keys())!r}"
-    )
+    }, f"C1: emitted summary must have exactly 9 keys; got {set(got_sr.keys())!r}"
     assert got_sr["event_id"] == str(_RID1)
     assert got_sr["occurred_at"] == _ISO_NOW
     assert got_sr["stage_name"] == "self_refinement:policy"
@@ -564,9 +553,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         "notes": "literal note from operator",
     }
     esc_events = [
-        _run_escalated_event(
-            event_id=_RID3, payload=esc_payload, occurred_at=_ISO_LATER
-        ),
+        _run_escalated_event(event_id=_RID3, payload=esc_payload, occurred_at=_ISO_LATER),
     ]
     got_esc = run_escalated_timeline_summary(esc_events)
     assert got_esc is not None
@@ -702,9 +689,7 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
             payload={"finding_id": "f-99", "category": "lint", "severity": "low"},
         ),
     ]
-    assert (
-        security_scan_on_verify_timeline_summary(finding_without_scan_meta) is None
-    ), (
+    assert security_scan_on_verify_timeline_summary(finding_without_scan_meta) is None, (
         "D3 step-2: ``finding.created`` event without either scan key in "
         "metadata must return ``None`` via the ``_finding_has_security_scan_metadata`` "
         "guard. Pins the two-stage filter (type first, then guard)."
@@ -743,9 +728,7 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
         "security_scan_ruff_exit",
         "security_scan_bandit_exit",
         "security_scan_snippet",
-    }, (
-        f"D4: emitted summary must have exactly 10 keys; got {set(got_ss.keys())!r}"
-    )
+    }, f"D4: emitted summary must have exactly 10 keys; got {set(got_ss.keys())!r}"
     assert got_ss["event_id"] == str(_RID3)
     assert got_ss["occurred_at"] == _ISO_NOW
     assert got_ss["finding_id"] == "f-1"

@@ -238,8 +238,10 @@ def execute_performance_critique_llm(
     fixes = [_required_fix_for_perf(failing)] if fail_any else []
     for tax_key in tax_keys:
         critic_role = registry.resolve(tax_key)
-        verdict = Verdict.FAIL if fail_any and tax_key == _PERFORMANCE_CRITIC else (
-            Verdict.FAIL if fail_any else Verdict.PASS
+        verdict = (
+            Verdict.FAIL
+            if fail_any and tax_key == _PERFORMANCE_CRITIC
+            else (Verdict.FAIL if fail_any else Verdict.PASS)
         )
         if tax_key != _PERFORMANCE_CRITIC:
             verdict = Verdict.PASS if not fail_any else Verdict.FAIL

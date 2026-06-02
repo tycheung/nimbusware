@@ -169,12 +169,18 @@ def test_agent_evaluator_persona_id_caption() -> None:
     assert agent_evaluator_persona_id_caption(None) is None
     assert agent_evaluator_persona_id_caption({"load_error": "bad"}) is None
     assert agent_evaluator_persona_id_caption({}) is None
-    assert agent_evaluator_persona_id_caption(
-        {"yaml_parsed_persona_id": ""},
-    ) is None
-    assert agent_evaluator_persona_id_caption(
-        {"yaml_parsed_persona_id": "   "},
-    ) is None
+    assert (
+        agent_evaluator_persona_id_caption(
+            {"yaml_parsed_persona_id": ""},
+        )
+        is None
+    )
+    assert (
+        agent_evaluator_persona_id_caption(
+            {"yaml_parsed_persona_id": "   "},
+        )
+        is None
+    )
 
 
 def test_agent_evaluator_yaml_parsed_enabled_caption() -> None:
@@ -196,12 +202,18 @@ def test_agent_evaluator_yaml_parsed_enabled_caption() -> None:
     assert "**false**" in cap_off
     assert agent_evaluator_yaml_parsed_enabled_caption(None) is None
     assert agent_evaluator_yaml_parsed_enabled_caption({"load_error": "bad"}) is None
-    assert agent_evaluator_yaml_parsed_enabled_caption(
-        {"agent_evaluator_yaml_key_present": False, "yaml_parsed_enabled": True},
-    ) is None
-    assert agent_evaluator_yaml_parsed_enabled_caption(
-        {"agent_evaluator_yaml_key_present": True, "yaml_parsed_enabled": "yes"},
-    ) is None
+    assert (
+        agent_evaluator_yaml_parsed_enabled_caption(
+            {"agent_evaluator_yaml_key_present": False, "yaml_parsed_enabled": True},
+        )
+        is None
+    )
+    assert (
+        agent_evaluator_yaml_parsed_enabled_caption(
+            {"agent_evaluator_yaml_key_present": True, "yaml_parsed_enabled": "yes"},
+        )
+        is None
+    )
 
 
 def test_agent_evaluator_llm_evaluation_enabled_caption() -> None:
@@ -292,15 +304,24 @@ def test_agent_evaluator_workflow_yaml_version_caption() -> None:
     assert cap is not None
     assert "**3**" in cap
     assert agent_evaluator_workflow_yaml_version_caption(None) is None
-    assert agent_evaluator_workflow_yaml_version_caption(
-        {"load_error": "bad"},
-    ) is None
-    assert agent_evaluator_workflow_yaml_version_caption(
-        {"workflow_yaml_top_level_version_int": 0},
-    ) is None
-    assert agent_evaluator_workflow_yaml_version_caption(
-        {"workflow_yaml_top_level_version_int": True},
-    ) is None
+    assert (
+        agent_evaluator_workflow_yaml_version_caption(
+            {"load_error": "bad"},
+        )
+        is None
+    )
+    assert (
+        agent_evaluator_workflow_yaml_version_caption(
+            {"workflow_yaml_top_level_version_int": 0},
+        )
+        is None
+    )
+    assert (
+        agent_evaluator_workflow_yaml_version_caption(
+            {"workflow_yaml_top_level_version_int": True},
+        )
+        is None
+    )
     cap_one = agent_evaluator_workflow_yaml_version_caption(
         {"workflow_yaml_top_level_version_int": 1},
     )
@@ -476,10 +497,7 @@ def test_agent_evaluator_explainer_table_rows_export_json_and_csv(
     _write_profile(
         tmp_path,
         "ae",
-        "version: 1\n"
-        "agent_evaluator:\n"
-        "  enabled: true\n"
-        "  persona_id: p1\n",
+        "version: 1\nagent_evaluator:\n  enabled: true\n  persona_id: p1\n",
     )
     payload = agent_evaluator_workflow_explainer_payload(
         tmp_path,
@@ -588,12 +606,18 @@ def test_agent_evaluator_workflow_explainer_operator_metrics_load_error() -> Non
 
 def test_agent_evaluator_workflow_explainer_operator_metrics_export() -> None:
     m = agent_evaluator_workflow_explainer_operator_metrics({})
-    assert json.loads(
-        agent_evaluator_workflow_explainer_operator_metrics_export_json(m),
-    ) == m
-    assert json.loads(
-        agent_evaluator_workflow_explainer_operator_metrics_export_json(None),
-    ) == {}
+    assert (
+        json.loads(
+            agent_evaluator_workflow_explainer_operator_metrics_export_json(m),
+        )
+        == m
+    )
+    assert (
+        json.loads(
+            agent_evaluator_workflow_explainer_operator_metrics_export_json(None),
+        )
+        == {}
+    )
     assert (
         agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug()
         == "agent_evaluator_workflow_explainer_operator_metrics"

@@ -1,6 +1,5 @@
 """Script-level tests for the fo126 ``--summary-path`` state-file output."""
 
-
 from __future__ import annotations
 
 import json
@@ -128,9 +127,7 @@ def test_cli_flag_overrides_env(tmp_path: Path) -> None:
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
     assert cli_path.is_file(), "CLI --summary-path should win and create the file"
-    assert not env_path.exists(), (
-        "Env-resolved path must NOT be written when --summary-path is set"
-    )
+    assert not env_path.exists(), "Env-resolved path must NOT be written when --summary-path is set"
 
 
 # Axis 4: Atomic write — .tmp sibling cleaned up after success
@@ -186,9 +183,7 @@ def test_dual_flag_json_summary_omits_extended_retention_fields(tmp_path: Path) 
         extra_args=["--summary-path", str(status_path), "--json-summary"],
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
-    stdout_summary = json.loads(
-        [ln for ln in proc.stdout.strip().splitlines() if ln][1]
-    )
+    stdout_summary = json.loads([ln for ln in proc.stdout.strip().splitlines() if ln][1])
     assert stdout_summary["schema_version"] == 1
     assert "retention_execution_mode" not in stdout_summary
     assert "object_store_attempted" not in stdout_summary

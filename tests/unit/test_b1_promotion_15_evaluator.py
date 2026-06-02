@@ -35,9 +35,7 @@ def test_pipeline_agent_evaluator_production_metadata(monkeypatch: pytest.Monkey
     orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
     evs = mem.list_run_events(str(rid))
     stage = next(
-        r
-        for r in evs
-        if (r.get("payload") or {}).get("stage_name", "").startswith("agent_eval")
+        r for r in evs if (r.get("payload") or {}).get("stage_name", "").startswith("agent_eval")
     )
     meta = (stage.get("metadata") or {}).get("agent_evaluator") or {}
     assert meta.get("production_scoring_mode") in (

@@ -16,5 +16,4 @@ class LlmJsonPort(Protocol):
         system: str,
         user: str,
         timeout_seconds: float,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...

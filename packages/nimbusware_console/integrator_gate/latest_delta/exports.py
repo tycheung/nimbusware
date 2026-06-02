@@ -38,7 +38,6 @@ def integrator_gate_latest_operator_metrics_export_filename_slug(
     return integrator_gate_latest_export_filename_slug(run_id, max_len=max_len)
 
 
-
 def integrator_gate_delta_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
@@ -93,7 +92,6 @@ def integrator_gate_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[
             continue
         rows.append({"field": label, "value": _stringify(delta.get(key))})
     return rows
-
 
 
 def integrator_gate_delta_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
@@ -168,5 +166,3 @@ def integrator_gate_latest_export_filename_slug(run_id: str, *, max_len: int = 3
     raw = str(run_id).strip().lower()
     slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
     return slug[:max_len]
-
-

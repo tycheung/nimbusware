@@ -57,9 +57,7 @@ def _render_integrator_gate_history(run_id: str, data: dict) -> None:
                 st.download_button(
                     label="Download integrator gate history CSV",
                     data=_ig_hist_csv.encode("utf-8"),
-                    file_name=(
-                        f"hermes_integrator_gate_history_{_ig_hist_slug}_{_ig_hist_ts}.csv"
-                    ),
+                    file_name=(f"hermes_integrator_gate_history_{_ig_hist_slug}_{_ig_hist_ts}.csv"),
                     mime="text/csv; charset=utf-8",
                     key="hermes_dl_integrator_gate_history_csv",
                 )
@@ -114,25 +112,16 @@ def _render_integrator_gate_history(run_id: str, data: dict) -> None:
                 hide_index=True,
             )
             if _ig_hist_metric_rows:
-                _ig_hist_metrics_json = (
-                    integrator_gate_history_operator_metrics_export_json(
-                        _ig_hist_metrics,
-                    )
+                _ig_hist_metrics_json = integrator_gate_history_operator_metrics_export_json(
+                    _ig_hist_metrics,
                 )
-                _ig_hist_metrics_csv = (
-                    integrator_gate_history_operator_metrics_table_rows_csv(
-                        _ig_hist_metric_rows,
-                    )
+                _ig_hist_metrics_csv = integrator_gate_history_operator_metrics_table_rows_csv(
+                    _ig_hist_metric_rows,
                 )
-                _ig_hist_metrics_dl_json_col, _ig_hist_metrics_dl_csv_col = (
-                    st.columns(2)
-                )
+                _ig_hist_metrics_dl_json_col, _ig_hist_metrics_dl_csv_col = st.columns(2)
                 with _ig_hist_metrics_dl_json_col:
                     st.download_button(
-                        label=(
-                            "Download integrator gate history "
-                            "operator metrics JSON"
-                        ),
+                        label=("Download integrator gate history operator metrics JSON"),
                         data=_ig_hist_metrics_json.encode("utf-8"),
                         file_name=(
                             "hermes_integrator_gate_history_operator_metrics_"
@@ -144,10 +133,7 @@ def _render_integrator_gate_history(run_id: str, data: dict) -> None:
                 with _ig_hist_metrics_dl_csv_col:
                     if _ig_hist_metrics_csv:
                         st.download_button(
-                            label=(
-                            "Download integrator gate history "
-                            "operator metrics CSV"
-                        ),
+                            label=("Download integrator gate history operator metrics CSV"),
                             data=_ig_hist_metrics_csv.encode("utf-8"),
                             file_name=(
                                 "hermes_integrator_gate_history_operator_metrics_"

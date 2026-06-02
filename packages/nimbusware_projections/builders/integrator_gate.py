@@ -29,9 +29,7 @@ def integrator_gate_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
     if "bundle_compatibility_ranking" in meta_d:
         out["bundle_compatibility_ranking"] = meta_d.get("bundle_compatibility_ranking")
     if "bundle_compatibility_ranking_count" in meta_d:
-        out["bundle_compatibility_ranking_count"] = meta_d.get(
-            "bundle_compatibility_ranking_count"
-        )
+        out["bundle_compatibility_ranking_count"] = meta_d.get("bundle_compatibility_ranking_count")
     if "selected_bundle_rank" in meta_d:
         out["selected_bundle_rank"] = meta_d.get("selected_bundle_rank")
     if "bundle_id" in meta_d and (

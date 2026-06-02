@@ -8,7 +8,9 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 def _render_persona_catalog_panel(repo_root: Path) -> None:
     if st.button("Load persona shelves", key="hermes_persona_load_btn"):
         try:
-            st.session_state[rl.rl._LAST_PERSONA_CATALOG_JSON] = load_persona_shelves_catalog(_proot)
+            st.session_state[rl.rl._LAST_PERSONA_CATALOG_JSON] = load_persona_shelves_catalog(
+                _proot
+            )
         except FileNotFoundError as exc:
             st.error(str(exc))
         except ValueError as exc:
@@ -47,15 +49,13 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
                 "populate optional fo127 fields."
             )
             _p_op_sum_metrics = persona_catalog_operator_summary_operator_metrics(_psum)
-            _p_op_sum_metrics_cap = (
-                persona_catalog_operator_summary_operator_metrics_caption(_p_op_sum_metrics)
+            _p_op_sum_metrics_cap = persona_catalog_operator_summary_operator_metrics_caption(
+                _p_op_sum_metrics
             )
             if _p_op_sum_metrics_cap:
                 st.caption(_p_op_sum_metrics_cap)
-            _p_op_sum_metric_rows = (
-                persona_catalog_operator_summary_operator_metrics_table_rows(
-                    _p_op_sum_metrics,
-                )
+            _p_op_sum_metric_rows = persona_catalog_operator_summary_operator_metrics_table_rows(
+                _p_op_sum_metrics,
             )
             if _p_op_sum_metric_rows:
                 st.dataframe(
@@ -67,10 +67,8 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
             _p_op_sum_metrics_slug = (
                 persona_catalog_operator_summary_operator_metrics_export_filename_slug()
             )
-            _p_op_sum_metrics_json = (
-                persona_catalog_operator_summary_operator_metrics_export_json(
-                    _p_op_sum_metrics,
-                )
+            _p_op_sum_metrics_json = persona_catalog_operator_summary_operator_metrics_export_json(
+                _p_op_sum_metrics,
             )
             _p_op_sum_metrics_csv = (
                 persona_catalog_operator_summary_operator_metrics_table_rows_csv(
@@ -82,9 +80,7 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
                 st.download_button(
                     label="Download operator summary metrics JSON",
                     data=_p_op_sum_metrics_json.encode("utf-8"),
-                    file_name=(
-                        f"hermes_{_p_op_sum_metrics_slug}_{_p_op_sum_ts}.json"
-                    ),
+                    file_name=(f"hermes_{_p_op_sum_metrics_slug}_{_p_op_sum_ts}.json"),
                     mime="application/json",
                     key="hermes_dl_persona_operator_summary_metrics_json",
                 )
@@ -93,9 +89,7 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
                     st.download_button(
                         label="Download operator summary metrics CSV",
                         data=_p_op_sum_metrics_csv.encode("utf-8"),
-                        file_name=(
-                            f"hermes_{_p_op_sum_metrics_slug}_{_p_op_sum_ts}.csv"
-                        ),
+                        file_name=(f"hermes_{_p_op_sum_metrics_slug}_{_p_op_sum_ts}.csv"),
                         mime="text/csv; charset=utf-8",
                         key="hermes_dl_persona_operator_summary_metrics_csv",
                     )

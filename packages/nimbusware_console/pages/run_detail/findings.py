@@ -60,8 +60,7 @@ def render_run_detail_findings(run_id: str) -> None:
                             label="Download findings operator metrics JSON",
                             data=_find_metrics_json.encode("utf-8"),
                             file_name=(
-                                "hermes_findings_operator_metrics_"
-                                f"{_find_slug}_{_find_ts}.json"
+                                f"hermes_findings_operator_metrics_{_find_slug}_{_find_ts}.json"
                             ),
                             mime="application/json",
                             key="hermes_dl_findings_operator_metrics_json",
@@ -72,8 +71,7 @@ def render_run_detail_findings(run_id: str) -> None:
                                 label="Download findings operator metrics CSV",
                                 data=_find_metrics_csv.encode("utf-8"),
                                 file_name=(
-                                    "hermes_findings_operator_metrics_"
-                                    f"{_find_slug}_{_find_ts}.csv"
+                                    f"hermes_findings_operator_metrics_{_find_slug}_{_find_ts}.csv"
                                 ),
                                 mime="text/csv; charset=utf-8",
                                 key="hermes_dl_findings_operator_metrics_csv",
@@ -91,9 +89,7 @@ def render_run_detail_findings(run_id: str) -> None:
                     st.download_button(
                         label="Download findings JSON",
                         data=_find_json.encode("utf-8"),
-                        file_name=(
-                            f"hermes_findings_{_find_slug}_{_find_ts}.json"
-                        ),
+                        file_name=(f"hermes_findings_{_find_slug}_{_find_ts}.json"),
                         mime="application/json",
                         key="hermes_dl_findings_json",
                     )
@@ -102,9 +98,7 @@ def render_run_detail_findings(run_id: str) -> None:
                         st.download_button(
                             label="Download findings CSV",
                             data=_find_csv.encode("utf-8"),
-                            file_name=(
-                                f"hermes_findings_{_find_slug}_{_find_ts}.csv"
-                            ),
+                            file_name=(f"hermes_findings_{_find_slug}_{_find_ts}.csv"),
                             mime="text/csv; charset=utf-8",
                             key="hermes_dl_findings_csv",
                         )

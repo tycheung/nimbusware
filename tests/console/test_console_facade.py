@@ -8,7 +8,12 @@ from nimbusware_env import find_repo_root
 
 
 def test_app_entry_is_thin_facade() -> None:
-    path = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_console" / "app.py"
+    path = (
+        find_repo_root(start=Path(__file__).resolve().parents[1])
+        / "packages"
+        / "nimbusware_console"
+        / "app.py"
+    )
     text = path.read_text(encoding="utf-8")
     assert "from nimbusware_console.main import render_main" in text
     assert "st.set_page_config" in text
@@ -62,7 +67,12 @@ def test_legacy_sections_shim_exports() -> None:
 
 
 def test_console_pages_module_paths() -> None:
-    base = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_console" / "pages"
+    base = (
+        find_repo_root(start=Path(__file__).resolve().parents[1])
+        / "packages"
+        / "nimbusware_console"
+        / "pages"
+    )
     assert (base / "config_tooling").is_dir()
     assert (base / "run_detail").is_dir()
     assert (base / "run_list.py").is_file()
@@ -70,7 +80,13 @@ def test_console_pages_module_paths() -> None:
 
 
 def test_run_detail_section_modules() -> None:
-    base = find_repo_root(start=Path(__file__).resolve().parents[1]) / "packages" / "nimbusware_console" / "pages" / "run_detail"
+    base = (
+        find_repo_root(start=Path(__file__).resolve().parents[1])
+        / "packages"
+        / "nimbusware_console"
+        / "pages"
+        / "run_detail"
+    )
     for name in (
         "summary.py",
         "timeline_core.py",

@@ -28,5 +28,3 @@ def persona_catalog_flat_rows(catalog: Mapping[str, Any]) -> list[dict[str, Any]
             row["shelf"] = shelf_key
             out.append(row)
     return out
-
-

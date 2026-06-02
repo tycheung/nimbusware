@@ -56,12 +56,18 @@ def test_agent_evaluator_evaluate_ok_with_assignment() -> None:
 
 def test_agent_evaluator_score_band_thresholds() -> None:
     assert agent_evaluator_score_band(0.5) == "below_threshold"
-    assert agent_evaluator_score_band(
-        AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
-    ) == "meets_threshold"
-    assert agent_evaluator_score_band(
-        AGENT_EVALUATOR_STRONG_SCORE_THRESHOLD,
-    ) == "strong"
+    assert (
+        agent_evaluator_score_band(
+            AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
+        )
+        == "meets_threshold"
+    )
+    assert (
+        agent_evaluator_score_band(
+            AGENT_EVALUATOR_STRONG_SCORE_THRESHOLD,
+        )
+        == "strong"
+    )
 
 
 def test_agent_evaluator_evaluate_invalid_missing_shelf_id() -> None:

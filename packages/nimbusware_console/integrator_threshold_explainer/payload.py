@@ -111,5 +111,3 @@ def integrator_threshold_explainer_payload(
             config_materializer=mat,
         ),
     }
-
-

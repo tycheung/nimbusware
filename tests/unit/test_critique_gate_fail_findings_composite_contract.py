@@ -1,6 +1,5 @@
 """_maybe_emit_critique_gate_fail_findings`` composite cross-cuts."""
 
-
 from __future__ import annotations
 
 import os
@@ -67,11 +66,7 @@ def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:
 
 def _findings(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
     """Return ``finding.created`` rows for the run in store order."""
-    return [
-        r
-        for r in mem.list_run_events(str(rid))
-        if r.get("event_type") == _FINDING_CREATED
-    ]
+    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _FINDING_CREATED]
 
 
 def _stage_names(findings: list[dict[str, Any]]) -> list[str | None]:
@@ -535,7 +530,10 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
 
     method_names = [c[0] for c in parent.mock_calls]
     finding_appends = [
-        c for c in parent.mock_calls if c[0] == "append" and len(c.args) >= 1
+        c
+        for c in parent.mock_calls
+        if c[0] == "append"
+        and len(c.args) >= 1
         and getattr(c.args[0], "event_type", None) == EventType.FINDING_CREATED
     ]
     assert len(finding_appends) == 1, (

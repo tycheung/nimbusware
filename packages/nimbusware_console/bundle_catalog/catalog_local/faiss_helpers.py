@@ -132,4 +132,3 @@ def _parse_bundle_order_string_ids(path: Path) -> tuple[list[str] | None, str | 
             return None, "bundle_order.json contains empty id string"
         out.append(t)
     return out, None
-

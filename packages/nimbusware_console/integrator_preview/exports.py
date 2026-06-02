@@ -19,7 +19,6 @@ def full_workflow_merge_diff_export_filename_slug() -> str:
     return "full_workflow_merge_diff"
 
 
-
 def _full_workflow_merge_diff_cell(value: Any) -> str:
     if value is None:
         return ""
@@ -141,8 +140,7 @@ def full_workflow_merge_diff_operator_metrics_caption(
     changed = metrics.get("changed_top_level_count", 0)
     unchanged = metrics.get("unchanged_top_level_count", 0)
     if not all(
-        isinstance(x, int) and not isinstance(x, bool)
-        for x in (added, removed, changed, unchanged)
+        isinstance(x, int) and not isinstance(x, bool) for x in (added, removed, changed, unchanged)
     ):
         return None
     paste_only = metrics.get("paste_only_top_level_count", 0)
@@ -159,7 +157,6 @@ def full_workflow_merge_diff_operator_metrics_caption(
     if hints:
         return base[:-1] + "; " + ", ".join(hints) + "."
     return base
-
 
 
 def full_workflow_merge_diff_operator_metrics_export_json(
@@ -207,10 +204,7 @@ def full_workflow_merge_attention_table_rows_csv(
     for r in rows:
         if isinstance(r, Mapping):
             w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _FULL_WORKFLOW_MERGE_ATTENTION_CSV_COLUMNS
-                },
+                {k: r.get(k, "") for k in _FULL_WORKFLOW_MERGE_ATTENTION_CSV_COLUMNS},
             )
     return buf.getvalue()
 
@@ -323,7 +317,6 @@ def full_workflow_merge_attention_operator_metrics_caption(
         return None
     word = "hint" if n == 1 else "hints"
     return f"Full-workflow merge attention metrics: **{n}** attention {word}."
-
 
 
 def full_workflow_merge_attention_operator_metrics_export_json(
