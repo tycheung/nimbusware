@@ -1,0 +1,6 @@
+[tool.poetry]
+name = "fixture-workspace"
+version = "0.0.0"
+
+[tool.poetry.dependencies]
+python = ">=3.10"

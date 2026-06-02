@@ -1,0 +1,5 @@
+research.brief.emitted
+stitch.license.checked
+stitch.dependency.checked
+stitch.plan.emitted
+stitch.applied

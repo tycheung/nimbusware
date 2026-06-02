@@ -10,6 +10,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 | `tests/orchestrator/` | `RunOrchestrator` integration paths |
 | `tests/integration/` | Postgres-marked (`-m integration`) |
 | `tests/e2e/` | Operator smoke checks |
+| `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `HERMES_RESEARCH=1`, `HERMES_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 
 ## Conventions
