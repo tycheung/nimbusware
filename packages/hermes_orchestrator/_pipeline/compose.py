@@ -73,18 +73,24 @@ def _rebind_descriptor(name: str, attr: object, cls: type) -> None:
         setattr(cls, name, _bind_function(attr))
 
 
-def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
-    """Build ``RunOrchestrator``; mixin methods resolve helpers via ``pipeline``."""
-    del _pipeline_globals
-    composed: type = type(
-        "RunOrchestrator",
-        _MIXINS,
-        {
-            "__doc__": ("MVP run lifecycle: create → preflight → plan stage → writer loop."),
-        },
-    )
-    for base in composed.__mro__:
-        if base in {object, composed}:
+class RunOrchestrator(
+    CreateRunMixin,
+    MicroSliceMixin,
+    PipelineScraperMixin,
+    LifecycleMixin,
+    CritiqueGatesMixin,
+    WritersMixin,
+    OptionalCritiqueMixin,
+    EscalationMixin,
+    OptionalStagesMixin,
+    RunOrchestratorBase,
+):
+    """MVP run lifecycle: create → preflight → plan stage → writer loop."""
+
+
+def _finalize_run_orchestrator_class(cls: type) -> type:
+    for base in cls.__mro__:
+        if base in {object, cls}:
             continue
         for name in base.__dict__:
             if name == "__init__" or (name.startswith("__") and name.endswith("__")):
@@ -93,5 +99,11 @@ def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
                 raw = getattr_static(base, name)
             except AttributeError:
                 continue
-            _rebind_descriptor(name, raw, composed)
-    return composed
+            _rebind_descriptor(name, raw, cls)
+    return cls
+
+
+def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
+    """Return ``RunOrchestrator``; mixin methods resolve helpers via ``pipeline``."""
+    del _pipeline_globals
+    return _finalize_run_orchestrator_class(RunOrchestrator)

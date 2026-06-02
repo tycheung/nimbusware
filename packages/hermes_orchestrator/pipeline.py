@@ -12,7 +12,7 @@ remains the stable import and ``unittest.mock.patch`` target.
 from __future__ import annotations
 
 from hermes_orchestrator._pipeline import _helpers
-from hermes_orchestrator._pipeline.compose import build_run_orchestrator_class
+from hermes_orchestrator._pipeline.compose import RunOrchestrator, _finalize_run_orchestrator_class
 from hermes_orchestrator._pipeline.dev_factory import default_paths, make_dev_orchestrator
 
 for _name, _value in vars(_helpers).items():
@@ -20,7 +20,7 @@ for _name, _value in vars(_helpers).items():
         continue
     globals()[_name] = _value
 
-RunOrchestrator = build_run_orchestrator_class(globals())
+_finalize_run_orchestrator_class(RunOrchestrator)
 
 __all__ = [
     "RunOrchestrator",
