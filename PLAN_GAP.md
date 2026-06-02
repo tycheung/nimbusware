@@ -1461,10 +1461,10 @@ V0 (fo600–fo604) Hygiene ──► V1 (fo610–fo614) Quality ratchet
 |-------|-------|--------|
 | **V0** Hygiene | fo600–fo604 | **Done** |
 | **V1** Quality ratchet | fo610–fo614 | **Done** |
-| **V2** UI + integration | fo620–fo624 | **In progress** |
-| **V3** Observability | fo630–fo633 | Pending |
-| **V4** Packaging | fo635–fo638 | Pending |
-| **V5** Enterprise ops | fo641–fo650 | Pending |
+| **V2** UI + integration | fo620–fo624 | **Done** |
+| **V3** Observability | fo630–fo633 | **Done** |
+| **V4** Packaging | fo635–fo638 | **Done** |
+| **V5** Enterprise ops | fo641–fo650 | **Done** |
 
 ### Lane V — explicit non-goals
 

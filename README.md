@@ -309,11 +309,15 @@ Runbooks: [`scripts/run_dispatch_fleet_runbook.md`](scripts/run_dispatch_fleet_r
 
 ```bash
 docker compose up -d postgres
+# API container (Lane V4):
+docker compose --profile api up -d api
 # Enterprise Redis worker:
 docker compose --profile fleet up -d redis
 ```
 
 Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
+
+Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md).
 
 ## Enterprise setup sketch
 
