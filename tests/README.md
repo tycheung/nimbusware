@@ -20,7 +20,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 
 ## CI subsets
 
-- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, advisory `ruff format --check` (non-blocking until backlog is reformatted), mypy (`services/` + tranche B), bandit, `pip-audit`, package coverage floors (`scripts/coverage_package_floors.py`), then pytest.
+- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, advisory `ruff format --check` (non-blocking until backlog is reformatted), mypy (`services/` + tranche B + API pilot modules), bandit, `pip-audit`, package coverage floors (`scripts/coverage_package_floors.py`), then pytest.
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=75` (see `.github/workflows/ci.yml`).
 - Coverage omits Streamlit `pages/**`, Maker `ui/**`, desktop launcher modules, `*_cli.py` entrypoints, and `hermes_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
 - **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency in `tests/api/test_api_runs.py` run on every PR (fo730).

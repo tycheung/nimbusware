@@ -106,7 +106,12 @@ def _models_response(
         base_url=base,
         primary_model_id=primary_id,
         fallback_model_ids=fallbacks,
-        user_policy=OllamaUserPolicyBody(**policy.to_dict()),
+        user_policy=OllamaUserPolicyBody(
+            allow_pull=policy.allow_pull,
+            allow_delete=policy.allow_delete,
+            allow_update_routing=policy.allow_update_routing,
+            updated_at=None,
+        ),
         models=[OllamaModelEntry(**row.to_dict()) for row in rows],
         query=query or None,
     )

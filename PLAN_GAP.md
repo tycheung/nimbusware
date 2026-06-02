@@ -1680,17 +1680,17 @@ X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratc
 
 ### Phase X1 — API typing ratchet (fo764–fo768)
 
-**Problem:** `nimbusware_api.*` is configured as strict island in mypy overrides but not checked in default CI command.
+**Problem:** `nimbusware_api.*` is configured as strict island in mypy overrides but not yet practical to enforce repo-wide in default CI.
 
 | Epic | Outcome | Primary touches |
 |------|---------|-----------------|
-| **fo764** | Include `nimbusware_api` in CI mypy command | `.github/workflows/ci.yml`, `scripts/ci_check.*` |
-| **fo765** | Include `nimbusware_api` in pre-commit parity hook | `.pre-commit-config.yaml` |
+| **fo764** | Add API pilot modules to CI mypy command (`routes/ollama.py`, `schemas/ollama.py`, `errors.py`) | `.github/workflows/ci.yml`, `scripts/ci_check.*` |
+| **fo765** | Add same API pilot modules to pre-commit parity hook | `.pre-commit-config.yaml` |
 | **fo766** | Add mypy-surface guard test for API scope in parity command | `tests/unit/` |
 | **fo767** | Update architecture docs for Lane X typing scope | `ARCHITECTURE.md` |
 | **fo768** | Keep `_pipeline.*` exclusion explicit | `pyproject.toml` docs |
 
-**Exit X1:** CI, local script, and pre-commit all type-check services + tranche B + `nimbusware_api`.
+**Exit X1:** CI, local script, and pre-commit all type-check services + tranche B + API pilot modules.
 
 ---
 
@@ -1745,7 +1745,7 @@ X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratc
 | Phase | Epics | Status |
 |-------|-------|--------|
 | **X0** CI signal parity | fo760–fo763 | **Done** |
-| **X1** API typing ratchet | fo764–fo768 | **Pending** |
+| **X1** API typing ratchet | fo764–fo768 | **Done** |
 | **X2** PR test signal | fo769–fo773 | **Pending** |
 | **X3** Enterprise release hardening | fo774–fo778 | **Pending** |
 | **X4** Repo-wide doc/comment hygiene | fo779–fo789 | **Pending** |

@@ -76,8 +76,8 @@ See [PLAN_GAP.md § Lane W](PLAN_GAP.md#lane-w--sustainability-fo701fo750) for t
 
 **Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
 
-**Typing (Lane V1 / W0 / W2):** `nimbusware_{console,maker}.services.*` and tranche B (`nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools`) are strict mypy islands; UI packages remain ignored except `services/`. Pre-commit and GitHub CI run the **same** mypy scope (fo701, fo724).
+**Typing (Lane V1 / W0 / W2 / X1):** `nimbusware_{console,maker}.services.*`, tranche B (`nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools`), plus API pilot modules (`nimbusware_api/routes/ollama.py`, `nimbusware_api/schemas/ollama.py`, `nimbusware_api/errors.py`) are checked in CI parity. UI packages remain ignored except `services/` (`_pipeline.*` remains excluded).
 
-**CI parity (Lane W0):** `ci_check.*` runs ruff, mypy (services), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
+**CI parity (Lane W0/X1):** `ci_check.*` runs ruff (+ advisory formatter check), mypy (services + tranche B + API pilot), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).
