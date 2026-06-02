@@ -30,8 +30,8 @@ repos:
         pass_filenames: false
         files: ^packages/.*\.py$
       - id: mypy-services
-        name: mypy (services, CI parity fo701)
-        entry: poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services
+        name: mypy (services + tranche B, CI parity fo701/fo724)
+        entry: poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services packages/nimbusware_projections packages/nimbusware_client packages/hermes_agent_tools
         language: system
         pass_filenames: false
-        files: ^packages/(nimbusware_console/services|nimbusware_maker/services)/
+        files: ^packages/(nimbusware_console/services|nimbusware_maker/services|nimbusware_projections|nimbusware_client|hermes_agent_tools)/

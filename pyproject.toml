@@ -233,6 +233,18 @@ module = [
 ]
 ignore_errors = false
 
+# fo720 (Lane W2): typing tranche B — small leaf packages checked in CI mypy.
+[[tool.mypy.overrides]]
+module = [
+  "nimbusware_projections",
+  "nimbusware_projections.*",
+  "nimbusware_client",
+  "nimbusware_client.*",
+  "hermes_agent_tools",
+  "hermes_agent_tools.*",
+]
+ignore_errors = false
+
 # fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in nimbusware_env.
 [[tool.mypy.overrides]]
 module = [
