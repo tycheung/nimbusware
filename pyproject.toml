@@ -236,11 +236,45 @@ module = [
 ]
 ignore_errors = false
 
+# fo731 (Lane X2): UI ignore narrowed (replaces blanket nimbusware_console.* / nimbusware_maker.*).
 [[tool.mypy.overrides]]
-module = ["nimbusware_console.*", "nimbusware_maker.*"]
+module = [
+  "nimbusware_console.pages",
+  "nimbusware_console.pages.*",
+  "nimbusware_console.main",
+  "nimbusware_console.app",
+  "nimbusware_maker.ui",
+  "nimbusware_maker.ui.*",
+  "nimbusware_maker.slice_workflow",
+  "nimbusware_maker.slice_workflow.*",
+  "nimbusware_maker.main",
+  "nimbusware_maker.app",
+  "nimbusware_console.bundle_catalog",
+  "nimbusware_console.bundle_catalog.*",
+  "nimbusware_console.integrator_gate",
+  "nimbusware_console.integrator_gate.*",
+  "nimbusware_console.integrator_preview",
+  "nimbusware_console.integrator_preview.*",
+  "nimbusware_console.persona_catalog",
+  "nimbusware_console.persona_catalog.*",
+  "nimbusware_console.escalation_suppress_workflow_explainer",
+  "nimbusware_console.escalation_suppress_workflow_explainer.*",
+  "nimbusware_console.integrator_threshold_explainer",
+  "nimbusware_console.integrator_threshold_explainer.*",
+  "nimbusware_console.self_refinement_workflow_explainer",
+  "nimbusware_console.self_refinement_workflow_explainer.*",
+  "nimbusware_console.enterprise_console",
+  "nimbusware_console.enterprise_console_ui",
+  "nimbusware_console.explainer_workflow_disk",
+  "nimbusware_console.integrator_gate_display",
+  "nimbusware_console.integrator_workflow_apply",
+  "nimbusware_console.integrator_workflow_preview",
+  "nimbusware_console.security_scan_on_verify_display",
+  "nimbusware_console.self_refinement_display",
+]
 ignore_errors = true
 
-# fo610 (Lane V1): strict services plane — must follow blanket UI ignore above.
+# fo610 (Lane V1): strict services plane.
 [[tool.mypy.overrides]]
 module = [
   "nimbusware_console.services",
@@ -259,6 +293,19 @@ module = [
   "nimbusware_client.*",
   "hermes_agent_tools",
   "hermes_agent_tools.*",
+]
+ignore_errors = false
+
+# fo732 (Lane X2): typing tranche D — API read layer + strict enterprise routes (CI mypy).
+[[tool.mypy.overrides]]
+module = [
+  "nimbusware_api.read_models",
+  "nimbusware_api.read_models.*",
+  "nimbusware_api.facade",
+  "nimbusware_api.deps",
+  "nimbusware_api.routes.enterprise",
+  "nimbusware_api.routes.enterprise.*",
+  "nimbusware_api.routes.personas_helpers",
 ]
 ignore_errors = false
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -35,7 +35,7 @@ EnterpriseDep = Annotated[None, Depends(_require_enterprise)]
 
 
 @router.get("/status")
-def enterprise_status(_gate: EnterpriseDep) -> dict:
+def enterprise_status(_gate: EnterpriseDep) -> dict[str, Any]:
     """Enterprise feature readiness map."""
     features = {
         name: {
@@ -57,7 +57,7 @@ def enterprise_status(_gate: EnterpriseDep) -> dict:
 
 
 @router.get("/health")
-def enterprise_health(_gate: EnterpriseDep, store: StoreDep) -> dict:
+def enterprise_health(_gate: EnterpriseDep, store: StoreDep) -> dict[str, Any]:
     """Minimal enterprise probe (store reachable)."""
     _ = store
     return {

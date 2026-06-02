@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from nimbusware_client import HTTPError
 from nimbusware_client.http import (
@@ -41,15 +41,18 @@ def post_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:
     try:
         return _post_json(path, payload)
     except HTTPError as exc:
-        if exc.response.status_code in {401, 403}:
-            try:
-                body = exc.response.json()
-            except ValueError:
-                body = {}
-            code = str(body.get("code") or "") if isinstance(body, dict) else ""
-            if code in {"unauthorized", "forbidden"} or exc.response.status_code == 403:
-                msg = problem_message(body, fallback=str(exc))
-                raise RuntimeError(f"Admin access required: {msg}") from exc
+        response = getattr(exc, "response", None)
+        status = getattr(response, "status_code", None)
+        if status not in {401, 403}:
+            raise
+        try:
+            body = cast(Any, response).json()
+        except ValueError:
+            body = {}
+        code = str(body.get("code") or "") if isinstance(body, dict) else ""
+        if code in {"unauthorized", "forbidden"} or status == 403:
+            msg = problem_message(body, fallback=str(exc))
+            raise RuntimeError(f"Admin access required: {msg}") from exc
         raise
 
 

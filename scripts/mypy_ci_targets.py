@@ -32,7 +32,25 @@ _API_PILOT = (
     "packages/nimbusware_api/errors.py",
 )
 
-MYPY_CI_TARGETS: tuple[str, ...] = _SERVICES + _TRANCHE_B + _TRANCHE_C + _API_PILOT
+# Tranche D (fo732): API read layer + enterprise routes that pass strict mypy.
+_TRANCHE_D = (
+    "packages/nimbusware_api/read_models",
+    "packages/nimbusware_api/facade.py",
+    "packages/nimbusware_api/deps.py",
+    "packages/nimbusware_api/routes/enterprise",
+    "packages/nimbusware_api/routes/personas_helpers.py",
+)
+
+# fo733: UI packages checked under narrowed ignore overrides (not blanket .*).
+_UI_STRICT = (
+    "packages/nimbusware_console",
+    "packages/nimbusware_maker",
+)
+
+# Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).
+MYPY_CI_TARGETS: tuple[str, ...] = (
+    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT
+)
 
 if __name__ == "__main__":
     print(*MYPY_CI_TARGETS)

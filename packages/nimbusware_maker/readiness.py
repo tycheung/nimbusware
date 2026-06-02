@@ -72,8 +72,10 @@ def _check_database(store: Any) -> dict[str, Any]:
 def _check_ollama(repo_root: Path) -> dict[str, Any]:
     if hermes_skip_preflight_enabled():
         routing = _load_model_routing(repo_root)
-        runtime = routing.get("runtime") if isinstance(routing.get("runtime"), dict) else {}
-        models = routing.get("models") if isinstance(routing.get("models"), dict) else {}
+        runtime_raw = routing.get("runtime")
+        runtime = runtime_raw if isinstance(runtime_raw, dict) else {}
+        models_raw = routing.get("models")
+        models = models_raw if isinstance(models_raw, dict) else {}
         primary = _primary_model_id(models) or "unknown"
         return {
             "status": "degraded",
@@ -84,8 +86,10 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         }
 
     routing = _load_model_routing(repo_root)
-    runtime = routing.get("runtime") if isinstance(routing.get("runtime"), dict) else {}
-    models = routing.get("models") if isinstance(routing.get("models"), dict) else {}
+    runtime_raw = routing.get("runtime")
+    runtime = runtime_raw if isinstance(runtime_raw, dict) else {}
+    models_raw = routing.get("models")
+    models = models_raw if isinstance(models_raw, dict) else {}
     base_url = str(runtime.get("base_url") or "http://localhost:11434")
     health_path = str(runtime.get("health_endpoint") or "/api/tags")
     primary = _primary_model_id(models)
@@ -154,8 +158,8 @@ def _available_memory_gb() -> float | None:
 
             stat = MEMORYSTATUSEX()
             stat.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
-            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):  # type: ignore[attr-defined]
-                return stat.ullAvailPhys / (1024**3)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+                return float(stat.ullAvailPhys / (1024**3))
         except (AttributeError, OSError, TypeError):
             return None
     elif sys.platform.startswith("linux"):

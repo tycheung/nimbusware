@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from typing import Any
+
 from nimbusware_maker.api_client import get_json
 
 
-def _summaries_from_list_payload(payload: dict) -> tuple[list[str], dict]:
+def _summaries_from_list_payload(payload: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
     run_ids = payload.get("run_ids")
     if not isinstance(run_ids, list):
         return [], {}

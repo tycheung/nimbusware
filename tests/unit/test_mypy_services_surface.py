@@ -17,9 +17,12 @@ _STRICT_MODULES = frozenset(
 
 def test_services_listed_in_mypy_strict_override_after_ui_ignore() -> None:
     text = _PYPROJECT.read_text(encoding="utf-8")
-    ui_ignore = text.find('module = ["nimbusware_console.*", "nimbusware_maker.*"]')
-    assert ui_ignore >= 0
-    services_block = text[ui_ignore:]
+    ui_marker = text.find("fo731 (Lane X2)")
+    assert ui_marker >= 0
+    services_marker = text.find("fo610 (Lane V1)")
+    assert services_marker >= 0
+    assert services_marker > ui_marker
+    services_block = text[services_marker : services_marker + 400]
     assert "ignore_errors = false" in services_block
     for module in _STRICT_MODULES:
         assert module in services_block, f"missing strict mypy override entry for {module}"
