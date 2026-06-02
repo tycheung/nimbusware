@@ -184,5 +184,5 @@ def _render_critique_pairings_panel(repo_root: Path) -> None:
             st.warning(f"Could not parse critique_pairings.yaml: {err}")
         else:
             with st.expander("critique_pairings.yaml (operator summary)", expanded=False):
-                st.caption("JSON-safe snapshot of the frozen YAML (§14 #14); not an API payload.")
+                st.caption("JSON-safe snapshot of the frozen YAML; not an API payload.")
                 st.json(_cp_sum)

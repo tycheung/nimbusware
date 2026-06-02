@@ -1,5 +1,3 @@
-"""Tests for optional follow-ups: default profile, Phase 3 scanners, production SR LLM."""
-
 from __future__ import annotations
 
 import os

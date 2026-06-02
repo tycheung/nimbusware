@@ -1,5 +1,3 @@
-"""HERMES_SCRAPER_ARTIFACT_DIR`` Pattern B string-passthrough contract."""
-
 from __future__ import annotations
 
 from pathlib import Path

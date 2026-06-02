@@ -1,5 +1,3 @@
-"""Split pages/_state.py into keys + run_list modules."""
-
 from __future__ import annotations
 
 import re

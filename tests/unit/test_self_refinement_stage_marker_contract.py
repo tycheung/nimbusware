@@ -1,5 +1,3 @@
-"""_maybe_emit_self_refinement_stage_marker`` direct contract."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""_maybe_emit_stage_failed_for_*_critique_gate_fail`` trio direct contracts."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

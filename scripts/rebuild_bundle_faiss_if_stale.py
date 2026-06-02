@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Rebuild bundle FAISS index when catalog is newer than index files (§14 #12)."""
 
 from __future__ import annotations
 

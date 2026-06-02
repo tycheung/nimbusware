@@ -1,5 +1,3 @@
-"""RunOrchestrator.create_run`` post-gate idempotency contract."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

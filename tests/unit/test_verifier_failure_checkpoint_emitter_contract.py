@@ -1,5 +1,3 @@
-"""_maybe_escalate_verifier_failure_checkpoint`` direct contract."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

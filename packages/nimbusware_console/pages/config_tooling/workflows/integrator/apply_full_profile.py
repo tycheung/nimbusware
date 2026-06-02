@@ -8,14 +8,14 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Apply full workflow profile to disk (§14 #13)", expanded=False):
+    with st.expander("Apply full workflow profile to disk", expanded=False):
         st.caption(
             "Paste a **full** workflow root (same allowed top-level keys as shipped "
             "``configs/workflows/*.yaml`` profiles). Validates keys + ``integrator_gate`` / "
             "``agent_evaluator`` blocks; **shallow-merges** each pasted top-level key over the "
             "on-disk file (keys you omit from the paste are unchanged). Requires "
             f"``{ALLOW_WORKFLOW_YAML_WRITE_ENV}=1`` (or true/yes/on). Uses the **same** "
-            "profile-stem confirmation field as **fo132** / **fo140** above."
+            "profile-stem confirmation field as the integrator gate and agent evaluator apply panels above."
         )
         st.text_area(
             "Pasted full workflow YAML",
@@ -205,7 +205,7 @@ def render_apply_full_profile_section(*, repo_root: Path, workflow_profile: str 
                                     mime="text/csv; charset=utf-8",
                                     key="hermes_dl_full_workflow_merge_attention_metrics_csv",
                                 )
-                        st.caption("Full-profile merge attention (read-only hints; §14 #13).")
+                        st.caption("Full-profile merge attention (read-only hints).")
                         st.dataframe(_att_fw, use_container_width=True, hide_index=True)
                         _att_fw_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
                         _att_fw_slug = full_workflow_merge_attention_export_filename_slug()

@@ -1,5 +1,3 @@
-"""_selected_model_for_run`` direct contract."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

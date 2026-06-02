@@ -1,5 +1,3 @@
-"""Split remaining console modules still over 400 lines (batch 3)."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""_emit_bundle_integrator_gate`` direct contract composite."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-# fo501: allowed star-from-barrel — bundles/_shared re-exports workflows/_shared
+# re-export via bundles/_shared barrel
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
 
 

@@ -1,5 +1,3 @@
-"""_critique_*_hard_block_gate_fail`` trio + aggregator direct contracts."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

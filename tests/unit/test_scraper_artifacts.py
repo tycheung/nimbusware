@@ -1,5 +1,3 @@
-"""Tests for scraper artifact retention helpers."""
-
 from __future__ import annotations
 
 import os

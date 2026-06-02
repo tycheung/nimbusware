@@ -1,5 +1,3 @@
-"""Split optional_stages.py and critique_gates.py into composed mixins."""
-
 from __future__ import annotations
 
 from pathlib import Path

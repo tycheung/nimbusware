@@ -1,5 +1,3 @@
-"""Tests for ``scripts/build_bundle_faiss_index.py`` (§14 #12 FAISS operator path)."""
-
 from __future__ import annotations
 
 import importlib.util

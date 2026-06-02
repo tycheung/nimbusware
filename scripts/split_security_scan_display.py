@@ -1,5 +1,3 @@
-"""Split security_scan_on_verify_display.py into a package."""
-
 from __future__ import annotations
 
 from pathlib import Path

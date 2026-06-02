@@ -1,5 +1,3 @@
-"""Tests for ``scripts/build_memory_faiss_index.py``."""
-
 from __future__ import annotations
 
 import importlib.util

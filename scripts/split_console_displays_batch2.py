@@ -1,5 +1,3 @@
-"""Split remaining large console display modules into packages (batch 2)."""
-
 from __future__ import annotations
 
 from pathlib import Path

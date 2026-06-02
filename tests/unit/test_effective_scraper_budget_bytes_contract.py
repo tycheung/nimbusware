@@ -1,5 +1,3 @@
-"""_effective_scraper_budget_bytes`` direct contract."""
-
 from __future__ import annotations
 
 from unittest.mock import patch

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-# fo501: allowed star-from-barrel — bundles/_shared re-exports workflows/_shared
+# re-export via bundles/_shared barrel
 from nimbusware_console.pages.config_tooling.bundles._shared import *  # noqa: F403
 
 
 def render_faiss_drilldown_panel(*, repo_root: Path) -> None:
-    with st.expander("Operator drill-down (fo142)", expanded=False):
+    with st.expander("Operator drill-down", expanded=False):
         st.caption(
             "Read-only: per-file sizes + UTC mtimes + bounded ``configs/bundles/index`` "
             "listing; no ``faiss`` import. Copy-paste rebuild uses the same resolved root "

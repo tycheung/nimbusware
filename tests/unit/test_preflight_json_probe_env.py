@@ -1,5 +1,3 @@
-"""HERMES_PREFLIGHT_JSON_PROBE`` env-layer string-arm contract."""
-
 from __future__ import annotations
 
 from collections.abc import Iterator

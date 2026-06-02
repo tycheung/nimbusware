@@ -1,5 +1,3 @@
-"""RoleRegistry resolve + known_taxonomy_keys direct contracts."""
-
 from __future__ import annotations
 
 from uuid import UUID, uuid4

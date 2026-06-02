@@ -48,8 +48,7 @@ def render_enterprise_sidebar() -> bool:
     if not enterprise_console_feature_enabled(manifest):
         if is_enterprise_edition_manifest(manifest):
             st.sidebar.caption(
-                "Enterprise edition detected; console surfaces ship with fo207 "
-                "(feature not enabled in this build)."
+                "Enterprise edition detected; enterprise console surfaces are not enabled in this build."
             )
         return False
 

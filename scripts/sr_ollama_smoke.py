@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Smoke-test self-refinement LLM critique against local Ollama (§14 #17 optional)."""
 
 from __future__ import annotations
 

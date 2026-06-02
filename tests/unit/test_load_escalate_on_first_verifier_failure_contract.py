@@ -1,5 +1,3 @@
-"""load_escalate_on_first_verifier_failure`` direct contract."""
-
 from __future__ import annotations
 
 from pathlib import Path

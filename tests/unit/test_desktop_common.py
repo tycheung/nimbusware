@@ -1,5 +1,3 @@
-"""Tests for Nimbusware desktop launcher helpers."""
-
 from __future__ import annotations
 
 import shutil

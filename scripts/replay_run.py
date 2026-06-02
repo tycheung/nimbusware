@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Replay a run's event-store rows into timeline JSON (Phase 4 / fo180)."""
 
 from __future__ import annotations
 

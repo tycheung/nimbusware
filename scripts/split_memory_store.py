@@ -1,5 +1,3 @@
-"""Split hermes_memory/store.py and normalize double-spaced formatting."""
-
 from __future__ import annotations
 
 from pathlib import Path

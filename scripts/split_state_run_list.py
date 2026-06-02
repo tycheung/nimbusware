@@ -1,5 +1,3 @@
-"""Split pages/_state_run_list.py into query-param sync and render/fetch modules."""
-
 from __future__ import annotations
 
 from pathlib import Path

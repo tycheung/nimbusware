@@ -43,10 +43,10 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
         _p_wocp_cap = persona_catalog_without_capability_profile_caption(_psum)
         if _p_wocp_cap:
             st.caption(_p_wocp_cap)
-        with st.expander("Operator summary (fo141)", expanded=False):
+        with st.expander("Operator summary", expanded=False):
             st.caption(
                 "Read-only counts: shelf sizes, total entries, and how many personas "
-                "populate optional fo127 fields."
+                "populate optional catalog fields."
             )
             _p_op_sum_metrics = persona_catalog_operator_summary_operator_metrics(_psum)
             _p_op_sum_metrics_cap = persona_catalog_operator_summary_operator_metrics_caption(
@@ -116,9 +116,7 @@ def _render_persona_catalog_panel(repo_root: Path) -> None:
             st.json(_psum)
         _p_other_rows = persona_probation_other_examples_by_shelf_table_rows(_psum)
         if _p_other_rows:
-            st.caption(
-                "Non-canonical **probation_status** strings by shelf (deduped sample; §14 #14)."
-            )
+            st.caption("Non-canonical **probation_status** strings by shelf (deduped sample).")
             st.dataframe(_p_other_rows, use_container_width=True, hide_index=True)
             _p_other_ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             _p_other_slug = persona_probation_other_export_filename_slug()

@@ -14,7 +14,7 @@ def render_apply_agent_evaluator_section(*, repo_root: Path, workflow_profile: s
             "via ``atomic_write_yaml`` (other YAML keys preserved). Accepts a full workflow root "
             "with ``agent_evaluator:`` or a flat ``enabled`` / ``persona_id`` map. Requires "
             f"``{ALLOW_WORKFLOW_YAML_WRITE_ENV}=1`` (or true/yes/on) in the Streamlit process env. "
-            "Uses the **same** profile-stem confirmation field as **fo132** above."
+            "Uses the **same** profile-stem confirmation field as the integrator gate apply panel above."
         )
         st.text_area(
             "Optional pasted ``agent_evaluator`` YAML (full workflow with key, or flat mapping)",

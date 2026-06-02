@@ -1,5 +1,3 @@
-"""_scraper_get_with_retries`` direct contract."""
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

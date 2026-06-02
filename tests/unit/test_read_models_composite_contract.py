@@ -1,5 +1,3 @@
-"""read_models.py`` composite direct contracts."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -1,5 +1,3 @@
-"""_maybe_emit_anti_deadlock_escalation`` direct contract."""
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone

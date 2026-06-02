@@ -1,5 +1,3 @@
-"""Contract tests for agent_core.models.events (plan hermes-orchestrator-local-plan.md)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -66,8 +66,7 @@ def render_integrator_preview_section(*, repo_root: Path, workflow_profile: str 
             st.json(_ip)
     _integrator_write_ok = workflow_yaml_write_enabled()
     st.caption(
-        "Workflow YAML disk writes (**fo132** ``integrator_gate``, "
-        "**fo140** ``agent_evaluator``, **§14 #13** full-profile merge): "
+        "Workflow YAML disk writes (integrator_gate, agent_evaluator, full-profile merge): "
         f"``{ALLOW_WORKFLOW_YAML_WRITE_ENV}`` is "
         f"{'**enabled**' if _integrator_write_ok else '**disabled** — no disk writes'}."
     )

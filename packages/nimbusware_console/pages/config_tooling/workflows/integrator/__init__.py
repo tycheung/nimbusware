@@ -21,12 +21,9 @@ from .universal_critique import render_universal_critique_section
 def render_workflows_integrator_section() -> None:
     with st.expander("Module Integrator gate (workflow preview)", expanded=False):
         st.caption(
-            "**fo131** read-only preview + **fo132** / **fo140** optional subtree disk apply + "
-            "**§14 #13** optional **full-profile** shallow merge + **fo133** "
-            "threshold source "
-            "breakdown + **fo134** universal critique + **fo135** self-refinement + **fo136** "
-            "security-scan-metadata + **fo137** escalation-suppress + **fo139** "
-            "agent-evaluator workflow explainer "
+            "Read-only preview + optional subtree disk apply + optional full-profile shallow merge + "
+            "threshold source breakdown + universal critique + self-refinement + "
+            "security-scan-metadata + escalation-suppress + agent-evaluator workflow explainer "
             "(nested expanders): preview "
             "``ModuleIntegrator.score_fit`` against ``configs/bundles/catalog.yaml`` using the same "
             "``integrator_gate`` knobs as the orchestrator (workflow YAML + "
@@ -34,7 +31,7 @@ def render_workflows_integrator_section() -> None:
             "``HERMES_INTEGRATOR_MIN_SCORE_TO_PASS`` still wins "
             "when set). Paste an ``integrator_gate:`` fragment to override **min_score** / "
             "**enabled** / "
-            "**project_tags** for preview; **Apply** (fo132 / fo140) merges only that subtree when "
+            "**project_tags** for preview; **Apply** merges only that subtree when "
             f"``{ALLOW_WORKFLOW_YAML_WRITE_ENV}`` is enabled and you confirm the profile stem.",
         )
         repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
