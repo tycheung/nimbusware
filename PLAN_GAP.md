@@ -7,7 +7,7 @@
 
 ## At a glance (read this first)
 
-**Active program (June 2026):** [Lane W — Sustainability (fo701–fo750)](#lane-w--sustainability-fo701fo750) is **complete** (regression-only). Normative product scope (§14, Lane M/U) remains **regression-only**.
+**Active program (June 2026):** [Lane X — Signal & hardening (fo760–fo789)](#lane-x--signal--hardening-fo760fo789) is **active**. [Lane W](#lane-w--sustainability-fo701fo750) is complete (regression-only). Normative product scope (§14, Lane M/U) remains **regression-only**.
 
 | Edition | Normative scope | ~% complete | Posture |
 |---------|-----------------|-------------|---------|
@@ -17,6 +17,7 @@
 | **User vs Admin consoles** | Lane **U** fo310–fo317 | **~100%** | **Shipped** — see [Lane U](#lane-u--user-vs-admin-consoles-fo310fo317) |
 | **Production maturity** | Lane **V** fo600–fo650 | **~100%** | **Complete** — [Lane V](#lane-v--production-maturity-fo600fo650); regression-only |
 | **Sustainability** | Lane **W** fo701–fo750 | **~100%** | **Complete** — [Lane W](#lane-w--sustainability-fo701fo750); regression-only |
+| **Signal & hardening** | Lane **X** fo760–fo789 | **In progress** | **Active** — [Lane X](#lane-x--signal--hardening-fo760fo789) |
 
 **v1 §14:** **21/21 Done**. **fo150–fo191**, **fo143–fo146**, **PZ-1–PZ-10**, and **fo200–fo207** meet epic exit criteria in code + tests. **Lane M (fo300–fo308)** is **~98% shipped**. **Lane U (fo310–fo317)** is **~100% shipped** — Maker as user console, Admin Console as admin/dev-only.
 
@@ -1637,14 +1638,136 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 
 ---
 
+## Lane X — Signal & hardening (fo760–fo789)
+
+**Status:** **Active** (June 2026) — follow-on engineering program after [Lane W](#lane-w--sustainability-fo701fo750).  
+**Depends on:** Lane W complete; normative product scope regression-only.  
+**Source:** Post-Lane-W quality review — CI signal parity, API typing ratchet, PR-test blind spots, enterprise release hardening, and repo-wide comment/doc cleanup.
+
+**Operating rule:** Ship one **phase** per commit; `./scripts/ci_check.ps1` green before each commit; final X4 pass trims docstrings/comments and refreshes docs.
+
+### Lane X — dependency graph
+
+```text
+Lane W complete
+        │
+        ▼
+X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratchet
+        │                                      │
+        ├──► X2 (fo769–fo773) PR test signal  │
+        │                                      │
+        ├──► X3 (fo774–fo778) Enterprise release hardening
+        │
+        └──► X4 (fo779–fo789) Repo-wide doc/comment hygiene
+```
+
+---
+
+### Phase X0 — CI signal parity (fo760–fo763)
+
+**Problem:** Pre-commit runs `ruff-format`, but default CI only runs `ruff check`.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo760** | Add advisory `ruff format --check` to CI unit job | `.github/workflows/ci.yml` |
+| **fo761** | Add advisory `ruff format --check` to `ci_check.*` parity scripts | `scripts/ci_check.ps1`, `scripts/ci_check.sh` |
+| **fo762** | Document formatter parity in test docs | `tests/README.md` |
+| **fo763** | Keep no-fix rule (no repo-wide auto-fix in CI) | docs + workflow comments |
+
+**Exit X0:** CI and local parity include formatter signal (advisory), with no auto-fix in pipeline.
+
+---
+
+### Phase X1 — API typing ratchet (fo764–fo768)
+
+**Problem:** `nimbusware_api.*` is configured as strict island in mypy overrides but not checked in default CI command.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo764** | Include `nimbusware_api` in CI mypy command | `.github/workflows/ci.yml`, `scripts/ci_check.*` |
+| **fo765** | Include `nimbusware_api` in pre-commit parity hook | `.pre-commit-config.yaml` |
+| **fo766** | Add mypy-surface guard test for API scope in parity command | `tests/unit/` |
+| **fo767** | Update architecture docs for Lane X typing scope | `ARCHITECTURE.md` |
+| **fo768** | Keep `_pipeline.*` exclusion explicit | `pyproject.toml` docs |
+
+**Exit X1:** CI, local script, and pre-commit all type-check services + tranche B + `nimbusware_api`.
+
+---
+
+### Phase X2 — PR test signal (fo769–fo773)
+
+**Problem:** Useful API behavior tests still marked slow and excluded from PR CI.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo769** | Remove blanket slow marker from Maker approval API suite | `tests/api/test_maker_approval_api.py` |
+| **fo770** | Add targeted integration assertions to event/config Postgres suites | `tests/integration/` |
+| **fo771** | Refresh marker policy docs with PR-vs-weekly intent | `tests/README.md` |
+| **fo772** | Keep heavy orchestrator suites as slow | `tests/orchestrator/`, `tests/console/` |
+| **fo773** | Validate PR subset remains stable under `ci_check` | CI parity scripts |
+
+**Exit X2:** PR suite gains additional API signal; integration coverage increases without destabilizing runtime.
+
+---
+
+### Phase X3 — Enterprise release hardening (fo774–fo778)
+
+**Problem:** SBOM workflow is non-blocking; release hygiene is advisory.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo774** | Make SBOM workflow failing on generation errors | `.github/workflows/sbom.yml` |
+| **fo775** | Document release-SBOM expectation | `README.md`, `docs/deploy/README.md` |
+| **fo776** | Tighten OIDC doc into implementation checklist language | `docs/deploy/oidc.md` |
+| **fo777** | Keep K8s docs explicit about reference status | `docs/deploy/k8s/README.md` |
+| **fo778** | Capture completion in tracker + docs | `PLAN_GAP.md` |
+
+**Exit X3:** Release SBOM job is strict and docs describe production expectations unambiguously.
+
+---
+
+### Phase X4 — Repo-wide comment/doc hygiene (fo779–fo789)
+
+**Problem:** Residual AI-generated verbose module docstrings/comments and stale docs drift over time.
+
+| Epic | Outcome | Primary touches |
+|------|---------|-----------------|
+| **fo779** | Run and refine repo-wide docstring trimmer for one-line noise | `scripts/trim_redundant_docstrings.py` |
+| **fo780** | Remove redundant comments where code is self-descriptive | `packages/`, `tests/` |
+| **fo781** | Refresh root and package docs for current CI/type/test scope | `README.md`, package READMEs |
+| **fo782** | Align architecture/testing docs with CI commands | `ARCHITECTURE.md`, `tests/README.md` |
+| **fo783–fo789** | Hold for subsequent hygiene passes | PLAN_GAP |
+
+**Exit X4:** CI green; docs current; comments/docstrings minimized repo-wide.
+
+### Lane X — progress tracker
+
+| Phase | Epics | Status |
+|-------|-------|--------|
+| **X0** CI signal parity | fo760–fo763 | **Done** |
+| **X1** API typing ratchet | fo764–fo768 | **Pending** |
+| **X2** PR test signal | fo769–fo773 | **Pending** |
+| **X3** Enterprise release hardening | fo774–fo778 | **Pending** |
+| **X4** Repo-wide doc/comment hygiene | fo779–fo789 | **Pending** |
+
+### Lane X — explicit non-goals
+
+- Rewriting Streamlit UI architecture
+- Strict-typing `hermes_orchestrator._pipeline.*`
+- Repo-wide auto-fixing in CI
+- Reopening §14/Lane M/U product scope
+
+---
+
 ## Execution priority (post–Lane D + M + U + R + T + V)
 
-1. **Hold — [Lane W](#lane-w--sustainability-fo701fo750)** — fo701–fo753 complete; CI green; regression-only.
-2. **Hold — [Lane T](#lane-t--maturity-program-fo520fo545)** — fo520–fo545 complete; regression-only.
-3. **Hold** — `./scripts/ci_check.ps1` green; regression on fo511–fo515.
-4. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
-5. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
-6. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
+1. **Active — [Lane X](#lane-x--signal--hardening-fo760fo789)** — fo760–fo789; ship phase-by-phase with CI green and phase commits.
+2. **Hold — [Lane W](#lane-w--sustainability-fo701fo750)** — fo701–fo753 complete; regression-only.
+3. **Hold — [Lane T](#lane-t--maturity-program-fo520fo545)** — fo520–fo545 complete; regression-only.
+4. **Hold** — `./scripts/ci_check.ps1` green; regression on fo511–fo515.
+5. **Hold Lane M + U + R** — fo300–fo317 and fo400–fo407 follow-on regression-only.
+6. **Optional** — [Lane D polish](#lane-d--ops-polish-non-blocking), [Optional depth](#optional-depth-on-request).
+7. **Do not** reopen §14 rows, fo150–fo207, fo143–fo146, fo160–fo191, or PZ-2–PZ-10 except for regressions.
 
 **Per-cycle default (June 2026 onward):** Ship **Lane W** phases with CI green each phase; hold normative product scope.
 
