@@ -27,6 +27,11 @@ def _should_drop(doc: str) -> bool:
         return True
     if stripped.endswith(" module.") or stripped.endswith(" package."):
         return True
+    if stripped.endswith(" .") or stripped.endswith("."):
+        if stripped.startswith("LLM-backed plan stage"):
+            return True
+    if stripped == "Backward-compatible shim.":
+        return True
     return len(stripped) > 120
 
 

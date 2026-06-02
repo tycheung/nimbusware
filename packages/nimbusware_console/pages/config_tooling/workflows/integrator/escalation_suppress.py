@@ -12,13 +12,13 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_escalation_suppress_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Escalation suppress (workflow YAML, fo137)", expanded=False):
+    with st.expander("Escalation suppress (workflow YAML)", expanded=False):
         st.caption(
             "Read-only: ``escalation.suppress_automatic_escalation`` from the **same** profile "
             "stem — **suppress_automatic_escalation_effective** matches "
             "``parse_escalation_workflow_block`` (same boolean the pipeline uses in "
             "``_workflow_suppresses_automatic_escalation`` once the run profile resolves to "
-            "this stem). Non-dict ``escalation:`` collapses to off. PLAN_GAP §14 #19."
+            "this stem). Non-dict ``escalation:`` collapses to off."
         )
         _es_expl = escalation_suppress_workflow_explainer_payload(
             repo_root,

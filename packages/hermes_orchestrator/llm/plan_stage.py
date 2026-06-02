@@ -1,5 +1,3 @@
-"""LLM-backed plan stage: two critics + gate JSON ."""
-
 from __future__ import annotations
 
 import json

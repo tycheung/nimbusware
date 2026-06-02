@@ -20,7 +20,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 
 ## CI subsets
 
-- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `ruff format --check`, mypy (see `scripts/mypy_ci_targets.py`: services + tranche B + tranche C core libs + API pilot), bandit, `pip-audit`, package coverage floors (`scripts/coverage_package_floors.py`), then pytest.
+- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `ruff format --check`, mypy (`scripts/mypy_ci_targets.py`: tranches B–E, UI packages under narrowed ignores, API pilot), bandit (`pyproject.toml` config), `pip-audit`, package coverage floors, pytest @ 75%.
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=75` (see `.github/workflows/ci.yml`).
 - Coverage omits Streamlit `pages/**`, Maker `ui/**`, desktop launcher modules, `*_cli.py` entrypoints, and `hermes_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
 - **Per-package floors** (`scripts/coverage_package_floors.py`, ≥85%): `agent_core`, `hermes_store`, `hermes_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.

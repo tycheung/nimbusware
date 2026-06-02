@@ -8,7 +8,7 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_apply_agent_evaluator_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Apply agent_evaluator to disk (fo140)", expanded=False):
+    with st.expander("Apply agent_evaluator to disk", expanded=False):
         st.caption(
             "Merges the pasted ``agent_evaluator`` block into the **selected** workflow profile "
             "via ``atomic_write_yaml`` (other YAML keys preserved). Accepts a full workflow root "

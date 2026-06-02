@@ -9,7 +9,8 @@
 | Orchestration | `hermes_orchestrator` | Run pipeline, critics, gates, dispatch |
 | Projections | `nimbusware_projections` | Shared timeline/list builders and field metadata |
 | API | `nimbusware_api` | FastAPI `/v1` control plane |
-| Console | `nimbusware_console` | Streamlit operator UI |
+| Maker | `nimbusware_maker` | Streamlit product UI (projects, builds, review) |
+| Admin Console | `nimbusware_console` | Streamlit ops/dev control plane |
 | Config | `nimbusware_config` | Versioned Postgres documents + materializer |
 | Memory | `hermes_memory` | Retrieval index (repo or fleet scope) |
 | IAM | `nimbusware_iam` | Enterprise tenancy and API keys |
@@ -39,7 +40,11 @@ Operator / API
 
 `NIMBUSWARE_EDITION=individual|enterprise` controls IAM, fleet memory, Redis workers, and enterprise-only routes (404 on Individual).
 
-See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md), [adr/002-edition-gate.md](adr/002-edition-gate.md), [adr/003-projections-layer.md](adr/003-projections-layer.md), and [adr/004-api-request-logging.md](adr/004-api-request-logging.md).
+See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md) through [adr/005-request-correlation-id.md](adr/005-request-correlation-id.md).
+
+## Quality gates
+
+Local CI parity: `scripts/ci_check.ps1` / `ci_check.sh` (ruff, format, mypy via `scripts/mypy_ci_targets.py`, bandit, pip-audit, pytest @ 75% + per-package floors).
 
 ## Projections map
 

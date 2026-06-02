@@ -12,12 +12,12 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_security_scan_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Security scan metadata on verify (workflow + env, fo136)", expanded=False):
+    with st.expander("Security scan metadata on verify (workflow + env)", expanded=False):
         st.caption(
             "Read-only: ``security_scan_metadata_on_verify`` from the **same** workflow profile vs "
             "``HERMES_ATTACH_SECURITY_SCAN_METADATA`` — **yaml_parsed_bool** is frozen YAML only; "
             "**effective_enabled** matches ``security_scan_metadata_on_verify_enabled`` "
-            "(truthy env forces on; ``0`` / ``false`` / ``no`` kill-switch). PLAN_GAP §14 #18."
+            "(truthy env forces on; ``0`` / ``false`` / ``no`` kill-switch)."
         )
         _ssm_expl = security_scan_metadata_workflow_explainer_payload(
             repo_root,

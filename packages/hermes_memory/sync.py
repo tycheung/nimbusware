@@ -1,4 +1,4 @@
-"""Memory index sync / stale detection (Phase 4 stub)."""
+"""Memory index sync and stale detection."""
 
 from __future__ import annotations
 

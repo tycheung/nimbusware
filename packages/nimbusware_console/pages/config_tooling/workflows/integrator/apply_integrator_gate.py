@@ -8,7 +8,7 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_apply_integrator_gate_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Apply integrator_gate to disk (fo132)", expanded=False):
+    with st.expander("Apply integrator_gate to disk", expanded=False):
         st.caption(
             "Merges the pasted ``integrator_gate`` block into the **selected** workflow profile "
             "via ``atomic_write_yaml`` (other YAML keys preserved). Requires "

@@ -87,7 +87,7 @@ packages/
   nimbusware_env/       Edition gate, env_flags, desktop runners
 configs/                Workflow YAML, personas, bundles (seed / gitops review)
 scripts/                Install, FAISS build, workers, e2e smoke, runbooks
-tests/                  Pytest suite (~2,774 tests; unit/api/console/orchestrator/integration)
+tests/                  Pytest suite (unit/api/console/orchestrator/integration/e2e)
 ```
 
 Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
@@ -355,7 +355,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 Layout and CI subsets: [`tests/README.md`](tests/README.md).
 
 ```bash
-# Matches GitHub CI (ruff, mypy, bandit, pip-audit, package coverage floors, pytest, 75% coverage on library code):
+# Matches GitHub CI (ruff, format, mypy via scripts/mypy_ci_targets.py, bandit, pip-audit, floors, pytest @ 75%):
 ./scripts/ci_check.ps1   # Windows
 ./scripts/ci_check.sh    # Linux/macOS
 

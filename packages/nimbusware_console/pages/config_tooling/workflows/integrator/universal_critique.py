@@ -12,12 +12,11 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_universal_critique_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Universal critique (workflow YAML, fo134)", expanded=False):
+    with st.expander("Universal critique (workflow YAML)", expanded=False):
         st.caption(
             "Read-only: ``universal_critique`` from the **same** workflow profile as integrator "
             "preview — **yaml_only** is frozen file content; **effective_with_env** applies "
-            "non-empty ``HERMES_*`` critique env overrides (same rules as the orchestrator). "
-            "PLAN_GAP §14 #16."
+            "non-empty ``HERMES_*`` critique env overrides (same rules as the orchestrator)."
         )
         _uc_expl = universal_critique_workflow_explainer_payload(
             repo_root,
@@ -158,7 +157,7 @@ def render_universal_critique_section(*, repo_root: Path, workflow_profile: str 
         st.dataframe(_uc_rows, use_container_width=True, hide_index=True)
         _uc_delta = universal_critique_env_override_deltas(_uc_expl)
         if _uc_delta:
-            st.caption("Env overrides vs frozen YAML (non-matching knobs only; §14 #16).")
+            st.caption("Env overrides vs frozen YAML (non-matching knobs only).")
             st.dataframe(_uc_delta, use_container_width=True, hide_index=True)
         _uc_delta_cap = universal_critique_env_override_summary_caption(_uc_expl)
         if _uc_delta_cap:
@@ -183,7 +182,7 @@ def render_universal_critique_section(*, repo_root: Path, workflow_profile: str 
             "Optional **workflow vs timeline** table: paste the top-level "
             "``universal_critique`` object **or** full **GET /v1/runs/{id}/timeline** JSON. "
             "Workflow counts are from the selected profile YAML; timeline values are "
-            "observed gate rollups. PLAN_GAP §14 #16."
+            "observed gate rollups."
         )
         _uc_tl_raw = st.text_area(
             "Optional timeline or universal_critique JSON",

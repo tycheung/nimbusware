@@ -15,14 +15,14 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_self_refinement_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Self-refinement (workflow + policy, fo135)", expanded=False):
+    with st.expander("Self-refinement (workflow + policy)", expanded=False):
         st.caption(
             "Read-only: workflow ``self_refinement`` from the **same** profile stem vs "
             "``configs/self_refinement/policy.yaml`` — **marker_merge** mirrors "
             "``_maybe_emit_self_refinement_stage_marker`` (emit when policy **or** workflow "
             "enables; version/description workflow wins when set). Env "
             "``HERMES_SELF_REFINEMENT_STAGE_MARKER`` in ``0``/``false``/``no`` suppresses "
-            "the ``self_refinement:policy`` stage marker. PLAN_GAP §14 #17."
+            "the ``self_refinement:policy`` stage marker."
         )
         _sr_expl = self_refinement_workflow_explainer_payload(
             repo_root,
@@ -132,7 +132,7 @@ def render_self_refinement_section(*, repo_root: Path, workflow_profile: str | N
             "(``events`` + summaries); the console extracts ``self_refinement`` when needed. "
             "Explainer values are predictive for the workflow profile above; timeline values "
             "are the last observed snapshot. When present, **``marker_count``** matches the "
-            "timeline read-model (Run detail / API). PLAN_GAP §14 #17."
+            "timeline read-model (Run detail / API)."
         )
         _sr_tl_raw = st.text_area(
             "Optional timeline or self_refinement JSON",

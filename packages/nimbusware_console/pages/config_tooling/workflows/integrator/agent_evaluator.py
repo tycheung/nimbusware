@@ -12,14 +12,14 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_agent_evaluator_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Agent evaluator (workflow + env, fo139)", expanded=False):
+    with st.expander("Agent evaluator (workflow + env)", expanded=False):
         st.caption(
             "Read-only: ``agent_evaluator`` from the **same** profile stem vs "
             "``HERMES_AGENT_EVALUATOR`` — **yaml_parsed_*** is frozen YAML; "
             "**would_emit_stage_started** matches ``_maybe_emit_agent_evaluator_stage`` "
             "before create-run persona checks (kill-switch ``0``/``false``/``no``; "
             "``1``/``true``/``yes`` forces on). **persona_id** is always from the parsed "
-            "workflow block when a stage would emit. PLAN_GAP §14 #15."
+            "workflow block when a stage would emit."
         )
         _ae_expl = agent_evaluator_workflow_explainer_payload(
             repo_root,

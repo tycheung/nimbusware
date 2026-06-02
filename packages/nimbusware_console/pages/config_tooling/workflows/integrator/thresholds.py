@@ -12,7 +12,7 @@ from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa:
 
 
 def render_thresholds_section(*, repo_root: Path, workflow_profile: str | None) -> None:
-    with st.expander("Integrator thresholds & gate emission (fo133)", expanded=False):
+    with st.expander("Integrator thresholds & gate emission", expanded=False):
         st.caption(
             "Read-only: **pipeline** ``min_score_to_pass`` resolution (matches gate emission) vs "
             "**Streamlit preview** (pasted fragment can change preview only), plus whether a "

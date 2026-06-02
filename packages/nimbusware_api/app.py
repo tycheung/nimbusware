@@ -42,7 +42,7 @@ _OPENAPI_APP_DESCRIPTION = (
     "require ``X-Nimbusware-Admin-Token``. Enterprise: user routes need "
     "``X-Nimbusware-Api-Key`` with ``maker_user`` scope; admin routes need "
     "``maker_admin`` scope or the admin token (bootstrap). "
-    "See PLAN_GAP.md Lane U for the full split."
+    "See README (User vs Admin) for the full split."
 )
 
 

@@ -184,7 +184,7 @@ def render_faiss_status_panel(
             st.warning(
                 "Index may be **out of date** (catalog mtime newer than index files). "
                 "Rebuild from repo root (see command block below or **Poetry optional "
-                "groups and FAISS** in ``PLAN_GAP.md``). CI smoke: ``"
+                "groups and FAISS** in the README). CI smoke: ``"
                 f"{BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH}``.",
             )
             st.code(bundle_faiss_build_command_snippet_explicit(repo_root), language="bash")
@@ -222,6 +222,6 @@ def render_faiss_status_panel(
             "(defaults repo root to the script's parent). "
             "``--help`` on the Python script lists ``--repo-root``, ``--catalog``, "
             "``--out-dir``. "
-            "See **Poetry optional groups and FAISS** in ``PLAN_GAP.md``; workflow file ``"
+            "See **Poetry optional groups and FAISS** in the README; workflow file ``"
             f"{BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH}``.",
         )
