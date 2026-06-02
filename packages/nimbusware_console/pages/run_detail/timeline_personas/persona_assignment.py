@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
     datetime,
-    os,
     st,
     timezone,
 )

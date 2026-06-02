@@ -121,7 +121,9 @@ def _validate_terminology_disambiguation(
         term = item.get("term")
         meaning = item.get("meaning_in_role")
         if not isinstance(term, str) or not term.strip():
-            raise ValueError(f"{where}: terminology_disambiguation[{i}].term must be a non-empty string")
+            raise ValueError(
+                f"{where}: terminology_disambiguation[{i}].term must be a non-empty string"
+            )
         if not isinstance(meaning, str) or not meaning.strip():
             raise ValueError(
                 f"{where}: terminology_disambiguation[{i}].meaning_in_role must be a non-empty string",

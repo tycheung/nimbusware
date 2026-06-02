@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from nimbusware_console.pages.run_detail.timeline_misc_core import (

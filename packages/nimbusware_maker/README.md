@@ -2,10 +2,15 @@
 
 Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/apply, workspace snapshots, and revert.
 
+## Simple vs Advanced
+
+**Simple** is the default: plain-language progress, no operator telemetry. **Advanced** appears in the sidebar only after **Sign in as admin** (same machine); it shows extra diagnostics. Full ops tooling remains in the [Admin Console](../nimbusware_console/README.md).
+
 ## Entry
 
 - `packages/nimbusware_maker/cli.py` — `poetry run nimbusware-maker`
 - API routes under `nimbusware_api/routes/runs/maker_*.py` drive the same approval state machine server-side.
+- First-run wizard on Home when onboarding is not complete (folder → readiness smoke → intent → create run).
 
 ## Layering
 
