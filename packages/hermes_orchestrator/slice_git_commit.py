@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from hermes_orchestrator.git_outputs import run_branch_name, slice_commit_message
 from hermes_orchestrator.micro_slice import SlicePlan
 
 
@@ -29,10 +30,7 @@ def maybe_commit_slice(
         return {"status": "skipped", "reason": "disabled"}
     if not (workspace / ".git").is_dir():
         return {"status": "skipped", "reason": "not_git_repo"}
-    branch = f"hermes/run-{run_id[:8]}"
-    prefix = os.environ.get("HERMES_SLICE_BRANCH_PREFIX", "hermes/run-").strip() or "hermes/run-"
-    branch = f"{prefix}{run_id}"
-    msg = (plan.rationale or plan.slice_id)[:200]
+    branch = run_branch_name(run_id)
     try:
         subprocess.run(
             ["git", "checkout", "-B", branch],
@@ -51,7 +49,7 @@ def maybe_commit_slice(
             check=False,
         )
         proc = subprocess.run(
-            ["git", "commit", "-m", f"[hermes] {plan.slice_id}: {msg}"],
+            ["git", "commit", "-m", slice_commit_message(plan)],
             cwd=workspace,
             capture_output=True,
             text=True,

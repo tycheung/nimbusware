@@ -77,6 +77,7 @@ hermes-fleet-ollama-sli = "hermes_orchestrator.fleet_ollama_sli_cli:main"
 nimbusware-run = "nimbusware_env.run_app:main"
 nimbusware-admin = "nimbusware_env.admin_app:main"
 nimbusware-maker = "nimbusware_maker.cli:main"
+nimbusware-git-pr = "nimbusware_env.git_pr_cli:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
 
 [tool.pytest.ini_options]

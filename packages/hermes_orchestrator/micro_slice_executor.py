@@ -432,4 +432,13 @@ def execute_micro_slice_pass(
         if not gate.passed:
             break
     orch.maybe_rebuild_memory_index(run_id)
+    from hermes_orchestrator.git_outputs import emit_git_finalize_after_micro_slice_pass
+
+    emit_git_finalize_after_micro_slice_pass(
+        orch,
+        run_id,
+        ws,
+        results,
+        emit_stage=_emit_slice_stage,
+    )
     return results
