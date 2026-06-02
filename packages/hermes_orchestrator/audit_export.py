@@ -1,4 +1,4 @@
-"""Signed audit bundle export for a run (fo402)."""
+"""Signed audit bundle export for a run."""
 
 from __future__ import annotations
 

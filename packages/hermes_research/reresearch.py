@@ -1,4 +1,4 @@
-"""Bounded re-research when plan stage fails for missing context (fo526)."""
+"""Bounded re-research when plan stage fails for missing context."""
 
 from __future__ import annotations
 

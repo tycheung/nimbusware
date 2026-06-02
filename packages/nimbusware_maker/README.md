@@ -9,7 +9,7 @@ Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/
 ## Entry
 
 - `packages/nimbusware_maker/cli.py` — `poetry run nimbusware-maker`
-- **Quick local mode (fo461):** `poetry run nimbusware-maker --quick` or `poetry run nimbusware-run --quick` — in-memory event store, `quick_local` workflow (stub critics, single-file slice). API must use the same env (use `nimbusware-run --quick` for API + Maker together).
+- **Quick local mode:** `poetry run nimbusware-run --quick` (or `nimbusware-maker --quick` with API started in the same env) — in-memory store, `quick_local` workflow.
 - API routes under `nimbusware_api/routes/runs/maker_*.py` drive the same approval state machine server-side.
 - First-run wizard on Home when onboarding is not complete (folder → readiness smoke → intent → create run).
 

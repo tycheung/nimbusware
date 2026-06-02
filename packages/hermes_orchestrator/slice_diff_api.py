@@ -1,4 +1,4 @@
-"""Resolve per-slice diff for public API (fo413)."""
+"""Resolve per-slice diff for public API."""
 
 from __future__ import annotations
 

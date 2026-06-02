@@ -1,4 +1,4 @@
-"""Sanitize untrusted fetched content before researcher LLM prompts (fo529)."""
+"""Sanitize untrusted fetched content before researcher LLM prompts."""
 
 from __future__ import annotations
 

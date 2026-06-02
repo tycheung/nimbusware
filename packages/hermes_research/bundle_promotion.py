@@ -1,4 +1,4 @@
-"""Code Researcher → catalog candidate promotion path (fo525)."""
+"""Code Researcher → catalog candidate promotion path."""
 
 from __future__ import annotations
 

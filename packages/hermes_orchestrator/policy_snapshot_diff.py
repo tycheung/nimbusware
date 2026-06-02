@@ -1,4 +1,4 @@
-"""Compare frozen ``policy_snapshot`` metadata on two runs (fo401)."""
+"""Compare frozen ``policy_snapshot`` metadata on two runs."""
 
 from __future__ import annotations
 

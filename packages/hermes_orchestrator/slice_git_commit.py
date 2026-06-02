@@ -1,4 +1,4 @@
-"""Optional per-slice git commit after gate PASS (fo410)."""
+"""Optional per-slice git commit after gate PASS."""
 
 from __future__ import annotations
 

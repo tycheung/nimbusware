@@ -80,6 +80,7 @@ packages/
   hermes_extensions/    Personas, bundles, catalog
   nimbusware_api/       FastAPI app
   nimbusware_maker/     Maker Streamlit UI + project store helpers
+  nimbusware_hw/        Hardware probe, resource governor, model fit ranking
   nimbusware_console/   Admin Console Streamlit UI (ops/dev)
   hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
@@ -147,6 +148,13 @@ poetry run nimbusware-admin
 poetry run nimbusware-maker
 ```
 
+**Quick local dev (in-memory store, stub critics, no Postgres):**
+
+```bash
+poetry run nimbusware-run --quick
+# or: poetry run nimbusware-maker --quick  (API must use same env — prefer nimbusware-run --quick)
+```
+
 **Launcher (install / update / run buttons):**
 
 ```bash
@@ -191,7 +199,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
 - Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
-- Per-project run history and **Settings** tab (Ollama model list, policy-gated pull/delete/routing when admin allows, readiness presets, auto-advance hint)
+- Per-project run history and **Settings** tab (hardware tier + resource governor sliders, Ollama model list, readiness presets, auto-advance hint)
 
 **Build**
 
@@ -259,7 +267,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
-| **Platform** | `GET /platform/edition`, `GET /platform/readiness` | User |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` | User |
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
 | **Actions** | Retry, escalate | Admin |
 | **Bundles** | `GET /bundles/search`, `GET /catalog` | User |
@@ -300,7 +308,8 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 | `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
 | `poetry run nimbusware-run` | Desktop API + Maker window (default) |
 | `poetry run nimbusware-admin` | Desktop API + Admin Console window |
-| `poetry run nimbusware-maker` | Streamlit Maker only (expects API at `NIMBUSWARE_API_BASE`) |
+| `poetry run nimbusware-maker` | Streamlit Maker only (expects API at `NIMBUSWARE_API_BASE`); add `--quick` for solo dev |
+| `poetry run nimbusware-git-pr` | Open GitHub PR for a Hermes run branch (`gh` CLI required) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |
 
 Scripts: [`scripts/build_bundle_faiss_index.py`](scripts/build_bundle_faiss_index.py), [`scripts/build_memory_faiss_index.py`](scripts/build_memory_faiss_index.py), [`scripts/run_dispatch_worker.py`](scripts/run_dispatch_worker.py), [`scripts/prune_scraper_artifacts.py`](scripts/prune_scraper_artifacts.py), [`scripts/e2e_smoke.py`](scripts/e2e_smoke.py).
@@ -387,6 +396,11 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 | `HERMES_USE_LLM` | Enable LLM-backed stages |
 | `HERMES_SLICE_AUTO_ADVANCE` | Default **on** (unset or `1`); set `0` to pause micro-slice chain for maker approval |
 | `HERMES_SLICE_IMPLEMENT` | Set to `agent` for allowlisted tool-based slice implement |
+| `HERMES_SLICE_AUTO_COMMIT` | Optional per-slice git commit on gate PASS |
+| `HERMES_GIT_NATIVE_OUTPUTS` | Final run commit on all slices passed |
+| `HERMES_GIT_PR_ON_COMPLETE` | Run `gh pr create` after final commit (requires `gh` CLI) |
+| `NIMBUSWARE_HW_FIXTURE` | CI/dev: `weak`, `medium`, or `strong` hardware profile fixture |
+| `NIMBUSWARE_MAX_PARALLEL_WRITERS` | Override governor parallel writer cap |
 | `HERMES_RUN_DISPATCH` | `redis` or in-memory queue for workers |
 | `HERMES_REDIS_URL` | Redis URL when dispatch=redis |
 

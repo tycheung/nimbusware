@@ -1,4 +1,4 @@
-"""Tenant-scoped research index + egress audit export hook (fo527)."""
+"""Tenant-scoped research index + egress audit export hook."""
 
 from __future__ import annotations
 
