@@ -18,6 +18,8 @@ from nimbusware_api.schemas.openapi import (
     CREATE_RUN_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from nimbusware_env.settings_catalog import SettingScope
+from nimbusware_env.settings_store import validate_patch
 from nimbusware_maker.intent import build_requirements_artifact
 
 router = APIRouter()
@@ -41,6 +43,10 @@ class CreateRunBody(BaseModel):
     custom_agent_id: str | None = Field(default=None, max_length=120)
     memory_retrieval_enabled: bool | None = Field(default=None)
     memory_index_contribution: bool | None = Field(default=None)
+    operator_settings: dict[str, str] | None = Field(
+        default=None,
+        description="Per-run operator overrides (run-scoped catalog keys only).",
+    )
     project_id: str | None = Field(default=None, max_length=36)
     requirements: RunRequirementsBody | None = None
 
@@ -78,7 +84,24 @@ def create_run(
             memory_overrides["retrieval_enabled"] = body.memory_retrieval_enabled
         if body.memory_index_contribution is not None:
             memory_overrides["index_contribution"] = body.memory_index_contribution
-        run_policy_overrides = {"memory": memory_overrides} if memory_overrides else None
+        run_policy_overrides: dict[str, Any] | None = None
+        if memory_overrides:
+            run_policy_overrides = {"memory": memory_overrides}
+        if body.operator_settings:
+            try:
+                op = validate_patch(
+                    body.operator_settings,
+                    scope=SettingScope.RUN,
+                    admin=False,
+                )
+            except ValueError as exc:
+                raise HTTPException(
+                    status_code=422,
+                    detail=problem("invalid_request", str(exc)),
+                ) from exc
+            if run_policy_overrides is None:
+                run_policy_overrides = {}
+            run_policy_overrides["operator_settings"] = op
         project_uuid: UUID | None = None
         project = None
         if body.project_id is not None and str(body.project_id).strip():

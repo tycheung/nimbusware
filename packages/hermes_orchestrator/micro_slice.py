@@ -111,3 +111,27 @@ def micro_slice_timeline_summary(
         "slices_blocked": len(blocked),
         "current_slice_id": current or None,
     }
+
+
+def micro_slice_count_for_run(rows: list[dict[str, Any]] | None = None) -> int:
+    from agent_core.models import EventType
+    from nimbusware_env.settings_resolve import (
+        operator_settings_from_run_metadata,
+        resolve_int,
+    )
+
+    if rows:
+        for row in rows:
+            if row.get("event_type") != EventType.RUN_CREATED.value:
+                continue
+            meta = row.get("metadata")
+            if isinstance(meta, dict):
+                op = operator_settings_from_run_metadata(meta)
+                raw = op.get("HERMES_MICRO_SLICE_COUNT")
+                if raw:
+                    try:
+                        return max(1, min(10, int(str(raw).strip())))
+                    except ValueError:
+                        break
+            break
+    return max(1, min(10, resolve_int("HERMES_MICRO_SLICE_COUNT", default=2)))

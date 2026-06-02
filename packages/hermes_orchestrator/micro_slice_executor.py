@@ -21,7 +21,7 @@ from hermes_orchestrator.llm_slice import (
     execute_slice_plan_llm,
     execute_slice_replan_llm,
 )
-from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+from hermes_orchestrator.micro_slice import SlicePlan, micro_slice_count_for_run, parse_slice_plan
 from hermes_orchestrator.slice_diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
@@ -48,14 +48,6 @@ def micro_slice_effective_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any
                 return ms
         break
     return None
-
-
-def micro_slice_count_for_run() -> int:
-    raw = os.environ.get("HERMES_MICRO_SLICE_COUNT", "2").strip()
-    try:
-        return max(1, min(10, int(raw)))
-    except ValueError:
-        return 2
 
 
 def default_stub_slice_plan(slice_index: int) -> SlicePlan:
@@ -235,7 +227,7 @@ def execute_micro_slice_pass(
     base = orch._base_cfg()
     runtime = base.get("runtime") or {}
     timeout = float(runtime.get("request_timeout_seconds", 120))
-    slice_count = micro_slice_count_for_run()
+    slice_count = micro_slice_count_for_run(rows)
     results: list[SliceGateChainResult] = []
 
     max_replan = slice_replan_max_attempts()

@@ -65,6 +65,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     else:
         app.state.run_queue = None
     app.state.edition = edition()
+    if url:
+        try:
+            from nimbusware_env.settings_resolve import refresh_scope_caches
+            from nimbusware_env.settings_store import apply_all_managed_to_environ
+
+            apply_all_managed_to_environ()
+            refresh_scope_caches()
+        except Exception:
+            logger.exception("Failed to load operator settings from Postgres")
     logger.info("Nimbusware edition=%s enterprise=%s", app.state.edition, is_enterprise())
     try:
         yield

@@ -36,12 +36,15 @@ def env_falsy(name: str) -> bool:
 
 
 def hermes_slice_auto_advance_enabled() -> bool:
-    raw = os.environ.get("HERMES_SLICE_AUTO_ADVANCE", "1").strip().lower()
-    return raw not in FALSY_VALUES
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_SLICE_AUTO_ADVANCE", default=True)
 
 
 def hermes_use_llm_enabled() -> bool:
-    return env_truthy("HERMES_USE_LLM")
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_USE_LLM", default=False)
 
 
 def hermes_skip_preflight_enabled() -> bool:
@@ -111,11 +114,15 @@ def hermes_run_bandit_enabled() -> bool:
 
 
 def hermes_run_semgrep_enabled() -> bool:
-    return env_default_on("HERMES_RUN_SEMGREP")
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_RUN_SEMGREP", default=True)
 
 
 def hermes_run_perf_scan_enabled() -> bool:
-    return env_default_on("HERMES_RUN_PERF_SCAN")
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_RUN_PERF_SCAN", default=True)
 
 
 def hermes_use_llm_explicitly_off() -> bool:
@@ -127,12 +134,14 @@ def hermes_use_llm_explicitly_off() -> bool:
 
 def hermes_slice_implement_mode() -> str:
     """``scoped`` (default), ``stub``, ``agent``, or ``llm``."""
-    raw = os.environ.get("HERMES_SLICE_IMPLEMENT", "scoped").strip().lower()
+    from nimbusware_env.settings_resolve import resolve_str
+
+    raw = resolve_str("HERMES_SLICE_IMPLEMENT", default="scoped").lower()
     if raw in ("stub", "0", "false", "no"):
         return "stub"
     if raw == "agent":
         return "agent"
-    if raw == "llm" or (raw in ("auto", "1", "true", "yes") and env_truthy_raw("HERMES_USE_LLM")):
+    if raw == "llm" or (raw in ("auto", "1", "true", "yes") and hermes_use_llm_enabled()):
         return "llm"
     return "scoped"
 

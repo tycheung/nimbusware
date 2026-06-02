@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
 from nimbusware_maker.services import platform as platform_svc
 from nimbusware_maker.ui.hardware_settings import render_hardware_settings_panel
 from nimbusware_maker.ui.ollama_models import render_ollama_models_panel
+from nimbusware_maker.ui.operator_settings import render_operator_settings_panel
 
 
 def render_settings_panel() -> None:
@@ -14,12 +14,8 @@ def render_settings_panel() -> None:
         "Workspace preferences for this machine. Admin-only routing lives in the Admin Console."
     )
 
-    enabled = hermes_slice_auto_advance_enabled()
-    auto_advance = "1" if enabled else "0"
-    st.markdown(
-        f"**Auto-advance slices:** `{auto_advance}` "
-        "(set `HERMES_SLICE_AUTO_ADVANCE=0` in `.env` to pause between slices)",
-    )
+    render_operator_settings_panel()
+    st.divider()
 
     try:
         readiness = platform_svc.fetch_readiness()

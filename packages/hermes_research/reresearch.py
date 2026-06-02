@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 from uuid import UUID
 
@@ -11,8 +10,9 @@ from hermes_store.protocol import EventStore
 
 
 def reresearch_enabled() -> bool:
-    raw = os.environ.get("HERMES_RERESARCH_MISSING_CONTEXT", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_RERESARCH_MISSING_CONTEXT", default=False)
 
 
 def plan_failure_needs_reresearch(rows: list[dict[str, Any]]) -> bool:

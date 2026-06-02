@@ -9,14 +9,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+from hermes_orchestrator.micro_slice import (
+    SlicePlan,
+    micro_slice_count_for_run,
+    parse_slice_plan,
+)
 from hermes_orchestrator.micro_slice_executor import (
     _custom_agent_system_prompt,
     _emit_slice_stage,
     _plan_one_slice,
     _resolve_slice_block,
     _run_slice_verify_and_test,
-    micro_slice_count_for_run,
 )
 from hermes_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
 from hermes_orchestrator.slice_patch_apply import apply_slice_file_edits

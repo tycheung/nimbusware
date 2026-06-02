@@ -203,6 +203,11 @@ class CreateRunMixin:
                 "workspace_path": str(ws),
                 "template": (project_template or "attach").strip() or "attach",
             }
+        operator_settings_meta: dict[str, str] | None = None
+        if run_policy_overrides:
+            raw_op = run_policy_overrides.get("operator_settings")
+            if isinstance(raw_op, dict) and raw_op:
+                operator_settings_meta = {str(k): str(v) for k, v in raw_op.items()}
         requirements_meta: dict[str, Any] | None = None
         if requirements is not None:
             if (
@@ -314,6 +319,7 @@ class CreateRunMixin:
                 **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
                 **({"project": project_meta} if project_meta else {}),
                 **({"requirements": requirements_meta} if requirements_meta else {}),
+                **({"operator_settings": operator_settings_meta} if operator_settings_meta else {}),
                 **({"maker_approval": {"enabled": True}} if requirements_meta is not None else {}),
                 **(
                     {
