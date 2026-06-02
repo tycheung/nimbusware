@@ -98,6 +98,19 @@ def slice_is_resolved(rows: list[dict[str, Any]], slice_id: str) -> bool:
     return False
 
 
+def last_revert_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    from hermes_research.stitch_read_model import (
+        stitch_applied_snapshot_from_events,
+        stitch_events_present,
+    )
+
+    if stitch_events_present(rows):
+        stitch_snap = stitch_applied_snapshot_from_events(rows)
+        if stitch_snap is not None:
+            return stitch_snap
+    return last_approved_snapshot_from_rows(rows)
+
+
 def last_approved_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     latest: dict[str, Any] | None = None
     for row in rows:
