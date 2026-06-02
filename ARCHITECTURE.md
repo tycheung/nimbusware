@@ -1,6 +1,6 @@
 # Nimbusware architecture
 
-One-page map of packages, data flow, and auth. Normative product contract: [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md). Sprint board: [PLAN_GAP.md](PLAN_GAP.md).
+One-page map of packages, data flow, and auth. Normative product contract: [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md). Local maturity ledger: [PLAN_GAP.md](PLAN_GAP.md) (gitignored).
 
 ## Layer diagram
 
@@ -61,7 +61,7 @@ One-page map of packages, data flow, and auth. Normative product contract: [herm
 
 ## Refactor playbook
 
-See [PLAN_GAP.md § Lane X](PLAN_GAP.md#lane-x--signal--hardening-fo760fo789) for the current hardening program. **Lane T (fo520–fo545)** shipped: UI `services/` plane, mypy ratchet (API strict, `_pipeline` mixins ignored), `run_detail/_imports` star facade, **75%** CI coverage floor, async Ollama pull jobs. Day-to-day workflow:
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup, CI, and production secrets. Day-to-day workflow:
 
 | Step | Command / guard |
 |------|-----------------|
@@ -74,10 +74,23 @@ See [PLAN_GAP.md § Lane X](PLAN_GAP.md#lane-x--signal--hardening-fo760fo789) fo
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
+**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `hermes_store`, `hermes_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/coverage_package_floors.py`. Streamlit `pages/**` and Maker `ui/**` are omitted from the denominator (`pyproject.toml`).
 
-**Typing (Lane V1 / W0 / W2 / X1):** `nimbusware_{console,maker}.services.*`, tranche B (`nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools`), plus API pilot modules (`nimbusware_api/routes/ollama.py`, `nimbusware_api/schemas/ollama.py`, `nimbusware_api/errors.py`) are checked in CI parity. UI packages remain ignored except `services/` (`_pipeline.*` remains excluded).
+**Typing:** Global mypy `strict = true`. CI checks paths from `scripts/mypy_ci_targets.py`:
 
-**CI parity (Lane X0/X1):** `ci_check.*` runs ruff (+ advisory formatter check), mypy (services + tranche B + API pilot), bandit, `pip-audit`, `coverage_package_floors.py`, then pytest at the coverage floor.
+| Tranche | Packages / paths |
+|---------|------------------|
+| B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
+| C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
+| D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
+| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles` |
+| API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
+| UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed fo731 ignore list; `services/*` strict |
+
+`hermes_orchestrator._pipeline.*` mixins remain `ignore_errors = true` until typed incrementally.
+
+**PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
+
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%.
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

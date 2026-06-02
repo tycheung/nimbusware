@@ -1,4 +1,4 @@
-# Deploying Nimbusware (Lane V4)
+# Deploying Nimbusware
 
 ## Docker Compose (local / staging)
 
@@ -44,7 +44,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 | Check | Command / reference |
 |-------|---------------------|
-| CI parity | `./scripts/ci_check.ps1` or `ci_check.sh` |
+| CI parity | `./scripts/ci_check.ps1` or `ci_check.sh` (see [CONTRIBUTING.md](../../CONTRIBUTING.md)) |
 | Schema applied | `scripts/apply_event_store.sh` |
 | Admin token rotated | `NIMBUSWARE_ADMIN_TOKEN` not the dev default |
 | API bind policy | Loopback-only unless token is production-grade |

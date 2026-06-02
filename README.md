@@ -364,7 +364,7 @@ poetry run pytest tests/ -q -m "not integration and not slow and not benchmark"
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
 ```
 
-Optional hooks: `pip install pre-commit && pre-commit install` (ruff, format, CI-parity `ruff check packages tests`, `compileall`, mypy on services + tranche B + API pilot modules).
+Optional hooks: `pip install pre-commit && pre-commit install` (ruff, format, compileall, mypy via `scripts/mypy_ci_targets.py` tranches B–E).
 
 Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). Gates script: `scripts/run_integration_like_ci.ps1` / `.sh`.
 

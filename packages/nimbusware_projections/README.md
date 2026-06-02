@@ -14,4 +14,6 @@ Pure functions that turn append-only events into timeline summaries, operator me
 
 Orchestrator must not import `nimbusware_api`; projections are the shared read-model layer (`tests/unit/test_import_graph.py`).
 
+Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
+
 Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).

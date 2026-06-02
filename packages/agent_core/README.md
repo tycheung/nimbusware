@@ -23,6 +23,4 @@ See `agent_core.models` exports in `packages/agent_core/models/__init__.py`.
 
 YAML helpers live in `agent_core.yaml_io` (`load_yaml`, `dump_yaml`, `atomic_write_yaml`).
 
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) in this directory.
+Ships PEP 561 marker (`py.typed`).

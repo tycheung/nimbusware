@@ -14,4 +14,6 @@ Append-only event store for Nimbusware runs: Postgres when `NIMBUSWARE_DATABASE_
 
 `hermes_orchestrator` appends pipeline events; `nimbusware_api` and `nimbusware_projections` read timelines and summaries.
 
+Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
+
 Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).

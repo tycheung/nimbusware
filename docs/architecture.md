@@ -44,7 +44,11 @@ See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md) through [adr/
 
 ## Quality gates
 
-Local CI parity: `scripts/ci_check.ps1` / `ci_check.sh` (ruff, format, mypy via `scripts/mypy_ci_targets.py`, bandit, pip-audit, pytest @ 75% + per-package floors).
+Local CI parity: `scripts/ci_check.ps1` / `ci_check.sh` — ruff check + format, mypy (`scripts/mypy_ci_targets.py` tranches B–E + UI), bandit, pip-audit, pytest @ 75% + per-package floors (see [CONTRIBUTING.md](../CONTRIBUTING.md)).
+
+Mypy tranches (CI-enforced): B = projections/client/agent_tools; C = core libs; D = API read layer; E = orchestrator leaf modules; plus API pilot (ollama routes/schemas, errors). UI packages checked under narrowed ignore list; `_pipeline.*` mixins excluded.
+
+Core libraries ship PEP 561 `py.typed` markers.
 
 ## Projections map
 
