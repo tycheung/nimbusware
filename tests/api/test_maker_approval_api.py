@@ -2,15 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
 
 from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 ADMIN_HEADERS = {"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN}
-
-pytestmark = pytest.mark.slow
-
 
 def test_maker_approval_flow(client: TestClient, tmp_path: Path) -> None:
     ws = tmp_path / "maker-ws"

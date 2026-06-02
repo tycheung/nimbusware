@@ -81,3 +81,45 @@ def test_postgres_max_store_seq_for_run() -> None:
         ),
     )
     assert store.max_store_seq_for_run(str(run_id)) == seq
+
+
+def test_postgres_get_run_head_returns_latest_event() -> None:
+    store = PostgresEventStore(_url())
+    run_id = uuid4()
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="default",
+                policy_version="1",
+                config_snapshot_id=str(uuid4()),
+            ),
+        ),
+    )
+    head = store.get_run_head(str(run_id))
+    assert head is not None
+    assert head["event_type"] == "run.created"
+
+
+def test_postgres_count_recent_runs_includes_new_run() -> None:
+    store = PostgresEventStore(_url())
+    run_id = uuid4()
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="default",
+                policy_version="1",
+                config_snapshot_id=str(uuid4()),
+            ),
+        ),
+    )
+    ids = store.list_recent_run_ids(limit=100, workflow_profile="default")
+    assert run_id in ids
+    assert store.count_recent_runs(workflow_profile="default") >= 1

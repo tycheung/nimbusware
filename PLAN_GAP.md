@@ -1746,7 +1746,7 @@ X0 (fo760–fo763) CI signal parity ──► X1 (fo764–fo768) API typing ratc
 |-------|-------|--------|
 | **X0** CI signal parity | fo760–fo763 | **Done** |
 | **X1** API typing ratchet | fo764–fo768 | **Done** |
-| **X2** PR test signal | fo769–fo773 | **Pending** |
+| **X2** PR test signal | fo769–fo773 | **Done** |
 | **X3** Enterprise release hardening | fo774–fo778 | **Pending** |
 | **X4** Repo-wide doc/comment hygiene | fo779–fo789 | **Pending** |
 
