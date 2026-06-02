@@ -30,8 +30,8 @@ repos:
         pass_filenames: false
         files: ^packages/.*\.py$
       - id: mypy-services
-        name: mypy (services + tranche B + API pilot, CI parity fo701/fo724/fo764)
-        entry: poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services packages/nimbusware_projections packages/nimbusware_client packages/hermes_agent_tools packages/nimbusware_api/routes/ollama.py packages/nimbusware_api/schemas/ollama.py packages/nimbusware_api/errors.py
+        name: mypy (CI targets via scripts/mypy_ci_targets.py)
+        entry: bash -c 'poetry run mypy $(poetry run python scripts/mypy_ci_targets.py)'
         language: system
         pass_filenames: false
-        files: ^packages/(nimbusware_console/services|nimbusware_maker/services|nimbusware_projections|nimbusware_client|hermes_agent_tools|nimbusware_api/routes/ollama.py|nimbusware_api/schemas/ollama.py|nimbusware_api/errors.py)/
+        files: ^packages/

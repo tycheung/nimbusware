@@ -262,6 +262,28 @@ module = [
 ]
 ignore_errors = false
 
+# fo730 (Lane X1): typing tranche C — core libraries checked in CI mypy (strict globally).
+[[tool.mypy.overrides]]
+module = [
+  "agent_core",
+  "agent_core.*",
+  "hermes_store",
+  "hermes_store.*",
+  "nimbusware_config",
+  "nimbusware_config.*",
+  "hermes_executor",
+  "hermes_executor.*",
+  "hermes_extensions",
+  "hermes_extensions.*",
+  "hermes_memory",
+  "hermes_memory.*",
+  "nimbusware_iam",
+  "nimbusware_iam.*",
+  "nimbusware_env",
+  "nimbusware_env.*",
+]
+ignore_errors = false
+
 # fo509: desktop launcher / subprocess (platform-specific); strict elsewhere in nimbusware_env.
 [[tool.mypy.overrides]]
 module = [

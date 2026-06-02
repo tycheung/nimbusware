@@ -9,7 +9,8 @@ COV_JSON="${ROOT}/.ci_coverage.json"
 poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
 poetry run ruff check packages tests
 poetry run ruff format --check packages tests
-poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services packages/nimbusware_projections packages/nimbusware_client packages/hermes_agent_tools packages/nimbusware_api/routes/ollama.py packages/nimbusware_api/schemas/ollama.py packages/nimbusware_api/errors.py
+mapfile -t _mypy_targets < <(poetry run python scripts/mypy_ci_targets.py)
+poetry run mypy "${_mypy_targets[@]}"
 poetry run bandit -r packages -lll -q
 poetry run pip-audit
 poetry run pytest tests -q -m "not integration and not slow and not benchmark" \

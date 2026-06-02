@@ -12,7 +12,8 @@ poetry run ruff check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run ruff format --check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-poetry run mypy packages/nimbusware_console/services packages/nimbusware_maker/services packages/nimbusware_projections packages/nimbusware_client packages/hermes_agent_tools packages/nimbusware_api/routes/ollama.py packages/nimbusware_api/schemas/ollama.py packages/nimbusware_api/errors.py
+$mypyTargets = (poetry run python scripts/mypy_ci_targets.py).Split(" ")
+poetry run mypy @mypyTargets
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run bandit -r packages -lll -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
