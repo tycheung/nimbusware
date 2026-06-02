@@ -1,4 +1,4 @@
-"""§14 #15: orchestrator-side persona shelf promotion after agent evaluator stage."""
+"""Persona shelf promotion after the agent evaluator stage."""
 
 from __future__ import annotations
 

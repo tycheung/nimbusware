@@ -6,7 +6,7 @@
 |-------|---------|------|
 | Events | `agent_core` | Pydantic event models and validation |
 | Persistence | `hermes_store` | Append-only Postgres / in-memory store |
-| Orchestration | `hermes_orchestrator` | Run pipeline, critics, gates, dispatch |
+| Orchestration | `hermes_orchestrator` | Run pipeline, critics, gates, dispatch (`runtime_bootstrap` wires API + worker) |
 | Projections | `nimbusware_projections` | Shared timeline/list builders and field metadata |
 | API | `nimbusware_api` | FastAPI `/v1` control plane |
 | Maker | `nimbusware_maker` | Streamlit product UI (projects, builds, review) |
@@ -46,7 +46,7 @@ See [adr/001-event-sourced-runs.md](adr/001-event-sourced-runs.md) through [adr/
 
 Local CI parity: `scripts/ci_check.ps1` / `ci_check.sh` — ruff check + format, mypy (`scripts/mypy_ci_targets.py` tranches B–E + UI), bandit, pip-audit, pytest @ 75% + per-package floors (see [CONTRIBUTING.md](../CONTRIBUTING.md)).
 
-Mypy tranches (CI-enforced): B = projections/client/agent_tools; C = core libs; D = API read layer; E = orchestrator leaf modules; plus API pilot (ollama routes/schemas, errors). UI packages checked under narrowed ignore list; `_pipeline.*` mixins excluded.
+Mypy tranches (CI-enforced): B = projections/client/agent_tools; C = core libs; D = API read layer + typed `deps.py`; E = orchestrator leaf modules + `_pipeline/create_run` pilot; API pilot (ollama routes/schemas, errors). UI packages checked under narrowed ignore list; other `_pipeline.*` mixins excluded.
 
 Core libraries ship PEP 561 `py.typed` markers.
 

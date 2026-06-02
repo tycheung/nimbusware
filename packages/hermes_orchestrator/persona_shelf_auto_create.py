@@ -1,4 +1,4 @@
-"""§14 #15: orchestrator-side creation of a missing catalog persona (POST-equivalent)."""
+"""Create a missing catalog persona when the evaluator references it."""
 
 from __future__ import annotations
 

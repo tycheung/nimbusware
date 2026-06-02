@@ -1,4 +1,4 @@
-"""Orchestration ingress: validate external labels before emitting events ."""
+"""Validate external labels before emitting orchestrator events."""
 
 from __future__ import annotations
 

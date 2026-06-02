@@ -1,6 +1,8 @@
 # Hermes orchestrator
 
-Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `pipeline.py`.
+Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `pipeline.py` (class defined in `_pipeline/compose.py`).
+
+Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bootstrap.py` (`build_runtime_orchestrator`, `api_config_from_db_enabled`).
 
 ## Mixin map (`_pipeline/compose.py`)
 
@@ -39,7 +41,7 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 
 ## Refactor notes
 
-- **Mypy:** `hermes_orchestrator._pipeline.*` stays on `ignore_errors = true` in `pyproject.toml` (mixin MRO / dynamic bindings). Leaf modules (`preflight`, `merge`, `ollama_manage`, etc.) are CI-checked (tranche E). Ships PEP 561 marker (`py.typed`).
+- **Mypy:** Most `_pipeline.*` mixins use `ignore_errors = true`; `_pipeline/create_run.py` is a strict CI pilot. Leaf modules (`preflight`, `merge`, `ollama_manage`, etc.) are tranche E. Ships PEP 561 marker (`py.typed`).
 - **Compose-time patch seam:** `compose.py` binds mixin method globals to `pipeline` during each call so tests can patch `hermes_orchestrator.pipeline.*` without star-import barrels in mixins. Mixins still import from `_helpers` explicitly at module level.
 - After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.

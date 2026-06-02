@@ -59,7 +59,7 @@ def integrator_gate_workflow_enabled(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when workflow YAML ``integrator_gate.enabled`` is truthy (§14 #13).
+    """True when workflow YAML ``integrator_gate.enabled`` is truthy.
 
     Missing file or invalid profile returns ``False`` (caller falls back to env + catalog YAML).
     """
