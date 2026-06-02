@@ -37,6 +37,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/runs/{run_id}/lifecycle/plan"),
         ("POST", "/runs/{run_id}/lifecycle/verify"),
         ("POST", "/runs/{run_id}/lifecycle/slice"),
+        ("GET", "/runs/{run_id}/slices/{slice_index}/diff"),
     },
 )
 
@@ -94,6 +95,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "lifecycle_router",
         "maker_progress_router",
         "maker_approval_router",
+        "slices_router",
     )
     if not all(hasattr(runs_module, name) for name in sub_names):
         pytest.skip("runs sub-routers not yet extracted")

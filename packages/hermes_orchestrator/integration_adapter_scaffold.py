@@ -84,6 +84,19 @@ def _target_state_for_kind(kind: str, run_id: str) -> dict[str, Any]:
     return {"connected": True, "kind": kind, "run_id": run_id}
 
 
+def validate_integration_manifest(manifest: dict[str, Any]) -> list[str]:
+    """Return validation errors; empty when manifest is acceptable."""
+    errors: list[str] = []
+    if not str(manifest.get("run_id", "")).strip():
+        errors.append("run_id required")
+    kind = str(manifest.get("target_adapter_kind", "")).strip()
+    if not kind:
+        errors.append("target_adapter_kind required")
+    if manifest.get("stub_only") is True:
+        errors.append("stub_only manifest cannot run live integration")
+    return errors
+
+
 def execute_target_adapter_integration(
     abs_dir: Path,
     *,
@@ -91,8 +104,26 @@ def execute_target_adapter_integration(
     run_id: str,
 ) -> dict[str, Any]:
     """Write ``target_state.json`` and run in-process adapter sync (real local I/O)."""
-    state = _target_state_for_kind(kind, run_id)
+    manifest_path = abs_dir / "manifest.json"
+    if manifest_path.is_file():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {
+                "target_integration_status": "manifest_invalid",
+                "target_state_path": "target_state.json",
+            }
+        errs = validate_integration_manifest(manifest)
+        if errs:
+            return {
+                "target_integration_status": "manifest_rejected",
+                "validation_errors": errs,
+            }
     state_path = abs_dir / "target_state.json"
+    backup: str | None = None
+    if state_path.is_file():
+        backup = state_path.read_text(encoding="utf-8")
+    state = _target_state_for_kind(kind, run_id)
     state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
 
     module_name = f"adapter_{kind.replace('-', '_')}"
@@ -113,12 +144,31 @@ def execute_target_adapter_integration(
             "target_state_path": "target_state.json",
         }
     adapter = adapter_cls(abs_dir, run_id=run_id)
-    result = adapter.sync_target()
+    try:
+        result = adapter.sync_target()
+    except Exception as exc:  # noqa: BLE001 — rollback local target state
+        if backup is not None:
+            state_path.write_text(backup, encoding="utf-8")
+        else:
+            state_path.unlink(missing_ok=True)
+        return {
+            "target_integration_status": "rolled_back",
+            "rollback_reason": str(exc)[:200],
+            "target_state_path": "target_state.json",
+        }
+    if not adapter.connect():
+        if backup is not None:
+            state_path.write_text(backup, encoding="utf-8")
+        return {
+            "target_integration_status": "rolled_back",
+            "rollback_reason": "connect_failed_after_sync",
+            "target_state_path": "target_state.json",
+        }
     return {
         "target_integration_status": "integrated",
         "target_state_path": "target_state.json",
         "target_sync_result": result,
-        "target_connected": adapter.connect(),
+        "target_connected": True,
     }
 
 

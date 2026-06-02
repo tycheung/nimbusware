@@ -137,6 +137,7 @@ def test_read_and_action_routes_document_500_problem_json(client: TestClient) ->
         ("/v1/personas", "get"),
         ("/v1/runs/{run_id}/actions/retry", "post"),
         ("/v1/runs/{run_id}/actions/escalate", "post"),
+        ("/v1/runs/{run_id}/actions/override-gate", "post"),
         ("/v1/roles/{role_id}/execute", "post"),
     ]
     for path, method in checks:

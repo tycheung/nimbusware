@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 
 from agent_core.models import (
     EventType,
+    GateOverriddenEvent,
+    GateOverriddenPayload,
     RunEscalatedEvent,
     RunEscalatedPayload,
     StageStartedEvent,
@@ -32,6 +34,13 @@ class EscalateBody(BaseModel):
     actor_id: str = Field(min_length=1)
     reason_code: str = Field(min_length=1)
     notes: str | None = None
+
+
+class OverrideGateBody(BaseModel):
+    actor_id: str = Field(min_length=1)
+    reason_code: str = Field(min_length=1)
+    stage_name: str = Field(min_length=1)
+    policy_snapshot_id: str | None = None
 
 
 @router.post(
@@ -106,6 +115,46 @@ def escalate(run_id: UUID, body: EscalateBody, store: StoreDep) -> dict[str, str
         ),
     )
     return {"status": "escalated"}
+
+
+@router.post(
+    "/runs/{run_id}/actions/override-gate",
+    responses={
+        200: {
+            "description": "Gate override event appended (audit trail only)",
+            "content": {
+                "application/json": {"example": {"status": "gate_overridden"}},
+            },
+        },
+        404: PROBLEM_RESPONSE_404,
+        422: PROBLEM_RESPONSE_422,
+        500: PROBLEM_RESPONSE_500,
+    },
+)
+def override_gate(run_id: UUID, body: OverrideGateBody, store: StoreDep) -> dict[str, str]:
+    rid_s = str(run_id)
+    rows = store.list_run_events(rid_s)
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": rid_s}),
+        )
+    rid = run_id
+    store.append(
+        GateOverriddenEvent(
+            event_type=EventType.GATE_OVERRIDDEN,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=datetime.now(timezone.utc),
+            payload=GateOverriddenPayload(
+                actor_id=body.actor_id,
+                reason_code=body.reason_code,
+                stage_name=body.stage_name,
+                policy_snapshot_id=body.policy_snapshot_id,
+            ),
+        ),
+    )
+    return {"status": "gate_overridden"}
 
 
 @router.post(

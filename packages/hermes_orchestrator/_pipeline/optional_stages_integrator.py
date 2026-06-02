@@ -155,6 +155,15 @@ class IntegratorOptionalStagesMixin:
                 payload=gate_payload,
             ),
         )
+        from hermes_orchestrator.ci_bridge import notify_gate_decision_external
+
+        ci_status = notify_gate_decision_external(
+            run_id=run_id,
+            verdict=str(gate_payload.verdict.value),
+            stage_name=gate_payload.stage_name,
+        )
+        if ci_status.get("status") != "skipped":
+            gate_meta["external_ci"] = ci_status
         if self._bundle_outcome_store is not None:
             store_seq = self._store.max_store_seq_for_run(str(run_id))
             persisted = build_bundle_outcome_from_gate(

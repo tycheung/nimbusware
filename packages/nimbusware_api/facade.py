@@ -6,11 +6,13 @@ from fastapi import APIRouter
 
 from nimbusware_api.routes import (
     actions,
+    audit,
     bundles,
     custom_agents,
     ollama,
     personas,
     platform,
+    policy,
     preflight,
     projects,
     runs,
@@ -24,6 +26,8 @@ def build_v1_router() -> APIRouter:
     router = APIRouter()
     router.include_router(runs.router)
     router.include_router(actions.router)
+    router.include_router(policy.router)
+    router.include_router(audit.router)
     router.include_router(bundles.router)
     router.include_router(personas.router)
     router.include_router(custom_agents.router)

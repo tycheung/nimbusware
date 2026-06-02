@@ -20,6 +20,8 @@ from nimbusware_api.preflight_read_model import preflight_timeline_summary
 from nimbusware_api.read_models import (
     agent_evaluator_timeline_summary,
     critic_matrix_live_timeline_summary,
+    gate_overridden_timeline_history,
+    gate_overridden_timeline_summary,
     integrator_gate_timeline_delta,
     integrator_gate_timeline_history,
     parallel_writer_groups_timeline_summary,
@@ -120,6 +122,8 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     re_hist = run_escalated_timeline_history(events)
     re_sum = re_hist[-1] if re_hist else None
     re_delta = run_escalated_timeline_delta(events)
+    go_hist = gate_overridden_timeline_history(events)
+    go_sum = gate_overridden_timeline_summary(events)
     ss_hist = security_scan_on_verify_timeline_history(events)
     ss_sum = ss_hist[-1] if ss_hist else None
     sr_markers = self_refinement_marker_timeline_history(events)
@@ -150,6 +154,8 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
         run_escalated=re_sum,
         run_escalated_history=re_hist or None,
         run_escalated_delta=re_delta,
+        gate_overridden=go_sum,
+        gate_overridden_history=go_hist or None,
         security_scan_on_verify=ss_sum,
         security_scan_on_verify_history=ss_hist or None,
         preflight=preflight_timeline_summary(events),

@@ -412,6 +412,23 @@ def execute_micro_slice_pass(
             test_output=test_out[:4000],
         )
         results.append(gate)
+        if gate.passed:
+            from hermes_orchestrator.slice_git_commit import maybe_commit_slice
+
+            run_meta = orch._run_created_metadata(run_id)
+            commit_result = maybe_commit_slice(
+                ws,
+                plan,
+                run_id=str(run_id),
+                run_metadata=run_meta,
+            )
+            if commit_result.get("status") not in ("skipped",):
+                _emit_slice_stage(
+                    orch,
+                    run_id,
+                    "slice.git_commit",
+                    metadata={"slice_id": plan.slice_id, **commit_result},
+                )
         if not gate.passed:
             break
     orch.maybe_rebuild_memory_index(run_id)

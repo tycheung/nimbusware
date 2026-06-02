@@ -23,8 +23,11 @@ from agent_core.models import (
 from hermes_extensions.phase2 import UniversalCritiqueRouter
 from hermes_orchestrator.registry import RoleRegistry
 from hermes_research.artifacts import persist_research_brief
+from hermes_research.bundle_promotion import write_catalog_candidate
+from hermes_research.enterprise_index import append_enterprise_research_index
 from hermes_research.models import ResearchBrief, ResearchBriefSource
 from hermes_research.pattern_index import append_pattern_index, new_pattern_id
+from hermes_research.prompt_security import wrap_researcher_prompt
 from hermes_store.protocol import EventStore
 
 
@@ -171,13 +174,18 @@ def emit_research_stages_stub(
         )
 
     if code_enabled:
+        raw_summary = (
+            "Code research brief: candidate OSS patterns and libraries for the "
+            "requested capability (stub; indexed for planner context)."
+        )
+        if isinstance(requirements, dict):
+            prompt_bit = str(requirements.get("business_prompt") or "")
+            if prompt_bit.strip():
+                raw_summary = wrap_researcher_prompt(prompt_bit, role="code_researcher")
         code_brief = ResearchBrief(
             brief_kind="code",
             domain_tag=domain_tag,
-            summary=(
-                "Code research brief: candidate OSS patterns and libraries for the "
-                "requested capability (stub; indexed for planner context)."
-            ),
+            summary=raw_summary[:4000],
             artifact_id=str(uuid4()),
             sources=(
                 ResearchBriefSource(
@@ -235,6 +243,22 @@ def emit_research_stages_stub(
                     embedding_ref=pattern["embedding_ref"],
                 ),
             ),
+        )
+        append_enterprise_research_index(
+            repo_root,
+            run_id=run_id,
+            pattern_id=pattern["pattern_id"],
+            domain_tag=domain_tag,
+        )
+        write_catalog_candidate(
+            repo_root,
+            run_id=run_id,
+            candidate_id=pattern["pattern_id"],
+            bundle_hints={
+                "repo_url": pattern["repo_url"],
+                "license": pattern["license"],
+                "domain_tag": domain_tag,
+            },
         )
         _emit_critique_panel(
             store,

@@ -3,6 +3,11 @@
 from __future__ import annotations
 
 from nimbusware_api.read_models.agent_evaluator import agent_evaluator_timeline_summary
+from nimbusware_api.read_models.gate_overridden import (
+    gate_overridden_timeline_entries,
+    gate_overridden_timeline_history,
+    gate_overridden_timeline_summary,
+)
 from nimbusware_api.read_models.integrator_gate import (
     integrator_gate_timeline_delta,
     integrator_gate_timeline_entries,
@@ -55,6 +60,9 @@ __all__ = [
     "_sanitize_workflow_profile_prefix",
     "agent_evaluator_timeline_summary",
     "critic_matrix_live_timeline_summary",
+    "gate_overridden_timeline_entries",
+    "gate_overridden_timeline_history",
+    "gate_overridden_timeline_summary",
     "integrator_gate_timeline_delta",
     "integrator_gate_timeline_entries",
     "integrator_gate_timeline_history",

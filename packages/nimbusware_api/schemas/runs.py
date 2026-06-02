@@ -45,6 +45,8 @@ class RunTimelineResponse(BaseModel):
     run_escalated: dict[str, Any] | None = None
     run_escalated_history: list[dict[str, Any]] | None = None
     run_escalated_delta: dict[str, Any] | None = None
+    gate_overridden: dict[str, Any] | None = None
+    gate_overridden_history: list[dict[str, Any]] | None = None
     security_scan_on_verify: dict[str, Any] | None = None
     security_scan_on_verify_history: list[dict[str, Any]] | None = None
     preflight: dict[str, Any] | None = None

@@ -20,6 +20,9 @@ from nimbusware_console.pages.run_detail.timeline_misc import render_run_detail_
 from nimbusware_console.pages.run_detail.timeline_personas import (
     render_run_detail_timeline_personas,
 )
+from nimbusware_console.pages.run_detail.timeline_research_stitch import (
+    render_run_detail_research_stitch,
+)
 from nimbusware_console.settings import API_BASE
 
 
@@ -55,6 +58,7 @@ def render_run_detail_section() -> None:
                 render_run_detail_timeline_personas(run_id, data)
                 render_run_detail_timeline_escalation(run_id, data)
                 render_run_detail_timeline_misc(run_id, data)
+                render_run_detail_research_stitch(run_id, data)
                 render_run_detail_critic_matrix(run_id, events)
         with c2:
             render_run_detail_findings(run_id)

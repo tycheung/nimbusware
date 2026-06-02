@@ -39,3 +39,16 @@ def post_escalate(
     timeout: float = 30.0,
 ) -> dict[str, Any]:
     return post_json(f"/runs/{run_id.strip()}/actions/escalate", body, timeout=timeout)
+
+
+def post_override_gate(
+    run_id: str,
+    body: dict[str, Any],
+    *,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    return post_json(
+        f"/runs/{run_id.strip()}/actions/override-gate",
+        body,
+        timeout=timeout,
+    )
