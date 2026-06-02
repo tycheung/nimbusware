@@ -220,6 +220,11 @@ mypy_path = "packages"
 module = ["hermes_orchestrator._pipeline.*"]
 ignore_errors = true
 
+# Pipeline mypy pilot: single mixin module strict-checked in CI (tranche E extension).
+[[tool.mypy.overrides]]
+module = ["hermes_orchestrator._pipeline.create_run"]
+ignore_errors = false
+
 # fo512 / fo526–fo530: explicit strict islands (documented in test_mypy_*_surface.py).
 [[tool.mypy.overrides]]
 module = [

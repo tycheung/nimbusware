@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from typing import Protocol
+
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EventType,
@@ -33,11 +35,25 @@ from hermes_orchestrator._pipeline._helpers import (
     workflow_profile_dict,
     workflow_profile_path,
 )
+from hermes_orchestrator.registry import RoleRegistry
+from hermes_store.protocol import EventStore
+
+
+class _CreateRunHost(Protocol):
+    _store: EventStore
+    _registry: RoleRegistry
+    _repo_root: Path
+    _base_path: Path
+    _config_materializer: Any | None
+    _memory_chunk_store: Any | None
+    _critique_router: Any
+
+    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]: ...
 
 
 class CreateRunMixin:
     def create_run(
-        self,
+        self: _CreateRunHost,
         workflow_profile: str,
         *,
         idempotency_key: UUID | None = None,
@@ -302,15 +318,14 @@ class CreateRunMixin:
         self._store.append(ev)
         return run_id
 
-    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]:
+    def _run_created_metadata(self: _CreateRunHost, run_id: UUID) -> dict[str, Any]:
         for row in self._store.list_run_events(str(run_id)):
             if row.get("event_type") == EventType.RUN_CREATED.value:
                 meta = row.get("metadata") or {}
                 return dict(meta) if isinstance(meta, dict) else {}
         return {}
 
-    def maybe_rebuild_memory_index(self, run_id: UUID) -> Any | None:
-        """Rebuild repo memory index when this run contributes (Phase 4)."""
+    def maybe_rebuild_memory_index(self: _CreateRunHost, run_id: UUID) -> Any | None:
         from hermes_memory.contribution import maybe_rebuild_memory_index_for_run
 
         return maybe_rebuild_memory_index_for_run(

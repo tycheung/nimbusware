@@ -54,6 +54,7 @@ _TRANCHE_E = (
     "packages/hermes_orchestrator/preflight.py",
     "packages/hermes_orchestrator/merge.py",
     "packages/hermes_orchestrator/workflow_profiles.py",
+    "packages/hermes_orchestrator/_pipeline/create_run.py",
 )
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).
