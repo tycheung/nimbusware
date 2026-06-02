@@ -1623,7 +1623,7 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 | **W1** Console consolidation | fo710–fo714 | **Done** |
 | **W2** Typing tranche B | fo720–fo724 | **Done** |
 | **W3** Test pyramid | fo730–fo734 | **Done** |
-| **W4** Coverage honesty | fo740–fo742 | **Pending** |
+| **W4** Coverage honesty | fo740–fo742 | **Done** |
 | **W5** Enterprise ops | fo745–fo750 | **Pending** |
 | **W6** Comment + doc hygiene | fo751–fo753 | **Pending** |
 

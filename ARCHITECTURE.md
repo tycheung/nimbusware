@@ -74,7 +74,7 @@ See [PLAN_GAP.md § Lane R](PLAN_GAP.md#lane-r--maintainability-refactor-fo400fo
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=72` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
+**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset (library code; Streamlit `pages/**` and `ui/**` omitted per `pyproject.toml`; `services/` packages stay in the denominator).
 
 **Typing (Lane V1 / W0 / W2):** `nimbusware_{console,maker}.services.*` and tranche B (`nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools`) are strict mypy islands; UI packages remain ignored except `services/`. Pre-commit and GitHub CI run the **same** mypy scope (fo701, fo724).
 

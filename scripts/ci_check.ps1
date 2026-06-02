@@ -22,7 +22,7 @@ poetry run pytest tests -q -m "not integration and not slow and not benchmark" `
   --cov=packages `
   --cov-report=term-missing:skip-covered `
   --cov-report=json:$CovJson `
-  --cov-fail-under=72
+  --cov-fail-under=75
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/coverage_package_floors.py --report $CovJson
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

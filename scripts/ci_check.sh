@@ -15,6 +15,6 @@ poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
   --cov=packages \
   --cov-report=term-missing:skip-covered \
   --cov-report="json:${COV_JSON}" \
-  --cov-fail-under=72
+  --cov-fail-under=75
 poetry run python scripts/coverage_package_floors.py --report "${COV_JSON}"
 rm -f "${COV_JSON}"
