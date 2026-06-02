@@ -7,10 +7,15 @@ from uuid import UUID, uuid4
 
 from agent_core.models import (
     EventType,
+    RoleId,
     StitchAppliedEvent,
     StitchAppliedPayload,
+    StitchDependencyCheckedEvent,
+    StitchDependencyCheckedPayload,
     StitchFailedEvent,
     StitchFailedPayload,
+    StitchLicenseCheckedEvent,
+    StitchLicenseCheckedPayload,
     StitchPlanEmittedEvent,
     StitchPlanEmittedPayload,
 )
@@ -20,6 +25,11 @@ from hermes_research.stages import _emit_critique_panel
 from hermes_research.stitch_manifests import persist_transplant_manifest
 from hermes_research.stitch_models import TransplantManifest
 from hermes_research.stitch_read_model import has_code_research_brief
+from hermes_research.stitch_verifiers import (
+    dependency_diff_check,
+    license_check_passes,
+    scan_manifest_licenses,
+)
 from hermes_store.protocol import EventStore
 from nimbusware_maker.workspace import workspace_path_from_run_created_metadata
 from nimbusware_maker.workspace_snapshot import create_workspace_snapshot
@@ -52,6 +62,33 @@ def _count_loc(paths: tuple[str, ...], workspace: Path) -> int:
             except OSError:
                 pass
     return total
+
+
+def _stitch_actor(registry: RoleRegistry) -> RoleId:
+    return registry.resolve("stitcher")
+
+
+def _append_stitch_failed(
+    store: EventStore,
+    registry: RoleRegistry,
+    *,
+    run_id: UUID,
+    reason_code: str,
+    rollback_snapshot_ref: str | None = None,
+) -> None:
+    store.append(
+        StitchFailedEvent(
+            event_type=EventType.STITCH_FAILED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            actor_role=_stitch_actor(registry),
+            payload=StitchFailedPayload(
+                reason_code=reason_code,
+                rollback_snapshot_ref=rollback_snapshot_ref,
+            ),
+        ),
+    )
 
 
 def _apply_stub_transplant(workspace: Path, paths: tuple[str, ...]) -> list[str]:
@@ -94,29 +131,81 @@ def emit_stitch_stages_stub(
     target_paths = list(manifest.file_paths)
 
     if len(target_paths) > max_files:
-        store.append(
-            StitchFailedEvent(
-                event_type=EventType.STITCH_FAILED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=registry.resolve("stitcher"),
-                payload=StitchFailedPayload(
-                    reason_code="budget_max_files",
-                    rollback_snapshot_ref=None,
-                ),
-            ),
-        )
+        _append_stitch_failed(store, registry, run_id=run_id, reason_code="budget_max_files")
         return False
 
     persist_transplant_manifest(repo_root, manifest)
+
+    allowlist_raw = stitch_meta.get("license_allowlist")
+    if isinstance(allowlist_raw, list) and allowlist_raw:
+        allowlist = tuple(str(x).strip() for x in allowlist_raw if str(x).strip())
+    else:
+        allowlist = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause")
+
+    detected = scan_manifest_licenses(
+        manifest,
+        repo_root,
+        prior_events=prior_events,
+    )
+    license_result = license_check_passes(detected, allowlist)
+    store.append(
+        StitchLicenseCheckedEvent(
+            event_type=EventType.STITCH_LICENSE_CHECKED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            actor_role=_stitch_actor(registry),
+            payload=StitchLicenseCheckedPayload(
+                detected_licenses=list(license_result.detected_licenses),
+                allowlist=list(license_result.allowlist),
+                passed=license_result.passed,
+                evidence_refs=list(license_result.evidence_refs),
+            ),
+        ),
+    )
+    if not license_result.passed:
+        _append_stitch_failed(store, registry, run_id=run_id, reason_code="license_not_allowed")
+        return False
+
+    workspace = workspace_path_from_run_created_metadata(run_created_metadata)
+    proposed_deps = ["stub-transplant-runtime"] if max_deps > 0 else []
+    dep_result = dependency_diff_check(
+        proposed_deps,
+        max_new_dependencies=max_deps,
+        workspace=workspace if workspace is not None else None,
+    )
+    store.append(
+        StitchDependencyCheckedEvent(
+            event_type=EventType.STITCH_DEPENDENCY_CHECKED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            actor_role=_stitch_actor(registry),
+            payload=StitchDependencyCheckedPayload(
+                declared_deps=list(dep_result.declared_deps),
+                new_deps=list(dep_result.new_deps),
+                max_allowed=dep_result.max_allowed,
+                passed=dep_result.passed,
+                reason_code=dep_result.reason_code,
+            ),
+        ),
+    )
+    if not dep_result.passed:
+        _append_stitch_failed(
+            store,
+            registry,
+            run_id=run_id,
+            reason_code="dependency_delta_rejected",
+        )
+        return False
+
     store.append(
         StitchPlanEmittedEvent(
             event_type=EventType.STITCH_PLAN_EMITTED,
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
-            actor_role=registry.resolve("stitcher"),
+            actor_role=_stitch_actor(registry),
             payload=StitchPlanEmittedPayload(
                 target_paths=target_paths,
                 source_manifest_id=manifest_id,
@@ -135,21 +224,8 @@ def emit_stitch_stages_stub(
         producer_key="stitcher",
     )
 
-    workspace = workspace_path_from_run_created_metadata(run_created_metadata)
     if workspace is None or not workspace.is_dir():
-        store.append(
-            StitchFailedEvent(
-                event_type=EventType.STITCH_FAILED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=registry.resolve("stitcher"),
-                payload=StitchFailedPayload(
-                    reason_code="workspace_missing",
-                    rollback_snapshot_ref=None,
-                ),
-            ),
-        )
+        _append_stitch_failed(store, registry, run_id=run_id, reason_code="workspace_missing")
         return False
 
     snapshot = create_workspace_snapshot(
@@ -162,38 +238,16 @@ def emit_stitch_stages_stub(
 
     projected_loc = _count_loc(manifest.file_paths, workspace) + 2 * len(target_paths)
     if projected_loc > max_loc:
-        store.append(
-            StitchFailedEvent(
-                event_type=EventType.STITCH_FAILED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=registry.resolve("stitcher"),
-                payload=StitchFailedPayload(
-                    reason_code="budget_max_loc",
-                    rollback_snapshot_ref=snapshot_ref or None,
-                ),
-            ),
+        _append_stitch_failed(
+            store,
+            registry,
+            run_id=run_id,
+            reason_code="budget_max_loc",
+            rollback_snapshot_ref=snapshot_ref or None,
         )
         return False
 
-    deps_added = ["stub-transplant-runtime"] if max_deps > 0 else []
-    if len(deps_added) > max_deps:
-        store.append(
-            StitchFailedEvent(
-                event_type=EventType.STITCH_FAILED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=registry.resolve("stitcher"),
-                payload=StitchFailedPayload(
-                    reason_code="budget_max_new_dependencies",
-                    rollback_snapshot_ref=snapshot_ref or None,
-                ),
-            ),
-        )
-        return False
-
+    deps_added = list(proposed_deps)
     files_added = _apply_stub_transplant(workspace, manifest.file_paths)
     store.append(
         StitchAppliedEvent(
@@ -201,7 +255,7 @@ def emit_stitch_stages_stub(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
-            actor_role=registry.resolve("stitcher"),
+            actor_role=_stitch_actor(registry),
             metadata={"workspace_snapshot": snapshot},
             payload=StitchAppliedPayload(
                 snapshot_ref=snapshot_ref,

@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS event_store (
     'research.brief.emitted',
     'research.pattern.indexed',
     'domain.critic.proposed',
+    'stitch.license.checked',
+    'stitch.dependency.checked',
     'stitch.plan.emitted',
     'stitch.applied',
     'stitch.failed'

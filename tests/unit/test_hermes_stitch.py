@@ -25,11 +25,35 @@ from nimbusware_maker.workspace import project_metadata_block
 def test_stitch_event_types_in_db_allowlist() -> None:
     allowed = allowed_event_type_values()
     for et in (
+        EventType.STITCH_LICENSE_CHECKED,
+        EventType.STITCH_DEPENDENCY_CHECKED,
         EventType.STITCH_PLAN_EMITTED,
         EventType.STITCH_APPLIED,
         EventType.STITCH_FAILED,
     ):
         assert et.value in allowed
+
+
+def test_license_check_passes_for_mit_allowlist() -> None:
+    from hermes_research.stitch_verifiers import license_check_passes
+
+    result = license_check_passes(("MIT",), ["MIT", "Apache-2.0"])
+    assert result.passed is True
+
+
+def test_license_check_fails_for_disallowed_license() -> None:
+    from hermes_research.stitch_verifiers import license_check_passes
+
+    result = license_check_passes(("GPL-3.0",), ["MIT"])
+    assert result.passed is False
+
+
+def test_dependency_check_fails_when_max_zero() -> None:
+    from hermes_research.stitch_verifiers import dependency_diff_check
+
+    result = dependency_diff_check(["stub-transplant-runtime"], max_new_dependencies=0)
+    assert result.passed is False
+    assert result.reason_code == "exceeds_max_new_dependencies"
 
 
 def test_transplant_manifest_round_trip(tmp_path: Path) -> None:
@@ -122,8 +146,16 @@ def test_execute_plan_stage_emits_stitch_and_post_refactor(
     )
     orch.execute_plan_stage(run_id)
     types = [r.get("event_type") for r in ev_store.list_run_events(str(run_id))]
+    assert EventType.STITCH_LICENSE_CHECKED.value in types
+    assert EventType.STITCH_DEPENDENCY_CHECKED.value in types
     assert EventType.STITCH_PLAN_EMITTED.value in types
     assert EventType.STITCH_APPLIED.value in types
+    license_row = next(
+        r
+        for r in ev_store.list_run_events(str(run_id))
+        if r.get("event_type") == EventType.STITCH_LICENSE_CHECKED.value
+    )
+    assert license_row["payload"]["passed"] is True
     stages = [
         (r.get("payload") or {}).get("stage_name")
         for r in ev_store.list_run_events(str(run_id))
@@ -168,6 +200,62 @@ def test_revert_workspace_restores_pre_stitch_snapshot(
     result = revert_workspace(orch, run_id)
     assert result["status"] == "reverted"
     assert not stub_file.is_file()
+
+
+def test_stitch_license_fail_blocks_plan(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    from hermes_extensions.phase2 import UniversalCritiqueRouter
+    from hermes_orchestrator.registry import RoleRegistry
+    from hermes_research import stages_stitch
+    from hermes_research.stages_stitch import emit_stitch_stages_stub
+
+    root = find_repo_root(start=Path(__file__).resolve().parents[1])
+    reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
+    router = UniversalCritiqueRouter.from_yaml(
+        root / "configs" / "personas" / "critique_pairings.yaml",
+    )
+    store = InMemoryEventStore()
+    run_id = uuid4()
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    meta = {
+        "project": project_metadata_block(
+            project_id=uuid4(),
+            name="lic-fail",
+            workspace_path=ws,
+            template="attach",
+        ),
+        "stitch": {
+            "max_files": 40,
+            "max_loc": 2500,
+            "max_new_dependencies": 10,
+            "license_allowlist": ["MIT"],
+        },
+    }
+    prior = [
+        {
+            "event_type": EventType.RESEARCH_BRIEF_EMITTED.value,
+            "payload": {"brief_kind": "code", "artifact_id": "a1"},
+        },
+    ]
+
+    def _bad_licenses(*_args: object, **_kwargs: object) -> tuple[str, ...]:
+        return ("GPL-3.0",)
+
+    monkeypatch.setattr(stages_stitch, "scan_manifest_licenses", _bad_licenses)
+    applied = emit_stitch_stages_stub(
+        store,
+        reg,
+        router,
+        run_id=run_id,
+        repo_root=tmp_path,
+        run_created_metadata=meta,
+        stitch_meta=meta["stitch"],
+        prior_events=prior,
+    )
+    assert applied is False
+    types = [r.get("event_type") for r in store.list_run_events(str(run_id))]
+    assert EventType.STITCH_FAILED.value in types
+    assert EventType.STITCH_PLAN_EMITTED.value not in types
 
 
 def test_require_refactor_pass_false_skips_post_stitch(

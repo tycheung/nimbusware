@@ -475,6 +475,21 @@ class DomainCriticProposedPayload(BasePayload):
     evidence_refs: list[str] = Field(default_factory=list, max_length=16)
 
 
+class StitchLicenseCheckedPayload(BasePayload):
+    detected_licenses: list[str] = Field(default_factory=list, max_length=16)
+    allowlist: list[str] = Field(default_factory=list, max_length=16)
+    passed: bool
+    evidence_refs: list[str] = Field(default_factory=list, max_length=16)
+
+
+class StitchDependencyCheckedPayload(BasePayload):
+    declared_deps: list[str] = Field(default_factory=list, max_length=40)
+    new_deps: list[str] = Field(default_factory=list, max_length=20)
+    max_allowed: int = Field(ge=0, le=50)
+    passed: bool
+    reason_code: str | None = Field(default=None, max_length=64)
+
+
 class StitchPlanEmittedPayload(BasePayload):
     target_paths: list[str] = Field(default_factory=list, max_length=40)
     source_manifest_id: str = Field(min_length=1, max_length=128)
