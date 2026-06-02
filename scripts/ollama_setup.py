@@ -1,4 +1,4 @@
-"""Ollama install, model pull, and health checks for Nimbusware / Hermes agent setup."""
+"""Ollama install, model pull, and health checks for Nimbusware (Hermes agent LLM stages)."""
 
 from __future__ import annotations
 

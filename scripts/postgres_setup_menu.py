@@ -47,7 +47,7 @@ def build_postgres_setup_options(
             explanation=(
                 "Starts the postgres:16-alpine service from this repository's "
                 "docker-compose.yml on port 5432 with database user/password "
-                "hermes/hermes (same as CI). Nothing is installed on the host except "
+                "nimbusware/nimbusware (same as CI). Nothing is installed on the host except "
                 "the container. Best if you already use Docker Desktop."
             ),
             available=docker_ok,
@@ -63,7 +63,7 @@ def build_postgres_setup_options(
                 explanation=(
                     "If PostgreSQL is already installed under Program Files, starts "
                     "that server and skips the installer. Otherwise downloads the EDB "
-                    "installer (~300 MB) and opens the setup wizard. Creates hermes/hermes. "
+                    "installer (~300 MB) and opens the setup wizard. Creates nimbusware/nimbusware. "
                     "Run as Administrator to start the Windows service. No Docker needed."
                 ),
                 available=True,
@@ -77,7 +77,7 @@ def build_postgres_setup_options(
                 explanation=(
                     "Installs PostgreSQL.PostgreSQL.16 via Windows Package Manager. "
                     "May open an elevated installer UI. After install you may need to "
-                    "create the hermes user/database manually (or press Enter here and "
+                    "create the nimbusware user/database manually (or press Enter here and "
                     "let setup retry once Postgres is listening)."
                 ),
                 available=winget_ok,
@@ -92,7 +92,7 @@ def build_postgres_setup_options(
                 explanation=(
                     "Prints suggested apt/brew commands for PostgreSQL 16 on "
                     "Linux/macOS. Does not run them automatically; you install, "
-                    "create hermes/hermes, then continue."
+                    "create nimbusware/nimbusware, then continue."
                 ),
                 available=True,
             ),
@@ -106,7 +106,7 @@ def build_postgres_setup_options(
                 explanation=(
                     "Use an existing local install, cloud instance, or a container you "
                     "start yourself. Ensure the server listens on the URL below and that "
-                    "the hermes role/database exist (or use a URL you configure next)."
+                    "the nimbusware role/database exist (or use a URL you configure next)."
                 ),
                 available=True,
             ),

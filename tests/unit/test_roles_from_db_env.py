@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 import hermes_orchestrator.runtime_bootstrap as _runtime_bootstrap
-import nimbusware_api.app as _hermes_api_app_pkg  # noqa: F401 -- ensures submodule loads
+import nimbusware_api.app as _nimbusware_api_app_pkg  # noqa: F401 -- ensures submodule loads
 from hermes_orchestrator.registry import RoleRegistry
 from nimbusware_api.app import app
 from nimbusware_iam.store import InMemoryIamStore
@@ -24,7 +24,7 @@ _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
 )
 
 _APP_MODULE = sys.modules["nimbusware_api.app"]
-"""Direct submodule reference because ``hermes_api/__init__.py`` does
+"""Direct submodule reference because ``nimbusware_api/__init__.py`` does
 ``from nimbusware_api.app import app`` which rebinds ``nimbusware_api.app`` in
 the package namespace to the **FastAPI instance** (shadowing the
 submodule). ``mock.patch("nimbusware_api.app.X")`` follows the package
@@ -50,7 +50,7 @@ def _run_lifespan(
     ``db_url`` / ``roles_from_db``: ``None`` -> ``monkeypatch.delenv(...)``
     to exercise the absent-env arm; any string is set verbatim (no
     ``.strip()`` mirrors production semantics at
-    [app.py:34](d:\\Hermes\\packages\\hermes_api\\app.py)).
+    [app.py:34](packages\\nimbusware_api\\app.py)).
     """
     if db_url is None:
         monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)

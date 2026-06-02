@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from nimbusware_config.materializer import ConfigMaterializer
 
-NOTIFY_CHANNEL = "hermes_config_document"
+NOTIFY_CHANNEL = "nimbusware_config_document"
 NOTIFY_EVENT_TYPE = "config.document.updated"
 
 

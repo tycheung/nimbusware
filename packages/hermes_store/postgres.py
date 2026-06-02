@@ -58,7 +58,7 @@ class PostgresEventStore:
         tid = str(store_tenant_id())
         with psycopg.connect(self._conninfo) as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT set_config('hermes.tenant_id', %s, true)", (tid,))
+                cur.execute("SELECT set_config('nimbusware.tenant_id', %s, true)", (tid,))
             yield conn
 
     def append(self, event: HermesEventUnion) -> int:

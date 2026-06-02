@@ -150,7 +150,7 @@ def test_emit_integrator_gate_env_force_on_string_arm_contract(
     pins the case-folded + whitespace-trimmed variants of the force-on tuple.
 
     Workflow profile is ``default`` (``integrator_gate.enabled: false`` in
-    [`configs/workflows/default.yaml`](d:\\Hermes\\configs\\workflows\\default.yaml))
+    [`configs/workflows/default.yaml`](configs\\workflows\\default.yaml))
     AND ``load_integrator_gate_emit_enabled`` is patched to ``False`` so any
     emitted ``gate.decision.emitted`` event comes only from the env force-on
     branch. The existing ``configs/integrator/thresholds.yaml`` is required

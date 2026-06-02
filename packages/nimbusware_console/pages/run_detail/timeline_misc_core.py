@@ -19,7 +19,9 @@ def _render_timeline_misc_core(run_id: str, data: dict, _wf_pick: str) -> None:
     _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
     _wf_pick = data.get("workflow_profile") if isinstance(data, dict) else None
     if not isinstance(_wf_pick, str) or not _wf_pick.strip():
-        _wf_pick = os.environ.get("HERMES_WORKFLOW_PROFILE", "nimbusware_production")
+        from nimbusware_env.env_flags import nimbusware_workflow_profile
+
+        _wf_pick = nimbusware_workflow_profile()
     with st.expander("Phase 3 critic stages (from timeline)", expanded=False):
         st.caption(phase3_critique_caption(data))
         _p3_rows = phase3_critique_table_rows(data)

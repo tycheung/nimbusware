@@ -97,7 +97,7 @@ def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
     """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
 
     Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](d:\\Hermes\\packages\\hermes_orchestrator\\workflow_profiles.py)
+    [workflow_profiles.py](packages\\hermes_orchestrator\\workflow_profiles.py)
     expectations: file must exist at
     ``{repo_root}/configs/workflows/{profile}.yaml``.
     """

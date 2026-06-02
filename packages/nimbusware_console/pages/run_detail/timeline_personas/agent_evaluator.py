@@ -53,7 +53,9 @@ def _workflow_profile_pick(data: dict[str, Any]) -> str:
     wf = data.get("workflow_profile") if isinstance(data, dict) else None
     if isinstance(wf, str) and wf.strip():
         return wf.strip()
-    return os.environ.get("HERMES_WORKFLOW_PROFILE", "nimbusware_production")
+    from nimbusware_env.env_flags import nimbusware_workflow_profile
+
+    return nimbusware_workflow_profile()
 
 
 def _run_slug(run_id: str, *, max_len: int = 36) -> str:
@@ -65,7 +67,9 @@ def _workflow_profile_pick(data: dict[str, Any]) -> str:
     wf = data.get("workflow_profile") if isinstance(data, dict) else None
     if isinstance(wf, str) and wf.strip():
         return wf.strip()
-    return os.environ.get("HERMES_WORKFLOW_PROFILE", "nimbusware_production")
+    from nimbusware_env.env_flags import nimbusware_workflow_profile
+
+    return nimbusware_workflow_profile()
 
 
 def _run_slug(run_id: str, *, max_len: int = 36) -> str:

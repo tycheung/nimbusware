@@ -190,7 +190,7 @@ def test_outbound_fetch_env_force_on_at_egress_checked_fetch_url_contract(
     """Pin §14 #10 ``HERMES_OUTBOUND_FETCH_ENABLED`` force-on contract at site 1.
 
     :meth:`RunOrchestrator.egress_checked_fetch_url` ([pipeline.py lines
-    214-218](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)) gates the
+    214-218](packages\\hermes_orchestrator\\pipeline.py)) gates the
     outbound GET on ``os.environ.get("HERMES_OUTBOUND_FETCH_ENABLED",
     "").lower() not in ("1", "true", "yes")``. Existing
     ``test_orchestrator_egress_fetch_requires_env`` only pins the
@@ -242,7 +242,7 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
     """Pin §14 #10 ``HERMES_OUTBOUND_FETCH_ENABLED`` force-on contract at site 2.
 
     :meth:`RunOrchestrator.run_optional_scraper_fetch_stage` ([pipeline.py
-    lines 379-398](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py))
+    lines 379-398](packages\\hermes_orchestrator\\pipeline.py))
     uses the **identical** coercion as site 1 to decide whether to emit a
     ``stage.failed`` ``outbound_fetch_disabled`` and return early. This
     test mirrors Part A across the same force-on variants asserting NO

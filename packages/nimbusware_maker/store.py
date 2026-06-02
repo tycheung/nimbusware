@@ -113,7 +113,7 @@ class PostgresProjectStore:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     """
-                    INSERT INTO hermes_project (
+                    INSERT INTO nimbusware_project (
                       project_id, tenant_id, name, workspace_path,
                       template, default_workflow_profile
                     )
@@ -142,7 +142,7 @@ class PostgresProjectStore:
                     """
                     SELECT project_id, tenant_id, name, workspace_path,
                            template, default_workflow_profile, created_at
-                    FROM hermes_project
+                    FROM nimbusware_project
                     WHERE project_id = %s
                     """,
                     (project_id,),
@@ -160,7 +160,7 @@ class PostgresProjectStore:
                         """
                         SELECT project_id, tenant_id, name, workspace_path,
                                template, default_workflow_profile, created_at
-                        FROM hermes_project
+                        FROM nimbusware_project
                         ORDER BY created_at DESC
                         """
                     )
@@ -169,7 +169,7 @@ class PostgresProjectStore:
                         """
                         SELECT project_id, tenant_id, name, workspace_path,
                                template, default_workflow_profile, created_at
-                        FROM hermes_project
+                        FROM nimbusware_project
                         WHERE tenant_id = %s
                         ORDER BY created_at DESC
                         """,
@@ -182,7 +182,7 @@ class PostgresProjectStore:
         with psycopg.connect(self._conninfo) as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "DELETE FROM hermes_project WHERE project_id = %s",
+                    "DELETE FROM nimbusware_project WHERE project_id = %s",
                     (project_id,),
                 )
                 deleted = cur.rowcount > 0

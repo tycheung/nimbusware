@@ -125,7 +125,7 @@ class PostgresIamStore:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     """
-                    INSERT INTO hermes_tenant (tenant_id, slug, display_name)
+                    INSERT INTO nimbusware_tenant (tenant_id, slug, display_name)
                     VALUES (%s, %s, %s)
                     ON CONFLICT (tenant_id) DO NOTHING
                     """,
@@ -134,7 +134,7 @@ class PostgresIamStore:
                 cur.execute(
                     """
                     SELECT tenant_id, slug, display_name, created_at
-                    FROM hermes_tenant WHERE tenant_id = %s
+                    FROM nimbusware_tenant WHERE tenant_id = %s
                     """,
                     (DEFAULT_TENANT_ID,),
                 )
@@ -150,7 +150,7 @@ class PostgresIamStore:
             with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(
                     """
-                    INSERT INTO hermes_tenant (tenant_id, slug, display_name)
+                    INSERT INTO nimbusware_tenant (tenant_id, slug, display_name)
                     VALUES (%s, %s, %s)
                     RETURNING tenant_id, slug, display_name, created_at
                     """,
@@ -167,7 +167,7 @@ class PostgresIamStore:
                 cur.execute(
                     """
                     SELECT tenant_id, slug, display_name, created_at
-                    FROM hermes_tenant
+                    FROM nimbusware_tenant
                     ORDER BY slug ASC
                     """,
                 )
@@ -180,7 +180,7 @@ class PostgresIamStore:
                 cur.execute(
                     """
                     SELECT tenant_id, slug, display_name, created_at
-                    FROM hermes_tenant WHERE tenant_id = %s
+                    FROM nimbusware_tenant WHERE tenant_id = %s
                     """,
                     (tenant_id,),
                 )
@@ -207,7 +207,7 @@ class PostgresIamStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO hermes_api_key (
+                    INSERT INTO nimbusware_api_key (
                       key_id, tenant_id, key_prefix, key_hash, label,
                       role_taxonomy_keys, api_scopes
                     ) VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s::jsonb)
@@ -231,8 +231,8 @@ class PostgresIamStore:
                     """
                     SELECT k.key_id, k.tenant_id, k.role_taxonomy_keys, k.api_scopes,
                            k.revoked_at, t.slug
-                    FROM hermes_api_key k
-                    JOIN hermes_tenant t ON t.tenant_id = k.tenant_id
+                    FROM nimbusware_api_key k
+                    JOIN nimbusware_tenant t ON t.tenant_id = k.tenant_id
                     WHERE k.key_hash = %s
                     LIMIT 1
                     """,

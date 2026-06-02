@@ -1,6 +1,6 @@
 # Nimbusware Env
 
-Edition, dotenv loading, admin token helpers, and shared `HERMES_*` env flag parsing.
+Nimbusware platform edition, dotenv loading, admin token helpers, and shared `HERMES_*` env flag parsing for the Hermes online agentic system.
 
 ## Key modules
 

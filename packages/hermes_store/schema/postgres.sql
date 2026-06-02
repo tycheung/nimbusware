@@ -1,24 +1,26 @@
--- Nimbusware PostgreSQL bootstrap for the Hermes agent event store (greenfield, single file).
+-- Nimbusware PostgreSQL bootstrap (greenfield, single file).
+-- Platform tables: nimbusware_* (IAM, projects, operator config).
+-- Hermes agent tables: event_store, hermes_memory_*, hermes_bundle_outcome, hermes_roles_registry.
 -- Apply to an empty database: psql "$NIMBUSWARE_DATABASE_URL" -v ON_ERROR_STOP=1 -f postgres.sql
 -- Lockstep with agent_core.models.EventType (see hermes_store.allowed_types.allowed_event_type_values).
 
 -- =============================================================================
--- hermes_tenant + hermes_api_key (Enterprise IAM, fo201)
+-- nimbusware_tenant + nimbusware_api_key (Enterprise IAM, fo201)
 -- =============================================================================
-CREATE TABLE IF NOT EXISTS hermes_tenant (
+CREATE TABLE IF NOT EXISTS nimbusware_tenant (
   tenant_id UUID PRIMARY KEY,
   slug TEXT NOT NULL UNIQUE,
   display_name TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO hermes_tenant (tenant_id, slug, display_name) VALUES
+INSERT INTO nimbusware_tenant (tenant_id, slug, display_name) VALUES
   ('00000000-0000-4000-8000-000000000001'::uuid, 'default', 'Default (Individual)')
 ON CONFLICT (tenant_id) DO NOTHING;
 
-CREATE TABLE IF NOT EXISTS hermes_api_key (
+CREATE TABLE IF NOT EXISTS nimbusware_api_key (
   key_id UUID PRIMARY KEY,
-  tenant_id UUID NOT NULL REFERENCES hermes_tenant(tenant_id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES nimbusware_tenant(tenant_id) ON DELETE CASCADE,
   key_prefix TEXT NOT NULL,
   key_hash TEXT NOT NULL UNIQUE,
   label TEXT NOT NULL DEFAULT '',
@@ -30,19 +32,19 @@ CREATE TABLE IF NOT EXISTS hermes_api_key (
   CHECK (jsonb_typeof(api_scopes) = 'array')
 );
 
-CREATE INDEX IF NOT EXISTS idx_hermes_api_key_tenant
-  ON hermes_api_key (tenant_id);
+CREATE INDEX IF NOT EXISTS idx_nimbusware_api_key_tenant
+  ON nimbusware_api_key (tenant_id);
 
-ALTER TABLE hermes_api_key
+ALTER TABLE nimbusware_api_key
   ADD COLUMN IF NOT EXISTS api_scopes JSONB NOT NULL DEFAULT '["maker_user"]'::jsonb;
 
 -- =============================================================================
--- hermes_project (Maker product, fo301)
+-- nimbusware_project (Maker product, fo301)
 -- =============================================================================
-CREATE TABLE IF NOT EXISTS hermes_project (
+CREATE TABLE IF NOT EXISTS nimbusware_project (
   project_id UUID PRIMARY KEY,
   tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
-    REFERENCES hermes_tenant(tenant_id),
+    REFERENCES nimbusware_tenant(tenant_id),
   name TEXT NOT NULL,
   workspace_path TEXT NOT NULL,
   template TEXT NOT NULL DEFAULT 'attach'
@@ -51,17 +53,17 @@ CREATE TABLE IF NOT EXISTS hermes_project (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_hermes_project_tenant
-  ON hermes_project (tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_nimbusware_project_tenant
+  ON nimbusware_project (tenant_id, created_at DESC);
 
 -- =============================================================================
--- event_store (append-only, plan §19.2)
+-- event_store (Hermes agent append-only run events, plan §19.2)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS event_store (
   store_seq BIGSERIAL NOT NULL,
   event_id UUID PRIMARY KEY,
   tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
-    REFERENCES hermes_tenant(tenant_id),
+    REFERENCES nimbusware_tenant(tenant_id),
   run_id UUID NOT NULL,
   stage_id UUID NULL,
   task_id UUID NULL,
@@ -101,10 +103,10 @@ DROP POLICY IF EXISTS event_store_tenant_isolation ON event_store;
 CREATE POLICY event_store_tenant_isolation ON event_store
   FOR ALL
   USING (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   )
   WITH CHECK (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   );
 
 CREATE OR REPLACE FUNCTION prevent_event_store_mutation()
@@ -152,7 +154,7 @@ FROM event_store e
 GROUP BY e.run_id;
 
 -- =============================================================================
--- hermes_roles_registry (optional DB-backed role registry, plan §5)
+-- hermes_roles_registry (Hermes agent role taxonomy, plan §5)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS hermes_roles_registry (
   taxonomy_key TEXT PRIMARY KEY,
@@ -169,9 +171,9 @@ INSERT INTO hermes_roles_registry (taxonomy_key, role_id, display_name) VALUES
 ON CONFLICT (taxonomy_key) DO NOTHING;
 
 -- =============================================================================
--- hermes_config_document (operator config authority, plan §19.5)
+-- nimbusware_config_document (operator config authority, plan §19.5)
 -- =============================================================================
-CREATE TABLE IF NOT EXISTS hermes_config_document (
+CREATE TABLE IF NOT EXISTS nimbusware_config_document (
   namespace TEXT NOT NULL,
   document_key TEXT NOT NULL,
   version INT NOT NULL DEFAULT 1,
@@ -182,10 +184,10 @@ CREATE TABLE IF NOT EXISTS hermes_config_document (
   PRIMARY KEY (namespace, document_key)
 );
 
-CREATE INDEX IF NOT EXISTS idx_hermes_config_document_ns
-  ON hermes_config_document (namespace);
+CREATE INDEX IF NOT EXISTS idx_nimbusware_config_document_ns
+  ON nimbusware_config_document (namespace);
 
-CREATE OR REPLACE FUNCTION notify_hermes_config_document_change()
+CREATE OR REPLACE FUNCTION notify_nimbusware_config_document_change()
 RETURNS TRIGGER AS $$
 DECLARE
   payload text;
@@ -196,23 +198,23 @@ BEGIN
     'document_key', NEW.document_key,
     'version', NEW.version
   )::text;
-  PERFORM pg_notify('hermes_config_document', payload);
+  PERFORM pg_notify('nimbusware_config_document', payload);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_hermes_config_document_notify ON hermes_config_document;
-CREATE TRIGGER trg_hermes_config_document_notify
-AFTER INSERT OR UPDATE ON hermes_config_document
-FOR EACH ROW EXECUTE FUNCTION notify_hermes_config_document_change();
+DROP TRIGGER IF EXISTS trg_nimbusware_config_document_notify ON nimbusware_config_document;
+CREATE TRIGGER trg_nimbusware_config_document_notify
+AFTER INSERT OR UPDATE ON nimbusware_config_document
+FOR EACH ROW EXECUTE FUNCTION notify_nimbusware_config_document_change();
 
 -- =============================================================================
--- hermes_memory_* (Phase 4 repo-scoped retrieval index, fo160)
+-- hermes_memory_* (Hermes agent Phase 4 repo-scoped retrieval index, fo160)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS hermes_memory_index_generation (
   generation_id UUID PRIMARY KEY,
   tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
-    REFERENCES hermes_tenant(tenant_id),
+    REFERENCES nimbusware_tenant(tenant_id),
   org_scope_hash TEXT NOT NULL,
   repo_scope_hash TEXT NOT NULL,
   embedding_mode TEXT NOT NULL,
@@ -232,7 +234,7 @@ CREATE TABLE IF NOT EXISTS hermes_memory_chunk (
   chunk_id UUID PRIMARY KEY,
   generation_id UUID NOT NULL REFERENCES hermes_memory_index_generation(generation_id) ON DELETE CASCADE,
   tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
-    REFERENCES hermes_tenant(tenant_id),
+    REFERENCES nimbusware_tenant(tenant_id),
   org_scope_hash TEXT NOT NULL,
   repo_scope_hash TEXT NOT NULL,
   run_id UUID NOT NULL,
@@ -262,27 +264,27 @@ DROP POLICY IF EXISTS hermes_memory_generation_tenant ON hermes_memory_index_gen
 CREATE POLICY hermes_memory_generation_tenant ON hermes_memory_index_generation
   FOR ALL
   USING (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   )
   WITH CHECK (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   );
 
 DROP POLICY IF EXISTS hermes_memory_chunk_tenant ON hermes_memory_chunk;
 CREATE POLICY hermes_memory_chunk_tenant ON hermes_memory_chunk
   FOR ALL
   USING (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   )
   WITH CHECK (
-    tenant_id = NULLIF(current_setting('hermes.tenant_id', true), '')::uuid
+    tenant_id = NULLIF(current_setting('nimbusware.tenant_id', true), '')::uuid
   );
 
 CREATE INDEX IF NOT EXISTS idx_hermes_memory_chunk_generation
   ON hermes_memory_chunk (generation_id);
 
 -- =============================================================================
--- hermes_bundle_outcome (Phase 4 bundle usage memory, fo170)
+-- hermes_bundle_outcome (Hermes agent Phase 4 bundle usage memory, fo170)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS hermes_bundle_outcome (
   outcome_id UUID PRIMARY KEY,

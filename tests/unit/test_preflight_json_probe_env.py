@@ -76,7 +76,7 @@ def test_preflight_json_probe_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #1 ``HERMES_PREFLIGHT_JSON_PROBE`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:194](d:\\Hermes\\packages\\hermes_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:194](packages\\hermes_orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")``. Truthy variants reach
     ``_optional_json_probe`` which, with ``_mocked_httpx`` returning the
     canonical OK response for ``/api/chat``, succeeds and adds two

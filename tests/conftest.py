@@ -1,4 +1,4 @@
-"""Pytest: load repository ``.env`` before any Nimbusware / Hermes imports in tests."""
+"""Pytest: load Nimbusware repository ``.env`` before package imports in tests."""
 
 from __future__ import annotations
 

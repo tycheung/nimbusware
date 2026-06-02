@@ -1,6 +1,15 @@
 # Nimbusware architecture
 
-One-page map of packages, data flow, and auth. Normative product contract: [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md). Local maturity ledger: [PLAN_GAP.md](PLAN_GAP.md) (gitignored).
+## Nomenclature
+
+| Name | Meaning |
+|------|---------|
+| **Nimbusware** | This repository and product: local-first platform (API, Maker, Admin Console, config, IAM). Use `NIMBUSWARE_*` env vars and `nimbusware_*` packages. |
+| **Hermes** | The **online agentic system** (adversarial multi-role runs, critics, gates, verifiers). This codebase integrates it locally via `hermes_*` packages and `HERMES_*` env vars — not a second product name for Nimbusware. |
+
+Legacy checkout paths (e.g. `D:\Hermes`) and artifact dirs (`.hermes/`) are historical; prefer **Nimbusware** in user-facing text.
+
+One-page map of packages, data flow, and auth. Normative Hermes agent contract: [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md). Local maturity ledger: [PLAN_GAP.md](PLAN_GAP.md) (gitignored).
 
 ## Layer diagram
 

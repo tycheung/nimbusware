@@ -74,8 +74,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=_TOOL_NAME,
         description=(
-            "Bootstrap or export Hermes agent operator config between Postgres "
-            "(hermes_config_document) and repo configs/ YAML for git review."
+            "Bootstrap or export Nimbusware operator config between Postgres "
+            "(nimbusware_config_document) and repo configs/ YAML for git review."
         ),
     )
     parser.add_argument(

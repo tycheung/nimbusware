@@ -20,7 +20,7 @@ def _write_workflow_min_score(tmp_path: Path, value: float | None) -> None:
     ``value`` is the ``integrator_gate.min_score_to_pass`` to embed.
     ``None`` writes the profile WITHOUT the key (only ``enabled: true``)
     so ``parse_integrator_gate_min_score_to_pass`` in
-    [integrator_gate.py](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py)
+    [integrator_gate.py](packages\\hermes_orchestrator\\integrator_gate.py)
     returns ``None`` and the wf layer falls through to thresholds.yaml.
 
     ``mkdir(parents=True, exist_ok=True)`` permits multiple
@@ -41,7 +41,7 @@ def _write_thresholds(tmp_path: Path, value: float | None) -> None:
 
     ``value`` ``None`` writes the file WITHOUT ``min_score_to_pass``
     so ``load_integrator_min_score_from_thresholds`` in
-    [integrator_gate.py](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py)
+    [integrator_gate.py](packages\\hermes_orchestrator\\integrator_gate.py)
     returns the ``raw.get(..., 0.0)`` factory default.
     """
     ig_dir = tmp_path / "configs" / "integrator"
@@ -129,7 +129,7 @@ def test_integrator_min_score_env_three_layer_precedence_contract(
       -> ``raw.get(..., 0.0)`` factory floor.
     * **Block 5** -- env-INVALID -> wf wins via the
       ``except ValueError: pass`` arm at
-      [integrator_gate.py:162-163](d:\\Hermes\\packages\\hermes_orchestrator\\integrator_gate.py).
+      [integrator_gate.py:162-163](packages\\hermes_orchestrator\\integrator_gate.py).
       A refactor narrowing or removing the ``except`` would surface
       ``ValueError`` to callers instead of degrading silently -- Block
       5 catches it.

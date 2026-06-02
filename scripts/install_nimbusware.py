@@ -403,7 +403,7 @@ def _bootstrap_postgres(
             raise SetupError("winget install is only supported on Windows.")
         run_winget_postgresql_install(major=args.postgres_major, log=_log)
         prompt_press_enter_when_ready(
-            "Complete the winget installer if prompted, create hermes/hermes if needed.",
+            "Complete the winget installer if prompted, create nimbusware/nimbusware if needed.",
         )
         _wait_for_postgres(url)
         return True, url
@@ -411,7 +411,7 @@ def _bootstrap_postgres(
     if choice == "packages":
         print_os_package_hints()
         prompt_press_enter_when_ready(
-            "After PostgreSQL is installed and hermes/hermes exists, continue.",
+            "After PostgreSQL is installed and nimbusware/nimbusware exists, continue.",
         )
         _wait_for_postgres(url)
         return True, url
@@ -746,7 +746,7 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=(
             "Windows only: download the official PostgreSQL EDB installer (.exe), "
-            "run it silently, and create the hermes/hermes database (requires admin/UAC)"
+            "run it silently, and create the nimbusware/nimbusware database (requires admin/UAC)"
         ),
     )
     parser.add_argument(
@@ -765,7 +765,7 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help=(
             "postgres superuser password for native install "
-            "(default: NIMBUSWARE_POSTGRES_SUPERPASSWORD or hermes_setup)"
+            "(default: NIMBUSWARE_POSTGRES_SUPERPASSWORD or nimbusware_setup)"
         ),
     )
     parser.add_argument(

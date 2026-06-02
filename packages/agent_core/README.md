@@ -1,6 +1,6 @@
 # agent_core
 
-Shared Pydantic models for the Hermes agent orchestration events.
+Shared Pydantic models for Hermes agent orchestration events (Nimbusware wire format).
 
 Normative product plan: `hermes-orchestrator-local-plan.md` (local, gitignored).
 

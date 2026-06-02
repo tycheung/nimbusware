@@ -1,6 +1,6 @@
 # Migrations (removed)
 
-Nimbusware no longer ships numbered incremental SQL migrations for the Hermes event store. For a **greenfield**
+Nimbusware no longer ships numbered incremental SQL migrations. Apply the greenfield schema in ``schema/postgres.sql`` (Nimbusware platform ``nimbusware_*`` tables plus Hermes agent tables). For a **greenfield**
 Postgres, apply the single bootstrap script:
 
 [`../schema/postgres.sql`](../schema/postgres.sql)

@@ -52,7 +52,7 @@ def _check_repo_root(repo_root: Path) -> dict[str, Any]:
         }
     return {
         "status": "ok",
-        "message": "Hermes config present",
+        "message": "Nimbusware config present",
         "repo_root": str(repo_root),
     }
 

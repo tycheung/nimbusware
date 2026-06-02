@@ -1,4 +1,4 @@
-"""Nimbusware Hermes agent API — ``poetry run nimbusware-api`` (uvicorn)."""
+"""Nimbusware control-plane API — ``poetry run nimbusware-api`` (uvicorn)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ def main() -> None:
     load_dotenv()
     import uvicorn
 
-    host = __import__("os").environ.get("HERMES_API_HOST", "0.0.0.0")
+    from nimbusware_env.env_flags import nimbusware_api_host
+
+    host = nimbusware_api_host()
     from nimbusware_env.admin_token import require_non_default_admin_token_for_host
 
     require_non_default_admin_token_for_host(host)

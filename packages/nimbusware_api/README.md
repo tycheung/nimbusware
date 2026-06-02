@@ -4,7 +4,7 @@ FastAPI control plane for runs, timelines, bundles, config, and Enterprise IAM.
 
 ## Entry
 
-- `poetry run nimbusware-api` — uvicorn on `HERMES_API_HOST` / `PORT`
+- `poetry run nimbusware-api` — uvicorn on `NIMBUSWARE_API_HOST` / `PORT`
 - App factory: `nimbusware_api.app:app`
 - Lifespan builds store/orchestrator via `hermes_orchestrator.runtime_bootstrap` (IAM/project stores stay in `app.py`).
 

@@ -1,6 +1,6 @@
 # Nimbusware
 
-Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit Maker app** (the default product UI — business prompt → scoped projects → reviewable slice builds), an **Admin Console** for ops/dev control-plane work, optional **desktop shells**, and the **Hermes** orchestration engine (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit Maker app** (the default product UI — business prompt → scoped projects → reviewable slice builds), an **Admin Console** for ops/dev control-plane work, optional **desktop shells**, and local integration with the **Hermes** online agentic system (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages via `hermes_*` packages).
 
 **Default install:** Maker only. The Admin Console is optional and gated behind an admin token.
 
@@ -49,7 +49,9 @@ Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent ru
 
 Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [CONTRIBUTING.md](CONTRIBUTING.md) (CI and conventions), [SECURITY.md](SECURITY.md) (secrets and production), [tests/README.md](tests/README.md) (CI subsets @ **75%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
 
-## Hermes orchestration (what the engine does)
+## Hermes agent runtime (online system, local integration)
+
+Capabilities below are provided by the Hermes agentic system; Nimbusware hosts the control plane and wires `hermes_orchestrator`, `hermes_store`, and related packages.
 
 - **Run lifecycle** — `run.created` → plan → implement/verify paths with frozen `policy_snapshot` from materialized config
 - **Adversarial critics** — domain-bound critique stages (security, performance, network/resilience, refactor on production profile)
@@ -64,7 +66,7 @@ Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [CO
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles). With Postgres, operator edits persist to `hermes_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
+Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
 
 ## Repository layout
 
@@ -188,7 +190,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 **Home & onboarding**
 
 - First-run wizard checks local readiness (Postgres, Ollama hints, workspace paths) via `GET /v1/platform/readiness`
-- Project picker backed by `hermes_project` (`GET/POST /v1/projects` — **no admin token**; `DELETE` is admin-only)
+- Project picker backed by `nimbusware_project` (`GET/POST /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (Ollama model list, policy-gated pull/delete/routing when admin allows, readiness presets, auto-advance hint)
 
 **Build**

@@ -1,4 +1,6 @@
-# Nimbusware / Hermes architecture
+# Nimbusware architecture
+
+**Nimbusware** is this codebase (local-first platform: `nimbusware_*`, `NIMBUSWARE_*`). **Hermes** is the online agentic system; integration lives in `hermes_*` packages and `HERMES_*` env (see [ARCHITECTURE.md](../ARCHITECTURE.md#nomenclature)).
 
 ## Layers
 

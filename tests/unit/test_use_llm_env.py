@@ -28,7 +28,7 @@ def _patched_execute(
 
     ``llm_raises``: when True, the patched LLM raises ``Exception("simulated
     llm failure")`` so the ``except Exception: pass`` arm at
-    [pipeline.py:696](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:696](packages\\hermes_orchestrator\\pipeline.py)
     swallows it and the stub fallback fires (Part B's LLM-raises branch).
     """
     llm_kwargs: dict[str, Any] = (
@@ -49,7 +49,7 @@ def test_use_llm_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #16 ``HERMES_USE_LLM`` force-on truthy tuple membership.
 
-    The env-gate at [pipeline.py:679](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
+    The env-gate at [pipeline.py:679](packages\\hermes_orchestrator\\pipeline.py)
     uses ``in ("1", "true", "yes")``. With ``_selected_model_for_run``
     returning a valid model and the LLM mock returning normally, truthy
     variants must reach the LLM-ok branch where ``execute_plan_stage_llm``

@@ -120,7 +120,7 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
     """Pin ``assert_taxonomy_keys_resolve`` 2-axis contract (accept / KE).
 
     The function is a thin loop over ``RoleRegistry.resolve`` at
-    [ingress.py:58-61](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py):
+    [ingress.py:58-61](packages\\hermes_orchestrator\\ingress.py):
 
     ```python
     def assert_taxonomy_keys_resolve(registry, keys):
@@ -129,7 +129,7 @@ def test_assert_taxonomy_keys_resolve_2_axis_contract() -> None:
     ```
 
     Reject contract from
-    [registry.py:67-72](d:\\Hermes\\packages\\hermes_orchestrator\\registry.py):
+    [registry.py:67-72](packages\\hermes_orchestrator\\registry.py):
     ``Unknown role taxonomy_key: {taxonomy_key!r}``. Zero existing
     direct tests anywhere in ``tests/`` (only mentioned in fo80
     docstrings) -- fo81 Part A is the first.
@@ -168,12 +168,12 @@ def test_assert_persona_shelves_valid_3_axis_wrapper_contract(tmp_path: Path) ->
     Existing tests only hit the happy path (real repo); the
     wrapper-level ``FileNotFoundError`` (missing file) and
     ``ValueError`` (invalid structure) axes are unpinned. Wrapper at
-    [ingress.py:22-28](d:\\Hermes\\packages\\hermes_orchestrator\\ingress.py)
+    [ingress.py:22-28](packages\\hermes_orchestrator\\ingress.py)
     formats ``f"missing persona catalog shelves: {path}"`` for the
     FNF arm; ``PersonaShelf.validate_structure`` at
-    [personas.py:14-37](d:\\Hermes\\packages\\hermes_extensions\\personas.py)
+    [personas.py:14-37](packages\\hermes_extensions\\personas.py)
     + ``load_yaml`` at
-    [merge.py:19-24](d:\\Hermes\\packages\\hermes_orchestrator\\merge.py)
+    [merge.py:19-24](packages\\hermes_orchestrator\\merge.py)
     contribute the 4 ``ValueError`` sub-arms.
 
     All wrapper-layer errors are pinned as ``ValueError`` (not

@@ -13,7 +13,7 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
   NIMBUSWARE_REPO_ROOT=/app \
   HERMES_SKIP_PREFLIGHT=1 \
-  HERMES_API_HOST=0.0.0.0 \
+  NIMBUSWARE_API_HOST=0.0.0.0 \
   PORT=8000
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin

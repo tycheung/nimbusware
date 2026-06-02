@@ -148,7 +148,7 @@ def start_servers(
         api_port = int(env_port) if env_port else _pick_free_port(api_host)
     streamlit_port = streamlit_port or _pick_free_port(streamlit_host)
 
-    os.environ["HERMES_API_HOST"] = api_host
+    os.environ["NIMBUSWARE_API_HOST"] = api_host
     os.environ["PORT"] = str(api_port)
     os.environ["NIMBUSWARE_API_BASE"] = f"http://{api_host}:{api_port}/v1"
     os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")

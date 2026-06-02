@@ -57,7 +57,7 @@ def _row_from_record(rec: dict[str, Any]) -> ConfigDocumentRow:
 
 
 class PostgresConfigStore:
-    """Authoritative config in ``hermes_config_document``."""
+    """Authoritative config in ``nimbusware_config_document``."""
 
     def __init__(self, conninfo: str) -> None:
         self._conninfo = conninfo
@@ -69,7 +69,7 @@ class PostgresConfigStore:
                     """
                     SELECT namespace, document_key, version, content,
                            content_sha256_16, updated_at
-                    FROM hermes_config_document
+                    FROM nimbusware_config_document
                     WHERE namespace = %s AND document_key = %s
                     """,
                     (namespace, document_key),
@@ -96,7 +96,7 @@ class PostgresConfigStore:
                 if expected_version is not None:
                     cur.execute(
                         """
-                        UPDATE hermes_config_document
+                        UPDATE nimbusware_config_document
                         SET version = version + 1,
                             content = %s,
                             content_sha256_16 = %s,
@@ -124,12 +124,12 @@ class PostgresConfigStore:
                 else:
                     cur.execute(
                         """
-                        INSERT INTO hermes_config_document (
+                        INSERT INTO nimbusware_config_document (
                           namespace, document_key, version, content,
                           content_sha256_16, updated_at
                         ) VALUES (%s, %s, 1, %s, %s, NOW())
                         ON CONFLICT (namespace, document_key) DO UPDATE SET
-                          version = hermes_config_document.version + 1,
+                          version = nimbusware_config_document.version + 1,
                           content = EXCLUDED.content,
                           content_sha256_16 = EXCLUDED.content_sha256_16,
                           updated_at = NOW()
@@ -152,7 +152,7 @@ class PostgresConfigStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    SELECT document_key FROM hermes_config_document
+                    SELECT document_key FROM nimbusware_config_document
                     WHERE namespace = %s ORDER BY document_key
                     """,
                     (namespace,),
@@ -165,7 +165,7 @@ class PostgresConfigStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """
-                    DELETE FROM hermes_config_document
+                    DELETE FROM nimbusware_config_document
                     WHERE namespace = %s AND document_key = %s
                     """,
                     (namespace, document_key),

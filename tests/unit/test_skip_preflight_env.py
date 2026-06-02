@@ -50,7 +50,7 @@ def test_skip_preflight_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #1 ``HERMES_SKIP_PREFLIGHT`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:115](d:\\Hermes\\packages\\hermes_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:115](packages\\hermes_orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")`` so truthy variants short-circuit
     BEFORE any ``httpx.get`` call. No network mocking is needed -- if
     the env-gate had rejected a variant, the test would fall through to

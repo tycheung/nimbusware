@@ -127,7 +127,7 @@ def test_agent_evaluator_env_force_on_string_arm_contract(
     tests sample only `"1"`; this test exhaustively pins the case-folded +
     whitespace-trimmed variants of the force-on tuple. The workflow profile is
     ``default`` (``agent_evaluator.enabled: false`` in
-    [`configs/workflows/default.yaml`](d:\\Hermes\\configs\\workflows\\default.yaml))
+    [`configs/workflows/default.yaml`](configs\\workflows\\default.yaml))
     so any emitted ``stage.started`` ``agent_eval:*`` event comes only from the
     env force-on branch.
 

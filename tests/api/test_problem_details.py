@@ -24,7 +24,7 @@ os.environ.setdefault(
 
 from nimbusware_api.app import (  # noqa: E402
     app,
-    hermes_http_exception_handler,
+    nimbusware_http_exception_handler,
     hermes_validation_handler,
 )
 from nimbusware_api.errors import problem  # noqa: E402
@@ -65,7 +65,7 @@ def test_http_exception_handler_emits_problem_json_without_type() -> None:
     exc = HTTPException(status_code=404, detail=detail)
     scope = {"type": "http", "method": "GET", "path": "/v1/runs/x", "headers": []}
     request = Request(scope)
-    response = asyncio.run(hermes_http_exception_handler(request, exc))
+    response = asyncio.run(nimbusware_http_exception_handler(request, exc))
     assert response.status_code == 404
     assert response.media_type == "application/problem+json"
     data = json.loads(response.body.decode())
@@ -79,7 +79,7 @@ def test_http_exception_handler_emits_problem_json_with_type() -> None:
     exc = HTTPException(status_code=404, detail=detail)
     scope = {"type": "http", "method": "GET", "path": "/v1/runs/x", "headers": []}
     request = Request(scope)
-    response = asyncio.run(hermes_http_exception_handler(request, exc))
+    response = asyncio.run(nimbusware_http_exception_handler(request, exc))
     assert response.status_code == 404
     assert response.media_type == "application/problem+json"
     assert uri in response.body.decode()

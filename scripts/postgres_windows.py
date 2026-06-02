@@ -685,7 +685,7 @@ def install_postgresql_windows(
     pw = (
         superpassword
         or os.environ.get(ENV_POSTGRES_PASSWORD, "").strip()
-        or "hermes_setup"
+        or "nimbusware_setup"
     )
     silent_args = _installer_args(superpassword=pw, port=port, prefix=None)
 

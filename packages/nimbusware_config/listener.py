@@ -22,7 +22,7 @@ def start_config_notify_listener(
     hub: ConfigNotifyHub,
     stop_event: threading.Event,
 ) -> threading.Thread:
-    """Background thread: LISTEN on ``hermes_config_document`` until ``stop_event``."""
+    """Background thread: LISTEN on ``nimbusware_config_document`` until ``stop_event``."""
 
     def _run() -> None:
         try:
@@ -38,7 +38,7 @@ def start_config_notify_listener(
         finally:
             logger.info("config NOTIFY listener stopped")
 
-    thread = threading.Thread(target=_run, name="hermes-config-notify", daemon=True)
+    thread = threading.Thread(target=_run, name="nimbusware-config-notify", daemon=True)
     thread.start()
     return thread
 

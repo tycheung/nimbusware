@@ -1,6 +1,6 @@
-# Hermes orchestrator
+# Hermes agent orchestration (Nimbusware integration)
 
-Event-sourced run pipeline for Nimbusware. Public entry: `RunOrchestrator` in `pipeline.py` (class defined in `_pipeline/compose.py`).
+Local event-sourced run pipeline for the Hermes online agentic system, hosted by Nimbusware. Public entry: `RunOrchestrator` in `pipeline.py` (class defined in `_pipeline/compose.py`).
 
 Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bootstrap.py` (`build_runtime_orchestrator`, `api_config_from_db_enabled`).
 

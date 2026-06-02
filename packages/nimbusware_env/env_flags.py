@@ -73,6 +73,25 @@ def hermes_preflight_json_probe_enabled() -> bool:
     return env_truthy_raw("HERMES_PREFLIGHT_JSON_PROBE")
 
 
+def nimbusware_api_host(default: str = "0.0.0.0") -> str:
+    """HTTP bind host for ``nimbusware-api`` (Nimbusware platform)."""
+    raw = env_str("NIMBUSWARE_API_HOST")
+    if raw:
+        return raw
+    legacy = env_str("HERMES_API_HOST")
+    return legacy or default
+
+
+def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
+    """Default workflow profile for console display (Nimbusware platform)."""
+    for name in ("NIMBUSWARE_WORKFLOW_PROFILE", "NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE"):
+        raw = env_str(name)
+        if raw:
+            return raw
+    legacy = env_str("HERMES_WORKFLOW_PROFILE")
+    return legacy or default
+
+
 def hermes_preflight_latency_sample_count(default: int = 1) -> int:
     raw = env_str("HERMES_PREFLIGHT_LATENCY_SAMPLES", str(default))
     try:

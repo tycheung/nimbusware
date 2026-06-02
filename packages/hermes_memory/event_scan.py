@@ -41,7 +41,7 @@ def fetch_event_rows_for_memory_index(
     with psycopg.connect(url) as conn:
         with conn.cursor() as cur:
             if tenant_id is not None:
-                cur.execute("SELECT set_config('hermes.tenant_id', %s, true)", (tenant_id,))
+                cur.execute("SELECT set_config('nimbusware.tenant_id', %s, true)", (tenant_id,))
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 """

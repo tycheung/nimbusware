@@ -1,6 +1,6 @@
 # hermes_memory
 
-Repo-scoped retrieval index for Hermes runs (local FAISS + metadata sidecars). Enterprise editions may share fleet-scoped indexes; Individual edition keeps indexes under the repo root.
+Repo-scoped retrieval index for Hermes agent runs (local FAISS + metadata sidecars). Enterprise editions may share fleet-scoped indexes; Individual edition keeps indexes under the Nimbusware repo root.
 
 ## Layout
 

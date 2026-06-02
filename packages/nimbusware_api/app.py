@@ -29,7 +29,7 @@ from nimbusware_maker.store import build_project_store
 logger = logging.getLogger(__name__)
 
 _OPENAPI_APP_DESCRIPTION = (
-    "Nimbusware Hermes agent run orchestration HTTP API. "
+    "Nimbusware control-plane HTTP API (orchestrates the Hermes online agentic system). "
     "Resource paths are under /v1. "
     "Operations are tagged **user** (Maker product loop) or **admin** (Admin Console / "
     "control plane). Individual edition: user routes are open locally; admin routes "
@@ -80,7 +80,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-    title="Nimbusware (Hermes agent)",
+    title="Nimbusware API",
     version="0.5.0",
     description=_OPENAPI_APP_DESCRIPTION,
     lifespan=lifespan,
@@ -138,7 +138,7 @@ app = FastAPI(
         {
             "name": "projects",
             "description": (
-                "Project workspaces bound to Hermes runs. "
+                "Project workspaces bound to agent runs. "
                 "``GET/POST`` are user routes; ``DELETE`` is admin-only."
             ),
         },
@@ -160,7 +160,7 @@ app = FastAPI(
 
 
 @app.exception_handler(HTTPException)
-async def hermes_http_exception_handler(
+async def nimbusware_http_exception_handler(
     _request: Request,
     exc: HTTPException,
 ) -> JSONResponse:

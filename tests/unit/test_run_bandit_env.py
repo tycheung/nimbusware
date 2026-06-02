@@ -22,7 +22,7 @@ def test_run_bandit_env_force_on_string_arm_contract(
 ) -> None:
     """Pin §14 #18 ``HERMES_RUN_BANDIT`` force-on truthy tuple membership.
 
-    The env-gate at [verifiers.py:36](d:\\Hermes\\packages\\hermes_orchestrator\\verifiers.py)
+    The env-gate at [verifiers.py:36](packages\\hermes_orchestrator\\verifiers.py)
     uses ``not in ("1", "true", "yes")`` so truthy variants reach the
     downstream ``shutil.which("bandit")`` branch. Patching ``shutil.which``
     to ``None`` collapses that branch to a deterministic

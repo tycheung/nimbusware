@@ -2,7 +2,7 @@
 
 ## Scope
 
-Enterprise operators may want SSO for the **Admin Console** and **Maker** Streamlit apps. The Hermes **API** continues to authenticate via:
+Enterprise operators may want SSO for the **Admin Console** and **Maker** Streamlit apps. The Nimbusware **API** continues to authenticate via:
 
 - Individual: open user routes on loopback; `X-Nimbusware-Admin-Token` for admin routes.
 - Enterprise: `X-Nimbusware-Api-Key` with `maker_user` / `maker_admin` scopes.

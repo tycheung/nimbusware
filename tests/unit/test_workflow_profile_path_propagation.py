@@ -157,7 +157,7 @@ def test_run_orchestrator_create_run_propagates_workflow_profile_path_exceptions
     """Pin ``RunOrchestrator.create_run`` propagation + early-fail-order contract.
 
     ``create_run`` calls ``assert_known_workflow`` at
-    [pipeline.py:154](d:\\Hermes\\packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:154](packages\\hermes_orchestrator\\pipeline.py)
     as its FIRST gate (BEFORE
     ``assert_bundle_catalog_maps_resolve`` / ``assert_persona_shelves_valid``
     / ``assert_agent_evaluator_persona_in_shelves`` /
@@ -222,7 +222,7 @@ def test_propagation_layer_uniformity_at_workflow_profile_path_boundary_contract
 
     **Sub-loop 2** (HTTP-layer translation completeness): the FastAPI
     error handler at
-    [runs.py:644-653](d:\\Hermes\\packages\\hermes_api\\routes\\runs.py)
+    [runs.py:644-653](packages\\nimbusware_api\\routes\\runs.py)
     maps ``FileNotFoundError`` -> 422 ``workflow_not_found`` AND
     ``ValueError`` -> 422 ``invalid_request``. The existing
     ``test_unknown_workflow_profile_422`` in tests/test_api.py
