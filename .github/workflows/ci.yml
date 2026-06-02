@@ -36,7 +36,7 @@ jobs:
       - name: Mypy
         run: poetry run mypy $(poetry run python scripts/mypy_ci_targets.py)
       - name: Bandit
-        run: poetry run bandit -r packages -lll -q
+        run: poetry run bandit -c pyproject.toml -r packages -lll -q
       - name: Pip audit
         run: poetry run pip-audit
       - name: Pytest unit

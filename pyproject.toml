@@ -365,3 +365,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["faiss", "faiss.*"]
 ignore_missing_imports = true
+
+[tool.bandit]
+exclude_dirs = [".venv", ".git", "tests", "scripts/_archive"]
+skips = ["B101"]

@@ -15,7 +15,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/mypy_ci_targets.py).Split(" ")
 poetry run mypy @mypyTargets
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-poetry run bandit -r packages -lll -q
+poetry run bandit -c pyproject.toml -r packages -lll -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $ErrorActionPreference = "Continue"
 poetry run pip-audit 2>&1 | Out-Null

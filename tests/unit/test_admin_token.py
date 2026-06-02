@@ -43,5 +43,7 @@ def test_require_non_default_admin_token_for_host(monkeypatch) -> None:
 
 def test_is_loopback_host() -> None:
     assert is_loopback_host("127.0.0.1")
+    assert is_loopback_host("127.2.3.4")
     assert is_loopback_host("localhost")
+    assert is_loopback_host("::1")
     assert not is_loopback_host("0.0.0.0")

@@ -36,8 +36,20 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 ## Secrets
 
-- Never ship the dev default admin token in production.
+- Never ship the dev default admin token in production (`nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD`).
+- Set `NIMBUSWARE_ADMIN_TOKEN` to a high-entropy secret before binding the API off loopback; `nimbusware-api` calls `require_non_default_admin_token_for_host()` and exits on unsafe defaults.
 - Enterprise edition: bootstrap IAM keys via Postgres (`nimbusware_iam`) or admin API; store keys in a secret manager.
+
+## Production checklist
+
+| Check | Command / reference |
+|-------|---------------------|
+| CI parity | `./scripts/ci_check.ps1` or `ci_check.sh` |
+| Schema applied | `scripts/apply_event_store.sh` |
+| Admin token rotated | `NIMBUSWARE_ADMIN_TOKEN` not the dev default |
+| API bind policy | Loopback-only unless token is production-grade |
+| SBOM on release | Tag `v*` triggers `.github/workflows/sbom.yml` |
+| Dependency audit | `poetry run pip-audit` (also in CI) |
 
 ## Worker (optional)
 

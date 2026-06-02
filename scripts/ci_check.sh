@@ -11,7 +11,7 @@ poetry run ruff check packages tests
 poetry run ruff format --check packages tests
 mapfile -t _mypy_targets < <(poetry run python scripts/mypy_ci_targets.py)
 poetry run mypy "${_mypy_targets[@]}"
-poetry run bandit -r packages -lll -q
+poetry run bandit -c pyproject.toml -r packages -lll -q
 poetry run pip-audit
 poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
   --cov=packages \
