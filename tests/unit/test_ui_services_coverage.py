@@ -117,6 +117,10 @@ def test_maker_platform_and_projects() -> None:
         get_json.return_value = {"status": "ready"}
         assert platform_svc.fetch_readiness()["status"] == "ready"
 
+    with patch("nimbusware_maker.services.projects.get_json") as get_json:
+        get_json.return_value = {"projects": []}
+        assert projects_svc.list_projects() == {"projects": []}
+
     with patch("nimbusware_maker.services.projects.post_json") as post_json:
         post_json.return_value = {"project_id": "p1"}
         out = projects_svc.create_project({"name": "App"})
@@ -159,3 +163,43 @@ def test_maker_runs_service() -> None:
         assert maker_runs_svc.fetch_pending("r2")["pending"] is True
         get_json.return_value = {"progress": 1}
         maker_runs_svc.fetch_maker_progress("r2", simple=False)
+
+
+def test_console_ollama_services() -> None:
+    from nimbusware_console.services import ollama as console_ollama
+
+    with patch("nimbusware_console.services.ollama.get_json") as get_json:
+        get_json.return_value = {"models": []}
+        console_ollama.list_models(query="llama")
+    assert "q=llama" in get_json.call_args.args[0]
+    with patch("nimbusware_console.services.ollama.patch_response") as patch_resp:
+        patch_resp.return_value = MagicMock(json=lambda: ["not", "a", "dict"])
+        out = console_ollama.save_user_policy(
+            allow_pull=False,
+            allow_delete=True,
+            allow_update_routing=False,
+        )
+        assert out["allow_pull"] is False
+    with patch("nimbusware_console.services.ollama.post_json") as post_json:
+        post_json.return_value = {"job_id": "j1"}
+        console_ollama.admin_pull_model("llama3")
+    with patch("nimbusware_console.services.ollama.delete_response") as delete:
+        console_ollama.admin_delete_model("old")
+    delete.assert_called_once()
+
+
+def test_maker_ollama_services() -> None:
+    from nimbusware_maker.services import ollama as maker_ollama
+
+    with patch("nimbusware_maker.services.ollama.get_json") as get_json:
+        get_json.return_value = {"models": []}
+        maker_ollama.list_models(query="q")
+    with patch("nimbusware_maker.services.ollama.post_json") as post_json:
+        post_json.return_value = {"job_id": "j2"}
+        maker_ollama.pull_model("llama3")
+    with patch("nimbusware_maker.services.ollama.delete_response") as delete:
+        maker_ollama.delete_model("old")
+    with patch("nimbusware_maker.services.ollama.patch_response") as patch_resp:
+        maker_ollama.set_primary_routing("llama3:latest")
+    patch_resp.assert_called_once()
+    delete.assert_called_once()

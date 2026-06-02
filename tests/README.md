@@ -26,6 +26,12 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - Integration job: `-m integration`.
 - Weekly slow: `-m slow`.
 
+## UI coverage policy (Lane V2)
+
+- Streamlit `pages/**` and Maker `ui/**` stay **out** of the coverage denominator until optional UI characterization tests land.
+- All HTTP for panels must go through `packages/*/services/` (guarded by `test_ui_no_direct_http.py`); service modules **are** in the denominator.
+- Production orchestrator modules must not use the `test_*.py` naming pattern reserved for pytest — see `test_writer_role_critique.py` (fo620).
+
 ## UI guards
 
 - `tests/unit/test_console_page_imports.py` — import smoke for Streamlit section entrypoints.
