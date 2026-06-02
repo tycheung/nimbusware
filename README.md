@@ -317,7 +317,7 @@ docker compose --profile fleet up -d redis
 
 Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
 
-Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) (API Deployment probes + resource limits in [`docs/deploy/k8s/`](docs/deploy/k8s/)). OIDC design: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags.
+Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) (API Deployment probes + resource limits in [`docs/deploy/k8s/`](docs/deploy/k8s/)). OIDC design: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
 
 ## Enterprise setup sketch
 
@@ -364,7 +364,7 @@ poetry run pytest tests/ -q -m "not integration and not slow and not benchmark"
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only
 ```
 
-Optional hooks: `pip install pre-commit && pre-commit install` (ruff, format, CI-parity `ruff check packages tests`, `compileall`, mypy on `packages/`).
+Optional hooks: `pip install pre-commit && pre-commit install` (ruff, format, CI-parity `ruff check packages tests`, `compileall`, mypy on services + tranche B + API pilot modules).
 
 Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). Gates script: `scripts/run_integration_like_ci.ps1` / `.sh`.
 

@@ -51,6 +51,11 @@ Reference manifests: [k8s/](k8s/README.md).
 
 Design note: [oidc.md](oidc.md) — API keys remain; IdP login is a console-layer addition.
 
+## Release SBOM
+
+Tag pushes (`v*`) run `.github/workflows/sbom.yml` and fail on SBOM generation errors.
+Use the uploaded `sbom.cdx.json` artifact as the release bill of materials.
+
 ## External SLI
 
 Fleet Ollama SLI: `scripts/fleet_ollama_sli_runbook.md` and `poetry run hermes-fleet-ollama-sli`.

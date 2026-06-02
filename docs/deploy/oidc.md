@@ -24,6 +24,8 @@ OIDC is a **console login** concern, not a replacement for API keys in v1.
 - [ ] Keep API calls on server-side `X-Nimbusware-Api-Key` / admin token — do not forward IdP access tokens to `/v1`.
 - [ ] Document session TTL and logout in runbook.
 
+**Definition of done (Lane X3):** checklist items are implemented in code/config and linked from deploy runbooks; this doc remains design guidance until those links are populated.
+
 ## Non-goals (V5)
 
 - Full OIDC middleware inside FastAPI (defer until product prioritizes).
