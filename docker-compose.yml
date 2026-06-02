@@ -27,5 +27,19 @@ services:
   #   HERMES_RUN_DISPATCH=redis HERMES_REDIS_URL=redis://127.0.0.1:6379/0
   #   poetry run python scripts/run_dispatch_worker.py
 
+  api:
+    profiles: ["api"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@postgres:5432/nimbusware
+      NIMBUSWARE_REPO_ROOT: /app
+      HERMES_SKIP_PREFLIGHT: "1"
+    depends_on:
+      - postgres
+
 volumes:
   nimbusware_pg:
