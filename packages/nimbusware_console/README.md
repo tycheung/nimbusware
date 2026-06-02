@@ -52,8 +52,9 @@ nimbusware_console/
 │   ├── services/            # testable /v1 clients (no Streamlit)
 │   ├── _state*.py           # run-list session / query-param state
 │   └── preflight_fleet.py
+├── explainer_core/          # shared payload/time/count helpers (Lane W1)
 ├── *\_display.py            # read-only caption/table/export helpers (top-level)
-├── *_workflow_explainer/    # workflow YAML explainers (packages + 1-line facades)
+├── *_workflow_explainer/    # workflow YAML explainers (packages + 1-line facades; allowlist in tests)
 ├── bundle_catalog/          # local catalog + FAISS status helpers
 ├── integrator_gate/         # gate summary, history, latest/delta metrics
 ├── integrator_preview/      # full-workflow merge diff + preview
@@ -63,6 +64,10 @@ nimbusware_console/
 ├── self_refinement/         # self-refinement timeline display
 └── …                        # other domain-specific display modules
 ```
+
+### Workflow explainers (Lane W1)
+
+Shared logic for `*_workflow_explainer` packages lives in `explainer_core/` (`payload.py`, `time.py`, `universal_critique_counts.py`). Per-domain packages re-export through their local `helpers.py` for backward compatibility. New `*_workflow_explainer` directories require updating `tests/unit/test_explainer_core_w1.py` allowlist (fo714).
 
 ### Pages
 

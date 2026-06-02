@@ -1620,7 +1620,7 @@ W0 (fo701–fo704) CI truth parity ──► W1 (fo710–fo714) Console consolid
 | Phase | Epics | Status |
 |-------|-------|--------|
 | **W0** CI truth parity | fo701–fo704 | **Done** |
-| **W1** Console consolidation | fo710–fo714 | **Pending** |
+| **W1** Console consolidation | fo710–fo714 | **Done** |
 | **W2** Typing tranche B | fo720–fo724 | **Pending** |
 | **W3** Test pyramid | fo730–fo734 | **Pending** |
 | **W4** Coverage honesty | fo740–fo742 | **Pending** |
