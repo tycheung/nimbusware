@@ -148,6 +148,7 @@ omit = [
   "*/tests/*",
   "*/__main__.py",
   "packages/**/*_cli.py",
+  # Postgres adapter: integration tests only (fo742).
   "packages/hermes_store/postgres.py",
   "packages/nimbusware_api/cli.py",
   "packages/nimbusware_config/cli.py",

@@ -23,6 +23,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `ruff format --check`, mypy (see `scripts/mypy_ci_targets.py`: services + tranche B + tranche C core libs + API pilot), bandit, `pip-audit`, package coverage floors (`scripts/coverage_package_floors.py`), then pytest.
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=75` (see `.github/workflows/ci.yml`).
 - Coverage omits Streamlit `pages/**`, Maker `ui/**`, desktop launcher modules, `*_cli.py` entrypoints, and `hermes_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
+- **Per-package floors** (`scripts/coverage_package_floors.py`, ≥85%): `agent_core`, `hermes_store`, `hermes_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.
 - **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api/test_api_runs.py`) and Maker approval API flow (`tests/api/test_maker_approval_api.py`) run on every PR.
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
 - **Weekly slow:** `-m slow`.
