@@ -13,7 +13,7 @@ def test_config_store_upsert_publishes_notify_event(monkeypatch: pytest.MonkeyPa
     store = InMemoryConfigStore()
     hub = get_config_notify_hub()
     before = hub.delivery_count
-    store.upsert_content(
+    store.upsert(
         NS_POLICY,
         KEY_MODEL_ROUTING,
         {"runtime": {"base_url": "http://127.0.0.1:11434"}},

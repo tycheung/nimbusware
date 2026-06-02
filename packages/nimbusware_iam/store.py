@@ -6,6 +6,7 @@ from uuid import UUID, uuid4
 
 import psycopg
 from psycopg.rows import dict_row
+from psycopg.types.json import Jsonb
 
 from nimbusware_iam.constants import DEFAULT_TENANT_ID, DEFAULT_TENANT_SLUG
 from nimbusware_iam.crypto import api_key_prefix, generate_api_key, hash_api_key
@@ -210,9 +211,17 @@ class PostgresIamStore:
                     INSERT INTO nimbusware_api_key (
                       key_id, tenant_id, key_prefix, key_hash, label,
                       role_taxonomy_keys, api_scopes
-                    ) VALUES (%s, %s, %s, %s, %s, %s::jsonb, %s::jsonb)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
                     """,
-                    (key_id, tenant_id, prefix, digest, label.strip(), roles, scopes),
+                    (
+                        key_id,
+                        tenant_id,
+                        prefix,
+                        digest,
+                        label.strip(),
+                        Jsonb(roles),
+                        Jsonb(scopes),
+                    ),
                 )
             conn.commit()
         return ApiKeyCreateResult(
