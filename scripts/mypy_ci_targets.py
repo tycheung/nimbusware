@@ -47,9 +47,18 @@ _UI_STRICT = (
     "packages/nimbusware_maker",
 )
 
+# Tranche E (fo734): orchestrator strict islands (pipeline mixins remain ignored).
+_TRANCHE_E = (
+    "packages/hermes_orchestrator/ollama_manage.py",
+    "packages/hermes_orchestrator/ollama_user_policy.py",
+    "packages/hermes_orchestrator/preflight.py",
+    "packages/hermes_orchestrator/merge.py",
+    "packages/hermes_orchestrator/workflow_profiles.py",
+)
+
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).
 MYPY_CI_TARGETS: tuple[str, ...] = (
-    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT
+    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT + _TRANCHE_E
 )
 
 if __name__ == "__main__":

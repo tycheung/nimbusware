@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from hermes_orchestrator.merge import load_yaml
 
@@ -30,5 +30,5 @@ def workflow_profile_dict(
 ) -> dict[str, Any]:
     """Load workflow profile from materializer (DB mode) or on-disk YAML."""
     if materializer is not None and getattr(materializer, "use_db", False):
-        return materializer.get_workflow_profile_dict(profile)
+        return cast(dict[str, Any], materializer.get_workflow_profile_dict(profile))
     return load_yaml(workflow_profile_path(repo_root, profile))
