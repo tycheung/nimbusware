@@ -460,6 +460,12 @@ class ResearchBriefEmittedPayload(BasePayload):
     sources: list[ResearchBriefSourcePayload] = Field(default_factory=list, max_length=20)
 
 
+class ResearchBriefReviewPayload(BasePayload):
+    artifact_id: str = Field(min_length=1, max_length=128)
+    brief_kind: Literal["domain", "code"]
+    notes: str = Field(default="", max_length=2000)
+
+
 class ResearchPatternIndexedPayload(BasePayload):
     pattern_id: str = Field(min_length=1, max_length=128)
     repo_url: str = Field(min_length=1, max_length=2048)

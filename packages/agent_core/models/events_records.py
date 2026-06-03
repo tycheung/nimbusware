@@ -26,6 +26,7 @@ from agent_core.models.events_payloads import (
     ModelSelectedPrimaryPayload,
     PersonaShelfUpdatedPayload,
     ResearchBriefEmittedPayload,
+    ResearchBriefReviewPayload,
     ResearchPatternIndexedPayload,
     RunCompletedPayload,
     RunCreatedPayload,
@@ -203,6 +204,16 @@ class ResearchBriefEmittedEvent(BaseHermesEvent):
     payload: ResearchBriefEmittedPayload
 
 
+class ResearchBriefApprovedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.RESEARCH_BRIEF_APPROVED]
+    payload: ResearchBriefReviewPayload
+
+
+class ResearchBriefRejectedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.RESEARCH_BRIEF_REJECTED]
+    payload: ResearchBriefReviewPayload
+
+
 class ResearchPatternIndexedEvent(BaseHermesEvent):
     event_type: Literal[EventType.RESEARCH_PATTERN_INDEXED]
     payload: ResearchPatternIndexedPayload
@@ -264,6 +275,8 @@ HermesEventUnion: TypeAlias = (
     | MemoryIndexedEvent
     | MemoryRetrievalEmittedEvent
     | ResearchBriefEmittedEvent
+    | ResearchBriefApprovedEvent
+    | ResearchBriefRejectedEvent
     | ResearchPatternIndexedEvent
     | DomainCriticProposedEvent
     | StitchLicenseCheckedEvent

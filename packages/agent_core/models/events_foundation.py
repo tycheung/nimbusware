@@ -83,6 +83,8 @@ class EventType(str, Enum):
     MEMORY_INDEXED = "memory.indexed"
     MEMORY_RETRIEVAL_EMITTED = "memory.retrieval.emitted"
     RESEARCH_BRIEF_EMITTED = "research.brief.emitted"
+    RESEARCH_BRIEF_APPROVED = "research.brief.approved"
+    RESEARCH_BRIEF_REJECTED = "research.brief.rejected"
     RESEARCH_PATTERN_INDEXED = "research.pattern.indexed"
     DOMAIN_CRITIC_PROPOSED = "domain.critic.proposed"
     STITCH_LICENSE_CHECKED = "stitch.license.checked"

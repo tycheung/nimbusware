@@ -3,6 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_maker.services import runs as runs_svc
+from nimbusware_maker.ui.research_briefs import render_research_briefs_panel
 
 
 def render_approval_panel() -> None:
@@ -18,6 +19,8 @@ def render_approval_panel() -> None:
 
     rid = run_id.strip()
     st.session_state["maker_active_run_id"] = rid
+    render_research_briefs_panel(rid)
+    st.divider()
 
     try:
         state = runs_svc.fetch_pending(rid)

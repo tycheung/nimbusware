@@ -1,51 +1,43 @@
-# Draft per hermes-orchestrator-local-plan.md §19.1
 version: 1
 platform:
   primary_os: windows
   supported_os:
-    - windows
-    - linux
-
+  - windows
+  - linux
 runtime:
   provider: ollama
   base_url: http://localhost:11434
   health_endpoint: /api/tags
   request_timeout_seconds: 60
-
 preflight:
   required: true
   min_context_tokens: 1
   max_p95_latency_ms: 8000
   require_structured_json_response: true
   checks:
-    - runtime_reachable
-    - model_available
-
+  - runtime_reachable
+  - model_available
 ollama_user_policy:
   allow_pull: false
   allow_delete: false
   allow_update_routing: false
-
 models:
   primary:
     id: llama3.1:8b
     temperature: 0.2
     top_p: 0.9
-    max_output_tokens: 4096
+    max_output_tokens: 8192
   fallbacks:
-    - id: qwen2.5-coder:14b
-      reason_code: primary_unavailable_or_failed_preflight
-
+  - id: qwen2.5-coder:14b
+    reason_code: primary_unavailable_or_failed_preflight
 selection_policy:
   mode: ordered_allowlist
   fail_fast_if_none_pass: true
   persist_selection_event: true
   persist_preflight_evidence: true
-
 finding_fix_strictness:
   minimum_severity_requiring_fixes: MEDIUM
   also_require_fixes_for_low_severity: false
-
 network_egress:
   scraper_role_allowlist: null
   domain_allowlist: null

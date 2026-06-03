@@ -90,6 +90,8 @@ CREATE TABLE IF NOT EXISTS event_store (
     'memory.indexed',
     'memory.retrieval.emitted',
     'research.brief.emitted',
+    'research.brief.approved',
+    'research.brief.rejected',
     'research.pattern.indexed',
     'domain.critic.proposed',
     'stitch.license.checked',
