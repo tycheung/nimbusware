@@ -247,6 +247,11 @@ module = [
   "hermes_orchestrator._pipeline.lifecycle_start",
   "hermes_orchestrator._pipeline.optional_stages_research",
   "hermes_orchestrator._pipeline.optional_stages_stitch",
+  "hermes_orchestrator._pipeline.optional_stages_integrator",
+  "hermes_orchestrator._pipeline.optional_stages_integration",
+  "hermes_orchestrator._pipeline.optional_stages_self_refinement",
+  "hermes_orchestrator._pipeline.optional_stages_agent_evaluator",
+  "hermes_orchestrator._pipeline.optional_stages",
 ]
 ignore_errors = false
 

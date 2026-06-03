@@ -69,6 +69,11 @@ _TRANCHE_E = (
     "packages/hermes_orchestrator/_pipeline/lifecycle_start.py",
     "packages/hermes_orchestrator/_pipeline/optional_stages_research.py",
     "packages/hermes_orchestrator/_pipeline/optional_stages_stitch.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_integrator.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_integration.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_self_refinement.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_agent_evaluator.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages.py",
 )
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EventType,
@@ -20,18 +20,19 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import IntegratorOptionalStagesHost
 from nimbusware_env.env_flags import env_tri_state
 
 
 class IntegratorOptionalStagesMixin:
-    def _emit_bundle_integrator_gate(self, run_id: UUID) -> None:
+    def _emit_bundle_integrator_gate(self: IntegratorOptionalStagesHost, run_id: UUID) -> None:
         tri = env_tri_state("HERMES_EMIT_INTEGRATOR_GATE")
         if tri == "off":
             return
         from hermes_extensions.phase2 import ModuleIntegrator
 
         rows = self._store.list_run_events(str(run_id))
-        wf = workflow_profile_from_run_created_rows(rows)
+        wf = workflow_profile_from_run_created_rows(rows) or ""
         mat = self._config_materializer
         yaml_on = load_integrator_gate_emit_enabled(
             self._repo_root,

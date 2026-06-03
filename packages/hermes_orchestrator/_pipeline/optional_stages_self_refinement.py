@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     _SELF_REFINEMENT_MAX_ITER_REASON,
     _SELF_REFINEMENT_POLICY_STAGE,
     UUID,
@@ -35,13 +35,19 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import SelfRefinementOptionalStagesHost
 
 _SelfRefinementOrchestrationBranch = Literal["rules", "rules_with_llm_critique"]
 _LlmGateDecision = Literal["proceed", "hold"]
+_SelfRefinementSignal = Literal["phase_d_kickoff", "phase_d_iteration"]
+_SelfRefinementEvalStatus = Literal["ok", "invalid", "gap"]
 
 
 class SelfRefinementOptionalStagesMixin:
-    def _maybe_continue_ungated_self_refinement_loop(self, run_id: UUID) -> None:
+    def _maybe_continue_ungated_self_refinement_loop(
+        self: SelfRefinementOptionalStagesHost,
+        run_id: UUID,
+    ) -> None:
         """Auto-continue ungated Phase D iterations when the last signal requests it (§14 #17)."""
         for _ in range(16):
             rows = self._store.list_run_events(str(run_id))
@@ -51,12 +57,15 @@ class SelfRefinementOptionalStagesMixin:
                 break
             self._maybe_emit_self_refinement_stage_marker(run_id)
 
-    def _maybe_emit_self_refinement_stage_marker(self, run_id: UUID) -> None:
+    def _maybe_emit_self_refinement_stage_marker(
+        self: SelfRefinementOptionalStagesHost,
+        run_id: UUID,
+    ) -> None:
         rows = self._store.list_run_events(str(run_id))
         if _self_refinement_max_iterations_exceeded(rows):
             return
 
-        wf_prof = workflow_profile_from_run_created_rows(rows)
+        wf_prof = workflow_profile_from_run_created_rows(rows) or ""
         wf_sr = parse_self_refinement_workflow_block(
             self._repo_root,
             wf_prof,
@@ -139,12 +148,16 @@ class SelfRefinementOptionalStagesMixin:
             shelf=load_persona_shelf(self._repo_root, materializer=self._config_materializer),
         )
         eval_status_raw = sr_eval.get("status")
-        eval_status = eval_status_raw if isinstance(eval_status_raw, str) else None
-        gate_decision = "proceed" if (eval_status == "ok" or ungated_loop) else "hold"
+        eval_status: _SelfRefinementEvalStatus | None = (
+            eval_status_raw if eval_status_raw in ("ok", "invalid", "gap") else None
+        )
+        gate_decision: _LlmGateDecision = (
+            "proceed" if (eval_status == "ok" or ungated_loop) else "hold"
+        )
         loops_remaining = max(0, int(max_iterations) - int(attempt))
         iteration_progress_ratio = min(1.0, float(attempt) / float(max_iterations))
         should_continue = loops_remaining > 0 and (gate_decision == "hold" or ungated_loop)
-        signal = "phase_d_kickoff" if attempt == 1 else "phase_d_iteration"
+        signal: _SelfRefinementSignal = "phase_d_kickoff" if attempt == 1 else "phase_d_iteration"
         orchestration_branch: _SelfRefinementOrchestrationBranch = "rules"
         llm_critique_attempted = False
         llm_critique_verdict: Verdict | None = None
@@ -274,7 +287,7 @@ class SelfRefinementOptionalStagesMixin:
                     attempt=attempt,
                     max_iterations=max_iterations,
                     signal=signal,
-                    gate_decision=gate_decision,  # explicit per-iteration phase D gate outcome
+                    gate_decision=gate_decision,
                     evaluation_status=eval_status,
                     loops_remaining=loops_remaining,
                     iteration_progress_ratio=iteration_progress_ratio,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     AgentEvaluator,
     Any,
@@ -23,17 +23,26 @@ from hermes_orchestrator._pipeline._helpers import (
     try_auto_promote_probation_persona,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import AgentEvaluatorOptionalStagesHost
 from nimbusware_env.env_flags import env_tri_state
 
 _AgentEvaluatorBranch = Literal["rules", "rules_with_llm_policy"]
 
 
 class AgentEvaluatorOptionalStagesMixin:
-    def _maybe_emit_agent_evaluator_stage(self, run_id: UUID) -> None:
+    def _maybe_emit_agent_evaluator_stage(
+        self: AgentEvaluatorOptionalStagesHost,
+        run_id: UUID,
+    ) -> None:
         tri = env_tri_state("HERMES_AGENT_EVALUATOR")
         if tri == "off":
             return
-        wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
+        wf = (
+            workflow_profile_from_run_created_rows(
+                self._store.list_run_events(str(run_id)),
+            )
+            or ""
+        )
         block = parse_agent_evaluator_workflow_block(
             self._repo_root,
             wf,
@@ -121,8 +130,8 @@ class AgentEvaluatorOptionalStagesMixin:
                 llm_result = {
                     "status": str(rules_eval.get("status", "ok")),
                     "gaps": (
-                        list(rules_eval.get("gaps"))
-                        if isinstance(rules_eval.get("gaps"), list)
+                        list(gaps_raw)
+                        if isinstance((gaps_raw := rules_eval.get("gaps")), list)
                         else []
                     ),
                     "summary": "stub agent-evaluator policy review",
