@@ -176,6 +176,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
+            "HERMES_SLICE_E2E_COMMAND",
+            user,
+            e,
+            "",
+            "Slice E2E command",
+            "Shell command for slice.e2e when workflow enables e2e.",
+            "User — maker runtime",
+        ),
+        SettingDef(
             "HERMES_SANDBOX_BACKEND",
             user,
             e,

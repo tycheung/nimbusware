@@ -52,6 +52,8 @@ class MicroSliceMixin:
         verify_ok: bool,
         critique_verdicts: list[str] | None = None,
         tests_passed: bool | None = None,
+        e2e_passed: bool | None = None,
+        e2e_detail: str = "",
         diff_unified: str = "",
         test_output: str = "",
     ):
@@ -73,6 +75,8 @@ class MicroSliceMixin:
             verify_ok=verify_ok,
             critique_verdicts=critique_verdicts,
             tests_passed=tests_passed,
+            e2e_passed=e2e_passed,
+            e2e_detail=e2e_detail,
         )
         run_meta = self._run_created_metadata(run_id)
         memory_excerpt = ""

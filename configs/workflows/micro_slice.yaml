@@ -5,6 +5,8 @@ slice:
   max_loc: 120
   allowed_globs:
     - "**/*.py"
+  e2e:
+    enabled: false
 
 stage_graph:
   - stage_name: plan
@@ -18,8 +20,10 @@ stage_graph:
     depends_on: [slice.verify]
   - stage_name: slice.test
     depends_on: [slice.critique]
-  - stage_name: slice.gate
+  - stage_name: slice.e2e
     depends_on: [slice.test]
+  - stage_name: slice.gate
+    depends_on: [slice.e2e]
 
 universal_critique:
   default_enabled: true

@@ -25,6 +25,7 @@ _SLICE_STAGE_NAMES = frozenset(
         "slice.verify",
         "slice.critique",
         "slice.test",
+        "slice.e2e",
         "slice.gate",
     },
 )

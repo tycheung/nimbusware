@@ -319,6 +319,7 @@ class CreateRunMixin:
                     "enabled": ms_block.enabled,
                     "max_files": ms_block.max_files,
                     "max_loc": ms_block.max_loc,
+                    "e2e_enabled": ms_block.e2e_enabled,
                 },
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {

@@ -1,0 +1,49 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from hermes_orchestrator.micro_slice import parse_slice_plan
+from hermes_orchestrator.slice_e2e import run_slice_e2e_verify
+from hermes_orchestrator.slice_gate import run_slice_gate_chain
+from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+from nimbusware_env import find_repo_root
+
+
+def test_slice_gate_skips_e2e_when_disabled() -> None:
+    plan = parse_slice_plan({"slice_id": "s1", "target_paths": ["a.py"]})
+    gate = run_slice_gate_chain(
+        plan,
+        verify_ok=True,
+        tests_passed=True,
+    )
+    e2e = next(s for s in gate.steps if s.name == "slice.e2e")
+    assert e2e.verdict == "SKIP"
+
+
+def test_slice_gate_fails_on_e2e_fail() -> None:
+    plan = parse_slice_plan({"slice_id": "s1", "target_paths": ["a.py"]})
+    gate = run_slice_gate_chain(
+        plan,
+        verify_ok=True,
+        tests_passed=True,
+        e2e_passed=False,
+        e2e_detail="playwright failed",
+    )
+    assert not gate.passed
+    e2e = next(s for s in gate.steps if s.name == "slice.e2e")
+    assert e2e.verdict == "FAIL"
+
+
+def test_run_slice_e2e_custom_command(tmp_path: Path) -> None:
+    result = run_slice_e2e_verify(
+        tmp_path,
+        command="python -c \"print('ok')\"",
+        timeout_seconds=30.0,
+    )
+    assert result.verdict == "PASS"
+
+
+def test_micro_slice_workflow_parses_e2e_disabled() -> None:
+    repo = find_repo_root()
+    block = parse_micro_slice_workflow_block(repo, "micro_slice")
+    assert block.e2e_enabled is False

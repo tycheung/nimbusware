@@ -41,6 +41,8 @@ def run_slice_gate_chain(
     critique_verdicts: list[str] | None = None,
     tests_passed: bool | None = None,
     test_detail: str = "",
+    e2e_passed: bool | None = None,
+    e2e_detail: str = "",
     unanimous_required: bool = True,
 ) -> SliceGateChainResult:
     """Deterministic per-slice gate: all steps must pass before next slice."""
@@ -67,6 +69,17 @@ def run_slice_gate_chain(
         t_verdict = "PASS" if tests_passed else "FAIL"
         t_detail = test_detail
     steps.append(SliceGateStep("slice.test", t_verdict, t_detail))
+
+    if e2e_passed is None and not e2e_detail:
+        e_verdict = "SKIP"
+        e_detail = "e2e disabled"
+    elif e2e_passed is None:
+        e_verdict = "SKIP"
+        e_detail = e2e_detail or "e2e skipped"
+    else:
+        e_verdict = "PASS" if e2e_passed else "FAIL"
+        e_detail = e2e_detail
+    steps.append(SliceGateStep("slice.e2e", e_verdict, e_detail))
 
     failing = [s for s in steps if s.verdict == "FAIL"]
     if unanimous_required and failing:

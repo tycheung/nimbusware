@@ -15,6 +15,8 @@ class MicroSliceWorkflowBlock:
     max_files: int = 3
     max_loc: int = 120
     allowed_globs: tuple[str, ...] = ("**/*.py",)
+    e2e_enabled: bool = False
+    e2e_command: str | None = None
 
 
 def parse_micro_slice_workflow_block(
@@ -35,9 +37,19 @@ def parse_micro_slice_workflow_block(
         globs = tuple(str(g) for g in globs_raw if str(g).strip())
     else:
         globs = ("**/*.py",)
+    e2e_raw = raw.get("e2e")
+    e2e_enabled = False
+    e2e_command: str | None = None
+    if isinstance(e2e_raw, dict):
+        e2e_enabled = bool(e2e_raw.get("enabled", False))
+        cmd = e2e_raw.get("command")
+        if isinstance(cmd, str) and cmd.strip():
+            e2e_command = cmd.strip()
     return MicroSliceWorkflowBlock(
         enabled=enabled,
         max_files=max(1, max_files),
         max_loc=max(1, max_loc),
         allowed_globs=globs or ("**/*.py",),
+        e2e_enabled=e2e_enabled,
+        e2e_command=e2e_command,
     )

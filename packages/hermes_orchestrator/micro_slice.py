@@ -79,7 +79,8 @@ def micro_slice_stage_graph_nodes() -> tuple[dict[str, Any], ...]:
         {"stage_name": "slice.verify", "depends_on": ("slice.implement",)},
         {"stage_name": "slice.critique", "depends_on": ("slice.verify",)},
         {"stage_name": "slice.test", "depends_on": ("slice.critique",)},
-        {"stage_name": "slice.gate", "depends_on": ("slice.test",)},
+        {"stage_name": "slice.e2e", "depends_on": ("slice.test",)},
+        {"stage_name": "slice.gate", "depends_on": ("slice.e2e",)},
     )
 
 
