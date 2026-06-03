@@ -336,6 +336,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
+            "HERMES_THEATER_LLM_SUMMARY",
+            system,
+            b,
+            "",
+            "Theater LLM summary",
+            "Enable optional one-line LLM paraphrase for theater messages (off by default).",
+            "System — theater",
+        ),
+        SettingDef(
             "HERMES_EMIT_INTEGRATOR_GATE",
             system,
             b,
