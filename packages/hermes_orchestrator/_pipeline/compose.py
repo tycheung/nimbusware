@@ -69,21 +69,9 @@ def _rebind_descriptor(name: str, attr: object, cls: type[object]) -> None:
         setattr(cls, name, classmethod(_bind_function(fn)))
         return
     if isinstance(attr, property):
-        fget = (
-            _bind_function(attr.fget)
-            if isinstance(attr.fget, types.FunctionType)
-            else attr.fget
-        )
-        fset = (
-            _bind_function(attr.fset)
-            if isinstance(attr.fset, types.FunctionType)
-            else attr.fset
-        )
-        fdel = (
-            _bind_function(attr.fdel)
-            if isinstance(attr.fdel, types.FunctionType)
-            else attr.fdel
-        )
+        fget = _bind_function(attr.fget) if isinstance(attr.fget, types.FunctionType) else attr.fget
+        fset = _bind_function(attr.fset) if isinstance(attr.fset, types.FunctionType) else attr.fset
+        fdel = _bind_function(attr.fdel) if isinstance(attr.fdel, types.FunctionType) else attr.fdel
         setattr(cls, name, property(fget, fset, fdel))
         return
     if isinstance(attr, types.FunctionType):

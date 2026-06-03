@@ -95,11 +95,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles`, `_pipeline/create_run`, `_pipeline/micro_slice`, `_pipeline/lifecycle_verify`, `_pipeline/writers`, `_pipeline/lifecycle_plan`, `_pipeline/optional_critique`, `_pipeline/escalation`, `_pipeline/critique_gates_*`, `_pipeline/lifecycle`, `_pipeline/lifecycle_start`, `_pipeline/optional_stages_research`, `_pipeline/optional_stages_stitch` |
+| E | Orchestrator islands: orchestrator root modules plus `_pipeline/create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 
-`hermes_orchestrator._pipeline.*` mixins stay `ignore_errors = true` except the strict islands above (`protocol_hosts.py` documents `CritiqueGateHost`, `LifecycleStartHost`, `ResearchOptionalStagesHost`, `MicroSliceHost`, `LifecycleVerifyHost`, `WritersHost`). API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+`hermes_orchestrator._pipeline.*` mixins stay `ignore_errors = true` except the strict islands above (`protocol_hosts.py` documents host protocols for each strict-checked pipeline mixin). API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
