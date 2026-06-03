@@ -11,6 +11,8 @@ from agent_core.models import (
     EventType,
     GateDecisionEmittedEvent,
     GateDecisionEmittedPayload,
+    MemoryRetrievalEmittedEvent,
+    MemoryRetrievalEmittedPayload,
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
     RequiredFixArtifact,
@@ -19,6 +21,8 @@ from agent_core.models import (
     RunCreatedEvent,
     RunCreatedPayload,
     Severity,
+    StageFailedEvent,
+    StageFailedPayload,
     StitchAppliedEvent,
     StitchAppliedPayload,
     StitchFailedEvent,
@@ -242,3 +246,55 @@ def test_theater_metadata_deferral_line() -> None:
     row["store_seq"] = 1
     msgs = build_run_theater_messages([row])
     assert any("Deferring to security-critic" in m["headline"] for m in msgs)
+
+
+def test_theater_slice_gate_and_memory_lines() -> None:
+    run_id = uuid4()
+    rows = [
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+            metadata={"theater": {"enabled": True}},
+        ).model_dump(mode="json"),
+        MemoryRetrievalEmittedEvent(
+            event_type=EventType.MEMORY_RETRIEVAL_EMITTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=MemoryRetrievalEmittedPayload(
+                stage_name="plan",
+                query_digest="abcd1234",
+                hit_chunk_ids=["c1", "c2"],
+                excerpt_chars=100,
+                retrieval_k=2,
+                repo_scope_hash="repo12345678",
+            ),
+        ).model_dump(mode="json"),
+        StageFailedEvent(
+            event_type=EventType.STAGE_FAILED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StageFailedPayload(
+                stage_name="slice.gate",
+                reason_code="tests_failed",
+                message="tests failed",
+            ),
+            metadata={
+                "slice_id": "slice-1",
+                "slice_gate_verdict": "FAIL",
+                "slice_context_packet": {"test_output": "FAILED test_foo"},
+            },
+        ).model_dump(mode="json"),
+    ]
+    msgs = build_run_theater_messages(_with_store_seq(rows))
+    headlines = [m["headline"] for m in msgs]
+    assert any("Recalled 2 memory" in h for h in headlines)
+    assert any("Slice gate blocked" in h for h in headlines)

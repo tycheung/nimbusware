@@ -18,6 +18,17 @@ MessageKind = Literal[
 ]
 Severity = Literal["info", "warn", "block", "pass"]
 
+_SLICE_STAGE_NAMES = frozenset(
+    {
+        "slice.plan",
+        "slice.implement",
+        "slice.verify",
+        "slice.critique",
+        "slice.test",
+        "slice.gate",
+    },
+)
+
 
 def _payload(row: dict[str, Any]) -> dict[str, Any]:
     raw = row.get("payload")
@@ -105,6 +116,16 @@ def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> s
 
 
 def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    from nimbusware_projections.builders.theater_paraphrase import (
+        apply_theater_paraphrase,
+        theater_enabled,
+        theater_llm_summary_enabled,
+        theater_max_message_chars,
+    )
+
+    if not theater_enabled(rows):
+        return []
+    max_body = theater_max_message_chars(rows)
     messages: list[dict[str, Any]] = []
     for row in rows:
         et = str(row.get("event_type") or "")
@@ -202,9 +223,37 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "body_md": None,
                 },
             )
+        elif et == EventType.MEMORY_RETRIEVAL_EMITTED.value:
+            stage = str(pl.get("stage_name") or "")
+            hits = pl.get("hit_chunk_ids")
+            hit_count = len(hits) if isinstance(hits, list) else 0
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "system",
+                    "severity": "info",
+                    "headline": f"Recalled {hit_count} memory hit(s) for {stage}",
+                    "body_md": None,
+                },
+            )
         elif et == EventType.STAGE_PASSED.value:
             sn = _stage_name(pl)
-            if sn in ("plan", "slice.plan"):
+            row_meta = _metadata(row)
+            if sn == "slice.gate":
+                slice_id = str(row_meta.get("slice_id") or "")
+                verdict = str(row_meta.get("slice_gate_verdict") or "PASS")
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Gate",
+                        "message_kind": "slice",
+                        "severity": "pass" if verdict.upper() == "PASS" else "block",
+                        "headline": f"Slice gate {verdict} ({slice_id or 'slice'})",
+                        "body_md": None,
+                    },
+                )
+            elif sn in ("plan", "slice.plan"):
                 messages.append(
                     {
                         **base,
@@ -215,29 +264,64 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "body_md": None,
                     },
                 )
-            elif sn.startswith("slice."):
+            elif sn in _SLICE_STAGE_NAMES:
+                slice_id = str(row_meta.get("slice_id") or "")
                 messages.append(
                     {
                         **base,
                         "actor_display": "Slice",
                         "message_kind": "slice",
                         "severity": "pass",
-                        "headline": f"Slice stage passed: {sn}",
-                        "body_md": None,
+                        "headline": f"Slice stage passed: {sn}"
+                        + (f" ({slice_id})" if slice_id else ""),
+                        "body_md": str(row_meta.get("rationale") or "")[:400] or None,
                     },
                 )
         elif et == EventType.STAGE_FAILED.value:
             sn = _stage_name(pl)
-            messages.append(
-                {
-                    **base,
-                    "actor_display": "Verifier",
-                    "message_kind": "verifier",
-                    "severity": "block",
-                    "headline": f"Stage failed: {sn}",
-                    "body_md": str(pl.get("message") or "")[:500] or None,
-                },
-            )
+            row_meta = _metadata(row)
+            if sn == "slice.gate":
+                slice_id = str(row_meta.get("slice_id") or "")
+                verdict = str(row_meta.get("slice_gate_verdict") or "FAIL")
+                packet = row_meta.get("slice_context_packet")
+                test_out = ""
+                if isinstance(packet, dict):
+                    test_out = str(packet.get("test_output") or "")[:400]
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Gate",
+                        "message_kind": "slice",
+                        "severity": "block",
+                        "headline": f"Slice gate blocked ({slice_id or 'slice'})",
+                        "body_md": test_out or None,
+                    },
+                )
+            elif sn in _SLICE_STAGE_NAMES:
+                slice_id = str(row_meta.get("slice_id") or "")
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Slice",
+                        "message_kind": "slice",
+                        "severity": "block",
+                        "headline": f"Slice stage failed: {sn}"
+                        + (f" ({slice_id})" if slice_id else ""),
+                        "body_md": str(pl.get("message") or row_meta.get("message") or "")[:500]
+                        or None,
+                    },
+                )
+            else:
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Verifier",
+                        "message_kind": "verifier",
+                        "severity": "block",
+                        "headline": f"Stage failed: {sn}",
+                        "body_md": str(pl.get("message") or "")[:500] or None,
+                    },
+                )
         elif et == EventType.CRITIC_VERDICT_EMITTED.value:
             verdict = str(pl.get("verdict") or "UNKNOWN")
             critic = str(pl.get("critic_role") or pl.get("critic_template") or "Critic")
@@ -377,11 +461,10 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
             )
     messages.sort(key=lambda m: int(m.get("store_seq") or 0))
     _append_why_another_round(rows, messages)
-    from nimbusware_projections.builders.theater_paraphrase import (
-        apply_theater_paraphrase,
-        theater_llm_summary_enabled,
-    )
-
+    for msg in messages:
+        body = msg.get("body_md")
+        if isinstance(body, str) and len(body) > max_body:
+            msg["body_md"] = body[:max_body]
     return apply_theater_paraphrase(
         messages,
         enabled=theater_llm_summary_enabled(rows),
