@@ -204,6 +204,24 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
     emit_maker_stage(orch, run_id, STAGE_SLICE_PENDING, pending_resolved)
 
     gate = complete_slice_after_implement(orch, run_id, ws, plan, duration_ms=duration_ms)
+    commit_result: dict[str, Any] = {"status": "skipped", "reason": "gate_not_passed"}
+    if gate.passed:
+        from hermes_orchestrator.slice_git_commit import maybe_commit_slice
+
+        run_meta = orch._run_created_metadata(run_id)
+        commit_result = maybe_commit_slice(
+            ws,
+            plan,
+            run_id=str(run_id),
+            run_metadata=run_meta,
+        )
+        if commit_result.get("status") not in ("skipped",):
+            _emit_slice_stage(
+                orch,
+                run_id,
+                "slice.git_commit",
+                metadata={"slice_id": plan.slice_id, **commit_result},
+            )
     emit_maker_stage(
         orch,
         run_id,
@@ -212,6 +230,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
             "slice_id": slice_id,
             "workspace_snapshot": snapshot,
             "gate_passed": gate.passed,
+            "git_commit": commit_result,
         },
     )
     return {
@@ -219,4 +238,5 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
         "slice_id": slice_id,
         "gate_passed": gate.passed,
         "snapshot_id": snapshot.get("snapshot_id"),
+        "git_commit": commit_result,
     }

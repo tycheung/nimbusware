@@ -57,9 +57,22 @@ def maybe_commit_slice(
         )
         if proc.returncode != 0 and "nothing to commit" in (proc.stderr or proc.stdout or ""):
             return {"status": "skipped", "reason": "nothing_to_commit"}
+        sha = ""
+        if proc.returncode == 0:
+            rev = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=workspace,
+                capture_output=True,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+            if rev.returncode == 0:
+                sha = (rev.stdout or "").strip()
         return {
             "status": "committed" if proc.returncode == 0 else "failed",
             "branch": branch,
+            "sha": sha,
             "exit_code": proc.returncode,
         }
     except (OSError, subprocess.SubprocessError) as exc:

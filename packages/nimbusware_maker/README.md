@@ -29,4 +29,8 @@ Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/
 
 Maker intentionally depends on the orchestrator for slice implement/verify/critique — that boundary is centralized in `slice_engine.py` and enforced by `test_maker_slice_workflow_uses_slice_engine_boundary`.
 
+## Git outputs (per-slice commit)
+
+When `HERMES_SLICE_AUTO_COMMIT` is enabled (Settings → git outputs), applying a slice that passes the gate runs `maybe_commit_slice` on the run workspace. The Review tab shows branch, short SHA, or skip reason; events include `slice.git_commit` stage metadata when a commit is attempted.
+
 HTTP to the API uses `NIMBUSWARE_API_BASE` and optional `NIMBUSWARE_API_KEY` / admin token headers from `nimbusware_client`.

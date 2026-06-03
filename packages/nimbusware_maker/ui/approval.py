@@ -80,6 +80,16 @@ def render_approval_panel() -> None:
                 result = runs_svc.apply_slice(rid, {"slice_id": slice_id})
                 gate = "passed" if result.get("gate_passed") else "did not pass"
                 st.success(f"Applied — gate {gate}.")
+                commit = result.get("git_commit") if isinstance(result.get("git_commit"), dict) else {}
+                status = str(commit.get("status") or "")
+                if status == "committed":
+                    sha = str(commit.get("sha") or "")[:12]
+                    branch = commit.get("branch") or ""
+                    st.caption(f"Git commit: branch `{branch}`" + (f" @ `{sha}`" if sha else ""))
+                elif status == "skipped":
+                    st.caption(f"Git commit skipped: {commit.get('reason', 'disabled')}")
+                elif status in ("failed", "error"):
+                    st.caption(f"Git commit {status}: {commit.get('reason', '')}")
                 st.rerun()
             except Exception as exc:  # noqa: BLE001
                 st.error(f"Apply failed: {exc}")

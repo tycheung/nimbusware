@@ -3,6 +3,11 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
+from nimbusware_console.critic_reliability_display import (
+    critic_reliability_caption,
+    critic_reliability_summary_from_events,
+    critic_reliability_table_rows,
+)
 from nimbusware_console.pages.run_detail._imports_display_a import (
     critic_matrix_export_filename_slug,
     critic_matrix_export_json,
@@ -17,6 +22,15 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
 
 
 def render_run_detail_critic_matrix(run_id: str, events: list) -> None:
+    _rel_summary = critic_reliability_summary_from_events(events)
+    with st.expander("Critic reliability", expanded=False):
+        st.caption(critic_reliability_caption(_rel_summary))
+        _rel_rows = critic_reliability_table_rows(_rel_summary)
+        if _rel_rows:
+            st.dataframe(_rel_rows, use_container_width=True, hide_index=True)
+        else:
+            st.dataframe([{"note": "no reliability metrics"}])
+
     _crit_rows = critic_matrix_rows_from_events(events)
     st.subheader("Critic matrix (extracted)")
     if not _crit_rows:
