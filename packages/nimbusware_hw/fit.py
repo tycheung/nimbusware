@@ -93,7 +93,10 @@ def rank_models(
     gpu_group_index: int = 0,
     limit: int = 50,
 ) -> list[dict[str, Any]]:
-    del use_case, gpu_group_index
+    del use_case
+    group_gpus: list[str] = []
+    if profile.gpu_groups and 0 <= gpu_group_index < len(profile.gpu_groups):
+        group_gpus = list(profile.gpu_groups[gpu_group_index])
     catalog = load_model_catalog(repo_root)
     allowlist = _load_routing_models(repo_root)
     tags = installed_tags or []
@@ -113,7 +116,12 @@ def rank_models(
             "ollama_tag": model_id,
             "fit_level": fit_level,
             "score": score,
-            "run_mode": "gpu" if profile.tier != "weak" and profile.gpus else "cpu_only",
+            "run_mode": (
+                "gpu"
+                if profile.tier != "weak" and (group_gpus or profile.gpus)
+                else "cpu_only"
+            ),
+            "gpu_group_index": gpu_group_index,
             "required_gb": round(params_b * 0.6, 1),
             "params_b": params_b,
         }
