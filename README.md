@@ -209,8 +209,9 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 **Progress**
 
-- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`)
+- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`)
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
+- Optional lightweight **Maker web** UI at `GET /v1/maker/app/` (same API; query `?run_id=` supported)
 
 **Review**
 
@@ -232,7 +233,7 @@ Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher
 **Runs & timeline**
 
 - Filtered run list (workflow profile, dates, escalation, status), pagination, CSV/JSON export
-- Run detail: summary, append-only timeline, findings, live critic matrix
+- Run detail: summary, append-only timeline, findings, live critic matrix, **run theater** panel (evidence expand, jump to timeline `store_seq`)
 - Lifecycle actions: retry, escalate; drill-downs for integrator gate, personas, agent evaluator, self-refinement, security scan, universal critique, scraper fetch, preflight
 
 **Configuration & search**
@@ -267,7 +268,8 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 |------|-----------|--------|
 | **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | User |
 | **Maker progress** | `GET /runs/{id}/maker-progress`, SSE `.../maker-progress/stream` | User |
-| **Run theater** | `GET /runs/{id}/theater`, SSE `.../theater/stream` | User |
+| **Run theater** | `GET /runs/{id}/theater`, SSE `.../theater/stream`, `GET .../theater/export` | User |
+| **Maker web** | `GET /maker/app/` (static SPA) | User |
 | **Research** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject` | User |
 | **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
@@ -316,6 +318,7 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 | `poetry run nimbusware-admin` | Desktop API + Admin Console window |
 | `poetry run nimbusware-maker` | Streamlit Maker only (expects API at `NIMBUSWARE_API_BASE`); add `--quick` for solo dev |
 | `poetry run nimbusware-git-pr` | Open GitHub PR for a Hermes run branch (`gh` CLI required) |
+| `poetry run nimbusware-mcp` | Stdio MCP server for IDE run status, theater, slice diff, plan approve ([`docs/ide-bridge.md`](docs/ide-bridge.md)) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |
 
 Scripts: [`scripts/build_bundle_faiss_index.py`](scripts/build_bundle_faiss_index.py), [`scripts/build_memory_faiss_index.py`](scripts/build_memory_faiss_index.py), [`scripts/run_dispatch_worker.py`](scripts/run_dispatch_worker.py), [`scripts/prune_scraper_artifacts.py`](scripts/prune_scraper_artifacts.py), [`scripts/e2e_smoke.py`](scripts/e2e_smoke.py).

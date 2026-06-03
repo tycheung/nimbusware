@@ -1,5 +1,3 @@
-"""``NIMBUSWARE_ROLES_FROM_DB`` compound AND-gate string-arm contract."""
-
 from __future__ import annotations
 
 import sys
