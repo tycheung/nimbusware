@@ -61,7 +61,7 @@ Reference manifests: [k8s/](k8s/README.md).
 
 ## OIDC (Enterprise console)
 
-Design note: [oidc.md](oidc.md) — API keys remain; IdP login is a console-layer addition.
+Implemented console gate: [oidc.md](oidc.md) — API keys remain; IdP login is a console-layer addition (`NIMBUSWARE_OIDC_*`).
 
 ## Release SBOM
 

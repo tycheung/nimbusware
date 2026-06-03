@@ -60,7 +60,7 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
-- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `HERMES_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
 - **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
@@ -337,7 +337,7 @@ docker compose --profile fleet up -d redis
 
 Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
 
-Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) (API Deployment probes + resource limits in [`docs/deploy/k8s/`](docs/deploy/k8s/)). OIDC design: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
+Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) — API, Redis, schema Job, dispatch worker, optional Admin Console ([`docs/deploy/k8s/`](docs/deploy/k8s/)). Enterprise OIDC console gate: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
 
 ## Enterprise setup sketch
 
@@ -354,6 +354,8 @@ poetry run nimbusware-api
 ```
 
 Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
+
+Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export`.
 
 ## Linux desktop (GTK / pywebview)
 
@@ -402,11 +404,14 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `HERMES_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
 | `HERMES_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
 | `HERMES_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` or `stub` (tags output; container backends later) |
+| `HERMES_SLICE_BUDGET_PRESET` | user | Micro-slice budget: `tiny`, `standard`, or `careful` |
 | `HERMES_SLICE_E2E_COMMAND` | user | Custom command when workflow `slice.e2e.enabled` is true |
+| `NIMBUSWARE_OIDC_ENABLED` | install | Enterprise Admin Console OIDC SSO gate |
+| `NIMBUSWARE_AUDIT_RETENTION_DAYS` | install | Enterprise audit export retention window |
 | `HERMES_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
 | `HERMES_RUN_DISPATCH` / `HERMES_REDIS_URL` | install | Fleet worker dispatch |
 
-Full catalog: `poetry run python scripts/audit_operator_env.py` (147+ keys).
+Full catalog: `poetry run python scripts/audit_operator_env.py` (155+ keys).
 
 ## License
 

@@ -41,7 +41,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 |---------|------|
 | `agent_core` | Event models, validation |
 | `hermes_store` | Event store (Postgres / memory) |
-| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`), preflight |
+| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), fleet analytics, blast-radius preview, audit export |
 | `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
@@ -52,10 +52,10 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
-| `nimbusware_iam` | Enterprise tenants + API keys (`maker_user` / `maker_admin`) |
+| `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
-| `nimbusware_console` | Admin Console (config, fleet, deep timeline; `services/` HTTP helpers) |
-| `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
+| `nimbusware_console` | Admin Console (config, fleet, OIDC gate, deep timeline; `services/` HTTP helpers) |
+| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
 
 ## Editions
