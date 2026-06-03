@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     emit_stub_plan_stage,
     execute_plan_stage_llm,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import LifecyclePlanHost
 from nimbusware_env.env_flags import hermes_use_llm_enabled
 
 
 class LifecyclePlanMixin:
-    def _execute_plan_stage_stub(self, run_id: UUID) -> None:
+    def _execute_plan_stage_stub(self: LifecyclePlanHost, run_id: UUID) -> None:
         emit_stub_plan_stage(
             self._store,
             self._registry,
@@ -17,7 +18,7 @@ class LifecyclePlanMixin:
             run_id=run_id,
         )
 
-    def execute_plan_stage(self, run_id: UUID) -> None:
+    def execute_plan_stage(self: LifecyclePlanHost, run_id: UUID) -> None:
         self._maybe_emit_research_stages(run_id)
         if hermes_use_llm_enabled():
             base = self._base_cfg()

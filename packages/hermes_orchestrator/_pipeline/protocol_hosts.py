@@ -11,6 +11,44 @@ from hermes_orchestrator.slice_gate import SliceGateChainResult
 from hermes_store.protocol import EventStore
 
 
+class LifecyclePlanHost(Protocol):
+    _store: EventStore
+    _registry: RoleRegistry
+    _critique_router: Any
+    _repo_root: Path
+
+    def _execute_plan_stage_stub(self, run_id: UUID) -> None: ...
+    def _maybe_emit_research_stages(self, run_id: UUID) -> None: ...
+    def _maybe_emit_stitch_stages(self, run_id: UUID) -> None: ...
+    def _base_cfg(self) -> dict[str, Any]: ...
+    def _selected_model_for_run(self, run_id: UUID) -> str | None: ...
+    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]: ...
+
+
+class EscalationHost(Protocol):
+    _store: EventStore
+    _repo_root: Path
+    _config_materializer: Any | None
+
+    def _workflow_suppresses_automatic_escalation(self, run_id: UUID) -> bool: ...
+
+
+class OptionalCritiqueHost(Protocol):
+    _store: EventStore
+    _registry: RoleRegistry
+    _critique_router: Any
+    _repo_root: Path
+    _config_materializer: Any | None
+
+    def _security_critique_producer_for_run(
+        self,
+        sg_snapshot: dict[str, Any] | None,
+    ) -> str: ...
+    def _effective_universal_critique_for_run(self, run_id: UUID) -> Any: ...
+    def _selected_model_for_run(self, run_id: UUID) -> str | None: ...
+    def _base_cfg(self) -> dict[str, Any]: ...
+
+
 class MicroSliceHost(Protocol):
     _store: EventStore
     _repo_root: Path

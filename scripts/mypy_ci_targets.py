@@ -58,6 +58,9 @@ _TRANCHE_E = (
     "packages/hermes_orchestrator/_pipeline/micro_slice.py",
     "packages/hermes_orchestrator/_pipeline/lifecycle_verify.py",
     "packages/hermes_orchestrator/_pipeline/writers.py",
+    "packages/hermes_orchestrator/_pipeline/lifecycle_plan.py",
+    "packages/hermes_orchestrator/_pipeline/optional_critique.py",
+    "packages/hermes_orchestrator/_pipeline/escalation.py",
 )
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).

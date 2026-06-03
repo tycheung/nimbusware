@@ -235,6 +235,9 @@ module = [
   "hermes_orchestrator._pipeline.micro_slice",
   "hermes_orchestrator._pipeline.lifecycle_verify",
   "hermes_orchestrator._pipeline.writers",
+  "hermes_orchestrator._pipeline.lifecycle_plan",
+  "hermes_orchestrator._pipeline.optional_critique",
+  "hermes_orchestrator._pipeline.escalation",
 ]
 ignore_errors = false
 

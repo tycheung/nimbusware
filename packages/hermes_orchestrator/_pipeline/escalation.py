@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     EventType,
     Verdict,
@@ -18,10 +18,11 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import EscalationHost
 
 
 class EscalationMixin:
-    def _workflow_suppresses_automatic_escalation(self, run_id: UUID) -> bool:
+    def _workflow_suppresses_automatic_escalation(self: EscalationHost, run_id: UUID) -> bool:
         rows = self._store.list_run_events(str(run_id))
         wf_prof = workflow_profile_from_run_created_rows(rows)
         block = parse_escalation_workflow_block(
@@ -31,7 +32,7 @@ class EscalationMixin:
         )
         return block.suppress_automatic_escalation
 
-    def _maybe_emit_anti_deadlock_escalation(self, run_id: UUID) -> None:
+    def _maybe_emit_anti_deadlock_escalation(self: EscalationHost, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         enabled, stall_minutes, min_prog = load_anti_deadlock_settings(self._repo_root)
@@ -58,7 +59,10 @@ class EscalationMixin:
             notes=f"stall_minutes={stall_minutes} min_progress_events={min_prog}",
         )
 
-    def _maybe_escalate_after_cumulative_stage_failures(self, run_id: UUID) -> None:
+    def _maybe_escalate_after_cumulative_stage_failures(
+        self: EscalationHost,
+        run_id: UUID,
+    ) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         threshold = load_escalate_after_cumulative_stage_failures(
@@ -85,7 +89,10 @@ class EscalationMixin:
             notes=f"threshold={threshold} cumulative_stage_failed={n_failed}",
         )
 
-    def _maybe_escalate_after_cumulative_gate_failures(self, run_id: UUID) -> None:
+    def _maybe_escalate_after_cumulative_gate_failures(
+        self: EscalationHost,
+        run_id: UUID,
+    ) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         threshold = load_escalate_after_cumulative_gate_failures(
@@ -118,7 +125,10 @@ class EscalationMixin:
             notes=f"threshold={threshold} cumulative_gate_failed={n_gate_fail}",
         )
 
-    def _maybe_escalate_after_cumulative_high_severity_findings(self, run_id: UUID) -> None:
+    def _maybe_escalate_after_cumulative_high_severity_findings(
+        self: EscalationHost,
+        run_id: UUID,
+    ) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         threshold = load_escalate_after_cumulative_high_severity_findings(
@@ -151,7 +161,7 @@ class EscalationMixin:
             notes=(f"threshold={threshold} cumulative_high_severity_findings={high_n}"),
         )
 
-    def _maybe_auto_escalate(self, run_id: UUID) -> None:
+    def _maybe_auto_escalate(self: EscalationHost, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         threshold = load_auto_escalate_after_cumulative_findings(
@@ -174,7 +184,7 @@ class EscalationMixin:
             notes=f"threshold={threshold} cumulative_findings={n_findings}",
         )
 
-    def _maybe_notice_escalate_findings(self, run_id: UUID) -> None:
+    def _maybe_notice_escalate_findings(self: EscalationHost, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         threshold = load_notice_escalate_at_cumulative_findings(
@@ -201,7 +211,7 @@ class EscalationMixin:
             notes=f"notice_threshold={threshold} cumulative_findings={n_findings}",
         )
 
-    def _maybe_escalate_verifier_failure_checkpoint(self, run_id: UUID) -> None:
+    def _maybe_escalate_verifier_failure_checkpoint(self: EscalationHost, run_id: UUID) -> None:
         if self._workflow_suppresses_automatic_escalation(run_id):
             return
         if not load_escalate_on_first_verifier_failure(self._repo_root):

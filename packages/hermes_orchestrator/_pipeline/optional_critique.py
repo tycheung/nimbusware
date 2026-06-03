@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EventType,
@@ -27,12 +27,13 @@ from hermes_orchestrator._pipeline._helpers import (
     security_critique_llm_branch_effective,
     stage_graph_node_lookup,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import OptionalCritiqueHost
 from nimbusware_env.env_flags import env_str, env_truthy
 
 
 class OptionalCritiqueMixin:
     def _security_critique_producer_for_run(
-        self,
+        self: OptionalCritiqueHost,
         sg_snapshot: dict[str, Any] | None,
     ) -> str:
         if sg_snapshot and "module_integrator" in stage_graph_node_lookup(sg_snapshot):
@@ -42,7 +43,7 @@ class OptionalCritiqueMixin:
         return "backend_writer"
 
     def _emit_security_critique_optional(
-        self,
+        self: OptionalCritiqueHost,
         run_id: UUID,
         *,
         workspace: Path | None,
@@ -103,7 +104,7 @@ class OptionalCritiqueMixin:
         return False
 
     def _emit_performance_critique_optional(
-        self,
+        self: OptionalCritiqueHost,
         run_id: UUID,
         *,
         workspace: Path | None,
@@ -163,7 +164,7 @@ class OptionalCritiqueMixin:
         return False
 
     def _emit_network_resilience_critique_optional(
-        self,
+        self: OptionalCritiqueHost,
         run_id: UUID,
         *,
         workspace: Path | None,
@@ -225,7 +226,7 @@ class OptionalCritiqueMixin:
         return False
 
     def _emit_refactor_stage_optional(
-        self,
+        self: OptionalCritiqueHost,
         run_id: UUID,
         *,
         workflow_profile: str | None,

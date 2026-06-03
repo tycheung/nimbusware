@@ -95,7 +95,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles`, `_pipeline/create_run`, `_pipeline/micro_slice`, `_pipeline/lifecycle_verify`, `_pipeline/writers` |
+| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles`, `_pipeline/create_run`, `_pipeline/micro_slice`, `_pipeline/lifecycle_verify`, `_pipeline/writers`, `_pipeline/lifecycle_plan`, `_pipeline/optional_critique`, `_pipeline/escalation` |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 
