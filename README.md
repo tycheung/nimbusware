@@ -209,7 +209,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 **Progress**
 
-- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`)
+- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
 - Optional lightweight **Maker web** UI at `GET /v1/maker/app/` (same API; query `?run_id=` supported)
 

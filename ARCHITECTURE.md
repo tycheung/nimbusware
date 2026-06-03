@@ -47,7 +47,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_executor` | Role-gated outbound HTTP |
 | `hermes_agent_tools` | Allowlisted tools for slice implement agent mode |
 | `nimbusware_config` | Versioned config documents + materializer |
-| `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export), research briefs |
+| `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Static Maker web SPA served at `/v1/maker/app` |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
