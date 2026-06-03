@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 import yaml
 from fastapi import APIRouter, HTTPException, Query
@@ -9,12 +9,10 @@ from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.store import PostgresConfigStore
-from nimbusware_hw.cache import get_cached_profile, rescan_hardware
+from nimbusware_hw.cache import get_cached_profile
 from nimbusware_hw.fit import rank_models
-from nimbusware_hw.governor import governor_for_profile
 from nimbusware_hw.ollama_presets import PRESET_NAMES
 from nimbusware_maker.readiness import build_platform_readiness
 
@@ -65,7 +63,9 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
     if row is None:
         raise HTTPException(
             status_code=422,
-            detail=problem("model_not_found", "model not in allowlist", details={"model_id": body.model_id}),
+            detail=problem(
+                "model_not_found", "model not in allowlist", details={"model_id": body.model_id}
+            ),
         )
     presets = row.get("presets") if isinstance(row.get("presets"), dict) else {}
     chosen = presets.get(body.preset) if isinstance(presets, dict) else {}

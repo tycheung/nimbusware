@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_env.env_flags import env_str
-
-from nimbusware_client.http import HTTPError, post_json, get_json
+from nimbusware_client.http import HTTPError, get_json, post_json
 from nimbusware_console.components.ui_errors import render_api_error
+from nimbusware_env.env_flags import env_str
 
 
 def render_hardware_panel() -> None:

@@ -11,13 +11,14 @@ Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/
 - `packages/nimbusware_maker/cli.py` — `poetry run nimbusware-maker`
 - **Quick local mode:** `poetry run nimbusware-run --quick` (or `nimbusware-maker --quick` with API started in the same env) — in-memory store, `quick_local` workflow.
 - API routes under `nimbusware_api/routes/runs/maker_*.py` drive the same approval state machine server-side.
-- First-run wizard on Home when onboarding is not complete (folder → readiness smoke → intent → create run).
+- First-run wizard when onboarding is incomplete (folder → readiness → model → intent → run).
+- **Models** tab: ranked models, presets, Ollama dependency strip (`ui/model_manager.py`).
 
 ## Layering
 
 | Module | Role |
 |--------|------|
-| `ui/` | Streamlit panels (home, build, review, progress, settings + Ollama models) |
+| `ui/` | Streamlit panels (home, build, review, progress, models, settings) |
 | `services/` | Testable `/v1` helpers (e.g. `services/ollama.py`) without Streamlit |
 | `slice_workflow/` | Approval UX orchestration (events, pending slice, revert) |
 | `slice_engine.py` | **Sole** module-level import site for `hermes_orchestrator` slice execution |

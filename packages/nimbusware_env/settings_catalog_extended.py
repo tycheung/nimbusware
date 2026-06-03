@@ -517,7 +517,9 @@ def extended_defs() -> tuple[SettingDef, ...]:
             choices=("weak", "medium", "strong"),
         ),
         _internal("NIMBUSWARE_HW_SSH_MOCK", "Mock SSH hardware probe", kind=_BOOL),
-        _internal("HERMES_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL),
+        _internal(
+            "HERMES_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL
+        ),
         _internal("HERMES_CI_GITHUB_REPO", "CI GitHub repo slug"),
         _internal("HERMES_CI_HEAD_SHA", "CI head SHA"),
         _internal("HERMES_TIMELINE_BASE_URL", "Timeline base URL for CI"),

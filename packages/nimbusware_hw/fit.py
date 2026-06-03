@@ -117,9 +117,7 @@ def rank_models(
             "fit_level": fit_level,
             "score": score,
             "run_mode": (
-                "gpu"
-                if profile.tier != "weak" and (group_gpus or profile.gpus)
-                else "cpu_only"
+                "gpu" if profile.tier != "weak" and (group_gpus or profile.gpus) else "cpu_only"
             ),
             "gpu_group_index": gpu_group_index,
             "required_gb": round(params_b * 0.6, 1),

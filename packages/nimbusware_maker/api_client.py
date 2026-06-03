@@ -34,8 +34,8 @@ def api_base() -> str:
     return _base()
 
 
-def get_json(path: str) -> dict[str, Any]:
-    return _get_json(path)
+def get_json(path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    return _get_json(path, params=params)
 
 
 def patch_json(path: str, payload: dict[str, Any]) -> dict[str, Any]:

@@ -17,7 +17,7 @@
 | Memory | `hermes_memory` | Retrieval index (repo or fleet scope) |
 | IAM | `nimbusware_iam` | Enterprise tenancy and API keys |
 | Editions | `nimbusware_env` | Individual vs enterprise gate |
-| Hardware | `nimbusware_hw` | Probe, governor, fit ranking; exposed at `/v1/platform/hardware` |
+| Hardware | `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
 
 ## Facade pattern
 

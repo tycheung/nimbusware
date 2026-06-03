@@ -18,7 +18,9 @@ def render_model_manager_panel() -> None:
         st.warning(f"Hardware: {exc}")
         hw = {}
     profile = hw.get("profile") if isinstance(hw.get("profile"), dict) else {}
-    st.caption(f"Tier **{profile.get('tier', '?')}** — RAM avail {profile.get('ram_available_gb', '?')} GB")
+    st.caption(
+        f"Tier **{profile.get('tier', '?')}** — RAM avail {profile.get('ram_available_gb', '?')} GB"
+    )
     if st.button("Rescan", key="mm_rescan"):
         try:
             hw_svc.rescan_hardware()
@@ -53,7 +55,9 @@ def render_model_manager_panel() -> None:
         fit = str(row.get("fit_level") or "")
         with st.expander(f"{mid} — {fit}", expanded=False):
             st.caption(fit_level_caption(fit))
-            st.json({k: row[k] for k in ("run_mode", "required_gb", "score", "presets") if k in row})
+            st.json(
+                {k: row[k] for k in ("run_mode", "required_gb", "score", "presets") if k in row}
+            )
             cols = st.columns(3)
             for preset, col in zip(("quality", "balanced", "speed"), cols, strict=True):
                 with col:
