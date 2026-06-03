@@ -19,7 +19,12 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     timeline_events_table_rows,
     timeline_events_table_rows_csv,
 )
+from nimbusware_console.run_list_pagination_display.timeline_events import (
+    timeline_events_near_store_seq,
+)
 from nimbusware_console.services import runs as runs_svc
+
+_TIMELINE_FOCUS_KEY = "hermes_timeline_focus_store_seq"
 
 
 def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] | None:
@@ -30,6 +35,15 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
             render_api_error(exc)
             return None
         events = timeline_events_from_body(data)
+        focus_seq = st.session_state.get(_TIMELINE_FOCUS_KEY)
+        if isinstance(focus_seq, int) and focus_seq > 0:
+            st.caption(f"Highlighting events near store_seq {focus_seq} (±5).")
+            events_display = timeline_events_near_store_seq(events, focus_seq)
+            if not events_display:
+                st.warning("No timeline events matched focus; showing full timeline.")
+                events_display = events
+        else:
+            events_display = events
         st.subheader("Timeline")
         _tl_metrics = timeline_events_operator_metrics(events)
         _tl_metrics_cap = timeline_events_operator_metrics_caption(_tl_metrics)
@@ -73,7 +87,7 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
                         key="hermes_dl_timeline_events_operator_metrics_csv",
                     )
         _tl_events_json = timeline_events_export_json(data)
-        _tl_events_rows = timeline_events_table_rows(events)
+        _tl_events_rows = timeline_events_table_rows(events_display)
         _tl_events_csv = timeline_events_table_rows_csv(_tl_events_rows)
         st.download_button(
             label="Download timeline JSON",
@@ -100,6 +114,6 @@ def render_run_detail_timeline_core(run_id: str) -> tuple[dict[str, Any], list] 
                     key="hermes_dl_timeline_events_csv",
                 )
         with st.expander("Raw timeline events JSON", expanded=False):
-            st.json(events)
+            st.json(events_display)
         return data, events
     return None

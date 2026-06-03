@@ -16,6 +16,20 @@ def fetch_timeline(run_id: str, *, timeout: float = 30.0) -> dict[str, Any]:
     return get_json(f"/runs/{run_id.strip()}/timeline", timeout=timeout)
 
 
+def fetch_run_theater(
+    run_id: str,
+    *,
+    cursor: int = 0,
+    limit: int = 200,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    return get_json(
+        f"/runs/{run_id.strip()}/theater",
+        params={"cursor": cursor, "limit": limit},
+        timeout=timeout,
+    )
+
+
 def fetch_findings(run_id: str, *, timeout: float = 30.0) -> dict[str, Any]:
     return get_json(f"/runs/{run_id.strip()}/findings", timeout=timeout)
 

@@ -35,6 +35,7 @@ def timeline_events_table_rows(events: Sequence[Any]) -> list[dict[str, str]]:
             continue
         rows.append(
             {
+                "store_seq": _timeline_event_stringify(ev.get("store_seq")),
                 "event_type": _timeline_event_stringify(ev.get("event_type")),
                 "occurred_at": _timeline_event_stringify(ev.get("occurred_at")),
                 "event_id": _timeline_event_stringify(ev.get("event_id")),
@@ -43,7 +44,39 @@ def timeline_events_table_rows(events: Sequence[Any]) -> list[dict[str, str]]:
     return rows
 
 
-_TIMELINE_EVENTS_CSV_COLUMNS: tuple[str, ...] = ("event_type", "occurred_at", "event_id")
+def timeline_events_near_store_seq(
+    events: Sequence[Any],
+    focus_seq: int,
+    *,
+    window: int = 5,
+) -> list[Any]:
+    """Return events within ``window`` store_seq of ``focus_seq`` (inclusive)."""
+    if focus_seq <= 0:
+        return list(events)
+    lo = focus_seq - window
+    hi = focus_seq + window
+    out: list[Any] = []
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        raw_seq = ev.get("store_seq")
+        if isinstance(raw_seq, int):
+            seq = raw_seq
+        elif isinstance(raw_seq, str) and raw_seq.strip().isdigit():
+            seq = int(raw_seq.strip())
+        else:
+            continue
+        if lo <= seq <= hi:
+            out.append(ev)
+    return out
+
+
+_TIMELINE_EVENTS_CSV_COLUMNS: tuple[str, ...] = (
+    "store_seq",
+    "event_type",
+    "occurred_at",
+    "event_id",
+)
 
 
 def timeline_events_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:

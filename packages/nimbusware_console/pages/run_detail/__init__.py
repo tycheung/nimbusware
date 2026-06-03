@@ -7,6 +7,7 @@ from nimbusware_console.pages.run_detail.actions import render_run_detail_action
 from nimbusware_console.pages.run_detail.critic_matrix import render_run_detail_critic_matrix
 from nimbusware_console.pages.run_detail.findings import render_run_detail_findings
 from nimbusware_console.pages.run_detail.summary import render_run_detail_summary
+from nimbusware_console.pages.run_detail.theater import render_run_detail_theater
 from nimbusware_console.pages.run_detail.timeline_core import render_run_detail_timeline_core
 from nimbusware_console.pages.run_detail.timeline_escalation import (
     render_run_detail_timeline_escalation,
@@ -61,5 +62,6 @@ def render_run_detail_section() -> None:
                 render_run_detail_critic_matrix(run_id, events)
         with c2:
             render_run_detail_findings(run_id)
+            render_run_detail_theater(run_id)
 
         render_run_detail_actions(run_id)

@@ -115,7 +115,9 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     for r in rows:
         d = serialized_event_from_row(r)
         ev = validate_event_dict(d)
-        events.append(serialize_event_persistent(ev))
+        persisted = serialize_event_persistent(ev)
+        persisted["store_seq"] = int(r.get("store_seq") or 0)
+        events.append(persisted)
     ig_hist = integrator_gate_timeline_history(events)
     ig_sum = ig_hist[-1] if ig_hist else None
     ig_delta = integrator_gate_timeline_delta(events)
