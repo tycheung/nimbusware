@@ -93,6 +93,11 @@ class AgentEvaluatorOptionalStagesMixin:
             shelf=shelf,
         )
         ae_meta["evaluation"] = rules_eval
+        overlaps = rules_eval.get("scope_overlaps")
+        if isinstance(overlaps, list) and overlaps:
+            ae_meta["scope_creep_warning"] = "; ".join(
+                str(w).strip() for w in overlaps[:3] if str(w).strip()
+            )
         evaluation_branch: _AgentEvaluatorBranch = "rules"
         production_scoring_mode = "rules"
         if agent_evaluator_llm_branch_effective(block):
@@ -155,6 +160,9 @@ class AgentEvaluatorOptionalStagesMixin:
         meta: dict[str, Any] = {}
         if ae_meta:
             meta["agent_evaluator"] = ae_meta
+        creep = ae_meta.get("scope_creep_warning")
+        if isinstance(creep, str) and creep.strip():
+            meta["scope_creep_warning"] = creep.strip()
         AgentEvaluator().emit_evaluation_stage_started(
             self._store,
             run_id=run_id,
