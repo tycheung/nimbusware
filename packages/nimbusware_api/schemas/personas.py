@@ -177,12 +177,29 @@ class PersonaShelfPatchRequest(BaseModel):
         return out
 
 
+class ProbationReliabilityResponse(BaseModel):
+    """Aggregated agent-evaluator scores for probation automation (fo422)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    persona_id: str
+    runs_evaluated: int
+    avg_score: float | None = None
+    below_threshold_count: int = 0
+    invalid_status_count: int = 0
+    decision: str
+    min_eval_runs: int
+    min_score: float
+    max_below_ratio: float
+
+
 # Typing re-export.
 __all__ = (
     "PersonaEntry",
     "PersonaShelvesResponse",
     "PersonaShelfUpsertRequest",
     "PersonaShelfPatchRequest",
+    "ProbationReliabilityResponse",
     "ProbationStatus",
     "ALLOWED_PROBATION_STATUSES",
 )

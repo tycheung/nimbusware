@@ -176,36 +176,41 @@ class LifecycleVerifyMixin:
 
         log_snippet = "\n".join(log.splitlines()[:60])
         eff = self._effective_universal_critique_for_run(run_id)
-        security_gate_fail = self._emit_security_critique_optional(
-            run_id,
-            workspace=workspace,
-            workflow_profile=wf_prof,
-            sg_snapshot=sg_snapshot,
-        )
+        skip_fast_matrix = self._fast_slice_should_skip_optional_critique_matrix(run_id)
+        security_gate_fail = False
         performance_gate_fail = False
-        if not security_gate_fail:
-            performance_gate_fail = self._emit_performance_critique_optional(
-                run_id,
-                workspace=workspace,
-                workflow_profile=wf_prof,
-                sg_snapshot=sg_snapshot,
-            )
         network_gate_fail = False
-        if not security_gate_fail and not performance_gate_fail:
-            network_gate_fail = self._emit_network_resilience_critique_optional(
+        refactor_gate_fail = False
+        if not skip_fast_matrix:
+            security_gate_fail = self._emit_security_critique_optional(
                 run_id,
                 workspace=workspace,
                 workflow_profile=wf_prof,
                 sg_snapshot=sg_snapshot,
             )
-        refactor_gate_fail = False
-        if not security_gate_fail and not performance_gate_fail and not network_gate_fail:
-            refactor_gate_fail = self._emit_refactor_stage_optional(
-                run_id,
-                workflow_profile=wf_prof,
-            )
-        post_stitch_gate_fail = refactor_post_stitch_gate_failed(
-            self._store.list_run_events(str(run_id)),
+            if not security_gate_fail:
+                performance_gate_fail = self._emit_performance_critique_optional(
+                    run_id,
+                    workspace=workspace,
+                    workflow_profile=wf_prof,
+                    sg_snapshot=sg_snapshot,
+                )
+            if not security_gate_fail and not performance_gate_fail:
+                network_gate_fail = self._emit_network_resilience_critique_optional(
+                    run_id,
+                    workspace=workspace,
+                    workflow_profile=wf_prof,
+                    sg_snapshot=sg_snapshot,
+                )
+            if not security_gate_fail and not performance_gate_fail and not network_gate_fail:
+                refactor_gate_fail = self._emit_refactor_stage_optional(
+                    run_id,
+                    workflow_profile=wf_prof,
+                )
+        post_stitch_gate_fail = (
+            False
+            if skip_fast_matrix
+            else refactor_post_stitch_gate_failed(self._store.list_run_events(str(run_id)))
         )
         impl_llm = eff.impl_llm
         stub_impl = eff.impl_stub
@@ -252,7 +257,10 @@ class LifecycleVerifyMixin:
         ):
             return
         rows_post_impl = self._store.list_run_events(str(run_id))
-        if not self._critique_impl_hard_block_gate_fail(rows_post_impl, eff):
+        if not skip_fast_matrix and not self._critique_impl_hard_block_gate_fail(
+            rows_post_impl,
+            eff,
+        ):
             self._emit_test_writer_critique_optional(
                 run_id,
                 verifier_exit_code=code,
@@ -296,7 +304,13 @@ class LifecycleVerifyMixin:
         self._maybe_emit_critique_gate_fail_findings(run_id, eff)
         self._maybe_auto_escalate(run_id)
         self._maybe_notice_escalate_findings(run_id)
-        skip_critique_downstream = self._should_skip_critique_downstream_tail(run_id, eff)
+        skip_critique_downstream = (
+            self._should_skip_critique_downstream_tail(
+                run_id,
+                eff,
+            )
+            or skip_fast_matrix
+        )
         if not skip_critique_downstream:
             self._emit_bundle_integrator_gate(run_id)
             self._maybe_emit_integration_adapter_writer_stage(run_id)

@@ -54,6 +54,8 @@ _TRANCHE_E = (
     "packages/hermes_orchestrator/preflight.py",
     "packages/hermes_orchestrator/merge.py",
     "packages/hermes_orchestrator/workflow_profiles.py",
+    "packages/hermes_orchestrator/_pipeline/base.py",
+    "packages/hermes_orchestrator/_pipeline/_helpers.py",
     "packages/hermes_orchestrator/_pipeline/create_run.py",
     "packages/hermes_orchestrator/_pipeline/micro_slice.py",
     "packages/hermes_orchestrator/_pipeline/lifecycle_verify.py",

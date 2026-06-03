@@ -129,6 +129,25 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
+        from hermes_orchestrator.workflow_fast_slice import (
+            fast_slice_effective_metadata,
+            parse_fast_slice_workflow_block,
+        )
+        from hermes_orchestrator.workflow_probation_automation import (
+            parse_probation_automation_workflow_block,
+            probation_automation_effective_metadata,
+        )
+
+        prob_block = parse_probation_automation_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        fs_block = parse_fast_slice_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
         from hermes_orchestrator.workflow_memory import (
             memory_effective_metadata,
             parse_memory_workflow_block,
@@ -337,6 +356,10 @@ class CreateRunMixin:
                 ),
                 "agent_evaluator_effective": agent_evaluator_effective,
                 "self_refinement_effective": self_refinement_effective,
+                "probation_automation_effective": probation_automation_effective_metadata(
+                    prob_block,
+                ),
+                "fast_slice_effective": fast_slice_effective_metadata(fs_block),
                 "micro_slice_effective": {
                     "enabled": ms_block.enabled,
                     "max_files": ms_max_files,

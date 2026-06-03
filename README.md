@@ -58,8 +58,9 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Unanimous gates** — stage progression blocked until critics/verifiers pass (with escalation anti-deadlock)
 - **Parallel writers** — frontend/backend writers with role taxonomy and failure routing
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
-- **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
+- **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic; **probation automation** (fo422: reliability auto-shelve, promote notice; `GET /v1/personas/{shelf}/{persona_id}/probation-reliability`)
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
+- **Fast slice** (`fast_slice: true` or `HERMES_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH (fo463)
 - **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `HERMES_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
 - **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
 - **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`HERMES_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `HERMES_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
@@ -240,7 +241,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
-- Optional lightweight **Maker web** UI at `GET /v1/maker/app/` (same API; query `?run_id=` supported)
+- Optional lightweight **Maker web** mobile PWA at `GET /v1/maker/app/` (manifest + slice progress panel; query `?run_id=` supported)
 
 **Review**
 

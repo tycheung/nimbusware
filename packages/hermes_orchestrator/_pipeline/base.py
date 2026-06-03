@@ -1,23 +1,30 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
-    UUID,
-    Any,
-    EffectiveUniversalCritique,
-    EventStore,
+from pathlib import Path
+from typing import Any
+from uuid import UUID
+
+from agent_core.models import (
     EventType,
     FindingFixStrictnessSettings,
-    Path,
-    RoleRegistry,
     RunCreatedEvent,
-    effective_universal_critique,
-    load_critique_router,
-    load_yaml,
-    serialized_event_from_row,
-    stage_graph_from_run_created_metadata,
     validate_event_dict,
-    workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator.critique_routing import load_critique_router
+from hermes_orchestrator.fast_slice_critique import (
+    fast_slice_env_effective,
+    fast_slice_skips_optional_critique_matrix,
+    max_open_finding_severity,
+)
+from hermes_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+from hermes_orchestrator.merge import load_yaml
+from hermes_orchestrator.registry import RoleRegistry
+from hermes_orchestrator.stage_graph import stage_graph_from_run_created_metadata
+from hermes_orchestrator.workflow_universal_critique import (
+    EffectiveUniversalCritique,
+    effective_universal_critique,
+)
+from hermes_store.protocol import EventStore, serialized_event_from_row
 
 
 class RunOrchestratorBase:
@@ -103,3 +110,19 @@ class RunOrchestratorBase:
                 return stage_graph_from_run_created_metadata(meta)
             break
         return None
+
+    def _fast_slice_should_skip_optional_critique_matrix(self, run_id: UUID) -> bool:
+        rows = self._store.list_run_events(str(run_id))
+        yaml_enabled = False
+        for row in rows:
+            if row.get("event_type") != EventType.RUN_CREATED.value:
+                continue
+            meta = row.get("metadata")
+            if isinstance(meta, dict):
+                fs_eff = meta.get("fast_slice_effective")
+                if isinstance(fs_eff, dict):
+                    yaml_enabled = bool(fs_eff.get("enabled"))
+            break
+        if not fast_slice_env_effective(yaml_enabled=yaml_enabled):
+            return False
+        return fast_slice_skips_optional_critique_matrix(max_open_finding_severity(rows))

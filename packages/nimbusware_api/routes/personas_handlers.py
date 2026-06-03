@@ -3,7 +3,12 @@ from __future__ import annotations
 from fastapi import APIRouter, Header, HTTPException, Query
 
 from hermes_extensions.personas import normalize_entry
+from hermes_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from hermes_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
+from hermes_orchestrator.persona_probation_reliability import (
+    collect_persona_eval_metrics,
+    reliability_decision,
+)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
@@ -33,6 +38,7 @@ from nimbusware_api.schemas.personas import (
     PersonaShelfPatchRequest,
     PersonaShelfUpsertRequest,
     PersonaShelvesResponse,
+    ProbationReliabilityResponse,
 )
 
 router = APIRouter(prefix="/personas", tags=["personas"])
@@ -48,6 +54,58 @@ def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
     """Return read-only persona catalog from ``configs/personas/shelves.yaml``."""
     shelf = load_shelf(orch)
     return public_catalog(shelf)
+
+
+@router.get(
+    "/{shelf}/{persona_id}/probation-reliability",
+    response_model=ProbationReliabilityResponse,
+    responses={200: PERSONAS_RESPONSE_200, 404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+    summary="Probation reliability metrics for a persona",
+)
+def get_persona_probation_reliability(
+    shelf: str,
+    persona_id: str,
+    store: StoreDep,
+    orch: OrchDep,
+    run_limit: int = Query(default=20, ge=1, le=200),
+    min_eval_runs: int = Query(default=2, ge=1, le=100),
+    min_score: float = Query(
+        default=AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
+        ge=0.0,
+        le=1.0,
+    ),
+    max_below_ratio: float = Query(default=0.5, ge=0.0, le=1.0),
+) -> ProbationReliabilityResponse:
+    validate_shelf_name(shelf)
+    persona_shelf = load_shelf(orch)
+    existing = persona_shelf.find_entry(shelf, persona_id)
+    if existing is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "persona_not_found",
+                f"persona {persona_id!r} not found on shelf {shelf!r}",
+                details={"shelf": shelf, "persona_id": persona_id},
+            ),
+        )
+    metrics = collect_persona_eval_metrics(store, persona_id, run_limit=run_limit)
+    decision = reliability_decision(
+        metrics,
+        min_runs=min_eval_runs,
+        min_score=min_score,
+        max_below_ratio=max_below_ratio,
+    )
+    return ProbationReliabilityResponse(
+        persona_id=metrics.persona_id,
+        runs_evaluated=metrics.runs_evaluated,
+        avg_score=metrics.avg_score,
+        below_threshold_count=metrics.below_threshold_count,
+        invalid_status_count=metrics.invalid_status_count,
+        decision=decision,
+        min_eval_runs=min_eval_runs,
+        min_score=min_score,
+        max_below_ratio=max_below_ratio,
+    )
 
 
 @router.post(

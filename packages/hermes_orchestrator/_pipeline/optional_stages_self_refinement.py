@@ -4,6 +4,7 @@ from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-define
     _SELF_REFINEMENT_MAX_ITER_REASON,
     _SELF_REFINEMENT_POLICY_STAGE,
     UUID,
+    AgentEvaluator,
     Any,
     EventType,
     Literal,
@@ -27,7 +28,9 @@ from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-define
     execute_self_refinement_critique_llm,
     load_self_refinement_policy,
     os,
+    parse_probation_automation_workflow_block,
     parse_self_refinement_workflow_block,
+    run_probation_automation,
     self_refinement_llm_critique_effective_for_run,
     self_refinement_ungated_loop_effective,
     timezone,
@@ -249,20 +252,47 @@ class SelfRefinementOptionalStagesMixin:
             "ungated_iterative_depth": ungated_loop and attempt > 1,
             "prior_gate_verdict": prior_gate_verdict,
         }
-        if auto_promote:
-            persona_id = (
-                _persona_id_from_assignment_slot(
-                    pa_for_eval.get("business_area") if pa_for_eval else None,
-                )
-                or ""
+        persona_id = (
+            _persona_id_from_assignment_slot(
+                pa_for_eval.get("business_area") if pa_for_eval else None,
             )
+            or ""
+        )
+        prob_block = parse_probation_automation_workflow_block(
+            self._repo_root,
+            wf_prof,
+            config_materializer=self._config_materializer,
+        )
+        if prob_block.enabled and persona_id:
+            rules_eval = AgentEvaluator().evaluate(
+                persona_id,
+                persona_assignment=pa_for_eval,
+                shelf=load_persona_shelf(self._repo_root, materializer=self._config_materializer),
+            )
+            sr_meta.update(
+                run_probation_automation(
+                    self._repo_root,
+                    self._store,
+                    persona_id=persona_id,
+                    run_id=run_id,
+                    evaluation=rules_eval,
+                    block=prob_block,
+                    config_materializer=self._config_materializer,
+                    owner_role=str(self._registry.resolve("agent_evaluator")),
+                    strictness_context=self._strictness_context(run_id),
+                ),
+            )
+        shelved = bool(
+            sr_meta.get("auto_shelve_probation", {}).get("auto_shelve_probation_applied"),
+        )
+        if auto_promote and not shelved:
             if _self_refinement_auto_promote_env_disabled():
                 sr_meta["auto_promote_probation"] = {
                     "auto_promote_probation_requested": True,
                     "auto_promote_probation_applied": False,
                     "reason": "env_kill_switch",
                 }
-            elif persona_id:
+            elif persona_id.strip():
                 sr_meta["auto_promote_probation"] = try_auto_promote_probation_persona(
                     self._repo_root,
                     self._store,

@@ -235,6 +235,36 @@ def agent_evaluator_yaml_parsed_enabled_caption(
     return f"Agent evaluator workflow enabled: **{str(enabled).lower()}**."
 
 
+def agent_evaluator_probation_automation_caption(
+    payload: Mapping[str, Any] | None,
+) -> str | None:
+    if not isinstance(payload, Mapping):
+        return None
+    load_error = payload.get("load_error")
+    if isinstance(load_error, str) and load_error.strip():
+        return None
+    enabled = payload.get("yaml_parsed_probation_automation_enabled")
+    if enabled is True:
+        return (
+            "Probation automation: workflow ``probation_automation.enabled`` is **on** "
+            "(auto-shelve / promote notice follow env and reliability thresholds)."
+        )
+    if enabled is False:
+        return "Probation automation: workflow ``probation_automation.enabled`` is **off**."
+    for key, label in (
+        ("HERMES_PROBATION_AUTO_SHELVE", "auto-shelve"),
+        ("HERMES_PROBATION_NOTIFY_BEFORE_PROMOTE", "promote notice"),
+    ):
+        env = payload.get(key)
+        if not isinstance(env, Mapping):
+            continue
+        if env.get("disables_feature"):
+            raw = env.get("raw")
+            detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
+            return f"Probation automation env: **{key}** disables {label}{detail}."
+    return None
+
+
 def agent_evaluator_would_emit_caption(payload: Mapping[str, Any] | None) -> str | None:
     if not isinstance(payload, Mapping):
         return None

@@ -232,6 +232,8 @@ ignore_errors = true
 # Pipeline mypy strict islands (fo450 + create_run pilot).
 [[tool.mypy.overrides]]
 module = [
+  "hermes_orchestrator._pipeline.base",
+  "hermes_orchestrator._pipeline._helpers",
   "hermes_orchestrator._pipeline.create_run",
   "hermes_orchestrator._pipeline.micro_slice",
   "hermes_orchestrator._pipeline.lifecycle_verify",

@@ -67,6 +67,11 @@ from hermes_orchestrator.escalation_threshold import (
     load_escalate_after_cumulative_stage_failures,
     load_notice_escalate_at_cumulative_findings,
 )
+from hermes_orchestrator.fast_slice_critique import (
+    fast_slice_env_effective,
+    fast_slice_skips_optional_critique_matrix,
+    max_open_finding_severity,
+)
 from hermes_orchestrator.ingress import (
     assert_agent_evaluator_persona_in_shelves,
     assert_bundle_catalog_maps_resolve,
@@ -91,12 +96,14 @@ from hermes_orchestrator.integrator_gate import (
     select_bundle_id_for_workflow,
     workflow_profile_from_run_created_rows,
 )
-from hermes_orchestrator.llm_plan import (
+from hermes_orchestrator.llm.common import (
     FRONTEND_WRITER_CRITIQUE_STAGE,
     IMPLEMENTATION_CRITIQUE_STAGE,
     MODULE_INTEGRATOR_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
+)
+from hermes_orchestrator.llm_plan import (
     emit_stub_frontend_writer_critique_panel,
     emit_stub_implementation_critique_panel,
     emit_stub_module_integrator_critique_panel,
@@ -129,6 +136,7 @@ from hermes_orchestrator.persona_coverage_critique import (
     emit_stub_persona_coverage_critique_panel,
     execute_persona_coverage_critique_llm,
 )
+from hermes_orchestrator.persona_probation_automation import run_probation_automation
 from hermes_orchestrator.persona_shelf_auto_create import try_auto_create_persona_if_missing
 from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
 from hermes_orchestrator.preflight import run_model_preflight
@@ -144,7 +152,9 @@ from hermes_orchestrator.run_dispatch import (
     run_dispatch_enabled,
     task_payload_workspace,
 )
-from hermes_orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
+from hermes_orchestrator.scraper_artifacts import (  # type: ignore[attr-defined]
+    resolve_scraper_artifact_base_dir,
+)
 from hermes_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
 from hermes_orchestrator.security_critique import (
     emit_stub_security_critique_panel,
@@ -193,6 +203,9 @@ from hermes_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
     performance_critique_llm_branch_effective,
+)
+from hermes_orchestrator.workflow_probation_automation import (
+    parse_probation_automation_workflow_block,
 )
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
 from hermes_orchestrator.workflow_refactor import (

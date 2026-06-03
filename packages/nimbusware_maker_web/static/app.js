@@ -74,6 +74,27 @@ function renderResearch(briefs) {
   }
 }
 
+function renderSliceProgress(body) {
+  const summary = document.getElementById("slice-summary");
+  const list = document.getElementById("slice-list");
+  list.replaceChildren();
+  const total = body.slice_total ?? 0;
+  const done = body.slices_completed ?? 0;
+  const idx = body.slice_index ?? 0;
+  const headline = body.current_headline || body.run_status || "";
+  summary.textContent = total
+    ? `Slice ${idx + 1}/${total} — ${done} completed. ${headline}`
+    : headline || "No slice progress yet.";
+  const slices = body.slices || [];
+  for (const slice of slices) {
+    const li = document.createElement("li");
+    const label = slice.headline || slice.stage_name || slice.slice_id || "slice";
+    const state = slice.status || slice.state || "";
+    li.textContent = state ? `${label} — ${state}` : String(label);
+    list.appendChild(li);
+  }
+}
+
 async function loadTheater() {
   const id = runId();
   if (!id) {
@@ -98,12 +119,28 @@ async function loadResearch() {
   setStatus(`Research: ${body.count ?? 0} briefs`);
 }
 
+async function loadSlices() {
+  const id = runId();
+  if (!id) {
+    setStatus("Enter a run ID.");
+    return;
+  }
+  setStatus("Loading slice progress…");
+  const body = await apiJson(`/runs/${id}/maker-progress?simple=true`);
+  renderSliceProgress(body);
+  setStatus(`Slices: ${body.slices_completed ?? 0}/${body.slice_total ?? 0}`);
+}
+
 document.getElementById("btn-load-theater").addEventListener("click", () => {
   loadTheater().catch((e) => setStatus(String(e.message || e)));
 });
 
 document.getElementById("btn-load-research").addEventListener("click", () => {
   loadResearch().catch((e) => setStatus(String(e.message || e)));
+});
+
+document.getElementById("btn-load-slices").addEventListener("click", () => {
+  loadSlices().catch((e) => setStatus(String(e.message || e)));
 });
 
 document.getElementById("btn-poll-theater").addEventListener("click", () => {

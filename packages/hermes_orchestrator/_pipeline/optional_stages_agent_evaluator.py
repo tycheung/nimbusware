@@ -17,8 +17,10 @@ from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-define
     execute_agent_evaluator_policy_llm,
     execute_persona_coverage_critique_llm,
     parse_agent_evaluator_workflow_block,
+    parse_probation_automation_workflow_block,
     persona_coverage_critique_effective,
     persona_coverage_critique_llm_branch_effective,
+    run_probation_automation,
     try_auto_create_persona_if_missing,
     try_auto_promote_probation_persona,
     workflow_profile_from_run_created_rows,
@@ -68,21 +70,6 @@ class AgentEvaluatorOptionalStagesMixin:
                     cfg=ac_cfg,
                     config_materializer=self._config_materializer,
                 )
-        if block.auto_promote_probation:
-            if _agent_evaluator_auto_promote_env_disabled():
-                ae_meta["auto_promote_probation"] = {
-                    "auto_promote_probation_requested": True,
-                    "auto_promote_probation_applied": False,
-                    "reason": "env_kill_switch",
-                }
-            else:
-                ae_meta["auto_promote_probation"] = try_auto_promote_probation_persona(
-                    self._repo_root,
-                    self._store,
-                    persona_id=block.persona_id,
-                    run_id=run_id,
-                    config_materializer=self._config_materializer,
-                )
         from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
         from nimbusware_config.persist import load_persona_shelf
 
@@ -102,6 +89,45 @@ class AgentEvaluatorOptionalStagesMixin:
             shelf=shelf,
         )
         ae_meta["evaluation"] = rules_eval
+
+        prob_block = parse_probation_automation_workflow_block(
+            self._repo_root,
+            wf,
+            config_materializer=self._config_materializer,
+        )
+        if prob_block.enabled:
+            ae_meta.update(
+                run_probation_automation(
+                    self._repo_root,
+                    self._store,
+                    persona_id=block.persona_id,
+                    run_id=run_id,
+                    evaluation=rules_eval,
+                    block=prob_block,
+                    config_materializer=self._config_materializer,
+                    owner_role=str(self._registry.resolve("agent_evaluator")),
+                    strictness_context=self._strictness_context(run_id),
+                ),
+            )
+        shelved = bool(
+            ae_meta.get("auto_shelve_probation", {}).get("auto_shelve_probation_applied"),
+        )
+        if block.auto_promote_probation and not shelved:
+            if _agent_evaluator_auto_promote_env_disabled():
+                ae_meta["auto_promote_probation"] = {
+                    "auto_promote_probation_requested": True,
+                    "auto_promote_probation_applied": False,
+                    "reason": "env_kill_switch",
+                }
+            else:
+                ae_meta["auto_promote_probation"] = try_auto_promote_probation_persona(
+                    self._repo_root,
+                    self._store,
+                    persona_id=block.persona_id,
+                    run_id=run_id,
+                    config_materializer=self._config_materializer,
+                )
+
         overlaps = rules_eval.get("scope_overlaps")
         if isinstance(overlaps, list) and overlaps:
             ae_meta["scope_creep_warning"] = "; ".join(

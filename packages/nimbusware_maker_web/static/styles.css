@@ -1,13 +1,15 @@
 :root {
   color-scheme: light dark;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   line-height: 1.5;
+  --accent: #1a5fb4;
 }
 
 body {
   margin: 0 auto;
   max-width: 52rem;
-  padding: 1.5rem;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 header h1 {
@@ -26,6 +28,16 @@ header h1 {
   padding: 1rem;
 }
 
+#slice-panel .slice-summary {
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+}
+
+.slice-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
 label {
   display: block;
   font-weight: 600;
@@ -36,6 +48,7 @@ input[type="text"] {
   width: 100%;
   box-sizing: border-box;
   padding: 0.5rem;
+  font-size: 16px;
 }
 
 .actions {
@@ -47,7 +60,10 @@ input[type="text"] {
 
 button {
   cursor: pointer;
-  padding: 0.4rem 0.75rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 1rem;
+  min-height: 44px;
+  border-radius: 6px;
 }
 
 .status {
@@ -71,4 +87,15 @@ button {
   margin-top: 0.25rem;
   opacity: 0.9;
   white-space: pre-wrap;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .actions button {
+    flex: 1 1 45%;
+  }
 }

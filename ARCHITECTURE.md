@@ -48,7 +48,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + `sandbox` backends for agent shell |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
-| `nimbusware_maker_web` | Static Maker web SPA served at `/v1/maker/app` |
+| `nimbusware_maker_web` | Static Maker web PWA (`manifest.json`, slice panel) at `/v1/maker/app` |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
@@ -95,7 +95,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: orchestrator root modules plus `_pipeline/create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
+| E | Orchestrator islands: orchestrator root modules plus `_pipeline/base`, `_helpers`, `create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*`; probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 

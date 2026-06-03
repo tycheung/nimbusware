@@ -13,6 +13,8 @@ _ORCHESTRATOR_STRICT = frozenset(
         "hermes_orchestrator.preflight",
         "hermes_orchestrator.merge",
         "hermes_orchestrator.workflow_profiles",
+        "hermes_orchestrator._pipeline.base",
+        "hermes_orchestrator._pipeline._helpers",
         "hermes_orchestrator._pipeline.create_run",
         "hermes_orchestrator._pipeline.micro_slice",
         "hermes_orchestrator._pipeline.lifecycle_verify",
@@ -55,6 +57,8 @@ def test_tranche_e_paths_in_ci_targets() -> None:
     text = _TARGETS.read_text(encoding="utf-8")
     assert "packages/hermes_orchestrator/merge.py" in text
     assert "packages/hermes_orchestrator/workflow_profiles.py" in text
+    assert "packages/hermes_orchestrator/_pipeline/base.py" in text
+    assert "packages/hermes_orchestrator/_pipeline/_helpers.py" in text
     assert "packages/hermes_orchestrator/_pipeline/create_run.py" in text
     assert "packages/hermes_orchestrator/_pipeline/micro_slice.py" in text
     assert "packages/hermes_orchestrator/_pipeline/lifecycle_plan.py" in text

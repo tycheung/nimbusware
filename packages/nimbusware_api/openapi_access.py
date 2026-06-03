@@ -69,6 +69,7 @@ _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("DELETE", re.compile(r"^/v1/platform/ollama/models/")),
     ("PATCH", re.compile(r"^/v1/platform/ollama/routing/")),
     ("GET", re.compile(r"^/v1/personas$")),
+    ("GET", re.compile(r"^/v1/personas/[^/]+/[^/]+/probation-reliability$")),
     ("GET", re.compile(r"^/v1/bundles/search$")),
     ("GET", re.compile(r"^/v1/bundles/catalog")),
     ("GET", re.compile(r"^/v1/preflight-history$")),

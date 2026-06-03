@@ -15,6 +15,7 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
+from hermes_orchestrator.fast_slice_critique import fast_slice_env_effective
 from hermes_orchestrator.llm_slice import (
     execute_slice_critique_llm,
     execute_slice_plan_llm,
@@ -38,6 +39,19 @@ from nimbusware_env.env_flags import (
 
 if TYPE_CHECKING:
     from hermes_orchestrator.pipeline import RunOrchestrator
+
+
+def fast_slice_effective_from_rows(rows: list[dict[str, Any]]) -> bool:
+    for row in rows:
+        if row.get("event_type") != EventType.RUN_CREATED.value:
+            continue
+        meta = row.get("metadata")
+        if isinstance(meta, dict):
+            fs = meta.get("fast_slice_effective")
+            if isinstance(fs, dict):
+                return fast_slice_env_effective(yaml_enabled=bool(fs.get("enabled")))
+        break
+    return False
 
 
 def micro_slice_effective_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
@@ -396,7 +410,8 @@ def execute_micro_slice_pass(
             }
             if sec_code != 0 or perf_code != 0:
                 critique_verdicts = ["FAIL"]
-        if hermes_use_llm_enabled():
+        rows = orch._store.list_run_events(str(run_id))
+        if hermes_use_llm_enabled() and not fast_slice_effective_from_rows(rows):
             model = orch._selected_model_for_run(run_id)
             if model:
                 critique_verdicts = execute_slice_critique_llm(
