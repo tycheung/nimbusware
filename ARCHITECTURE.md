@@ -95,11 +95,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles`, `_pipeline/create_run` (mypy pilot) |
+| E | Orchestrator islands: `ollama_manage`, `ollama_user_policy`, `preflight`, `merge`, `workflow_profiles`, `_pipeline/create_run`, `_pipeline/micro_slice`, `_pipeline/lifecycle_verify`, `_pipeline/writers` |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 
-`hermes_orchestrator._pipeline.*` mixins stay `ignore_errors = true` except `_pipeline/create_run` (strict pilot). API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+`hermes_orchestrator._pipeline.*` mixins stay `ignore_errors = true` except the strict islands above (`protocol_hosts.py` documents `MicroSliceHost`, `LifecycleVerifyHost`, `WritersHost`). API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 

@@ -1,0 +1,22 @@
+name: SWE-bench harness
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 0"
+
+jobs:
+  swe-bench-dry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: SWE-bench harness dry-run
+        run: poetry run python scripts/swe_bench_harness.py --dry-run --json
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+          HERMES_SWE_BENCH_ENABLED: "1"

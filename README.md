@@ -68,6 +68,15 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 
 Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
 
+## Benchmarks
+
+Optional **SWE-bench-style** regression harness for the `micro_slice` workflow profile:
+
+- Script: [`scripts/swe_bench_harness.py`](scripts/swe_bench_harness.py) (`--dry-run` validates fixture layout; full run reserved for scheduled jobs)
+- Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/)
+- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) (not required on PR)
+- Env: `HERMES_SWE_BENCH_ENABLED`, `HERMES_SWE_BENCH_MANIFEST`
+
 ## Repository layout
 
 ```
