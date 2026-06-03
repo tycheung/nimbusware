@@ -5,7 +5,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
@@ -13,6 +13,7 @@ from nimbusware_api.errors import problem
 from nimbusware_api.read_models.run_theater import build_run_theater_messages
 from nimbusware_api.routes.runs.stream import _sse_pack
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
+from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 
 router = APIRouter()
 
@@ -49,6 +50,30 @@ def get_run_theater(
         messages=page,
         count=len(page),
         next_cursor=next_c,
+    )
+
+
+@router.get(
+    "/runs/{run_id}/theater/export",
+    responses={
+        200: {"content": {"text/markdown": {}}},
+        404: PROBLEM_RESPONSE_404,
+    },
+)
+def export_run_theater(run_id: UUID, store: StoreDep) -> Response:
+    rid = str(run_id)
+    rows = store.list_run_events(rid)
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": rid}),
+        )
+    messages = build_run_theater_messages(rows)
+    md = format_theater_transcript_md(run_id=rid, messages=messages)
+    return Response(
+        content=md,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="hermes-theater-{rid}.md"'},
     )
 
 

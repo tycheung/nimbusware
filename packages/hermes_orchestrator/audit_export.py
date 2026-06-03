@@ -21,6 +21,7 @@ def build_audit_bundle_bytes(
     run_id: str,
     events: list[dict[str, Any]],
     policy_snapshot: dict[str, Any],
+    theater_transcript_md: str | None = None,
 ) -> bytes:
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
@@ -37,6 +38,11 @@ def build_audit_bundle_bytes(
         man_info = tarfile.TarInfo(name="manifest.json")
         man_info.size = len(man_bytes)
         tar.addfile(man_info, io.BytesIO(man_bytes))
+        if theater_transcript_md:
+            th_bytes = theater_transcript_md.encode("utf-8")
+            th_info = tarfile.TarInfo(name="theater_transcript.md")
+            th_info.size = len(th_bytes)
+            tar.addfile(th_info, io.BytesIO(th_bytes))
     payload = buf.getvalue()
     key = _signing_key()
     if not key:

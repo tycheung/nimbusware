@@ -10,12 +10,14 @@ from hermes_orchestrator.policy_snapshot_diff import policy_snapshot_from_run_cr
 from hermes_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.read_models.run_theater import build_run_theater_messages
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_404,
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
 from nimbusware_maker.workspace import run_created_metadata_from_rows
+from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 
 router = APIRouter(tags=["audit"])
 
@@ -44,7 +46,16 @@ def audit_export(run_id: UUID, store: StoreDep) -> Response:
         events.append(serialize_event_persistent(ev))
     meta = run_created_metadata_from_rows(rows)
     snap = policy_snapshot_from_run_created_metadata(meta)
-    payload = build_audit_bundle_bytes(run_id=rid, events=events, policy_snapshot=snap)
+    theater_md = format_theater_transcript_md(
+        run_id=rid,
+        messages=build_run_theater_messages(rows),
+    )
+    payload = build_audit_bundle_bytes(
+        run_id=rid,
+        events=events,
+        policy_snapshot=snap,
+        theater_transcript_md=theater_md,
+    )
     return Response(
         content=payload,
         media_type="application/gzip",

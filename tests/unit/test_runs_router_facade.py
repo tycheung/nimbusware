@@ -29,6 +29,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/maker-progress"),
         ("GET", "/runs/{run_id}/maker-progress/stream"),
         ("GET", "/runs/{run_id}/theater"),
+        ("GET", "/runs/{run_id}/theater/export"),
         ("GET", "/runs/{run_id}/theater/stream"),
         ("GET", "/runs/{run_id}/research"),
         ("POST", "/runs/{run_id}/research/{brief_id}/approve"),
