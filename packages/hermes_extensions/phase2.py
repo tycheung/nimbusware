@@ -160,6 +160,17 @@ class AgentEvaluator:
                         slot["version"] = ver
                     coverage["development_role"] = slot
 
+        scope_overlaps: list[str] = []
+        if shelf is not None:
+            from hermes_extensions.persona_scope_overlap import scope_in_overlaps_for_assignment
+
+            scope_overlaps = scope_in_overlaps_for_assignment(
+                shelf=shelf,
+                persona_assignment=persona_assignment,
+            )
+            for warning in scope_overlaps:
+                gaps.append(f"scope_in_overlap:{warning[:120]}")
+
         if gaps:
             status = "invalid"
         elif pid == "default" and not (isinstance(persona_assignment, dict) and persona_assignment):
@@ -186,6 +197,7 @@ class AgentEvaluator:
             "coverage": coverage,
             "coverage_ratio": coverage_ratio,
             "score": score,
+            "scope_overlaps": scope_overlaps,
             "promotion_ready": status == "ok"
             and score >= AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
             "score_band": agent_evaluator_score_band(score),
