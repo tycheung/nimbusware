@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EventType,
@@ -29,12 +29,13 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import LifecycleVerifyHost
 from nimbusware_env.env_flags import env_str
 
 
 class LifecycleVerifyMixin:
     def execute_writer_verifier_pass(
-        self,
+        self: LifecycleVerifyHost,
         run_id: UUID,
         *,
         workspace: Path | None = None,
@@ -309,7 +310,7 @@ class LifecycleVerifyMixin:
             self._maybe_continue_ungated_self_refinement_loop(run_id)
 
     def dispatch_or_run_verify(
-        self,
+        self: LifecycleVerifyHost,
         run_id: UUID,
         *,
         workspace: Path | None = None,
@@ -326,7 +327,7 @@ class LifecycleVerifyMixin:
         )
         return "queued"
 
-    def process_verify_dispatch_task(self, task: RunDispatchTask) -> None:
+    def process_verify_dispatch_task(self: LifecycleVerifyHost, task: RunDispatchTask) -> None:
         ws_raw = task_payload_workspace(task.payload)
         ws = Path(ws_raw) if ws_raw else None
         self.execute_writer_verifier_pass(UUID(task.run_id), workspace=ws)

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from typing import Any
+
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
-    Any,
     EventType,
     Path,
     StageFailedEvent,
@@ -15,11 +16,13 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import MicroSliceHost
+from hermes_orchestrator.slice_gate import SliceGateChainResult
 
 
 class MicroSliceMixin:
     def record_micro_slice_plan(
-        self,
+        self: MicroSliceHost,
         run_id: UUID,
         plan: dict[str, Any] | Any,
     ) -> None:
@@ -45,7 +48,7 @@ class MicroSliceMixin:
         )
 
     def record_micro_slice_gate(
-        self,
+        self: MicroSliceHost,
         run_id: UUID,
         plan: dict[str, Any] | Any,
         *,
@@ -56,7 +59,7 @@ class MicroSliceMixin:
         e2e_detail: str = "",
         diff_unified: str = "",
         test_output: str = "",
-    ):
+    ) -> SliceGateChainResult:
         """Run per-slice gate chain and append pass/fail stage events."""
         from hermes_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from hermes_orchestrator.slice_context_packet import build_slice_context_packet
@@ -106,6 +109,8 @@ class MicroSliceMixin:
         if memory_hits:
             from hermes_memory.audit import append_memory_retrieval_emitted_event
 
+            chunk_store = self._memory_chunk_store
+            assert chunk_store is not None
             append_memory_retrieval_emitted_event(
                 self._store,
                 run_id=run_id,
@@ -122,7 +127,7 @@ class MicroSliceMixin:
                 retrieval_k=memory_settings.retrieval_k,
                 repo_scope_hash=memory_scope,
                 generation_id=pinned_generation_for_scope(
-                    self._memory_chunk_store,
+                    chunk_store,
                     repo_root=self._repo_root,
                 ),
             )
@@ -154,18 +159,20 @@ class MicroSliceMixin:
             )
         return gate
 
-    def _micro_slice_enabled_for_run(self, run_id: UUID) -> bool:
+    def _micro_slice_enabled_for_run(self: MicroSliceHost, run_id: UUID) -> bool:
         from hermes_orchestrator.micro_slice_executor import micro_slice_effective_from_rows
 
         rows = self._store.list_run_events(str(run_id))
         return micro_slice_effective_from_rows(rows) is not None
 
     def execute_micro_slice_pass(
-        self,
+        self: MicroSliceHost,
         run_id: UUID,
         *,
         workspace: Path | None = None,
     ) -> list[Any]:
+        from typing import cast
+
         from hermes_orchestrator.micro_slice_executor import execute_micro_slice_pass
 
-        return execute_micro_slice_pass(self, run_id, workspace=workspace)
+        return execute_micro_slice_pass(cast(Any, self), run_id, workspace=workspace)

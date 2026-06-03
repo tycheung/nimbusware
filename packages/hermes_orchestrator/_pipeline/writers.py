@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EventType,
@@ -24,6 +24,7 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import WritersHost
 from nimbusware_env.env_flags import env_str, env_truthy, hermes_use_llm_enabled
 
 
@@ -41,7 +42,7 @@ class WritersMixin:
         return meta or None
 
     def _run_writers_sequential(
-        self,
+        self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
         *,
@@ -58,7 +59,7 @@ class WritersMixin:
                 event_id=uuid4(),
                 run_id=run_id,
                 occurred_at=datetime.now(timezone.utc),
-                metadata=impl_meta,
+                metadata=impl_meta or {},
                 payload=StageStartedPayload(stage_name="implementation", attempt=1),
             ),
         )
@@ -75,7 +76,7 @@ class WritersMixin:
                         event_id=uuid4(),
                         run_id=run_id,
                         occurred_at=datetime.now(timezone.utc),
-                        metadata=tw_meta,
+                        metadata=tw_meta or {},
                         payload=StageStartedPayload(stage_name="test_writer", attempt=1),
                     ),
                 )
@@ -92,7 +93,7 @@ class WritersMixin:
                         event_id=uuid4(),
                         run_id=run_id,
                         occurred_at=datetime.now(timezone.utc),
-                        metadata=fw_meta,
+                        metadata=fw_meta or {},
                         payload=StageStartedPayload(stage_name="frontend_writer", attempt=1),
                     ),
                 )
@@ -109,7 +110,7 @@ class WritersMixin:
         return run_writer_verifier_bundle(ws)
 
     def _parallel_run_implementation(
-        self,
+        self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
         ws: Path,
@@ -126,7 +127,7 @@ class WritersMixin:
                 event_id=uuid4(),
                 run_id=run_id,
                 occurred_at=datetime.now(timezone.utc),
-                metadata=impl_meta,
+                metadata=impl_meta or {},
                 payload=StageStartedPayload(stage_name="implementation", attempt=1),
             ),
         )
@@ -151,7 +152,7 @@ class WritersMixin:
         )
 
     def _parallel_run_test_writer(
-        self,
+        self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
         ws: Path,
@@ -170,10 +171,13 @@ class WritersMixin:
             except ValueError:
                 pass
         started = time.perf_counter()
-        tw_meta = self._writer_stage_started_metadata(
-            sg_snapshot,
-            "test_writer",
-            dispatch_mode="parallel",
+        tw_meta = (
+            self._writer_stage_started_metadata(
+                sg_snapshot,
+                "test_writer",
+                dispatch_mode="parallel",
+            )
+            or {}
         )
         body_mode = "subprocess"
         if llm_body_enabled and hermes_use_llm_enabled():
@@ -240,7 +244,7 @@ class WritersMixin:
         )
 
     def _run_writers_parallel_dispatch(
-        self,
+        self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any],
         writers_group: list[str],
@@ -301,10 +305,10 @@ class WritersMixin:
             (r for r in results if r.stage_name == "implementation"),
             WriterStageResult(stage_name="implementation"),
         )
-        return impl.verifier_exit_code, impl.verifier_log
+        return int(impl.verifier_exit_code), str(impl.verifier_log)
 
     def _parallel_run_frontend_writer_stub(
-        self,
+        self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
     ) -> WriterStageResult:
@@ -320,7 +324,7 @@ class WritersMixin:
                 event_id=uuid4(),
                 run_id=run_id,
                 occurred_at=datetime.now(timezone.utc),
-                metadata=fw_meta,
+                metadata=fw_meta or {},
                 payload=StageStartedPayload(stage_name="frontend_writer", attempt=1),
             ),
         )
