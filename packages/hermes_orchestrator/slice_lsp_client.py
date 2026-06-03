@@ -8,9 +8,9 @@ import os
 import shlex
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
+
 from nimbusware_env.env_flags import (
     hermes_slice_lsp_command,
     hermes_slice_lsp_timeout_sec,

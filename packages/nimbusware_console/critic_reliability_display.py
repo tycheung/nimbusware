@@ -42,9 +42,7 @@ def critic_reliability_summary_from_events(
                 finding_fingerprints[key] = finding_fingerprints.get(key, 0) + 1
 
     repeat_paths = sum(1 for n in finding_fingerprints.values() if n > 1)
-    fail_rate = (
-        critic_fail_count / critic_verdict_count if critic_verdict_count else 0.0
-    )
+    fail_rate = critic_fail_count / critic_verdict_count if critic_verdict_count else 0.0
     return {
         "critic_verdict_count": critic_verdict_count,
         "critic_fail_count": critic_fail_count,

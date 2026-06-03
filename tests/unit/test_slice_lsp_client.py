@@ -1,9 +1,6 @@
-"""Unit tests for slice LSP client (mocked JSON-RPC, no pyright in CI)."""
-
 from __future__ import annotations
 
 import io
-import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 

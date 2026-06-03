@@ -12,6 +12,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 | `tests/e2e/` | PR e2e subset (`-m e2e`); weekly operator smoke stays in `e2e_smoke.yml` |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `HERMES_RESEARCH=1`, `HERMES_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
+| `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
 
 ## Conventions
 

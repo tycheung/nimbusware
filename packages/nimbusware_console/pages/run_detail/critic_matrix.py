@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import streamlit as st
 
-from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.critic_reliability_display import (
     critic_reliability_caption,
     critic_reliability_summary_from_events,
     critic_reliability_table_rows,
 )
+from nimbusware_console.pages.run_detail._imports_common import datetime, st, timezone
 from nimbusware_console.pages.run_detail._imports_display_a import (
     critic_matrix_export_filename_slug,
     critic_matrix_export_json,

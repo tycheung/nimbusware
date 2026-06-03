@@ -80,7 +80,9 @@ def render_approval_panel() -> None:
                 result = runs_svc.apply_slice(rid, {"slice_id": slice_id})
                 gate = "passed" if result.get("gate_passed") else "did not pass"
                 st.success(f"Applied — gate {gate}.")
-                commit = result.get("git_commit") if isinstance(result.get("git_commit"), dict) else {}
+                commit = (
+                    result.get("git_commit") if isinstance(result.get("git_commit"), dict) else {}
+                )
                 status = str(commit.get("status") or "")
                 if status == "committed":
                     sha = str(commit.get("sha") or "")[:12]
