@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "models": [
+    {"id": "llama3.1:8b", "params_b": 8, "context": 128000},
+    {"id": "qwen2.5-coder:14b", "params_b": 14, "context": 32768},
+    {"id": "llama3.2:3b", "params_b": 3, "context": 128000},
+    {"id": "phi3:mini", "params_b": 4, "context": 128000}
+  ]
+}
