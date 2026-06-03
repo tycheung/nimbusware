@@ -79,7 +79,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
             )
         elif et == EventType.CRITIC_VERDICT_EMITTED.value:
             verdict = str(pl.get("verdict") or "UNKNOWN")
-            critic = str(pl.get("critic_template") or "Critic")
+            critic = str(pl.get("critic_role") or pl.get("critic_template") or "Critic")
             sev: Severity = "pass" if verdict == "PASS" else "block"
             messages.append(
                 {
@@ -88,20 +88,20 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "message_kind": "critic_verdict",
                     "severity": sev,
                     "headline": f"{critic}: {verdict}",
-                    "body_md": str(pl.get("rationale") or "")[:800] or None,
+                    "body_md": None,
                 },
             )
         elif et == EventType.GATE_DECISION_EMITTED.value:
-            decision = str(pl.get("decision") or "")
-            sev_gate: Severity = "pass" if decision == "PASS" else "block"
+            verdict_gate = str(pl.get("verdict") or "")
+            sev_gate: Severity = "pass" if verdict_gate == "PASS" else "block"
             messages.append(
                 {
                     **base,
                     "actor_display": "Gate",
                     "message_kind": "gate",
                     "severity": sev_gate,
-                    "headline": f"Gate {decision}",
-                    "body_md": str(pl.get("reason_code") or "")[:400] or None,
+                    "headline": f"Gate {verdict_gate} ({pl.get('stage_name', '')})",
+                    "body_md": str(pl.get("failure_reason_code") or "")[:400] or None,
                 },
             )
         elif et == EventType.FINDING_ROUTED.value:
@@ -150,4 +150,43 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 },
             )
     messages.sort(key=lambda m: int(m.get("store_seq") or 0))
+    _append_why_another_round(rows, messages)
     return messages
+
+
+def _append_why_another_round(rows: list[dict[str, Any]], messages: list[dict[str, Any]]) -> None:
+    failing_critics: list[str] = []
+    categories: list[str] = []
+    last_gate_fail_seq = 0
+    for row in rows:
+        et = str(row.get("event_type") or "")
+        pl = _payload(row)
+        if et == EventType.CRITIC_VERDICT_EMITTED.value and str(pl.get("verdict")) != "PASS":
+            failing_critics.append(str(pl.get("critic_role") or "Critic"))
+        if et == EventType.FINDING_ROUTED.value:
+            cat = pl.get("category")
+            if isinstance(cat, str) and cat.strip():
+                categories.append(cat.strip())
+        if et == EventType.GATE_DECISION_EMITTED.value and str(pl.get("verdict")) != "PASS":
+            last_gate_fail_seq = int(row.get("store_seq") or 0)
+    if not failing_critics and last_gate_fail_seq == 0:
+        return
+    critics_txt = ", ".join(dict.fromkeys(failing_critics)) or "gate"
+    cats_txt = ", ".join(dict.fromkeys(categories)) or "see findings"
+    messages.append(
+        {
+            "store_seq": last_gate_fail_seq or (messages[-1]["store_seq"] if messages else 0),
+            "event_id": "",
+            "occurred_at": None,
+            "refs": {},
+            "actor_display": "System",
+            "message_kind": "gate",
+            "severity": "warn",
+            "headline": "Why another round?",
+            "body_md": (
+                f"Blocking: {critics_txt}. Categories: {cats_txt}. "
+                "Review routed findings and retry or approve overrides in Admin."
+            ),
+        },
+    )
+    messages.sort(key=lambda m: int(m.get("store_seq") or 0))
