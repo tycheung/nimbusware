@@ -6,6 +6,7 @@
 poetry install
 # Optional: poetry install --with faiss
 #           poetry install --with redis
+# Pyright langserver (slice LSP) is included in the default dev install.
 cp .env.example .env
 ```
 

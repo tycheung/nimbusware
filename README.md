@@ -43,7 +43,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
 | **Desktop / env** | `nimbusware_env` | Edition gate, `env_flags`, admin token guards, desktop launchers |
 
-Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`).
+Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`). **Pyright LSP** for slice symbol sketch ships with default `poetry install` (dev dependency); installer sets `HERMES_SLICE_LSP_ENABLED=1` in `.env`.
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
@@ -62,7 +62,7 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
 - **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `HERMES_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
 - **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
-- **Slice symbol sketch** — optional Pyright LSP `documentSymbol` when `HERMES_SLICE_LSP_ENABLED=1` (install `pyright` / `pyright-langserver` on PATH, or set `HERMES_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
+- **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`HERMES_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `HERMES_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
@@ -129,7 +129,7 @@ Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory
 
 ```bash
 poetry install
-# Optional:
+# Includes dev tools and Pyright langserver (slice LSP). Optional extras:
 poetry install --with faiss    # bundle + memory FAISS indexes
 poetry install --with redis    # Enterprise Redis dispatch (included for --edition enterprise)
 ```
@@ -140,6 +140,7 @@ poetry install --with redis    # Enterprise Redis dispatch (included for --editi
 python scripts/install_nimbusware.py
 # Enterprise:
 python scripts/install_nimbusware.py --edition enterprise
+# Installer also sets HERMES_SLICE_LSP_ENABLED=1 in .env (default; use --no-enable-slice-lsp to skip)
 ```
 
 The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/hermes_store/schema/postgres.sql`](packages/hermes_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`.

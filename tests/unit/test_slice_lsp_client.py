@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -68,3 +69,17 @@ def test_resolve_lsp_command_env_override(monkeypatch) -> None:
     monkeypatch.setenv("HERMES_SLICE_LSP_COMMAND", "custom-langserver --stdio")
     argv = resolve_lsp_command_argv()
     assert argv == ["custom-langserver", "--stdio"]
+
+
+def test_resolve_lsp_command_prefers_venv_scripts(monkeypatch, tmp_path: Path) -> None:
+    scripts = tmp_path / "bin"
+    scripts.mkdir()
+    langserver = scripts / "pyright-langserver.exe"
+    langserver.write_text("", encoding="utf-8")
+    python = scripts / "python.exe"
+    python.write_text("", encoding="utf-8")
+    monkeypatch.delenv("HERMES_SLICE_LSP_COMMAND", raising=False)
+    monkeypatch.setattr("hermes_orchestrator.slice_lsp_client.shutil.which", lambda _name: None)
+    monkeypatch.setattr(sys, "executable", str(python))
+    argv = resolve_lsp_command_argv()
+    assert argv == [str(langserver)]

@@ -460,7 +460,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "HERMES_SLICE_LSP_ENABLED",
             _USER,
             _BOOL,
-            "0",
+            "1",
             "Slice Pyright LSP symbols",
             "When enabled, try pyright-langserver documentSymbol before AST symbol sketch.",
             "User — maker runtime",

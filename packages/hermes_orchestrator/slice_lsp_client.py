@@ -8,6 +8,8 @@ import os
 import shlex
 import shutil
 import subprocess
+import sys
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -74,11 +76,20 @@ def write_lsp_message(stream: Any, payload: dict[str, Any]) -> None:
     stream.flush()
 
 
+def _venv_langserver_candidates() -> Sequence[Path]:
+    scripts = Path(sys.executable).resolve().parent
+    names = ("pyright-langserver", "pyright-langserver.exe", "pyright-langserver.cmd")
+    return [scripts / name for name in names]
+
+
 def resolve_lsp_command_argv() -> list[str] | None:
-    """Resolve langserver argv: env override, PATH, or npx fallback."""
+    """Resolve langserver argv: env override, venv scripts, PATH, or npx."""
     override = hermes_slice_lsp_command()
     if override:
         return shlex.split(override, posix=os.name != "nt")
+    for candidate in _venv_langserver_candidates():
+        if candidate.is_file():
+            return [str(candidate)]
     for name in ("pyright-langserver", "pyright-langserver.cmd"):
         found = shutil.which(name)
         if found:

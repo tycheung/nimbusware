@@ -11,7 +11,9 @@ Or clone first (requires git)::
 
 If PostgreSQL is not running, the script shows an interactive menu (Docker,
 Windows ``.exe``, winget, manual, custom URL, or skip). Ollama can be installed
-via winget/brew/curl (see ``--ollama-choice``). Use ``--non-interactive`` for CI.
+via winget/brew/curl (see ``--ollama-choice``). ``poetry install`` includes Pyright
+langserver (dev dependency); the installer enables ``HERMES_SLICE_LSP_ENABLED=1`` in
+``.env`` by default. Use ``--non-interactive`` for CI.
 Use ``--install-postgres-native`` or ``--postgres-choice native`` to skip the Postgres menu.
 
 Windows wrapper: ``.\\scripts\\install-nimbusware.ps1``
@@ -499,6 +501,69 @@ def _import_ollama_setup():
     return OllamaSetupError, bootstrap_ollama, models_from_repo, ollama_api_host
 
 
+def _enable_slice_lsp_in_env(repo: Path, *, log) -> None:
+    packages = repo / "packages"
+    if str(packages) not in sys.path:
+        sys.path.insert(0, str(packages))
+    from nimbusware_env import set_env_var  # noqa: PLC0415
+
+    path = set_env_var("HERMES_SLICE_LSP_ENABLED", "1", repo_root=repo)
+    os.environ["HERMES_SLICE_LSP_ENABLED"] = "1"
+    log(f"Enabled HERMES_SLICE_LSP_ENABLED=1 in {path}")
+
+
+def _bootstrap_slice_lsp(
+    poetry: str,
+    repo: Path,
+    *,
+    enable_in_env: bool,
+) -> bool:
+    _log("\nSlice LSP (Pyright documentSymbol for micro_slice)...")
+    check = subprocess.run(
+        [
+            poetry,
+            "run",
+            "python",
+            "-c",
+            (
+                "from hermes_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "import sys; sys.exit(0 if resolve_lsp_command_argv() else 1)"
+            ),
+        ],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    if check.returncode != 0:
+        _warn(
+            "pyright-langserver not found after `poetry install`. "
+            "Re-run `poetry install` or set HERMES_SLICE_LSP_COMMAND.",
+        )
+        return False
+    resolved = subprocess.run(
+        [
+            poetry,
+            "run",
+            "python",
+            "-c",
+            (
+                "from hermes_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "argv = resolve_lsp_command_argv() or []; print(' '.join(argv))"
+            ),
+        ],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    if resolved.returncode == 0 and resolved.stdout.strip():
+        _log(f"  Langserver: {resolved.stdout.strip()}")
+    else:
+        _log("  Langserver: pyright-langserver (venv)")
+    if enable_in_env:
+        _enable_slice_lsp_in_env(repo, log=_log)
+    return True
+
+
 def _bootstrap_ollama(args: argparse.Namespace, repo: Path) -> bool:
     if args.skip_ollama:
         return _check_ollama(args.ollama_host)
@@ -557,6 +622,7 @@ def _print_next_steps(
     *,
     ollama_ok: bool,
     with_faiss: bool,
+    slice_lsp_ok: bool,
     edition_name: str = "individual",
 ) -> None:
     _log("")
@@ -607,6 +673,11 @@ def _print_next_steps(
         _log("")
         _log("FAISS index (optional):")
         _log("  poetry run python scripts/build_bundle_faiss_index.py")
+    if slice_lsp_ok:
+        _log("")
+        _log("Slice LSP (Pyright documentSymbol):")
+        _log("  HERMES_SLICE_LSP_ENABLED=1 in .env (use --no-enable-slice-lsp to skip)")
+        _log("  AST fallback when langserver is off or unavailable")
 
 
 def _check_prerequisites(*, install_poetry: bool) -> list[str]:
@@ -720,6 +791,11 @@ def main(argv: list[str] | None = None) -> int:
         "--with-redis",
         action="store_true",
         help="poetry install --with redis (dispatch worker profile)",
+    )
+    parser.add_argument(
+        "--no-enable-slice-lsp",
+        action="store_true",
+        help="Do not set HERMES_SLICE_LSP_ENABLED=1 in .env during install",
     )
     parser.add_argument(
         "--seed-config",
@@ -886,6 +962,14 @@ def main(argv: list[str] | None = None) -> int:
             with_redis=args.with_redis,
         )
 
+    lsp_ok = False
+    if not args.no_poetry_install:
+        lsp_ok = _bootstrap_slice_lsp(
+            poetry,
+            repo,
+            enable_in_env=not args.no_enable_slice_lsp,
+        )
+
     if sys.platform.startswith("linux") and not args.skip_linux_desktop_deps:
         _log("\nLinux desktop (GTK / pywebview)...")
         packages = repo / "packages"
@@ -953,6 +1037,7 @@ def main(argv: list[str] | None = None) -> int:
         url if postgres_ready else "(Postgres not configured - set NIMBUSWARE_DATABASE_URL)",
         ollama_ok=ollama_ok,
         with_faiss=args.with_faiss,
+        slice_lsp_ok=lsp_ok,
         edition_name=edition_name,
     )
     return 0

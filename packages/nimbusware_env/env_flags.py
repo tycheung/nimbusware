@@ -239,7 +239,7 @@ def hermes_slice_repo_map_max_chars(default: int = 4000) -> int:
 def hermes_slice_lsp_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_LSP_ENABLED", default=False)
+    return resolve_bool("HERMES_SLICE_LSP_ENABLED", default=True)
 
 
 def hermes_slice_lsp_command() -> str | None:
