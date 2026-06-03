@@ -192,6 +192,33 @@ def delete(path: str, *, timeout: float = 15.0, headers: dict[str, str] | None =
     delete_response(path, timeout=timeout, headers=headers)
 
 
+def stream_collect_text(
+    path: str,
+    *,
+    params: dict[str, Any] | None = None,
+    timeout: float = 30.0,
+    headers: dict[str, str] | None = None,
+    max_bytes: int = 256_000,
+) -> str:
+    hdrs = headers if headers is not None else user_headers()
+    chunks: list[str] = []
+    size = 0
+    with httpx.Client(timeout=timeout) as client:
+        with client.stream(
+            "GET",
+            f"{api_base()}{path}",
+            params=params,
+            headers=hdrs,
+        ) as response:
+            response.raise_for_status()
+            for part in response.iter_text():
+                chunks.append(part)
+                size += len(part.encode("utf-8", errors="ignore"))
+                if size >= max_bytes:
+                    break
+    return "".join(chunks)
+
+
 __all__ = [
     "ADMIN_TOKEN_HEADER",
     "HTTPError",
@@ -207,5 +234,6 @@ __all__ = [
     "post_json",
     "post_response",
     "problem_message",
+    "stream_collect_text",
     "user_headers",
 ]

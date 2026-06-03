@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
+from nimbusware_maker.services import progress_stream as stream_svc
 from nimbusware_maker.services import runs as runs_svc
 
 
@@ -26,15 +27,27 @@ def render_progress_panel(*, simple_mode: bool = True) -> None:
         st.info("Start a run from the Build tab, or paste a run ID here.")
         return
 
-    st.session_state["maker_active_run_id"] = run_id.strip()
-    st.caption(
-        f"Live updates: `GET /v1/runs/{run_id.strip()}/maker-progress/stream` (SSE).",
-    )
-    try:
-        progress = runs_svc.fetch_maker_progress(run_id.strip(), simple=simple_mode)
-    except Exception as exc:  # noqa: BLE001
-        st.warning(f"Could not load progress: {exc}")
-        return
+    rid = run_id.strip()
+    st.session_state["maker_active_run_id"] = rid
+    cols = st.columns([1, 1])
+    with cols[0]:
+        if st.button("Refresh", key="maker_progress_refresh"):
+            st.rerun()
+    with cols[1]:
+        if st.button("Pull live (SSE)", key="maker_progress_sse"):
+            try:
+                live = stream_svc.fetch_progress_from_stream(rid)
+                if live:
+                    st.session_state["maker_progress_live"] = live
+            except Exception as exc:  # noqa: BLE001
+                st.warning(str(exc))
+    progress = st.session_state.get("maker_progress_live")
+    if not isinstance(progress, dict):
+        try:
+            progress = runs_svc.fetch_maker_progress(rid, simple=simple_mode)
+        except Exception as exc:  # noqa: BLE001
+            st.warning(f"Could not load progress: {exc}")
+            return
 
     headline = str(progress.get("current_headline") or "No progress yet")
     status = str(progress.get("status") or "unknown")
