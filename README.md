@@ -32,7 +32,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
 | **Maker app** | `nimbusware_maker` | **User console** — projects, intent, plain progress, slice approval/revert (no admin token for the product loop) |
 | **Admin Console** | `nimbusware_console` | **Admin/dev console** — runs, timeline, config editors, fleet panels (admin token at sign-in) |
-| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell for slice implement agent mode |
+| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + optional sandbox backend (`HERMES_FILESYSTEM_JAIL`, `HERMES_SANDBOX_BACKEND`) |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
 | **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
@@ -60,8 +60,8 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
-- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
-- **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses allowlisted tools instead of a single-shot writer stub
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice, per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
+- **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
@@ -400,10 +400,13 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_API_BASE` | install | UI → API URL |
 | `HERMES_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
 | `HERMES_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
+| `HERMES_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
+| `HERMES_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` or `stub` (tags output; container backends later) |
+| `HERMES_SLICE_E2E_COMMAND` | user | Custom command when workflow `slice.e2e.enabled` is true |
 | `HERMES_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
 | `HERMES_RUN_DISPATCH` / `HERMES_REDIS_URL` | install | Fleet worker dispatch |
 
-Full catalog: `poetry run python scripts/audit_operator_env.py` (140+ keys).
+Full catalog: `poetry run python scripts/audit_operator_env.py` (147+ keys).
 
 ## License
 

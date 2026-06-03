@@ -41,11 +41,11 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 |---------|------|
 | `agent_core` | Event models, validation |
 | `hermes_store` | Event store (Postgres / memory) |
-| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice, preflight |
+| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`), preflight |
 | `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
-| `hermes_agent_tools` | Allowlisted tools for slice implement agent mode |
+| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + `sandbox` backends for agent shell |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Static Maker web SPA served at `/v1/maker/app` |
