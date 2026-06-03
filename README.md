@@ -67,7 +67,7 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`).
+Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles, `critic_packs/`). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`). Bundle catalog authority is YAML under the repo root unless `NIMBUSWARE_DATABASE_URL` is set, in which case `policy/bundle-catalog` in Postgres is authoritative (`GET /v1/bundles/catalog/source`).
 
 ## Benchmarks
 
@@ -308,7 +308,9 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
 | **Actions** | Retry, escalate | Admin |
 | **Bundles** | `GET /bundles/search`, `GET /catalog` | User |
-| **Bundles** | `PUT/PATCH /bundles/catalog` | Admin |
+| **Bundles** | `PUT/PATCH /bundles/catalog`, `GET /bundles/catalog/source` | Admin / read |
+| **Critic packs** | `GET/PUT /config/critic-packs/{id}` | Admin (Postgres writes) |
+| **Fleet critic reliability** | `GET /enterprise/fleet/critic-reliability` | Enterprise |
 | **Personas** | Shelf read | User |
 | **Personas** | Admin CRUD | Admin |
 | **Custom agents** | `GET` list | User |

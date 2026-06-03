@@ -3,6 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from nimbusware_client.http import HTTPError
+from nimbusware_config import config_from_db_enabled
 from nimbusware_console.components.ui_errors import render_api_error
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
 from nimbusware_console.services import config_editors as cfg_svc
@@ -10,9 +11,14 @@ from nimbusware_console.services import config_editors as cfg_svc
 
 def render_workflows_bundle_editor_section() -> None:
     with st.expander("Bundle catalog editor (writes via API)", expanded=False):
+        _auth_note = (
+            "Authoritative store: Postgres `nimbusware_config_document` (policy/bundle-catalog)."
+            if config_from_db_enabled()
+            else "Authoritative store: repo `configs/bundles/catalog.yaml` (set NIMBUSWARE_DATABASE_URL for Postgres)."
+        )
         st.caption(
             "Edits use **PATCH /v1/bundles/catalog/bundles/{id}** (admin token). "
-            "Reload catalog from API before saving."
+            "Reload catalog from API before saving. " + _auth_note
         )
         _bc_admin = st.text_input(
             "X-Nimbusware-Admin-Token",

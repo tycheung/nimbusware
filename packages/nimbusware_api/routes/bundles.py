@@ -170,6 +170,25 @@ def get_bundle_catalog(orch: OrchDep) -> BundleCatalogResponse:
     return _catalog_response(orch, _load_catalog_raw(orch))
 
 
+@router.get(
+    "/catalog/source",
+    summary="Bundle catalog authority metadata",
+)
+def get_bundle_catalog_source(orch: OrchDep) -> dict[str, Any]:
+    mat = _config_materializer(orch)
+    if mat is not None and getattr(mat, "use_db", False):
+        return {
+            "authoritative": "postgres",
+            "document": "nimbusware_config_document",
+            "namespace": "policy",
+            "document_key": "bundle-catalog",
+        }
+    return {
+        "authoritative": "yaml",
+        "path": str(orch.repo_root / "configs" / "bundles" / "catalog.yaml"),
+    }
+
+
 @router.put(
     "/catalog",
     response_model=BundleCatalogResponse,
