@@ -44,6 +44,22 @@ def render_readiness_strip() -> dict:
         guide = readiness.get("install_guide")
         if isinstance(guide, str) and guide.strip():
             st.warning(f"Setup help: `{guide}`")
+    try:
+        from nimbusware_maker.services import hardware as hw_svc
+
+        hw = hw_svc.fetch_hardware()
+        profile = hw.get("profile") if isinstance(hw.get("profile"), dict) else {}
+        tier = str(profile.get("tier") or "")
+        ranked = hw.get("models_ranked") if isinstance(hw.get("models_ranked"), list) else []
+        if tier == "weak" or (
+            ranked and all(r.get("fit_level") == "too_tight" for r in ranked if isinstance(r, dict))
+        ):
+            st.caption(
+                "Hardware tier is limited — open **Settings → Hardware** "
+                "or rerun setup to pick a smaller model.",
+            )
+    except Exception:
+        pass
     return readiness
 
 
