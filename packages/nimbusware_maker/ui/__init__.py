@@ -7,6 +7,7 @@ from nimbusware_maker.ui.approval import render_approval_panel
 from nimbusware_maker.ui.home import render_projects_panel, render_readiness_strip
 from nimbusware_maker.ui.intent import render_intent_wizard
 from nimbusware_maker.ui.progress import render_progress_panel
+from nimbusware_maker.ui.model_manager import render_model_manager_panel
 from nimbusware_maker.ui.settings import render_settings_panel
 from nimbusware_maker.ui.wizard import render_first_run_wizard
 
@@ -45,8 +46,8 @@ def render_main() -> None:
         "Agent tools: set `HERMES_SLICE_IMPLEMENT=agent` and `HERMES_USE_LLM=1` for tool-using slices.",
     )
 
-    tabs = ["Home", "Build", "Review", "Progress", "Settings"]
-    tab_home, tab_build, tab_review, tab_progress, tab_settings = st.tabs(tabs)
+    tabs = ["Home", "Build", "Review", "Progress", "Models", "Settings"]
+    tab_home, tab_build, tab_review, tab_progress, tab_models, tab_settings = st.tabs(tabs)
     with tab_home:
         if not render_first_run_wizard():
             render_readiness_strip()
@@ -58,6 +59,8 @@ def render_main() -> None:
         render_approval_panel()
     with tab_progress:
         render_progress_panel(simple_mode=simple_mode)
+    with tab_models:
+        render_model_manager_panel()
     with tab_settings:
         render_settings_panel()
 
