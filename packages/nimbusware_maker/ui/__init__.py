@@ -8,6 +8,7 @@ from nimbusware_maker.ui.home import render_projects_panel, render_readiness_str
 from nimbusware_maker.ui.intent import render_intent_wizard
 from nimbusware_maker.ui.model_manager import render_model_manager_panel
 from nimbusware_maker.ui.progress import render_progress_panel
+from nimbusware_maker.ui.run_theater import render_run_theater_panel
 from nimbusware_maker.ui.settings import render_settings_panel
 from nimbusware_maker.ui.wizard import render_first_run_wizard
 
@@ -58,6 +59,8 @@ def render_main() -> None:
     with tab_review:
         render_approval_panel()
     with tab_progress:
+        render_run_theater_panel()
+        st.divider()
         render_progress_panel(simple_mode=simple_mode)
     with tab_models:
         render_model_manager_panel()
