@@ -13,6 +13,7 @@ from nimbusware_api.routes import (
     operator_settings,
     personas,
     platform,
+    platform_models,
     policy,
     preflight,
     projects,
@@ -36,6 +37,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)
+    router.include_router(platform_models.router)
     router.include_router(operator_settings.router)
     router.include_router(ollama.router)
     router.include_router(build_enterprise_router())

@@ -36,7 +36,7 @@ def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict:
 def get_platform_hardware(orch: OrchDep) -> dict:
     profile = get_cached_profile()
     governor = governor_for_profile(profile)
-    ranked = rank_models(orch.repo_root, profile)
+    ranked = rank_models(orch.repo_root, profile, limit=20)
     return {
         "profile": profile.model_dump_public(),
         "resource_governor": governor.to_metadata(),
@@ -53,7 +53,7 @@ def post_platform_hardware_rescan(
     del body
     profile = rescan_hardware()
     governor = governor_for_profile(profile)
-    ranked = rank_models(orch.repo_root, profile)
+    ranked = rank_models(orch.repo_root, profile, limit=20)
     return {
         "profile": profile.model_dump_public(),
         "resource_governor": governor.to_metadata(),

@@ -58,6 +58,8 @@ _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/maker/")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/maker/")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/workspace/revert$")),
+    ("GET", re.compile(r"^/v1/platform/models/")),
+    ("POST", re.compile(r"^/v1/platform/models/")),
     ("GET", re.compile(r"^/v1/platform/")),
     ("POST", re.compile(r"^/v1/platform/ollama/pull$")),
     ("DELETE", re.compile(r"^/v1/platform/ollama/models/")),
