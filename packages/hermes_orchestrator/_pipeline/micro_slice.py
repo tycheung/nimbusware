@@ -96,6 +96,7 @@ class MicroSliceMixin:
             test_output=test_output,
             gate=gate,
             memory_excerpt=memory_excerpt,
+            repo_root=self._repo_root,
         )
         meta = {
             **gate.to_metadata(),

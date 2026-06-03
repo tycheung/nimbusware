@@ -226,6 +226,16 @@ def hermes_slice_packet_max_chars(default: int = 12000) -> int:
     return resolve_int("HERMES_SLICE_PACKET_MAX_CHARS", default=default)
 
 
+def hermes_slice_repo_map_enabled() -> bool:
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("HERMES_SLICE_REPO_MAP_ENABLED", default=True)
+
+
+def hermes_slice_repo_map_max_chars(default: int = 4000) -> int:
+    return resolve_int("HERMES_SLICE_REPO_MAP_MAX_CHARS", default=default)
+
+
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
     raw = resolve_raw("NIMBUSWARE_MAX_PARALLEL_WRITERS")
     if raw is None or not str(raw).strip():
