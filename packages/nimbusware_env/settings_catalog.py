@@ -11,6 +11,7 @@ class SettingScope(str, Enum):
     SYSTEM = "system"
     USER = "user"
     RUN = "run"
+    INTERNAL = "internal"
 
 
 class SettingKind(str, Enum):
@@ -329,18 +330,18 @@ def _defs() -> tuple[SettingDef, ...]:
             "HERMES_AGENT_EVALUATOR",
             system,
             b,
-            "0",
+            "",
             "Agent evaluator",
-            "Enable agent evaluator stage after verify.",
+            "Enable agent evaluator stage after verify (empty = YAML).",
             "System — optional stages",
         ),
         SettingDef(
             "HERMES_EMIT_INTEGRATOR_GATE",
             system,
             b,
-            "0",
+            "",
             "Integrator gate",
-            "Emit integrator gate decision stage.",
+            "Emit integrator gate decision stage (empty = YAML).",
             "System — optional stages",
         ),
         SettingDef(
@@ -401,15 +402,24 @@ def _defs() -> tuple[SettingDef, ...]:
             "HERMES_STUB_IMPLEMENTATION_CRITICS",
             system,
             b,
-            "0",
+            "",
             "Stub implementation critics",
-            "Force stub implementation critique panels.",
+            "Force stub implementation critique panels (empty = YAML).",
             "System — critics",
         ),
     )
 
 
-CATALOG: dict[str, SettingDef] = {d.key: d for d in _defs()}
+def _all_defs() -> tuple[SettingDef, ...]:
+    from nimbusware_env.settings_catalog_extended import extended_defs
+
+    merged: dict[str, SettingDef] = {}
+    for d in _defs() + extended_defs():
+        merged[d.key] = d
+    return tuple(merged[k] for k in sorted(merged))
+
+
+CATALOG: dict[str, SettingDef] = {d.key: d for d in _all_defs()}
 
 
 def catalog_for_scope(scope: SettingScope) -> list[SettingDef]:

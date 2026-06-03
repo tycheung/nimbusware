@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
+from nimbusware_env.env_flags import nimbusware_workflow_profile
 
 _PRODUCTION_PROFILE = "nimbusware_production"
 
 
 def default_workflow_profile() -> str:
     """Return default profile; override with ``NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE``."""
-    raw = os.environ.get("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", _PRODUCTION_PROFILE).strip()
-    return raw or _PRODUCTION_PROFILE
+    return nimbusware_workflow_profile(default=_PRODUCTION_PROFILE)

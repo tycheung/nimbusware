@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 from hermes_orchestrator.micro_slice import DiffBudgetResult, SlicePlan, validate_diff_budget
 from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_env.env_flags import env_str
+from nimbusware_env.settings_resolve import resolve_int
 
 
 @dataclass(frozen=True)
@@ -21,11 +22,7 @@ class SliceDiffStats:
 
 
 def slice_replan_max_attempts() -> int:
-    raw = os.environ.get("HERMES_SLICE_REPLAN_MAX", "3").strip()
-    try:
-        return max(0, min(10, int(raw)))
-    except ValueError:
-        return 3
+    return max(0, min(10, resolve_int("HERMES_SLICE_REPLAN_MAX", default=3)))
 
 
 def _normalise_path(path: str) -> str:
@@ -96,7 +93,7 @@ def _git_numstat(workspace: Path, paths: tuple[str, ...]) -> SliceDiffStats | No
 
 def _plan_scope_loc_estimate(workspace: Path, paths: tuple[str, ...]) -> tuple[int, int]:
     """Fallback LOC when git has no diff (stub implement / clean tree)."""
-    stub_per_file = os.environ.get("HERMES_SLICE_STUB_LOC_PER_FILE", "").strip()
+    stub_per_file = env_str("HERMES_SLICE_STUB_LOC_PER_FILE")
     if stub_per_file:
         try:
             per = max(0, int(stub_per_file))

@@ -10,6 +10,8 @@ poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run ruff check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/audit_operator_env.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run ruff format --check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/mypy_ci_targets.py).Split(" ")

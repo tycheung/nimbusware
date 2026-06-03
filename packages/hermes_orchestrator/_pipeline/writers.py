@@ -24,6 +24,7 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from nimbusware_env.env_flags import env_str, env_truthy, hermes_use_llm_enabled
 
 
 class WritersMixin:
@@ -104,7 +105,7 @@ class WritersMixin:
                         payload=StagePassedPayload(stage_name="frontend_writer", duration_ms=0),
                     ),
                 )
-        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
         return run_writer_verifier_bundle(ws)
 
     def _parallel_run_implementation(
@@ -162,7 +163,7 @@ class WritersMixin:
         llm_base_url: str,
         llm_timeout_seconds: float,
     ) -> WriterStageResult:
-        delay_raw = os.environ.get("HERMES_PARALLEL_WRITER_TEST_DELAY_SECONDS", "").strip()
+        delay_raw = env_str("HERMES_PARALLEL_WRITER_TEST_DELAY_SECONDS")
         if delay_raw:
             try:
                 time.sleep(float(delay_raw))
@@ -175,17 +176,9 @@ class WritersMixin:
             dispatch_mode="parallel",
         )
         body_mode = "subprocess"
-        if llm_body_enabled and os.environ.get("HERMES_USE_LLM", "").strip().lower() in (
-            "1",
-            "true",
-            "yes",
-        ):
+        if llm_body_enabled and hermes_use_llm_enabled():
             body_mode = "llm"
-            if os.environ.get("HERMES_TEST_WRITER_LLM_STUB", "").strip().lower() in (
-                "1",
-                "true",
-                "yes",
-            ):
+            if env_truthy("HERMES_TEST_WRITER_LLM_STUB"):
                 body_mode = "stub"
         tw_meta["body_mode"] = body_mode
         self._store.append(
@@ -260,7 +253,7 @@ class WritersMixin:
         test_writer_llm_base_url: str = "http://localhost:11434",
         test_writer_llm_timeout_seconds: float = 120.0,
     ) -> tuple[int, str]:
-        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
         runners: list[tuple[str, Any]] = []
         if "implementation" in writers_group:
             runners.append(

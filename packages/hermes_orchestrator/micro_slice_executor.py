@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +31,10 @@ from hermes_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_te
 from hermes_orchestrator.slice_implement import execute_slice_implement
 from hermes_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_env.env_flags import (
+    hermes_slice_p3_evidence_enabled,
+    hermes_use_llm_enabled,
+)
 
 if TYPE_CHECKING:
     from hermes_orchestrator.pipeline import RunOrchestrator
@@ -106,7 +109,7 @@ def _plan_one_slice(
     budget_feedback: str | None = None,
 ) -> SlicePlan:
     rows = orch._store.list_run_events(str(run_id))
-    use_llm = os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes")
+    use_llm = hermes_use_llm_enabled()
     memory_excerpt = ""
     run_meta = orch._run_created_metadata(run_id)
     from hermes_orchestrator.workflow_memory import (
@@ -281,11 +284,7 @@ def execute_micro_slice_pass(
                 stats=stats,
                 replan_attempt=replan_attempt + 1,
             )
-            if subdivided is None and os.environ.get("HERMES_USE_LLM", "").lower() in (
-                "1",
-                "true",
-                "yes",
-            ):
+            if subdivided is None and hermes_use_llm_enabled():
                 model = orch._selected_model_for_run(run_id)
                 if model:
                     subdivided = execute_slice_replan_llm(
@@ -341,7 +340,7 @@ def execute_micro_slice_pass(
 
         critique_verdicts = ["PASS"]
         critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
-        if os.environ.get("HERMES_SLICE_P3_EVIDENCE", "1").lower() not in ("0", "false", "no"):
+        if hermes_slice_p3_evidence_enabled():
             from hermes_orchestrator.performance_scan import run_ruff_perf
             from hermes_orchestrator.security_scan import run_security_scan
 
@@ -357,7 +356,7 @@ def execute_micro_slice_pass(
             }
             if sec_code != 0 or perf_code != 0:
                 critique_verdicts = ["FAIL"]
-        if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
+        if hermes_use_llm_enabled():
             model = orch._selected_model_for_run(run_id)
             if model:
                 critique_verdicts = execute_slice_critique_llm(

@@ -39,6 +39,7 @@ def test_catalog_covers_managed_keys() -> None:
     assert "HERMES_RERESARCH_MISSING_CONTEXT" in CATALOG
     assert CATALOG["HERMES_RERESARCH_MISSING_CONTEXT"].scope == SettingScope.SYSTEM
     assert CATALOG["NIMBUSWARE_DATABASE_URL"].scope == SettingScope.INSTALL
+    assert len(CATALOG) >= 100
 
 
 def test_validate_patch_bool_coercion() -> None:
@@ -85,12 +86,36 @@ def test_merge_system_applies_to_environ(monkeypatch: pytest.MonkeyPatch) -> Non
         "nimbusware_env.settings_store._load_store",
         lambda: store,
     )
-    merge_scope_values(
-        SettingScope.SYSTEM,
-        {"HERMES_RERESARCH_MISSING_CONTEXT": "1"},
-        admin=True,
+    key = "HERMES_RERESARCH_MISSING_CONTEXT"
+    try:
+        merge_scope_values(
+            SettingScope.SYSTEM,
+            {key: "1"},
+            admin=True,
+        )
+        apply_scope_to_environ(SettingScope.SYSTEM)
+        assert os.environ.get(key) == "1"
+        refresh_scope_caches()
+        assert resolve_raw(key) == "1"
+    finally:
+        os.environ.pop(key, None)
+
+
+def test_env_over_yaml_resolved_after_postgres_sync(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nimbusware_env.settings_resolve import env_over_yaml_resolved
+
+    key = "HERMES_STUB_IMPLEMENTATION_CRITICS"
+    monkeypatch.delenv(key, raising=False)
+    store = InMemoryConfigStore()
+    monkeypatch.setattr(
+        "nimbusware_env.settings_store._load_store",
+        lambda: store,
     )
-    apply_scope_to_environ(SettingScope.SYSTEM)
-    assert os.environ.get("HERMES_RERESARCH_MISSING_CONTEXT") == "1"
-    refresh_scope_caches()
-    assert resolve_raw("HERMES_RERESARCH_MISSING_CONTEXT") == "1"
+    try:
+        merge_scope_values(SettingScope.SYSTEM, {key: "1"}, admin=True)
+        apply_scope_to_environ(SettingScope.SYSTEM)
+        assert env_over_yaml_resolved(key, False) is True
+    finally:
+        os.environ.pop(key, None)

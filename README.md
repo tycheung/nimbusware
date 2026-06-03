@@ -381,30 +381,20 @@ Integration tests need `NIMBUSWARE_DATABASE_URL` (`@pytest.mark.integration`). G
 
 ## Configuration reference (common env vars)
 
-| Variable | Purpose |
-|----------|---------|
-| `NIMBUSWARE_REPO_ROOT` | Repo root for configs and artifacts |
-| `NIMBUSWARE_DATABASE_URL` | Postgres for events + config |
-| `NIMBUSWARE_API_BASE` | UI → API URL |
-| `NIMBUSWARE_API_KEY` | Enterprise Maker user key (`maker_user` scope) |
-| `NIMBUSWARE_UI` | Desktop shell: `maker` (default) or `admin` / `console` |
-| `NIMBUSWARE_ADMIN_TOKEN` | Admin Console sign-in + admin API routes; default dev value in `.env.example` — change before binding API to non-loopback hosts (CLI blocks dev default on `0.0.0.0` / public interfaces) |
-| `NIMBUSWARE_ADMIN_CONSOLE_URL` | Maker sidebar link target for Open Admin Console (default `http://127.0.0.1:8502`) |
-| `NIMBUSWARE_MAKER_URL` | Admin Console deep link back to Maker (default `http://127.0.0.1:8501`) |
-| `NIMBUSWARE_EDITION` | `individual` (default) or `enterprise` |
-| `HERMES_SKIP_PREFLIGHT` | Skip Ollama preflight (tests/CI) |
-| `HERMES_USE_LLM` | Enable LLM-backed stages |
-| `HERMES_SLICE_AUTO_ADVANCE` | Default **on** (unset or `1`); set `0` to pause micro-slice chain for maker approval |
-| `HERMES_SLICE_IMPLEMENT` | Set to `agent` for allowlisted tool-based slice implement |
-| `HERMES_SLICE_AUTO_COMMIT` | Optional per-slice git commit on gate PASS |
-| `HERMES_GIT_NATIVE_OUTPUTS` | Final run commit on all slices passed |
-| `HERMES_GIT_PR_ON_COMPLETE` | Run `gh pr create` after final commit (requires `gh` CLI) |
-| `NIMBUSWARE_HW_FIXTURE` | CI/dev: `weak`, `medium`, or `strong` hardware profile fixture |
-| `NIMBUSWARE_MAX_PARALLEL_WRITERS` | Override governor parallel writer cap |
-| `HERMES_RUN_DISPATCH` | `redis` or in-memory queue for workers |
-| `HERMES_REDIS_URL` | Redis URL when dispatch=redis |
+Install-only variables stay in [`.env.example`](.env.example). Admin and Maker tunables are in Postgres — see [docs/operator-settings.md](docs/operator-settings.md).
 
-Full list: [`.env.example`](.env.example).
+| Variable | Scope | Purpose |
+|----------|-------|---------|
+| `NIMBUSWARE_DATABASE_URL` | install | Postgres for events + config |
+| `NIMBUSWARE_REPO_ROOT` | install | Repo root for configs and artifacts |
+| `NIMBUSWARE_ADMIN_TOKEN` | install | Admin Console + admin API |
+| `NIMBUSWARE_API_BASE` | install | UI → API URL |
+| `HERMES_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
+| `HERMES_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
+| `HERMES_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
+| `HERMES_RUN_DISPATCH` / `HERMES_REDIS_URL` | install | Fleet worker dispatch |
+
+Full catalog: `poetry run python scripts/audit_operator_env.py` (140+ keys).
 
 ## License
 

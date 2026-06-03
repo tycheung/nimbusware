@@ -4,8 +4,8 @@ from hermes_orchestrator._pipeline._helpers import (
     UUID,
     emit_stub_plan_stage,
     execute_plan_stage_llm,
-    os,
 )
+from nimbusware_env.env_flags import hermes_use_llm_enabled
 
 
 class LifecyclePlanMixin:
@@ -19,7 +19,7 @@ class LifecyclePlanMixin:
 
     def execute_plan_stage(self, run_id: UUID) -> None:
         self._maybe_emit_research_stages(run_id)
-        if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
+        if hermes_use_llm_enabled():
             base = self._base_cfg()
             runtime = base.get("runtime") or {}
             base_url = str(runtime.get("base_url", "http://localhost:11434"))
@@ -58,7 +58,7 @@ class LifecyclePlanMixin:
             requirements=req_dict,
             research_meta=research_meta,
         ):
-            if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
+            if hermes_use_llm_enabled():
                 base = self._base_cfg()
                 runtime = base.get("runtime") or {}
                 model = self._selected_model_for_run(run_id)

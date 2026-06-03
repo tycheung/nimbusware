@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
-
 import streamlit as st
 
 from nimbusware_maker.services import hardware as hw_svc
+from nimbusware_maker.services import operator_settings as settings_svc
 
 
 def render_hardware_settings_panel() -> None:
@@ -37,8 +36,18 @@ def render_hardware_settings_panel() -> None:
         value=bool(governor.get("auto_adjust", True)),
         key="maker_hw_auto_adjust",
     )
-    os.environ["NIMBUSWARE_MAX_SYSTEM_RAM_PCT"] = str(ram_pct)
-    os.environ["NIMBUSWARE_HW_AUTO_ADJUST"] = "1" if auto_adjust else "0"
+
+    if st.button("Save hardware governor", key="maker_hw_save"):
+        try:
+            settings_svc.patch_user_settings(
+                {
+                    "NIMBUSWARE_MAX_SYSTEM_RAM_PCT": str(ram_pct),
+                    "NIMBUSWARE_HW_AUTO_ADJUST": "1" if auto_adjust else "0",
+                },
+            )
+            st.success("Hardware governor settings saved.")
+        except Exception as exc:  # noqa: BLE001
+            st.error(str(exc))
 
     if st.button("Rescan hardware", key="maker_hw_rescan"):
         try:

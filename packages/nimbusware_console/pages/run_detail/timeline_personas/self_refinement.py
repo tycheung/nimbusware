@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
 
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -58,6 +54,7 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     self_refinement_would_emit_after_env_caption,
     self_refinement_would_emit_marker_caption,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _workflow_profile_pick(data: dict[str, Any]) -> str:
@@ -90,7 +87,7 @@ def _run_slug(run_id: str, *, max_len: int = 36) -> str:
 
 def _render_self_refinement(run_id: str, data: dict) -> None:
     _wf_pick = _workflow_profile_pick(data)
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     _slug = _run_slug(run_id.strip())
     _sr = self_refinement_from_timeline(data)

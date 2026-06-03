@@ -57,10 +57,13 @@ def render_operator_settings_section() -> None:
 
     groups = payload.get("groups") if isinstance(payload.get("groups"), dict) else {}
     patch: dict[str, str] = {}
+    _uc_group = "System — universal critique overrides"
     for group_name, items in groups.items():
         if not isinstance(items, list):
             continue
         with st.expander(group_name, expanded=False):
+            if group_name == _uc_group:
+                st.caption("Empty = follow workflow YAML. Set 1/0/true/false to force on or off.")
             for item in items:
                 if not isinstance(item, dict) or not item.get("admin_editable", True):
                     continue

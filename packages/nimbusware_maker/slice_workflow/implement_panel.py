@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import os
 import time
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import hermes_slice_p3_evidence_enabled, hermes_use_llm_enabled
 from nimbusware_maker.approval import (
     STAGE_SLICE_APPLIED,
     STAGE_SLICE_PENDING,
@@ -59,7 +59,7 @@ def complete_slice_after_implement(
 
     critique_verdicts = ["PASS"]
     critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
-    if os.environ.get("HERMES_SLICE_P3_EVIDENCE", "1").lower() not in ("0", "false", "no"):
+    if hermes_slice_p3_evidence_enabled():
         sec_exit, perf_exit = _complete_slice_p3_evidence(ws, timeout_seconds=timeout)
         critique_meta["phase3_evidence"] = {
             "security_scan_exit": sec_exit,
@@ -67,7 +67,7 @@ def complete_slice_after_implement(
         }
         if sec_exit != 0 or perf_exit != 0:
             critique_verdicts = ["FAIL"]
-    if os.environ.get("HERMES_USE_LLM", "").lower() in ("1", "true", "yes"):
+    if hermes_use_llm_enabled():
         model = orch._selected_model_for_run(run_id)
         if model:
             critique_verdicts = _execute_slice_critique_llm(

@@ -1,35 +1,35 @@
 from __future__ import annotations
 
-import os
 from typing import Any
+
+from nimbusware_env.env_flags import env_tri_state
 
 
 def _hermes_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
-    raw = os.environ.get("HERMES_ATTACH_SECURITY_SCAN_METADATA", "")
-    low = raw.strip().lower()
-    if not low:
+    raw = env_tri_state("HERMES_ATTACH_SECURITY_SCAN_METADATA")
+    if raw is None:
         return {
-            "raw": raw,
+            "raw": "",
             "forces_off": False,
             "forces_on": False,
             "unset_follows_yaml": True,
         }
-    if low in ("0", "false", "no"):
+    if raw == "off":
         return {
-            "raw": raw,
+            "raw": "0",
             "forces_off": True,
             "forces_on": False,
             "unset_follows_yaml": False,
         }
-    if low in ("1", "true", "yes"):
+    if raw == "on":
         return {
-            "raw": raw,
+            "raw": "1",
             "forces_off": False,
             "forces_on": True,
             "unset_follows_yaml": False,
         }
     return {
-        "raw": raw,
+        "raw": "",
         "forces_off": False,
         "forces_on": False,
         "unset_follows_yaml": True,

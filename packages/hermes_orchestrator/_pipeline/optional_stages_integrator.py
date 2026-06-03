@@ -13,7 +13,6 @@ from hermes_orchestrator._pipeline._helpers import (
     load_bundle_tags_for_bundle_id,
     load_bundle_title_for_bundle_id,
     load_integrator_gate_emit_enabled,
-    os,
     parse_integrator_gate_project_tags,
     rank_bundle_compatibility_candidates,
     select_bundle_id_for_workflow,
@@ -21,12 +20,13 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from nimbusware_env.env_flags import env_tri_state
 
 
 class IntegratorOptionalStagesMixin:
     def _emit_bundle_integrator_gate(self, run_id: UUID) -> None:
-        env = os.environ.get("HERMES_EMIT_INTEGRATOR_GATE", "").strip().lower()
-        if env in ("0", "false", "no"):
+        tri = env_tri_state("HERMES_EMIT_INTEGRATOR_GATE")
+        if tri == "off":
             return
         from hermes_extensions.phase2 import ModuleIntegrator
 
@@ -42,7 +42,7 @@ class IntegratorOptionalStagesMixin:
             wf,
             config_materializer=mat,
         )
-        if env not in ("1", "true", "yes") and not yaml_on and not wf_on:
+        if tri != "on" and not yaml_on and not wf_on:
             return
         if mat is None or not getattr(mat, "use_db", False):
             path = self._repo_root / "configs" / "integrator" / "thresholds.yaml"

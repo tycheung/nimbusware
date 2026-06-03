@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -44,10 +39,11 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     security_scan_snippet_length_caption,
     security_scan_snippet_line_count_caption,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _render_security_scan_on_verify(run_id: str, data: dict, _wf_pick: str) -> None:
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _ss = security_scan_on_verify_from_timeline(data)
     _ss_rows = security_scan_on_verify_summary_rows(_ss)
     _ssm_align_payload = security_scan_metadata_workflow_explainer_payload(

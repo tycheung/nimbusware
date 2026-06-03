@@ -10,7 +10,6 @@ Optional ``integrator_gate.min_score_to_pass`` overrides
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +18,7 @@ from hermes_extensions.catalog import load_bundle_catalog_content
 from hermes_extensions.phase2 import ModuleIntegrator
 from hermes_orchestrator.merge import load_yaml
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_env.env_flags import env_str
 
 
 def load_integrator_gate_workflow_block(
@@ -225,7 +225,7 @@ def effective_integrator_min_score_to_pass(
     config_materializer: Any | None = None,
 ) -> float:
     """Resolve min score: env (non-empty) beats workflow, then ``thresholds.yaml``."""
-    env_raw = os.environ.get("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
+    env_raw = env_str("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS")
     if env_raw:
         try:
             return max(0.0, min(1.0, float(env_raw)))

@@ -56,10 +56,20 @@ def render_operator_settings_panel() -> None:
         return
 
     patch: dict[str, str] = {}
+    _expanded_groups = frozenset(
+        {
+            "User — git outputs",
+            "User — maker runtime",
+            "User — hardware governor",
+        },
+    )
     for group_name, items in groups.items():
         if not isinstance(items, list):
             continue
-        with st.expander(group_name, expanded=False):
+        expanded = group_name in _expanded_groups
+        with st.expander(group_name, expanded=expanded):
+            if group_name == "User — git outputs":
+                st.caption("Native git output paths and branch prefix for slice commits.")
             for item in items:
                 if not isinstance(item, dict) or not item.get("user_editable", True):
                     continue

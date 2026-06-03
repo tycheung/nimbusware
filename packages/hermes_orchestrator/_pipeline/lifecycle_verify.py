@@ -13,7 +13,6 @@ from hermes_orchestrator._pipeline._helpers import (
     emit_stub_implementation_critique_panel,
     execute_implementation_critique_llm,
     get_run_queue,
-    os,
     parallel_group_members,
     parallel_writers_enabled,
     refactor_post_stitch_gate_failed,
@@ -30,6 +29,7 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from nimbusware_env.env_flags import env_str
 
 
 class LifecycleVerifyMixin:
@@ -128,7 +128,7 @@ class LifecycleVerifyMixin:
                 wf_prof,
                 config_materializer=self._config_materializer,
             ):
-                ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+                ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
                 scode, slog, ruff_ec, bandit_ec, mypy_ec, perf_ec, n1_ec, semgrep_ec = (
                     run_security_scan(ws)
                 )

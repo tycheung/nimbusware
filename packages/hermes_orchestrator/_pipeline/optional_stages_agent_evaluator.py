@@ -16,7 +16,6 @@ from hermes_orchestrator._pipeline._helpers import (
     emit_stub_persona_coverage_critique_panel,
     execute_agent_evaluator_policy_llm,
     execute_persona_coverage_critique_llm,
-    os,
     parse_agent_evaluator_workflow_block,
     persona_coverage_critique_effective,
     persona_coverage_critique_llm_branch_effective,
@@ -24,23 +23,23 @@ from hermes_orchestrator._pipeline._helpers import (
     try_auto_promote_probation_persona,
     workflow_profile_from_run_created_rows,
 )
+from nimbusware_env.env_flags import env_tri_state
 
 _AgentEvaluatorBranch = Literal["rules", "rules_with_llm_policy"]
 
 
 class AgentEvaluatorOptionalStagesMixin:
     def _maybe_emit_agent_evaluator_stage(self, run_id: UUID) -> None:
-        env_raw = os.environ.get("HERMES_AGENT_EVALUATOR", "").strip().lower()
-        if env_raw in ("0", "false", "no"):
+        tri = env_tri_state("HERMES_AGENT_EVALUATOR")
+        if tri == "off":
             return
-        env_on = env_raw in ("1", "true", "yes")
         wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
         block = parse_agent_evaluator_workflow_block(
             self._repo_root,
             wf,
             config_materializer=self._config_materializer,
         )
-        if not env_on and not block.enabled:
+        if tri != "on" and not block.enabled:
             return
         ae_meta: dict[str, Any] = {}
         ac_cfg = block.auto_create_persona

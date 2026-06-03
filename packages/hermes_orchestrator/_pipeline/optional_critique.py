@@ -14,7 +14,6 @@ from hermes_orchestrator._pipeline._helpers import (
     execute_security_critique_llm,
     network_resilience_critique_effective,
     network_resilience_critique_llm_branch_effective,
-    os,
     parse_network_resilience_critique_workflow_block,
     parse_performance_critique_workflow_block,
     parse_refactor_workflow_block,
@@ -28,6 +27,7 @@ from hermes_orchestrator._pipeline._helpers import (
     security_critique_llm_branch_effective,
     stage_graph_node_lookup,
 )
+from nimbusware_env.env_flags import env_str, env_truthy
 
 
 class OptionalCritiqueMixin:
@@ -57,7 +57,7 @@ class OptionalCritiqueMixin:
         )
         if not security_critique_effective(block):
             return False
-        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
         scan_summary = run_security_scan_summary(ws)
         producer = self._security_critique_producer_for_run(sg_snapshot)
         eff = self._effective_universal_critique_for_run(run_id)
@@ -117,7 +117,7 @@ class OptionalCritiqueMixin:
         )
         if not performance_critique_effective(block):
             return False
-        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
         scan_summary = run_security_scan_summary(ws)
         producer = self._security_critique_producer_for_run(sg_snapshot)
         eff = self._effective_universal_critique_for_run(run_id)
@@ -182,7 +182,7 @@ class OptionalCritiqueMixin:
             and "backend_writer" not in self._critique_router.known_producer_keys()
         ):
             return False
-        ws = workspace or Path(os.environ.get("HERMES_WORKSPACE", ".")).resolve()
+        ws = workspace or Path(env_str("HERMES_WORKSPACE") or ".").resolve()
         scan_summary = run_network_resilience_scan_summary(ws)
         eff = self._effective_universal_critique_for_run(run_id)
         enforce = eff.unanimous_gate_enforce
@@ -238,11 +238,7 @@ class OptionalCritiqueMixin:
         if not refactor_stage_effective(block):
             return False
         eff = self._effective_universal_critique_for_run(run_id)
-        force_fail = os.environ.get("HERMES_REFACTOR_FORCE_FAIL", "").lower() in (
-            "1",
-            "true",
-            "yes",
-        )
+        force_fail = env_truthy("HERMES_REFACTOR_FORCE_FAIL")
         return emit_refactor_stage_and_critique(
             self._store,
             self._registry,

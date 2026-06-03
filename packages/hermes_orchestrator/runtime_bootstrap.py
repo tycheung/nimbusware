@@ -83,6 +83,19 @@ def resolve_role_registry(
     return RoleRegistry.from_yaml(repo / "configs" / "roles.yaml")
 
 
+def _load_operator_settings_from_db(url: str | None) -> None:
+    if not url:
+        return
+    try:
+        from nimbusware_env.settings_resolve import refresh_scope_caches
+        from nimbusware_env.settings_store import apply_all_managed_to_environ
+
+        apply_all_managed_to_environ()
+        refresh_scope_caches()
+    except Exception:
+        return
+
+
 def build_event_store(url: str | None) -> EventStore:
     if url:
         return PostgresEventStore(url)
@@ -112,6 +125,7 @@ def build_runtime_orchestrator(
     repo = resolve_repo_root(repo_root)
     base, _ = default_paths(repo)
     url = resolve_database_url()
+    _load_operator_settings_from_db(url)
     roles_db = roles_from_db_enabled() if roles_from_db is None else roles_from_db
 
     materializer: ConfigMaterializer | None = None

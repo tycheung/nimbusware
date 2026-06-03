@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
 
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -47,6 +43,7 @@ from nimbusware_console.pages.run_detail._imports_display_a import (
     agent_evaluator_yaml_key_present_caption,
     agent_evaluator_yaml_parsed_enabled_caption,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _workflow_profile_pick(data: dict[str, Any]) -> str:
@@ -79,7 +76,7 @@ def _run_slug(run_id: str, *, max_len: int = 36) -> str:
 
 def _render_agent_evaluator(run_id: str, data: dict) -> None:
     _wf_pick = _workflow_profile_pick(data)
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     _slug = _run_slug(run_id.strip())
 

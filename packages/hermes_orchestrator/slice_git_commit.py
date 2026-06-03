@@ -2,21 +2,20 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.git_outputs import run_branch_name, slice_commit_message
 from hermes_orchestrator.micro_slice import SlicePlan
+from nimbusware_env.env_flags import hermes_slice_auto_commit_enabled
 
 
 def slice_auto_commit_enabled(run_metadata: dict[str, Any]) -> bool:
     slice_meta = run_metadata.get("slice")
     if isinstance(slice_meta, dict) and slice_meta.get("auto_commit_per_slice") is True:
         return True
-    raw = os.environ.get("HERMES_SLICE_AUTO_COMMIT", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    return hermes_slice_auto_commit_enabled()
 
 
 def maybe_commit_slice(

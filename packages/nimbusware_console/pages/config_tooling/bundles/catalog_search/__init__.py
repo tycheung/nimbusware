@@ -9,6 +9,7 @@ from nimbusware_console.pages.config_tooling.bundles.catalog_search.summary_pane
 from nimbusware_console.pages.config_tooling.bundles.faiss_readiness import (
     render_faiss_readiness_section,
 )
+from nimbusware_console.settings import repo_root as get_repo_root
 
 
 def render_bundle_catalog_search_section() -> None:
@@ -18,7 +19,7 @@ def render_bundle_catalog_search_section() -> None:
             "``configs/bundles/catalog.yaml``. Uses **NIMBUSWARE_REPO_ROOT** (resolved); "
             "matches the API frozen repo root when both use the same env.",
         )
-        repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+        repo_root = get_repo_root()
         st.caption(f"Effective repo root: `{repo_root}`")
         _render_catalog_summary_panel(repo_root)
         _render_catalog_rollups_panel(repo_root)

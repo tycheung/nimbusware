@@ -3,12 +3,14 @@ from __future__ import annotations
 import os
 from collections.abc import MutableMapping
 
+from nimbusware_env.env_flags import env_str
+
 QUICK_MODE_ENV = "NIMBUSWARE_QUICK_MODE"
 DEFAULT_QUICK_WORKFLOW = "quick_local"
 
 
 def quick_mode_enabled() -> bool:
-    return os.environ.get(QUICK_MODE_ENV, "").strip().lower() in ("1", "true", "yes")
+    return env_str(QUICK_MODE_ENV).lower() in ("1", "true", "yes")
 
 
 def _apply_quick(target: MutableMapping[str, str]) -> None:

@@ -224,7 +224,13 @@ from hermes_orchestrator.workflow_universal_critique import (
 )
 from hermes_store.memory import InMemoryEventStore
 from hermes_store.protocol import EventStore, serialized_event_from_row
-from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
+from nimbusware_env.env_flags import (
+    env_str,
+    env_tri_state,
+    env_truthy,
+    hermes_outbound_fetch_enabled,
+    hermes_use_llm_enabled,
+)
 
 
 def _coerce_samples_ms(raw: Any) -> list[int] | None:
@@ -249,24 +255,28 @@ def _coerce_samples_ms(raw: Any) -> list[int] | None:
 
 
 def _agent_evaluator_auto_promote_env_disabled() -> bool:
-    raw = os.environ.get("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE", "").strip().lower()
-    return raw in ("0", "false", "no")
+    from nimbusware_env.env_flags import env_falsy
+
+    return env_falsy("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE")
 
 
 def _agent_evaluator_auto_create_env_disabled() -> bool:
-    raw = os.environ.get("HERMES_AGENT_EVALUATOR_AUTO_CREATE", "").strip().lower()
-    return raw in ("0", "false", "no")
+    from nimbusware_env.env_flags import env_falsy
+
+    return env_falsy("HERMES_AGENT_EVALUATOR_AUTO_CREATE")
 
 
 def _self_refinement_stage_marker_env_disabled() -> bool:
     """When ``HERMES_SELF_REFINEMENT_STAGE_MARKER`` is ``0``/``false``/``no``, skip marker emit."""
-    raw = os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "").strip().lower()
-    return raw in ("0", "false", "no")
+    from nimbusware_env.env_flags import env_falsy
+
+    return env_falsy("HERMES_SELF_REFINEMENT_STAGE_MARKER")
 
 
 def _self_refinement_auto_promote_env_disabled() -> bool:
-    raw = os.environ.get("HERMES_SELF_REFINEMENT_AUTO_PROMOTE", "").strip().lower()
-    return raw in ("0", "false", "no")
+    from nimbusware_env.env_flags import env_falsy
+
+    return env_falsy("HERMES_SELF_REFINEMENT_AUTO_PROMOTE")
 
 
 _SELF_REFINEMENT_POLICY_STAGE = "self_refinement:policy"

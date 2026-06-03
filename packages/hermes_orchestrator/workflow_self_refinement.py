@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_env.env_flags import env_falsy, env_tri_state, hermes_use_llm_explicitly_off
 
 
 @dataclass(frozen=True)
@@ -76,12 +77,10 @@ def parse_self_refinement_workflow_block(
 
 def self_refinement_ungated_loop_effective(block: SelfRefinementWorkflowBlock) -> bool:
     """YAML ``ungated_loop`` unless ``HERMES_SELF_REFINEMENT_UNGATED_LOOP`` overrides."""
-    import os
-
-    env_raw = os.environ.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP", "").strip().lower()
-    if env_raw in ("1", "true", "yes"):
+    tri = env_tri_state("HERMES_SELF_REFINEMENT_UNGATED_LOOP")
+    if tri == "on":
         return True
-    if env_raw in ("0", "false", "no"):
+    if tri == "off":
         return False
     return block.ungated_loop
 
@@ -93,8 +92,6 @@ def self_refinement_production_ungated_effective(
     config_materializer: Any | None = None,
 ) -> bool:
     """Ungated iterative depth from YAML without env kill-switches."""
-    import os
-
     block = parse_self_refinement_workflow_block(
         repo_root,
         workflow_profile,
@@ -102,29 +99,18 @@ def self_refinement_production_ungated_effective(
     )
     if not block.enabled or not block.ungated_loop:
         return False
-    if os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "").strip().lower() in (
-        "0",
-        "false",
-        "no",
-    ):
+    if env_falsy("HERMES_SELF_REFINEMENT_STAGE_MARKER"):
         return False
-    if os.environ.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP", "").strip().lower() in (
-        "0",
-        "false",
-        "no",
-    ):
+    if env_falsy("HERMES_SELF_REFINEMENT_UNGATED_LOOP"):
         return False
     return True
 
 
 def self_refinement_llm_critique_branch_effective(block: SelfRefinementWorkflowBlock) -> bool:
     """YAML ``llm_critique_enabled`` unless ``HERMES_USE_LLM`` is explicitly off."""
-    import os
-
     if not block.llm_critique_enabled:
         return False
-    env_raw = os.environ.get("HERMES_USE_LLM", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     return True
 
@@ -136,8 +122,6 @@ def self_refinement_production_llm_critique_effective(
     config_materializer: Any | None = None,
 ) -> bool:
     """Live Ollama SR critique on production profiles without requiring ``HERMES_USE_LLM=1``."""
-    import os
-
     profile = (workflow_profile or "").strip()
     if profile not in ("nimbusware_production", "self_refinement_production_ungated"):
         return False
@@ -148,13 +132,9 @@ def self_refinement_production_llm_critique_effective(
     )
     if not block.enabled or not block.llm_critique_enabled:
         return False
-    if os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "").strip().lower() in (
-        "0",
-        "false",
-        "no",
-    ):
+    if env_falsy("HERMES_SELF_REFINEMENT_STAGE_MARKER"):
         return False
-    if os.environ.get("HERMES_USE_LLM", "").strip().lower() in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     return True
 

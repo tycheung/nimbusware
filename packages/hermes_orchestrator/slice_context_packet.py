@@ -2,19 +2,14 @@
 
 from __future__ import annotations
 
-import os
-
 from agent_core.models.slice_packet import SliceContextPacket, SliceVerdictSummary
 from hermes_orchestrator.micro_slice import SlicePlan
 from hermes_orchestrator.slice_gate import SliceGateChainResult
+from nimbusware_env.env_flags import hermes_slice_packet_max_chars
 
 
 def default_packet_max_chars() -> int:
-    raw = os.environ.get("HERMES_SLICE_PACKET_MAX_CHARS", "12000").strip()
-    try:
-        return max(500, int(raw))
-    except ValueError:
-        return 12000
+    return max(500, hermes_slice_packet_max_chars())
 
 
 def build_slice_context_packet(

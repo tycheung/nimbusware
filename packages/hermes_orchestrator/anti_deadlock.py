@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 from hermes_orchestrator.merge import load_yaml
+from nimbusware_env.env_flags import env_str
 
 _PROGRESS_IGNORE: frozenset[str] = frozenset(
     {
@@ -53,7 +53,7 @@ def load_anti_deadlock_settings(repo_root: Path) -> tuple[bool, int, int]:
         return False, 0, 0
     enabled = bool(ad.get("enabled", False))
     min_prog = int(ad.get("min_progress_events", 0))
-    raw_min = os.environ.get("HERMES_DEADLOCK_ESCALATION_MINUTES", "").strip()
+    raw_min = env_str("HERMES_DEADLOCK_ESCALATION_MINUTES")
     if raw_min:
         stall_minutes = int(raw_min)
     else:

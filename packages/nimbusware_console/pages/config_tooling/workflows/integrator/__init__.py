@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import streamlit as st
 
 from nimbusware_console.pages.config_tooling.workflows._shared import *  # noqa: F403
+from nimbusware_console.settings import repo_root as get_repo_root
 
 from .agent_evaluator import render_agent_evaluator_section
 from .apply_agent_evaluator import render_apply_agent_evaluator_section
@@ -34,7 +33,7 @@ def render_workflows_integrator_section() -> None:
             "**project_tags** for preview; **Apply** merges only that subtree when "
             f"``{ALLOW_WORKFLOW_YAML_WRITE_ENV}`` is enabled and you confirm the profile stem.",
         )
-        repo_root = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+        repo_root = get_repo_root()
         st.caption(f"Effective repo root: `{repo_root}`")
         wf_keys = list_workflow_profile_keys(repo_root)
         if not wf_keys:

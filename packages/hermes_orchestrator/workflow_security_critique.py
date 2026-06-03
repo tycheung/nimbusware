@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_env.env_flags import env_tri_state, hermes_use_llm_explicitly_off
 
 
 @dataclass(frozen=True)
@@ -44,20 +44,20 @@ def parse_security_critique_workflow_block(
 
 
 def security_critique_effective(block: SecurityCritiqueBlock) -> bool:
-    env_raw = os.environ.get("HERMES_SECURITY_CRITIQUE", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    tri = env_tri_state("HERMES_SECURITY_CRITIQUE")
+    if tri == "off":
         return False
-    if env_raw in ("1", "true", "yes"):
+    if tri == "on":
         return True
     return block.enabled
 
 
 def security_critique_llm_branch_effective(block: SecurityCritiqueBlock) -> bool:
-    env_raw = os.environ.get("HERMES_SECURITY_CRITIQUE_LLM", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    tri = env_tri_state("HERMES_SECURITY_CRITIQUE_LLM")
+    if tri == "off":
         return False
-    if env_raw in ("1", "true", "yes"):
+    if tri == "on":
         return True
-    if os.environ.get("HERMES_USE_LLM", "").strip().lower() in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     return block.llm_enabled

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from typing import Any
 
+from nimbusware_env.env_flags import env_str, env_truthy, nimbusware_max_parallel_writers
+from nimbusware_env.settings_resolve import resolve_bool
 from nimbusware_hw.profile import HardwareProfile
 
 
@@ -30,21 +31,11 @@ class ResourceGovernor:
 
 
 def _env_float(name: str, default: float) -> float:
-    raw = os.environ.get(name, "").strip()
+    raw = env_str(name)
     if not raw:
         return default
     try:
         return float(raw)
-    except ValueError:
-        return default
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return int(raw)
     except ValueError:
         return default
 
@@ -60,23 +51,15 @@ def governor_for_profile(profile: HardwareProfile) -> ResourceGovernor:
     else:
         parallel = 1
         ram_pct = 70.0
+    override = nimbusware_max_parallel_writers()
+    parallel_stages = override if override is not None else parallel
     return ResourceGovernor(
         max_system_ram_pct=_env_float("NIMBUSWARE_MAX_SYSTEM_RAM_PCT", ram_pct),
         max_vram_pct=_env_float("NIMBUSWARE_MAX_VRAM_PCT", 85.0),
         reserve_ram_gb=_env_float("NIMBUSWARE_RESERVE_RAM_GB", 2.0),
-        max_parallel_writer_stages=_env_int(
-            "NIMBUSWARE_MAX_PARALLEL_WRITERS",
-            parallel,
-        ),
-        allow_parallel_critics=os.environ.get(
-            "NIMBUSWARE_ALLOW_PARALLEL_CRITICS",
-            "",
-        )
-        .strip()
-        .lower()
-        in ("1", "true", "yes"),
-        auto_adjust=os.environ.get("NIMBUSWARE_HW_AUTO_ADJUST", "1").strip().lower()
-        not in ("0", "false", "no"),
+        max_parallel_writer_stages=parallel_stages,
+        allow_parallel_critics=env_truthy("NIMBUSWARE_ALLOW_PARALLEL_CRITICS"),
+        auto_adjust=resolve_bool("NIMBUSWARE_HW_AUTO_ADJUST", default=True),
         hardware_tier=tier,
     )
 

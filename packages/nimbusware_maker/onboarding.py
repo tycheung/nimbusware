@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
+
+from nimbusware_env.env_flags import env_str
 
 SESSION_ONBOARDED = "maker_onboarded"
 SESSION_WIZARD_STEP = "maker_wizard_step"
@@ -23,6 +24,6 @@ def mark_onboarded(session_state: object) -> None:
 
 
 def onboarding_flag_path() -> Path:
-    base = os.environ.get("NIMBUSWARE_MAKER_STATE_DIR", "").strip()
+    base = env_str("NIMBUSWARE_MAKER_STATE_DIR")
     root = Path(base) if base else Path(".cache/nimbusware_maker")
     return root.resolve() / "onboarded"

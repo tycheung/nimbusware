@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -31,10 +26,11 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     scraper_fetch_summary_rows,
     scraper_fetch_summary_rows_csv,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _render_timeline_misc_scraper(run_id: str, data: dict, _wf_pick: str) -> None:
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _sf = scraper_fetch_from_timeline(data)
     _sf_rows = scraper_fetch_summary_rows(_sf)
     with st.expander("Scraper fetch (from timeline)", expanded=False):

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from hermes_orchestrator._pipeline._helpers import (
@@ -9,12 +8,13 @@ from hermes_orchestrator._pipeline._helpers import (
     parse_stitch_workflow_block,
     workflow_profile_from_run_created_rows,
 )
+from nimbusware_env.env_flags import env_tri_state
 
 
 class StitchOptionalStagesMixin:
     def _maybe_emit_stitch_stages(self, run_id: UUID) -> None:
-        env_raw = os.environ.get("HERMES_STITCH", "").strip().lower()
-        if env_raw in ("0", "false", "no"):
+        tri = env_tri_state("HERMES_STITCH")
+        if tri == "off":
             return
         rows = self._store.list_run_events(str(run_id))
         wf = workflow_profile_from_run_created_rows(rows)
@@ -23,8 +23,7 @@ class StitchOptionalStagesMixin:
             wf,
             config_materializer=self._config_materializer,
         )
-        env_on = env_raw in ("1", "true", "yes")
-        if not env_on and not block.enabled:
+        if tri != "on" and not block.enabled:
             return
         meta = self._run_created_metadata(run_id)
         stitch_meta = meta.get("stitch")

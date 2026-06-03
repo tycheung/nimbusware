@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
 
-from nimbusware_env.env_flags import hermes_run_bandit_enabled
+from nimbusware_env.env_flags import hermes_run_bandit_enabled, hermes_run_mypy_enabled
 
 
 def run_pytest(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int, str]:
@@ -82,7 +81,7 @@ def run_ruff_on_paths(
 
 
 def run_mypy(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int, str]:
-    if os.environ.get("HERMES_RUN_MYPY", "").lower() not in ("1", "true", "yes"):
+    if not hermes_run_mypy_enabled():
         return 0, "mypy skipped (set HERMES_RUN_MYPY=1 to enable)\n"
     exe = shutil.which("mypy")
     if not exe:

@@ -19,12 +19,12 @@ uses ``hard_block_on_gate_fail`` per stage and env
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_env.env_flags import env_falsy, env_over_yaml
 
 
 def _coerce_yaml_bool(raw: object, default: bool = False) -> bool:
@@ -177,14 +177,6 @@ def parse_universal_critique_workflow_block(
     )
 
 
-def env_over_yaml(key: str, yaml_value: bool) -> bool:
-    """If ``key`` unset (empty strip), ``yaml_value``; otherwise env truthy (1/true/yes)."""
-    raw = os.environ.get(key, "").strip().lower()
-    if not raw:
-        return yaml_value
-    return raw in ("1", "true", "yes")
-
-
 _UC_PANEL_KILL_SWITCH_KEYS = (
     "HERMES_STUB_IMPLEMENTATION_CRITICS",
     "HERMES_ENABLE_TEST_WRITER_CRITIQUE",
@@ -209,8 +201,7 @@ def universal_critique_production_default_on(
     if not wf.default_enabled:
         return False
     for key in _UC_PANEL_KILL_SWITCH_KEYS:
-        raw = os.environ.get(key, "").strip().lower()
-        if raw in ("0", "false", "no"):
+        if env_falsy(key):
             return False
     return True
 

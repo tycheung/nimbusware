@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -36,10 +31,11 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     preflight_history_summary_rows_csv,
     preflight_history_validated_model_caption,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _render_timeline_misc_preflight(run_id: str, data: dict, _wf_pick: str) -> None:
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _pf = preflight_history_from_timeline(data)
     _pf_rows = preflight_history_summary_rows(_pf)
     with st.expander("Preflight history (from timeline)", expanded=False):

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os
-
 import streamlit as st
 
 from nimbusware_console.pages import _state as rl
@@ -24,6 +22,7 @@ from nimbusware_console.pages.run_detail.timeline_research_stitch import (
     render_run_detail_research_stitch,
 )
 from nimbusware_console.settings import API_BASE
+from nimbusware_env.env_flags import env_str
 
 
 def render_run_detail_section() -> None:
@@ -34,7 +33,7 @@ def render_run_detail_section() -> None:
 
         if run_id.strip():
             rid = run_id.strip()
-            maker_url = os.environ.get("NIMBUSWARE_MAKER_URL", "http://127.0.0.1:8501").rstrip("/")
+            maker_url = env_str("NIMBUSWARE_MAKER_URL", default="http://127.0.0.1:8501").rstrip("/")
             st.link_button(
                 "Open in Maker Review",
                 f"{maker_url}/?run_id={rid}",

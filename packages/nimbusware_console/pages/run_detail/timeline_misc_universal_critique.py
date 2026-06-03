@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import streamlit as st
 
 from nimbusware_console.pages.run_detail._imports_common import (
-    Path,
     datetime,
-    os,
     st,
     timezone,
 )
@@ -28,10 +23,11 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     universal_critique_timeline_stage_rows,
     universal_critique_timeline_stage_rows_csv,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _render_timeline_misc_universal_critique(run_id: str, data: dict, _wf_pick: str) -> None:
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _uc_tl = universal_critique_from_timeline(data)
     _uc_tl_rows = universal_critique_timeline_stage_rows(_uc_tl)
     with st.expander("Universal critique (from timeline)", expanded=False):

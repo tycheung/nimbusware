@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
-
 import streamlit as st
 
 from nimbusware_env.admin_token import nimbusware_admin_token
+from nimbusware_env.env_flags import env_str
 
 SESSION_ADMIN_UNLOCKED = "maker_admin_unlocked"
 
@@ -23,7 +22,7 @@ def clear_admin_unlock(session_state: object | None = None) -> None:
 
 
 def admin_console_url() -> str:
-    return os.environ.get("NIMBUSWARE_ADMIN_CONSOLE_URL", "http://127.0.0.1:8502").rstrip("/")
+    return env_str("NIMBUSWARE_ADMIN_CONSOLE_URL", default="http://127.0.0.1:8502").rstrip("/")
 
 
 def render_admin_sidebar() -> None:

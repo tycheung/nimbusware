@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import streamlit as st
 
-from nimbusware_console.pages.run_detail._imports_common import Path, os, st
+from nimbusware_console.pages.run_detail._imports_common import st
 from nimbusware_console.pages.run_detail._imports_display_b import (
     latest_slice_context_packet_from_timeline,
     memory_indexed_timeline_summary,
@@ -13,10 +10,11 @@ from nimbusware_console.pages.run_detail._imports_display_b import (
     phase3_critique_caption,
     phase3_critique_table_rows,
 )
+from nimbusware_console.settings import repo_root
 
 
 def _render_timeline_misc_core(run_id: str, data: dict, _wf_pick: str) -> None:
-    _iroot = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    _iroot = repo_root()
     _wf_pick = data.get("workflow_profile") if isinstance(data, dict) else None
     if not isinstance(_wf_pick, str) or not _wf_pick.strip():
         from nimbusware_env.env_flags import nimbusware_workflow_profile

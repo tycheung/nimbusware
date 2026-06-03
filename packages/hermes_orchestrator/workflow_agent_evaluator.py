@@ -7,6 +7,12 @@ from pathlib import Path
 from typing import Any
 
 from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_env.env_flags import (
+    env_falsy,
+    env_tri_state,
+    env_truthy,
+    hermes_use_llm_explicitly_off,
+)
 
 
 @dataclass(frozen=True)
@@ -107,21 +113,16 @@ def parse_agent_evaluator_workflow_block(
 
 def persona_coverage_critique_effective(block: AgentEvaluatorWorkflowBlock) -> bool:
     """Env ``HERMES_PERSONA_COVERAGE_CRITIQUE=0`` kill-switch overrides workflow YAML."""
-    import os
-
-    env_raw = os.environ.get("HERMES_PERSONA_COVERAGE_CRITIQUE", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    tri = env_tri_state("HERMES_PERSONA_COVERAGE_CRITIQUE")
+    if tri == "off":
         return False
-    if env_raw in ("1", "true", "yes"):
+    if tri == "on":
         return True
     return block.persona_coverage_critique.enabled
 
 
 def agent_evaluator_llm_stub_env_enabled() -> bool:
-    import os
-
-    raw = os.environ.get("HERMES_AGENT_EVALUATOR_LLM_STUB", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    return env_truthy("HERMES_AGENT_EVALUATOR_LLM_STUB")
 
 
 def agent_evaluator_rules_derived_llm_evaluation(rules_eval: dict[str, Any]) -> dict[str, Any]:
@@ -150,8 +151,6 @@ def agent_evaluator_production_default_on(
     config_materializer: Any | None = None,
 ) -> bool:
     """True when YAML enables evaluator + LLM branch and no production kill-switch is set."""
-    import os
-
     block = parse_agent_evaluator_workflow_block(
         repo_root,
         workflow_profile,
@@ -159,13 +158,9 @@ def agent_evaluator_production_default_on(
     )
     if not block.enabled or not block.llm_evaluation_enabled:
         return False
-    if os.environ.get("HERMES_AGENT_EVALUATOR", "").strip().lower() in (
-        "0",
-        "false",
-        "no",
-    ):
+    if env_falsy("HERMES_AGENT_EVALUATOR"):
         return False
-    if os.environ.get("HERMES_USE_LLM", "").strip().lower() in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     if agent_evaluator_llm_stub_env_enabled():
         return False
@@ -174,12 +169,9 @@ def agent_evaluator_production_default_on(
 
 def agent_evaluator_llm_branch_effective(block: AgentEvaluatorWorkflowBlock) -> bool:
     """YAML ``llm_evaluation_enabled`` suffices unless ``HERMES_USE_LLM`` is explicitly off."""
-    import os
-
     if not block.llm_evaluation_enabled:
         return False
-    env_raw = os.environ.get("HERMES_USE_LLM", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     return True
 
@@ -188,22 +180,17 @@ def persona_coverage_critique_llm_branch_effective(
     block: AgentEvaluatorWorkflowBlock,
 ) -> bool:
     """Persona-coverage LLM when YAML enables it; ``HERMES_USE_LLM=0`` still kill-switches."""
-    import os
-
     if not persona_coverage_critique_llm_effective(block):
         return False
-    env_raw = os.environ.get("HERMES_USE_LLM", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if hermes_use_llm_explicitly_off():
         return False
     return True
 
 
 def persona_coverage_critique_llm_effective(block: AgentEvaluatorWorkflowBlock) -> bool:
-    import os
-
-    env_raw = os.environ.get("HERMES_PERSONA_COVERAGE_CRITIQUE_LLM", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    tri = env_tri_state("HERMES_PERSONA_COVERAGE_CRITIQUE_LLM")
+    if tri == "off":
         return False
-    if env_raw in ("1", "true", "yes"):
+    if tri == "on":
         return True
     return block.persona_coverage_critique.llm_enabled

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -8,11 +7,16 @@ from typing import Any
 from uuid import UUID
 
 from hermes_orchestrator.micro_slice import SlicePlan
+from nimbusware_env.env_flags import (
+    hermes_git_native_outputs_enabled,
+    hermes_git_pr_on_complete_enabled,
+    hermes_slice_branch_prefix,
+)
 
 
 def run_branch_name(run_id: str | UUID, *, prefix: str | None = None) -> str:
     rid = str(run_id)
-    pfx = (prefix or os.environ.get("HERMES_SLICE_BRANCH_PREFIX", "hermes/run-")).strip()
+    pfx = (prefix or hermes_slice_branch_prefix()).strip()
     if not pfx:
         pfx = "hermes/run-"
     return f"{pfx}{rid}"
@@ -22,16 +26,14 @@ def git_native_outputs_enabled(run_metadata: dict[str, Any]) -> bool:
     git_meta = run_metadata.get("git")
     if isinstance(git_meta, dict) and git_meta.get("native_outputs") is True:
         return True
-    raw = os.environ.get("HERMES_GIT_NATIVE_OUTPUTS", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    return hermes_git_native_outputs_enabled()
 
 
 def gh_pr_on_complete_enabled(run_metadata: dict[str, Any]) -> bool:
     git_meta = run_metadata.get("git")
     if isinstance(git_meta, dict) and git_meta.get("open_pr_on_complete") is True:
         return True
-    raw = os.environ.get("HERMES_GIT_PR_ON_COMPLETE", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    return hermes_git_pr_on_complete_enabled()
 
 
 def slice_commit_message(plan: SlicePlan) -> str:
