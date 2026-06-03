@@ -48,6 +48,13 @@ def bootstrap_iam(
         role_taxonomy_keys=["planner", "backend_writer"],
         api_scopes=list(DEFAULT_ADMIN_SCOPES),
     )
+    if hasattr(iam, "log_iam_action"):
+        iam.log_iam_action(
+            action="iam.bootstrap",
+            tenant_id=ops.tenant_id,
+            actor_key_id=key.key_id,
+            detail={"tenant_slug": ops.slug},
+        )
     return {
         "tenant_id": str(ops.tenant_id),
         "tenant_slug": ops.slug,

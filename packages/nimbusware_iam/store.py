@@ -8,6 +8,7 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
+from nimbusware_iam.action_log import IamActionRecord, new_iam_action
 from nimbusware_iam.constants import DEFAULT_TENANT_ID, DEFAULT_TENANT_SLUG
 from nimbusware_iam.crypto import api_key_prefix, generate_api_key, hash_api_key
 from nimbusware_iam.models import ApiKeyCreateResult, AuthContext, TenantRecord
@@ -21,7 +22,38 @@ class InMemoryIamStore:
         self.tenants: dict[UUID, TenantRecord] = {}
         self.keys: dict[UUID, dict[str, Any]] = {}
         self._keys_by_hash: dict[str, UUID] = {}
+        self.iam_actions: list[IamActionRecord] = []
         self.ensure_default_tenant()
+
+    def log_iam_action(
+        self,
+        *,
+        action: str,
+        tenant_id: UUID | None = None,
+        actor_key_id: UUID | None = None,
+        detail: dict[str, Any] | None = None,
+    ) -> IamActionRecord:
+        row = new_iam_action(
+            action=action,
+            tenant_id=str(tenant_id) if tenant_id else None,
+            actor_key_id=str(actor_key_id) if actor_key_id else None,
+            detail=detail,
+        )
+        self.iam_actions.append(row)
+        return row
+
+    def list_iam_actions(
+        self,
+        *,
+        since: datetime | None = None,
+        until: datetime | None = None,
+    ) -> list[IamActionRecord]:
+        rows = self.iam_actions
+        if since is not None:
+            rows = [r for r in rows if r.occurred_at >= since]
+        if until is not None:
+            rows = [r for r in rows if r.occurred_at <= until]
+        return sorted(rows, key=lambda r: r.occurred_at)
 
     def ensure_default_tenant(self) -> TenantRecord:
         if DEFAULT_TENANT_ID in self.tenants:
@@ -48,6 +80,7 @@ class InMemoryIamStore:
             created_at=datetime.now(timezone.utc),
         )
         self.tenants[tid] = row
+        self.log_iam_action(action="tenant.created", tenant_id=tid, detail={"slug": slug_n})
         return row
 
     def list_tenants(self) -> list[TenantRecord]:
@@ -87,6 +120,12 @@ class InMemoryIamStore:
             "revoked_at": None,
         }
         self._keys_by_hash[digest] = key_id
+        self.log_iam_action(
+            action="api_key.created",
+            tenant_id=tenant_id,
+            actor_key_id=key_id,
+            detail={"label": label.strip(), "key_prefix": prefix},
+        )
         return ApiKeyCreateResult(
             key_id=key_id,
             api_key=plain,
@@ -120,6 +159,37 @@ class InMemoryIamStore:
 class PostgresIamStore:
     def __init__(self, conninfo: str) -> None:
         self._conninfo = conninfo
+        self.iam_actions: list[IamActionRecord] = []
+
+    def log_iam_action(
+        self,
+        *,
+        action: str,
+        tenant_id: UUID | None = None,
+        actor_key_id: UUID | None = None,
+        detail: dict[str, Any] | None = None,
+    ) -> IamActionRecord:
+        row = new_iam_action(
+            action=action,
+            tenant_id=str(tenant_id) if tenant_id else None,
+            actor_key_id=str(actor_key_id) if actor_key_id else None,
+            detail=detail,
+        )
+        self.iam_actions.append(row)
+        return row
+
+    def list_iam_actions(
+        self,
+        *,
+        since: datetime | None = None,
+        until: datetime | None = None,
+    ) -> list[IamActionRecord]:
+        rows = self.iam_actions
+        if since is not None:
+            rows = [r for r in rows if r.occurred_at >= since]
+        if until is not None:
+            rows = [r for r in rows if r.occurred_at <= until]
+        return sorted(rows, key=lambda r: r.occurred_at)
 
     def ensure_default_tenant(self) -> TenantRecord:
         with psycopg.connect(self._conninfo) as conn:
@@ -160,7 +230,9 @@ class PostgresIamStore:
                 row = cur.fetchone()
             conn.commit()
         assert row is not None
-        return _tenant_from_row(row)
+        tenant = _tenant_from_row(row)
+        self.log_iam_action(action="tenant.created", tenant_id=tid, detail={"slug": slug_n})
+        return tenant
 
     def list_tenants(self) -> list[TenantRecord]:
         with psycopg.connect(self._conninfo) as conn:
@@ -224,6 +296,12 @@ class PostgresIamStore:
                     ),
                 )
             conn.commit()
+        self.log_iam_action(
+            action="api_key.created",
+            tenant_id=tenant_id,
+            actor_key_id=key_id,
+            detail={"label": label.strip(), "key_prefix": prefix},
+        )
         return ApiKeyCreateResult(
             key_id=key_id,
             api_key=plain,

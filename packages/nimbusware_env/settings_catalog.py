@@ -152,6 +152,17 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
+            "NIMBUSWARE_AUDIT_RETENTION_DAYS",
+            install,
+            i,
+            "90",
+            "Audit retention days",
+            "Default window for enterprise SOC2-oriented audit export.",
+            "Install — enterprise audit",
+            admin_editable=False,
+            user_editable=False,
+        ),
+        SettingDef(
             "NIMBUSWARE_OIDC_REDIRECT_URI",
             install,
             s,

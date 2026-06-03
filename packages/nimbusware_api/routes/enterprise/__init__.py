@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
+from nimbusware_api.routes.enterprise.audit_export import router as enterprise_audit_export_router
 from nimbusware_api.routes.enterprise.config_notify import router as config_notify_router
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.core import router as core_router
@@ -39,4 +40,5 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_worker_router)
     router.include_router(fleet_ollama_sli_router)
     router.include_router(fleet_analytics_router)
+    router.include_router(enterprise_audit_export_router)
     return router
