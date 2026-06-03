@@ -66,8 +66,11 @@ def max_parallel_writer_stages_from_governor() -> int | None:
     try:
         from nimbusware_hw.cache import get_cached_profile
         from nimbusware_hw.governor import governor_for_profile
+        from nimbusware_hw.pressure import pressure_limits_parallel, sample_pressure
 
-        return governor_for_profile(get_cached_profile()).max_parallel_writer_stages
+        gov = governor_for_profile(get_cached_profile())
+        level, _ = sample_pressure(gov)
+        return pressure_limits_parallel(level, gov.max_parallel_writer_stages)
     except ImportError:
         return None
 
