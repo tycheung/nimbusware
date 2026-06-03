@@ -25,6 +25,68 @@ from nimbusware_env.env_flags import env_tri_state
 
 
 class IntegratorOptionalStagesMixin:
+    def _maybe_emit_integrator_dep_preflight(
+        self: IntegratorOptionalStagesHost,
+        run_id: UUID,
+        *,
+        bundle_id: str,
+    ) -> None:
+        from hermes_orchestrator.integrator_dep_preflight import analyze_integrator_dep_conflicts
+        from nimbusware_config.persist import load_bundle_catalog_dict
+
+        if env_tri_state("HERMES_INTEGRATOR_DEP_PREFLIGHT") != "on":
+            return
+        ws = self._repo_root
+        pyproject = ws / "pyproject.toml"
+        catalog = load_bundle_catalog_dict(ws, materializer=self._config_materializer)
+        bundle_meta: dict[str, Any] | None = None
+        bundles_raw = catalog.get("bundles") if isinstance(catalog, dict) else None
+        if isinstance(bundles_raw, list):
+            for row in bundles_raw:
+                if isinstance(row, dict) and str(row.get("id") or "") == bundle_id:
+                    bundle_meta = row
+                    break
+        conflicts = analyze_integrator_dep_conflicts(
+            pyproject_path=pyproject,
+            bundle_meta=bundle_meta,
+        )
+        if not conflicts:
+            return
+        rows = self._store.list_run_events(str(run_id))
+        if any(
+            (r.get("metadata") or {}).get("integrator_dep_preflight")
+            for r in rows
+            if r.get("event_type") == EventType.FINDING_CREATED.value
+        ):
+            return
+        from agent_core.models import (
+            EventType as ET,
+        )
+        from agent_core.models import (
+            FindingCreatedEvent,
+            FindingCreatedPayload,
+            Severity,
+        )
+
+        self._store.append(
+            FindingCreatedEvent(
+                event_type=ET.FINDING_CREATED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={"integrator_dep_preflight": True, "bundle_id": bundle_id},
+                payload=FindingCreatedPayload(
+                    finding_id=uuid4(),
+                    category="integrator",
+                    owner_role=uuid4(),
+                    severity=Severity.LOW,
+                    source_artifact=f"integrator_dep_preflight:{bundle_id}",
+                    repro_steps=[c.get("detail", "") for c in conflicts[:20]],
+                    required_fixes=[],
+                ),
+            ),
+        )
+
     def _emit_bundle_integrator_gate(self: IntegratorOptionalStagesHost, run_id: UUID) -> None:
         tri = env_tri_state("HERMES_EMIT_INTEGRATOR_GATE")
         if tri == "off":
@@ -60,6 +122,7 @@ class IntegratorOptionalStagesMixin:
             wf,
             config_materializer=self._config_materializer,
         )
+        self._maybe_emit_integrator_dep_preflight(run_id, bundle_id=bundle_id)
         bundle_tags = load_bundle_tags_for_bundle_id(
             self._repo_root,
             bundle_id,

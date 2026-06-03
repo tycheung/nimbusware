@@ -43,6 +43,13 @@ class IntegratorOptionalStagesHost(Protocol):
     _config_materializer: Any | None
     _bundle_outcome_store: Any | None
 
+    def _maybe_emit_integrator_dep_preflight(
+        self,
+        run_id: UUID,
+        *,
+        bundle_id: str,
+    ) -> None: ...
+
 
 class IntegrationOptionalStagesHost(Protocol):
     _store: EventStore

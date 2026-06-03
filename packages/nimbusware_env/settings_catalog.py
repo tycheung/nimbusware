@@ -467,6 +467,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
+            "HERMES_INTEGRATOR_DEP_PREFLIGHT",
+            system,
+            b,
+            "",
+            "Integrator dep preflight",
+            "Emit finding when bundle required_packages are missing from pyproject.",
+            "System — optional stages",
+        ),
+        SettingDef(
             "HERMES_SELF_REFINEMENT_STAGE_MARKER",
             system,
             b,
