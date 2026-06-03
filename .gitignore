@@ -103,6 +103,7 @@ secrets.json
 hermes-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
+e2e-testing-extension-plan.md
 benchmarks/
 
 # Hermes agent local run artifacts (integration adapter workspaces, etc.)
