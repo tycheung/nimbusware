@@ -102,6 +102,7 @@ secrets.json
 # Nimbusware planning docs (normative contract may stay out of repo)
 hermes-orchestrator-local-plan.md
 PLAN_GAP.md
+plan_gap.md
 
 # Hermes agent local run artifacts (integration adapter workspaces, etc.)
 .hermes/
