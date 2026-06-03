@@ -81,13 +81,14 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
         hermes_slice_symbol_sketch_max_chars,
     )
 
-    if hermes_slice_lsp_enabled() and plan.target_paths:
-        from hermes_orchestrator.slice_symbol_sketch import build_symbol_sketch
+    if plan.target_paths:
+        from hermes_orchestrator.slice_lsp_client import build_symbol_sketch_with_lsp_fallback
 
-        symbol_sketch = build_symbol_sketch(
+        symbol_sketch, _ = build_symbol_sketch_with_lsp_fallback(
             ws,
             plan.target_paths,
             max_chars=hermes_slice_symbol_sketch_max_chars(),
+            lsp_enabled=hermes_slice_lsp_enabled(),
         )
 
     pending_meta = {

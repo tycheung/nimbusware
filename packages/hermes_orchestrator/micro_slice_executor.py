@@ -285,13 +285,17 @@ def execute_micro_slice_pass(
                 hermes_slice_symbol_sketch_max_chars,
             )
 
-            if hermes_slice_lsp_enabled() and plan.target_paths:
-                from hermes_orchestrator.slice_symbol_sketch import build_symbol_sketch
+            lsp_reason = ""
+            if plan.target_paths:
+                from hermes_orchestrator.slice_lsp_client import (
+                    build_symbol_sketch_with_lsp_fallback,
+                )
 
-                symbol_sketch = build_symbol_sketch(
+                symbol_sketch, lsp_reason = build_symbol_sketch_with_lsp_fallback(
                     ws,
                     plan.target_paths,
                     max_chars=hermes_slice_symbol_sketch_max_chars(),
+                    lsp_enabled=hermes_slice_lsp_enabled(),
                 )
             impl_meta = {
                 "slice_id": plan.slice_id,
@@ -300,6 +304,8 @@ def execute_micro_slice_pass(
                 "paths_touched": list(impl_result.paths_touched),
                 "symbol_sketch": symbol_sketch,
             }
+            if lsp_reason:
+                impl_meta["symbol_sketch_lsp_reason"] = lsp_reason
             _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
             duration_ms = int((time.perf_counter() - started) * 1000)
 

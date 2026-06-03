@@ -242,6 +242,28 @@ def hermes_slice_lsp_enabled() -> bool:
     return resolve_bool("HERMES_SLICE_LSP_ENABLED", default=False)
 
 
+def hermes_slice_lsp_command() -> str | None:
+    from nimbusware_env.settings_resolve import resolve_raw
+
+    raw = resolve_raw("HERMES_SLICE_LSP_COMMAND")
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    return text or None
+
+
+def hermes_slice_lsp_timeout_sec(default: float = 8.0) -> float:
+    from nimbusware_env.settings_resolve import resolve_raw
+
+    raw = resolve_raw("HERMES_SLICE_LSP_TIMEOUT_SEC")
+    if raw is None or not str(raw).strip():
+        return default
+    try:
+        return max(1.0, float(str(raw).strip()))
+    except ValueError:
+        return default
+
+
 def hermes_slice_symbol_sketch_max_chars(default: int = 3000) -> int:
     return resolve_int("HERMES_SLICE_SYMBOL_SKETCH_MAX_CHARS", default=default)
 

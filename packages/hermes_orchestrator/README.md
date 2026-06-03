@@ -11,6 +11,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 | `CreateRunMixin` | `create_run.py` | `run.created`, idempotency, project metadata |
 | `MicroSliceMixin` | `micro_slice.py` | Slice plan/implement/verify chain |
 | (packet helper) | `slice_repo_map.py` | Repo tree + import graph for `SliceContextPacket.repo_map_excerpt` |
+| (packet helper) | `slice_symbol_sketch.py` | AST symbol sketch; `slice_lsp_client.py` optional Pyright `documentSymbol` |
 | `PipelineScraperMixin` | `pipeline_scraper.py` | Scraper stage + artifacts |
 | `LifecycleMixin` | `lifecycle.py` | start / plan / verify / slice API transitions |
 | `CritiqueGatesMixin` | `critique_gates.py` | Composed: `critique_gates_{stage_failed,helpers,optional_emit}.py` |
