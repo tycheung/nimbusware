@@ -8,7 +8,8 @@ Append-only event store for Hermes agent runs (via Nimbusware): Postgres when `N
 |--------|------|
 | `postgres.py` | SQL-backed append + replay |
 | `memory.py` | `InMemoryEventStore` for tests and offline use |
-| `schema/postgres.sql` | Canonical DDL (applied via `scripts/apply_event_store.sh`) |
+| `schema/postgres.sql` | Canonical DDL + `event_store_type_allowed` (incl. `research.brief.*`) |
+| `migrations/README.md` | Greenfield apply; notes for extending the event CHECK on live DBs |
 
 ## Consumers
 

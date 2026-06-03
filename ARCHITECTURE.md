@@ -47,7 +47,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_executor` | Role-gated outbound HTTP |
 | `hermes_agent_tools` | Allowlisted tools for slice implement agent mode |
 | `nimbusware_config` | Versioned config documents + materializer |
-| `nimbusware_projections` | Pure functions: events → timeline summaries |
+| `nimbusware_projections` | Events → timeline, maker-progress, theater, research briefs |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants + API keys (`maker_user` / `maker_admin`) |
@@ -55,7 +55,6 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_console` | Admin Console (config, fleet, deep timeline; `services/` HTTP helpers) |
 | `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
-| `nimbusware_projections` | Read models: timeline, maker-progress, run theater, research briefs |
 
 ## Editions
 

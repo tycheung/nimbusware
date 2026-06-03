@@ -103,13 +103,8 @@ def _strictness_from_validation_info(info: ValidationInfo) -> FindingFixStrictne
 
 
 class RequiredFixArtifact(BasePayload):
-    """Machine-actionable remediation; mirrors plan ?4.2 / ?19.1."""
-
     artifact_schema_version: Literal[1] = 1
-    patch_format: Literal["json_patch", "unified_diff"] = Field(
-        alias="format",
-        description="Wire / JSON key remains `format` (plan + configs).",
-    )
+    patch_format: Literal["json_patch", "unified_diff"] = Field(alias="format")
     target_files: list[str] = Field(min_length=1)
     patch_artifact: str = Field(min_length=1)
     validation_steps: list[str] = Field(

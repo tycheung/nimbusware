@@ -13,7 +13,7 @@ Streamlit **user loop** for micro-slice workflows: plan approval, slice preview/
 - API routes under `nimbusware_api/routes/runs/maker_*.py` drive the same approval state machine server-side.
 - First-run wizard when onboarding is incomplete (folder → readiness → model → intent → run).
 - **Models** tab: ranked models, presets, Ollama dependency strip (`ui/model_manager.py`).
-- **Progress** tab: run theater group chat + plain-language progress (SSE optional).
+- **Progress** tab: run theater group chat + plain-language progress (`Pull live` uses SSE via `services/progress_stream.py`).
 - **Review** tab: research brief approve/reject when `research.brief.emitted` events exist.
 
 ## Layering
