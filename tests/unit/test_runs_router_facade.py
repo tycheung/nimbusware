@@ -28,6 +28,8 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/findings"),
         ("GET", "/runs/{run_id}/maker-progress"),
         ("GET", "/runs/{run_id}/maker-progress/stream"),
+        ("GET", "/runs/{run_id}/theater"),
+        ("GET", "/runs/{run_id}/theater/stream"),
         ("GET", "/runs/{run_id}/research"),
         ("POST", "/runs/{run_id}/research/{brief_id}/approve"),
         ("POST", "/runs/{run_id}/research/{brief_id}/reject"),
@@ -101,6 +103,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "maker_approval_router",
         "research_router",
         "stream_router",
+        "theater_router",
         "slices_router",
     )
     if not all(hasattr(runs_module, name) for name in sub_names):
