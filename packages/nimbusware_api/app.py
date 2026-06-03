@@ -253,6 +253,10 @@ async def _enterprise_iam(request: Request, call_next):
 
 app.include_router(build_v1_router(), prefix="/v1")
 
+from nimbusware_api.routes.maker_web import mount_maker_web  # noqa: E402
+
+mount_maker_web(app)
+
 
 def _build_openapi_schema() -> dict:
     from fastapi.openapi.utils import get_openapi

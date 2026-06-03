@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hermes Maker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Hermes Maker</h1>
+      <p class="subtitle">Lightweight run theater and research approvals</p>
+    </header>
+    <main>
+      <section class="panel">
+        <label for="run-theater-run-id">Run ID</label>
+        <input id="run-theater-run-id" type="text" placeholder="uuid" autocomplete="off" />
+        <div class="actions">
+          <button id="btn-load-theater" type="button">Load theater</button>
+          <button id="btn-load-research" type="button">Load research</button>
+          <button id="btn-poll-theater" type="button">Poll theater</button>
+        </div>
+        <p id="status" class="status" aria-live="polite"></p>
+      </section>
+      <section class="panel">
+        <h2>Theater</h2>
+        <ul id="theater-list"></ul>
+      </section>
+      <section class="panel">
+        <h2>Research briefs</h2>
+        <ul id="research-list"></ul>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
