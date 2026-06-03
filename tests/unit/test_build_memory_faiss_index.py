@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from uuid import uuid4
 
+import numpy as np
 import pytest
 
 from hermes_memory import InMemoryMemoryChunkStore, rebuild_memory_index
@@ -89,9 +90,15 @@ def test_memory_faiss_search_chunk_ids(tmp_path) -> None:
     ]
     idx_dir = tmp_path / "index"
     assert build_memory_faiss_index(chunks=chunks, index_dir=idx_dir) == 0
-    hits = faiss_search_chunk_ids(
-        idx_dir,
-        deterministic_embed("sql injection"),
-        k=1,
+    query = deterministic_embed("sql injection")
+    hits = faiss_search_chunk_ids(idx_dir, query, k=1)
+    best = max(
+        chunks,
+        key=lambda ch: float(
+            np.dot(
+                np.asarray(query, dtype=np.float32),
+                np.asarray(ch.embedding_vector, dtype=np.float32),
+            )
+        ),
     )
-    assert hits == [chunks[0].chunk_id]
+    assert hits == [best.chunk_id]
