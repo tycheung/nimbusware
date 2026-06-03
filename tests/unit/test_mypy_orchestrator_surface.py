@@ -33,6 +33,7 @@ _ORCHESTRATOR_STRICT = frozenset(
         "hermes_orchestrator._pipeline.optional_stages_self_refinement",
         "hermes_orchestrator._pipeline.optional_stages_agent_evaluator",
         "hermes_orchestrator._pipeline.optional_stages",
+        "hermes_orchestrator._pipeline.compose",
     },
 )
 

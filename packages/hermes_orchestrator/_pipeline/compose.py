@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import types
 from inspect import getattr_static
+from typing import cast
 
 from hermes_orchestrator._pipeline.base import RunOrchestratorBase
 from hermes_orchestrator._pipeline.create_run import CreateRunMixin
@@ -55,22 +56,34 @@ def _bind_function(fn: types.FunctionType) -> types.FunctionType:
             fn_globals.clear()
             fn_globals.update(snapshot)
 
-    return wrapper  # type: ignore[return-value]
+    return cast(types.FunctionType, wrapper)
 
 
-def _rebind_descriptor(name: str, attr: object, cls: type) -> None:
+def _rebind_descriptor(name: str, attr: object, cls: type[object]) -> None:
     if isinstance(attr, staticmethod):
-        fn = attr.__func__
+        fn = cast(types.FunctionType, attr.__func__)
         setattr(cls, name, staticmethod(_bind_function(fn)))
         return
     if isinstance(attr, classmethod):
-        fn = attr.__func__
+        fn = cast(types.FunctionType, attr.__func__)
         setattr(cls, name, classmethod(_bind_function(fn)))
         return
     if isinstance(attr, property):
-        fget = _bind_function(attr.fget) if attr.fget is not None else None
-        fset = _bind_function(attr.fset) if attr.fset is not None else None
-        fdel = _bind_function(attr.fdel) if attr.fdel is not None else None
+        fget = (
+            _bind_function(attr.fget)
+            if isinstance(attr.fget, types.FunctionType)
+            else attr.fget
+        )
+        fset = (
+            _bind_function(attr.fset)
+            if isinstance(attr.fset, types.FunctionType)
+            else attr.fset
+        )
+        fdel = (
+            _bind_function(attr.fdel)
+            if isinstance(attr.fdel, types.FunctionType)
+            else attr.fdel
+        )
         setattr(cls, name, property(fget, fset, fdel))
         return
     if isinstance(attr, types.FunctionType):
@@ -109,7 +122,7 @@ def _finalize_run_orchestrator_class(cls: type) -> type:
     return cls
 
 
-def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type:
+def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type[object]:
     """Return ``RunOrchestrator``; mixin methods resolve helpers via ``pipeline``."""
     del _pipeline_globals
     return _finalize_run_orchestrator_class(RunOrchestrator)
