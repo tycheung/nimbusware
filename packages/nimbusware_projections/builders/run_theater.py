@@ -29,6 +29,70 @@ def _stage_name(pl: dict[str, Any]) -> str:
     return str(sn).strip() if isinstance(sn, str) else ""
 
 
+def _metadata(row: dict[str, Any]) -> dict[str, Any]:
+    raw = row.get("metadata")
+    return dict(raw) if isinstance(raw, dict) else {}
+
+
+def _metadata_theater_lines(row: dict[str, Any], base: dict[str, Any]) -> list[dict[str, Any]]:
+    meta = _metadata(row)
+    out: list[dict[str, Any]] = []
+    defer = meta.get("defer_to_role")
+    if isinstance(defer, dict):
+        role = str(defer.get("role_id") or defer.get("role") or "role")
+        reason = str(defer.get("reason_code") or defer.get("reason") or "")[:300]
+        out.append(
+            {
+                **base,
+                "actor_display": "System",
+                "message_kind": "system",
+                "severity": "info",
+                "headline": f"Deferring to {role}",
+                "body_md": reason or None,
+            },
+        )
+    elif isinstance(defer, str) and defer.strip():
+        out.append(
+            {
+                **base,
+                "actor_display": "System",
+                "message_kind": "system",
+                "severity": "info",
+                "headline": f"Deferring to {defer.strip()}",
+                "body_md": None,
+            },
+        )
+    creep = meta.get("scope_creep_warning")
+    if isinstance(creep, str) and creep.strip():
+        out.append(
+            {
+                **base,
+                "actor_display": "System",
+                "message_kind": "system",
+                "severity": "warn",
+                "headline": "Scope creep warning",
+                "body_md": creep.strip()[:400],
+            },
+        )
+    return out
+
+
+def _governor_headline_from_run_created(meta: dict[str, Any]) -> str | None:
+    gov = meta.get("resource_governor")
+    if not isinstance(gov, dict):
+        return None
+    max_writers = gov.get("max_parallel_writers")
+    tier = gov.get("hardware_tier") or gov.get("tier")
+    parts: list[str] = []
+    if max_writers is not None:
+        parts.append(f"max parallel writers: {max_writers}")
+    if tier:
+        parts.append(f"tier: {tier}")
+    if not parts:
+        return None
+    return "Resource governor — " + ", ".join(parts)
+
+
 def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> str:
     raw = pl.get(key)
     if not isinstance(raw, list) or not raw:
@@ -52,7 +116,93 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
             "occurred_at": row.get("occurred_at"),
             "refs": {"event_id": str(row.get("event_id") or "")},
         }
-        if et == EventType.STAGE_PASSED.value:
+        messages.extend(_metadata_theater_lines(row, base))
+        if et == EventType.RUN_CREATED.value:
+            meta = _metadata(row)
+            gov_headline = _governor_headline_from_run_created(meta)
+            if gov_headline:
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "System",
+                        "message_kind": "system",
+                        "severity": "info",
+                        "headline": gov_headline,
+                        "body_md": None,
+                    },
+                )
+        elif et == EventType.STAGE_STARTED.value:
+            sn = _stage_name(pl)
+            if sn.startswith("agent_eval:"):
+                ae = meta.get("agent_evaluator") if (meta := _metadata(row)) else {}
+                evaluation = ae.get("evaluation") if isinstance(ae, dict) else {}
+                overlaps = (
+                    evaluation.get("scope_overlaps") if isinstance(evaluation, dict) else None
+                )
+                if isinstance(overlaps, list) and overlaps:
+                    for warn in overlaps[:3]:
+                        if isinstance(warn, str) and warn.strip():
+                            messages.append(
+                                {
+                                    **base,
+                                    "actor_display": "Agent Evaluator",
+                                    "message_kind": "system",
+                                    "severity": "warn",
+                                    "headline": "Persona scope overlap",
+                                    "body_md": warn.strip()[:400],
+                                },
+                            )
+        elif et == EventType.MODEL_PREFLIGHT_STARTED.value:
+            model = str(pl.get("requested_model_id") or "")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "system",
+                    "severity": "info",
+                    "headline": f"Model preflight started: {model}",
+                    "body_md": str(pl.get("provider") or "")[:200] or None,
+                },
+            )
+        elif et == EventType.MODEL_PREFLIGHT_PASSED.value:
+            model = str(pl.get("validated_model_id") or "")
+            latency = pl.get("p95_latency_ms")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "system",
+                    "severity": "pass",
+                    "headline": f"Model preflight passed: {model}",
+                    "body_md": (f"p95 latency {latency}ms" if latency is not None else None),
+                },
+            )
+        elif et == EventType.MODEL_PREFLIGHT_FAILED.value:
+            model = str(pl.get("requested_model_id") or "")
+            reason = str(pl.get("reason_code") or "failed")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "system",
+                    "severity": "warn",
+                    "headline": f"Model preflight failed: {model}",
+                    "body_md": reason[:400],
+                },
+            )
+        elif et == EventType.HARDWARE_PROFILE_DETECTED.value:
+            tier = str(pl.get("hardware_tier") or pl.get("tier") or "unknown")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "system",
+                    "severity": "info",
+                    "headline": f"Hardware profile detected ({tier})",
+                    "body_md": None,
+                },
+            )
+        elif et == EventType.STAGE_PASSED.value:
             sn = _stage_name(pl)
             if sn in ("plan", "slice.plan"):
                 messages.append(
@@ -227,7 +377,15 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
             )
     messages.sort(key=lambda m: int(m.get("store_seq") or 0))
     _append_why_another_round(rows, messages)
-    return messages
+    from nimbusware_projections.builders.theater_paraphrase import (
+        apply_theater_paraphrase,
+        theater_llm_summary_enabled,
+    )
+
+    return apply_theater_paraphrase(
+        messages,
+        enabled=theater_llm_summary_enabled(rows),
+    )
 
 
 def _append_why_another_round(rows: list[dict[str, Any]], messages: list[dict[str, Any]]) -> None:

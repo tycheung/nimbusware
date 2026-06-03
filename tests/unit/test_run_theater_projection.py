@@ -11,6 +11,8 @@ from agent_core.models import (
     EventType,
     GateDecisionEmittedEvent,
     GateDecisionEmittedPayload,
+    ModelPreflightPassedEvent,
+    ModelPreflightPassedPayload,
     RequiredFixArtifact,
     ResearchPatternIndexedEvent,
     ResearchPatternIndexedPayload,
@@ -182,3 +184,61 @@ def test_theater_research_and_stitch_event_lines() -> None:
     stitch_msgs = [m for m in msgs if m.get("message_kind") == "stitch"]
     failed = next(m for m in stitch_msgs if "Stitch failed" in m["headline"])
     assert failed["severity"] == "block"
+
+
+def test_theater_governor_and_preflight_lines() -> None:
+    run_id = uuid4()
+    rows = [
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+            metadata={"resource_governor": {"max_parallel_writers": 2, "hardware_tier": "medium"}},
+        ).model_dump(mode="json"),
+        ModelPreflightPassedEvent(
+            event_type=EventType.MODEL_PREFLIGHT_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=ModelPreflightPassedPayload(
+                provider="ollama",
+                validated_model_id="llama3",
+                context_tokens=4096,
+                p95_latency_ms=120,
+            ),
+        ).model_dump(mode="json"),
+    ]
+    msgs = build_run_theater_messages(_with_store_seq(rows))
+    headlines = [m["headline"] for m in msgs]
+    assert any("Resource governor" in h for h in headlines)
+    assert any("Model preflight passed" in h for h in headlines)
+
+
+def test_theater_metadata_deferral_line() -> None:
+    run_id = uuid4()
+    row = CriticVerdictEmittedEvent(
+        event_type=EventType.CRITIC_VERDICT_EMITTED,
+        event_id=uuid4(),
+        run_id=run_id,
+        occurred_at=datetime.now(timezone.utc),
+        payload=CriticVerdictEmittedPayload(
+            critic_role=uuid4(),
+            verdict=Verdict.PASS,
+            severity=Severity.LOW,
+            owner_role=uuid4(),
+            is_in_domain=True,
+            required_fixes=[],
+        ),
+        metadata={
+            "defer_to_role": {"role_id": "security-critic", "reason_code": "out_of_scope"},
+        },
+    ).model_dump(mode="json")
+    row["store_seq"] = 1
+    msgs = build_run_theater_messages([row])
+    assert any("Deferring to security-critic" in m["headline"] for m in msgs)
