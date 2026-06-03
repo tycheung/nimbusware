@@ -72,10 +72,28 @@ Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-ro
 
 Optional **SWE-bench-style** regression harness for the `micro_slice` workflow profile:
 
-- Script: [`scripts/swe_bench_harness.py`](scripts/swe_bench_harness.py) (`--dry-run` validates fixture layout; full run reserved for scheduled jobs)
-- Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/)
-- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) (not required on PR)
-- Env: `HERMES_SWE_BENCH_ENABLED`, `HERMES_SWE_BENCH_MANIFEST`
+- Script: [`scripts/swe_bench_harness.py`](scripts/swe_bench_harness.py)
+  - `--dry-run --json` — validate manifest + fixture layout
+  - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
+- Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
+- Published metrics: gitignored [`benchmarks/`](benchmarks/) — set `HERMES_SWE_BENCH_WRITE_JSON=1` to write `benchmarks/latest_swe_bench.json`
+- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + scored `--run` (not required on PR)
+- Env: `HERMES_SWE_BENCH_ENABLED`, `HERMES_SWE_BENCH_MANIFEST`, `HERMES_SWE_BENCH_WRITE_JSON`
+
+Example scored output:
+
+```json
+{
+  "ok": true,
+  "mode": "run",
+  "pass_rate": 1.0,
+  "slices_total": 1,
+  "gates_passed": 1,
+  "gates_failed": 0,
+  "duration_sec": 12.5,
+  "run_id": "..."
+}
+```
 
 ## Repository layout
 

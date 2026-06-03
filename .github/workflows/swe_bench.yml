@@ -20,3 +20,20 @@ jobs:
           HERMES_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           HERMES_SWE_BENCH_ENABLED: "1"
+
+  swe-bench-scored:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: SWE-bench scored micro_slice run
+        run: poetry run python scripts/swe_bench_harness.py --run --json
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+          HERMES_SWE_BENCH_ENABLED: "1"
+          HERMES_MICRO_SLICE_COUNT: "1"

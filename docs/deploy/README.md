@@ -39,7 +39,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Unit** — default PR job (`ci.yml`): ruff, mypy, pytest unit subset @ 75% coverage.
 - **Integration** — Postgres `-m integration` on PR.
 - **E2E** — `tests/e2e -m e2e` on PR (import smoke + API `run.created` with Postgres).
-- **Weekly** — `e2e_smoke.yml`, `swe_bench.yml` (operator smoke + benchmark dry-run).
+- **Weekly** — `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + scored `--run` micro_slice benchmark; scored job may `continue-on-error` until fixture pass rate stabilizes).
 
 ## Secrets
 
