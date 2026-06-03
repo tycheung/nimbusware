@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     FRONTEND_WRITER_CRITIQUE_STAGE,
     IMPLEMENTATION_CRITIQUE_STAGE,
     MODULE_INTEGRATOR_CRITIQUE_STAGE,
@@ -17,11 +17,12 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import CritiqueGateHost
 
 
 class CritiqueGateStageFailedMixin:
     def _maybe_emit_stage_failed_for_implementation_critique_gate_fail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
@@ -70,7 +71,7 @@ class CritiqueGateStageFailedMixin:
         )
 
     def _maybe_emit_stage_failed_for_test_writer_critique_gate_fail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
@@ -119,7 +120,7 @@ class CritiqueGateStageFailedMixin:
         )
 
     def _maybe_emit_stage_failed_for_planner_critique_gate_fail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
@@ -168,7 +169,7 @@ class CritiqueGateStageFailedMixin:
         )
 
     def _maybe_emit_stage_failed_for_frontend_writer_critique_gate_fail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
@@ -200,7 +201,7 @@ class CritiqueGateStageFailedMixin:
         )
 
     def _maybe_emit_stage_failed_for_module_integrator_critique_gate_fail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:

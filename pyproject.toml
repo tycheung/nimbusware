@@ -239,6 +239,9 @@ module = [
   "hermes_orchestrator._pipeline.lifecycle_plan",
   "hermes_orchestrator._pipeline.optional_critique",
   "hermes_orchestrator._pipeline.escalation",
+  "hermes_orchestrator._pipeline.critique_gates_helpers",
+  "hermes_orchestrator._pipeline.critique_gates_optional_emit",
+  "hermes_orchestrator._pipeline.critique_gates_stage_failed",
 ]
 ignore_errors = false
 

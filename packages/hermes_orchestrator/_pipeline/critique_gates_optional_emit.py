@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     EffectiveUniversalCritique,
     EventType,
@@ -20,11 +20,12 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import CritiqueGateHost
 
 
 class CritiqueGateOptionalEmitMixin:
     def _emit_test_writer_critique_optional(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         *,
         verifier_exit_code: int,
@@ -68,7 +69,7 @@ class CritiqueGateOptionalEmitMixin:
             )
 
     def _emit_planner_critique_optional(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         *,
         verifier_exit_code: int,
@@ -111,7 +112,7 @@ class CritiqueGateOptionalEmitMixin:
             )
 
     def _emit_frontend_writer_critique_optional(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         *,
         verifier_exit_code: int,
@@ -161,7 +162,7 @@ class CritiqueGateOptionalEmitMixin:
             )
 
     def _emit_module_integrator_critique_optional(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         *,
         verifier_exit_code: int,

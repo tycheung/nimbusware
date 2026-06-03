@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     FRONTEND_WRITER_CRITIQUE_STAGE,
     IMPLEMENTATION_CRITIQUE_STAGE,
     MODULE_INTEGRATOR_CRITIQUE_STAGE,
@@ -18,6 +18,7 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import CritiqueGateHost
 
 
 class CritiqueGateHelpersMixin:
@@ -54,7 +55,10 @@ class CritiqueGateHelpersMixin:
                 return True
         return False
 
-    def _repro_steps_from_critique_gate(self, gate_pl: dict[str, Any]) -> list[str]:
+    def _repro_steps_from_critique_gate(
+        self: CritiqueGateHost,
+        gate_pl: dict[str, Any],
+    ) -> list[str]:
         lines = [
             f"stage={gate_pl.get('stage_name')}",
             f"verdict={gate_pl.get('verdict')}",
@@ -71,7 +75,7 @@ class CritiqueGateHelpersMixin:
         return lines[:40]
 
     def _maybe_emit_critique_gate_fail_findings(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
@@ -136,7 +140,7 @@ class CritiqueGateHelpersMixin:
             rows = self._store.list_run_events(str(run_id))
 
     def _critique_impl_hard_block_gate_fail(
-        self,
+        self: CritiqueGateHost,
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
@@ -147,7 +151,7 @@ class CritiqueGateHelpersMixin:
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
     def _critique_tw_hard_block_gate_fail(
-        self,
+        self: CritiqueGateHost,
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
@@ -158,7 +162,7 @@ class CritiqueGateHelpersMixin:
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
     def _critique_pll_hard_block_gate_fail(
-        self,
+        self: CritiqueGateHost,
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
@@ -171,7 +175,7 @@ class CritiqueGateHelpersMixin:
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
     def _critique_fw_hard_block_gate_fail(
-        self,
+        self: CritiqueGateHost,
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
@@ -191,7 +195,7 @@ class CritiqueGateHelpersMixin:
         return bool(pl and self._critique_gate_verdict_is_fail(pl))
 
     def _should_skip_critique_downstream_tail(
-        self,
+        self: CritiqueGateHost,
         run_id: UUID,
         eff: EffectiveUniversalCritique,
     ) -> bool:
@@ -201,7 +205,7 @@ class CritiqueGateHelpersMixin:
         :meth:`execute_writer_verifier_pass` tail ordering).
         """
         rows = self._store.list_run_events(str(run_id))
-        return (
+        return bool(
             self._critique_impl_hard_block_gate_fail(rows, eff)
             or self._critique_tw_hard_block_gate_fail(rows, eff)
             or self._critique_pll_hard_block_gate_fail(rows, eff)
