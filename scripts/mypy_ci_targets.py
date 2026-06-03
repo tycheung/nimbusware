@@ -64,6 +64,11 @@ _TRANCHE_E = (
     "packages/hermes_orchestrator/_pipeline/critique_gates_helpers.py",
     "packages/hermes_orchestrator/_pipeline/critique_gates_optional_emit.py",
     "packages/hermes_orchestrator/_pipeline/critique_gates_stage_failed.py",
+    "packages/hermes_orchestrator/_pipeline/critique_gates.py",
+    "packages/hermes_orchestrator/_pipeline/lifecycle.py",
+    "packages/hermes_orchestrator/_pipeline/lifecycle_start.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_research.py",
+    "packages/hermes_orchestrator/_pipeline/optional_stages_stitch.py",
 )
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).

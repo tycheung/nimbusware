@@ -11,6 +11,32 @@ from hermes_orchestrator.slice_gate import SliceGateChainResult
 from hermes_store.protocol import EventStore
 
 
+class LifecycleStartHost(Protocol):
+    _store: EventStore
+
+    def _base_cfg(self) -> dict[str, Any]: ...
+
+
+class ResearchOptionalStagesHost(Protocol):
+    _store: EventStore
+    _registry: RoleRegistry
+    _critique_router: Any
+    _repo_root: Path
+    _config_materializer: Any | None
+
+    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]: ...
+
+
+class StitchOptionalStagesHost(Protocol):
+    _store: EventStore
+    _registry: RoleRegistry
+    _critique_router: Any
+    _repo_root: Path
+    _config_materializer: Any | None
+
+    def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]: ...
+
+
 class LifecyclePlanHost(Protocol):
     _store: EventStore
     _registry: RoleRegistry

@@ -23,6 +23,11 @@ _ORCHESTRATOR_STRICT = frozenset(
         "hermes_orchestrator._pipeline.critique_gates_helpers",
         "hermes_orchestrator._pipeline.critique_gates_optional_emit",
         "hermes_orchestrator._pipeline.critique_gates_stage_failed",
+        "hermes_orchestrator._pipeline.critique_gates",
+        "hermes_orchestrator._pipeline.lifecycle",
+        "hermes_orchestrator._pipeline.lifecycle_start",
+        "hermes_orchestrator._pipeline.optional_stages_research",
+        "hermes_orchestrator._pipeline.optional_stages_stitch",
     },
 )
 
@@ -48,3 +53,4 @@ def test_tranche_e_paths_in_ci_targets() -> None:
     assert "packages/hermes_orchestrator/_pipeline/micro_slice.py" in text
     assert "packages/hermes_orchestrator/_pipeline/lifecycle_plan.py" in text
     assert "packages/hermes_orchestrator/_pipeline/critique_gates_helpers.py" in text
+    assert "packages/hermes_orchestrator/_pipeline/lifecycle_start.py" in text

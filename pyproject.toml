@@ -242,6 +242,11 @@ module = [
   "hermes_orchestrator._pipeline.critique_gates_helpers",
   "hermes_orchestrator._pipeline.critique_gates_optional_emit",
   "hermes_orchestrator._pipeline.critique_gates_stage_failed",
+  "hermes_orchestrator._pipeline.critique_gates",
+  "hermes_orchestrator._pipeline.lifecycle",
+  "hermes_orchestrator._pipeline.lifecycle_start",
+  "hermes_orchestrator._pipeline.optional_stages_research",
+  "hermes_orchestrator._pipeline.optional_stages_stitch",
 ]
 ignore_errors = false
 

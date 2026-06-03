@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     EventType,
     ModelPreflightPassedEvent,
@@ -19,10 +19,11 @@ from hermes_orchestrator._pipeline._helpers import (
     timezone,
     uuid4,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import LifecycleStartHost
 
 
 class LifecycleStartMixin:
-    def start_run_after_preflight(self, run_id: UUID) -> None:
+    def start_run_after_preflight(self: LifecycleStartHost, run_id: UUID) -> None:
         base = self._base_cfg()
         runtime = base.get("runtime") or {}
         models = base.get("models") or {}
