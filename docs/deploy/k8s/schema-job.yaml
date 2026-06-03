@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nimbusware-schema-apply
+  labels:
+    app: nimbusware-schema-apply
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: nimbusware-schema-apply
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: schema
+          image: nimbusware-api:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "scripts/apply_event_store.sh"]
+          envFrom:
+            - secretRef:
+                name: nimbusware-api-secrets
+          env:
+            - name: NIMBUSWARE_REPO_ROOT
+              value: /app

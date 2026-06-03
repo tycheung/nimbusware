@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nimbusware-dispatch-worker
+  labels:
+    app: nimbusware-dispatch-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nimbusware-dispatch-worker
+  template:
+    metadata:
+      labels:
+        app: nimbusware-dispatch-worker
+    spec:
+      containers:
+        - name: worker
+          image: nimbusware-api:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "scripts/run_dispatch_worker.py"]
+          envFrom:
+            - secretRef:
+                name: nimbusware-api-secrets
+          env:
+            - name: NIMBUSWARE_REPO_ROOT
+              value: /app
+            - name: NIMBUSWARE_EDITION
+              value: enterprise
+            - name: HERMES_RUN_DISPATCH
+              value: redis
+            - name: HERMES_REDIS_URL
+              value: redis://nimbusware-redis:6379/0
+            - name: HERMES_SKIP_PREFLIGHT
+              value: "1"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
