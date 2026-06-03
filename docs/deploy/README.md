@@ -34,6 +34,13 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
   bash scripts/apply_event_store.sh
 ```
 
+## CI (GitHub Actions)
+
+- **Unit** — default PR job (`ci.yml`): ruff, mypy, pytest unit subset @ 75% coverage.
+- **Integration** — Postgres `-m integration` on PR.
+- **E2E** — `tests/e2e -m e2e` on PR (import smoke + API `run.created` with Postgres).
+- **Weekly** — `e2e_smoke.yml`, `swe_bench.yml` (operator smoke + benchmark dry-run).
+
 ## Secrets
 
 - Never ship the dev default admin token in production (`nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD`).
