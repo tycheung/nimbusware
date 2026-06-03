@@ -176,6 +176,16 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
+            "HERMES_SANDBOX_BACKEND",
+            user,
+            e,
+            "none",
+            "Agent shell sandbox backend",
+            "none runs locally; stub tags output for future container backends.",
+            "User — agent tools safety",
+            choices=("none", "stub"),
+        ),
+        SettingDef(
             "HERMES_SLICE_AUTO_COMMIT",
             user,
             b,

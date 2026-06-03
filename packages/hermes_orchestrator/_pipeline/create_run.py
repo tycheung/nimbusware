@@ -282,11 +282,17 @@ class CreateRunMixin:
                 wf_path,
                 run_policy_overrides,
             )
+        from hermes_agent_tools.filesystem_jail import default_jail_policy
+        from hermes_agent_tools.sandbox import resolve_sandbox_backend
         from nimbusware_hw.cache import get_cached_profile
         from nimbusware_hw.governor import governor_for_profile
 
         hw_profile = get_cached_profile()
         resource_governor = governor_for_profile(hw_profile).to_metadata()
+        agent_tools_effective = {
+            "sandbox_backend": resolve_sandbox_backend(),
+            "filesystem_jail": default_jail_policy().enabled,
+        }
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -314,6 +320,7 @@ class CreateRunMixin:
                     "max_files": ms_block.max_files,
                     "max_loc": ms_block.max_loc,
                 },
+                "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],
                     "index_contribution": memory_meta["index_contribution"],

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -111,15 +110,16 @@ def tool_run_shell(
             cmd, cmd_args = shell_from_string(command)
         else:
             cmd, cmd_args = validate_shell_invocation(command, list(args or []))
-        proc = subprocess.run(
+        from hermes_agent_tools.sandbox import run_subprocess_in_sandbox
+
+        proc = run_subprocess_in_sandbox(
+            workspace,
             [cmd, *cmd_args],
-            cwd=workspace,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
+            timeout_seconds=timeout_seconds,
         )
-        out = (proc.stdout or "") + (proc.stderr or "")
+        out = proc.combined_output
         ok = proc.returncode == 0
-        return ToolResult("shell", ok, out[:4000] or f"exit {proc.returncode}")
-    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        tag = f"[{proc.backend}] " if proc.backend != "none" else ""
+        return ToolResult("shell", ok, (tag + out)[:4000] or f"exit {proc.returncode}")
+    except (OSError, TimeoutError, ValueError) as exc:
         return ToolResult("shell", False, str(exc))
