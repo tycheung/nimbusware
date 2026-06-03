@@ -26,6 +26,9 @@ def path_in_plan(rel: str, allowed: set[str]) -> bool:
 
 
 def resolve_workspace_file(workspace: Path, rel: str) -> Path:
+    from hermes_agent_tools.filesystem_jail import assert_rel_allowed
+
+    assert_rel_allowed(rel)
     ws = workspace.resolve()
     target = (ws / normalise_rel(rel)).resolve()
     if not str(target).startswith(str(ws)):

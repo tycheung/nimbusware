@@ -49,16 +49,18 @@ def tool_grep(
         return ToolResult("grep", False, f"invalid pattern: {exc}")
 
     scope = [normalise_rel(p) for p in (paths or []) if str(p).strip()]
+    if not scope:
+        return ToolResult("grep", False, "paths required (filesystem jail)")
     matches: list[str] = []
     ws = workspace.resolve()
     files: list[Path] = []
-    if scope:
-        for rel in scope:
-            fp = ws / rel
-            if fp.is_file():
-                files.append(fp)
-    else:
-        files = [p for p in ws.rglob("*") if p.is_file() and ".git" not in p.parts]
+    for rel in scope:
+        try:
+            fp = resolve_workspace_file(ws, rel)
+        except ValueError as exc:
+            return ToolResult("grep", False, str(exc))
+        if fp.is_file():
+            files.append(fp)
 
     for fp in files:
         rel = str(fp.relative_to(ws)).replace("\\", "/")

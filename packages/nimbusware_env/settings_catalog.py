@@ -167,6 +167,15 @@ def _defs() -> tuple[SettingDef, ...]:
             choices=("scoped", "stub", "agent", "llm"),
         ),
         SettingDef(
+            "HERMES_FILESYSTEM_JAIL",
+            user,
+            b,
+            "1",
+            "Agent tools filesystem jail",
+            "Deny .env, .git, secrets paths; require scoped grep.",
+            "User — agent tools safety",
+        ),
+        SettingDef(
             "HERMES_SLICE_AUTO_COMMIT",
             user,
             b,
