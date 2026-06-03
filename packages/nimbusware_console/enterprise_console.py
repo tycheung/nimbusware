@@ -25,6 +25,7 @@ fetch_tenants = enterprise_svc.fetch_tenants
 fetch_fleet_memory_status = enterprise_svc.fetch_fleet_memory_status
 fetch_fleet_preflight_aggregate = enterprise_svc.fetch_fleet_preflight_aggregate
 fetch_fleet_worker_health = enterprise_svc.fetch_fleet_worker_health
+fetch_fleet_critic_reliability = enterprise_svc.fetch_fleet_critic_reliability
 
 
 def tenant_select_options(tenants_body: Mapping[str, Any] | None) -> list[tuple[str, str]]:

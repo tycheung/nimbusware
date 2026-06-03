@@ -6,6 +6,10 @@ from typing import Any
 import streamlit as st
 
 from nimbusware_client.http import HTTPError
+from nimbusware_console.critic_reliability_display import (
+    fleet_critic_reliability_caption,
+    fleet_critic_reliability_table_rows,
+)
 from nimbusware_console.enterprise_console import (
     SS_API_KEY,
     SS_EDITION_MANIFEST,
@@ -13,6 +17,7 @@ from nimbusware_console.enterprise_console import (
     SS_SELECTED_TENANT,
     SS_TENANT_KEYS,
     enterprise_console_feature_enabled,
+    fetch_fleet_critic_reliability,
     fetch_fleet_memory_status,
     fetch_fleet_preflight_aggregate,
     fetch_fleet_worker_health,
@@ -177,6 +182,7 @@ def render_enterprise_fleet_dashboard() -> None:
             memory_body: dict[str, Any] | None = None
             aggregate_body: dict[str, Any] | None = None
             worker_body: dict[str, Any] | None = None
+            critic_body: dict[str, Any] | None = None
             try:
                 memory_body = fetch_fleet_memory_status(api_key=api_key)
             except HTTPError as exc:
@@ -192,9 +198,27 @@ def render_enterprise_fleet_dashboard() -> None:
                 worker_body = fetch_fleet_worker_health(api_key=api_key)
             except HTTPError as exc:
                 errors.append(f"fleet-worker/health: {exc}")
+            iam_me = st.session_state.get(SS_IAM_ME)
+            tenant_id = (
+                str(iam_me.get("tenant_id"))
+                if isinstance(iam_me, dict) and iam_me.get("tenant_id")
+                else None
+            )
+            if tenant_id:
+                try:
+                    critic_body = fetch_fleet_critic_reliability(
+                        api_key=api_key,
+                        tenant_id=tenant_id,
+                        run_limit=100,
+                    )
+                except HTTPError as exc:
+                    errors.append(f"fleet/critic-reliability: {exc}")
+            else:
+                errors.append("fleet/critic-reliability: missing tenant_id (load IAM me first)")
             st.session_state["hermes_enterprise_dashboard_memory"] = memory_body
             st.session_state["hermes_enterprise_dashboard_aggregate"] = aggregate_body
             st.session_state["hermes_enterprise_dashboard_worker"] = worker_body
+            st.session_state["hermes_enterprise_dashboard_critic"] = critic_body
             st.session_state["hermes_enterprise_dashboard_errors"] = errors
 
         for err in st.session_state.get("hermes_enterprise_dashboard_errors") or []:
@@ -226,12 +250,23 @@ def render_enterprise_fleet_dashboard() -> None:
             if wcap:
                 st.caption(wcap)
 
+        critic = st.session_state.get("hermes_enterprise_dashboard_critic")
+        if isinstance(critic, dict):
+            st.subheader("Fleet critic reliability")
+            ccap = fleet_critic_reliability_caption(critic)
+            if ccap:
+                st.caption(ccap)
+            crows = fleet_critic_reliability_table_rows(critic)
+            if crows:
+                st.dataframe(crows, use_container_width=True, hide_index=True)
+
         if any(
             isinstance(st.session_state.get(k), dict)
             for k in (
                 "hermes_enterprise_dashboard_memory",
                 "hermes_enterprise_dashboard_aggregate",
                 "hermes_enterprise_dashboard_worker",
+                "hermes_enterprise_dashboard_critic",
             )
         ):
             export_json = fleet_dashboard_export_json(

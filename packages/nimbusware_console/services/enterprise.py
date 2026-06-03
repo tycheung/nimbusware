@@ -79,6 +79,24 @@ def fetch_fleet_worker_health(
     )
 
 
+def fetch_fleet_critic_reliability(
+    *,
+    api_key: str,
+    tenant_id: str,
+    run_limit: int = 100,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    return _enterprise_get(
+        "/enterprise/fleet/critic-reliability",
+        api_key=api_key,
+        params={
+            "tenant_id": tenant_id,
+            "run_limit": max(1, min(500, int(run_limit))),
+        },
+        timeout=timeout,
+    )
+
+
 def is_enterprise_edition_manifest(manifest: Mapping[str, Any] | None) -> bool:
     if not isinstance(manifest, Mapping):
         return False

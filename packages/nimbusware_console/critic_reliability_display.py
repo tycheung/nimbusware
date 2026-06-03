@@ -86,3 +86,36 @@ def critic_reliability_caption(summary: Mapping[str, Any] | None) -> str:
 
 def critic_reliability_export_json(summary: Mapping[str, Any] | None) -> str:
     return json.dumps(summary or {}, indent=2, ensure_ascii=False)
+
+
+def fleet_critic_reliability_table_rows(
+    metrics: Mapping[str, Any] | None,
+) -> list[dict[str, str]]:
+    if not metrics:
+        return []
+    return [
+        {"metric": "Runs scanned", "value": str(metrics.get("runs_scanned", 0))},
+        {"metric": "Runs with critics", "value": str(metrics.get("runs_with_critics", 0))},
+        {"metric": "Critic verdicts", "value": str(metrics.get("critic_verdict_count", 0))},
+        {"metric": "Critic FAIL count", "value": str(metrics.get("critic_fail_count", 0))},
+        {
+            "metric": "Fleet critic FAIL rate",
+            "value": f"{float(metrics.get('critic_fail_rate', 0)):.1%}",
+        },
+        {"metric": "Gate blocks (FAIL)", "value": str(metrics.get("gate_block_count", 0))},
+        {
+            "metric": "Repeat finding paths",
+            "value": str(metrics.get("repeat_finding_paths", 0)),
+        },
+    ]
+
+
+def fleet_critic_reliability_caption(metrics: Mapping[str, Any] | None) -> str:
+    if not metrics or int(metrics.get("critic_verdict_count") or 0) == 0:
+        return "No critic.verdict.emitted events in scanned runs."
+    rate = float(metrics.get("critic_fail_rate") or 0)
+    runs = int(metrics.get("runs_with_critics") or 0)
+    scanned = int(metrics.get("runs_scanned") or 0)
+    return (
+        f"Fleet critic FAIL rate {rate:.1%} across {runs} run(s) with critics ({scanned} scanned)."
+    )
