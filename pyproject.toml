@@ -89,6 +89,7 @@ testpaths = ["tests"]
 pythonpath = ["packages"]
 markers = [
   "integration: requires PostgreSQL (set NIMBUSWARE_DATABASE_URL)",
+  "e2e: PR e2e subset (import smoke + optional Postgres API checks)",
   "benchmark: pytest-benchmark fleet harness (fo206)",
   "slow: long-running tests excluded from default CI unit job",
 ]

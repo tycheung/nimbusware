@@ -9,6 +9,8 @@ from fastapi.testclient import TestClient
 
 from nimbusware_api.app import app
 
+pytestmark = pytest.mark.e2e
+
 
 @pytest.fixture
 def client() -> TestClient:

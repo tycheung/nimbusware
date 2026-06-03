@@ -5,6 +5,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import pytest
+
+pytestmark = pytest.mark.e2e
+
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 os.environ.setdefault(
