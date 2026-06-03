@@ -303,6 +303,13 @@ class CreateRunMixin:
         if ms_block.enabled:
             ms_max_files = slice_budget.max_files
             ms_max_loc = slice_budget.max_loc
+        from hermes_orchestrator.critic_pack_resolve import resolve_critic_pack_for_workflow
+
+        critic_pack_effective = resolve_critic_pack_for_workflow(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -323,6 +330,11 @@ class CreateRunMixin:
                 "critique_coverage": critique_coverage,
                 "stage_graph": stage_graph_snapshot,
                 "universal_critique_effective": universal_critique_effective,
+                **(
+                    {"critic_pack_effective": critic_pack_effective}
+                    if critic_pack_effective
+                    else {}
+                ),
                 "agent_evaluator_effective": agent_evaluator_effective,
                 "self_refinement_effective": self_refinement_effective,
                 "micro_slice_effective": {

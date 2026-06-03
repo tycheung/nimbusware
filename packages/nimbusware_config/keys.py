@@ -22,3 +22,5 @@ KEY_CRITIQUE_PAIRINGS = "critique-pairings"
 
 NS_CUSTOM_AGENTS = "custom_agents"
 KEY_CUSTOM_AGENTS_REGISTRY = "registry"
+
+NS_CRITIC_PACKS = "critic_packs"

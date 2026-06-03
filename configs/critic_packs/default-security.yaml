@@ -1,0 +1,4 @@
+id: default-security
+domain: security
+blocking_authority: advisory
+description: Default security critic pack for workflow profiles

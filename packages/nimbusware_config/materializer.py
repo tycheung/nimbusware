@@ -22,6 +22,7 @@ from nimbusware_config.keys import (
     KEY_PERSONA_SHELVES,
     KEY_ROLE_REGISTRY,
     KEY_SELF_REFINEMENT,
+    NS_CRITIC_PACKS,
     NS_CUSTOM_AGENTS,
     NS_PERSONAS,
     NS_POLICY,
@@ -126,6 +127,9 @@ class ConfigMaterializer:
             if path.is_file():
                 return load_yaml(path)
             return {"agents": []}
+        if namespace == NS_CRITIC_PACKS:
+            path = self._repo_root / "configs" / "critic_packs" / f"{document_key}.yaml"
+            return load_yaml(path)
         msg = f"unknown config file mapping: {namespace}/{document_key}"
         raise KeyError(msg)
 
@@ -201,6 +205,20 @@ class ConfigMaterializer:
     def get_custom_agent_registry(self) -> CustomAgentRegistry:
         raw = self._get_content(NS_CUSTOM_AGENTS, KEY_CUSTOM_AGENTS_REGISTRY)
         return CustomAgentRegistry.from_content(raw)
+
+    def list_critic_pack_ids(self) -> list[str]:
+        if self._use_db:
+            return self._store.list_keys(NS_CRITIC_PACKS)
+        root = self._repo_root / "configs" / "critic_packs"
+        if not root.is_dir():
+            return []
+        return sorted(p.stem for p in root.glob("*.yaml"))
+
+    def get_critic_pack(self, pack_id: str) -> dict[str, Any]:
+        return self._get_content(NS_CRITIC_PACKS, pack_id.strip())
+
+    def upsert_critic_pack(self, pack_id: str, content: dict[str, Any]) -> int:
+        return self.upsert_content(NS_CRITIC_PACKS, pack_id.strip(), content)
 
 
 def _default_paths(repo_root: Path) -> tuple[Path, Path]:
