@@ -27,6 +27,9 @@ def render_progress_panel(*, simple_mode: bool = True) -> None:
         return
 
     st.session_state["maker_active_run_id"] = run_id.strip()
+    st.caption(
+        f"Live updates: `GET /v1/runs/{run_id.strip()}/maker-progress/stream` (SSE).",
+    )
     try:
         progress = runs_svc.fetch_maker_progress(run_id.strip(), simple=simple_mode)
     except Exception as exc:  # noqa: BLE001

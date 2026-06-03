@@ -54,7 +54,7 @@ _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("GET", re.compile(r"^/v1/runs")),
     ("POST", re.compile(r"^/v1/runs$")),
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/slices/")),
-    ("GET", re.compile(r"^/v1/runs/\{run_id\}/maker-progress$")),
+    ("GET", re.compile(r"^/v1/runs/\{run_id\}/maker-progress")),
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/research$")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/research/")),
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/maker/")),

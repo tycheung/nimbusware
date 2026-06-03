@@ -14,6 +14,7 @@ from nimbusware_api.routes.runs.maker_approval import router as maker_approval_r
 from nimbusware_api.routes.runs.maker_progress import router as maker_progress_router
 from nimbusware_api.routes.runs.research import router as research_router
 from nimbusware_api.routes.runs.slices import router as slices_router
+from nimbusware_api.routes.runs.stream import router as stream_router
 
 __all__ = [
     "build_runs_router",
@@ -40,6 +41,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(maker_progress_router)
     composed.include_router(maker_approval_router)
     composed.include_router(research_router)
+    composed.include_router(stream_router)
     composed.include_router(slices_router)
     return composed
 
