@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import re
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +33,12 @@ _REDUNDANT_PREFIXES = (
     "Remove scraper response artifact files",
     "Rebuild bundle FAISS index when catalog",
     "Nimbusware end-to-end operator smoke checks",
+    "Smoke coverage for ",
+    "Additional coverage for ",
+    "AST guard: ",
+    "EventStore protocol and ",
+    "MCP stdio bridge for ",
+    "Backward-compatible re-export shim",
 )
 
 
@@ -57,6 +64,8 @@ def _should_drop(doc: str) -> bool:
     if " direct contract" in stripped or " direct-contract" in stripped:
         return True
     if stripped.endswith(" contract.") or stripped.endswith(" contracts."):
+        return True
+    if re.search(r"\(fo\d{3,4}\)", stripped) and len(stripped) < 100:
         return True
     return len(stripped) > 120
 

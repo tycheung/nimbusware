@@ -1,4 +1,4 @@
-"""Protocol host types for strict-checked pipeline mixins (fo450)."""
+"""Protocol host types for strict-checked pipeline mixins."""
 
 from __future__ import annotations
 

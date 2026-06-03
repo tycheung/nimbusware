@@ -1,9 +1,3 @@
-"""EventStore protocol and allowed_types parity guards (fo502).
-
-Complements ``test_hermes_store_contract.py`` with package-root exports and
-schema allowlist parity (see also ``test_allowed_event_types.py``).
-"""
-
 from __future__ import annotations
 
 import re

@@ -1,5 +1,3 @@
-"""Additional coverage for memory timeline and env flags (fo504)."""
-
 from __future__ import annotations
 
 from agent_core.models import EventType

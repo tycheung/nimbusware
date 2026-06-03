@@ -1,5 +1,3 @@
-"""AST guard: star imports with F403 only in documented facade paths (fo502)."""
-
 from __future__ import annotations
 
 import ast

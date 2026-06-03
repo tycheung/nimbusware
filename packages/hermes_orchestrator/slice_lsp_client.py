@@ -1,4 +1,4 @@
-"""Pyright LSP documentSymbol client for slice implement planning (fo491)."""
+"""Pyright LSP documentSymbol client for slice implement planning."""
 
 from __future__ import annotations
 

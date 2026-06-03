@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Optional SWE-bench-style harness for Hermes micro_slice profile (fo452).
+"""Optional SWE-bench-style harness for Hermes micro_slice profile.
 
 Dry-run (default): validate manifest + fixture layout, emit JSON summary.
 ``--run``: in-memory orchestrator against fixture workspace; score slice.gate outcomes.
@@ -178,7 +178,7 @@ def run_harness(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Hermes SWE-bench harness (fo452)")
+    parser = argparse.ArgumentParser(description="Hermes SWE-bench harness")
     parser.add_argument(
         "--manifest",
         type=Path,

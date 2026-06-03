@@ -1,5 +1,3 @@
-"""Smoke coverage for projection builders and maker slice helpers (fo504)."""
-
 from __future__ import annotations
 
 from nimbusware_projections.builders import maker_progress, preflight, scraper_fetch, stage_timeline
