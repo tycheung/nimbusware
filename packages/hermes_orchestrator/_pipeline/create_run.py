@@ -152,6 +152,10 @@ class CreateRunMixin:
             research_effective_metadata,
             stitch_effective_metadata,
         )
+        from hermes_orchestrator.workflow_theater import (
+            parse_theater_workflow_block,
+            theater_effective_metadata,
+        )
 
         research_block = parse_research_workflow_block(
             self._repo_root,
@@ -159,6 +163,11 @@ class CreateRunMixin:
             config_materializer=mat,
         )
         stitch_block = parse_stitch_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        theater_block = parse_theater_workflow_block(
             self._repo_root,
             workflow_profile,
             config_materializer=mat,
@@ -316,6 +325,7 @@ class CreateRunMixin:
                 "memory": memory_meta,
                 "research": research_effective_metadata(research_block),
                 "stitch": stitch_effective_metadata(stitch_block),
+                "theater": theater_effective_metadata(theater_block),
                 **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
                 **({"project": project_meta} if project_meta else {}),
                 **({"requirements": requirements_meta} if requirements_meta else {}),

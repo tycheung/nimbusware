@@ -31,6 +31,12 @@ integrator_gate:
 agent_evaluator:
   enabled: false
 
+theater:
+  enabled: true
+  max_message_chars: 1200
+  show_evidence_links: true
+  llm_summary: false
+
 memory:
   retrieval_enabled: true
   index_contribution: true
