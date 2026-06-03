@@ -75,11 +75,27 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
     if not diff_unified:
         diff_unified = preview_diff_for_plan(ws, plan)
 
+    symbol_sketch = ""
+    from nimbusware_env.env_flags import (
+        hermes_slice_lsp_enabled,
+        hermes_slice_symbol_sketch_max_chars,
+    )
+
+    if hermes_slice_lsp_enabled() and plan.target_paths:
+        from hermes_orchestrator.slice_symbol_sketch import build_symbol_sketch
+
+        symbol_sketch = build_symbol_sketch(
+            ws,
+            plan.target_paths,
+            max_chars=hermes_slice_symbol_sketch_max_chars(),
+        )
+
     pending_meta = {
         "slice_id": plan.slice_id,
         "awaiting_approval": True,
         "diff_unified": diff_unified[:12000],
         "implement_mode": mode,
+        "symbol_sketch": symbol_sketch,
         "rationale": plan.rationale,
         "target_paths": list(plan.target_paths),
         "slice_plan": {

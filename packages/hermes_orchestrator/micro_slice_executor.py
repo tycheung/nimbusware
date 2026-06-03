@@ -279,11 +279,26 @@ def execute_micro_slice_pass(
                     orch._store.list_run_events(str(run_id)),
                 ),
             )
+            symbol_sketch = ""
+            from nimbusware_env.env_flags import (
+                hermes_slice_lsp_enabled,
+                hermes_slice_symbol_sketch_max_chars,
+            )
+
+            if hermes_slice_lsp_enabled() and plan.target_paths:
+                from hermes_orchestrator.slice_symbol_sketch import build_symbol_sketch
+
+                symbol_sketch = build_symbol_sketch(
+                    ws,
+                    plan.target_paths,
+                    max_chars=hermes_slice_symbol_sketch_max_chars(),
+                )
             impl_meta = {
                 "slice_id": plan.slice_id,
                 "slice_implement_mode": impl_result.mode,
                 "slice_implement_exit": impl_result.exit_code,
                 "paths_touched": list(impl_result.paths_touched),
+                "symbol_sketch": symbol_sketch,
             }
             _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
             duration_ms = int((time.perf_counter() - started) * 1000)
