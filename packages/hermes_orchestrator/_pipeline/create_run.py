@@ -293,6 +293,16 @@ class CreateRunMixin:
             "sandbox_backend": resolve_sandbox_backend(),
             "filesystem_jail": default_jail_policy().enabled,
         }
+        from hermes_orchestrator.slice_budget_presets import resolve_slice_budget_preset
+
+        slice_budget = resolve_slice_budget_preset(
+            operator_settings=operator_settings_meta,
+        )
+        ms_max_files = ms_block.max_files
+        ms_max_loc = ms_block.max_loc
+        if ms_block.enabled:
+            ms_max_files = slice_budget.max_files
+            ms_max_loc = slice_budget.max_loc
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -317,9 +327,11 @@ class CreateRunMixin:
                 "self_refinement_effective": self_refinement_effective,
                 "micro_slice_effective": {
                     "enabled": ms_block.enabled,
-                    "max_files": ms_block.max_files,
-                    "max_loc": ms_block.max_loc,
+                    "max_files": ms_max_files,
+                    "max_loc": ms_max_loc,
                     "e2e_enabled": ms_block.e2e_enabled,
+                    "budget_preset": slice_budget.name,
+                    "replan_max": slice_budget.replan_max,
                 },
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {

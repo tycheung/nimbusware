@@ -148,6 +148,16 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
+            "HERMES_SLICE_BUDGET_PRESET",
+            user,
+            e,
+            "standard",
+            "Slice budget preset",
+            "tiny, standard, or careful — maps to max_files, max_loc, replan max.",
+            "User — maker runtime",
+            choices=("tiny", "standard", "careful"),
+        ),
+        SettingDef(
             "HERMES_SLICE_AUTO_ADVANCE",
             user,
             b,

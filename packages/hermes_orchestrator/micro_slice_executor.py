@@ -71,12 +71,31 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
     from hermes_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
     from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 
-    wf = workflow_profile_from_run_created_rows(orch._store.list_run_events(str(run_id)))
-    return parse_micro_slice_workflow_block(
+    rows = orch._store.list_run_events(str(run_id))
+    wf = workflow_profile_from_run_created_rows(rows)
+    block = parse_micro_slice_workflow_block(
         orch.repo_root,
         wf or "micro_slice",
         config_materializer=orch.config_materializer,
     )
+    ms = micro_slice_effective_from_rows(rows)
+    if not isinstance(ms, dict) or not ms.get("enabled"):
+        return block
+    return MicroSliceWorkflowBlock(
+        enabled=True,
+        max_files=int(ms.get("max_files", block.max_files)),
+        max_loc=int(ms.get("max_loc", block.max_loc)),
+        allowed_globs=block.allowed_globs,
+        e2e_enabled=bool(ms.get("e2e_enabled", block.e2e_enabled)),
+        e2e_command=block.e2e_command,
+    )
+
+
+def slice_replan_max_for_run(rows: list[dict[str, Any]]) -> int:
+    ms = micro_slice_effective_from_rows(rows)
+    if isinstance(ms, dict) and "replan_max" in ms:
+        return max(0, min(10, int(ms["replan_max"])))
+    return slice_replan_max_attempts()
 
 
 def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]]) -> str | None:
@@ -233,7 +252,7 @@ def execute_micro_slice_pass(
     slice_count = micro_slice_count_for_run(rows)
     results: list[SliceGateChainResult] = []
 
-    max_replan = slice_replan_max_attempts()
+    max_replan = slice_replan_max_for_run(rows)
 
     for index in range(1, slice_count + 1):
         budget_feedback: str | None = None
