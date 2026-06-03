@@ -54,7 +54,8 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
 | `nimbusware_console` | Admin Console (config, fleet, deep timeline; `services/` HTTP helpers) |
 | `nimbusware_env` | Edition gate, desktop launchers, dotenv, `env_flags`, admin token guards |
-| `nimbusware_hw` | Probe, governor, pressure sampling, offline catalog, ranked fit + Ollama presets; `/v1/platform/hardware` and `/v1/platform/models/*` |
+| `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
+| `nimbusware_projections` | Read models: timeline, maker-progress, run theater, research briefs |
 
 ## Editions
 

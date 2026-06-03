@@ -18,6 +18,7 @@
 | IAM | `nimbusware_iam` | Enterprise tenancy and API keys |
 | Editions | `nimbusware_env` | Individual vs enterprise gate |
 | Hardware | `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
+| Projections | `nimbusware_projections` | Theater, research briefs, maker-progress builders |
 
 ## Facade pattern
 

@@ -209,10 +209,12 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 **Progress**
 
-- Plain-language stage summaries via `GET /v1/runs/{id}/maker-progress` (projection over run events)
+- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`)
+- Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
 
 **Review**
 
+- Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject)
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
 - Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `HERMES_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
@@ -264,7 +266,9 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | Area | Endpoints | Access |
 |------|-----------|--------|
 | **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | User |
-| **Maker progress** | `GET /runs/{id}/maker-progress` | User |
+| **Maker progress** | `GET /runs/{id}/maker-progress`, SSE `.../maker-progress/stream` | User |
+| **Run theater** | `GET /runs/{id}/theater`, SSE `.../theater/stream` | User |
+| **Research** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject` | User |
 | **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |

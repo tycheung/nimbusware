@@ -12,7 +12,6 @@ from agent_core.models import EventType
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.read_models.maker_progress import maker_progress_from_events
-from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 
 router = APIRouter()
 
@@ -48,11 +47,7 @@ def get_maker_progress_stream(
         idle_rounds = 0
         while idle_rounds < 30:
             current = store.list_run_events(str(run_id))
-            new_rows = [
-                r
-                for r in current
-                if int(r.get("store_seq") or 0) > last_seq
-            ]
+            new_rows = [r for r in current if int(r.get("store_seq") or 0) > last_seq]
             if new_rows:
                 idle_rounds = 0
                 for row in new_rows:
