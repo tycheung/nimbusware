@@ -8,6 +8,7 @@ from nimbusware_api.routes import (
     actions,
     audit,
     bundles,
+    config_ops,
     custom_agents,
     ollama,
     operator_settings,
@@ -29,6 +30,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(runs.router)
     router.include_router(actions.router)
     router.include_router(policy.router)
+    router.include_router(config_ops.router)
     router.include_router(audit.router)
     router.include_router(bundles.router)
     router.include_router(personas.router)
