@@ -24,6 +24,16 @@ def maybe_rebuild_memory_index_for_run(
         return None
     if not run_index_contribution_enabled(run_created_metadata):
         return None
+    try:
+        from nimbusware_hw.governor import governor_from_metadata
+        from nimbusware_hw.pressure import sample_pressure
+
+        gov = governor_from_metadata(run_created_metadata)
+        level, _ = sample_pressure(gov)
+        if level == "block":
+            return None
+    except ImportError:
+        pass
     conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip() or None
     mem_meta = run_created_metadata.get("memory")
     embedding_mode = "deterministic"
