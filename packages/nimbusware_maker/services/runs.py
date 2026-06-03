@@ -14,6 +14,10 @@ def fetch_maker_progress(run_id: str, *, simple: bool = True) -> dict[str, Any]:
     return get_json(path)
 
 
+def fetch_run_timeline(run_id: str) -> dict[str, Any]:
+    return get_json(f"/runs/{run_id}/timeline")
+
+
 def fetch_pending(run_id: str) -> dict[str, Any]:
     return get_json(f"/runs/{run_id}/maker/pending")
 

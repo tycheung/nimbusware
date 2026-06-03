@@ -6,6 +6,7 @@ from nimbusware_maker.session import is_admin_unlocked, render_admin_sidebar
 from nimbusware_maker.ui.approval import render_approval_panel
 from nimbusware_maker.ui.home import render_projects_panel, render_readiness_strip
 from nimbusware_maker.ui.intent import render_intent_wizard
+from nimbusware_maker.ui.memory_influence import render_memory_influence_panel
 from nimbusware_maker.ui.model_manager import render_model_manager_panel
 from nimbusware_maker.ui.progress import render_progress_panel
 from nimbusware_maker.ui.run_theater import render_run_theater_panel
@@ -60,6 +61,8 @@ def render_main() -> None:
         render_approval_panel()
     with tab_progress:
         render_run_theater_panel()
+        st.divider()
+        render_memory_influence_panel()
         st.divider()
         render_progress_panel(simple_mode=simple_mode)
     with tab_models:

@@ -433,6 +433,7 @@ class MemoryRetrievalEmittedPayload(BasePayload):
     """Audit record when memory hits are injected into a stage."""
 
     stage_name: str = Field(min_length=1, max_length=256)
+    slice_id: str | None = Field(default=None, max_length=128)
     query_digest: str = Field(min_length=8, max_length=64)
     hit_chunk_ids: list[str] = Field(default_factory=list, max_length=20)
     excerpt_chars: int = Field(ge=0)

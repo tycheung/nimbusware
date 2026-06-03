@@ -110,6 +110,7 @@ class MicroSliceMixin:
                 self._store,
                 run_id=run_id,
                 stage_name="slice.gate",
+                slice_id=p.slice_id,
                 query_digest=query_digest(
                     " ".join(
                         [p.slice_id, p.rationale, *p.target_paths],

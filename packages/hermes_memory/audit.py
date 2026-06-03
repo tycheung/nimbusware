@@ -58,6 +58,7 @@ def append_memory_retrieval_emitted_event(
     retrieval_k: int,
     repo_scope_hash: str,
     generation_id: UUID | None,
+    slice_id: str | None = None,
 ) -> None:
     """Persist ``memory.retrieval.emitted`` when hits are injected into a stage."""
     store.append(
@@ -68,6 +69,7 @@ def append_memory_retrieval_emitted_event(
             occurred_at=datetime.now(timezone.utc),
             payload=MemoryRetrievalEmittedPayload(
                 stage_name=stage_name,
+                slice_id=slice_id,
                 query_digest=query_digest,
                 hit_chunk_ids=[str(h.chunk_id) for h in hits],
                 excerpt_chars=len(excerpt),
