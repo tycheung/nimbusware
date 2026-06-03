@@ -160,6 +160,8 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _install("NIMBUSWARE_TENANT_ID", "Enterprise tenant id"),
         _install("NIMBUSWARE_MAKER_STATE_DIR", "Maker session state directory"),
         _install("HERMES_OLLAMA_BASE_URL", "Ollama base URL override"),
+        _install("NIMBUSWARE_HW_SSH_HOST", "Enterprise SSH hardware probe host"),
+        _install("NIMBUSWARE_HW_SSH_IDENTITY", "SSH private key path for hardware probe"),
     )
 
     system_extra = (
@@ -514,6 +516,8 @@ def extended_defs() -> tuple[SettingDef, ...]:
             kind=_ENUM,
             choices=("weak", "medium", "strong"),
         ),
+        _internal("NIMBUSWARE_HW_SSH_MOCK", "Mock SSH hardware probe", kind=_BOOL),
+        _internal("HERMES_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL),
         _internal("HERMES_CI_GITHUB_REPO", "CI GitHub repo slug"),
         _internal("HERMES_CI_HEAD_SHA", "CI head SHA"),
         _internal("HERMES_TIMELINE_BASE_URL", "Timeline base URL for CI"),

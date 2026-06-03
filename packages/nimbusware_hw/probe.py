@@ -63,7 +63,49 @@ def classify_tier(*, ram_total_gb: float | None, cpu_count: int) -> str:
     return "weak"
 
 
-def probe_hardware(*, fixture: str | None = None) -> dict[str, Any]:
+def probe_hardware_remote_ssh(host: str) -> dict[str, Any]:
+    """Enterprise SSH probe stub — returns degraded local profile when SSH unavailable."""
+    from nimbusware_env.edition import is_enterprise
+
+    if not is_enterprise():
+        return {"errors": ["ssh_probe_requires_enterprise"], "tier": "weak"}
+    host = host.strip()
+    if not host:
+        return {"errors": ["ssh_host_empty"], "tier": "weak"}
+    from nimbusware_env.env_flags import env_str, env_truthy
+
+    key_path = env_str("NIMBUSWARE_HW_SSH_IDENTITY")
+    if env_truthy("NIMBUSWARE_HW_SSH_MOCK"):
+        return {
+            "tier": "medium",
+            "ram_total_gb": 32.0,
+            "ram_available_gb": 16.0,
+            "cpu_count": 8,
+            "gpus": [{"name": "mock-ssh-gpu", "vram_gb": 8.0, "backend": "cuda"}],
+            "gpu_groups": [["mock-ssh-gpu"]],
+            "unified_memory": False,
+            "errors": [],
+            "platform": "ssh-mock",
+            "remote_host": host,
+            "ssh_identity_configured": bool(key_path),
+        }
+    return {
+        "tier": "medium",
+        "ram_total_gb": None,
+        "ram_available_gb": None,
+        "cpu_count": 1,
+        "gpus": [],
+        "gpu_groups": [],
+        "unified_memory": False,
+        "errors": ["ssh_probe_not_configured"],
+        "platform": "ssh",
+        "remote_host": host,
+    }
+
+
+def probe_hardware(*, fixture: str | None = None, remote_host: str | None = None) -> dict[str, Any]:
+    if remote_host and remote_host.strip():
+        return probe_hardware_remote_ssh(remote_host.strip())
     fix = fixture or os.environ.get("NIMBUSWARE_HW_FIXTURE", "").strip() or None
     if fix:
         from nimbusware_hw.fixtures import fixture_probe
