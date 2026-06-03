@@ -29,6 +29,17 @@ def _stage_name(pl: dict[str, Any]) -> str:
     return str(sn).strip() if isinstance(sn, str) else ""
 
 
+def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> str:
+    raw = pl.get(key)
+    if not isinstance(raw, list) or not raw:
+        return ""
+    parts = [str(p).strip() for p in raw if str(p).strip()][:max_items]
+    if not parts:
+        return ""
+    suffix = f" (+{len(raw) - len(parts)} more)" if len(raw) > len(parts) else ""
+    return ", ".join(parts) + suffix
+
+
 def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     messages: list[dict[str, Any]] = []
     for row in rows:
@@ -138,15 +149,80 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "body_md": str(pl.get("summary") or "")[:600] or None,
                 },
             )
-        elif et in (EventType.STITCH_APPLIED.value, EventType.STITCH_PLAN_EMITTED.value):
+        elif et == EventType.RESEARCH_PATTERN_INDEXED.value:
+            pattern_id = str(pl.get("pattern_id") or "")
+            repo_url = str(pl.get("repo_url") or "")[:200]
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "Researcher",
+                    "message_kind": "research",
+                    "severity": "info",
+                    "headline": f"Pattern indexed: {pattern_id}",
+                    "body_md": repo_url or None,
+                },
+            )
+        elif et == EventType.DOMAIN_CRITIC_PROPOSED.value:
+            template = str(pl.get("critic_template") or "critic")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "Researcher",
+                    "message_kind": "research",
+                    "severity": "info",
+                    "headline": f"Domain critic proposed: {template}",
+                    "body_md": str(pl.get("blocking_authority") or "")[:200] or None,
+                },
+            )
+        elif et == "transplant.candidate.selected":
+            source_kind = str(pl.get("source_kind") or "unknown")
+            candidate_id = str(pl.get("candidate_id") or "")[:80]
             messages.append(
                 {
                     **base,
                     "actor_display": "Stitcher",
                     "message_kind": "stitch",
                     "severity": "info",
-                    "headline": "Stitch update",
-                    "body_md": None,
+                    "headline": f"Transplant candidate selected ({source_kind})",
+                    "body_md": candidate_id or None,
+                },
+            )
+        elif et == EventType.STITCH_PLAN_EMITTED.value:
+            targets = _path_list_summary(pl, "target_paths")
+            headline = f"Stitch plan: {targets}" if targets else "Stitch plan emitted"
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "Stitcher",
+                    "message_kind": "stitch",
+                    "severity": "info",
+                    "headline": headline,
+                    "body_md": str(pl.get("wiring_delta_summary") or "")[:600] or None,
+                },
+            )
+        elif et == EventType.STITCH_APPLIED.value:
+            files = _path_list_summary(pl, "files_added")
+            headline = f"Stitch applied: {files}" if files else "Stitch applied"
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "Stitcher",
+                    "message_kind": "stitch",
+                    "severity": "info",
+                    "headline": headline,
+                    "body_md": str(pl.get("snapshot_ref") or "")[:200] or None,
+                },
+            )
+        elif et == EventType.STITCH_FAILED.value:
+            reason = str(pl.get("reason_code") or "failed")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "Stitcher",
+                    "message_kind": "stitch",
+                    "severity": "block",
+                    "headline": f"Stitch failed: {reason}",
+                    "body_md": str(pl.get("rollback_snapshot_ref") or "")[:200] or None,
                 },
             )
     messages.sort(key=lambda m: int(m.get("store_seq") or 0))
