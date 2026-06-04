@@ -1,15 +1,21 @@
 # nimbusware_maker_web
 
-Static Maker web PWA served at `/v1/maker/app/`.
+Alpine.js Maker web app served at `/v1/maker/app/`.
 
-## Features
+## Tabs
 
-- Run theater and research brief approve/reject
-- Slice progress (`GET /v1/runs/{id}/maker-progress`)
-- Slice approval (`GET /v1/runs/{id}/maker/pending`, plan approve, slice apply/skip, prepare)
+| Tab | Module | APIs |
+|-----|--------|------|
+| Home | `static/js/tabs/home.js` | `/platform/readiness`, `/projects` |
+| Build | `static/js/tabs/build.js` | `POST /runs` |
+| Review | `static/js/tabs/review.js` | maker pending, research, slice diff, workspace revert |
+| Progress | `static/js/tabs/progress.js` | theater + maker-progress SSE, memory-influence |
+| Models | `static/js/tabs/models.js` | `/platform/hardware`, Ollama pull |
+| Settings | `static/js/tabs/settings.js` | `/settings/me`, hardware profile |
+| Wizard | `static/js/tabs/wizard.js` | `/platform/onboarding` |
 
-## Files
-
-- `static/index.html`, `app.js`, `styles.css`, `manifest.json`
+Shared: `api-client.js`, `sse-client.js`, `app-shell.js`, `tab-loader.js`, `tokens.css`.
 
 Mount: [`packages/nimbusware_api/routes/maker_web.py`](../nimbusware_api/routes/maker_web.py).
+
+Vitest: `npm test` in this package.

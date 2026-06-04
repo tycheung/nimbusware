@@ -15,8 +15,9 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│  UI (Streamlit)                                              │
-│  nimbusware_maker (user)    nimbusware_console (admin/dev)   │
+│  UI (web + pywebview desktop)                                │
+│  nimbusware_maker_web (/v1/maker/app)  nimbusware_admin_ui   │
+│  nimbusware_console (services + display modules, no Streamlit)│
 └────────────────────────────┬────────────────────────────────┘
                              │ HTTP /v1
 ┌────────────────────────────▼────────────────────────────────┐
@@ -48,7 +49,8 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`, `stub`, or opt-in `docker` (Individual v1; VM/k8s fleet deferred) |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
-| `nimbusware_maker_web` | Static Maker web PWA (manifest, slice progress, slice approval) at `/v1/maker/app` |
+| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
+| `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (built `dist/`) |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |

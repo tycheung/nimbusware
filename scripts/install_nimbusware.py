@@ -652,8 +652,10 @@ def _print_next_steps(
     _log("")
     _log("Run API:")
     _log("  poetry run nimbusware-api")
-    _log("Run console:")
-    _log("  poetry run streamlit run packages/nimbusware_console/app.py")
+    _log("Web UI (default; requires Admin dist for /v1/admin/app/):")
+    _log("  nimbusware-run          # Maker at /v1/maker/app/")
+    _log("  nimbusware-admin        # Admin at /v1/admin/app/")
+    _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
     if ollama_ok:
         _log("")
         _log("Ollama: ready (HERMES_USE_LLM=1 if enabled in .env)")
