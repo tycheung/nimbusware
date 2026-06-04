@@ -1,0 +1,47 @@
+from __future__ import annotations
+
+from fastapi import APIRouter, Request
+
+from nimbusware_env.edition import edition
+from nimbusware_env.env_flags import env_str
+from nimbusware_maker.quick_mode import quick_mode_enabled
+
+router = APIRouter(tags=["web"])
+
+
+def _api_base(request: Request) -> str:
+    base = env_str("NIMBUSWARE_API_BASE")
+    if base:
+        return base.rstrip("/")
+    return str(request.base_url).rstrip("/") + "/v1"
+
+
+def maker_bootstrap_payload(request: Request) -> dict:
+    return {
+        "api_base": _api_base(request),
+        "edition": edition(),
+        "quick_mode": quick_mode_enabled(),
+        "ui_backend": env_str("NIMBUSWARE_UI_BACKEND") or "web",
+        "features": {
+            "maker_web": True,
+            "admin_web": True,
+            "sse_theater": True,
+            "sse_progress": True,
+        },
+    }
+
+
+def admin_bootstrap_payload(request: Request) -> dict:
+    body = maker_bootstrap_payload(request)
+    body["admin_token_required"] = True
+    return body
+
+
+@router.get("/maker/app/bootstrap.json")
+def get_maker_app_bootstrap(request: Request) -> dict:
+    return maker_bootstrap_payload(request)
+
+
+@router.get("/admin/app/bootstrap.json")
+def get_admin_app_bootstrap(request: Request) -> dict:
+    return admin_bootstrap_payload(request)

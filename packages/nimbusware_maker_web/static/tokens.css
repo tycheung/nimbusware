@@ -1,0 +1,15 @@
+:root {
+  --color-primary: #1f77b4;
+  --color-primary-dark: #155a8a;
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-text: #1a1a1a;
+  --color-muted: #5c5c5c;
+  --color-border: #d8d8d8;
+  --color-danger: #c42b2b;
+  --color-success: #2d7a3e;
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --sidebar-width: 220px;
+}

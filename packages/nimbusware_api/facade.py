@@ -24,6 +24,7 @@ from nimbusware_api.routes import (
     scraper_artifacts,
 )
 from nimbusware_api.routes.enterprise import build_enterprise_router
+from nimbusware_api.routes.web_bootstrap import router as web_bootstrap_router
 
 
 def build_v1_router() -> APIRouter:
@@ -47,4 +48,5 @@ def build_v1_router() -> APIRouter:
     router.include_router(operator_settings.router)
     router.include_router(ollama.router)
     router.include_router(build_enterprise_router())
+    router.include_router(web_bootstrap_router)
     return router

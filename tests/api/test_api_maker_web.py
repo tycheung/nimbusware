@@ -21,3 +21,4 @@ def test_maker_web_index_served(client: TestClient) -> None:
     assert r.status_code == 200
     assert "run-theater-run-id" in r.text
     assert "Hermes Maker" in r.text
+    assert "alpine.min.js" in r.text or "app-shell" in r.text

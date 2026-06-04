@@ -32,3 +32,26 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/coverage_package_floors.py --report $CovJson
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Remove-Item -Force $CovJson -ErrorAction SilentlyContinue
+
+$node = Get-Command node -ErrorAction SilentlyContinue
+if ($node) {
+    Push-Location (Join-Path $Root "packages\nimbusware_maker_web")
+    if (Test-Path package.json) {
+        npm ci --silent 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            npm test --silent
+            if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
+        }
+    }
+    Pop-Location
+    $adminUi = Join-Path $Root "packages\nimbusware_admin_ui"
+    if ((Test-Path (Join-Path $adminUi "package.json")) -and (Test-Path (Join-Path $adminUi "dist\index.html"))) {
+        Push-Location $adminUi
+        npm ci --silent 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            npm test --silent
+            if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
+        }
+        Pop-Location
+    }
+}

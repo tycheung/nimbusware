@@ -1,0 +1,96 @@
+import { apiJson, toast } from "../api-client.js";
+
+function runId() {
+  return document.getElementById("run-theater-run-id")?.value?.trim() || "";
+}
+
+export async function mountReview(root) {
+  root.innerHTML = `
+    <div class="actions">
+      <button type="button" id="rev-load-pending">Refresh approval</button>
+      <button type="button" id="rev-load-research">Research briefs</button>
+      <button type="button" id="rev-load-diff">Slice diff</button>
+      <button type="button" id="rev-revert">Revert workspace</button>
+    </div>
+    <p id="rev-summary"></p>
+    <div id="rev-actions" class="actions"></div>
+    <ul id="rev-research"></ul>
+    <pre id="rev-diff" class="diff-pre"></pre>`;
+
+  async function loadPending() {
+    const id = runId();
+    if (!id) return toast("Enter a run ID on Progress tab", "error");
+    const body = await apiJson(`/runs/${id}/maker/pending`);
+    root.querySelector("#rev-summary").textContent = JSON.stringify(body, null, 2);
+    const actions = root.querySelector("#rev-actions");
+    actions.replaceChildren();
+    if (!body.plan_approved) {
+      const b = document.createElement("button");
+      b.textContent = "Approve plan";
+      b.onclick = () => apiJson(`/runs/${id}/maker/plan/approve`, { method: "POST" }).then(loadPending);
+      actions.appendChild(b);
+    }
+    if (body.awaiting_approval && body.pending) {
+      const sid = body.pending.slice_id || body.pending.id;
+      for (const [label, path, payload] of [
+        ["Apply", "apply", { slice_id: String(sid) }],
+        ["Skip", "skip", { slice_id: String(sid) }],
+      ]) {
+        const b = document.createElement("button");
+        b.textContent = label;
+        b.onclick = () =>
+          apiJson(`/runs/${id}/maker/slices/${path}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(loadPending);
+        actions.appendChild(b);
+      }
+    }
+  }
+
+  root.querySelector("#rev-load-pending")?.addEventListener("click", () => loadPending().catch((e) => toast(String(e.message), "error")));
+  root.querySelector("#rev-load-research")?.addEventListener("click", async () => {
+    const id = runId();
+    const body = await apiJson(`/runs/${id}/research`);
+    const ul = root.querySelector("#rev-research");
+    ul.replaceChildren();
+    for (const brief of body.briefs || []) {
+      const li = document.createElement("li");
+      const bid = brief.brief_id || brief.artifact_id;
+      li.textContent = `${bid} — ${brief.review_status || brief.status}`;
+      if ((brief.review_status || brief.status) === "pending") {
+        const approve = document.createElement("button");
+        approve.textContent = "Approve";
+        approve.onclick = () =>
+          apiJson(`/runs/${id}/research/${encodeURIComponent(bid)}/approve`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notes: "" }),
+          });
+        const reject = document.createElement("button");
+        reject.textContent = "Reject";
+        reject.onclick = () =>
+          apiJson(`/runs/${id}/research/${encodeURIComponent(bid)}/reject`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notes: "" }),
+          });
+        li.append(approve, reject);
+      }
+      ul.appendChild(li);
+    }
+  });
+  root.querySelector("#rev-load-diff")?.addEventListener("click", async () => {
+    const id = runId();
+    const pending = await apiJson(`/runs/${id}/maker/pending`);
+    const idx = pending?.pending?.slice_index ?? 0;
+    const diff = await apiJson(`/runs/${id}/slices/${idx}/diff`);
+    root.querySelector("#rev-diff").textContent = diff.patch || diff.diff || JSON.stringify(diff, null, 2);
+  });
+  root.querySelector("#rev-revert")?.addEventListener("click", async () => {
+    const id = runId();
+    await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
+    toast("Workspace reverted", "success");
+  });
+}

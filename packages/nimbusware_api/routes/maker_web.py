@@ -7,7 +7,7 @@ from nimbusware_maker_web import STATIC_DIR
 
 
 def mount_maker_web(app: FastAPI) -> None:
-    """Serve the lightweight Maker SPA at ``/v1/maker/app`` (mount on app, not sub-router)."""
+    """Serve the Maker web UI at ``/v1/maker/app`` (mount on app, not sub-router)."""
     app.mount(
         "/v1/maker/app",
         StaticFiles(directory=str(STATIC_DIR), html=True),

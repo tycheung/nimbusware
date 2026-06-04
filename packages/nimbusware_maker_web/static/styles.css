@@ -1,55 +1,82 @@
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  --accent: #1a5fb4;
-}
-
 body {
-  margin: 0 auto;
-  max-width: 52rem;
-  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-    max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  margin: 0;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  line-height: 1.5;
+  color: var(--color-text, #1a1a1a);
+  background: var(--color-bg, #fafafa);
 }
 
-header h1 {
-  margin: 0 0 0.25rem;
+.app-layout {
+  display: flex;
+  min-height: 100vh;
 }
 
-.subtitle {
-  margin: 0 0 1.5rem;
-  opacity: 0.8;
-}
-
-.panel {
-  border: 1px solid #8884;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+.sidebar {
+  width: var(--sidebar-width, 220px);
+  background: var(--color-surface, #fff);
+  border-right: 1px solid var(--color-border, #d8d8d8);
   padding: 1rem;
+  flex-shrink: 0;
 }
 
-#approval-panel .approval-summary {
-  font-size: 0.95rem;
-  margin: 0 0 0.75rem;
+.brand {
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+  color: var(--color-primary, #1f77b4);
 }
 
-.approval-actions {
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius, 8px);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.nav-link.active,
+.nav-link:hover {
+  background: rgba(31, 119, 180, 0.12);
+  color: var(--color-primary-dark, #155a8a);
+}
+
+.edition {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-top: 1.5rem;
+}
+
+.admin-link {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.main {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  max-width: 56rem;
+}
+
+.view h2 {
   margin-top: 0;
 }
 
-.approval-actions button {
-  flex: 1 1 auto;
-  min-width: 8rem;
+.muted {
+  color: var(--color-muted);
 }
 
-#slice-panel .slice-summary {
-  font-size: 0.95rem;
-  margin: 0 0 0.75rem;
-}
-
-.slice-list {
-  margin: 0;
-  padding-left: 1.25rem;
+.panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
 }
 
 label {
@@ -58,11 +85,15 @@ label {
   margin-bottom: 0.35rem;
 }
 
-input[type="text"] {
+input[type="text"],
+textarea,
+select {
   width: 100%;
   box-sizing: border-box;
   padding: 0.5rem;
   font-size: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
 }
 
 .actions {
@@ -77,7 +108,15 @@ button {
   padding: 0.5rem 0.85rem;
   font-size: 1rem;
   min-height: 44px;
-  border-radius: 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+button.primary {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
 }
 
 .status {
@@ -86,30 +125,36 @@ button {
   min-height: 1.25rem;
 }
 
+.toast {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  background: #e8f4fc;
+}
+
+.toast.error {
+  background: #fde8e8;
+}
+
 #theater-list li,
 #research-list li {
-  border-bottom: 1px solid #8883;
+  border-bottom: 1px solid var(--color-border);
   padding: 0.5rem 0;
 }
 
-.theater-headline {
-  font-weight: 600;
-}
-
-.theater-body {
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-  opacity: 0.9;
-  white-space: pre-wrap;
-}
-
-@media (max-width: 480px) {
-  body {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+@media (max-width: 720px) {
+  .app-layout {
+    flex-direction: column;
   }
 
-  .actions button {
-    flex: 1 1 45%;
+  .sidebar {
+    width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
