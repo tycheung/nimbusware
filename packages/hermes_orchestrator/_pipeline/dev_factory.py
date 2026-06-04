@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from hermes_orchestrator._pipeline._helpers import InMemoryEventStore
 from hermes_orchestrator.registry import RoleRegistry
+from hermes_store.memory import InMemoryEventStore
+
+if TYPE_CHECKING:
+    from hermes_orchestrator.pipeline import RunOrchestrator
 
 
 def default_paths(repo_root: Path | None = None) -> tuple[Path, Path]:
@@ -20,7 +23,7 @@ def make_dev_orchestrator(
     *,
     memory_chunk_store: Any | None = None,
     bundle_outcome_store: Any | None = None,
-) -> tuple[Any, InMemoryEventStore]:
+) -> tuple[RunOrchestrator, InMemoryEventStore]:
     from hermes_orchestrator.pipeline import RunOrchestrator
 
     root = repo_root or Path(__file__).resolve().parents[3]

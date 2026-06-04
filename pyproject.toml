@@ -224,11 +224,6 @@ packages = [
 ]
 mypy_path = "packages"
 
-# Strict-check API + orchestrator except pipeline mixins.
-[[tool.mypy.overrides]]
-module = ["hermes_orchestrator._pipeline.*"]
-ignore_errors = true
-
 # Pipeline mypy strict islands.
 [[tool.mypy.overrides]]
 module = [
@@ -257,6 +252,8 @@ module = [
   "hermes_orchestrator._pipeline.compose",
   "hermes_orchestrator._pipeline.protocol_hosts",
   "hermes_orchestrator._pipeline.pipeline_scraper",
+  "hermes_orchestrator._pipeline.dev_factory",
+  "hermes_orchestrator._pipeline.__init__",
 ]
 ignore_errors = false
 

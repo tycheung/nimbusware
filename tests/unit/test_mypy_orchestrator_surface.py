@@ -38,10 +38,12 @@ _ORCHESTRATOR_STRICT = frozenset(
         "hermes_orchestrator._pipeline.compose",
         "hermes_orchestrator._pipeline.protocol_hosts",
         "hermes_orchestrator._pipeline.pipeline_scraper",
+        "hermes_orchestrator._pipeline.dev_factory",
+        "hermes_orchestrator._pipeline.__init__",
     },
 )
 
-_PIPELINE_IGNORED = "hermes_orchestrator._pipeline.*"
+_PIPELINE_BLANKET_IGNORE = 'module = ["hermes_orchestrator._pipeline.*"]'
 
 
 def test_orchestrator_strict_islands_listed() -> None:
@@ -50,9 +52,9 @@ def test_orchestrator_strict_islands_listed() -> None:
         assert module in text, f"missing strict mypy override entry for {module}"
 
 
-def test_pipeline_mixins_still_ignored() -> None:
+def test_pipeline_blanket_ignore_removed() -> None:
     text = _PYPROJECT.read_text(encoding="utf-8")
-    assert _PIPELINE_IGNORED in text
+    assert _PIPELINE_BLANKET_IGNORE not in text
 
 
 def test_tranche_e_paths_in_ci_targets() -> None:
@@ -66,3 +68,5 @@ def test_tranche_e_paths_in_ci_targets() -> None:
     assert "packages/hermes_orchestrator/_pipeline/lifecycle_plan.py" in text
     assert "packages/hermes_orchestrator/_pipeline/critique_gates_helpers.py" in text
     assert "packages/hermes_orchestrator/_pipeline/lifecycle_start.py" in text
+    assert "packages/hermes_orchestrator/_pipeline/dev_factory.py" in text
+    assert "packages/hermes_orchestrator/_pipeline/__init__.py" in text

@@ -14,7 +14,7 @@ _STRICT_MODULES = frozenset(
     },
 )
 
-_PIPELINE_IGNORED = "hermes_orchestrator._pipeline.*"
+_PIPELINE_BLANKET_IGNORE = 'module = ["hermes_orchestrator._pipeline.*"]'
 
 
 def test_api_listed_in_mypy_strict_override() -> None:
@@ -24,7 +24,6 @@ def test_api_listed_in_mypy_strict_override() -> None:
         assert module in text, f"missing strict mypy override entry for {module}"
 
 
-def test_pipeline_mixins_remain_ignored() -> None:
+def test_pipeline_blanket_ignore_removed() -> None:
     text = _PYPROJECT.read_text(encoding="utf-8")
-    assert _PIPELINE_IGNORED in text
-    assert "hermes_orchestrator._pipeline.*" in text
+    assert _PIPELINE_BLANKET_IGNORE not in text
