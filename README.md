@@ -1,6 +1,6 @@
 # Nimbusware
 
-Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, a **Streamlit Maker app** (the default product UI — business prompt → scoped projects → reviewable slice builds), an **Admin Console** for ops/dev control-plane work, optional **desktop shells**, and local integration with the **Hermes** online agentic system (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages via `hermes_*` packages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, **Maker** and **Admin** web apps (Alpine + Preact at `/v1/maker/app/` and `/v1/admin/app/`), optional **desktop shells** (pywebview), and local integration with the **Hermes** online agentic system (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages via `hermes_*` packages).
 
 **Default install:** Maker only. The Admin Console is optional and gated behind an admin token.
 
@@ -30,8 +30,8 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | Layer | Packages / entry | Role |
 |-------|------------------|------|
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
-| **Maker app** | `nimbusware_maker` | **User console** — projects, intent, plain progress, slice approval/revert (no admin token for the product loop) |
-| **Admin Console** | `nimbusware_console` | **Admin/dev console** — runs, timeline, config editors, fleet panels (admin token at sign-in) |
+| **Maker app** | `nimbusware_maker` + `nimbusware_maker_web` | **User console** — web UI at `/v1/maker/app/` |
+| **Admin Console** | `nimbusware_console` + `nimbusware_admin_ui` | **Admin/dev console** — web UI at `/v1/admin/app/` |
 | **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + sandbox (`none` / `stub` / opt-in `docker` for Individual v1) |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
@@ -108,9 +108,11 @@ packages/
   hermes_executor/      Role-gated outbound HTTP
   hermes_extensions/    Personas, bundles, catalog
   nimbusware_api/       FastAPI app
-  nimbusware_maker/     Maker Streamlit UI + project store helpers
+  nimbusware_maker/     Maker services, slice workflow, onboarding helpers
+  nimbusware_maker_web/ Maker web UI static assets (Alpine)
+  nimbusware_admin_ui/  Admin Preact SPA (built to dist/)
   nimbusware_hw/        Hardware probe, resource governor, model fit ranking
-  nimbusware_console/   Admin Console Streamlit UI (ops/dev)
+  nimbusware_console/   Admin display helpers + services (ops/dev)
   hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
   nimbusware_iam/       Enterprise IAM
@@ -195,12 +197,16 @@ poetry run nimbusware-launcher
 
 ```bash
 poetry run nimbusware-api
-poetry run streamlit run packages/nimbusware_maker/app.py
-# Admin Console (admin token at load):
-poetry run streamlit run packages/nimbusware_console/app.py
+# Web UIs (default when NIMBUSWARE_UI_BACKEND=web):
+#   Maker:  http://127.0.0.1:8000/v1/maker/app/
+#   Admin:  http://127.0.0.1:8000/v1/admin/app/
+poetry run nimbusware-maker
+poetry run nimbusware-admin
 ```
 
-Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--admin --smoke` to smoke the Admin Console instead.
+Set `NIMBUSWARE_UI_BACKEND=streamlit` only if you still run a legacy Streamlit build (removed from this tree).
+
+Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--admin --smoke` for the admin web entry.
 
 API docs: http://127.0.0.1:8000/docs — operations are tagged **user** (Maker) vs **admin** (Admin Console) in OpenAPI.
 
@@ -223,7 +229,7 @@ Bootstrap (`POST /v1/enterprise/iam/bootstrap`) returns a **maker_admin** key. C
 
 ## Maker app
 
-Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/app.py). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`). Set `NIMBUSWARE_API_KEY` on Enterprise (user-scoped key).
+Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimbusware_maker_web/static/)). Launcher: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`). Set `NIMBUSWARE_API_KEY` on Enterprise (user-scoped key).
 
 **Home & onboarding**
 
@@ -241,7 +247,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
-- Optional **Maker web** PWA at `GET /v1/maker/app/` (manifest, slice progress, plan/slice approval via maker pending API; `?run_id=` supported)
+- Tabbed web UI: Home, Build, Review, Progress (SSE theater + maker-progress), Models, Settings; PWA manifest; `?run_id=` deep links
 
 **Review**
 
@@ -256,9 +262,9 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 ## Admin Console
 
-**Admin/dev only** — not part of the default product path. Streamlit app: [`packages/nimbusware_console/app.py`](packages/nimbusware_console/app.py). Requires admin token at load. Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
+**Admin/dev only** — not part of the default product path. Web app: `GET /v1/admin/app/` ([`packages/nimbusware_admin_ui`](packages/nimbusware_admin_ui/)). Sign in with `NIMBUSWARE_ADMIN_TOKEN` (stored in browser `sessionStorage`). Uses `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`).
 
-Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher **Admin Console…** button.
+Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher **Admin Console…** button. Build the SPA after UI changes: `cd packages/nimbusware_admin_ui && npm ci && npm run build`.
 
 **Runs & timeline**
 
