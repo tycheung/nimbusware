@@ -100,3 +100,35 @@ button.secondary {
 .error {
   color: #c42b2b;
 }
+
+.theater-list {
+  list-style: none;
+  padding: 0;
+}
+
+.theater-list li {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.theater-body {
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  max-height: 12rem;
+  overflow: auto;
+}
+
+.timeline-events li.highlight {
+  background: #fff3cd;
+}
+
+button.linkish {
+  background: none;
+  border: none;
+  color: var(--color-accent, #2563eb);
+  cursor: pointer;
+  margin-left: 0.5rem;
+  text-decoration: underline;
+}

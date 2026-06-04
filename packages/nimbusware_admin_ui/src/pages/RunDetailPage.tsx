@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+import { TheaterPanel } from "../components/TheaterPanel";
 import { TimelineAccordion } from "../components/TimelineAccordion";
 
 type RunDetail = {
@@ -116,8 +117,14 @@ export function RunDetailPage({ id }: { id?: string }) {
           Open in Maker review
         </a>
       </p>
+      <h3>Theater</h3>
+      <TheaterPanel runId={id} onJumpToSeq={(seq) => setTimelineSeq(seq)} />
       <h3>Timeline</h3>
-      {timeline ? <TimelineAccordion runId={id} timeline={timeline} /> : <p>No timeline.</p>}
+      {timeline ? (
+        <TimelineAccordion runId={id} timeline={timeline} highlightSeq={timelineSeq} />
+      ) : (
+        <p>No timeline.</p>
+      )}
       <h3>Findings</h3>
       <FindingsTable rows={findings} />
       <h3>Critic matrix</h3>

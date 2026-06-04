@@ -12,8 +12,16 @@ const SECTIONS: { key: string; label: string; timelineField?: string }[] = [
 
 type Timeline = Record<string, unknown>;
 
-export function TimelineAccordion({ runId, timeline }: { runId: string; timeline: Timeline }) {
-  const [open, setOpen] = useState<string | null>(null);
+export function TimelineAccordion({
+  runId,
+  timeline,
+  highlightSeq,
+}: {
+  runId: string;
+  timeline: Timeline;
+  highlightSeq?: number | null;
+}) {
+  const [open, setOpen] = useState<string | null>(highlightSeq != null ? "events" : null);
   const [explain, setExplain] = useState<Record<string, string>>({});
 
   async function toggle(section: string) {
@@ -46,7 +54,18 @@ export function TimelineAccordion({ runId, timeline }: { runId: string; timeline
               {sec.label}
             </summary>
             {sec.key === "events" ? (
-              <p>{(timeline.events as unknown[])?.length || 0} events (use findings/critic panels below).</p>
+              <ul class="timeline-events">
+                {((timeline.events as Record<string, unknown>[]) || []).map((ev, i) => {
+                  const seq = Number(ev.store_seq ?? ev.seq ?? 0);
+                  const et = String(ev.event_type ?? ev.type ?? "event");
+                  const hl = highlightSeq != null && seq === highlightSeq;
+                  return (
+                    <li key={`${seq}-${i}`} data-store-seq={seq || undefined} class={hl ? "highlight" : ""}>
+                      <strong>#{seq || "—"}</strong> {et}
+                    </li>
+                  );
+                })}
+              </ul>
             ) : (
               <pre class="json-block">{JSON.stringify(payload, null, 2)}</pre>
             )}
