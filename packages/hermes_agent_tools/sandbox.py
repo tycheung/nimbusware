@@ -5,7 +5,8 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-VALID_BACKENDS = frozenset({"none", "stub"})
+VALID_BACKENDS = frozenset({"none", "stub", "docker"})
+DEFAULT_DOCKER_IMAGE = "python:3.11-slim"
 
 
 @dataclass(frozen=True)
@@ -27,6 +28,42 @@ def resolve_sandbox_backend() -> str:
     return raw
 
 
+def resolve_sandbox_docker_image() -> str:
+    raw = os.environ.get("HERMES_SANDBOX_DOCKER_IMAGE", DEFAULT_DOCKER_IMAGE).strip()
+    return raw or DEFAULT_DOCKER_IMAGE
+
+
+def docker_cli_available() -> bool:
+    try:
+        proc = subprocess.run(
+            ["docker", "version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return proc.returncode == 0
+
+
+def build_docker_run_argv(workspace: Path, argv: list[str], *, image: str) -> list[str]:
+    ws = workspace.resolve()
+    return [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "none",
+        "-v",
+        f"{ws}:/workspace",
+        "-w",
+        "/workspace",
+        image,
+        *argv,
+    ]
+
+
 def run_subprocess_in_sandbox(
     workspace: Path,
     argv: list[str],
@@ -37,6 +74,40 @@ def run_subprocess_in_sandbox(
     chosen = backend or resolve_sandbox_backend()
     if chosen not in VALID_BACKENDS:
         chosen = "none"
+
+    if chosen == "docker":
+        if not docker_cli_available():
+            proc = subprocess.run(
+                argv,
+                cwd=workspace,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+            note = "[sandbox:docker-unavailable] "
+            return SandboxRunResult(
+                backend="docker",
+                returncode=proc.returncode,
+                stdout=note + (proc.stdout or ""),
+                stderr=(proc.stderr or "")
+                + "Docker CLI unavailable; ran without container isolation.\n",
+            )
+        image = resolve_sandbox_docker_image()
+        docker_argv = build_docker_run_argv(workspace, argv, image=image)
+        proc = subprocess.run(
+            docker_argv,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+        prefix = "[sandbox:docker] "
+        return SandboxRunResult(
+            backend="docker",
+            returncode=proc.returncode,
+            stdout=prefix + (proc.stdout or ""),
+            stderr=proc.stderr or "",
+        )
+
     proc = subprocess.run(
         argv,
         cwd=workspace,
