@@ -10,7 +10,7 @@ Not production-hardened — starting point for Enterprise ops.
 4. `kubectl apply -f schema-job.yaml` and wait for completion (greenfield `postgres.sql`).
 5. `kubectl apply -f api-deployment.yaml`
 6. Optional: `kubectl apply -f worker-deployment.yaml` when `HERMES_RUN_DISPATCH=redis`.
-7. Optional: `kubectl apply -f console-deployment.yaml` for Admin web UI (legacy manifest may reference streamlit; prefer API + static `/v1/admin/app/`).
+7. Admin web UI: use **api-deployment** only — open `/v1/admin/app/` (Enterprise fleet: `/v1/admin/app/fleet`). `console-deployment.yaml` is a legacy stub (no separate console pod).
 
 ## Files
 
@@ -21,7 +21,7 @@ Not production-hardened — starting point for Enterprise ops.
 | `redis-deployment.yaml` | Redis 7 for fleet worker queue |
 | `worker-deployment.yaml` | `run_dispatch_worker.py` (enterprise + redis dispatch) |
 | `schema-job.yaml` | One-shot schema apply via `scripts/apply_event_store.sh` |
-| `console-deployment.yaml` | Optional Admin Console (not production-hardened) |
+| `console-deployment.yaml` | Legacy note only — Admin UI ships with API (`/v1/admin/app/`) |
 
 ## Environment matrix
 

@@ -1,58 +1,14 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nimbusware-admin-console
-  labels:
-    app: nimbusware-admin-console
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nimbusware-admin-console
-  template:
-    metadata:
-      labels:
-        app: nimbusware-admin-console
-    spec:
-      containers:
-        - name: console
-          image: nimbusware-api:latest
-          imagePullPolicy: IfNotPresent
-          command:
-            [
-              "streamlit",
-              "run",
-              "packages/nimbusware_console/app.py",
-              "--server.port",
-              "8502",
-              "--server.address",
-              "0.0.0.0",
-            ]
-          ports:
-            - containerPort: 8502
-          envFrom:
-            - secretRef:
-                name: nimbusware-api-secrets
-          env:
-            - name: NIMBUSWARE_API_BASE
-              value: http://nimbusware-api/v1
-            - name: NIMBUSWARE_REPO_ROOT
-              value: /app
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: "1"
-              memory: 1Gi
----
+# Legacy optional manifest — Admin UI is served by the API Deployment at /v1/admin/app/.
+# Prefer applying api-deployment.yaml only; do not run a separate Streamlit console pod.
+#
+# If you still want a dedicated Service name for Admin bookmarks, point it at the API
+# Service (nimbusware-api) on port 8000 and open /v1/admin/app/ in the browser.
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: nimbusware-admin-console
-spec:
-  selector:
-    app: nimbusware-admin-console
-  ports:
-    - port: 80
-      targetPort: 8502
+  name: nimbusware-admin-console-note
+data:
+  readme: |
+    Admin Console is the Preact SPA bundled with nimbusware-api.
+    Apply api-deployment.yaml and route operators to http://<api>/v1/admin/app/
+    Enterprise fleet panels: http://<api>/v1/admin/app/fleet

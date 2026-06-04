@@ -23,7 +23,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 - **Object-store primary** — S3-compatible scraper artifact backend (optional local mirror)
 - **Redis fleet worker** — shared verify queue, health/back-pressure metrics
 - **Fleet Ollama SLI** — sustained health p95 export + preflight aggregate API
-- **Enterprise console** — sidebar tenant switcher, fleet memory / preflight / worker dashboards
+- **Enterprise fleet (Admin)** — **Fleet** tab at `/v1/admin/app/fleet` (tenant switcher, fleet memory, Ollama SLI aggregate, worker health, hardware tiers; requires `X-Nimbusware-Api-Key` in Admin sign-in)
 
 ## Architecture
 
@@ -283,7 +283,7 @@ Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher
 - Persona shelves and editor, workflow explainers, integrator preview/apply
 - Cross-run preflight trends and fleet metrics export
 
-**Enterprise only** (sidebar): API key connect, tenant switcher, **Enterprise fleet dashboard** (fleet memory status, Ollama SLI + preflight aggregate, Redis worker health).
+**Enterprise only** (Admin **Fleet** tab at `/v1/admin/app/fleet`): set Enterprise API key at sign-in, optional tenant switcher, fleet memory status, Ollama SLI + preflight aggregate, Redis worker health, hardware fleet tiers. Cross-run preflight **history** remains on the **Preflight** tab.
 
 Run detail includes **Open in Maker Review** deep links (`NIMBUSWARE_MAKER_URL/?run_id=…`).
 

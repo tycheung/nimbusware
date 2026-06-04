@@ -31,7 +31,7 @@ nimbusware_console/
 ├── operator_chat_core.py  # Operator chat command handling (BFF: POST /v1/admin/ui/operator-chat/message)
 ├── admin_gate.py          # Token gate helpers
 ├── integrator_gate/       # Integrator gate display logic
-└── enterprise_console*.py # Enterprise fleet (deferred in web UI)
+└── enterprise_console*.py # Enterprise fleet formatters (Admin Fleet tab at /v1/admin/app/fleet)
 ```
 
 Admin UX lives in `nimbusware_admin_ui` (Metrics, Preflight, Runs, …) and reuses the display modules above via API BFF routes.
