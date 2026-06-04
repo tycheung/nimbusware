@@ -162,6 +162,10 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _install("HERMES_OLLAMA_BASE_URL", "Ollama base URL override"),
         _install("NIMBUSWARE_HW_SSH_HOST", "Enterprise SSH hardware probe host"),
         _install("NIMBUSWARE_HW_SSH_IDENTITY", "SSH private key path for hardware probe"),
+        _install(
+            "NIMBUSWARE_HW_FLEET_HOSTS",
+            "Comma-separated SSH hosts for fleet hardware tier aggregate",
+        ),
     )
 
     system_extra = (

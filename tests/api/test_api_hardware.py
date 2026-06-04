@@ -16,3 +16,8 @@ def test_platform_hardware_rescan(client: TestClient) -> None:
     r = client.post("/v1/platform/hardware/rescan", json={})
     assert r.status_code == 200
     assert "profile" in r.json()
+
+
+def test_platform_hardware_fleet_individual_404(client: TestClient) -> None:
+    r = client.get("/v1/platform/hardware/fleet")
+    assert r.status_code == 404

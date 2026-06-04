@@ -23,9 +23,11 @@ from nimbusware_console.enterprise_console import (
     fetch_fleet_worker_health,
     fetch_iam_me,
     fetch_platform_edition,
+    fetch_platform_hardware_fleet,
     fetch_tenants,
     fleet_dashboard_export_filename_slug,
     fleet_dashboard_export_json,
+    fleet_hardware_tier_table_rows,
     fleet_memory_status_table_rows,
     fleet_sli_aggregate_caption,
     fleet_worker_health_caption,
@@ -183,6 +185,7 @@ def render_enterprise_fleet_dashboard() -> None:
             aggregate_body: dict[str, Any] | None = None
             worker_body: dict[str, Any] | None = None
             critic_body: dict[str, Any] | None = None
+            hardware_fleet_body: dict[str, Any] | None = None
             try:
                 memory_body = fetch_fleet_memory_status(api_key=api_key)
             except HTTPError as exc:
@@ -215,10 +218,15 @@ def render_enterprise_fleet_dashboard() -> None:
                     errors.append(f"fleet/critic-reliability: {exc}")
             else:
                 errors.append("fleet/critic-reliability: missing tenant_id (load IAM me first)")
+            try:
+                hardware_fleet_body = fetch_platform_hardware_fleet()
+            except HTTPError as exc:
+                errors.append(f"platform/hardware/fleet: {exc}")
             st.session_state["hermes_enterprise_dashboard_memory"] = memory_body
             st.session_state["hermes_enterprise_dashboard_aggregate"] = aggregate_body
             st.session_state["hermes_enterprise_dashboard_worker"] = worker_body
             st.session_state["hermes_enterprise_dashboard_critic"] = critic_body
+            st.session_state["hermes_enterprise_dashboard_hardware_fleet"] = hardware_fleet_body
             st.session_state["hermes_enterprise_dashboard_errors"] = errors
 
         for err in st.session_state.get("hermes_enterprise_dashboard_errors") or []:
@@ -249,6 +257,18 @@ def render_enterprise_fleet_dashboard() -> None:
             wcap = fleet_worker_health_caption(worker)
             if wcap:
                 st.caption(wcap)
+
+        hardware_fleet = st.session_state.get("hermes_enterprise_dashboard_hardware_fleet")
+        if isinstance(hardware_fleet, dict):
+            st.subheader("Fleet hardware tiers")
+            hw_rows = fleet_hardware_tier_table_rows(hardware_fleet)
+            if hw_rows:
+                st.dataframe(hw_rows, use_container_width=True, hide_index=True)
+            elif hardware_fleet.get("host_count", 0) == 0:
+                st.caption(
+                    "No fleet hosts configured. Set NIMBUSWARE_HW_FLEET_HOSTS "
+                    "(comma-separated) on the API process."
+                )
 
         critic = st.session_state.get("hermes_enterprise_dashboard_critic")
         if isinstance(critic, dict):

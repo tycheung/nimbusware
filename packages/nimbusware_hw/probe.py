@@ -64,7 +64,7 @@ def classify_tier(*, ram_total_gb: float | None, cpu_count: int) -> str:
 
 
 def probe_hardware_remote_ssh(host: str) -> dict[str, Any]:
-    """Enterprise SSH probe stub — returns degraded local profile when SSH unavailable."""
+    """Enterprise SSH hardware probe (subprocess ssh + /proc/meminfo parse)."""
     from nimbusware_env.edition import is_enterprise
 
     if not is_enterprise():
@@ -74,7 +74,7 @@ def probe_hardware_remote_ssh(host: str) -> dict[str, Any]:
         return {"errors": ["ssh_host_empty"], "tier": "weak"}
     from nimbusware_env.env_flags import env_str, env_truthy
 
-    key_path = env_str("NIMBUSWARE_HW_SSH_IDENTITY")
+    key_path = env_str("NIMBUSWARE_HW_SSH_IDENTITY") or None
     if env_truthy("NIMBUSWARE_HW_SSH_MOCK"):
         return {
             "tier": "medium",
@@ -89,18 +89,9 @@ def probe_hardware_remote_ssh(host: str) -> dict[str, Any]:
             "remote_host": host,
             "ssh_identity_configured": bool(key_path),
         }
-    return {
-        "tier": "medium",
-        "ram_total_gb": None,
-        "ram_available_gb": None,
-        "cpu_count": 1,
-        "gpus": [],
-        "gpu_groups": [],
-        "unified_memory": False,
-        "errors": ["ssh_probe_not_configured"],
-        "platform": "ssh",
-        "remote_host": host,
-    }
+    from nimbusware_hw.ssh_probe import run_ssh_hardware_probe
+
+    return run_ssh_hardware_probe(host, identity_path=key_path)
 
 
 def probe_hardware(*, fixture: str | None = None, remote_host: str | None = None) -> dict[str, Any]:

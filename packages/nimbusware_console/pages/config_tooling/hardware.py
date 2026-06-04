@@ -39,6 +39,27 @@ def render_hardware_panel() -> None:
         host = st.text_input(
             "SSH remote host (enterprise)",
             value=env_str("NIMBUSWARE_HW_SSH_HOST"),
+            key="admin_hw_ssh_host",
         )
-        if host.strip():
-            st.caption("Set NIMBUSWARE_HW_SSH_MOCK=1 in dev to exercise mock SSH probe.")
+        if st.button("Probe remote host", key="admin_hw_ssh_probe"):
+            if not host.strip():
+                st.warning("Enter a remote host first.")
+            else:
+                try:
+                    remote_data = get_json(
+                        "/platform/hardware",
+                        params={"remote_host": host.strip()},
+                    )
+                    remote_profile = (
+                        remote_data.get("profile")
+                        if isinstance(remote_data.get("profile"), dict)
+                        else {}
+                    )
+                    st.success(f"Remote tier: `{remote_profile.get('tier', '?')}`")
+                    st.json(remote_profile)
+                except HTTPError as exc:
+                    render_api_error(exc)
+        st.caption(
+            "Set NIMBUSWARE_HW_SSH_MOCK=1 for mock probe, or configure "
+            "NIMBUSWARE_HW_SSH_IDENTITY for live SSH."
+        )

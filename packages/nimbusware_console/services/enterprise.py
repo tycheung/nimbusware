@@ -79,6 +79,10 @@ def fetch_fleet_worker_health(
     )
 
 
+def fetch_platform_hardware_fleet(*, timeout: float = 30.0) -> dict[str, Any]:
+    return get_json("/platform/hardware/fleet", timeout=timeout)
+
+
 def fetch_fleet_critic_reliability(
     *,
     api_key: str,

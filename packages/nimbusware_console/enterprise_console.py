@@ -26,6 +26,7 @@ fetch_fleet_memory_status = enterprise_svc.fetch_fleet_memory_status
 fetch_fleet_preflight_aggregate = enterprise_svc.fetch_fleet_preflight_aggregate
 fetch_fleet_worker_health = enterprise_svc.fetch_fleet_worker_health
 fetch_fleet_critic_reliability = enterprise_svc.fetch_fleet_critic_reliability
+fetch_platform_hardware_fleet = enterprise_svc.fetch_platform_hardware_fleet
 
 
 def tenant_select_options(tenants_body: Mapping[str, Any] | None) -> list[tuple[str, str]]:
@@ -164,3 +165,31 @@ def fleet_dashboard_export_json(
 
 def fleet_dashboard_export_filename_slug() -> str:
     return "enterprise_fleet_dashboard"
+
+
+def fleet_hardware_tier_table_rows(body: Mapping[str, Any] | None) -> list[dict[str, Any]]:
+    if not isinstance(body, Mapping):
+        return []
+    hosts = body.get("hosts")
+    if not isinstance(hosts, list):
+        return []
+    rows: list[dict[str, Any]] = []
+    for item in hosts:
+        if not isinstance(item, Mapping):
+            continue
+        err_list = item.get("errors")
+        err_text = ", ".join(str(e) for e in err_list[:3]) if isinstance(err_list, list) else ""
+        rows.append(
+            {
+                "host": item.get("host", ""),
+                "tier": item.get("tier", ""),
+                "ram_total_gb": item.get("ram_total_gb"),
+                "ram_available_gb": item.get("ram_available_gb"),
+                "cpu_count": item.get("cpu_count"),
+                "gpu_count": item.get("gpu_count"),
+                "platform": item.get("platform", ""),
+                "errors": err_text,
+            },
+        )
+    rows.sort(key=lambda r: (str(r.get("tier")), str(r.get("host"))))
+    return rows
