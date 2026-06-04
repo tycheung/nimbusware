@@ -42,6 +42,10 @@ def pressure_limits_parallel(level: PressureLevel, base_cap: int) -> int:
     return base_cap
 
 
+def should_defer_memory_rebuild(level: PressureLevel) -> bool:
+    return level != "ok"
+
+
 def should_degrade_llm_to_stub(level: PressureLevel) -> bool:
     if level != "block":
         return False

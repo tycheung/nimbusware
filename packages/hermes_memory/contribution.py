@@ -29,8 +29,10 @@ def maybe_rebuild_memory_index_for_run(
         from nimbusware_hw.pressure import sample_pressure
 
         gov = governor_from_metadata(run_created_metadata)
+        from nimbusware_hw.pressure import should_defer_memory_rebuild
+
         level, _ = sample_pressure(gov)
-        if level == "block":
+        if should_defer_memory_rebuild(level):
             return None
     except ImportError:
         pass

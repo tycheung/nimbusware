@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
+import pytest
+
 from agent_core.models import EventType
 from hermes_memory import InMemoryMemoryChunkStore
 from hermes_memory.contribution import maybe_rebuild_memory_index_for_run
@@ -37,6 +39,41 @@ def test_maybe_rebuild_skips_when_index_contribution_false() -> None:
         run_created_metadata={"memory": {"index_contribution": False}},
     )
     assert result is None
+
+
+@pytest.mark.parametrize("pressure_level", ["warn", "throttle", "block"])
+def test_maybe_rebuild_defers_under_ram_pressure(
+    tmp_path,
+    monkeypatch,
+    pressure_level: str,
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    store = InMemoryEventStore()
+    mem = InMemoryMemoryChunkStore()
+    run_id = uuid4()
+
+    def _fake_pressure(_gov):
+        return pressure_level, {"reason": "ram_over_cap"}
+
+    monkeypatch.setattr("nimbusware_hw.pressure.sample_pressure", _fake_pressure)
+    monkeypatch.setattr(
+        "nimbusware_hw.governor.governor_from_metadata",
+        lambda _meta: object(),
+    )
+    result = maybe_rebuild_memory_index_for_run(
+        mem,
+        store,
+        run_id=run_id,
+        repo_root=tmp_path,
+        run_created_metadata={
+            "memory": {"index_contribution": True},
+            "resource_governor": {"max_system_ram_pct": 75},
+        },
+    )
+    assert result is None
+    assert not any(
+        r["event_type"] == EventType.MEMORY_INDEXED.value for r in store.list_all_event_rows()
+    )
 
 
 def test_maybe_rebuild_emits_memory_indexed(tmp_path, monkeypatch) -> None:
