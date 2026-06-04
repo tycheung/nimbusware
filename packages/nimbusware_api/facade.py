@@ -6,6 +6,7 @@ from fastapi import APIRouter
 
 from nimbusware_api.routes import (
     actions,
+    admin_ui_bff,
     analytics,
     audit,
     bundles,
@@ -49,4 +50,5 @@ def build_v1_router() -> APIRouter:
     router.include_router(ollama.router)
     router.include_router(build_enterprise_router())
     router.include_router(web_bootstrap_router)
+    router.include_router(admin_ui_bff.router)
     return router
