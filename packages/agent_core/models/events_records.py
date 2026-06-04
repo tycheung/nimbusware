@@ -17,6 +17,7 @@ from agent_core.models.events_payloads import (
     FindingRoutedPayload,
     GateDecisionEmittedPayload,
     GateOverriddenPayload,
+    HardwareProfileDetectedPayload,
     MemoryIndexedPayload,
     MemoryRetrievalEmittedPayload,
     ModelPreflightFailedPayload,
@@ -249,6 +250,11 @@ class StitchFailedEvent(BaseHermesEvent):
     payload: StitchFailedPayload
 
 
+class HardwareProfileDetectedEvent(BaseHermesEvent):
+    event_type: Literal[EventType.HARDWARE_PROFILE_DETECTED]
+    payload: HardwareProfileDetectedPayload
+
+
 HermesEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -284,6 +290,7 @@ HermesEventUnion: TypeAlias = (
     | StitchPlanEmittedEvent
     | StitchAppliedEvent
     | StitchFailedEvent
+    | HardwareProfileDetectedEvent
 )
 
 HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]

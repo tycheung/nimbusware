@@ -11,6 +11,8 @@ from agent_core.models import (
     EventType,
     GateDecisionEmittedEvent,
     GateDecisionEmittedPayload,
+    HardwareProfileDetectedEvent,
+    HardwareProfileDetectedPayload,
     MemoryRetrievalEmittedEvent,
     MemoryRetrievalEmittedPayload,
     ModelPreflightPassedEvent,
@@ -222,6 +224,23 @@ def test_theater_governor_and_preflight_lines() -> None:
     headlines = [m["headline"] for m in msgs]
     assert any("Resource governor" in h for h in headlines)
     assert any("Model preflight passed" in h for h in headlines)
+
+
+def test_theater_hardware_profile_detected_line() -> None:
+    run_id = uuid4()
+    row = HardwareProfileDetectedEvent(
+        event_type=EventType.HARDWARE_PROFILE_DETECTED,
+        event_id=uuid4(),
+        run_id=run_id,
+        occurred_at=datetime.now(timezone.utc),
+        payload=HardwareProfileDetectedPayload(
+            hardware_tier="medium",
+            tier="medium",
+        ),
+    ).model_dump(mode="json")
+    row["store_seq"] = 1
+    msgs = build_run_theater_messages([row])
+    assert any("Hardware profile detected (medium)" in m["headline"] for m in msgs)
 
 
 def test_theater_metadata_deferral_line() -> None:

@@ -417,6 +417,17 @@ class SelfRefinementLoopSignalledPayload(BasePayload):
     llm_gate_decision: Literal["proceed", "hold"] | None = None
 
 
+class HardwareProfileDetectedPayload(BasePayload):
+    hardware_tier: str = Field(min_length=1, max_length=32)
+    tier: str = Field(min_length=1, max_length=32)
+    ram_total_gb: float | None = None
+    ram_available_gb: float | None = None
+    platform: str = Field(default="", max_length=64)
+    profile_fingerprint: str | None = Field(default=None, max_length=64)
+    pressure_level: str | None = Field(default=None, max_length=16)
+    pressure_reason: str | None = Field(default=None, max_length=64)
+
+
 class MemoryIndexedPayload(BasePayload):
     """Audit record after a repo-scoped memory index rebuild."""
 

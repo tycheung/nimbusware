@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles, is_enterprise
+from nimbusware_hw.audit import append_hardware_profile_detected_event
 from nimbusware_hw.cache import get_cached_profile, rescan_hardware
 from nimbusware_hw.fit import rank_models
 from nimbusware_hw.fleet_hardware import probe_fleet_hardware_hosts
@@ -20,7 +23,11 @@ router = APIRouter(tags=["platform"])
 class HardwareRescanBody(BaseModel):
     emit_event: bool = Field(
         default=False,
-        description="Reserved: append hardware.profile.detected when platform ops events ship",
+        description="Append hardware.profile.detected to the event store when true",
+    )
+    run_id: UUID | None = Field(
+        default=None,
+        description="Run to attach the hardware.profile.detected event (required when emit_event)",
     )
 
 
@@ -65,21 +72,39 @@ def get_platform_hardware(
 @router.post("/platform/hardware/rescan")
 def post_platform_hardware_rescan(
     orch: OrchDep,
-    _store: StoreDep,
+    store: StoreDep,
     body: HardwareRescanBody | None = None,
     remote_host: str | None = Query(default=None, max_length=256),
 ) -> dict:
-    del body
     if remote_host and remote_host.strip():
         return _hardware_response(orch, remote_host=remote_host)
     profile = rescan_hardware()
     governor = governor_for_profile(profile)
     ranked = rank_models(orch.repo_root, profile, limit=20)
-    return {
+    out: dict = {
         "profile": profile.model_dump_public(),
         "resource_governor": governor.to_metadata(),
         "models_ranked": ranked[:20],
     }
+    req = body or HardwareRescanBody()
+    if req.emit_event and req.run_id is None:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "run_id_required",
+                "run_id is required when emit_event is true",
+            ),
+        )
+    if req.emit_event and req.run_id is not None:
+        store_seq = append_hardware_profile_detected_event(
+            store,
+            run_id=req.run_id,
+            profile=profile,
+            governor=governor,
+        )
+        out["event_emitted"] = True
+        out["store_seq"] = store_seq
+    return out
 
 
 @router.get("/platform/hardware/fleet")
