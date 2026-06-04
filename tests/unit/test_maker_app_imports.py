@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 
 def test_maker_package_imports() -> None:
-    import nimbusware_maker.app  # noqa: F401
-    from nimbusware_maker.ui import render_main
+    import nimbusware_maker  # noqa: F401
+    from nimbusware_maker.cli import main
 
-    assert callable(render_main)
+    assert callable(main)
+    assert (Path(nimbusware_maker.__file__).resolve().parent / "services").is_dir()
 
 
 def test_maker_runs_latest_for_project(monkeypatch) -> None:

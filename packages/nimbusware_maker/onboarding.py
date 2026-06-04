@@ -16,11 +16,19 @@ def is_onboarded(session_state: object) -> bool:
     return flag_file.is_file()
 
 
-def mark_onboarded(session_state: object) -> None:
-    setattr(session_state, SESSION_ONBOARDED, True)
+def mark_onboarded_server() -> None:
     flag = onboarding_flag_path()
     flag.parent.mkdir(parents=True, exist_ok=True)
     flag.write_text("1\n", encoding="utf-8")
+
+
+def is_onboarded_server() -> bool:
+    return onboarding_flag_path().is_file()
+
+
+def mark_onboarded(session_state: object) -> None:
+    setattr(session_state, SESSION_ONBOARDED, True)
+    mark_onboarded_server()
 
 
 def onboarding_flag_path() -> Path:

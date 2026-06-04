@@ -15,6 +15,7 @@ from nimbusware_hw.fleet_hardware import probe_fleet_hardware_hosts
 from nimbusware_hw.governor import governor_for_profile
 from nimbusware_hw.probe import probe_hardware
 from nimbusware_hw.profile import profile_from_probe
+from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
 
 router = APIRouter(tags=["platform"])
@@ -118,3 +119,14 @@ def get_platform_hardware_fleet() -> dict:
             ),
         )
     return probe_fleet_hardware_hosts()
+
+
+@router.get("/platform/onboarding")
+def get_platform_onboarding() -> dict:
+    return {"onboarded": is_onboarded_server()}
+
+
+@router.post("/platform/onboarding")
+def post_platform_onboarding() -> dict:
+    mark_onboarded_server()
+    return {"onboarded": True}

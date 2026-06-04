@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from nimbusware_maker.ui.memory_influence import format_retrieval_rows
+from nimbusware_maker.memory_influence_display import format_retrieval_rows
 
 
 def test_format_retrieval_rows_truncates_digest() -> None:

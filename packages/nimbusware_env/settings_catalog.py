@@ -185,6 +185,17 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
+            "NIMBUSWARE_UI_BACKEND",
+            install,
+            s,
+            "web",
+            "Desktop UI backend",
+            "web = pywebview opens /v1/maker/app or /v1/admin/app; streamlit = legacy.",
+            "Install — infrastructure",
+            admin_editable=False,
+            user_editable=False,
+        ),
+        SettingDef(
             "PORT",
             install,
             s,

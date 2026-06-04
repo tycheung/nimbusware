@@ -23,8 +23,7 @@ def test_nimbusware_api_app_importable() -> None:
     assert any(route.path.startswith("/v1") for route in app.routes)
 
 
-def test_nimbusware_maker_app_importable() -> None:
-    import nimbusware_maker.app  # noqa: F401
-    from nimbusware_maker.ui import render_main
+def test_nimbusware_maker_web_importable() -> None:
+    from nimbusware_maker_web import STATIC_DIR
 
-    assert callable(render_main)
+    assert (STATIC_DIR / "index.html").is_file()

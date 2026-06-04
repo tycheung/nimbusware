@@ -108,6 +108,18 @@ def _streamlit_command(py_cmd: list[str], console_script: Path, host: str, port:
     ]
 
 
+def _ui_backend() -> str:
+    from nimbusware_env.env_flags import env_str
+
+    return env_str("NIMBUSWARE_UI_BACKEND", default="web").strip().lower()
+
+
+def _web_console_url(*, api_host: str, api_port: int, ui_mode: str) -> str:
+    if ui_mode == "admin":
+        return f"http://{api_host}:{api_port}/v1/admin/app/"
+    return f"http://{api_host}:{api_port}/v1/maker/app/"
+
+
 def _resolve_ui_mode(*, ui: str | None = None) -> str:
     raw = (ui or os.environ.get("NIMBUSWARE_UI", "maker")).strip().lower()
     if raw in ("console", "operator", "admin"):
@@ -160,9 +172,17 @@ def start_servers(
     py_cmd = resolve_python_command(root)
     env = os.environ.copy()
 
-    streamlit_script = _streamlit_app_script(root, mode)
-
     _spawn([*py_cmd, "-m", "nimbusware_api.cli"], cwd=root, env=env)
+
+    api_url = f"http://{api_host}:{api_port}/openapi.json"
+    _wait_for_http(api_url)
+
+    if _ui_backend() == "web":
+        console_url = _web_console_url(api_host=api_host, api_port=api_port, ui_mode=mode)
+        _wait_for_http(console_url)
+        return console_url, api_url, env
+
+    streamlit_script = _streamlit_app_script(root, mode)
     _spawn(
         _streamlit_command(py_cmd, streamlit_script, streamlit_host, streamlit_port),
         cwd=root,
@@ -170,9 +190,7 @@ def start_servers(
     )
 
     console_url = f"http://{streamlit_host}:{streamlit_port}"
-    api_url = f"http://{api_host}:{api_port}/openapi.json"
     _wait_for_http(f"{console_url}/_stcore/health")
-    _wait_for_http(api_url)
     return console_url, api_url, env
 
 
@@ -240,7 +258,7 @@ def run_desktop(
     _log(f"API ready: {api_url}")
 
     if smoke_test:
-        _log("Smoke test passed: API and Streamlit are reachable.")
+        _log("Smoke test passed: API and web UI are reachable.")
         _terminate_procs()
         return 0
 
