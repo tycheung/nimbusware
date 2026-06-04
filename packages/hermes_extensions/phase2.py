@@ -1,4 +1,4 @@
-"""Phase 2–4 building blocks (plan §12 Phase 2+, §14 #12–19).
+"""Hermes extension building blocks (personas, bundles, escalation).
 
 Concrete YAML-backed types live in sibling modules; integrator/evaluator/scanner
 verticals remain thin until wired to events.

@@ -241,7 +241,7 @@ Streamlit entry: [`packages/nimbusware_maker/app.py`](packages/nimbusware_maker/
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
-- Optional lightweight **Maker web** mobile PWA at `GET /v1/maker/app/` (manifest, slice progress panel, installable icon; query `?run_id=` supported)
+- Optional **Maker web** PWA at `GET /v1/maker/app/` (manifest, slice progress, plan/slice approval via maker pending API; `?run_id=` supported)
 
 **Review**
 
@@ -299,13 +299,13 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Runs** | `GET/POST /runs`, `GET /runs/{id}`, timeline, findings | User |
 | **Maker progress** | `GET /runs/{id}/maker-progress`, SSE `.../maker-progress/stream` | User |
 | **Run theater** | `GET /runs/{id}/theater`, SSE `.../theater/stream`, `GET .../theater/export` | User |
-| **Maker web** | `GET /maker/app/` (static SPA) | User |
+| **Maker web** | `GET /maker/app/` (PWA: theater, research approve, slice approval) | User |
 | **Research** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject` | User |
-| **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
+| **Maker approval** | `GET .../maker/pending`, plan approve, slice prepare/apply/skip, workspace revert | User |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id`), `GET /platform/analytics/stitch-outcomes` | User |
+| **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
-| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id` append `hardware.profile.detected`) | User |
-| **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
 | **Actions** | Retry, escalate | Admin |
 | **Bundles** | `GET /bundles/search`, `GET /catalog` | User |

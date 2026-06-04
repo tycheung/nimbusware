@@ -46,7 +46,7 @@ def apply_theater_paraphrase(
     *,
     enabled: bool,
 ) -> list[dict[str, Any]]:
-    """Optional fo560 hook; no LLM call when disabled (default)."""
+    """Optional theater paraphrase hook; no LLM call when disabled (default)."""
     if not enabled:
         return messages
     return messages
