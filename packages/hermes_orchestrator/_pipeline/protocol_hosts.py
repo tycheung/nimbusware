@@ -57,6 +57,57 @@ class IntegrationOptionalStagesHost(Protocol):
     _config_materializer: Any | None
 
 
+class PipelineScraperHost(Protocol):
+    _store: EventStore
+    _repo_root: Path
+    _config_materializer: Any | None
+    _registry: RoleRegistry
+
+    def policy_snapshot_for_run(self, run_id: UUID) -> dict[str, Any]: ...
+
+    def _persist_scraper_response_artifact(
+        self,
+        run_id: UUID,
+        url_index: int,
+        content: bytes,
+        persist_cap: int,
+    ) -> dict[str, Any]: ...
+
+    def _scraper_get_with_retries(
+        self,
+        run_id: UUID,
+        scraper_url: str,
+        actor: UUID,
+        client: Any,
+        cfg: Any,
+        max_response_bytes: int | None,
+    ) -> tuple[Any, int]: ...
+
+    def _effective_scraper_budget_bytes(
+        self,
+        run_id: UUID,
+        cfg: Any,
+    ) -> int | None: ...
+
+    def _scraper_stage_audit_metadata(
+        self,
+        host: str,
+        http_status: int,
+        nbytes: int,
+        attempts_used: int,
+        *,
+        content_length_header: int | None = None,
+    ) -> dict[str, Any]: ...
+
+    def _parse_content_length_header(self, resp: Any) -> int | None: ...
+
+    def _scraper_body_digest_and_snippet(
+        self,
+        content: bytes,
+        snippet_max_bytes: int,
+    ) -> dict[str, Any]: ...
+
+
 class SelfRefinementOptionalStagesHost(Protocol):
     _store: EventStore
     _registry: RoleRegistry

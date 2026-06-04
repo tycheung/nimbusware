@@ -95,7 +95,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: orchestrator root modules plus `_pipeline/base`, `_helpers`, `create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*`; probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
+| E | Orchestrator islands: orchestrator root modules plus `_pipeline/base`, `_helpers`, `create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*`, `protocol_hosts`, `pipeline_scraper`; probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 

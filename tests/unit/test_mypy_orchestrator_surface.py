@@ -36,6 +36,8 @@ _ORCHESTRATOR_STRICT = frozenset(
         "hermes_orchestrator._pipeline.optional_stages_agent_evaluator",
         "hermes_orchestrator._pipeline.optional_stages",
         "hermes_orchestrator._pipeline.compose",
+        "hermes_orchestrator._pipeline.protocol_hosts",
+        "hermes_orchestrator._pipeline.pipeline_scraper",
     },
 )
 

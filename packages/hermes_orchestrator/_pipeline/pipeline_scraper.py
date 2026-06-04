@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (
+from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
     UUID,
     Any,
     EgressResponseTooLarge,
@@ -23,12 +23,13 @@ from hermes_orchestrator._pipeline._helpers import (
     uuid4,
     workflow_profile_from_run_created_rows,
 )
+from hermes_orchestrator._pipeline.protocol_hosts import PipelineScraperHost
 from nimbusware_env.env_flags import hermes_outbound_fetch_enabled
 
 
 class PipelineScraperMixin:
     def egress_checked_fetch_url(
-        self,
+        self: PipelineScraperHost,
         run_id: UUID,
         url: str,
         actor_role_id: UUID,
@@ -92,14 +93,16 @@ class PipelineScraperMixin:
         return out
 
     def _persist_scraper_response_artifact(
-        self,
+        self: PipelineScraperHost,
         run_id: UUID,
         url_index: int,
         content: bytes,
         persist_cap: int,
     ) -> dict[str, Any]:
         """Write truncated response bytes; object-store primary when Enterprise edition."""
-        from hermes_orchestrator.scraper_artifacts import persist_scraper_artifact
+        from hermes_orchestrator.scraper_artifacts import (  # type: ignore[attr-defined]
+            persist_scraper_artifact,
+        )
 
         return persist_scraper_artifact(
             self._repo_root,
@@ -110,7 +113,7 @@ class PipelineScraperMixin:
         )
 
     def _scraper_get_with_retries(
-        self,
+        self: PipelineScraperHost,
         run_id: UUID,
         scraper_url: str,
         actor: UUID,
@@ -149,7 +152,7 @@ class PipelineScraperMixin:
         raise RuntimeError(msg)
 
     def _effective_scraper_budget_bytes(
-        self,
+        self: PipelineScraperHost,
         run_id: UUID,
         cfg: ScraperFetchConfig,
     ) -> int | None:
@@ -168,7 +171,7 @@ class PipelineScraperMixin:
         return min(caps) if caps else None
 
     def run_optional_scraper_fetch_stage(
-        self,
+        self: PipelineScraperHost,
         run_id: UUID,
         *,
         client: httpx.Client | None = None,
