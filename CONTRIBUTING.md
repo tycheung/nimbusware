@@ -42,7 +42,7 @@ Architecture is enforced by [`tests/unit/test_import_graph.py`](tests/unit/test_
 
 - `hermes_orchestrator` must not import `nimbusware_api` at module level
 - `hermes_extensions` must not import `hermes_orchestrator` at module level
-- Streamlit UI must use `services/*` and `nimbusware_client` — not direct `httpx`
+- Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repo; **Hermes** = online agentic system).
 
