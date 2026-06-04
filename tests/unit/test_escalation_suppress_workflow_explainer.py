@@ -1,4 +1,4 @@
-"""§14 #19."""
+"""Escalation suppress workflow explainer coverage."""
 
 from __future__ import annotations
 

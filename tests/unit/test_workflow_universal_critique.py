@@ -1,4 +1,4 @@
-"""§14 #16: parse and merge ``universal_critique`` workflow knobs."""
+"""parse and merge ``universal_critique`` workflow knobs."""
 
 from __future__ import annotations
 

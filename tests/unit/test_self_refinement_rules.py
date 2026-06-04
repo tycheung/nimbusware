@@ -1,4 +1,4 @@
-"""Self-refinement rules loop v1 (P2-a / §14 #17)."""
+"""Self-refinement rules loop v1."""
 
 from __future__ import annotations
 

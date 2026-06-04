@@ -17,7 +17,7 @@ from hermes_store.protocol import EventStore
 
 @runtime_checkable
 class ModuleIntegratorPort(Protocol):
-    """§3A.4 integration path + compatibility gate thresholds."""
+    """Integration path + compatibility gate thresholds."""
 
     def score_fit(self, bundle_id: str, project_profile: dict[str, Any]) -> float: ...
 

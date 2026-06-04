@@ -1,4 +1,4 @@
-"""Escalation policy breadth metrics for operators (§14 #19)."""
+"""Escalation policy breadth metrics for operators."""
 
 from __future__ import annotations
 

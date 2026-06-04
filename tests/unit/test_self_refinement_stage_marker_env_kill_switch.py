@@ -1,4 +1,4 @@
-"""§14 #17: ``HERMES_SELF_REFINEMENT_STAGE_MARKER`` suppresses ``self_refinement:policy`` emit."""
+"""``HERMES_SELF_REFINEMENT_STAGE_MARKER`` suppresses ``self_refinement:policy`` emit."""
 
 from __future__ import annotations
 

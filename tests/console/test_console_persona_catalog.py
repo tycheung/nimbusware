@@ -1,4 +1,4 @@
-"""Console persona shelves helper (follow-on 32 §14 #14)."""
+"""Console persona shelves helper."""
 
 from __future__ import annotations
 

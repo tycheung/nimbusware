@@ -1,4 +1,4 @@
-"""Production evaluator LLM fallback without stub env (§14 #15)."""
+"""Production evaluator LLM fallback without stub env."""
 
 from __future__ import annotations
 

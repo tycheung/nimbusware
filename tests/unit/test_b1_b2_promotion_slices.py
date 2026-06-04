@@ -1,4 +1,4 @@
-"""B1/B2 promotion slice tests (§14 #13–#19, production workflows)."""
+"""B1/B2 promotion slice tests."""
 
 from __future__ import annotations
 

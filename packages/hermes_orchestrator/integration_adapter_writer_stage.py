@@ -1,4 +1,4 @@
-"""Integration Adapter Writer ``stage.started`` emitters (stub + live metadata slice, §14 #13)."""
+"""Integration Adapter Writer ``stage.started`` emitters."""
 
 from __future__ import annotations
 

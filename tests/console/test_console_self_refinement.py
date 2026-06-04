@@ -1,4 +1,4 @@
-"""Console self-refinement display helper (follow-on 38 §14 #17)."""
+"""Console self-refinement display helper."""
 
 from __future__ import annotations
 

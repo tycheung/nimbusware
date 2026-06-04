@@ -1,4 +1,4 @@
-"""B1 promotion proof for §14 #15 — production LLM evaluator on workflow YAML."""
+"""B1 promotion: production LLM evaluator on workflow YAML."""
 
 from __future__ import annotations
 

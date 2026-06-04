@@ -1,4 +1,4 @@
-"""§14 #17: workflow YAML can opt in to self_refinement stage marker."""
+"""workflow YAML can opt in to self_refinement stage marker."""
 
 from __future__ import annotations
 

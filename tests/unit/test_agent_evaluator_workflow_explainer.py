@@ -1,4 +1,4 @@
-"""§14 #15."""
+"""Agent evaluator workflow explainer coverage."""
 
 from __future__ import annotations
 

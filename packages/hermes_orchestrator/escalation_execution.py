@@ -1,4 +1,4 @@
-"""Central escalation emit helpers with policy breadth metadata (§14 #19)."""
+"""Central escalation emit helpers with policy breadth metadata."""
 
 from __future__ import annotations
 

@@ -1,10 +1,4 @@
-"""OS-specific subprocess execution (plan §9, §19.1 compatibility adapters).
-
-Outbound HTTP from a scraper role should use
-[`egress_checked_httpx_get`][hermes_executor.fetch.egress_checked_httpx_get], which
-calls [`assert_egress_allowed`][hermes_executor.egress.assert_egress_allowed] on
-the request host using the frozen policy snapshot (plan §6.3A, §9.1).
-"""
+"""OS-specific subprocess execution. Outbound HTTP from a scraper role should use [`egress_checked_httpx_get`][hermes_executor.fetch.egress_checked_httpx_get], which calls [`assert_egress_allowed`][hermes_executor.egress.assert_egress_allowed] on the request host using the frozen policy snapshot."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""HERMES_SKIP_PREFLIGHT`` env-layer string-arm contract (follow-on 67, §14 #1)."""
+"""HERMES_SKIP_PREFLIGHT`` env-layer string-arm contract."""
 
 from __future__ import annotations
 

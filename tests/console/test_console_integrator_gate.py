@@ -1,4 +1,4 @@
-"""Console integrator gate display helper (follow-on 31 §14 #13)."""
+"""Console integrator gate display helper."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Integration Adapter Writer stub pipeline stage (§14 #13)."""
+"""Integration Adapter Writer stub pipeline stage."""
 
 from __future__ import annotations
 

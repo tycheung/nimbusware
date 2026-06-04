@@ -1,4 +1,4 @@
-"""Research and stitch workflow support (plan §20.7)."""
+"""Research and stitch workflow support."""
 
 from hermes_research.artifacts import persist_research_brief, read_research_brief
 from hermes_research.models import ResearchBrief, ResearchBriefSource

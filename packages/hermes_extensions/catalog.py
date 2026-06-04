@@ -1,8 +1,4 @@
-"""Bundle catalog (plan §3A, §14 #12) with tag search + optional on-disk FAISS index.
-
-Use :func:`search_bundles` for a repo-root-relative catalog search without constructing
-paths at the call site.
-"""
+"""Bundle catalog with tag search + optional on-disk FAISS index. Use :func:`search_bundles` for a repo-root-relative catalog search without constructing paths at the call site."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""§14 #16: critique pairings drive plan stub + create_run taxonomy validation."""
+"""critique pairings drive plan stub + create_run taxonomy validation."""
 
 from __future__ import annotations
 

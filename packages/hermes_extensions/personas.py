@@ -1,25 +1,4 @@
-"""Persona shelves and optional per-entry edit/instructions extension.
-
-The minimal on-disk shape is ``{id, display_name}`` per entry. Optional additive fields let operators author per-persona
-instructions / capability profile / boundary statement / allowed tools /
-success metrics / probation status — plus a monotonic ``version`` for
-optimistic-concurrency on the new write API:
-
- - ``instructions`` str (≤ 8000 chars, NFC-normalized)
- - ``capability_profile`` str (≤ 2000)
- - ``boundary_statement`` str (≤ 2000)
- - ``scope_in`` list[str] (≤ 30; what this persona owns — plan §3E.3)
- - ``scope_out`` list[str] (≤ 30; explicit non-goals / other roles' jobs)
- - ``defers_to`` list[str] (≤ 20; role or persona ids to hand off to)
- - ``terminology_disambiguation`` list[{term, meaning_in_role}] (≤ 25; overloaded terms)
- - ``allowed_tools`` list[str] (≤ 50 entries; each ≤ 100 chars)
- - ``success_metrics`` list[str] (≤ 20 entries; each ≤ 200 chars)
- - ``probation_status`` Literal["probation", "promoted", "shelved"]
- - ``version`` int (≥ 1, default 1 when absent)
-
-All new fields are OPTIONAL on disk so minimal ``shelves.yaml`` entries keep
-loading unchanged.
-"""
+"""Persona shelves and optional per-entry edit/instructions extension. The minimal on-disk shape is ``{id, display_name}`` per entry. Optional additive fields let operators author per-persona instructions / capability profile / boundary statement / allowed tools / success metrics / probation status — plus a monotonic ``version`` for optimistic-concurrency on the new write API: - ``instructions`` str (≤ 8000 chars, NFC-normalized) - ``capability_profile`` str (≤ 2000) - ``boundary_statement`` str (≤ 2000) - ``scope_in`` list[str] (≤ 30; what this persona owns — plan §3E.3) - ``scope_out`` list[str] (≤ 30; explicit non-goals / other roles' jobs) - ``defers_to`` list[str] (≤ 20; role or persona ids to hand off to) - ``terminology_disambiguation`` list[{term, meaning_in_role}] (≤ 25; overloaded terms) - ``allowed_tools`` list[str] (≤ 50 entries; each ≤ 100 chars) - ``success_metrics`` list[str] (≤ 20 entries; each ≤ 200 chars) - ``probation_status`` Literal["probation", "promoted", "shelved"] - ``version`` int (≥ 1, default 1 when absent) All new fields are OPTIONAL on disk so minimal ``shelves.yaml`` entries keep loading unchanged."""
 
 from __future__ import annotations
 

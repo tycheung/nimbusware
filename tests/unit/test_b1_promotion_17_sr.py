@@ -1,4 +1,4 @@
-"""B2 promotion proof for §14 #17 — YAML-first ungated self-refinement."""
+"""B2 promotion: YAML-first ungated self-refinement."""
 
 from __future__ import annotations
 

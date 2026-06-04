@@ -1,4 +1,4 @@
-"""§14 #13 Integration Adapter Writer workflow scaffold."""
+"""Integration Adapter Writer workflow scaffold."""
 
 from __future__ import annotations
 

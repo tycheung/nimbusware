@@ -1,4 +1,4 @@
-"""B1 promotion proof for §14 #13 — Integration Adapter Writer target I/O."""
+"""B1 promotion: Integration Adapter Writer target I/O."""
 
 from __future__ import annotations
 

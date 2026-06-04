@@ -1,4 +1,4 @@
-"""§14 #18: per-tool exit codes from ``run_security_scan``."""
+"""per-tool exit codes from ``run_security_scan``."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Bundle catalog write API (§14 #12 catalog edit path)."""
+"""Bundle catalog write API."""
 
 from __future__ import annotations
 

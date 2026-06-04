@@ -1,4 +1,4 @@
-"""Egress allowlist rules (no network; plan §6.3A, §9.1)."""
+"""Egress allowlist rules (no network.1)."""
 
 from __future__ import annotations
 

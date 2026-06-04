@@ -1,4 +1,4 @@
-"""§14 #15: workflow ``agent_evaluator`` block parsing."""
+"""workflow ``agent_evaluator`` block parsing."""
 
 from __future__ import annotations
 

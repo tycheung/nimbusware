@@ -1,4 +1,4 @@
-"""YAML merge, Role Registry, preflight, and MVP orchestration (plan §5–§6.3A).
+"""YAML merge, Role Registry, preflight, and MVP orchestration.
 
 Avoid importing ``pipeline`` at package import time: ``pipeline`` depends on
 ``hermes_extensions``, while ``hermes_extensions`` (e.g. ``catalog``) imports

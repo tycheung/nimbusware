@@ -1,4 +1,4 @@
-"""B2 promotion proof for §14 #18 — security scan tool categories on verify."""
+"""B2 promotion: security scan tool categories on verify."""
 
 from __future__ import annotations
 

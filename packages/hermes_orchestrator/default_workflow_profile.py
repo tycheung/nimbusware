@@ -1,4 +1,4 @@
-"""Default workflow profile for API ingress and orchestrator (§14 optional product)."""
+"""Default workflow profile for API ingress and orchestrator."""
 
 from __future__ import annotations
 

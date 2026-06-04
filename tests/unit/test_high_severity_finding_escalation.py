@@ -1,4 +1,4 @@
-"""§14 #19: cumulative HIGH/BLOCKER ``finding.created`` → one ``run.escalated``."""
+"""cumulative HIGH/BLOCKER ``finding.created`` → one ``run.escalated``."""
 
 from __future__ import annotations
 

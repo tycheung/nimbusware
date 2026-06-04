@@ -1,4 +1,4 @@
-"""§14 #13: full-profile workflow YAML paste + merge + disk apply (shallow merge)."""
+"""full-profile workflow YAML paste + merge + disk apply (shallow merge)."""
 
 from __future__ import annotations
 

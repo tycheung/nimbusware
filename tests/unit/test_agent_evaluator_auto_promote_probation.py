@@ -1,4 +1,4 @@
-"""§14 #15: agent-evaluator probation→promoted auto path + timeline metadata."""
+"""agent-evaluator probation→promoted auto path + timeline metadata."""
 
 from __future__ import annotations
 

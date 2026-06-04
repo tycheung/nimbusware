@@ -1,4 +1,4 @@
-"""Console bundle catalog helper (follow-on 24 §14 #12)."""
+"""Console bundle catalog helper."""
 
 from __future__ import annotations
 

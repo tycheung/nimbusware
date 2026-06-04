@@ -15,7 +15,8 @@ Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory a
   from the Role Registry (plan §3, §5). JSON uses **UUID strings** (`serialize_event_persistent` /
   `model_dump(mode="json")`).
 - **Event envelope**: discriminated union on `event_type`; use `validate_event_dict` so
-  `event_type` and `payload` stay coupled (plan §6.5).
+  `event_type` and `payload` stay coupled.
+- **Hardware**: `hardware.profile.detected` (optional `run_id` on platform rescan) is in the foundation union (`events_foundation.py`).
 
 ## Public API
 

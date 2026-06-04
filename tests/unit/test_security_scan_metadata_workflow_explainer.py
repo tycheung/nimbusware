@@ -1,4 +1,4 @@
-"""§14 #18."""
+"""Security scan metadata workflow explainer coverage."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Critique coverage snapshot + timeline enrichment (P2-b / §14 #16)."""
+"""Critique coverage snapshot + timeline enrichment."""
 
 from __future__ import annotations
 

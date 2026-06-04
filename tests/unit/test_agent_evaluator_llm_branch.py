@@ -1,4 +1,4 @@
-"""Agent evaluator LLM branch without mandatory HERMES_USE_LLM (§14 #15)."""
+"""Agent evaluator LLM branch without mandatory HERMES_USE_LLM."""
 
 from __future__ import annotations
 

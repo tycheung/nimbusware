@@ -1,4 +1,4 @@
-"""Self-refinement LLM critique YAML-first branch (§14 #17)."""
+"""Self-refinement LLM critique YAML-first branch."""
 
 from __future__ import annotations
 

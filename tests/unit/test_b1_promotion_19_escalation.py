@@ -1,4 +1,4 @@
-"""B2 promotion proof for §14 #19 — escalation policy breadth metrics."""
+"""B2 promotion: escalation policy breadth metrics."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Console security scan on verify display helper (follow-on 40 §14 #18)."""
+"""Console security scan on verify display helper."""
 
 from __future__ import annotations
 

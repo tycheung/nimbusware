@@ -1,4 +1,4 @@
-"""§14 #19: workflow ``escalation`` block."""
+"""workflow ``escalation`` block."""
 
 from __future__ import annotations
 

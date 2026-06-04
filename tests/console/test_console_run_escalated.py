@@ -1,4 +1,4 @@
-"""Console run escalated display helper (follow-on 39 §14 #19)."""
+"""Console run escalated display helper."""
 
 from __future__ import annotations
 

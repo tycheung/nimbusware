@@ -1,4 +1,4 @@
-"""Agent evaluator rules loop v1 (P1-c / §14 #15)."""
+"""Agent evaluator rules loop v1."""
 
 from __future__ import annotations
 

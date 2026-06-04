@@ -1,4 +1,4 @@
-"""Console agent evaluator display helper (follow-on 36 §14 #15)."""
+"""Console agent evaluator display helper."""
 
 from __future__ import annotations
 

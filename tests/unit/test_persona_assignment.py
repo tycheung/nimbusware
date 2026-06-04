@@ -1,4 +1,4 @@
-"""Persona assignment at run creation (P1 / §3B.3)."""
+"""Persona assignment at run creation."""
 
 from __future__ import annotations
 

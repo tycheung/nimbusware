@@ -1,4 +1,4 @@
-"""B1 promotion proof for §14 #16 — default-on universal critique on production profile."""
+"""B1 promotion: default-on universal critique on production profile."""
 
 from __future__ import annotations
 

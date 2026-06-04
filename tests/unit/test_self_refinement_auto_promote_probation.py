@@ -1,4 +1,4 @@
-"""§14 #17: self-refinement probation→promoted auto path + timeline metadata."""
+"""self-refinement probation→promoted auto path + timeline metadata."""
 
 from __future__ import annotations
 

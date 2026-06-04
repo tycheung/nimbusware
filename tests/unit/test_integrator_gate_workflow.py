@@ -1,4 +1,4 @@
-"""§14 #13: integrator gate can be enabled from workflow YAML."""
+"""integrator gate can be enabled from workflow YAML."""
 
 from __future__ import annotations
 

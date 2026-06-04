@@ -1,4 +1,4 @@
-"""Target adapter file generation for Integration Adapter Writer live path (§14 #13)."""
+"""Target adapter file generation for Integration Adapter Writer live path."""
 
 from __future__ import annotations
 
