@@ -57,12 +57,10 @@ tests/e2e/web/blob-report/
 .env.*
 !.env.example
 
-# Legacy Streamlit (web UI is default; only repo config.toml may stay tracked for tests)
-.streamlit/*
-!.streamlit/config.toml
-# Removed Streamlit app trees — do not re-commit if recreated locally
+# Retired Streamlit operator trees — do not re-commit if recreated locally
 packages/nimbusware_maker/ui/
 packages/nimbusware_console/pages/
+.streamlit/
 
 # Logs and local scratch
 *.log

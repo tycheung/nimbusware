@@ -107,10 +107,6 @@ ignore = ["E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "packages/**/__init__.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/pages/**/_imports*.py" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/pages/**/_shared*.py" = ["F401", "F403", "F405", "F811"]
-"packages/nimbusware_console/pages/config_tooling/bundles/_shared.py" = ["F401", "F403", "F405", "F811"]
-"packages/nimbusware_console/pages/run_detail/_imports_display_a/*.py" = ["F401", "F403", "F405"]
 "packages/nimbusware_console/**/*_display.py" = ["F401", "F403", "F405"]
 "packages/nimbusware_console/*_display.py" = ["F401", "F403", "F405"]
 "packages/nimbusware_console/*_explainer.py" = ["F401", "F403", "F405"]
@@ -123,10 +119,7 @@ ignore = ["E501"]
 "packages/hermes_orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
 "packages/hermes_orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405"]
 "packages/hermes_orchestrator/llm/**" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/pages/config_tooling/**" = ["F401", "F403", "F405"]
-"packages/nimbusware_console/pages/run_detail/**" = ["F811"]
 "packages/nimbusware_api/app.py" = ["E402"]
-"packages/nimbusware_console/app.py" = ["E402"]
 "packages/nimbusware_console/custom_agents_ui.py" = ["E402"]
 "packages/nimbusware_console/agent_evaluator_display/metrics.py" = ["E402"]
 "packages/nimbusware_console/prune_status_display/*.py" = ["E402"]
@@ -273,14 +266,9 @@ ignore_errors = false
 # fo731 (Lane X2): UI ignore narrowed (replaces blanket nimbusware_console.* / nimbusware_maker.*).
 [[tool.mypy.overrides]]
 module = [
-  "nimbusware_console.pages",
-  "nimbusware_console.pages.*",
   "nimbusware_console.main",
-  "nimbusware_console.app",
   "nimbusware_maker.slice_workflow",
   "nimbusware_maker.slice_workflow.*",
-  "nimbusware_maker.main",
-  "nimbusware_maker.app",
   "nimbusware_console.bundle_catalog",
   "nimbusware_console.bundle_catalog.*",
   "nimbusware_console.integrator_gate",
@@ -383,10 +371,6 @@ disable_error_code = [
 
 [[tool.mypy.overrides]]
 module = ["redis", "redis.*"]
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = ["streamlit.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

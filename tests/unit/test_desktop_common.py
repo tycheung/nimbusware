@@ -16,7 +16,7 @@ from nimbusware_env.desktop_common import (
     run_log_path,
     venv_python_candidates,
 )
-from nimbusware_env.run_app import _reject_legacy_streamlit_backend
+from nimbusware_env.run_app import _reject_legacy_ui_backend
 
 
 def test_read_poetry_version_from_repo() -> None:
@@ -79,10 +79,10 @@ def test_run_log_path_under_cache() -> None:
     assert path.name == "nimbusware-run.log"
 
 
-def test_streamlit_ui_backend_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_legacy_streamlit_ui_backend_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_UI_BACKEND", "streamlit")
-    with pytest.raises(RuntimeError, match="no longer supported"):
-        _reject_legacy_streamlit_backend()
+    with pytest.raises(RuntimeError, match="Streamlit retired"):
+        _reject_legacy_ui_backend()
 
 
 def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> None:

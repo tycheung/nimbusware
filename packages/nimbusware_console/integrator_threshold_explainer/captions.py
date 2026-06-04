@@ -3,6 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.integrator_threshold_explainer.keys import (
+    get_preview_effective_min_score,
+)
+
 
 def integrator_threshold_gate_emission_caption(
     payload: Mapping[str, Any] | None,
@@ -47,7 +51,7 @@ def integrator_threshold_min_score_agreement_caption(
     if not isinstance(payload, Mapping):
         return None
     pipe = payload.get("pipeline_effective_min_score_to_pass")
-    preview = payload.get("streamlit_preview_effective_min_score_to_pass")
+    preview = get_preview_effective_min_score(payload)
     if not isinstance(pipe, (int, float)) or isinstance(pipe, bool):
         return None
     if not isinstance(preview, (int, float)) or isinstance(preview, bool):

@@ -14,6 +14,9 @@ from nimbusware_config.workflow_read import (
 )
 from nimbusware_console.components.workflow_explainer_helpers import relative_under
 from nimbusware_console.config_materializer import console_config_materializer
+from nimbusware_console.integrator_threshold_explainer.keys import (
+    PREVIEW_EFFECTIVE_MIN_SCORE_KEY,
+)
 from nimbusware_console.integrator_threshold_explainer.snapshots import (
     _emit_integrator_gate_breakdown,
     _env_min_score_to_pass_breakdown,
@@ -103,7 +106,7 @@ def integrator_threshold_explainer_payload(
         },
         "env_min_score_to_pass": _env_min_score_to_pass_breakdown(),
         "pipeline_effective_min_score_to_pass": pipe_eff,
-        "streamlit_preview_effective_min_score_to_pass": preview_eff,
+        PREVIEW_EFFECTIVE_MIN_SCORE_KEY: preview_eff,
         "min_score_agreement_note": note,
         "gate_event_emission": _emit_integrator_gate_breakdown(
             repo_root,

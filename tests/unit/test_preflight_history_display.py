@@ -1,6 +1,6 @@
 """Tests for `nimbusware_console.preflight_history_display`.
 
-Covers the three pure functions consumed by the new Streamlit expander:
+Covers the three pure functions consumed by the Admin preflight history panel:
 
 * `preflight_history_from_timeline` (3 axes): None / non-mapping inputs,
  missing key, non-dict ``preflight`` value, happy path.

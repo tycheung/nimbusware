@@ -13,9 +13,5 @@ def test_start_servers_rejects_default_admin_token_on_public_bind(
 ) -> None:
     monkeypatch.delenv("NIMBUSWARE_ADMIN_TOKEN", raising=False)
     monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
-    maker_dir = tmp_path / "packages" / "nimbusware_maker"
-    maker_dir.mkdir(parents=True)
-    (maker_dir / "app.py").write_text("", encoding="utf-8")
-
     with pytest.raises(RuntimeError, match="dev default"):
-        start_servers(root=tmp_path, api_host="0.0.0.0", api_port=18000, streamlit_port=18501)
+        start_servers(root=tmp_path, api_host="0.0.0.0", api_port=18000)

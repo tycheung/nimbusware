@@ -81,7 +81,7 @@ def test_integrator_threshold_min_score_agreement_caption_agrees() -> None:
     cap = integrator_threshold_min_score_agreement_caption(
         {
             "pipeline_effective_min_score_to_pass": 0.4,
-            "streamlit_preview_effective_min_score_to_pass": 0.4,
+            "preview_effective_min_score_to_pass": 0.4,
             "min_score_agreement_note": "Preview and pipeline agree on min score.",
         },
     )
@@ -93,7 +93,7 @@ def test_integrator_threshold_min_score_agreement_caption_mismatch() -> None:
     cap = integrator_threshold_min_score_agreement_caption(
         {
             "pipeline_effective_min_score_to_pass": 0.4,
-            "streamlit_preview_effective_min_score_to_pass": 0.05,
+            "preview_effective_min_score_to_pass": 0.05,
         },
     )
     assert cap is not None
@@ -160,7 +160,7 @@ def test_pipeline_effective_prefers_workflow_over_thresholds_yaml(
         pasted_yaml="",
     )
     assert out["pipeline_effective_min_score_to_pass"] == pytest.approx(0.4)
-    assert out["streamlit_preview_effective_min_score_to_pass"] == pytest.approx(0.4)
+    assert out["preview_effective_min_score_to_pass"] == pytest.approx(0.4)
     assert out["thresholds_yaml"]["top_level_version_int"] == 1
     emit = out["gate_event_emission"]
     assert emit["would_emit_integrator_gate_event"] is True
@@ -175,7 +175,7 @@ def test_preview_min_score_paste_overrides_before_workflow(
         pasted_yaml="min_score_to_pass: 0.05\n",
     )
     assert out["pipeline_effective_min_score_to_pass"] == pytest.approx(0.4)
-    assert out["streamlit_preview_effective_min_score_to_pass"] == pytest.approx(0.05)
+    assert out["preview_effective_min_score_to_pass"] == pytest.approx(0.05)
 
 
 def test_env_min_score_overrides_workflow(
@@ -189,7 +189,7 @@ def test_env_min_score_overrides_workflow(
         pasted_yaml="",
     )
     assert out["pipeline_effective_min_score_to_pass"] == pytest.approx(0.15)
-    assert out["streamlit_preview_effective_min_score_to_pass"] == pytest.approx(0.15)
+    assert out["preview_effective_min_score_to_pass"] == pytest.approx(0.15)
     assert out["env_min_score_to_pass"]["overrides_yaml"] is True
 
 
@@ -388,7 +388,7 @@ def test_integrator_threshold_explainer_operator_metrics_would_emit(
 def test_integrator_threshold_explainer_operator_metrics_min_score_agree_caption() -> None:
     payload = {
         "pipeline_effective_min_score_to_pass": 0.55,
-        "streamlit_preview_effective_min_score_to_pass": 0.55,
+        "preview_effective_min_score_to_pass": 0.55,
         "gate_event_emission": {
             "would_emit_integrator_gate_event": True,
             "thresholds_yaml_exists": True,
@@ -408,7 +408,7 @@ def test_integrator_threshold_explainer_operator_metrics_min_score_agree_caption
 def test_integrator_threshold_explainer_operator_metrics_min_score_mismatch() -> None:
     payload = {
         "pipeline_effective_min_score_to_pass": 0.4,
-        "streamlit_preview_effective_min_score_to_pass": 0.9,
+        "preview_effective_min_score_to_pass": 0.9,
         "gate_event_emission": {
             "would_emit_integrator_gate_event": False,
             "thresholds_yaml_exists": True,
@@ -455,7 +455,7 @@ def test_integrator_threshold_explainer_operator_metrics_export() -> None:
     m = integrator_threshold_explainer_operator_metrics(
         {
             "pipeline_effective_min_score_to_pass": 0.5,
-            "streamlit_preview_effective_min_score_to_pass": 0.5,
+            "preview_effective_min_score_to_pass": 0.5,
             "gate_event_emission": {"would_emit_integrator_gate_event": True},
         },
     )

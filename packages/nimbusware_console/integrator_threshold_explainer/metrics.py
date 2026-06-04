@@ -7,6 +7,9 @@ from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     mapping_export_json,
 )
+from nimbusware_console.integrator_threshold_explainer.keys import (
+    get_preview_effective_min_score,
+)
 
 
 def integrator_threshold_explainer_operator_metrics(
@@ -35,7 +38,7 @@ def integrator_threshold_explainer_operator_metrics(
     if isinstance(thr, Mapping) and thr.get("exists") is True:
         metrics["thresholds_yaml_exists"] = True
     pipe = payload.get("pipeline_effective_min_score_to_pass")
-    preview = payload.get("streamlit_preview_effective_min_score_to_pass")
+    preview = get_preview_effective_min_score(payload)
     if isinstance(pipe, (int, float)) and not isinstance(pipe, bool):
         metrics["min_score_pipeline"] = float(pipe)
     if isinstance(preview, (int, float)) and not isinstance(preview, bool):

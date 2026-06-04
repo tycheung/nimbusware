@@ -107,10 +107,10 @@ def _resolve_ui_mode(*, ui: str | None = None) -> str:
     return "maker"
 
 
-def _reject_legacy_streamlit_backend() -> None:
+def _reject_legacy_ui_backend() -> None:
     if _ui_backend() == "streamlit":
         raise RuntimeError(
-            "NIMBUSWARE_UI_BACKEND=streamlit is no longer supported. "
+            "NIMBUSWARE_UI_BACKEND=streamlit is no longer supported (Streamlit retired). "
             "Use web (default) and open /v1/maker/app/ or /v1/admin/app/ from the API.",
         )
 
@@ -119,15 +119,13 @@ def start_servers(
     *,
     root: Path,
     api_host: str = "127.0.0.1",
-    streamlit_host: str = "127.0.0.1",  # legacy CLI name; unused (web UI served by API)
     api_port: int | None = None,
-    streamlit_port: int | None = None,  # legacy CLI name; unused
     ui_mode: str | None = None,
     quick_mode: bool = False,
 ) -> tuple[str, str, dict[str, str]]:
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
-    _reject_legacy_streamlit_backend()
+    _reject_legacy_ui_backend()
     if quick_mode:
         apply_quick_mode_env()
 
@@ -161,9 +159,7 @@ def run_desktop(
     *,
     root: Path | None = None,
     api_host: str = "127.0.0.1",
-    streamlit_host: str = "127.0.0.1",
     api_port: int | None = None,
-    streamlit_port: int | None = None,
     window_title: str | None = None,
     smoke_test: bool = False,
     ui_mode: str | None = None,
@@ -206,9 +202,7 @@ def run_desktop(
         console_url, api_url, _env = start_servers(
             root=repo,
             api_host=api_host,
-            streamlit_host=streamlit_host,
             api_port=api_port,
-            streamlit_port=streamlit_port,
             ui_mode=mode,
             quick_mode=quick_mode,
         )
@@ -278,8 +272,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--api-host", default="127.0.0.1")
     parser.add_argument("--api-port", type=int, default=None)
-    parser.add_argument("--streamlit-host", default="127.0.0.1")
-    parser.add_argument("--streamlit-port", type=int, default=None)
     parser.add_argument("--title", default=None, help="Window title (default: Maker or Console)")
     ui_group = parser.add_mutually_exclusive_group()
     ui_group.add_argument(
@@ -313,8 +305,6 @@ def main(argv: list[str] | None = None) -> int:
         root=args.repo_root,
         api_host=args.api_host,
         api_port=args.api_port,
-        streamlit_host=args.streamlit_host,
-        streamlit_port=args.streamlit_port,
         window_title=args.title,
         smoke_test=args.smoke,
         ui_mode=ui_mode,

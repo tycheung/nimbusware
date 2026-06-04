@@ -64,3 +64,10 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
     }
     web_true_ids = {r["id"] for r in data.get("maker", []) if r.get("web") is True}
     assert web_true_ids == expected
+
+
+def test_parity_matrix_has_no_streamlit_column() -> None:
+    data = _load()
+    for section in ("maker", "admin"):
+        for row in data.get(section, []):
+            assert "streamlit" not in row, f"{section}/{row.get('id')} still has streamlit key"
