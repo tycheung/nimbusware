@@ -5,7 +5,7 @@ import {
   filtersFromSearch,
   syncFiltersToUrl,
   type RunListFilters,
-} from "../lib/runListCursor";
+} from "../runListCursor";
 
 type RunSummary = {
   status?: string;
