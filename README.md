@@ -148,6 +148,8 @@ python scripts/install_nimbusware.py --edition enterprise
 
 The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/hermes_store/schema/postgres.sql`](packages/hermes_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`.
 
+Model catalog maintenance (offline-first): `python scripts/sync_model_catalog.py --help`.
+
 Or manually:
 
 ```bash
