@@ -1,0 +1,46 @@
+name: Web UI tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/nimbusware_maker_web/**"
+      - "packages/nimbusware_admin_ui/**"
+      - "packages/nimbusware_api/**"
+      - "tests/e2e/web/**"
+      - "tests/web/**"
+
+jobs:
+  web-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry
+      - run: poetry install
+      - name: Pytest web + API
+        run: poetry run pytest tests/web tests/api/test_memory_influence_route.py tests/api/test_admin_ui_bff.py -q
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Vitest maker_web
+        run: |
+          cd packages/nimbusware_maker_web
+          npm ci
+          npm test
+      - name: Vitest admin_ui
+        run: |
+          cd packages/nimbusware_admin_ui
+          npm ci
+          npm test
+      - name: Playwright
+        run: |
+          cd tests/e2e/web
+          npm ci
+          npx playwright install chromium --with-deps
+          npm test

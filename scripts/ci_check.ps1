@@ -54,4 +54,17 @@ if ($node) {
         }
         Pop-Location
     }
+    $pwDir = Join-Path $Root "tests\e2e\web"
+    if ((Test-Path (Join-Path $pwDir "package.json")) -and (Get-Command npx -ErrorAction SilentlyContinue)) {
+        Push-Location $pwDir
+        npm ci --silent 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            npx playwright install chromium 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                npm test --silent
+                if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
+            }
+        }
+        Pop-Location
+    }
 }

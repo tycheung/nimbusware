@@ -219,15 +219,23 @@ print("api_smoke ok")
     return CheckResult("api_run_smoke", code == 0, "TestClient POST /v1/runs + timeline", required=True)
 
 
-def check_console_smoke() -> CheckResult:
+def check_web_ui_smoke() -> CheckResult:
     snippet = """
-import importlib.util
-spec = importlib.util.find_spec("nimbusware_console.app")
-assert spec is not None
-print("console_smoke ok")
-"""
+import os
+os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
+from fastapi.testclient import TestClient
+from nimbusware_api.app import app
+with TestClient(app) as client:
+    m = client.get("/v1/maker/app/")
+    assert m.status_code == 200, m.text
+    b = client.get("/v1/admin/app/bootstrap.json")
+    assert b.status_code == 200, b.text
+    assert b.json().get("api_base")
+print("web_ui_smoke ok")
+""" % str(REPO_ROOT)
     code = _poetry_run_python(snippet)
-    return CheckResult("console_import", code == 0, "import nimbusware_console.app", required=True)
+    return CheckResult("web_ui_smoke", code == 0, "Maker + Admin bootstrap HTTP", required=True)
 
 
 def check_faiss_stale_rebuild() -> CheckResult:
@@ -257,6 +265,8 @@ def run_checks(
     skip_integration: bool,
     skip_install: bool,
 ) -> list[CheckResult]:
+    if profile == "web":
+        return [check_web_ui_smoke()]
     full = profile == "full"
     results: list[CheckResult] = []
     results.append(check_bootstrap())
@@ -283,7 +293,7 @@ def run_checks(
             ),
         )
     results.append(check_api_smoke())
-    results.append(check_console_smoke())
+    results.append(check_web_ui_smoke())
     results.append(check_faiss_stale_rebuild())
     return results
 
@@ -296,9 +306,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-install-check", action="store_true")
     parser.add_argument(
         "--profile",
-        choices=("app", "full"),
+        choices=("app", "full", "web"),
         default="app",
-        help="app=fast smoke without Postgres; full=CI parity including integration",
+        help="app=fast smoke without Postgres; full=CI parity including integration; web=web UI HTTP only",
     )
     args = parser.parse_args(argv)
 
