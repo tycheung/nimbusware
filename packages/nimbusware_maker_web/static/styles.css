@@ -28,6 +28,20 @@ header h1 {
   padding: 1rem;
 }
 
+#approval-panel .approval-summary {
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+}
+
+.approval-actions {
+  margin-top: 0;
+}
+
+.approval-actions button {
+  flex: 1 1 auto;
+  min-width: 8rem;
+}
+
 #slice-panel .slice-summary {
   font-size: 0.95rem;
   margin: 0 0 0.75rem;

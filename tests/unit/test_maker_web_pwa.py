@@ -1,4 +1,4 @@
-"""fo473: Maker web mobile PWA static assets and slice panel."""
+"""Maker web mobile PWA static assets."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ def test_maker_web_has_pwa_and_slice_panel() -> None:
     assert "viewport" in html
     assert "apple-mobile-web-app-capable" in html
     assert 'id="slice-panel"' in html
+    assert 'id="approval-panel"' in html
 
     manifest = json.loads((_STATIC / "manifest.json").read_text(encoding="utf-8"))
     assert manifest.get("display") == "standalone"
@@ -25,3 +26,14 @@ def test_maker_web_has_pwa_and_slice_panel() -> None:
     app_js = (_STATIC / "app.js").read_text(encoding="utf-8")
     assert "maker-progress" in app_js
     assert "slice-panel" in html or "slice-list" in app_js
+
+
+def test_maker_web_has_slice_approval_controls() -> None:
+    html = (_STATIC / "index.html").read_text(encoding="utf-8")
+    app_js = (_STATIC / "app.js").read_text(encoding="utf-8")
+    assert "btn-load-pending" in html
+    assert "/maker/pending" in app_js
+    assert "/maker/plan/approve" in app_js
+    assert "/maker/slices/apply" in app_js
+    assert "/maker/slices/skip" in app_js
+    assert "/maker/slices/prepare" in app_js

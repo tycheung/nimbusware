@@ -95,6 +95,82 @@ function renderSliceProgress(body) {
   }
 }
 
+function addActionButton(container, label, onClick) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = label;
+  btn.addEventListener("click", () => {
+    onClick().catch((e) => setStatus(String(e.message || e)));
+  });
+  container.appendChild(btn);
+}
+
+function renderPending(body) {
+  const summary = document.getElementById("approval-summary");
+  const actions = document.getElementById("approval-actions");
+  actions.replaceChildren();
+
+  const parts = [];
+  parts.push(body.plan_approved ? "Plan approved" : "Plan not approved yet");
+  if (body.awaiting_approval) {
+    parts.push("awaiting slice approval");
+  }
+  const pending = body.pending || null;
+  if (pending) {
+    const sid = pending.slice_id || pending.id || "?";
+    const headline = pending.headline || pending.stage_name || sid;
+    parts.push(`pending: ${headline}`);
+  }
+  summary.textContent = parts.join(" · ");
+
+  const id = runId();
+  if (!body.plan_approved) {
+    addActionButton(actions, "Approve plan", async () => {
+      setStatus("Approving plan…");
+      await apiJson(`/runs/${id}/maker/plan/approve`, { method: "POST" });
+      setStatus("Plan approved.");
+      await loadPending();
+      await loadSlices();
+    });
+  }
+
+  if (body.awaiting_approval && pending) {
+    const sliceId = pending.slice_id || pending.id;
+    if (sliceId) {
+      addActionButton(actions, "Apply slice", async () => {
+        setStatus("Applying slice…");
+        await apiJson(`/runs/${id}/maker/slices/apply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slice_id: String(sliceId) }),
+        });
+        setStatus("Slice applied.");
+        await loadPending();
+        await loadSlices();
+      });
+      addActionButton(actions, "Skip slice", async () => {
+        setStatus("Skipping slice…");
+        await apiJson(`/runs/${id}/maker/slices/skip`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slice_id: String(sliceId) }),
+        });
+        setStatus("Slice skipped.");
+        await loadPending();
+        await loadSlices();
+      });
+    }
+  } else if (body.plan_approved && !body.awaiting_approval) {
+    addActionButton(actions, "Prepare next slice", async () => {
+      setStatus("Preparing slice…");
+      await apiJson(`/runs/${id}/maker/slices/prepare`, { method: "POST" });
+      setStatus("Slice prepared.");
+      await loadPending();
+      await loadSlices();
+    });
+  }
+}
+
 async function loadTheater() {
   const id = runId();
   if (!id) {
@@ -131,6 +207,20 @@ async function loadSlices() {
   setStatus(`Slices: ${body.slices_completed ?? 0}/${body.slice_total ?? 0}`);
 }
 
+async function loadPending() {
+  const id = runId();
+  if (!id) {
+    setStatus("Enter a run ID.");
+    return;
+  }
+  setStatus("Loading approval state…");
+  const body = await apiJson(`/runs/${id}/maker/pending`);
+  renderPending(body);
+  setStatus(
+    body.awaiting_approval ? "Awaiting slice approval" : "Approval state loaded",
+  );
+}
+
 document.getElementById("btn-load-theater").addEventListener("click", () => {
   loadTheater().catch((e) => setStatus(String(e.message || e)));
 });
@@ -141,6 +231,10 @@ document.getElementById("btn-load-research").addEventListener("click", () => {
 
 document.getElementById("btn-load-slices").addEventListener("click", () => {
   loadSlices().catch((e) => setStatus(String(e.message || e)));
+});
+
+document.getElementById("btn-load-pending").addEventListener("click", () => {
+  loadPending().catch((e) => setStatus(String(e.message || e)));
 });
 
 document.getElementById("btn-poll-theater").addEventListener("click", () => {
