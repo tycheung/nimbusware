@@ -11,8 +11,8 @@ maker:
     web: true
   - id: wizard_creates_run
     streamlit: true
-    web: partial
-    notes: Onboarding wizard; run creation is on Build tab
+    web: true
+    notes: Wizard Start building links to Build tab
   - id: build_intent
     streamlit: true
     web: true
@@ -71,15 +71,15 @@ maker:
     web: true
   - id: project_delete
     streamlit: true
-    web: partial
-    notes: DELETE /projects requires admin token; not exposed in Maker UI
+    web: true
+    notes: Admin Projects tab with admin token
   - id: quick_mode_banner
     streamlit: true
     web: true
   - id: admin_unlock_sidebar
     streamlit: true
-    web: partial
-    notes: Admin gate lives in Admin SPA
+    web: true
+    notes: Admin SPA LoginGate (token or enterprise SSO shell)
   - id: git_commit_status
     streamlit: true
     web: true

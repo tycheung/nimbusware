@@ -9,6 +9,7 @@ import { CustomAgentsPage } from "./pages/CustomAgentsPage";
 import { PreflightPage } from "./pages/PreflightPage";
 import { MetricsPage } from "./pages/MetricsPage";
 import { FleetPage } from "./pages/FleetPage";
+import { ProjectsPage } from "./pages/ProjectsPage";
 import { loadBootstrap, type Bootstrap } from "./api/client";
 
 export function App() {
@@ -35,6 +36,7 @@ export function App() {
       </header>
       <nav class="admin-nav">
         <a href="/v1/admin/app/runs">Runs</a>
+        <a href="/v1/admin/app/projects">Projects</a>
         <a href="/v1/admin/app/config">Config</a>
         <a href="/v1/admin/app/chat">Chat</a>
         <a href="/v1/admin/app/agents">Agents</a>
@@ -45,6 +47,7 @@ export function App() {
         <Router>
           <RunListPage path="/runs" />
           <RunDetailPage path="/runs/:id" />
+          <ProjectsPage path="/projects" />
           <ConfigPage path="/config" />
           <OperatorChatPage path="/chat" />
           <CustomAgentsPage path="/agents" />

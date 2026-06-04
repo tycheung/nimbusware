@@ -13,7 +13,11 @@ export async function mountWizard(root) {
       <li>Pick a model on the Models tab</li>
       <li>Start a build from the Build tab</li>
     </ol>
-    <button type="button" id="wizard-done" class="primary">Mark setup complete</button>`;
+    <button type="button" id="wizard-start-build" class="primary">Start building</button>
+    <button type="button" id="wizard-done" class="secondary">Mark setup complete</button>`;
+  root.querySelector("#wizard-start-build")?.addEventListener("click", () => {
+    window.location.hash = "/build";
+  });
   root.querySelector("#wizard-done")?.addEventListener("click", async () => {
     await apiJson("/platform/onboarding", { method: "POST" });
     toast("Onboarding complete", "success");
