@@ -145,6 +145,31 @@ class PostgresEventStore:
                     out.setdefault(str(d["run_id"]), []).append(d)
         return out
 
+    def list_stitch_analytics_event_rows(self, limit_runs: int) -> list[dict[str, Any]]:
+        cap = max(1, min(limit_runs, 5000))
+        with self._connect() as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(
+                    """
+                    WITH stitch_runs AS (
+                      SELECT run_id, MAX(store_seq) AS mx
+                      FROM event_store
+                      WHERE event_type = 'stitch.applied'
+                      GROUP BY run_id
+                      ORDER BY mx DESC
+                      LIMIT %s
+                    )
+                    SELECT e.store_seq, e.event_id, e.run_id, e.stage_id, e.task_id,
+                           e.event_type, e.event_version, e.occurred_at, e.actor_role,
+                           e.model_id, e.correlation_id, e.causation_id, e.payload, e.metadata
+                    FROM event_store e
+                    INNER JOIN stitch_runs sr ON e.run_id = sr.run_id
+                    ORDER BY e.store_seq ASC
+                    """,
+                    (cap,),
+                )
+                return [dict(r) for r in cur.fetchall()]
+
     def get_run_head(self, run_id: str) -> dict[str, Any] | None:
         rows = self.list_run_events(run_id)
         return rows[-1] if rows else None

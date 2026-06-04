@@ -18,10 +18,14 @@ from nimbusware_console.pages.config_tooling.workflows.persona_shelves import (
 from nimbusware_console.pages.config_tooling.workflows.prune import (
     render_workflows_prune_section,
 )
+from nimbusware_console.pages.config_tooling.workflows.stitch_outcomes import (
+    render_stitch_outcomes_section,
+)
 
 
 def render_config_tooling_workflows_section() -> None:
     render_workflows_bundle_memory_section()
+    render_stitch_outcomes_section()
     render_workflows_bundle_editor_section()
     render_workflows_integrator_section()
     render_workflows_persona_shelves_section()
