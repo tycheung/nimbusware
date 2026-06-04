@@ -78,6 +78,14 @@ def test_maybe_rebuild_defers_under_ram_pressure(
 
 def test_maybe_rebuild_emits_memory_indexed(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        "nimbusware_hw.pressure.sample_pressure",
+        lambda _gov: ("ok", {}),
+    )
+    monkeypatch.setattr(
+        "nimbusware_hw.governor.governor_from_metadata",
+        lambda _meta: object(),
+    )
     store = InMemoryEventStore()
     mem = InMemoryMemoryChunkStore()
     run_id = uuid4()

@@ -1,4 +1,4 @@
-"""Optional memory chunk store factory (Phase 4)."""
+"""Optional memory chunk store factory."""
 
 from __future__ import annotations
 

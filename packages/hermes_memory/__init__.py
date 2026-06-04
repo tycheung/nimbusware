@@ -1,4 +1,4 @@
-"""Hermes agent retrieval memory (Phase 4): repo-scoped failure/fix index."""
+"""Hermes agent retrieval memory: repo-scoped failure/fix index."""
 
 from hermes_memory.audit import append_memory_indexed_event, append_memory_retrieval_emitted_event
 from hermes_memory.chunking import chunks_from_event_rows, run_index_contribution_enabled

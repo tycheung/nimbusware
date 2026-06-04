@@ -1,4 +1,4 @@
-"""CLI entry for Hermes memory index rebuild (Phase 4)."""
+"""CLI entry for Hermes memory index rebuild."""
 
 from __future__ import annotations
 

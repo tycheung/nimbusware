@@ -1,4 +1,4 @@
-"""Pydantic models for memory chunks and retrieval hits (Phase 4)."""
+"""Pydantic models for memory chunks and retrieval hits."""
 
 from __future__ import annotations
 

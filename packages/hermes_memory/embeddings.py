@@ -1,4 +1,4 @@
-"""Embedding helpers for memory chunks (Phase 4)."""
+"""Embedding helpers for memory chunks."""
 
 from __future__ import annotations
 

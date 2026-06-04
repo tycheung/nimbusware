@@ -1,4 +1,4 @@
-"""Rebuild repo-scoped memory index from the event store (Phase 4)."""
+"""Rebuild repo-scoped memory index from the event store."""
 
 from __future__ import annotations
 

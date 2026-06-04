@@ -1,4 +1,4 @@
-"""Memory retrieval with optional FAISS acceleration (Phase 4)."""
+"""Memory retrieval with optional FAISS acceleration."""
 
 from __future__ import annotations
 

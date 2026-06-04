@@ -1,4 +1,4 @@
-"""On-disk memory index manifest (Phase 4)."""
+"""On-disk memory index manifest."""
 
 from __future__ import annotations
 

@@ -95,11 +95,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
 | C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: orchestrator root modules plus `_pipeline/base`, `_helpers`, `create_run`, `micro_slice`, `lifecycle_*`, `writers`, `optional_critique`, `escalation`, `critique_gates_*`, `optional_stages*`, `protocol_hosts`, `pipeline_scraper`; probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
+| E | Orchestrator islands: orchestrator root modules plus full `_pipeline/*` (including `dev_factory`, `compose`, `protocol_hosts`, `pipeline_scraper`); probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 
-`hermes_orchestrator._pipeline.*` mixins stay `ignore_errors = true` except the strict islands above (`protocol_hosts.py` documents host protocols for each strict-checked pipeline mixin). API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+
+**Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap).
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 

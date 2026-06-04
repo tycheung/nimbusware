@@ -1,4 +1,4 @@
-"""Rebuild memory index when a run opts in to index contribution (Phase 4)."""
+"""Rebuild memory index when a run opts in to index contribution."""
 
 from __future__ import annotations
 
@@ -19,7 +19,6 @@ def maybe_rebuild_memory_index_for_run(
     repo_root: Any,
     run_created_metadata: dict[str, Any],
 ) -> RebuildIndexResult | None:
-    """Rebuild repo index and emit ``memory.indexed`` when contribution is enabled."""
     if memory_store is None:
         return None
     if not run_index_contribution_enabled(run_created_metadata):

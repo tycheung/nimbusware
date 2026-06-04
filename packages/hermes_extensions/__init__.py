@@ -1,4 +1,4 @@
-"""Phase 2–4 extension points ."""
+"""Hermes extension points (personas, bundles, escalation)."""
 
 from hermes_extensions.catalog import (
     BundleCatalog,

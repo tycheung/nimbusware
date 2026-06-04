@@ -1,4 +1,4 @@
-"""Phase 3 performance / N+1 static scanners (§14 #18 optional depth)."""
+"""Performance / N+1 static scanners."""
 
 from __future__ import annotations
 

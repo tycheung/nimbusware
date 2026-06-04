@@ -304,7 +304,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Maker approval** | plan approve, slice prepare/apply/skip, `POST /runs/{id}/workspace/revert` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
-| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` | User |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id` append `hardware.profile.detected`) | User |
 | **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
 | **Actions** | Retry, escalate | Admin |
