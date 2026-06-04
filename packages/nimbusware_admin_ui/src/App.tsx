@@ -7,6 +7,7 @@ import { ConfigPage } from "./pages/ConfigPage";
 import { OperatorChatPage } from "./pages/OperatorChatPage";
 import { CustomAgentsPage } from "./pages/CustomAgentsPage";
 import { PreflightPage } from "./pages/PreflightPage";
+import { MetricsPage } from "./pages/MetricsPage";
 import { loadBootstrap, type Bootstrap } from "./api/client";
 
 export function App() {
@@ -32,6 +33,7 @@ export function App() {
         <a href="/v1/admin/app/chat">Chat</a>
         <a href="/v1/admin/app/agents">Agents</a>
         <a href="/v1/admin/app/preflight">Preflight</a>
+        <a href="/v1/admin/app/metrics">Metrics</a>
       </nav>
       <main>
         <Router>
@@ -41,6 +43,7 @@ export function App() {
           <OperatorChatPage path="/chat" />
           <CustomAgentsPage path="/agents" />
           <PreflightPage path="/preflight" />
+          <MetricsPage path="/metrics" />
           <RunListPage default />
         </Router>
       </main>
