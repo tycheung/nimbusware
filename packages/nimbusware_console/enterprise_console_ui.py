@@ -1,12 +1,12 @@
-from __future__ import annotations
+"""Legacy Enterprise fleet UI entry points — use Admin SPA at ``/v1/admin/app/fleet``."""
 
 
 def render_enterprise_sidebar() -> bool:
-    raise RuntimeError("Enterprise fleet sidebar is deferred; use API fleet endpoints.")
+    return False
 
 
 def render_enterprise_fleet_dashboard() -> None:
-    raise RuntimeError("Enterprise fleet dashboard is deferred.")
+    return None
 
 
 def enterprise_preflight_headers_for_cross_run() -> dict[str, str]:

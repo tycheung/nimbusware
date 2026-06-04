@@ -8,6 +8,7 @@ import { OperatorChatPage } from "./pages/OperatorChatPage";
 import { CustomAgentsPage } from "./pages/CustomAgentsPage";
 import { PreflightPage } from "./pages/PreflightPage";
 import { MetricsPage } from "./pages/MetricsPage";
+import { FleetPage } from "./pages/FleetPage";
 import { loadBootstrap, type Bootstrap } from "./api/client";
 
 export function App() {
@@ -21,8 +22,10 @@ export function App() {
     return <p class="loading">Loading…</p>;
   }
 
+  const fleetUi = boot.features?.enterprise_fleet_ui === true;
+
   return (
-    <LoginGate>
+    <LoginGate enterpriseEdition={boot.edition === "enterprise"}>
       <header class="admin-header">
         <h1>Nimbusware Admin</h1>
         <span class="edition">{boot.edition}</span>
@@ -44,6 +47,7 @@ export function App() {
           <CustomAgentsPage path="/agents" />
           <PreflightPage path="/preflight" />
           <MetricsPage path="/metrics" />
+          {fleetUi ? <FleetPage path="/fleet" /> : null}
           <RunListPage default />
         </Router>
       </main>

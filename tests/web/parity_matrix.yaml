@@ -131,5 +131,5 @@ admin:
     web: true
   - id: preflight_fleet
     streamlit: true
-    web: partial
-    notes: Preflight history only; enterprise fleet deferred
+    web: true
+    notes: Preflight history tab; fleet SLI aggregate on Admin Fleet tab

@@ -16,6 +16,10 @@ export function PreflightPage() {
   return (
     <section>
       <h2>Preflight history</h2>
+      <p class="muted">
+        Cross-run preflight entries. Fleet Ollama SLI aggregate is on the{" "}
+        <a href="/v1/admin/app/fleet">Fleet</a> tab (Enterprise).
+      </p>
       {error ? <p class="error">{error}</p> : null}
       <table class="data-table">
         <thead>
