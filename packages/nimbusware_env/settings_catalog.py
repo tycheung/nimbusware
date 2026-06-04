@@ -190,7 +190,7 @@ def _defs() -> tuple[SettingDef, ...]:
             s,
             "web",
             "Desktop UI backend",
-            "web = pywebview opens /v1/maker/app or /v1/admin/app; streamlit = legacy.",
+            "web = pywebview opens /v1/maker/app or /v1/admin/app (default).",
             "Install — infrastructure",
             admin_editable=False,
             user_editable=False,

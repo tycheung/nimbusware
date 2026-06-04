@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-import streamlit as st
+import pytest
+
+from nimbusware_console.components.ui_errors import render_api_error
 
 
-def render_api_error(exc: BaseException, *, prefix: str = "API error") -> None:
-    st.error(f"{prefix}: {exc}")
+def test_render_api_error_raises_for_web_console() -> None:
+    with pytest.raises(RuntimeError, match="Streamlit UI removed"):
+        render_api_error(ValueError("boom"))
