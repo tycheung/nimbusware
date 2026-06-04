@@ -34,6 +34,8 @@ Integration tests (Postgres required):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
+**Browser verify (`slice.e2e`)** is opt-in for operators only: enable `slice.e2e.enabled` in the micro_slice workflow and install Playwright locally. PR CI runs [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) without installing browsers.
+
 ## Code conventions
 
 ### Import boundaries
