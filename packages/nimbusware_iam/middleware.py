@@ -22,6 +22,10 @@ def _is_iam_exempt(path: str) -> bool:
         return True
     if path == "/v1/enterprise/iam/bootstrap":
         return True
+    if path.startswith("/v1/admin/oauth"):
+        return True
+    if path.endswith("/bootstrap.json"):
+        return True
     return False
 
 

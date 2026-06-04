@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request
 
 from nimbusware_env.edition import edition, is_enterprise
 from nimbusware_env.env_flags import env_str
+from nimbusware_env.oidc_config import load_oidc_config
 from nimbusware_maker.quick_mode import quick_mode_enabled
 
 router = APIRouter(tags=["web"])
@@ -37,6 +38,7 @@ def admin_bootstrap_payload(request: Request) -> dict:
     features = body.setdefault("features", {})
     if isinstance(features, dict):
         features["enterprise_fleet_ui"] = is_enterprise()
+        features["oidc_login_ready"] = is_enterprise() and load_oidc_config().login_ready()
     return body
 
 

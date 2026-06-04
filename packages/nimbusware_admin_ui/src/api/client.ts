@@ -5,6 +5,7 @@ export type Bootstrap = {
   admin_token_required?: boolean;
   features?: {
     enterprise_fleet_ui?: boolean;
+    oidc_login_ready?: boolean;
   };
 };
 

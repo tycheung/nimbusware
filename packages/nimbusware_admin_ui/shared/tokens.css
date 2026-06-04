@@ -65,6 +65,11 @@ button.secondary {
   min-width: 14rem;
 }
 
+.button-link {
+  display: inline-block;
+  margin: 0.5rem 0;
+}
+
 .login-panel {
   max-width: 24rem;
   margin: 4rem auto;

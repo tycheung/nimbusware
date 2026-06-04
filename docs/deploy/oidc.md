@@ -2,38 +2,57 @@
 
 ## Scope
 
-Enterprise operators may want SSO for the **Admin Console** and **Maker** web apps. The Nimbusware **API** continues to authenticate via:
+Enterprise operators may use SSO for the **Admin Console** web app at `/v1/admin/app/`. The Nimbusware **API** continues to authenticate via:
 
 - Individual: open user routes on loopback; `X-Nimbusware-Admin-Token` for admin routes.
 - Enterprise: `X-Nimbusware-Api-Key` with `maker_user` / `maker_admin` scopes.
 
-OIDC is a **console login** concern, not a replacement for API keys in v1.
+OIDC unlocks the Admin **shell** (httpOnly session cookie). **API calls still require** `X-Nimbusware-Admin-Token` and, for Fleet, `X-Nimbusware-Api-Key`.
 
-## Proposed flow
+## Flow
 
-1. Operator opens Admin Console → redirect to IdP (OIDC authorization code + PKCE).
-2. Console callback validates JWT (`iss`, `aud`, `exp`, groups claim).
-3. Console maps IdP groups → local role (`maker_admin` vs read-only).
-4. Console stores a short-lived session cookie; backend calls still use server-side API key or token vault — **never** embed IdP tokens in browser-local storage for API calls.
+1. Operator clicks **Sign in with SSO** → `GET /v1/admin/oauth/login` (PKCE + redirect to IdP).
+2. IdP callback → `GET /v1/admin/oauth/callback` validates state/code.
+3. API sets `nimbusware_oidc_session` cookie (1 hour TTL, signed with admin token secret).
+4. Admin SPA checks `GET /v1/admin/oauth/session`; operator enters admin token for `/v1` API calls.
 
-## Implementation checklist (fo500)
+## Environment
 
-- [x] Register OIDC client with redirect URI for Admin Console (`NIMBUSWARE_OIDC_REDIRECT_URI` or `{NIMBUSWARE_ADMIN_CONSOLE_URL}/oauth/callback`).
-- [x] Configure `NIMBUSWARE_OIDC_ENABLED`, `NIMBUSWARE_OIDC_ISSUER`, `NIMBUSWARE_OIDC_CLIENT_ID`, optional `NIMBUSWARE_OIDC_CLIENT_SECRET`.
-- [x] Admin Console PKCE authorize flow in `nimbusware_console.admin_gate` (enterprise edition only).
-- [ ] Map IdP groups claim → `maker_admin` vs read-only console session (future).
-- [x] Keep API calls on server-side `X-Nimbusware-Api-Key` / admin token — OIDC does not replace API keys.
-- [ ] Document session TTL and logout in runbook (future).
+| Variable | Purpose |
+|----------|---------|
+| `NIMBUSWARE_OIDC_ENABLED` | `1` to enable |
+| `NIMBUSWARE_OIDC_ISSUER` | IdP base URL (https) |
+| `NIMBUSWARE_OIDC_CLIENT_ID` | OAuth client id |
+| `NIMBUSWARE_OIDC_CLIENT_SECRET` | Optional (confidential clients) |
+| `NIMBUSWARE_OIDC_REDIRECT_URI` | Callback, e.g. `https://host/v1/admin/oauth/callback` |
+| `NIMBUSWARE_OIDC_MOCK` | `1` for dev/CI mock IdP (`/v1/admin/oauth/mock-authorize`) |
 
-Code: [`packages/nimbusware_env/oidc_config.py`](../../packages/nimbusware_env/oidc_config.py), [`packages/nimbusware_console/services/oauth_pkce.py`](../../packages/nimbusware_console/services/oauth_pkce.py).
+## Routes
 
-## Non-goals (V5)
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `/v1/admin/oauth/login` | Start login (Enterprise only) |
+| GET | `/v1/admin/oauth/callback` | OAuth redirect target |
+| GET | `/v1/admin/oauth/session` | `{ "authenticated": true/false }` |
+| POST | `/v1/admin/oauth/logout` | Clear session cookie |
 
-- Full OIDC middleware inside FastAPI (defer until product prioritizes).
-- Replacing `nimbusware_iam` Postgres API keys for machine clients.
+## Session and logout
 
-## Implementation hooks
+- Session cookie TTL: **3600 seconds** (see `admin_oauth.py`).
+- Logout: `POST /v1/admin/oauth/logout` or SSO logout button in Admin header.
+- IdP token exchange in production: configure issuer token endpoint separately; v1 validates authorization code + PKCE state only (mock path for CI).
 
-- `nimbusware_env.admin_token` — keep loopback guard for dev token.
-- Enterprise IAM — tenant-scoped API keys remain authoritative for `/v1`.
-- Future: `NIMBUSWARE_OIDC_*` env vars documented here when implemented.
+## Group mapping (future)
+
+Map IdP `groups` claim → `maker_admin` vs read-only via env `NIMBUSWARE_OIDC_ADMIN_GROUPS` (not implemented in v1).
+
+## Code
+
+- [`packages/nimbusware_env/oidc_config.py`](../../packages/nimbusware_env/oidc_config.py)
+- [`packages/nimbusware_console/services/oauth_pkce.py`](../../packages/nimbusware_console/services/oauth_pkce.py)
+- [`packages/nimbusware_api/routes/admin_oauth.py`](../../packages/nimbusware_api/routes/admin_oauth.py)
+
+## Non-goals
+
+- Replacing `nimbusware_iam` API keys for machine clients.
+- Embedding IdP tokens in `sessionStorage` for API calls.

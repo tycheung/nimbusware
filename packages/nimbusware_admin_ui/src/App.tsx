@@ -25,7 +25,10 @@ export function App() {
   const fleetUi = boot.features?.enterprise_fleet_ui === true;
 
   return (
-    <LoginGate enterpriseEdition={boot.edition === "enterprise"}>
+    <LoginGate
+      enterpriseEdition={boot.edition === "enterprise"}
+      oidcLoginReady={boot.features?.oidc_login_ready === true}
+    >
       <header class="admin-header">
         <h1>Nimbusware Admin</h1>
         <span class="edition">{boot.edition}</span>
