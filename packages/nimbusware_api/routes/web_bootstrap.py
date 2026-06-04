@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Request
 
-from nimbusware_env.edition import edition
+from nimbusware_env.edition import edition, is_enterprise
 from nimbusware_env.env_flags import env_str
 from nimbusware_maker.quick_mode import quick_mode_enabled
 
@@ -34,6 +34,9 @@ def maker_bootstrap_payload(request: Request) -> dict:
 def admin_bootstrap_payload(request: Request) -> dict:
     body = maker_bootstrap_payload(request)
     body["admin_token_required"] = True
+    features = body.setdefault("features", {})
+    if isinstance(features, dict):
+        features["enterprise_fleet_ui"] = is_enterprise()
     return body
 
 

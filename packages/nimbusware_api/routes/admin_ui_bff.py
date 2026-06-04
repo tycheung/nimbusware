@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
@@ -14,9 +14,13 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
+from nimbusware_console import enterprise_console as ent_console
 from nimbusware_console.critic_matrix_display import critic_matrix_rows_from_events
 from nimbusware_console.findings_display import findings_list_from_response, findings_table_rows
 from nimbusware_console.operator_chat_core import ChatState, process_user_message
+from nimbusware_console.services import enterprise as enterprise_svc
+from nimbusware_env.edition import is_enterprise
+from nimbusware_iam.constants import API_KEY_HEADER
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
 
@@ -84,3 +88,66 @@ def critic_matrix_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict
         ev = validate_event_dict(d)
         events.append(serialize_event_persistent(ev))
     return {"run_id": str(run_id), "rows": critic_matrix_rows_from_events(events)}
+
+
+def _require_enterprise_api_key(
+    x_nimbusware_api_key: str | None = Header(default=None, alias=API_KEY_HEADER),
+) -> str:
+    if not is_enterprise():
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "enterprise_edition_required",
+                "Fleet dashboard requires NIMBUSWARE_EDITION=enterprise",
+            ),
+        )
+    key = (x_nimbusware_api_key or "").strip()
+    if not key:
+        raise HTTPException(
+            status_code=401,
+            detail=problem(
+                "api_key_required",
+                f"Enterprise fleet dashboard requires {API_KEY_HEADER}",
+            ),
+        )
+    return key
+
+
+@router.get("/enterprise/fleet-dashboard")
+def enterprise_fleet_dashboard(
+    _admin: AdminDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_id: Annotated[str | None, Query()] = None,
+    preflight_limit: Annotated[int, Query(ge=1, le=50)] = 10,
+) -> dict[str, Any]:
+    memory = enterprise_svc.fetch_fleet_memory_status(api_key=api_key)
+    preflight = enterprise_svc.fetch_fleet_preflight_aggregate(
+        api_key=api_key,
+        limit=preflight_limit,
+    )
+    worker = enterprise_svc.fetch_fleet_worker_health(api_key=api_key)
+    hardware = enterprise_svc.fetch_platform_hardware_fleet()
+    critic: dict[str, Any] | None = None
+    tid = (tenant_id or "").strip()
+    if tid:
+        critic = enterprise_svc.fetch_fleet_critic_reliability(
+            api_key=api_key,
+            tenant_id=tid,
+        )
+    return {
+        "memory_rows": ent_console.fleet_memory_status_table_rows(memory),
+        "worker_caption": ent_console.fleet_worker_health_caption(worker),
+        "sli_caption": ent_console.fleet_sli_aggregate_caption(preflight),
+        "hardware_rows": ent_console.fleet_hardware_tier_table_rows(hardware),
+        "export_json": ent_console.fleet_dashboard_export_json(
+            memory=memory,
+            preflight_aggregate=preflight,
+            worker=worker,
+        ),
+        "export_filename_slug": ent_console.fleet_dashboard_export_filename_slug(),
+        "fleet_memory": memory,
+        "preflight_aggregate": preflight,
+        "fleet_worker": worker,
+        "hardware_fleet": hardware,
+        "critic_reliability": critic,
+    }

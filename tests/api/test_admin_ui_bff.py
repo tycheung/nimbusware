@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 
 from nimbusware_api.app import app  # noqa: E402
+from nimbusware_console.services import enterprise as enterprise_svc  # noqa: E402
 from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
 ADMIN_HEADERS = {
@@ -48,3 +49,87 @@ def test_findings_table_not_found(client: TestClient) -> None:
         headers=ADMIN_HEADERS,
     )
     assert r.status_code == 404
+
+
+def test_fleet_dashboard_individual_edition_404(client: TestClient) -> None:
+    from nimbusware_iam.constants import API_KEY_HEADER
+
+    r = client.get(
+        "/v1/admin/ui/enterprise/fleet-dashboard",
+        headers={**ADMIN_HEADERS, API_KEY_HEADER: "any-key"},
+    )
+    assert r.status_code == 404
+
+
+def test_fleet_dashboard_missing_api_key_401(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
+
+    monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
+    r = client.get(
+        "/v1/admin/ui/enterprise/fleet-dashboard",
+        headers=ADMIN_HEADERS,
+    )
+    assert r.status_code == 401
+
+
+def test_fleet_dashboard_enterprise_formatted(monkeypatch: pytest.MonkeyPatch) -> None:
+    import importlib
+
+    from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
+    from nimbusware_iam.constants import API_KEY_HEADER
+    from nimbusware_iam.scopes import MAKER_ADMIN_SCOPE
+    from nimbusware_iam.store import InMemoryIamStore
+
+    monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
+    monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
+    iam = InMemoryIamStore()
+    tenant = iam.create_tenant(slug="ops", display_name="Ops")
+    created = iam.create_api_key(
+        tenant_id=tenant.tenant_id,
+        label="fleet-admin",
+        api_scopes=[MAKER_ADMIN_SCOPE],
+    )
+    monkeypatch.setattr("nimbusware_iam.store.build_iam_store", lambda _url: iam)
+    api_module = importlib.import_module("nimbusware_api.app")
+    monkeypatch.setattr(api_module, "build_iam_store", lambda _url: iam)
+
+    memory = {"tenant_id": "t1", "local_chunk_count": 2, "remote": {"configured": True}}
+    preflight = {"fleet_sli": {"sustained_export_present": False}}
+    worker = {"ok": True, "backpressure": "ok", "metrics": {"queue": {"pending": 0}}}
+    hardware = {"hosts": [{"host": "h1", "tier": "A", "ram_total_gb": 16}]}
+
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_memory_status",
+        lambda *, api_key, timeout=30.0: memory,
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_preflight_aggregate",
+        lambda *, api_key, limit=10, timeout=30.0: preflight,
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_worker_health",
+        lambda *, api_key, timeout=30.0: worker,
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_platform_hardware_fleet",
+        lambda *, timeout=30.0: hardware,
+    )
+
+    with TestClient(api_module.app) as client:
+        r = client.get(
+            "/v1/admin/ui/enterprise/fleet-dashboard",
+            headers={**ADMIN_HEADERS, API_KEY_HEADER: created.api_key},
+        )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["export_filename_slug"] == "enterprise_fleet_dashboard"
+    assert any(row["field"] == "local_chunk_count" for row in body["memory_rows"])
+    assert len(body["hardware_rows"]) == 1
+    assert "Fleet worker" in (body["worker_caption"] or "")
