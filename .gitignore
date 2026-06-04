@@ -23,6 +23,7 @@ env/
 build/
 develop-eggs/
 dist/
+node_modules/
 # PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/NimbuswareLauncher.spec)
 /NimbuswareLauncher.spec
 # Rare stray single-character junk at repo root (broken UPX/tooling redirects)
