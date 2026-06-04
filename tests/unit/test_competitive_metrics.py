@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import (
@@ -139,3 +141,13 @@ def test_competitive_summary_research_utilization() -> None:
     assert util["plan_stage_count"] == 1
     assert util["plan_with_approved_brief"] == 1
     assert util["rate"] == 1.0
+
+
+def test_competitive_summary_includes_swe_bench_json(tmp_path: Path) -> None:
+    bench_dir = tmp_path / "benchmarks"
+    bench_dir.mkdir()
+    snap = {"ok": True, "pass_rate": 0.85, "mode": "run"}
+    (bench_dir / "latest_swe_bench.json").write_text(json.dumps(snap), encoding="utf-8")
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
+    assert body["metrics"]["swe_bench"] == snap

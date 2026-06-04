@@ -36,4 +36,11 @@ jobs:
           HERMES_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           HERMES_SWE_BENCH_ENABLED: "1"
+          HERMES_SWE_BENCH_WRITE_JSON: "1"
           HERMES_MICRO_SLICE_COUNT: "1"
+      - name: Upload SWE-bench snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: latest_swe_bench.json
+          path: benchmarks/latest_swe_bench.json
+          if-no-files-found: warn
