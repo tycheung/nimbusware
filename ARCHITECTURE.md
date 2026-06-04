@@ -9,7 +9,7 @@
 
 Legacy checkout paths (e.g. `D:\Hermes`) and artifact dirs (`.hermes/`) are historical; prefer **Nimbusware** in user-facing text.
 
-One-page map of packages, data flow, and auth. Normative Hermes agent contract: [hermes-orchestrator-local-plan.md](hermes-orchestrator-local-plan.md). Local maturity ledger: [PLAN_GAP.md](PLAN_GAP.md) (gitignored).
+One-page map of packages, data flow, and auth. Normative Hermes agent contract: gitignored `hermes-orchestrator-local-plan.md` (repo root). Maturity backlog: gitignored `plan_gap.md`. ADR index: [docs/architecture.md](docs/architecture.md).
 
 ## Layer diagram
 
@@ -17,7 +17,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 ┌─────────────────────────────────────────────────────────────┐
 │  UI (web + pywebview desktop)                                │
 │  nimbusware_maker_web (/v1/maker/app)  nimbusware_admin_ui   │
-│  nimbusware_console (services + display modules, no Streamlit)│
+│  nimbusware_console (services + display modules for Admin BFF) │
 └────────────────────────────┬────────────────────────────────┘
                              │ HTTP /v1
 ┌────────────────────────────▼────────────────────────────────┐
@@ -46,6 +46,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
+| `hermes_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
 | `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`, `stub`, or opt-in `docker` (Individual v1; VM/k8s fleet deferred) |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
@@ -55,7 +56,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
-| `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
+| `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
 | `nimbusware_console` | Admin display helpers + enterprise fleet formatters; BFF tables via `routes/admin_ui_bff.py` |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
@@ -67,11 +68,30 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | **Individual** (default) | User routes open on localhost; admin routes need `X-Nimbusware-Admin-Token` |
 | **Enterprise** | All routes need `X-Nimbusware-Api-Key`; scopes `maker_user` / `maker_admin` |
 
+## Data flow
+
+1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `hermes_store`.
+2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress without API imports from orchestrator.
+3. **Read** — HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
+4. **Maker loop** — Pending slices, research approve/reject, and stitch summary are read models over the same event log (`nimbusware_maker` + maker web tabs).
+
+## Auth (request path)
+
+| Surface | Header / cookie |
+|---------|------------------|
+| Maker user routes | Open on loopback (Individual); `X-Nimbusware-Api-Key` (`maker_user`) on Enterprise |
+| Admin API routes | `X-Nimbusware-Admin-Token` (Individual); `maker_admin` key (Enterprise) |
+| Admin SPA SSO | Optional OIDC session cookie for shell only — API calls still need admin token / API key ([docs/deploy/oidc.md](docs/deploy/oidc.md)) |
+
 ## Import rules (enforced)
 
 - `hermes_extensions` must not import `hermes_orchestrator` at module level (`tests/unit/test_import_graph.py`).
 - `hermes_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
 - Legacy `packages/hermes_{api,console,config,env}/` shims removed (Lane R-B).
+
+## Architecture decision records
+
+See [docs/architecture.md](docs/architecture.md) for ADR links (event store, edition gate, projections, logging, correlation IDs).
 
 ## Refactor playbook
 

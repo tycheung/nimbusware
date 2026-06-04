@@ -71,6 +71,8 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 
 ## Documentation
 
-- Package-level READMEs live under `packages/*/README.md`
-- ADRs under `docs/adr/`
-- Deploy reference under `docs/deploy/`
+- **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md) (canonical); [docs/architecture.md](docs/architecture.md) is the ADR index only
+- Doc index: [docs/README.md](docs/README.md)
+- Package READMEs: `packages/*/README.md`
+- ADRs: `docs/adr/`
+- Deploy: `docs/deploy/`

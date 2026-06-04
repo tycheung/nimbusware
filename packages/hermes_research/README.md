@@ -12,4 +12,7 @@ Research briefs, stitch transplant stages, and outcome analytics.
 
 ## API
 
-`GET /v1/platform/analytics/stitch-outcomes` — recent runs with `stitch.applied` scored against subsequent gate outcomes.
+| Endpoint | Audience | Purpose |
+|----------|----------|---------|
+| `GET /v1/runs/{id}/stitch-summary` | User (Maker Review) | Stitch transplant snapshot for one run |
+| `GET /v1/platform/analytics/stitch-outcomes` | User / Admin | Recent runs with `stitch.applied` scored against subsequent gate outcomes |

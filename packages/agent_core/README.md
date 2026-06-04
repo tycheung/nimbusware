@@ -2,7 +2,7 @@
 
 Shared Pydantic models for Hermes agent orchestration events (Nimbusware wire format).
 
-Normative product plan: `hermes-orchestrator-local-plan.md` (local, gitignored).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.
 
 Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory append store),
 `hermes_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI

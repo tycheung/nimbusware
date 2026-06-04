@@ -6,4 +6,4 @@ Role-gated outbound HTTP and subprocess helpers for slice implement agents. Cent
 
 `hermes_orchestrator` micro-slice implement path; tests under `tests/unit/test_executor.py`.
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

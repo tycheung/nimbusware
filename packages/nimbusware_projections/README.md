@@ -16,4 +16,4 @@ Orchestrator must not import `nimbusware_api`; projections are the shared read-m
 
 Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

@@ -26,4 +26,5 @@ API `read_models/*` modules become thin shims that delegate to projections. Cons
 ## References
 
 - `packages/nimbusware_projections/`
-- `docs/architecture.md` (projections map)
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) (projections in package map)
+- [docs/architecture.md](../architecture.md) (ADR index)

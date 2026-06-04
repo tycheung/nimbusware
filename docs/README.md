@@ -1,0 +1,14 @@
+# Nimbusware documentation
+
+| Document | Audience | Summary |
+|----------|----------|---------|
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI |
+| [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
+| [operator-settings.md](operator-settings.md) | Operators | Settings catalog and `HERMES_*` / `NIMBUSWARE_*` keys |
+| [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge |
+| [deploy/README.md](deploy/README.md) | Ops | Docker Compose, CI jobs, secrets |
+| [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO |
+| [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
+| [adr/](adr/) | Maintainers | Architecture decision records |
+
+Gitignored local ledgers (not in git): `plan_gap.md`, `hermes-orchestrator-local-plan.md`, `MIGRATION AWAY FROM STREAMLIT.md`.

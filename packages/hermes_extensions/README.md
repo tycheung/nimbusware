@@ -19,4 +19,4 @@ Promoted personas should define **`scope_in`**, **`scope_out`**, **`capability_p
 
 `hermes_orchestrator` (workflow merge, persona shelves), `nimbusware_console` (config tooling, catalog panels), `nimbusware_api` (admin config routes).
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

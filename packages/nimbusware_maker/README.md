@@ -14,7 +14,7 @@ Server-side **maker approval** state machine and slice workflow helpers. The ope
 |-----|------|
 | Home | Projects, readiness, project create (delete via Admin console) |
 | Build | Intent → `POST /runs` |
-| Review | Pending slices, diff preview, research approve/reject, git commit status |
+| Review | Pending slices, diff preview, research approve/reject, stitch summary, git commit status |
 | Progress | Theater SSE, maker-progress SSE, theater transcript export |
 | Models | Ranked models, presets, Ollama pull, catalog-info strip |
 | Settings | Operator settings with catalog labels, hardware profile |

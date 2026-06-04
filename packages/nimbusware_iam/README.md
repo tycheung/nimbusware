@@ -6,4 +6,4 @@ Enterprise edition API keys, tenants, and scope checks (`maker_user` / `maker_ad
 
 `nimbusware_api` dependencies (`UserDep`, `AdminDep`); launcher and env helpers in `nimbusware_env`.
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

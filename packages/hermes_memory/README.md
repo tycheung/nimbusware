@@ -14,4 +14,4 @@ Repo-scoped retrieval index for Hermes agent runs (local FAISS + metadata sideca
 - `scripts/build_memory_faiss_index.py` — rebuild memory index from repo artifacts
 - Console memory panels — `nimbusware_console.memory_display`
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

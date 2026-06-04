@@ -17,4 +17,4 @@ Append-only event store for Hermes agent runs (via Nimbusware): Postgres when `N
 
 Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
 
-Normative contract: [hermes-orchestrator-local-plan.md](../../hermes-orchestrator-local-plan.md).
+Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.

@@ -39,6 +39,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
 | **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
+| **Research / stitch** | `hermes_research` | Research briefs, stitch stages, outcome analytics |
 | **Projections** | `nimbusware_projections` | Pure event → timeline read models (no API import from orchestrator) |
 | **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
 | **Desktop / env** | `nimbusware_env` | Edition gate, `env_flags`, admin token guards, desktop launchers |
@@ -47,7 +48,7 @@ Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-wo
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
-Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (package map and guards), [CONTRIBUTING.md](CONTRIBUTING.md) (CI and conventions), [SECURITY.md](SECURITY.md) (secrets and production), [tests/README.md](tests/README.md) (CI subsets @ **75%** coverage floor), [packages/nimbusware_console/README.md](packages/nimbusware_console/README.md) (Admin Console layout). UI panels call `services/*` modules; Maker `ui/` must not import HTTP clients directly.
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (canonical package map), [docs/README.md](docs/README.md) (doc index), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [tests/README.md](tests/README.md). Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python display helpers use `packages/*/services/` (no direct HTTP in `*_display.py`).
 
 ## Hermes agent runtime (online system, local integration)
 
@@ -219,7 +220,7 @@ Operator analytics snapshot: `GET /v1/platform/analytics/competitive-summary` (A
 |---------|-----|------|
 | **Maker** (default) | End user / maker | No admin token for the product loop (`GET/POST /projects`, runs, maker approval) |
 | **Admin Console** | Ops / dev / admin | Admin token at console sign-in; API admin routes use `X-Nimbusware-Admin-Token` (Individual) or `maker_admin` API key (Enterprise) |
-| **Maker → Admin** | Admin on same machine | Sidebar **Sign in as admin** → **Open Admin Console** |
+| **Maker → Admin** | Admin on same machine | Maker shell **Admin console** link → `/v1/admin/app/` |
 
 Enterprise IAM scopes on API keys:
 
@@ -254,14 +255,14 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 **Review**
 
-- Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject)
+- Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject); stitch panel (`GET /v1/runs/{id}/stitch-summary`)
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
 - Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `HERMES_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
 
-**Admin unlock (optional)**
+**Admin console link**
 
-- Sidebar **Sign in as admin** unlocks Advanced mode and **Open Admin Console** (does not grant user-route admin headers)
+- Maker shell header links to `/v1/admin/app/`; Admin routes still require `X-Nimbusware-Admin-Token` (or Enterprise API key) — opening Admin does not grant user-route admin headers on Maker API calls
 
 ## Admin Console
 
@@ -309,7 +310,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Maker progress** | `GET /runs/{id}/maker-progress`, SSE `.../maker-progress/stream` | User |
 | **Run theater** | `GET /runs/{id}/theater`, SSE `.../theater/stream`, `GET .../theater/export` | User |
 | **Maker web** | `GET /maker/app/` (PWA: theater, research approve, slice approval) | User |
-| **Research** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject` | User |
+| **Research / stitch** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject`, `GET /runs/{id}/stitch-summary` | User |
 | **Maker approval** | `GET .../maker/pending`, plan approve, slice prepare/apply/skip, workspace revert | User |
 | **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id`), `GET /platform/analytics/stitch-outcomes` | User |
 | **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |

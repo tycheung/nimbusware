@@ -41,7 +41,8 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 ## UI coverage policy (Lane V2)
 
 - Console display/explainer modules stay **out** of the coverage denominator (characterization + integration tests).
-- All HTTP for panels must go through `packages/*/services/` (guarded by `test_ui_no_direct_http.py`); service modules **are** in the denominator.
+- All HTTP for panels must go through `packages/*/services/` (guarded by `test_no_streamlit_imports.py` and import-graph rules); service modules **are** in the denominator.
+- Retired Streamlit `ui/` trees must not return (`test_ui_no_direct_http.py`).
 - Production orchestrator modules must not use the `test_*.py` naming pattern reserved for pytest — see `test_writer_role_critique.py`.
 
 ## UI guards
