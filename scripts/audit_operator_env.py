@@ -45,6 +45,8 @@ BOOTSTRAP_REL = frozenset(
         "nimbusware_api/routes/runs/lifecycle.py",
         "nimbusware_maker/onboarding.py",
         "nimbusware_maker/session.py",
+        "nimbusware_maker/cli.py",
+        "nimbusware_env/admin_cli.py",
         "nimbusware_env/launcher_app.py",
         "nimbusware_env/desktop_common.py",
         "nimbusware_client/http.py",

@@ -39,7 +39,6 @@ fastapi = ">=0.115"
 starlette = ">=1.0.1"
 uvicorn = { version = ">=0.30", extras = ["standard"] }
 psycopg = { version = ">=3.2", extras = ["binary"] }
-streamlit = ">=1.39"
 idna = ">=3.15"
 numpy = ">=1.26"
 pywebview = ">=5"
@@ -281,8 +280,6 @@ module = [
   "nimbusware_console.pages.*",
   "nimbusware_console.main",
   "nimbusware_console.app",
-  "nimbusware_maker.ui",
-  "nimbusware_maker.ui.*",
   "nimbusware_maker.slice_workflow",
   "nimbusware_maker.slice_workflow.*",
   "nimbusware_maker.main",

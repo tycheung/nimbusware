@@ -16,6 +16,7 @@ from nimbusware_api.routes.runs.research import router as research_router
 from nimbusware_api.routes.runs.slices import router as slices_router
 from nimbusware_api.routes.runs.stream import router as stream_router
 from nimbusware_api.routes.runs.theater import router as theater_router
+from nimbusware_api.routes.runs.timeline_explain import router as timeline_explain_router
 
 __all__ = [
     "build_runs_router",
@@ -47,6 +48,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(stream_router)
     composed.include_router(theater_router)
     composed.include_router(slices_router)
+    composed.include_router(timeline_explain_router)
     return composed
 
 

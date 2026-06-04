@@ -9,7 +9,6 @@ _PYPROJECT = _REPO / "pyproject.toml"
 _NARROWED_MARKERS = (
     "nimbusware_console.pages",
     "nimbusware_console.bundle_catalog",
-    "nimbusware_maker.ui",
 )
 
 _BLANKET_UI_IGNORE = 'module = ["nimbusware_console.*", "nimbusware_maker.*"]'

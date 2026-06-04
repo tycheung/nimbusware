@@ -28,7 +28,7 @@ def test_api_create_run_timeline(client: TestClient) -> None:
     assert len(t.json().get("events", [])) >= 1
 
 
-def test_console_app_importable() -> None:
+def test_console_main_importable() -> None:
     import importlib.util
 
-    assert importlib.util.find_spec("nimbusware_console.app") is not None
+    assert importlib.util.find_spec("nimbusware_console.main") is not None

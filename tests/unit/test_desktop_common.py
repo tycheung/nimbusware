@@ -99,9 +99,10 @@ def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> N
     assert _resolve_ui_mode() == "admin"
 
     root = repo_root(start=Path(__file__).resolve().parent)
-    assert _streamlit_app_script(root, "maker").name == "app.py"
-    assert "nimbusware_maker" in str(_streamlit_app_script(root, "maker"))
-    assert "nimbusware_console" in str(_streamlit_app_script(root, "admin"))
+    with pytest.raises(FileNotFoundError):
+        _streamlit_app_script(root, "maker")
+    with pytest.raises(FileNotFoundError):
+        _streamlit_app_script(root, "admin")
 
 
 def test_launcher_module_imports() -> None:
