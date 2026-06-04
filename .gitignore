@@ -18,54 +18,51 @@ venv/
 ENV/
 env/
 
-# Packaging / install metadata
+# Packaging / install metadata (repo-root setuptools/pip dirs only — not package src/lib/)
 .Python
-build/
-develop-eggs/
-dist/
-node_modules/
-# PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/NimbuswareLauncher.spec)
-/NimbuswareLauncher.spec
-# Rare stray single-character junk at repo root (broken UPX/tooling redirects)
-/[0-9]
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 pip-wheel-metadata/
+# PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/NimbuswareLauncher.spec)
+/NimbuswareLauncher.spec
+# Rare stray single-character junk at repo root (broken UPX/tooling redirects)
+/[0-9]
 
-# Test / coverage / type / lint caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.pytype/
-.coverage
-.coverage.*
-.ci_coverage.json
-coverage.xml
-htmlcov/
-.tox/
-.nox/
-.hypothesis/
-nosetests.xml
+# JavaScript / web UI tooling
+node_modules/
+**/.vite/
+*.tsbuildinfo
+# Playwright (tests/e2e/web)
+tests/e2e/web/test-results/
+tests/e2e/web/playwright-report/
+tests/e2e/web/blob-report/
 
 # Environment and local secrets (never commit real credentials)
 .env
 .env.*
 !.env.example
 
-# Streamlit local secrets (repo may ship `.streamlit/config.toml`)
-.streamlit/secrets.toml
+# Legacy Streamlit (web UI is default; only repo config.toml may stay tracked for tests)
+.streamlit/*
+!.streamlit/config.toml
+# Removed Streamlit app trees — do not re-commit if recreated locally
+packages/nimbusware_maker/ui/
+packages/nimbusware_console/pages/
 
 # Logs and local scratch
 *.log
