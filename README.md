@@ -459,4 +459,4 @@ Full catalog: `poetry run python scripts/audit_operator_env.py` (155+ keys).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Nimbusware (including Hermes) is free software under the [GNU General Public License v3.0](LICENSE). Copyright © 2026 Nimbusware contributors.

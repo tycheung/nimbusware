@@ -1,6 +1,7 @@
 {
   "name": "nimbusware-maker-web",
   "private": true,
+  "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
     "test": "vitest run"

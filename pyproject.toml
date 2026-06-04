@@ -7,6 +7,7 @@ name = "nimbusware"
 version = "0.5.0"
 description = "Nimbusware local-first platform integrating the Hermes online agentic system. Python >=3.10; use 3.11+ when available."
 authors = []
+license = "GPL-3.0-only"
 package-mode = true
 packages = [
   { include = "agent_core", from = "packages" },
