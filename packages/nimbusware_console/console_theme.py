@@ -7,7 +7,7 @@ def streamlit_theme_defaults_caption(*, repo_root: Path | None = None) -> str:
     root = repo_root if repo_root is not None else Path(".")
     cfg = root.resolve() / ".streamlit" / "config.toml"
     exists = cfg.is_file()
-    loc = "present" if exists else "missing (Streamlit built-in defaults apply)"
+    loc = "present" if exists else "missing (built-in light theme applies)"
     return (
         "Console theme: repo **``.streamlit/config.toml``** is "
         f"**{loc}** — override locally for branding; committed defaults use "

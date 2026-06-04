@@ -16,7 +16,7 @@ from nimbusware_env.desktop_common import (
     run_log_path,
     venv_python_candidates,
 )
-from nimbusware_env.run_app import _streamlit_command
+from nimbusware_env.run_app import _reject_legacy_streamlit_backend
 
 
 def test_read_poetry_version_from_repo() -> None:
@@ -79,17 +79,14 @@ def test_run_log_path_under_cache() -> None:
     assert path.name == "nimbusware-run.log"
 
 
-def test_streamlit_command_uses_headless_local_bind() -> None:
-    script = Path("packages/nimbusware_console/app.py")
-    cmd = _streamlit_command(["python"], script, "127.0.0.1", 8501)
-    assert "streamlit" in cmd
-    assert "--server.headless" in cmd
-    assert "127.0.0.1" in cmd
-    assert "8501" in cmd
+def test_streamlit_ui_backend_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_UI_BACKEND", "streamlit")
+    with pytest.raises(RuntimeError, match="no longer supported"):
+        _reject_legacy_streamlit_backend()
 
 
 def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> None:
-    from nimbusware_env.run_app import _resolve_ui_mode, _streamlit_app_script
+    from nimbusware_env.run_app import _resolve_ui_mode
 
     monkeypatch.delenv("NIMBUSWARE_UI", raising=False)
     assert _resolve_ui_mode() == "maker"
@@ -97,12 +94,6 @@ def test_resolve_ui_mode_defaults_to_maker(monkeypatch: pytest.MonkeyPatch) -> N
     assert _resolve_ui_mode(ui="admin") == "admin"
     monkeypatch.setenv("NIMBUSWARE_UI", "operator")
     assert _resolve_ui_mode() == "admin"
-
-    root = repo_root(start=Path(__file__).resolve().parent)
-    with pytest.raises(FileNotFoundError):
-        _streamlit_app_script(root, "maker")
-    with pytest.raises(FileNotFoundError):
-        _streamlit_app_script(root, "admin")
 
 
 def test_launcher_module_imports() -> None:

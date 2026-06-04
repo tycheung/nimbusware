@@ -30,7 +30,7 @@ Examples:
   CLI flags always win when present.
 - **State file**: ``--summary-path ~/.cache/hermes_scraper/.prune_status.json``
   writes the same JSON object as ``--json-summary`` plus a UTC ``wrote_at`` timestamp,
-  atomically (tmp + ``os.replace``), so the Streamlit "Prune status" card can render
+  atomically (tmp + ``os.replace``), so operator prune-status UIs can render
   the last-run summary. ``HERMES_PRUNE_STATUS_PATH`` is the env equivalent; the CLI
   flag wins when both are set. Independent of ``--json-summary``: you can write the
   file without printing the extra stdout line, or do both.
@@ -147,7 +147,7 @@ def main() -> int:
         metavar="PATH",
         help=(
             "Atomically write the JSON summary (same shape as --json-summary, plus "
-            "wrote_at UTC timestamp) to PATH so the Streamlit Prune status card can "
+            "wrote_at UTC timestamp) to PATH so operator prune-status panels can "
             "render it. Overrides HERMES_PRUNE_STATUS_PATH when both are set."
         ),
     )

@@ -88,26 +88,6 @@ def _spawn(
     return proc
 
 
-def _streamlit_command(py_cmd: list[str], console_script: Path, host: str, port: int) -> list[str]:
-    return [
-        *py_cmd,
-        "-m",
-        "streamlit",
-        "run",
-        str(console_script),
-        "--server.headless",
-        "true",
-        "--server.address",
-        host,
-        "--server.port",
-        str(port),
-        "--browser.gatherUsageStats",
-        "false",
-        "--global.developmentMode",
-        "false",
-    ]
-
-
 def _ui_backend() -> str:
     from nimbusware_env.env_flags import env_str
 
@@ -127,16 +107,12 @@ def _resolve_ui_mode(*, ui: str | None = None) -> str:
     return "maker"
 
 
-def _streamlit_app_script(root: Path, ui_mode: str) -> Path:
-    if ui_mode == "admin":
-        script = root / "packages" / "nimbusware_console" / "app.py"
-        label = "admin console"
-    else:
-        script = root / "packages" / "nimbusware_maker" / "app.py"
-        label = "maker app"
-    if not script.is_file():
-        raise FileNotFoundError(f"Streamlit {label} not found: {script}")
-    return script
+def _reject_legacy_streamlit_backend() -> None:
+    if _ui_backend() == "streamlit":
+        raise RuntimeError(
+            "NIMBUSWARE_UI_BACKEND=streamlit is no longer supported. "
+            "Use web (default) and open /v1/maker/app/ or /v1/admin/app/ from the API.",
+        )
 
 
 def start_servers(
@@ -151,6 +127,7 @@ def start_servers(
 ) -> tuple[str, str, dict[str, str]]:
     load_dotenv(repo_root=root)
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(root))
+    _reject_legacy_streamlit_backend()
     if quick_mode:
         apply_quick_mode_env()
 
@@ -162,8 +139,6 @@ def start_servers(
     if api_port is None:
         env_port = os.environ.get("NIMBUSWARE_API_PORT", "").strip()
         api_port = int(env_port) if env_port else _pick_free_port(api_host)
-    streamlit_port = streamlit_port or _pick_free_port(streamlit_host)
-
     os.environ["NIMBUSWARE_API_HOST"] = api_host
     os.environ["PORT"] = str(api_port)
     os.environ["NIMBUSWARE_API_BASE"] = f"http://{api_host}:{api_port}/v1"
@@ -177,20 +152,8 @@ def start_servers(
     api_url = f"http://{api_host}:{api_port}/openapi.json"
     _wait_for_http(api_url)
 
-    if _ui_backend() == "web":
-        console_url = _web_console_url(api_host=api_host, api_port=api_port, ui_mode=mode)
-        _wait_for_http(console_url)
-        return console_url, api_url, env
-
-    streamlit_script = _streamlit_app_script(root, mode)
-    _spawn(
-        _streamlit_command(py_cmd, streamlit_script, streamlit_host, streamlit_port),
-        cwd=root,
-        env=env,
-    )
-
-    console_url = f"http://{streamlit_host}:{streamlit_port}"
-    _wait_for_http(f"{console_url}/_stcore/health")
+    console_url = _web_console_url(api_host=api_host, api_port=api_port, ui_mode=mode)
+    _wait_for_http(console_url)
     return console_url, api_url, env
 
 
