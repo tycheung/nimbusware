@@ -109,13 +109,21 @@ def emit_research_stages_stub(
     code_enabled = bool(research_meta.get("code_enabled", True))
 
     if domain_enabled:
+        raw_domain_summary = (
+            f"Domain brief for {domain_tag}: user journeys, constraints, and glossary "
+            "derived from requirements (stub; no live crawl in CI)."
+        )
+        if isinstance(requirements, dict):
+            prompt_bit = str(requirements.get("business_prompt") or "")
+            if prompt_bit.strip():
+                raw_domain_summary = wrap_researcher_prompt(
+                    prompt_bit,
+                    role="domain_researcher",
+                )
         domain_brief = ResearchBrief(
             brief_kind="domain",
             domain_tag=domain_tag,
-            summary=(
-                f"Domain brief for {domain_tag}: user journeys, constraints, and glossary "
-                "derived from requirements (stub; no live crawl in CI)."
-            ),
+            summary=raw_domain_summary[:4000],
             artifact_id=str(uuid4()),
             sources=(
                 ResearchBriefSource(
