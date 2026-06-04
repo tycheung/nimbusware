@@ -32,6 +32,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/theater"),
         ("GET", "/runs/{run_id}/theater/export"),
         ("GET", "/runs/{run_id}/theater/stream"),
+        ("GET", "/runs/{run_id}/stitch-summary"),
         ("GET", "/runs/{run_id}/research"),
         ("POST", "/runs/{run_id}/research/{brief_id}/approve"),
         ("POST", "/runs/{run_id}/research/{brief_id}/reject"),
@@ -108,6 +109,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "research_router",
         "stream_router",
         "theater_router",
+        "stitch_summary_router",
         "slices_router",
         "timeline_explain_router",
     )

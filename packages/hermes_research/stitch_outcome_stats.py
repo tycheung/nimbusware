@@ -64,6 +64,18 @@ def _outcome_after_stitch(rows: list[dict[str, Any]], *, after_seq: int) -> Tran
     return "unknown"
 
 
+def transplant_outcome_for_run(rows: list[dict[str, Any]]) -> TransplantOutcome | None:
+    """Outcome after the last stitch.applied on this run, if any."""
+    ordered = sorted(rows, key=lambda r: int(r.get("store_seq") or 0))
+    stitch_seq: int | None = None
+    for row in ordered:
+        if str(row.get("event_type") or "") == EventType.STITCH_APPLIED.value:
+            stitch_seq = int(row.get("store_seq") or 0)
+    if stitch_seq is None:
+        return None
+    return _outcome_after_stitch(ordered, after_seq=stitch_seq)
+
+
 def compute_stitch_transplant_stats(event_rows: list[dict[str, Any]]) -> dict[str, Any]:
     by_run: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in event_rows:

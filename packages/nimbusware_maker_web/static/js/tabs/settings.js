@@ -17,7 +17,13 @@ export async function mountSettings(root) {
     apiJson("/settings/me"),
     apiJson("/settings/catalog").catch(() => null),
   ]);
-  root.innerHTML = `<form id="settings-form"></form><div id="hardware-mount"></div>`;
+  root.innerHTML = `
+    <form id="settings-form"></form>
+    <p class="muted" id="reresearch-help">
+      <strong>Re-research on plan fail</strong> (<code>HERMES_RERESARCH_MISSING_CONTEXT</code>):
+      when enabled, the pipeline may re-run research after planner missing-context failures.
+    </p>
+    <div id="hardware-mount"></div>`;
   const form = root.querySelector("#settings-form");
   const stored = me.stored || me.values || me.settings || me;
   const entries = Object.entries(stored).filter(

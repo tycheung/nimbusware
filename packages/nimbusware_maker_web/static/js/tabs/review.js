@@ -15,6 +15,11 @@ export async function mountReview(root) {
     <p id="rev-summary"></p>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
+    <section id="rev-stitch" class="stitch-panel hidden">
+      <h3>Stitch / transplant</h3>
+      <button type="button" id="rev-load-stitch">Load stitch summary</button>
+      <pre id="rev-stitch-body" class="json-pre"></pre>
+    </section>
     <pre id="rev-diff" class="diff-pre"></pre>
     <p id="rev-git-status" class="muted"></p>`;
 
@@ -105,6 +110,21 @@ export async function mountReview(root) {
       }
       ul.appendChild(li);
     }
+  });
+  root.querySelector("#rev-load-stitch")?.addEventListener("click", async () => {
+    const id = runId();
+    if (!id) return toast("Enter a run ID on Progress tab", "error");
+    const body = await apiJson(`/runs/${id}/stitch-summary`);
+    const panel = root.querySelector("#rev-stitch");
+    panel?.classList.remove("hidden");
+    const lines = (body.events || []).map(
+      (ev) => `#${ev.store_seq} ${ev.event_type}: ${ev.summary || ""}`,
+    );
+    const outcome = body.transplant_outcome
+      ? `\nTransplant outcome: ${body.transplant_outcome}`
+      : "";
+    root.querySelector("#rev-stitch-body").textContent =
+      (lines.length ? lines.join("\n") : "No stitch events for this run.") + outcome;
   });
   root.querySelector("#rev-load-diff")?.addEventListener("click", async () => {
     const id = runId();
