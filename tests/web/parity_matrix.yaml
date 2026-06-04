@@ -8,13 +8,14 @@ maker:
     web: true
   - id: home_projects
     streamlit: true
-    web: false
+    web: true
   - id: wizard_creates_run
     streamlit: true
-    web: false
+    web: partial
+    notes: Onboarding wizard; run creation is on Build tab
   - id: build_intent
     streamlit: true
-    web: false
+    web: true
   - id: slice_approval_apply_skip
     streamlit: true
     web: true
@@ -26,70 +27,78 @@ maker:
     web: true
   - id: theater_sse_live
     streamlit: partial
-    web: false
+    web: true
+    notes: EventSource theater/stream
   - id: progress_sse_live
     streamlit: partial
-    web: false
+    web: true
+    notes: EventSource maker-progress/stream with simple=true
   - id: research_approve
     streamlit: true
     web: true
   - id: research_reject
     streamlit: true
-    web: false
+    web: true
   - id: slice_diff_preview
     streamlit: true
-    web: false
+    web: true
   - id: workspace_revert
     streamlit: true
-    web: false
+    web: true
   - id: models_ranked_table
     streamlit: true
-    web: false
+    web: true
   - id: ollama_pull
     streamlit: true
-    web: false
+    web: true
   - id: settings_operator
     streamlit: true
-    web: false
+    web: true
   - id: hardware_panel
     streamlit: true
-    web: false
+    web: true
   - id: deep_link_run_id
     streamlit: true
     web: true
   - id: memory_influence
     streamlit: true
-    web: false
+    web: true
   - id: readiness_strip
     streamlit: true
-    web: false
+    web: true
   - id: project_create
     streamlit: true
-    web: false
+    web: true
   - id: project_delete
     streamlit: true
-    web: false
+    web: partial
+    notes: DELETE /projects requires admin token; not exposed in Maker UI
   - id: quick_mode_banner
     streamlit: true
-    web: false
+    web: partial
+    notes: Deferred; quick_local via CLI/env only
   - id: admin_unlock_sidebar
     streamlit: true
-    web: false
+    web: partial
+    notes: Admin gate lives in Admin SPA
   - id: git_commit_status
     streamlit: true
-    web: false
+    web: partial
+    notes: Deferred polish
   - id: slice_prepare
     streamlit: true
     web: true
   - id: theater_export
     streamlit: true
-    web: false
+    web: partial
+    notes: Deferred export button
   - id: progress_simple_mode
     streamlit: true
-    web: false
+    web: true
   - id: settings_catalog_keys
     streamlit: true
-    web: false
+    web: partial
+    notes: Dynamic keys from GET /settings/me
 admin:
   - id: admin_gate
     streamlit: true
@@ -102,28 +111,29 @@ admin:
     web: true
   - id: run_list_qp_bookmark
     streamlit: true
-    web: false
+    web: true
   - id: timeline_accordion
     streamlit: true
-    web: partial
+    web: true
   - id: findings_panel
     streamlit: true
-    web: false
+    web: true
   - id: critic_matrix
     streamlit: true
-    web: false
+    web: true
   - id: config_ollama
     streamlit: true
-    web: false
+    web: true
   - id: config_bundles
     streamlit: true
-    web: false
+    web: true
   - id: operator_chat
     streamlit: true
-    web: false
+    web: true
   - id: custom_agents
     streamlit: true
-    web: false
+    web: true
   - id: preflight_fleet
     streamlit: true
-    web: false
+    web: partial
+    notes: Preflight history only; enterprise fleet deferred

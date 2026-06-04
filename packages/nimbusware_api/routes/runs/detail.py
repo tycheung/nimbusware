@@ -11,6 +11,7 @@ from fastapi.routing import APIRouter
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from hermes_memory.timeline import (
     memory_indexed_timeline_summary,
+    memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
 )
 from hermes_store.protocol import serialized_event_from_row
@@ -47,6 +48,7 @@ from nimbusware_api.schemas.openapi import (
     format_run_timeline_link_header,
 )
 from nimbusware_api.schemas.runs import RunDetailResponse, RunTimelineResponse
+from nimbusware_maker.memory_influence_display import format_retrieval_rows
 from nimbusware_projections.run_summary import build_run_summary
 
 router = APIRouter()
@@ -217,3 +219,39 @@ def findings(run_id: UUID, store: StoreDep, response: Response) -> dict[str, Any
         ev = validate_event_dict(d)
         out.append(serialize_event_persistent(ev))
     return {"run_id": rid, "findings": out}
+
+
+@router.get(
+    "/runs/{run_id}/memory-influence",
+    responses={
+        200: {
+            "description": "Memory retrieval rows for Maker progress panel",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "run_id": "11111111-1111-4111-8111-111111111111",
+                        "rows": [],
+                        "summary": None,
+                    },
+                },
+            },
+        },
+        404: PROBLEM_RESPONSE_404,
+        422: PROBLEM_RESPONSE_422,
+        500: PROBLEM_RESPONSE_500,
+    },
+)
+def memory_influence(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    events = [serialized_event_from_row(r) for r in rows]
+    raw = memory_retrieval_timeline_entries(events)
+    return {
+        "run_id": str(run_id),
+        "rows": format_retrieval_rows(raw),
+        "summary": memory_retrieval_timeline_summary(events),
+    }

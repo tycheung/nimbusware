@@ -20,4 +20,9 @@ describe("sse-client parse", () => {
     const body = parseSseJson({ data: '{"ok":true}' });
     expect(body.ok).toBe(true);
   });
+
+  it("parseSseJson returns null on invalid JSON", async () => {
+    const { parseSseJson } = await import("../static/js/sse-client.js");
+    expect(parseSseJson({ data: "not-json" })).toBeNull();
+  });
 });

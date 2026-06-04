@@ -14,7 +14,9 @@ export async function mountProgress(root) {
     mount.innerHTML = `
       <ul id="theater-list"></ul>
       <p id="slice-summary"></p>
-      <ol id="slice-list"></ol>`;
+      <ol id="slice-list"></ol>
+      <h4>Memory influence</h4>
+      <table id="memory-influence-table"><thead><tr><th>Stage</th><th>Hits</th><th>Digest</th></tr></thead><tbody></tbody></table>`;
   }
 
   function stopStreams() {
@@ -73,6 +75,21 @@ export async function mountProgress(root) {
     renderProgress(snap);
   } catch (e) {
     toast(String(e.message || e), "error");
+  }
+
+  try {
+    const mem = await apiJson(`/runs/${id}/memory-influence`);
+    const tbody = document.querySelector("#memory-influence-table tbody");
+    if (tbody) {
+      tbody.replaceChildren();
+      for (const row of mem.rows || []) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.stage || ""}</td><td>${row.hits || ""}</td><td>${row.query_digest || ""}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+  } catch {
+    /* optional panel when run has no retrieval events */
   }
 }
 
