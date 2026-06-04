@@ -2,7 +2,7 @@
 
 ## Scope
 
-Enterprise operators may want SSO for the **Admin Console** and **Maker** Streamlit apps. The Nimbusware **API** continues to authenticate via:
+Enterprise operators may want SSO for the **Admin Console** and **Maker** web apps. The Nimbusware **API** continues to authenticate via:
 
 - Individual: open user routes on loopback; `X-Nimbusware-Admin-Token` for admin routes.
 - Enterprise: `X-Nimbusware-Api-Key` with `maker_user` / `maker_admin` scopes.
@@ -14,7 +14,7 @@ OIDC is a **console login** concern, not a replacement for API keys in v1.
 1. Operator opens Admin Console → redirect to IdP (OIDC authorization code + PKCE).
 2. Console callback validates JWT (`iss`, `aud`, `exp`, groups claim).
 3. Console maps IdP groups → local role (`maker_admin` vs read-only).
-4. Console stores a short-lived session cookie; backend calls still use server-side API key or token vault — **never** embed IdP tokens in Streamlit state sent to browsers for API calls.
+4. Console stores a short-lived session cookie; backend calls still use server-side API key or token vault — **never** embed IdP tokens in browser-local storage for API calls.
 
 ## Implementation checklist (fo500)
 

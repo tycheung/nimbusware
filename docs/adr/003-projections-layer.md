@@ -6,13 +6,13 @@ Accepted (2026-05)
 
 ## Context
 
-Timeline summaries and field metadata were duplicated between `nimbusware_api.read_models` and Streamlit display modules. Divergence caused console/API parity bugs and made operator exports hard to keep consistent.
+Timeline summaries and field metadata were duplicated between `nimbusware_api.read_models` and console display modules. Divergence caused console/API parity bugs and made operator exports hard to keep consistent.
 
 ## Decision
 
 Introduce `nimbusware_projections` with:
 
-- `builders/` — pure functions over normalized event dicts (no HTTP or Streamlit)
+- `builders/` — pure functions over normalized event dicts (no HTTP or UI framework)
 - `fields/` — row keys and human-facing display field order shared by API examples and console tables
 
 API `read_models/*` modules become thin shims that delegate to projections. Console display modules import field metadata (for example `RUN_ESCALATED_DISPLAY_FIELDS`) from projections rather than redefining tuples.

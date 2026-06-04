@@ -1,7 +1,5 @@
-# Nimbusware operator console (`packages/nimbusware_console`). Override locally; do not commit secrets.
-#
-# Page title stays in packages/nimbusware_console/app.py (st.set_page_config).
-# Theme-only overrides: edit [theme] below; full white-label deferred — per-tenant CSS/logo skins out of scope.
+# Legacy theme reference for console_theme tests (web UI is default).
+# White-label deferred — use [theme] keys below for local overrides only.
 [theme]
 base = "light"
 primaryColor = "#1f77b4"

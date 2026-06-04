@@ -6,7 +6,7 @@ Normative product plan: `hermes-orchestrator-local-plan.md` (local, gitignored).
 
 Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory append store),
 `hermes_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI
-`/v1`), `hermes_executor` (subprocess + egress helpers), `nimbusware_console` (Streamlit),
+`/v1`), `hermes_executor` (subprocess + egress helpers), `nimbusware_console` (Admin display modules),
 `hermes_extensions` (personas, bundles, escalation), `nimbusware_projections` (shared timeline builders).
 
 ## Wire format

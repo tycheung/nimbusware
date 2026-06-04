@@ -206,11 +206,11 @@ poetry run nimbusware-maker
 poetry run nimbusware-admin
 ```
 
-Set `NIMBUSWARE_UI_BACKEND=streamlit` only if you still run a legacy Streamlit build (removed from this tree).
-
 Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. Use `--admin --smoke` for the admin web entry.
 
 API docs: http://127.0.0.1:8000/docs — operations are tagged **user** (Maker) vs **admin** (Admin Console) in OpenAPI.
+
+Operator analytics snapshot: `GET /v1/platform/analytics/competitive-summary` (Admin **Metrics** tab).
 
 ## User vs Admin
 
@@ -356,7 +356,7 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 | `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
 | `poetry run nimbusware-run` | Desktop API + Maker window (default) |
 | `poetry run nimbusware-admin` | Desktop API + Admin Console window |
-| `poetry run nimbusware-maker` | Streamlit Maker only (expects API at `NIMBUSWARE_API_BASE`); add `--quick` for solo dev |
+| `poetry run nimbusware-maker` | Start API + open Maker web UI (`/v1/maker/app/`); add `--quick` for in-memory solo dev |
 | `poetry run nimbusware-git-pr` | Open GitHub PR for a Hermes run branch (`gh` CLI required) |
 | `poetry run nimbusware-mcp` | Stdio MCP server for IDE run status, theater, slice diff, plan approve ([`docs/ide-bridge.md`](docs/ide-bridge.md)) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |

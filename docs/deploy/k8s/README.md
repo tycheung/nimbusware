@@ -10,7 +10,7 @@ Not production-hardened — starting point for Enterprise ops.
 4. `kubectl apply -f schema-job.yaml` and wait for completion (greenfield `postgres.sql`).
 5. `kubectl apply -f api-deployment.yaml`
 6. Optional: `kubectl apply -f worker-deployment.yaml` when `HERMES_RUN_DISPATCH=redis`.
-7. Optional: `kubectl apply -f console-deployment.yaml` for Admin Console (Streamlit).
+7. Optional: `kubectl apply -f console-deployment.yaml` for Admin web UI (legacy manifest may reference streamlit; prefer API + static `/v1/admin/app/`).
 
 ## Files
 

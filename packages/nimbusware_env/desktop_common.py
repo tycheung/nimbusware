@@ -98,7 +98,7 @@ def resolve_python_command(root: Path) -> list[str]:
 
 
 def run_log_path(root: Path) -> Path:
-    """Desktop run diagnostics log (API / Streamlit / pywebview startup)."""
+    """Desktop run diagnostics log (API / web UI / pywebview startup)."""
     log_dir = root / ".cache"
     log_dir.mkdir(parents=True, exist_ok=True)
     return log_dir / "nimbusware-run.log"
@@ -143,7 +143,7 @@ def subprocess_spawn_kwargs(
 ) -> dict[str, object]:
     """Extra ``Popen`` kwargs.
 
-    Use ``hide_window=True`` for headless API/Streamlit children on Windows.
+    Use ``hide_window=True`` for headless API children on Windows.
     Leave it false when starting ``run.py`` so failures can surface a console.
     """
     kwargs: dict[str, object] = {}

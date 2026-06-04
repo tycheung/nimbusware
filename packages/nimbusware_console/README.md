@@ -18,7 +18,7 @@ Build the Admin SPA before packaging: `cd packages/nimbusware_admin_ui && npm ci
 | `NIMBUSWARE_REPO_ROOT` | Frozen repo root for local YAML reads (catalog, personas, workflows) |
 | `NIMBUSWARE_API_BASE` | API base for run list, detail, timeline, findings |
 | `NIMBUSWARE_ADMIN_TOKEN` | Admin gate (`X-Nimbusware-Admin-Token`) |
-| `NIMBUSWARE_UI_BACKEND` | `web` (default) or legacy `streamlit` (removed from this tree) |
+| `NIMBUSWARE_UI_BACKEND` | `web` (default; pywebview opens `/v1/admin/app/`) |
 
 Repo root and API base helpers live in `settings.py` (`repo_root()`, `API_BASE`).
 
@@ -34,7 +34,7 @@ nimbusware_console/
 └── enterprise_console*.py # Enterprise fleet (deferred in web UI)
 ```
 
-Streamlit `pages/` were removed; Admin UX lives in `nimbusware_admin_ui` and reuses the display modules above via API BFF routes.
+Admin UX lives in `nimbusware_admin_ui` (Metrics, Preflight, Runs, …) and reuses the display modules above via API BFF routes.
 
 ## Tests
 

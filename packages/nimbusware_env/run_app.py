@@ -310,7 +310,7 @@ def run_desktop(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Run Nimbusware (API + Streamlit) in a desktop window.",
+        description="Run Nimbusware (API + web UI) in a desktop window.",
     )
     parser.add_argument("--repo-root", type=Path, default=None)
     parser.add_argument("--api-host", default="127.0.0.1")
@@ -337,7 +337,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--smoke",
         action="store_true",
-        help="Start API + Streamlit, verify health, exit (no GUI window).",
+        help="Start API + web UI backends, verify health, exit (no GUI window).",
     )
     parser.add_argument(
         "--quick",

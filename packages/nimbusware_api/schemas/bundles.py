@@ -44,7 +44,7 @@ class BundleSearchResponse(BaseModel):
         le=20,
         description=(
             "Echoed bounded ``k`` (1..20) that the response was sized to. Matches the "
-            "``k`` echoed by the Streamlit ``run_bundle_catalog_search`` payload so API "
+            "``k`` echoed by the bundle catalog search payload so API "
             "and console clients can deduplicate hits consistently."
         ),
     )

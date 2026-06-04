@@ -257,7 +257,7 @@ def bundle_faiss_index_ready(repo_root: Path) -> bool:
     (the two files written by ``scripts/build_bundle_faiss_index.py`` and consumed by
     :meth:`BundleCatalog._try_load_faiss`). This is a *file-presence* signal only — it does
     not import ``faiss`` or attempt to load the index, so it stays cheap to call from API
-    handlers and Streamlit captions alike.
+    handlers and Admin display captions alike.
     """
     idx_dir = repo_root / "configs" / "bundles" / "index"
     return (idx_dir / "faiss.index").is_file() and (idx_dir / "bundle_order.json").is_file()

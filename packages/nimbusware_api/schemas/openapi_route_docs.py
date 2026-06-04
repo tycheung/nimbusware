@@ -26,9 +26,9 @@ BUNDLE_SEARCH_RESPONSE_200: dict[str, Any] = {
         "Bundle catalog search hits (FAISS top-k when an index is built under "
         "``configs/bundles/index/``; otherwise tag/id overlap). ``k`` echoes the "
         "bounded request parameter (1..20) so clients can deduplicate hits, mirroring "
-        "the Streamlit ``run_bundle_catalog_search`` payload. ``faiss_index_ready`` "
-        "is ``true`` when both index files exist under the orchestrator repo root, "
-        "mirroring the Streamlit FAISS readiness caption. ``faiss_index_stale`` mirrors "
+        "the bundle catalog search payload. ``faiss_index_ready`` "
+        "is ``true`` when both index files exist under the orchestrator repo root. "
+        "``faiss_index_stale`` mirrors "
         "``bundle_faiss_index_sync_state`` ``stale`` (``null`` when not comparable)."
     ),
     "content": {

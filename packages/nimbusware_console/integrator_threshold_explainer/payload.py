@@ -78,7 +78,7 @@ def integrator_threshold_explainer_payload(
     preview_eff = preview_effective_min_score_to_pass(repo_root, wf_sel, pasted_block)
 
     note = (
-        "Streamlit preview uses pasted min_score_to_pass before workflow when the pasted "
+        "Admin preview uses pasted min_score_to_pass before workflow when the pasted "
         "fragment parses; pipeline emission uses env, then workflow, then thresholds.yaml only."
     )
     if preview_eff == pipe_eff:
