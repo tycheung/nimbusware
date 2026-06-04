@@ -111,6 +111,26 @@ def last_revert_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]
     return last_approved_snapshot_from_rows(rows)
 
 
+def last_git_commit_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Latest per-slice git commit result from slice.applied maker stages."""
+    latest: dict[str, Any] | None = None
+    latest_seq = -1
+    for row in rows:
+        if row.get("event_type") != EventType.STAGE_PASSED.value:
+            continue
+        if _stage_name(row) != STAGE_SLICE_APPLIED:
+            continue
+        meta = _metadata(row)
+        commit = meta.get("git_commit")
+        if not isinstance(commit, dict):
+            continue
+        seq = int(row.get("store_seq") or 0)
+        if seq >= latest_seq:
+            latest_seq = seq
+            latest = {**commit, "slice_id": meta.get("slice_id")}
+    return latest
+
+
 def last_approved_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     latest: dict[str, Any] | None = None
     for row in rows:

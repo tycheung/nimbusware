@@ -38,10 +38,15 @@ function makerShellFactory() {
     toastMsg: "",
     toastKind: "info",
     editionLabel: "",
+    quickModeActive: false,
+    quickBannerDismissed: false,
     init() {
       this.route = parseRoute();
       applyQueryToRunId();
       const b = getBootstrap();
+      this.quickModeActive = Boolean(b.quick_mode);
+      this.quickBannerDismissed =
+        sessionStorage.getItem("maker_quick_banner_dismissed") === "1";
       this.editionLabel = `Edition: ${b.edition || "individual"}${b.quick_mode ? " (quick)" : ""}`;
       window.addEventListener("hashchange", () => {
         this.route = parseRoute();
@@ -64,6 +69,10 @@ function makerShellFactory() {
           this.toastMsg = "";
         }, 5000);
       }
+    },
+    dismissQuickBanner() {
+      this.quickBannerDismissed = true;
+      sessionStorage.setItem("maker_quick_banner_dismissed", "1");
     },
   };
 }

@@ -31,6 +31,14 @@
         <a class="admin-link" href="/v1/admin/app/" target="_blank" rel="noopener">Admin console</a>
       </aside>
       <main class="main">
+        <div
+          class="quick-banner"
+          x-show="quickModeActive && !quickBannerDismissed"
+          role="status"
+        >
+          <span>Quick local mode — runs use in-memory store and quick_local workflow.</span>
+          <button type="button" @click="dismissQuickBanner()">Dismiss</button>
+        </div>
         <div class="toast" x-show="toastMsg" x-text="toastMsg" :class="toastKind"></div>
         <div id="view-home" class="view" x-show="route === '/home'">
           <h2>Home</h2>

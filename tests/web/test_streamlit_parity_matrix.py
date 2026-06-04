@@ -54,6 +54,10 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "project_create",
         "slice_prepare",
         "progress_simple_mode",
+        "quick_mode_banner",
+        "git_commit_status",
+        "theater_export",
+        "settings_catalog_keys",
     }
     web_true_ids = {r["id"] for r in data.get("maker", []) if r.get("web") is True}
     assert web_true_ids == expected

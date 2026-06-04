@@ -15,7 +15,29 @@ export async function mountReview(root) {
     <p id="rev-summary"></p>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
-    <pre id="rev-diff" class="diff-pre"></pre>`;
+    <pre id="rev-diff" class="diff-pre"></pre>
+    <p id="rev-git-status" class="muted"></p>`;
+
+  async function loadGitStatus() {
+    const id = runId();
+    if (!id) return;
+    const el = root.querySelector("#rev-git-status");
+    try {
+      const body = await apiJson(`/runs/${id}/maker/git-status`);
+      const gc = body.git_commit;
+      if (!gc) {
+        el.textContent = "Git: no per-slice commits recorded yet.";
+        return;
+      }
+      const status = gc.status || "unknown";
+      const branch = gc.branch ? ` on ${gc.branch}` : "";
+      const sha = gc.sha ? ` (${String(gc.sha).slice(0, 8)})` : "";
+      const reason = gc.reason ? ` — ${gc.reason}` : "";
+      el.textContent = `Git ${status}${branch}${sha}${reason}`;
+    } catch {
+      el.textContent = "";
+    }
+  }
 
   async function loadPending() {
     const id = runId();
@@ -49,7 +71,10 @@ export async function mountReview(root) {
     }
   }
 
-  root.querySelector("#rev-load-pending")?.addEventListener("click", () => loadPending().catch((e) => toast(String(e.message), "error")));
+  root.querySelector("#rev-load-pending")?.addEventListener("click", () => {
+    loadPending().then(loadGitStatus).catch((e) => toast(String(e.message), "error"));
+  });
+  void loadGitStatus();
   root.querySelector("#rev-load-research")?.addEventListener("click", async () => {
     const id = runId();
     const body = await apiJson(`/runs/${id}/research`);

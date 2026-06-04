@@ -7,7 +7,18 @@ export async function mountModels(root) {
       <button type="submit">Pull via Ollama</button>
     </form>
     <p id="models-pull-status"></p>
-    <button type="button" id="models-apply-preset">Apply recommended preset</button>`;
+    <button type="button" id="models-apply-preset">Apply recommended preset</button>
+    <p id="models-catalog-info" class="muted"></p>`;
+
+  try {
+    const info = await apiJson("/platform/models/catalog-info");
+    const el = root.querySelector("#models-catalog-info");
+    if (el) {
+      el.textContent = `Catalog: ${info.model_count} models (v${info.version}), updated ${info.updated_at || "unknown"}`;
+    }
+  } catch {
+    /* optional */
+  }
 
   const hw = await apiJson("/platform/hardware");
   const tbody = root.querySelector("#models-table tbody");

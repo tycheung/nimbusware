@@ -36,6 +36,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/runs/{run_id}/research/{brief_id}/approve"),
         ("POST", "/runs/{run_id}/research/{brief_id}/reject"),
         ("GET", "/runs/{run_id}/maker/pending"),
+        ("GET", "/runs/{run_id}/maker/git-status"),
         ("POST", "/runs/{run_id}/maker/plan/approve"),
         ("POST", "/runs/{run_id}/maker/slices/prepare"),
         ("POST", "/runs/{run_id}/maker/slices/apply"),

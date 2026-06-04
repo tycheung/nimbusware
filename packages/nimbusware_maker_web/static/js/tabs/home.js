@@ -8,7 +8,8 @@ export async function mountHome(root) {
       <label>Name <input name="name" required /></label>
       <label>Workspace path <input name="workspace_path" required /></label>
       <button type="submit" class="primary">Create project</button>
-    </form>`;
+    </form>
+    <p class="muted">To delete a project, use the Admin console (requires admin token).</p>`;
 
   try {
     const readiness = await apiJson("/platform/readiness");

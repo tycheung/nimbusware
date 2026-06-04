@@ -1,14 +1,31 @@
 import { apiJson, toast } from "../api-client.js";
 
+function labelForKey(catalog, key) {
+  const groups = catalog?.groups;
+  if (!groups || typeof groups !== "object") return key;
+  for (const defs of Object.values(groups)) {
+    if (!Array.isArray(defs)) continue;
+    for (const item of defs) {
+      if (item?.key === key && item?.label) return `${item.label} (${key})`;
+    }
+  }
+  return key;
+}
+
 export async function mountSettings(root) {
-  const me = await apiJson("/settings/me");
+  const [me, catalog] = await Promise.all([
+    apiJson("/settings/me"),
+    apiJson("/settings/catalog").catch(() => null),
+  ]);
   root.innerHTML = `<form id="settings-form"></form><div id="hardware-mount"></div>`;
   const form = root.querySelector("#settings-form");
-  const entries = Object.entries(me.values || me.settings || me);
+  const stored = me.stored || me.values || me.settings || me;
+  const entries = Object.entries(stored).filter(
+    ([, val]) => typeof val === "string" || typeof val === "number" || typeof val === "boolean",
+  );
   for (const [key, val] of entries) {
-    if (typeof val !== "string" && typeof val !== "number" && typeof val !== "boolean") continue;
     const label = document.createElement("label");
-    label.textContent = key;
+    label.textContent = labelForKey(catalog, key);
     const input = document.createElement("input");
     input.name = key;
     input.value = String(val);
@@ -28,7 +45,7 @@ export async function mountSettings(root) {
     await apiJson("/settings/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patch),
+      body: JSON.stringify({ values: patch }),
     });
     toast("Settings saved", "success");
   });

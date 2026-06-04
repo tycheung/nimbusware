@@ -55,6 +55,15 @@ export async function mountProgress(root) {
   const id = runId();
   if (!id) return;
 
+  const exportBar = document.createElement("p");
+  exportBar.className = "actions";
+  const exportLink = document.createElement("a");
+  exportLink.href = `/v1/runs/${encodeURIComponent(id)}/theater/export`;
+  exportLink.textContent = "Export theater transcript (.md)";
+  exportLink.setAttribute("download", `hermes-theater-${id}.md`);
+  mount?.prepend(exportBar);
+  exportBar.appendChild(exportLink);
+
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
     onMessage: (ev) => {
       const data = parseSseJson(ev);

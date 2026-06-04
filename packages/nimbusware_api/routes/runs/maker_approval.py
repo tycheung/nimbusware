@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from nimbusware_maker.approval import last_git_commit_from_rows
 from nimbusware_maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
@@ -26,6 +27,21 @@ class PendingSliceResponse(BaseModel):
     awaiting_approval: bool
     pending: dict[str, Any] | None = None
     last_snapshot: dict[str, Any] | None = None
+
+
+@router.get(
+    "/runs/{run_id}/maker/git-status",
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def get_maker_git_status(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    commit = last_git_commit_from_rows(rows)
+    return {"run_id": str(run_id), "git_commit": commit}
 
 
 @router.get(

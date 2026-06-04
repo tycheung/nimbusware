@@ -37,10 +37,9 @@ def normalize_model_row(raw: dict[str, Any]) -> dict[str, Any] | None:
     """Map Odysseus/hf_models-style rows to catalog schema."""
     if not isinstance(raw, dict):
         return None
-    model_id = (
-        str(raw.get("id") or raw.get("model_id") or raw.get("name") or raw.get("ollama_tag") or "")
-        .strip()
-    )
+    model_id = str(
+        raw.get("id") or raw.get("model_id") or raw.get("name") or raw.get("ollama_tag") or ""
+    ).strip()
     if not model_id:
         return None
     params_b = _coerce_float(
@@ -51,7 +50,15 @@ def normalize_model_row(raw: dict[str, Any]) -> dict[str, Any] | None:
         params_b = float(raw["params_billions"])
     if params_b <= 0:
         low = model_id.lower()
-        for suffix, val in (("70b", 70.0), ("34b", 34.0), ("14b", 14.0), ("13b", 13.0), ("8b", 8.0), ("7b", 7.0), ("3b", 3.0)):
+        for suffix, val in (
+            ("70b", 70.0),
+            ("34b", 34.0),
+            ("14b", 14.0),
+            ("13b", 13.0),
+            ("8b", 8.0),
+            ("7b", 7.0),
+            ("3b", 3.0),
+        ):
             if suffix in low:
                 params_b = val
                 break

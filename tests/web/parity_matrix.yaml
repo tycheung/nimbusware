@@ -75,30 +75,26 @@ maker:
     notes: DELETE /projects requires admin token; not exposed in Maker UI
   - id: quick_mode_banner
     streamlit: true
-    web: partial
-    notes: Deferred; quick_local via CLI/env only
+    web: true
   - id: admin_unlock_sidebar
     streamlit: true
     web: partial
     notes: Admin gate lives in Admin SPA
   - id: git_commit_status
     streamlit: true
-    web: partial
-    notes: Deferred polish
+    web: true
   - id: slice_prepare
     streamlit: true
     web: true
   - id: theater_export
     streamlit: true
-    web: partial
-    notes: Deferred export button
+    web: true
   - id: progress_simple_mode
     streamlit: true
     web: true
   - id: settings_catalog_keys
     streamlit: true
-    web: partial
-    notes: Dynamic keys from GET /settings/me
+    web: true
 admin:
   - id: admin_gate
     streamlit: true
