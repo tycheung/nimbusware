@@ -105,6 +105,26 @@ def _governor_headline_from_run_created(meta: dict[str, Any]) -> str | None:
     return "Resource governor — " + ", ".join(parts)
 
 
+def _approved_research_body_md(rows: list[dict[str, Any]], before_seq: int) -> str | None:
+    from nimbusware_projections.builders.run_research import run_research_briefs_from_events
+
+    prior = [r for r in rows if int(r.get("store_seq") or 0) < before_seq]
+    briefs = run_research_briefs_from_events(prior).get("briefs") or []
+    approved = [b for b in briefs if b.get("status") == "approved"]
+    if not approved:
+        return None
+    parts: list[str] = []
+    for brief in approved:
+        bid = str(brief.get("brief_id") or brief.get("artifact_id") or "").strip()
+        if not bid:
+            continue
+        summary = str(brief.get("summary") or "").strip()[:120]
+        parts.append(f"{bid} — {summary}" if summary else bid)
+    if not parts:
+        return None
+    return "Approved research: " + "; ".join(parts)
+
+
 def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> str:
     raw = pl.get(key)
     if not isinstance(raw, list) or not raw:
@@ -255,6 +275,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     },
                 )
             elif sn in ("plan", "slice.plan"):
+                plan_seq = int(row.get("store_seq") or 0)
                 messages.append(
                     {
                         **base,
@@ -262,7 +283,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "message_kind": "plan",
                         "severity": "pass",
                         "headline": f"Stage passed: {sn}",
-                        "body_md": None,
+                        "body_md": _approved_research_body_md(rows, plan_seq),
                     },
                 )
             elif sn in _SLICE_STAGE_NAMES:

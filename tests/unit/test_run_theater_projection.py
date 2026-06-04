@@ -18,6 +18,10 @@ from agent_core.models import (
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
     RequiredFixArtifact,
+    ResearchBriefApprovedEvent,
+    ResearchBriefEmittedEvent,
+    ResearchBriefEmittedPayload,
+    ResearchBriefReviewPayload,
     ResearchPatternIndexedEvent,
     ResearchPatternIndexedPayload,
     RunCreatedEvent,
@@ -25,6 +29,8 @@ from agent_core.models import (
     Severity,
     StageFailedEvent,
     StageFailedPayload,
+    StagePassedEvent,
+    StagePassedPayload,
     StitchAppliedEvent,
     StitchAppliedPayload,
     StitchFailedEvent,
@@ -40,6 +46,60 @@ def _with_store_seq(rows: list[dict]) -> list[dict]:
     for i, row in enumerate(rows):
         row["store_seq"] = i + 1
     return rows
+
+
+def test_theater_plan_stage_cites_approved_research() -> None:
+    run_id = uuid4()
+    rows = [
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+        ).model_dump(mode="json"),
+        ResearchBriefEmittedEvent(
+            event_type=EventType.RESEARCH_BRIEF_EMITTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=ResearchBriefEmittedPayload(
+                brief_kind="domain",
+                domain_tag="auth",
+                summary="OAuth integration patterns for the slice",
+                artifact_id="brief-plan-1",
+                sources=[],
+            ),
+        ).model_dump(mode="json"),
+        ResearchBriefApprovedEvent(
+            event_type=EventType.RESEARCH_BRIEF_APPROVED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=ResearchBriefReviewPayload(
+                artifact_id="brief-plan-1",
+                brief_kind="domain",
+                notes="approved",
+            ),
+        ).model_dump(mode="json"),
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StagePassedPayload(stage_name="plan", duration_ms=50),
+        ).model_dump(mode="json"),
+    ]
+    msgs = build_run_theater_messages(_with_store_seq(rows))
+    plan_msgs = [m for m in msgs if m.get("message_kind") == "plan"]
+    assert plan_msgs
+    body = plan_msgs[-1].get("body_md") or ""
+    assert "brief-plan-1" in body
+    assert "Approved research:" in body
 
 
 def test_theater_includes_why_another_round_on_gate_fail() -> None:
