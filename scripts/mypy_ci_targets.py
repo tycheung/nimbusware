@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-# Tranche C (fo730): core libraries — strict globally; enforced in CI.
+# Tranche C: core libraries — strict globally; enforced in CI.
 _TRANCHE_C = (
     "packages/agent_core",
     "packages/hermes_store",
@@ -14,7 +14,7 @@ _TRANCHE_C = (
     "packages/nimbusware_env",
 )
 
-# Tranche B (fo720): leaf read-model / client packages.
+# Tranche B: leaf read-model / client packages.
 _TRANCHE_B = (
     "packages/nimbusware_projections",
     "packages/nimbusware_client",
@@ -41,13 +41,13 @@ _TRANCHE_D = (
     "packages/nimbusware_api/routes/personas_helpers.py",
 )
 
-# fo733: UI packages checked under narrowed ignore overrides (not blanket .*).
+# UI packages checked under narrowed ignore overrides (not blanket .*).
 _UI_STRICT = (
     "packages/nimbusware_console",
     "packages/nimbusware_maker",
 )
 
-# Tranche E (fo734): orchestrator strict islands (pipeline mixins remain ignored).
+# Tranche E: orchestrator strict islands (remaining mixins under blanket _pipeline.* ignore).
 _TRANCHE_E = (
     "packages/hermes_orchestrator/ollama_manage.py",
     "packages/hermes_orchestrator/ollama_user_policy.py",

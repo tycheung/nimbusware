@@ -1,4 +1,4 @@
-# Custom operator agents (fo151). Editable via Streamlit pencil UI or PATCH /v1/custom-agents/{id}.
+# Custom operator agents. Editable via Streamlit pencil UI or PATCH /v1/custom-agents/{id}.
 agents:
   - id: default_planner
     display_name: Default planner

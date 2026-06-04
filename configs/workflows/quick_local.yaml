@@ -1,4 +1,4 @@
-# Solo dev quick mode (fo461): in-memory store, stub critics, tight single-package slice.
+# Solo dev quick mode: in-memory store, stub critics, tight single-package slice.
 version: 1
 slice:
   enabled: true

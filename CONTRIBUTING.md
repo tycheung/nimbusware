@@ -55,7 +55,7 @@ Do not use “Hermes” to mean the Nimbusware platform, API, Maker, or Admin Co
 
 ### Typing
 
-Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py`. Pipeline mixins under `hermes_orchestrator._pipeline.*` remain ignored until typed incrementally.
+Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py`. Most pipeline mixins are strict-checked; `dev_factory` and any remaining modules stay under the blanket `_pipeline.*` ignore until typed.
 
 ### Module size
 

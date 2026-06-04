@@ -5,7 +5,7 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 _PYPROJECT = _REPO / "pyproject.toml"
 
-# Narrowed UI ignores (fo731) — must not use blanket console.*/maker.*.
+# Narrowed UI ignores — must not use blanket console.*/maker.*.
 _NARROWED_MARKERS = (
     "nimbusware_console.pages",
     "nimbusware_console.bundle_catalog",

@@ -224,12 +224,12 @@ packages = [
 ]
 mypy_path = "packages"
 
-# fo531: strict-check API + orchestrator except pipeline mixins (Lane T T2).
+# Strict-check API + orchestrator except pipeline mixins.
 [[tool.mypy.overrides]]
 module = ["hermes_orchestrator._pipeline.*"]
 ignore_errors = true
 
-# Pipeline mypy strict islands (fo450 + create_run pilot).
+# Pipeline mypy strict islands.
 [[tool.mypy.overrides]]
 module = [
   "hermes_orchestrator._pipeline.base",

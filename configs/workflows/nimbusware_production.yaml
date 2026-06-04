@@ -71,7 +71,7 @@ refactor:
   stub_only: true
   max_iterations: 1
 
-# Phase 4 memory (fo164): default-on retrieval + index contribution for production runs.
+# Phase 4 memory: default-on retrieval + index contribution for production runs.
 memory:
   retrieval_enabled: true
   index_contribution: true

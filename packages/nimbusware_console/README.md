@@ -67,7 +67,7 @@ nimbusware_console/
 
 ### Workflow explainers (Lane W1)
 
-Shared logic for `*_workflow_explainer` packages lives in `explainer_core/` (`payload.py`, `time.py`, `universal_critique_counts.py`). Per-domain packages re-export through their local `helpers.py` for backward compatibility. New `*_workflow_explainer` directories require updating `tests/unit/test_explainer_core_w1.py` allowlist (fo714).
+Shared logic for `*_workflow_explainer` packages lives in `explainer_core/` (`payload.py`, `time.py`, `universal_critique_counts.py`). Per-domain packages re-export through their local `helpers.py` for backward compatibility. New `*_workflow_explainer` directories require updating `tests/unit/test_explainer_core_w1.py` allowlist.
 
 ### Pages
 

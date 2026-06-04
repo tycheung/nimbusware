@@ -324,7 +324,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--quick",
         action="store_true",
-        help="In-memory store + stub critics + quick_local workflow (fo461).",
+        help="In-memory store + stub critics + quick_local workflow.",
     )
     args = parser.parse_args(argv)
     ui_mode = "admin" if (args.console or args.admin) else "maker"

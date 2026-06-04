@@ -45,7 +45,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
-| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + `sandbox` backends for agent shell |
+| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + `sandbox` backends (`none`, `stub`, optional `docker`) for agent shell |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Static Maker web PWA (`manifest.json`, slice panel) at `/v1/maker/app` |
@@ -56,7 +56,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
 | `nimbusware_console` | Admin Console (config, fleet, OIDC gate, deep timeline; `services/` HTTP helpers) |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, `env_flags`, admin token guards |
-| `nimbusware_hw` | Probe, governor, pressure, catalog fit; `/v1/platform/hardware` and `/v1/platform/models/*` |
+| `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 
 ## Editions
 

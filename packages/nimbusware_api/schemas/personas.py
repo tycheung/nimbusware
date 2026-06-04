@@ -32,7 +32,7 @@ class PersonaEntry(BaseModel):
         max_length=PERSONA_INSTRUCTIONS_MAX_CHARS,
         description=(
             "Per-persona system-prompt / operating instructions. NFC-normalized "
-            "server-side; <= 8000 chars (fo127)."
+            "server-side; <= 8000 chars."
         ),
     )
     capability_profile: str | None = Field(
@@ -178,7 +178,7 @@ class PersonaShelfPatchRequest(BaseModel):
 
 
 class ProbationReliabilityResponse(BaseModel):
-    """Aggregated agent-evaluator scores for probation automation (fo422)."""
+    """Aggregated agent-evaluator scores for probation automation."""
 
     model_config = ConfigDict(extra="forbid")
 

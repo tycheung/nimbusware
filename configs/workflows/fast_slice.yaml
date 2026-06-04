@@ -1,4 +1,4 @@
-# Micro-slice workflow with fast_slice opt-in (fo463). Use workflow_profile=fast_slice.
+# Micro-slice workflow with fast_slice opt-in. Use workflow_profile=fast_slice.
 fast_slice: true
 
 slice:
