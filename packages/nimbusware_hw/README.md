@@ -35,6 +35,14 @@ python scripts/sync_model_catalog.py --from-url https://example.com/curated-mode
 
 Use `--merge` to keep existing model ids and overlay new rows. CI does not fetch URLs; operators opt in to `--from-url`.
 
+## SSH fleet probe (Enterprise)
+
+- `NIMBUSWARE_HW_SSH_MOCK=1` — deterministic remote profile (default in unit CI)
+- `NIMBUSWARE_HW_SSH_HOST` + optional `NIMBUSWARE_HW_SSH_IDENTITY` — live probe via `ssh`
+- Optional GitHub workflow: `.github/workflows/ssh_hardware_probe.yml` (`workflow_dispatch`, requires repo secrets)
+
+PR CI keeps mock; staging operators set secrets for manual live probe runs.
+
 ## Fixtures and pressure
 
 - `NIMBUSWARE_HW_FIXTURE=weak|medium|strong` — deterministic profile in CI

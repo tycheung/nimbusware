@@ -59,6 +59,16 @@ def test_parse_fleet_hosts_env(monkeypatch: pytest.MonkeyPatch) -> None:
     assert parse_fleet_hosts_env() == ["a.example", "b.example"]
 
 
+def test_probe_hardware_remote_ssh_no_mock_missing_ssh(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
+    monkeypatch.delenv("NIMBUSWARE_HW_SSH_MOCK", raising=False)
+    with patch("nimbusware_hw.ssh_probe.subprocess.run") as mock_run:
+        mock_run.side_effect = FileNotFoundError("ssh not found")
+        raw = probe_hardware_remote_ssh("unreachable.example")
+    assert raw["errors"]
+    assert raw["tier"] == "weak"
+
+
 def test_probe_fleet_hardware_hosts_mock(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
     monkeypatch.setenv("NIMBUSWARE_HW_FLEET_HOSTS", "host-a,host-b")

@@ -36,6 +36,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
 - **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API `run.created` timeline). Local opt-in: set `NIMBUSWARE_DATABASE_URL` and run the same command; `ci_check.ps1` stays unit-only.
 - **Weekly slow:** `-m slow`.
+- **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — `workflow_dispatch` with `NIMBUSWARE_HW_SSH_HOST` secret; PR CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
 
 ## UI coverage policy (Lane V2)
 
