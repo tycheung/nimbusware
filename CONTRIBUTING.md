@@ -57,6 +57,8 @@ Do not use “Hermes” to mean the Nimbusware platform, API, Maker, or Admin Co
 
 Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py`. All `hermes_orchestrator._pipeline` modules are strict-checked islands (including `dev_factory`); there is no blanket `_pipeline.*` ignore.
 
+Docker agent sandbox (`HERMES_SANDBOX_BACKEND=docker`) requires a local Docker CLI; it is the Individual v1 container backend (multi-tenant VM sandboxes are deferred).
+
 ### Module size
 
 Console `.py` files must stay **≤400 lines** ([`tests/unit/test_console_module_size.py`](tests/unit/test_console_module_size.py)).

@@ -32,7 +32,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
 | **Maker app** | `nimbusware_maker` | **User console** — projects, intent, plain progress, slice approval/revert (no admin token for the product loop) |
 | **Admin Console** | `nimbusware_console` | **Admin/dev console** — runs, timeline, config editors, fleet panels (admin token at sign-in) |
-| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + optional sandbox backend (`HERMES_FILESYSTEM_JAIL`, `HERMES_SANDBOX_BACKEND`) |
+| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + sandbox (`none` / `stub` / opt-in `docker` for Individual v1) |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
 | **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
@@ -435,7 +435,8 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `HERMES_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
 | `HERMES_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
 | `HERMES_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
-| `HERMES_SANDBOX_BACKEND` | user | Agent shell sandbox: `none`, `stub`, or `docker` (opt-in container via `HERMES_SANDBOX_DOCKER_IMAGE`) |
+| `HERMES_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` (host+jail), `stub`, or `docker` (Individual v1; requires local Docker CLI) |
+| `HERMES_SANDBOX_DOCKER_IMAGE` | user | Image for docker sandbox (default `python:3.11-slim`) |
 | `HERMES_FAST_SLICE` | user | Env override for workflow `fast_slice` opt-in |
 | `HERMES_PROBATION_AUTO_SHELVE` | user | Disable auto-shelve on probation reliability failure (unset = on) |
 | `HERMES_PROBATION_NOTIFY_BEFORE_PROMOTE` | user | Disable promotion notice finding (unset = on) |
