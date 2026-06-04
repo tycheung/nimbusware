@@ -656,6 +656,8 @@ def _print_next_steps(
     _log("  nimbusware-run          # Maker at /v1/maker/app/")
     _log("  nimbusware-admin        # Admin at /v1/admin/app/")
     _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
+    _log("Model catalog (optional):")
+    _log("  python scripts/sync_model_catalog.py --help")
     if ollama_ok:
         _log("")
         _log("Ollama: ready (HERMES_USE_LLM=1 if enabled in .env)")

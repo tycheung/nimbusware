@@ -12,6 +12,7 @@ from nimbusware_api.errors import problem
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.store import PostgresConfigStore
 from nimbusware_hw.cache import get_cached_profile
+from nimbusware_hw.catalog_sync import catalog_info_from_path
 from nimbusware_hw.fit import rank_models
 from nimbusware_hw.ollama_presets import PRESET_NAMES
 from nimbusware_maker.readiness import build_platform_readiness
@@ -23,6 +24,12 @@ class ApplyPresetBody(BaseModel):
     model_id: str = Field(min_length=1)
     preset: Literal["quality", "balanced", "speed"] = "balanced"
     target: Literal["model-routing", "run_defaults"] = "model-routing"
+
+
+@router.get("/platform/models/catalog-info")
+def get_model_catalog_info(orch: OrchDep) -> dict[str, Any]:
+    path = orch.repo_root / "configs" / "hardware" / "model_catalog.json"
+    return catalog_info_from_path(path, source="bundled")
 
 
 @router.get("/platform/models/ranked")
