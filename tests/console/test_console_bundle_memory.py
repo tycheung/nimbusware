@@ -31,6 +31,8 @@ def test_bundle_success_stats_table_rows() -> None:
     assert analytics["outcome_count"] == 1
     rows = bundle_success_stats_table_rows(analytics["stats"])
     assert rows[0]["bundle_id"] == "bundle-a"
+    assert rows[0]["avg_fit_score"] == 0.8
+    assert rows[0]["avg_fit_on_pass"] == 0.8
     assert "integrator outcomes" in bundle_memory_caption(analytics)
 
 

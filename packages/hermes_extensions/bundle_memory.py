@@ -111,6 +111,12 @@ def extract_bundle_outcomes_from_event_rows(
     return out
 
 
+def _mean(values: list[float]) -> float | None:
+    if not values:
+        return None
+    return sum(values) / len(values)
+
+
 def aggregate_bundle_success_stats(
     records: list[BundleOutcomeRecord],
 ) -> dict[str, BundleSuccessStats]:
@@ -119,13 +125,26 @@ def aggregate_bundle_success_stats(
         bid = rec.bundle_id
         bucket = buckets.setdefault(
             bid,
-            {"pass": 0, "fail": 0, "last_verdict": rec.verdict},
+            {
+                "pass": 0,
+                "fail": 0,
+                "last_verdict": rec.verdict,
+                "scores": [],
+                "scores_pass": [],
+                "scores_fail": [],
+            },
         )
         if rec.verdict == Verdict.PASS.value:
             bucket["pass"] = int(bucket["pass"]) + 1
+            if rec.integrator_score is not None:
+                bucket["scores_pass"].append(float(rec.integrator_score))
         else:
             bucket["fail"] = int(bucket["fail"]) + 1
+            if rec.integrator_score is not None:
+                bucket["scores_fail"].append(float(rec.integrator_score))
         bucket["last_verdict"] = rec.verdict
+        if rec.integrator_score is not None:
+            bucket["scores"].append(float(rec.integrator_score))
     stats: dict[str, BundleSuccessStats] = {}
     for bid, bucket in buckets.items():
         passed = int(bucket["pass"])
@@ -139,6 +158,9 @@ def aggregate_bundle_success_stats(
             sample_count=total,
             success_rate=rate,
             last_verdict=str(bucket.get("last_verdict")),
+            avg_integrator_score=_mean(list(bucket["scores"])),
+            avg_score_on_pass=_mean(list(bucket["scores_pass"])),
+            avg_score_on_fail=_mean(list(bucket["scores_fail"])),
         )
     return stats
 

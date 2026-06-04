@@ -31,3 +31,6 @@ class BundleSuccessStats(BaseModel):
     sample_count: int = Field(ge=0)
     success_rate: float = Field(ge=0.0, le=1.0)
     last_verdict: str | None = None
+    avg_integrator_score: float | None = None
+    avg_score_on_pass: float | None = None
+    avg_score_on_fail: float | None = None

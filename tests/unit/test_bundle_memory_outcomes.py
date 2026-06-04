@@ -106,3 +106,6 @@ def test_aggregate_bundle_success_stats() -> None:
     assert stats["a"].pass_count == 1
     assert stats["a"].fail_count == 1
     assert stats["a"].success_rate == 0.5
+    assert stats["a"].avg_integrator_score == 0.55
+    assert stats["a"].avg_score_on_pass == 0.9
+    assert stats["a"].avg_score_on_fail == 0.2
