@@ -28,9 +28,8 @@ def test_streamlit_theme_defaults_caption_present_when_config_exists(
 
 def test_streamlit_white_label_deferred_caption() -> None:
     cap = streamlit_white_label_deferred_caption()
-    assert "deferred" in cap.lower()
     assert ".streamlit/config.toml" in cap
-    assert "per-tenant" in cap.lower()
+    assert "tenant" in cap.lower()
 
 
 def test_repo_streamlit_config_documents_white_label_deferral() -> None:

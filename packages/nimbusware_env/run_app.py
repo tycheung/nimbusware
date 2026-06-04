@@ -119,9 +119,9 @@ def start_servers(
     *,
     root: Path,
     api_host: str = "127.0.0.1",
-    streamlit_host: str = "127.0.0.1",
+    streamlit_host: str = "127.0.0.1",  # legacy CLI name; unused (web UI served by API)
     api_port: int | None = None,
-    streamlit_port: int | None = None,
+    streamlit_port: int | None = None,  # legacy CLI name; unused
     ui_mode: str | None = None,
     quick_mode: bool = False,
 ) -> tuple[str, str, dict[str, str]]:

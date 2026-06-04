@@ -6,18 +6,9 @@ from pathlib import Path
 def streamlit_theme_defaults_caption(*, repo_root: Path | None = None) -> str:
     root = repo_root if repo_root is not None else Path(".")
     cfg = root.resolve() / ".streamlit" / "config.toml"
-    exists = cfg.is_file()
-    loc = "present" if exists else "missing (built-in light theme applies)"
-    return (
-        "Console theme: repo **``.streamlit/config.toml``** is "
-        f"**{loc}** — override locally for branding; committed defaults use "
-        "``base=light`` and ``primaryColor=#1f77b4``."
-    )
+    loc = "present" if cfg.is_file() else "missing (built-in light theme)"
+    return f"Theme: ``.streamlit/config.toml`` is **{loc}** (``base=light``, ``primaryColor=#1f77b4``)."
 
 
 def streamlit_white_label_deferred_caption() -> str:
-    return (
-        "White-label: optional branding deferred — no per-tenant CSS injection. "
-        "See the deferral note at the top of ``.streamlit/config.toml``; use ``[theme]`` keys "
-        "locally or fork the console for custom skins."
-    )
+    return "White-label branding is not injected per tenant; use ``[theme]`` in ``.streamlit/config.toml`` locally."

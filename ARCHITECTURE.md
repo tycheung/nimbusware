@@ -50,13 +50,13 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
-| `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (built `dist/`) |
+| `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | User product UI — projects, intent, maker approval/revert (`ui/` + `services/`) |
-| `nimbusware_console` | Admin Console (config, fleet, OIDC gate, deep timeline; `services/` HTTP helpers) |
+| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; BFF tables via `routes/admin_ui_bff.py` |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 

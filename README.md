@@ -31,7 +31,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 |-------|------------------|------|
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
 | **Maker app** | `nimbusware_maker` + `nimbusware_maker_web` | **User console** — web UI at `/v1/maker/app/` |
-| **Admin Console** | `nimbusware_console` + `nimbusware_admin_ui` | **Admin/dev console** — web UI at `/v1/admin/app/` |
+| **Admin Console** | `nimbusware_console` + `nimbusware_admin_ui` | **Admin/dev console** — web UI at `/v1/admin/app/` (Enterprise **Fleet** at `/v1/admin/app/fleet`) |
 | **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + sandbox (`none` / `stub` / opt-in `docker` for Individual v1) |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |

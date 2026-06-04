@@ -17,7 +17,7 @@ FastAPI route injection uses typed providers in `deps.py` (`EventStore`, `RunOrc
 | Area | Path |
 |------|------|
 | User routes | `routes/runs/`, `routes/bundles.py`, `routes/ollama.py`, … |
-| Admin / Enterprise | `routes/enterprise/` |
+| Admin / Enterprise | `routes/enterprise/`, `routes/admin_ui_bff.py` (Preact BFF, incl. `/admin/ui/enterprise/fleet-dashboard`) |
 | Schemas + OpenAPI | `schemas/` |
 | Timeline read models | `read_models/` (thin wrappers over `nimbusware_projections`) |
 | Run list summary | `nimbusware_projections.run_summary` (`build_run_summary`) |

@@ -1,4 +1,4 @@
-"""Tests for console API error handling (web UI; no Streamlit dependency)."""
+"""Tests for console API error handling (web UI)."""
 
 from __future__ import annotations
 
@@ -8,5 +8,5 @@ from nimbusware_console.components.ui_errors import render_api_error
 
 
 def test_render_api_error_raises_for_web_console() -> None:
-    with pytest.raises(RuntimeError, match="Streamlit UI removed"):
+    with pytest.raises(RuntimeError, match="Admin web UI"):
         render_api_error(ValueError("boom"))

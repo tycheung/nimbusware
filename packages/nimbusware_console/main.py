@@ -6,7 +6,4 @@ WEB_ENTRY = "/v1/admin/app/"
 
 
 def render_main() -> None:
-    raise RuntimeError(
-        f"Streamlit Admin Console removed. Open {WEB_ENTRY} in a browser "
-        "(set NIMBUSWARE_UI_BACKEND=web for desktop launcher).",
-    )
+    raise RuntimeError(f"Admin UI is web-only. Open {WEB_ENTRY} (NIMBUSWARE_UI_BACKEND=web).")
