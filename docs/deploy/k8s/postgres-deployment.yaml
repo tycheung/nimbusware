@@ -1,0 +1,52 @@
+# Lab / non-prod in-cluster Postgres so api-secrets.yaml host `postgres` resolves.
+# Production: use a managed Postgres service and point NIMBUSWARE_DATABASE_URL there instead.
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: nimbusware-postgres
+    nimbusware.io/lab-only: "true"
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: nimbusware-postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nimbusware-postgres
+  labels:
+    app: nimbusware-postgres
+    nimbusware.io/lab-only: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nimbusware-postgres
+  template:
+    metadata:
+      labels:
+        app: nimbusware-postgres
+        nimbusware.io/lab-only: "true"
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: nimbusware
+            - name: POSTGRES_PASSWORD
+              value: CHANGE_ME_LAB_ONLY
+            - name: POSTGRES_DB
+              value: nimbusware
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          emptyDir: {}

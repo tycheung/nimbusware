@@ -40,5 +40,5 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 ## Deployment references
 
 - [deploy/README.md](deploy/README.md) — Docker, schema, secrets rotation
-- [deploy/k8s/README.md](deploy/k8s/README.md) — reference manifests
+- [deploy/k8s/README.md](deploy/k8s/README.md) — reference manifests (verified by `k8s_reference_smoke` workflow dry-run)
 - [SECURITY.md](../SECURITY.md) — vulnerability reporting and production checklist

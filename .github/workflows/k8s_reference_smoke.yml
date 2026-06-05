@@ -1,0 +1,25 @@
+name: K8s reference smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 1 1,4,7,10 *"
+
+jobs:
+  manifest-dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+      - name: Dry-run apply reference manifests
+        run: |
+          set -euo pipefail
+          for f in docs/deploy/k8s/*.yaml; do
+            echo "==> kubectl apply --dry-run=client -f $f"
+            kubectl apply --dry-run=client -f "$f"
+          done
+      - name: Schema job command sanity
+        run: |
+          grep -q 'apply_event_store.sh' docs/deploy/k8s/schema-job.yaml
+          test -f scripts/apply_event_store.sh
