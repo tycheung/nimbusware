@@ -21,7 +21,7 @@ Allowlisted tools for slice implement agent mode (file reads, bounded shell, etc
 | `stub` | No subprocess; returns stub output for tests |
 | `docker` | Opt-in: `docker run --rm --network none` with workspace bind-mount |
 | `kubernetes` | Fleet: `kubectl exec` into `HERMES_SANDBOX_K8S_EXEC_POD` (falls back with prefix if unset) |
-| `e2b` | Fleet: reserved E2B hook (`HERMES_E2B_API_KEY`); host fallback until remote API wired |
+| `e2b` | Fleet: remote E2B VM when `HERMES_E2B_API_KEY` + optional `e2b` package; host fallback otherwise |
 
 Docker sandbox requires a local Docker CLI. Set `HERMES_SANDBOX_DOCKER_IMAGE` (default `python:3.11-slim`). When Docker is unavailable, commands fall back to host execution with a `[sandbox:docker-unavailable]` prefix.
 

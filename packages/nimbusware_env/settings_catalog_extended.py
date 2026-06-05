@@ -171,6 +171,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _install("HERMES_SANDBOX_K8S_NAMESPACE", "Fleet sandbox Kubernetes namespace"),
         _install("HERMES_SANDBOX_K8S_WORKDIR", "Working directory inside fleet sandbox pod"),
         _install("HERMES_E2B_API_KEY", "Enterprise E2B fleet sandbox API key"),
+        _install("HERMES_E2B_TEMPLATE", "Optional E2B sandbox template id"),
     )
 
     system_extra = (

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+import types
 from pathlib import Path
 
 import pytest
@@ -37,6 +39,70 @@ def test_e2b_sandbox_unconfigured_fallback(tmp_path: Path) -> None:
     result = run_e2b_sandbox(ws, ["python", "-c", "print(1)"], timeout_seconds=30.0)
     assert result.backend == "e2b"
     assert "e2b-unconfigured" in result.stdout or "e2b-local-fallback" in result.stdout
+
+
+def test_e2b_sandbox_remote_when_key_and_sdk_present(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "main.py").write_text("print('ok')\n", encoding="utf-8")
+    monkeypatch.setenv("HERMES_E2B_API_KEY", "e2b_test_key")
+
+    class FakeResult:
+        exit_code = 0
+        stdout = "remote ok"
+        stderr = ""
+
+    class FakeCommands:
+        def run(self, cmd: str, *, cwd: str | None = None, timeout: int | None = None):
+            assert "python" in cmd
+            assert cwd == "/home/user/workspace"
+            return FakeResult()
+
+    class FakeFiles:
+        def write(self, path: str, content: bytes) -> None:
+            assert path.startswith("/home/user/workspace/")
+
+    class FakeSandbox:
+        commands = FakeCommands()
+        files = FakeFiles()
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+    class FakeSandboxClass:
+        @staticmethod
+        def create(**_kwargs: object) -> FakeSandbox:
+            return FakeSandbox()
+
+    fake_e2b = types.ModuleType("e2b")
+    fake_e2b.Sandbox = FakeSandboxClass  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "e2b", fake_e2b)
+
+    result = run_e2b_sandbox(ws, ["python", "-c", "print(1)"], timeout_seconds=30.0)
+    assert result.backend == "e2b"
+    assert "[sandbox:e2b]" in result.stdout
+    assert "remote ok" in result.stdout
+    assert "e2b-local-fallback" not in result.stdout
+
+
+def test_e2b_sandbox_import_missing_falls_back_to_host(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    monkeypatch.setenv("HERMES_E2B_API_KEY", "e2b_test_key")
+    monkeypatch.delitem(sys.modules, "e2b", raising=False)
+
+    result = run_e2b_sandbox(ws, ["python", "-c", "print(9)"], timeout_seconds=30.0)
+    assert result.backend == "e2b"
+    assert "e2b-local-fallback" in result.stdout
 
 
 def test_run_subprocess_routes_kubernetes_backend(

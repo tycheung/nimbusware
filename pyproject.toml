@@ -67,6 +67,12 @@ optional = true
 [tool.poetry.group.redis.dependencies]
 redis = ">=5"
 
+[tool.poetry.group.fleet]
+optional = true
+
+[tool.poetry.group.fleet.dependencies]
+e2b = ">=1.0,<3"
+
 [tool.poetry.scripts]
 nimbusware-api = "nimbusware_api.cli:main"
 hermes-preflight = "hermes_orchestrator.preflight_cli:main"
