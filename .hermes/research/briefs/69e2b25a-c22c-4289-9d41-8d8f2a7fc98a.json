@@ -1,0 +1,13 @@
+{
+  "brief_kind": "domain",
+  "domain_tag": "auth",
+  "summary": "Domain brief for auth: user journeys, constraints, and glossary derived from requirements (stub; no live crawl in CI).",
+  "artifact_id": "69e2b25a-c22c-4289-9d41-8d8f2a7fc98a",
+  "sources": [
+    {
+      "url": "stub://domain/auth",
+      "license": "MIT",
+      "trust_tier": "medium"
+    }
+  ]
+}

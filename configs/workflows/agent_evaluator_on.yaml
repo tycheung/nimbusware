@@ -1,5 +1,5 @@
 # Optional profile: emit ``stage.started`` ``agent_eval:{persona_id}`` after verify via workflow
-# ``agent_evaluator.enabled`` (no ``HERMES_AGENT_EVALUATOR`` required).
+# ``agent_evaluator.enabled`` (no ``NIMBUSWARE_AGENT_EVALUATOR`` required).
 # ``persona_id`` must be ``default`` or listed in ``configs/personas/shelves.yaml`` when enabled.
 version: 1
 finding_fix_strictness:

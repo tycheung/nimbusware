@@ -73,7 +73,7 @@ def export_run_theater(run_id: UUID, store: StoreDep) -> Response:
     return Response(
         content=md,
         media_type="text/markdown; charset=utf-8",
-        headers={"Content-Disposition": f'attachment; filename="hermes-theater-{rid}.md"'},
+        headers={"Content-Disposition": f'attachment; filename="nimbusware-theater-{rid}.md"'},
     )
 
 

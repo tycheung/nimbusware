@@ -4,14 +4,14 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType, Verdict
-from hermes_extensions.bundle_memory import (
+from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     aggregate_bundle_success_stats,
     build_bundle_outcome_from_gate,
     bundle_outcome_metadata,
     extract_bundle_outcomes_from_event_rows,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_env import find_repo_root
 
 
@@ -69,7 +69,7 @@ def test_extract_bundle_outcomes_from_gate_events() -> None:
 
 
 def test_emit_integrator_gate_persists_bundle_outcome(monkeypatch) -> None:
-    monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", "1")
+    monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "1")
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryBundleOutcomeStore()
     orch, _mem = make_dev_orchestrator(repo, bundle_outcome_store=store)

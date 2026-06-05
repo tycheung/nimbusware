@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-from hermes_orchestrator.preflight_histogram import build_histogram, empty_histogram
+from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_histogram
 
 _PREFLIGHT_FIELDS: tuple[tuple[str, str], ...] = (
     ("validated_model_id", "Validated model id"),

@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-from hermes_extensions.phase2 import agent_evaluator_score_band
+from nimbusware_extensions.phase2 import agent_evaluator_score_band
 
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (
     ("persona_id", "Persona id"),

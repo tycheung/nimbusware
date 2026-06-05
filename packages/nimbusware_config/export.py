@@ -6,7 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.merge import atomic_write_yaml
+from nimbusware_orchestrator.merge import atomic_write_yaml
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,

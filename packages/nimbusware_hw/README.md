@@ -46,7 +46,7 @@ PR CI keeps mock; staging operators set secrets for manual live probe runs.
 ## Fixtures and pressure
 
 - `NIMBUSWARE_HW_FIXTURE=weak|medium|strong` — deterministic profile in CI
-- `HERMES_PRESSURE_DEGRADE_STUB` — when RAM is blocked, skip LLM paths (default on)
+- `NIMBUSWARE_PRESSURE_DEGRADE_STUB` — when RAM is blocked, skip LLM paths (default on)
 - Memory index rebuild at run start skips when pressure is warn/throttle/block (governor cap)
 
 ## Attribution

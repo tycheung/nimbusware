@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.llm_plan import IMPLEMENTATION_CRITIQUE_STAGE
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
+from nimbusware_orchestrator.llm_plan import IMPLEMENTATION_CRITIQUE_STAGE
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
 from nimbusware_env import find_repo_root
 
 
@@ -18,11 +18,11 @@ def test_security_gate_fail_skips_implementation_critique(monkeypatch: pytest.Mo
     run_id = orch.create_run("security_critique_on")
 
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         lambda ws: (0, "ok\n"),
     )
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_security_scan_summary",
+        "nimbusware_orchestrator.pipeline.run_security_scan_summary",
         lambda ws: {
             "security_scan_tools": {"ruff": 1, "bandit": 0, "mypy": 0},
             "security_scan_exit": 1,

@@ -120,7 +120,7 @@ def enterprise_install_hints() -> list[str]:
     """Post-install operator hints keyed to edition."""
     if is_individual():
         return [
-            "Individual edition: repo-scoped Hermes memory is enabled.",
+            "Individual edition: repo-scoped Nimbusware memory is enabled.",
             "Enterprise-only capabilities (IAM, fleet memory) stay disabled.",
         ]
     return [

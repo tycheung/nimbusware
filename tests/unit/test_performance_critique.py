@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.performance_critique import (
+from nimbusware_orchestrator.performance_critique import (
     PERFORMANCE_CRITIQUE_STAGE,
     performance_scan_tools_failed,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_performance_critique import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
 )
@@ -45,7 +45,7 @@ def test_verify_pass_runs_performance_critique(monkeypatch: pytest.MonkeyPatch) 
     orch, store = make_dev_orchestrator(repo)
     run_id = orch.create_run("performance_critique_on")
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         lambda ws: (0, "ok\n"),
     )
     orch.execute_writer_verifier_pass(run_id, workspace=repo)

@@ -1,4 +1,4 @@
-"""Apply Nimbusware ``postgres.sql`` (platform + Hermes agent schema) using ``psql`` when available."""
+"""Apply Nimbusware ``postgres.sql`` (platform + Nimbusware agent schema) using ``psql`` when available."""
 
 from __future__ import annotations
 

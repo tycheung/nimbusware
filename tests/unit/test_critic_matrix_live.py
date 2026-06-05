@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hermes_orchestrator.critic_matrix_live import (
+from nimbusware_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )

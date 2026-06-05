@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import yaml
 
-from hermes_orchestrator.runtime_bootstrap import build_runtime_orchestrator
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.runtime_bootstrap import build_runtime_orchestrator
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_env import find_repo_root
 from nimbusware_maker.quick_mode import (
     DEFAULT_QUICK_WORKFLOW,
@@ -14,12 +14,12 @@ from nimbusware_maker.quick_mode import (
 
 
 def test_apply_quick_mode_env_clears_database_url(monkeypatch) -> None:
-    monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://localhost/hermes")
+    monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://localhost/nimbusware")
     env: dict[str, str] = {}
     apply_quick_mode_env(env)
     assert env.get(QUICK_MODE_ENV) == "1"
     assert "NIMBUSWARE_DATABASE_URL" not in env
-    assert env.get("HERMES_SKIP_PREFLIGHT") == "1"
+    assert env.get("NIMBUSWARE_SKIP_PREFLIGHT") == "1"
     assert env.get("NIMBUSWARE_CONFIG_FROM_FILES") == "1"
     assert env.get("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE") == DEFAULT_QUICK_WORKFLOW
 

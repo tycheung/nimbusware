@@ -10,7 +10,7 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from hermes_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 
 
 def _resp_with_cl(value: str | None) -> httpx.Response:
@@ -177,11 +177,11 @@ def test_persist_scraper_response_artifact_5_axis(
     The helper writes ``<base>/<run_id>/url{NN:02d}_<sha256(content)[:32]>.bin``
     truncated to ``persist_cap`` bytes; returns ``{artifact_relpath (forward
     slash normalized), artifact_sha256 (sha256 of TRUNCATED blob),
-    artifact_bytes_written}``. ``HERMES_SCRAPER_ARTIFACT_DIR`` overrides
+    artifact_bytes_written}``. ``NIMBUSWARE_SCRAPER_ARTIFACT_DIR`` overrides
     the default cache dir; ``resolve_scraper_artifact_base_dir`` is the
     seam (imported into pipeline at pipeline.py:104).
     """
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(tmp_path))
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(tmp_path))
     orch, _ = make_dev_orchestrator()
     base_dir = Path(str(tmp_path)).expanduser().resolve()
 

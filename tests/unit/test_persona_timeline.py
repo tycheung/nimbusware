@@ -6,9 +6,9 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.read_models import persona_assignment_from_run_created_metadata
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_orchestrator.read_models import persona_assignment_from_run_created_metadata
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.materializer import ConfigMaterializer

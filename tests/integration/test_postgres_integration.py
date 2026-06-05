@@ -1,6 +1,6 @@
 """Postgres append-only store.
 
-Requires ``NIMBUSWARE_DATABASE_URL`` and applied ``packages/hermes_store/schema/postgres.sql``.
+Requires ``NIMBUSWARE_DATABASE_URL`` and applied ``packages/nimbusware_store/schema/postgres.sql``.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from agent_core.models import (
     RunStartedPayload,
     Severity,
 )
-from hermes_store.postgres import PostgresEventStore
+from nimbusware_store.postgres import PostgresEventStore
 
 pytestmark = pytest.mark.integration
 
@@ -350,15 +350,15 @@ def test_list_recent_run_ids_has_escalation_filter(store: PostgresEventStore) ->
     assert store.count_recent_runs(workflow_profile="default", has_escalation=False) >= 1
 
 
-def test_hermes_roles_registry_seeded(store: PostgresEventStore) -> None:
+def test_nimbusware_roles_registry_seeded(store: PostgresEventStore) -> None:
     with psycopg.connect(_url()) as conn:
         with conn.cursor() as cur:
-            cur.execute("SELECT COUNT(*) FROM hermes_roles_registry")
+            cur.execute("SELECT COUNT(*) FROM nimbusware_roles_registry")
             assert int(cur.fetchone()[0]) >= 5
 
 
 def test_load_registry_from_postgres_roundtrip(store: PostgresEventStore) -> None:
-    from hermes_orchestrator.registry_db import load_registry_from_postgres
+    from nimbusware_orchestrator.registry_db import load_registry_from_postgres
 
     reg = load_registry_from_postgres(_url())
     assert reg.resolve("backend_writer") == UUID("44444444-4444-4444-8444-444444444404")

@@ -9,8 +9,8 @@ from fastapi.testclient import TestClient
 
 from nimbusware_env import find_repo_root
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-os.environ.setdefault("HERMES_MICRO_SLICE_COUNT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
 
 from nimbusware_api.app import app  # noqa: E402
 
@@ -24,7 +24,7 @@ def slice_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     ws.mkdir()
     (ws / "README.md").write_text("# slice\n", encoding="utf-8")
     monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
-    monkeypatch.setenv("HERMES_WORKSPACE", str(ws))
+    monkeypatch.setenv("NIMBUSWARE_WORKSPACE", str(ws))
     with TestClient(app) as c:
         yield c
 

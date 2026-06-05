@@ -3,14 +3,14 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
-@patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
+@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
 def test_default_profile_enforces_unanimous_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
         orch.execute_writer_verifier_pass(rid)
     gates = [
         r
@@ -24,13 +24,13 @@ def test_default_profile_enforces_unanimous_gate() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1", "HERMES_UNANIMOUS_GATE_ENFORCE": "0"},
+    {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1", "NIMBUSWARE_UNANIMOUS_GATE_ENFORCE": "0"},
     clear=False,
 )
 def test_env_override_can_disable_unanimous_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
         orch.execute_writer_verifier_pass(rid)
     run_created = next(
         r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "run.created"

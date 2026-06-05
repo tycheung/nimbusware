@@ -69,7 +69,7 @@ def _workflow_profile_pick(data: dict[str, Any]) -> str:
     wf = data.get("workflow_profile") if isinstance(data, dict) else None
     if isinstance(wf, str) and wf.strip():
         return wf.strip()
-    return os.environ.get("HERMES_WORKFLOW_PROFILE", "nimbusware_production")
+    return os.environ.get("NIMBUSWARE_WORKFLOW_PROFILE", "nimbusware_production")
 
 
 def render_run_detail_timeline_misc(run_id: str, data: dict) -> None:

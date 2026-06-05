@@ -1,0 +1,13 @@
+{
+  "brief_kind": "domain",
+  "domain_tag": "golf",
+  "summary": "Domain brief for golf: user journeys, constraints, and glossary derived from requirements (stub; no live crawl in CI).",
+  "artifact_id": "d6871c8a-d3c9-4f51-b98e-18d25825eb94",
+  "sources": [
+    {
+      "url": "stub://domain/golf",
+      "license": "MIT",
+      "trust_tier": "medium"
+    }
+  ]
+}

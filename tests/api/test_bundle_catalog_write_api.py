@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from nimbusware_env import find_repo_root
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault(
     "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
 )
@@ -119,7 +119,7 @@ def test_promote_catalog_candidate(tmp_path: Path, monkeypatch) -> None:
     _seed_catalog(tmp_path)
     monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
 
-    cand_dir = tmp_path / ".hermes" / "research" / "catalog_candidates" / "run-1"
+    cand_dir = tmp_path / ".nimbusware" / "research" / "catalog_candidates" / "run-1"
     cand_dir.mkdir(parents=True)
     payload = {
         "run_id": "run-1",

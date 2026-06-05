@@ -39,7 +39,7 @@ def _write_profile(tmp_path: Path, name: str, body: str) -> None:
 def test_agent_evaluator_env_gate_caption() -> None:
     cap_off = agent_evaluator_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR": {
+            "NIMBUSWARE_AGENT_EVALUATOR": {
                 "forces_off": True,
                 "raw": "0",
             },
@@ -49,7 +49,7 @@ def test_agent_evaluator_env_gate_caption() -> None:
     assert "kill-switch" in cap_off
     cap_on = agent_evaluator_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR": {
+            "NIMBUSWARE_AGENT_EVALUATOR": {
                 "forces_on": True,
                 "raw": "1",
             },
@@ -59,7 +59,7 @@ def test_agent_evaluator_env_gate_caption() -> None:
     assert "force-on" in cap_on
     cap_unset = agent_evaluator_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR": {
+            "NIMBUSWARE_AGENT_EVALUATOR": {
                 "unset": True,
             },
         },
@@ -73,7 +73,7 @@ def test_agent_evaluator_env_gate_caption() -> None:
 def test_agent_evaluator_auto_promote_env_gate_caption() -> None:
     cap_off = agent_evaluator_auto_promote_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR_AUTO_PROMOTE": {
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE": {
                 "disables_auto_promote": True,
                 "raw": "0",
             },
@@ -83,7 +83,7 @@ def test_agent_evaluator_auto_promote_env_gate_caption() -> None:
     assert "kill-switch" in cap_off
     cap_unset = agent_evaluator_auto_promote_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR_AUTO_PROMOTE": {
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE": {
                 "unset": True,
             },
         },
@@ -92,7 +92,7 @@ def test_agent_evaluator_auto_promote_env_gate_caption() -> None:
     assert "unset" in cap_unset
     cap_bad = agent_evaluator_auto_promote_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR_AUTO_PROMOTE": {
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE": {
                 "unrecognised_value": True,
                 "raw": "maybe",
             },
@@ -107,7 +107,7 @@ def test_agent_evaluator_auto_promote_env_gate_caption() -> None:
 def test_agent_evaluator_auto_create_env_gate_caption() -> None:
     cap_off = agent_evaluator_auto_create_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR_AUTO_CREATE": {
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE": {
                 "disables_auto_create": True,
                 "raw": "0",
             },
@@ -117,7 +117,7 @@ def test_agent_evaluator_auto_create_env_gate_caption() -> None:
     assert "kill-switch" in cap_off
     cap_unset = agent_evaluator_auto_create_env_gate_caption(
         {
-            "HERMES_AGENT_EVALUATOR_AUTO_CREATE": {
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE": {
                 "unset": True,
             },
         },
@@ -348,7 +348,7 @@ def test_explainer_missing_agent_evaluator_key(tmp_path: Path) -> None:
         "shelf": "",
         "display_name": "",
     }
-    ac_env = pl["HERMES_AGENT_EVALUATOR_AUTO_CREATE"]
+    ac_env = pl["NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE"]
     assert isinstance(ac_env, dict)
     assert ac_env.get("disables_auto_create") is False
     assert pl["would_emit_stage_started"] is False
@@ -417,7 +417,7 @@ def test_explainer_auto_promote_probation_yaml_true(tmp_path: Path) -> None:
         workflow_profile="ae_promo",
     )
     assert pl["yaml_parsed_auto_promote_probation"] is True
-    ap = pl["HERMES_AGENT_EVALUATOR_AUTO_PROMOTE"]
+    ap = pl["NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE"]
     assert isinstance(ap, dict)
     assert ap.get("disables_auto_promote") is False
     assert pl["agent_evaluator_yaml_raw_type"] == "dict"
@@ -446,14 +446,14 @@ def test_explainer_auto_create_persona_yaml_block(tmp_path: Path) -> None:
         "shelf": "business_area",
         "display_name": "Net New AE",
     }
-    env_ac = pl["HERMES_AGENT_EVALUATOR_AUTO_CREATE"]
+    env_ac = pl["NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE"]
     assert isinstance(env_ac, dict)
     assert env_ac.get("disables_auto_create") is False
     assert pl["agent_evaluator_yaml_true_bool_value_count"] == 1
 
 
 def test_explainer_env_force_on_overrides_workflow_off(monkeypatch: object, tmp_path: Path) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
     _write_profile(
         tmp_path,
         "ae_off",
@@ -465,7 +465,7 @@ def test_explainer_env_force_on_overrides_workflow_off(monkeypatch: object, tmp_
     )
     assert pl["yaml_parsed_enabled"] is False
     assert pl["would_emit_stage_started"] is True
-    env = pl["HERMES_AGENT_EVALUATOR"]
+    env = pl["NIMBUSWARE_AGENT_EVALUATOR"]
     assert isinstance(env, dict)
     assert env.get("forces_on") is True
 
@@ -474,7 +474,7 @@ def test_explainer_env_kill_switch_overrides_workflow_on(
     monkeypatch: object,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "0")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "0")
     _write_profile(
         tmp_path,
         "ae_on",
@@ -486,7 +486,7 @@ def test_explainer_env_kill_switch_overrides_workflow_on(
     )
     assert pl["yaml_parsed_enabled"] is True
     assert pl["would_emit_stage_started"] is False
-    env = pl["HERMES_AGENT_EVALUATOR"]
+    env = pl["NIMBUSWARE_AGENT_EVALUATOR"]
     assert isinstance(env, dict)
     assert env.get("forces_off") is True
 
@@ -521,11 +521,11 @@ def test_agent_evaluator_explainer_table_rows_minimal_fixture() -> None:
     payload = {
         "workflow_profile": "wf",
         "yaml_parsed_enabled": True,
-        "HERMES_AGENT_EVALUATOR": {"forces_off": False, "forces_on": True},
+        "NIMBUSWARE_AGENT_EVALUATOR": {"forces_off": False, "forces_on": True},
     }
     rows = agent_evaluator_explainer_table_rows(payload)
     assert len(rows) == 3
-    env_row = next(r for r in rows if r["field"] == "HERMES_AGENT_EVALUATOR")
+    env_row = next(r for r in rows if r["field"] == "NIMBUSWARE_AGENT_EVALUATOR")
     assert '"forces_on": true' in env_row["value"]
     assert json.loads(agent_evaluator_explainer_export_json(payload)) == payload
 
@@ -546,8 +546,8 @@ def test_agent_evaluator_workflow_explainer_operator_metrics_would_emit_llm() ->
 def test_agent_evaluator_workflow_explainer_operator_metrics_llm_and_env_gates() -> None:
     payload = {
         "yaml_parsed_llm_evaluation_enabled": True,
-        "HERMES_AGENT_EVALUATOR_AUTO_PROMOTE": {"disables_auto_promote": True},
-        "HERMES_AGENT_EVALUATOR_AUTO_CREATE": {"disables_auto_create": True},
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE": {"disables_auto_promote": True},
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE": {"disables_auto_create": True},
     }
     m = agent_evaluator_workflow_explainer_operator_metrics(payload)
     assert m["llm_evaluation_enabled"] is True
@@ -578,7 +578,7 @@ def test_agent_evaluator_workflow_explainer_operator_metrics_env_forces_on() -> 
         "yaml_parsed_enabled": False,
         "yaml_parsed_persona_id": "p1",
         "would_emit_stage_started": True,
-        "HERMES_AGENT_EVALUATOR": {
+        "NIMBUSWARE_AGENT_EVALUATOR": {
             "forces_on": True,
             "forces_off": False,
             "unset": False,

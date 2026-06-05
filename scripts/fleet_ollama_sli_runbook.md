@@ -5,18 +5,18 @@ Sustained health-probe p95 export for fleet-wide Ollama SLO monitoring, merged w
 ## Prerequisites
 
 - `NIMBUSWARE_EDITION=enterprise`
-- Ollama reachable at `http://localhost:11434` (or set `HERMES_FLEET_OLLAMA_SLI_BASE_URL`)
+- Ollama reachable at `http://localhost:11434` (or set `NIMBUSWARE_FLEET_OLLAMA_SLI_BASE_URL`)
 
 ## Sustained export job
 
 ```powershell
 $env:NIMBUSWARE_EDITION = "enterprise"
-$env:HERMES_FLEET_OLLAMA_SLI_SAMPLES = "60"
-$env:HERMES_FLEET_OLLAMA_SLI_INTERVAL_SEC = "5"
-poetry run hermes-fleet-ollama-sli
+$env:NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES = "60"
+$env:NIMBUSWARE_FLEET_OLLAMA_SLI_INTERVAL_SEC = "5"
+poetry run nimbusware-fleet-ollama-sli
 ```
 
-Writes `.cache/fleet_ollama_sli.json` by default (`HERMES_FLEET_OLLAMA_SLI_EXPORT_PATH` to override).
+Writes `.cache/fleet_ollama_sli.json` by default (`NIMBUSWARE_FLEET_OLLAMA_SLI_EXPORT_PATH` to override).
 
 ## Enterprise API (IAM API key required)
 

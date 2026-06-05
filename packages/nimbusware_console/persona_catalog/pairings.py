@@ -15,7 +15,7 @@ from nimbusware_console.components.operator_metrics import (
 def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     rel = "configs/personas/critique_pairings.yaml"
     path = repo_root / "configs" / "personas" / "critique_pairings.yaml"

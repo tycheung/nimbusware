@@ -43,4 +43,4 @@ def test_redis_service_selects_redis() -> None:
 def test_worker_uses_redis_dispatch() -> None:
     dep = next(d for d in _load_docs("worker-deployment.yaml") if d.get("kind") == "Deployment")
     env = {e["name"]: e["value"] for e in dep["spec"]["template"]["spec"]["containers"][0]["env"]}
-    assert env.get("HERMES_RUN_DISPATCH") == "redis"
+    assert env.get("NIMBUSWARE_RUN_DISPATCH") == "redis"

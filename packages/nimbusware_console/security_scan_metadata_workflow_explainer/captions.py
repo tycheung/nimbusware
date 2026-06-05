@@ -40,33 +40,33 @@ def security_scan_metadata_env_gate_caption(
     load_error = payload.get("load_error")
     if isinstance(load_error, str) and load_error.strip():
         return None
-    env = payload.get("HERMES_ATTACH_SECURITY_SCAN_METADATA")
+    env = payload.get("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA")
     if not isinstance(env, Mapping):
         return None
     if env.get("forces_off"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Security scan metadata env: **HERMES_ATTACH_SECURITY_SCAN_METADATA** "
+            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
             f"kill-switch active{detail}."
         )
     if env.get("forces_on"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Security scan metadata env: **HERMES_ATTACH_SECURITY_SCAN_METADATA** "
+            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
             f"force-on{detail}."
         )
     if env.get("unset_follows_yaml"):
         return (
-            "Security scan metadata env: **HERMES_ATTACH_SECURITY_SCAN_METADATA** unset — "
+            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** unset — "
             "workflow YAML controls **effective_enabled**."
         )
     if env.get("unrecognised_value"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Security scan metadata env: **HERMES_ATTACH_SECURITY_SCAN_METADATA** "
+            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
             f"unrecognised value{detail} — treated like unset."
         )
     return None
@@ -165,5 +165,5 @@ def security_scan_metadata_yaml_effective_mismatch_caption(
         return None
     return (
         "``yaml_parsed_bool`` (workflow file only) differs from **effective_enabled** "
-        "(YAML + ``HERMES_ATTACH_SECURITY_SCAN_METADATA``) — check env kill-switch / force-on."
+        "(YAML + ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA``) — check env kill-switch / force-on."
     )

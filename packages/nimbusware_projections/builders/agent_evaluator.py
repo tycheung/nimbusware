@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from agent_core.models import EventType
-from hermes_extensions.phase2 import agent_evaluator_score_band
+from nimbusware_extensions.phase2 import agent_evaluator_score_band
 from nimbusware_projections.fields.agent_evaluator import AGENT_EVALUATOR_SUMMARY_KEYS
 
 _AGENT_EVAL_STAGE_PREFIX = "agent_eval:"

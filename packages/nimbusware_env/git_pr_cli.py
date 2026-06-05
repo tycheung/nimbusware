@@ -5,12 +5,12 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-from hermes_orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
+from nimbusware_orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Open a GitHub PR for a Hermes run branch (requires gh CLI).",
+        description="Open a GitHub PR for a Nimbusware run branch (requires gh CLI).",
     )
     parser.add_argument("run_id", help="Run UUID")
     parser.add_argument(

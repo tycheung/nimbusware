@@ -4,12 +4,12 @@ import os
 from unittest.mock import patch
 
 from agent_core.models import EventType
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
-@patch.dict(os.environ, {"HERMES_PARALLEL_WRITERS": "1"}, clear=False)
+@patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False)
 def test_frontend_writer_runs_in_parallel_group() -> None:
-    with patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default")
         orch.execute_writer_verifier_pass(rid)

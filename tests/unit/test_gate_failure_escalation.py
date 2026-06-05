@@ -12,7 +12,7 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_cumulative_gate_failures_emits_single_escalation() -> None:
@@ -34,7 +34,7 @@ def test_cumulative_gate_failures_emits_single_escalation() -> None:
             ),
         )
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_gate_failures(rid)

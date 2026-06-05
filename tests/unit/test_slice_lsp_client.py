@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from hermes_orchestrator.slice_lsp_client import (
+from nimbusware_orchestrator.slice_lsp_client import (
     _encode_message,
     build_lsp_symbol_sketch,
     format_document_symbols,
@@ -56,7 +56,7 @@ def test_build_lsp_symbol_sketch_mocked() -> None:
     proc.wait.return_value = 0
 
     with patch(
-        "hermes_orchestrator.slice_lsp_client.subprocess.Popen",
+        "nimbusware_orchestrator.slice_lsp_client.subprocess.Popen",
         return_value=proc,
     ):
         text, reason = build_lsp_symbol_sketch(repo, ("calc.py",), max_chars=2000)
@@ -66,7 +66,7 @@ def test_build_lsp_symbol_sketch_mocked() -> None:
 
 
 def test_resolve_lsp_command_env_override(monkeypatch) -> None:
-    monkeypatch.setenv("HERMES_SLICE_LSP_COMMAND", "custom-langserver --stdio")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_LSP_COMMAND", "custom-langserver --stdio")
     argv = resolve_lsp_command_argv()
     assert argv == ["custom-langserver", "--stdio"]
 
@@ -78,8 +78,8 @@ def test_resolve_lsp_command_prefers_venv_scripts(monkeypatch, tmp_path: Path) -
     langserver.write_text("", encoding="utf-8")
     python = scripts / "python.exe"
     python.write_text("", encoding="utf-8")
-    monkeypatch.delenv("HERMES_SLICE_LSP_COMMAND", raising=False)
-    monkeypatch.setattr("hermes_orchestrator.slice_lsp_client.shutil.which", lambda _name: None)
+    monkeypatch.delenv("NIMBUSWARE_SLICE_LSP_COMMAND", raising=False)
+    monkeypatch.setattr("nimbusware_orchestrator.slice_lsp_client.shutil.which", lambda _name: None)
     monkeypatch.setattr(sys, "executable", str(python))
     argv = resolve_lsp_command_argv()
     assert argv == [str(langserver)]

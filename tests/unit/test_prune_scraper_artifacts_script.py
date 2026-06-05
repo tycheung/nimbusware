@@ -65,7 +65,7 @@ def test_prune_scraper_artifacts_help_lists_json_summary() -> None:
 
 
 def test_prune_scraper_artifacts_json_summary_second_line(tmp_path: Path) -> None:
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"
@@ -98,7 +98,7 @@ def test_prune_scraper_artifacts_json_summary_second_line(tmp_path: Path) -> Non
 
 
 def test_prune_scraper_artifacts_json_summary_with_dry_run(tmp_path: Path) -> None:
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"
@@ -126,7 +126,7 @@ def test_prune_scraper_artifacts_json_summary_with_dry_run(tmp_path: Path) -> No
 
 
 def test_prune_json_summary_includes_last_object_store_error(tmp_path: Path) -> None:
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"
@@ -137,11 +137,11 @@ def test_prune_json_summary_includes_last_object_store_error(tmp_path: Path) -> 
         tmp_path,
         extra_args=["--json-summary"],
         extra_env={
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE": "1",
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_URL": "https://s3.example.com",
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET": "b",
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS": "1",
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS": "1",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE": "1",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL": "https://s3.example.com",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET": "b",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS": "1",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS": "1",
         },
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
@@ -155,7 +155,7 @@ def test_prune_json_summary_includes_last_object_store_error(tmp_path: Path) -> 
 
 def test_prune_include_pattern_filters_and_summary_echoes_patterns(tmp_path: Path) -> None:
     """fo125: ``--include-pattern '*.bin'`` only deletes ``.bin``; summary echoes the list."""
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale_bin = run_dir / "url00_deadbeef.bin"
@@ -188,7 +188,7 @@ def test_prune_exclude_pattern_preserves_matches_and_summary_echoes_patterns(
     tmp_path: Path,
 ) -> None:
     """fo125: ``--exclude-pattern '*.keep'`` preserves matches; summary lists the pattern."""
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale_bin = run_dir / "url00_deadbeef.bin"
@@ -217,8 +217,8 @@ def test_prune_exclude_pattern_preserves_matches_and_summary_echoes_patterns(
 
 
 def test_prune_env_include_pattern_defaults(tmp_path: Path) -> None:
-    """Comma-separated ``HERMES_PRUNE_INCLUDE_PATTERN`` when no CLI include flags."""
-    base = tmp_path / ".cache" / "hermes_scraper"
+    """Comma-separated ``NIMBUSWARE_PRUNE_INCLUDE_PATTERN`` when no CLI include flags."""
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale_bin = run_dir / "url00_deadbeef.bin"
@@ -231,7 +231,7 @@ def test_prune_env_include_pattern_defaults(tmp_path: Path) -> None:
     proc = _run_prune_script(
         tmp_path,
         extra_args=["--json-summary"],
-        extra_env={"HERMES_PRUNE_INCLUDE_PATTERN": "*.bin"},
+        extra_env={"NIMBUSWARE_PRUNE_INCLUDE_PATTERN": "*.bin"},
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
     summary = json.loads([ln for ln in proc.stdout.strip().splitlines() if ln][1])
@@ -245,7 +245,7 @@ def test_prune_env_include_pattern_defaults(tmp_path: Path) -> None:
 
 
 def test_prune_cli_include_overrides_env(tmp_path: Path) -> None:
-    base = tmp_path / ".cache" / "hermes_scraper"
+    base = tmp_path / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale_bin = run_dir / "url00_deadbeef.bin"
@@ -258,7 +258,7 @@ def test_prune_cli_include_overrides_env(tmp_path: Path) -> None:
     proc = _run_prune_script(
         tmp_path,
         extra_args=["--include-pattern", "*.txt", "--json-summary"],
-        extra_env={"HERMES_PRUNE_INCLUDE_PATTERN": "*.bin"},
+        extra_env={"NIMBUSWARE_PRUNE_INCLUDE_PATTERN": "*.bin"},
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
     summary = json.loads([ln for ln in proc.stdout.strip().splitlines() if ln][1])

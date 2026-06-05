@@ -207,7 +207,7 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
-            "HERMES_SKIP_PREFLIGHT",
+            "NIMBUSWARE_SKIP_PREFLIGHT",
             system,
             b,
             "0",
@@ -216,7 +216,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — runtime",
         ),
         SettingDef(
-            "HERMES_USE_LLM",
+            "NIMBUSWARE_USE_LLM",
             user,
             b,
             "0",
@@ -225,7 +225,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_BUDGET_PRESET",
+            "NIMBUSWARE_SLICE_BUDGET_PRESET",
             user,
             e,
             "standard",
@@ -235,7 +235,7 @@ def _defs() -> tuple[SettingDef, ...]:
             choices=("tiny", "standard", "careful"),
         ),
         SettingDef(
-            "HERMES_SLICE_AUTO_ADVANCE",
+            "NIMBUSWARE_SLICE_AUTO_ADVANCE",
             user,
             b,
             "1",
@@ -244,7 +244,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_IMPLEMENT",
+            "NIMBUSWARE_SLICE_IMPLEMENT",
             user,
             e,
             "scoped",
@@ -254,7 +254,7 @@ def _defs() -> tuple[SettingDef, ...]:
             choices=("scoped", "stub", "agent", "llm"),
         ),
         SettingDef(
-            "HERMES_FILESYSTEM_JAIL",
+            "NIMBUSWARE_FILESYSTEM_JAIL",
             user,
             b,
             "1",
@@ -263,7 +263,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
-            "HERMES_SLICE_E2E_COMMAND",
+            "NIMBUSWARE_SLICE_E2E_COMMAND",
             user,
             e,
             "",
@@ -272,7 +272,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SANDBOX_BACKEND",
+            "NIMBUSWARE_SANDBOX_BACKEND",
             user,
             e,
             "none",
@@ -282,7 +282,7 @@ def _defs() -> tuple[SettingDef, ...]:
             choices=("none", "stub", "docker", "kubernetes", "e2b"),
         ),
         SettingDef(
-            "HERMES_AGENT_MAX_TOOL_STEPS",
+            "NIMBUSWARE_AGENT_MAX_TOOL_STEPS",
             user,
             e,
             "20",
@@ -291,7 +291,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
-            "HERMES_AGENT_MAX_SHELL_INVOCATIONS",
+            "NIMBUSWARE_AGENT_MAX_SHELL_INVOCATIONS",
             user,
             e,
             "5",
@@ -300,7 +300,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
-            "HERMES_AGENT_MAX_WRITE_BYTES",
+            "NIMBUSWARE_AGENT_MAX_WRITE_BYTES",
             user,
             e,
             "262144",
@@ -309,16 +309,16 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — agent tools safety",
         ),
         SettingDef(
-            "HERMES_SANDBOX_DOCKER_IMAGE",
+            "NIMBUSWARE_SANDBOX_DOCKER_IMAGE",
             user,
             e,
             "python:3.11-slim",
             "Docker image for agent shell sandbox",
-            "Used when HERMES_SANDBOX_BACKEND=docker; workspace mounted at /workspace.",
+            "Used when NIMBUSWARE_SANDBOX_BACKEND=docker; workspace mounted at /workspace.",
             "User — agent tools safety",
         ),
         SettingDef(
-            "HERMES_SLICE_AUTO_COMMIT",
+            "NIMBUSWARE_SLICE_AUTO_COMMIT",
             user,
             b,
             "0",
@@ -327,7 +327,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — git outputs",
         ),
         SettingDef(
-            "HERMES_GIT_NATIVE_OUTPUTS",
+            "NIMBUSWARE_GIT_NATIVE_OUTPUTS",
             user,
             b,
             "0",
@@ -336,7 +336,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — git outputs",
         ),
         SettingDef(
-            "HERMES_GIT_PR_ON_COMPLETE",
+            "NIMBUSWARE_GIT_PR_ON_COMPLETE",
             user,
             b,
             "0",
@@ -345,7 +345,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — git outputs",
         ),
         SettingDef(
-            "HERMES_MICRO_SLICE_COUNT",
+            "NIMBUSWARE_MICRO_SLICE_COUNT",
             run,
             i,
             "2",
@@ -354,7 +354,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "Run — slice loop",
         ),
         SettingDef(
-            "HERMES_RERESARCH_MISSING_CONTEXT",
+            "NIMBUSWARE_RERESARCH_MISSING_CONTEXT",
             system,
             b,
             "0",
@@ -363,7 +363,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — research",
         ),
         SettingDef(
-            "HERMES_RESEARCH",
+            "NIMBUSWARE_RESEARCH",
             system,
             b,
             "0",
@@ -372,7 +372,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — research",
         ),
         SettingDef(
-            "HERMES_STITCH",
+            "NIMBUSWARE_STITCH",
             system,
             b,
             "0",
@@ -381,7 +381,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — research",
         ),
         SettingDef(
-            "HERMES_PARALLEL_WRITERS",
+            "NIMBUSWARE_PARALLEL_WRITERS",
             system,
             b,
             "0",
@@ -390,7 +390,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — pipeline",
         ),
         SettingDef(
-            "HERMES_RUN_DISPATCH",
+            "NIMBUSWARE_RUN_DISPATCH",
             install,
             e,
             "",
@@ -402,7 +402,7 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
-            "HERMES_REDIS_URL",
+            "NIMBUSWARE_REDIS_URL",
             install,
             s,
             "",
@@ -460,7 +460,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — hardware governor",
         ),
         SettingDef(
-            "HERMES_RUN_BANDIT",
+            "NIMBUSWARE_RUN_BANDIT",
             system,
             b,
             "0",
@@ -469,7 +469,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
-            "HERMES_RUN_SEMGREP",
+            "NIMBUSWARE_RUN_SEMGREP",
             system,
             b,
             "1",
@@ -478,7 +478,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
-            "HERMES_RUN_PERF_SCAN",
+            "NIMBUSWARE_RUN_PERF_SCAN",
             system,
             b,
             "1",
@@ -487,7 +487,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
-            "HERMES_AGENT_EVALUATOR",
+            "NIMBUSWARE_AGENT_EVALUATOR",
             system,
             b,
             "",
@@ -496,7 +496,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_THEATER_LLM_SUMMARY",
+            "NIMBUSWARE_THEATER_LLM_SUMMARY",
             system,
             b,
             "",
@@ -505,7 +505,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — theater",
         ),
         SettingDef(
-            "HERMES_EMIT_INTEGRATOR_GATE",
+            "NIMBUSWARE_EMIT_INTEGRATOR_GATE",
             system,
             b,
             "",
@@ -514,7 +514,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_INTEGRATOR_MIN_SCORE_TO_PASS",
+            "NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS",
             system,
             s,
             "",
@@ -523,7 +523,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_INTEGRATOR_DEP_PREFLIGHT",
+            "NIMBUSWARE_INTEGRATOR_DEP_PREFLIGHT",
             system,
             b,
             "",
@@ -532,7 +532,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_SELF_REFINEMENT_STAGE_MARKER",
+            "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER",
             system,
             b,
             "0",
@@ -541,7 +541,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_DEADLOCK_ESCALATION_MINUTES",
+            "NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES",
             system,
             i,
             "",
@@ -550,7 +550,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — pipeline",
         ),
         SettingDef(
-            "HERMES_OUTBOUND_FETCH_ENABLED",
+            "NIMBUSWARE_OUTBOUND_FETCH_ENABLED",
             system,
             b,
             "0",
@@ -559,7 +559,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — egress",
         ),
         SettingDef(
-            "HERMES_ATTACH_SECURITY_SCAN_METADATA",
+            "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",
             system,
             b,
             "0",
@@ -568,7 +568,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — security",
         ),
         SettingDef(
-            "HERMES_UNANIMOUS_GATE_ENFORCE",
+            "NIMBUSWARE_UNANIMOUS_GATE_ENFORCE",
             system,
             b,
             "1",
@@ -577,7 +577,7 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — gates",
         ),
         SettingDef(
-            "HERMES_STUB_IMPLEMENTATION_CRITICS",
+            "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS",
             system,
             b,
             "",

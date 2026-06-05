@@ -9,9 +9,9 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
-from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
-from hermes_orchestrator.fleet_analytics import compare_tenant_metrics
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
+from nimbusware_orchestrator.fleet_analytics import compare_tenant_metrics
+from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem

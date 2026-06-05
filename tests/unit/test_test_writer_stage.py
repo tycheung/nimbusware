@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from hermes_orchestrator.test_writer_stage import run_test_writer_stage
+from nimbusware_orchestrator.test_writer_stage import run_test_writer_stage
 
 
 def test_run_test_writer_stage_passes_exit_code_and_output() -> None:
@@ -19,7 +19,7 @@ def test_run_test_writer_stage_passes_exit_code_and_output() -> None:
 
 def test_run_test_writer_stage_uses_configured_command() -> None:
     proc = SimpleNamespace(returncode=2, stdout="", stderr="bad")
-    with patch.dict(os.environ, {"HERMES_TEST_WRITER_STAGE_CMD": "python -m pytest -q"}):
+    with patch.dict(os.environ, {"NIMBUSWARE_TEST_WRITER_STAGE_CMD": "python -m pytest -q"}):
         with patch("subprocess.run", return_value=proc) as mock_run:
             code, log, mode = run_test_writer_stage(Path("."))
     assert code == 2

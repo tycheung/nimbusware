@@ -20,7 +20,7 @@ jobs:
       - name: E2E smoke (app profile)
         run: poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
 
   e2e-full:
@@ -56,5 +56,5 @@ jobs:
         run: poetry run python scripts/e2e_smoke.py --profile full --skip-install-check
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}

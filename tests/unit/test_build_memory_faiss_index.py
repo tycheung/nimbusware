@@ -9,9 +9,9 @@ from uuid import uuid4
 import numpy as np
 import pytest
 
-from hermes_memory import InMemoryMemoryChunkStore, rebuild_memory_index
-from hermes_memory.faiss_index import memory_faiss_index_ready
-from hermes_memory.models import MemoryChunkRecord
+from nimbusware_memory import InMemoryMemoryChunkStore, rebuild_memory_index
+from nimbusware_memory.faiss_index import memory_faiss_index_ready
+from nimbusware_memory.models import MemoryChunkRecord
 from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -60,8 +60,8 @@ def test_rebuild_writes_memory_faiss_index(tmp_path, monkeypatch) -> None:
 
 def test_memory_faiss_search_chunk_ids(tmp_path) -> None:
     pytest.importorskip("faiss")
-    from hermes_memory.embeddings import deterministic_embed
-    from hermes_memory.faiss_index import build_memory_faiss_index, faiss_search_chunk_ids
+    from nimbusware_memory.embeddings import deterministic_embed
+    from nimbusware_memory.faiss_index import build_memory_faiss_index, faiss_search_chunk_ids
 
     gid = uuid4()
     chunks = [

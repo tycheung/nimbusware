@@ -1,0 +1,13 @@
+{
+  "brief_kind": "code",
+  "domain_tag": "golf",
+  "summary": "Code research brief: candidate OSS patterns and libraries for the requested capability (stub; indexed for planner context).",
+  "artifact_id": "9ac495bb-bf2c-419e-94f3-909c9eb9512b",
+  "sources": [
+    {
+      "url": "stub://oss/pattern-index",
+      "license": "MIT",
+      "trust_tier": "high"
+    }
+  ]
+}

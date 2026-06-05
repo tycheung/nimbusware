@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from hermes_orchestrator.llm_slice import execute_slice_plan_llm
-from hermes_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.llm_slice import execute_slice_plan_llm
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
 
 
 def test_execute_slice_plan_llm_parses_response() -> None:
@@ -26,7 +26,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
         "acceptance_criteria": "tests pass",
     }
     with patch(
-        "hermes_orchestrator.llm_slice.ollama_chat_json",
+        "nimbusware_orchestrator.llm_slice.ollama_chat_json",
         return_value=fake,
     ):
         plan = execute_slice_plan_llm(
@@ -42,7 +42,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
 
 def test_execute_slice_plan_llm_returns_none_on_failure() -> None:
     with patch(
-        "hermes_orchestrator.llm_slice.ollama_chat_json",
+        "nimbusware_orchestrator.llm_slice.ollama_chat_json",
         side_effect=RuntimeError("down"),
     ):
         plan = execute_slice_plan_llm(

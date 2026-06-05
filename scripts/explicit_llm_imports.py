@@ -6,10 +6,10 @@ import ast
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-LLM = REPO / "packages/hermes_orchestrator/llm"
+LLM = REPO / "packages/nimbusware_orchestrator/llm"
 COMMON = LLM / "common.py"
 
-STAR = "from hermes_orchestrator.llm.common import *  # noqa: F403\n"
+STAR = "from nimbusware_orchestrator.llm.common import *  # noqa: F403\n"
 
 SKIP = {
     "__init__.py",
@@ -63,9 +63,9 @@ def _used_names(path: Path) -> set[str]:
 def _format_import(symbols: list[str]) -> str:
     symbols = sorted(symbols)
     if len(symbols) <= 5:
-        return f"from hermes_orchestrator.llm.common import {', '.join(symbols)}"
+        return f"from nimbusware_orchestrator.llm.common import {', '.join(symbols)}"
     joined = ",\n    ".join(symbols)
-    return f"from hermes_orchestrator.llm.common import (\n    {joined},\n)"
+    return f"from nimbusware_orchestrator.llm.common import (\n    {joined},\n)"
 
 
 def explicitize(path: Path, exports: set[str]) -> bool:

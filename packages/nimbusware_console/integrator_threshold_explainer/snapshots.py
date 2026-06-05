@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
     load_integrator_gate_emit_enabled,
 )
@@ -90,7 +90,7 @@ def _thresholds_disk_snapshot(repo_root: Path) -> dict[str, Any]:
 
 
 def _env_min_score_to_pass_breakdown() -> dict[str, Any]:
-    raw = os.environ.get("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
+    raw = os.environ.get("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
     if not raw:
         return {
             "raw": "",
@@ -118,7 +118,7 @@ def _emit_integrator_gate_breakdown(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any]:
-    env_raw = os.environ.get("HERMES_EMIT_INTEGRATOR_GATE", "")
+    env_raw = os.environ.get("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "")
     env = env_raw.strip().lower()
     forces_off = env in ("0", "false", "no")
     forces_on = env in ("1", "true", "yes")
@@ -143,14 +143,14 @@ def _emit_integrator_gate_breakdown(
         has_thr = thr_path.is_file()
     if forces_off:
         would_emit = False
-        reason = "HERMES_EMIT_INTEGRATOR_GATE forces off (0/false/no)"
+        reason = "NIMBUSWARE_EMIT_INTEGRATOR_GATE forces off (0/false/no)"
     elif not has_thr:
         would_emit = False
         reason = "configs/integrator/thresholds.yaml missing"
     elif forces_on or yaml_on or wf_on:
         would_emit = True
         reason = (
-            "thresholds file present and at least one of: HERMES_EMIT_INTEGRATOR_GATE "
+            "thresholds file present and at least one of: NIMBUSWARE_EMIT_INTEGRATOR_GATE "
             "force-on, thresholds.yaml enabled, workflow integrator_gate.enabled"
         )
     else:
@@ -160,7 +160,7 @@ def _emit_integrator_gate_breakdown(
             "workflow integrator_gate.enabled false"
         )
     return {
-        "HERMES_EMIT_INTEGRATOR_GATE": env_raw,
+        "NIMBUSWARE_EMIT_INTEGRATOR_GATE": env_raw,
         "forces_off": forces_off,
         "forces_on": forces_on,
         "catalog_thresholds_yaml_enabled": yaml_on,

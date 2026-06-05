@@ -1,0 +1,13 @@
+{
+  "manifest_id": "bc2bf741-7360-477e-89bb-8c1fde3c7f82",
+  "source_kind": "stub",
+  "source_tree_hash": "stub:bc2bf741",
+  "file_paths": [
+    "packages/stub_transplant/__init__.py",
+    "packages/stub_transplant/auth_helpers.py"
+  ],
+  "license_paths": [
+    "LICENSE"
+  ],
+  "required_env_vars": []
+}

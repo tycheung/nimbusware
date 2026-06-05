@@ -1,13 +1,13 @@
 # agent_core
 
-Shared Pydantic models for Hermes agent orchestration events (Nimbusware wire format).
+Shared Pydantic models for Nimbusware agent orchestration events (Nimbusware wire format).
 
-Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.
+Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.
 
-Sibling packages (same Poetry workspace): `hermes_store` (Postgres + in-memory append store),
-`hermes_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI
-`/v1`), `hermes_executor` (subprocess + egress helpers), `nimbusware_console` (Admin display modules),
-`hermes_extensions` (personas, bundles, escalation), `nimbusware_projections` (shared timeline builders).
+Sibling packages (same Poetry workspace): `nimbusware_store` (Postgres + in-memory append store),
+`nimbusware_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI
+`/v1`), `nimbusware_executor` (subprocess + egress helpers), `nimbusware_console` (Admin display modules),
+`nimbusware_extensions` (personas, bundles, escalation), `nimbusware_projections` (shared timeline builders).
 
 ## Wire format
 

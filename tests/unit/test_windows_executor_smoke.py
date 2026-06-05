@@ -11,12 +11,12 @@ pytestmark = pytest.mark.skipif(sys.platform != "win32", reason="Windows-only su
 
 
 def test_run_subprocess_cmd_echo() -> None:
-    from hermes_executor.windows import run_subprocess
+    from nimbusware_executor.windows import run_subprocess
 
     proc = run_subprocess(
-        ["cmd", "/c", "echo", "hermes-smoke"],
+        ["cmd", "/c", "echo", "nimbusware-smoke"],
         cwd=Path(__file__).resolve().parent,
         timeout_seconds=15.0,
     )
     assert proc.returncode == 0
-    assert "hermes-smoke" in (proc.stdout or "")
+    assert "nimbusware-smoke" in (proc.stdout or "")

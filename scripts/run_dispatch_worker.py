@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Operational wrapper for the Hermes agent run-dispatch worker.
+"""Operational wrapper for the Nimbusware agent run-dispatch worker.
 
 Provides copy-paste entrypoint with sane defaults for queue-drain testing:
 - heartbeat file output
@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 def _args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run Hermes agent dispatch worker with ops defaults")
+    p = argparse.ArgumentParser(description="Run Nimbusware agent dispatch worker with ops defaults")
     p.add_argument("--max-tasks", type=int, default=None)
     p.add_argument("--max-idle-loops", type=int, default=50)
     p.add_argument("--idle-sleep-seconds", type=float, default=0.1)
@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     cmd = [
         sys.executable,
         "-m",
-        "hermes_orchestrator.run_worker",
+        "nimbusware_orchestrator.run_worker",
         "--max-idle-loops",
         str(ns.max_idle_loops),
         "--idle-sleep-seconds",

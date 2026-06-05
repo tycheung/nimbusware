@@ -8,7 +8,7 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 from agent_core.models import (  # noqa: E402
     EventType,
@@ -17,7 +17,7 @@ from agent_core.models import (  # noqa: E402
     StagePassedEvent,
     StagePassedPayload,
 )
-from hermes_store.memory import InMemoryEventStore  # noqa: E402
+from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 
 

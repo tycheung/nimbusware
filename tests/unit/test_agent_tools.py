@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from hermes_agent_tools.allowlist import path_in_plan, validate_shell_invocation
-from hermes_agent_tools.runtime import execute_slice_implement_agent
-from hermes_agent_tools.tools import tool_grep, tool_read_file, tool_write_file
-from hermes_orchestrator.micro_slice import parse_slice_plan
-from hermes_orchestrator.slice_implement import slice_implement_mode
+from nimbusware_agent_tools.allowlist import path_in_plan, validate_shell_invocation
+from nimbusware_agent_tools.runtime import execute_slice_implement_agent
+from nimbusware_agent_tools.tools import tool_grep, tool_read_file, tool_write_file
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.slice_implement import slice_implement_mode
 
 
 def test_path_in_plan() -> None:
@@ -48,16 +48,16 @@ def test_tool_grep_finds_line(tmp_path: Path) -> None:
 def test_execute_slice_implement_agent_stub(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("HERMES_SLICE_IMPLEMENT", "agent")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_IMPLEMENT", "agent")
     assert slice_implement_mode() == "agent"
     ws = tmp_path / "proj"
     ws.mkdir()
-    (ws / "packages/hermes_orchestrator").mkdir(parents=True)
-    (ws / "packages/hermes_orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
+    (ws / "packages/nimbusware_orchestrator").mkdir(parents=True)
+    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text("# x\n", encoding="utf-8")
     plan = parse_slice_plan(
         {
             "slice_id": "slice-1",
-            "target_paths": ["packages/hermes_orchestrator/micro_slice.py"],
+            "target_paths": ["packages/nimbusware_orchestrator/micro_slice.py"],
             "rationale": "inventory",
         },
     )

@@ -35,7 +35,7 @@ def theater_max_message_chars(rows: list[dict[str, Any]], *, default: int = 1200
 
 
 def theater_llm_summary_enabled(rows: list[dict[str, Any]]) -> bool:
-    if os.environ.get("HERMES_THEATER_LLM_SUMMARY", "").strip() == "1":
+    if os.environ.get("NIMBUSWARE_THEATER_LLM_SUMMARY", "").strip() == "1":
         return True
     cfg = _theater_config_from_rows(rows)
     return bool(cfg.get("llm_summary")) if cfg else False

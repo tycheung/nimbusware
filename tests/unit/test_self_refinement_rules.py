@@ -9,11 +9,11 @@ from uuid import UUID
 
 from fastapi.testclient import TestClient
 
-from hermes_extensions.personas import PersonaShelf
-from hermes_extensions.self_refinement import SelfRefinementEvaluator
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
-from hermes_orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
+from nimbusware_orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.materializer import ConfigMaterializer
@@ -152,7 +152,7 @@ def test_self_refinement_max_iterations_emits_stage_failed() -> None:
     rid = orch.create_run("self_refinement_on")
     block = SelfRefinementWorkflowBlock(enabled=True, max_iterations=2)
     with patch(
-        "hermes_orchestrator.pipeline.parse_self_refinement_workflow_block",
+        "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
         return_value=block,
     ):
         for _ in range(3):
@@ -230,7 +230,7 @@ def test_timeline_self_refinement_includes_evaluation_fields() -> None:
             run_id = r.json()["run_id"]
             with patch.dict(
                 os.environ,
-                {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"},
+                {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"},
                 clear=False,
             ):
                 orch._maybe_emit_self_refinement_stage_marker(UUID(run_id))  # noqa: SLF001

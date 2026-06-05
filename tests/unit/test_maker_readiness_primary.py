@@ -19,7 +19,7 @@ def test_check_ollama_skip_uses_primary_id(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     (tmp_path / "configs").mkdir()
     (tmp_path / "configs" / "model-routing.yaml").write_text(
         "models:\n  primary:\n    id: llama3.1:8b\n",

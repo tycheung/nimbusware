@@ -6,16 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from hermes_extensions.phase2 import UniversalCritiqueRouter
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.security_critique import (
+from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.security_critique import (
     SECURITY_CRITIQUE_STAGE,
     emit_stub_security_critique_panel,
     run_security_scan_summary,
     security_critique_timeline_summary,
     security_scan_tools_failed,
 )
-from hermes_orchestrator.workflow_security_critique import (
+from nimbusware_orchestrator.workflow_security_critique import (
     SecurityCritiqueBlock,
     parse_security_critique_workflow_block,
     security_critique_effective,
@@ -122,7 +122,7 @@ def test_verify_pass_runs_security_critique(monkeypatch: pytest.MonkeyPatch) -> 
         return 0, "ok\n"
 
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         _fake_bundle,
     )
     orch.execute_writer_verifier_pass(run_id, workspace=repo)

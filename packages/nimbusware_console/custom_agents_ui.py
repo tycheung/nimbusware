@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_extensions.custom_agents import CustomAgentRegistry
+from nimbusware_extensions.custom_agents import CustomAgentRegistry
 from nimbusware_config.persist import load_custom_agent_registry
 
 

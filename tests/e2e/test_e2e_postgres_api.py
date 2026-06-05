@@ -13,7 +13,7 @@ from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 pytestmark = [pytest.mark.e2e, pytest.mark.integration]
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", DEFAULT_NIMBUSWARE_ADMIN_TOKEN)
 
 from nimbusware_api.app import app  # noqa: E402

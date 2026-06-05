@@ -49,7 +49,7 @@ SKIP_DIR_NAMES = frozenset(
         "pip-wheel-metadata",
         "share",
         ".cursor",
-        ".hermes",
+        ".nimbusware",
         ".cache",
         "logs",
         "benchmarks",

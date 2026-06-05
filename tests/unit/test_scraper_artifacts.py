@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.scraper_artifacts import (
+from nimbusware_orchestrator.scraper_artifacts import (
     prune_scraper_artifacts,
     resolve_scraper_artifact_base_dir,
 )
@@ -18,7 +18,7 @@ def test_resolve_artifact_dir_env_override(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     art = tmp_path / "custom_art"
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(art))
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(art))
     assert resolve_scraper_artifact_base_dir(tmp_path) == art.resolve()
 
 
@@ -26,13 +26,13 @@ def test_resolve_artifact_dir_default_cache(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_SCRAPER_ARTIFACT_DIR", raising=False)
-    want = (tmp_path / ".cache" / "hermes_scraper").resolve()
+    monkeypatch.delenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", raising=False)
+    want = (tmp_path / ".cache" / "nimbusware_scraper").resolve()
     assert resolve_scraper_artifact_base_dir(tmp_path) == want
 
 
 def test_prune_scraper_artifacts_dry_run_counts_without_deleting(tmp_path: Path) -> None:
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"
@@ -51,7 +51,7 @@ def test_prune_scraper_artifacts_dry_run_counts_without_deleting(tmp_path: Path)
 
 
 def test_prune_scraper_artifacts_removes_stale_files(tmp_path: Path) -> None:
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"

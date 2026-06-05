@@ -649,7 +649,7 @@ export function ConfigPage() {
           <h3>Probation reliability</h3>
           <p class="muted">
             Agent-evaluator scores for shelve/promote decisions. Tune thresholds via System settings (
-            HERMES_PROBATION_*).
+            NIMBUSWARE_PROBATION_*).
           </p>
           <label>
             Shelf{" "}

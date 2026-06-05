@@ -1,7 +1,7 @@
 from nimbusware_console.security_scan_metadata_workflow_explainer import (
     _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS,
     _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS,
-    _hermes_attach_security_scan_metadata_env_summary,
+    _nimbusware_attach_security_scan_metadata_env_summary,
     _security_scan_metadata_explainer_cell,
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,

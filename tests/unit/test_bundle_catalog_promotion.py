@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hermes_research.bundle_promotion import (
+from nimbusware_research.bundle_promotion import (
     candidate_to_bundle_entry,
     load_catalog_candidate,
     mark_catalog_candidate_promoted,
@@ -39,7 +39,7 @@ def test_promote_candidate_mark_status(tmp_path: Path) -> None:
     mark_catalog_candidate_promoted(tmp_path, run_id=str(run_id), candidate_id="c1")
     again = json.loads(
         (
-            tmp_path / ".hermes" / "research" / "catalog_candidates" / str(run_id) / "c1.json"
+            tmp_path / ".nimbusware" / "research" / "catalog_candidates" / str(run_id) / "c1.json"
         ).read_text(encoding="utf-8"),
     )
     assert again["status"] == "promoted"

@@ -8,7 +8,7 @@ from pathlib import Path
 _HELPERS = (
     Path(__file__).resolve().parents[2]
     / "packages"
-    / "hermes_orchestrator"
+    / "nimbusware_orchestrator"
     / "_pipeline"
     / "_helpers.py"
 )
@@ -62,6 +62,6 @@ def test_pipeline_mixins_use_explicit_helpers_imports() -> None:
         }:
             continue
         text = path.read_text(encoding="utf-8")
-        if "from hermes_orchestrator._pipeline._helpers import *" in text:
+        if "from nimbusware_orchestrator._pipeline._helpers import *" in text:
             offenders.append(path.name)
     assert not offenders, "Mixins must not star-import _helpers:\n" + "\n".join(offenders)

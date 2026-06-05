@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_extensions.catalog import assert_workflow_bundle_map_ids_resolve
-from hermes_orchestrator.ingress import assert_bundle_catalog_maps_resolve
+from nimbusware_extensions.catalog import assert_workflow_bundle_map_ids_resolve
+from nimbusware_orchestrator.ingress import assert_bundle_catalog_maps_resolve
 from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -93,7 +93,7 @@ def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
     """Pin the wrapper's 3-axis contract (accept / FNF / VE propagation).
 
     Wrapper at
-    [ingress.py:13-19](packages\\hermes_orchestrator\\ingress.py)
+    [ingress.py:13-19](packages\\nimbusware_orchestrator\\ingress.py)
     delegates to ``assert_workflow_bundle_map_ids_resolve`` after
     joining ``configs/bundles/catalog.yaml`` to ``repo_root``. The
     accept arm exercises the real repo; FNF arm uses ``tmp_path``
@@ -141,7 +141,7 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
     """Pin the inner helper's reject + early-return matrix.
 
     Inner helper at
-    [catalog.py:20-49](packages\\hermes_extensions\\catalog.py)
+    [catalog.py:20-49](packages\\nimbusware_extensions\\catalog.py)
     has 5 reject sub-cases + 3 early-return cases; only "unknown
     bundle id" was tested in ``test_extensions_yaml.py``. fo82
     Part B closes the remainder.
@@ -201,7 +201,7 @@ def test_bundle_catalog_wrapper_vs_helper_consistency_contract(
     """Pin wrapper-vs-helper exception + message parity.
 
     The wrapper at
-    [ingress.py:13-19](packages\\hermes_orchestrator\\ingress.py)
+    [ingress.py:13-19](packages\\nimbusware_orchestrator\\ingress.py)
     is a pure path-prefixing passthrough -- it joins
     ``configs/bundles/catalog.yaml`` to ``repo_root`` and delegates
     to ``assert_workflow_bundle_map_ids_resolve``. This test pins

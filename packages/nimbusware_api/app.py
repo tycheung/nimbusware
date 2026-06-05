@@ -14,8 +14,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from hermes_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
-from hermes_orchestrator.runtime_bootstrap import (
+from nimbusware_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
+from nimbusware_orchestrator.runtime_bootstrap import (
     api_config_from_db_enabled,
     build_runtime_orchestrator,
 )
@@ -29,7 +29,7 @@ from nimbusware_maker.store import build_project_store
 logger = logging.getLogger(__name__)
 
 _OPENAPI_APP_DESCRIPTION = (
-    "Nimbusware control-plane HTTP API (orchestrates the Hermes online agentic system). "
+    "Nimbusware control-plane HTTP API (orchestrates the Nimbusware online agentic system). "
     "Resource paths are under /v1. "
     "Operations are tagged **user** (Maker product loop) or **admin** (Admin Console / "
     "control plane). Individual edition: user routes are open locally; admin routes "
@@ -187,7 +187,7 @@ async def nimbusware_http_exception_handler(
 
 
 @app.exception_handler(RequestValidationError)
-async def hermes_validation_handler(
+async def nimbusware_validation_handler(
     _request: Request,
     exc: RequestValidationError,
 ) -> JSONResponse:
@@ -203,7 +203,7 @@ async def hermes_validation_handler(
 
 
 @app.exception_handler(Exception)
-async def hermes_uncaught_exception_handler(
+async def nimbusware_uncaught_exception_handler(
     request: Request,
     exc: Exception,
 ) -> JSONResponse:

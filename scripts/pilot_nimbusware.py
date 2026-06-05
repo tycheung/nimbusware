@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(ROOT))
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 
 def main() -> int:

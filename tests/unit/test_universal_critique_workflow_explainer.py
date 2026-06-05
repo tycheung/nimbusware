@@ -98,7 +98,7 @@ def test_explainer_yaml_and_effective_match_without_env(repo_uc_stub: Path) -> N
 
 
 def test_explainer_env_overrides_yaml(repo_uc_stub: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_IMPLEMENTATION_CRITIQUE_LLM", "1")
+    monkeypatch.setenv("NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM", "1")
     out = universal_critique_workflow_explainer_payload(
         repo_uc_stub,
         workflow_profile="stub",
@@ -114,8 +114,8 @@ def test_explainer_new_stage_env_overrides_yaml(
     repo_uc_stub: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_ENABLE_FRONTEND_WRITER_CRITIQUE", "0")
-    monkeypatch.setenv("HERMES_STUB_MODULE_INTEGRATOR_CRITICS", "0")
+    monkeypatch.setenv("NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE", "0")
+    monkeypatch.setenv("NIMBUSWARE_STUB_MODULE_INTEGRATOR_CRITICS", "0")
     out = universal_critique_workflow_explainer_payload(
         repo_uc_stub,
         workflow_profile="stub",

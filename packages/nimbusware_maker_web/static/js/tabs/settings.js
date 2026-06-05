@@ -68,7 +68,7 @@ export async function mountSettings(root) {
     </section>
     <form id="settings-form"></form>
     <p class="muted" id="reresearch-help">
-      <strong>Re-research on plan fail</strong> (<code>HERMES_RERESARCH_MISSING_CONTEXT</code>):
+      <strong>Re-research on plan fail</strong> (<code>NIMBUSWARE_RERESARCH_MISSING_CONTEXT</code>):
       when enabled, the pipeline may re-run research after planner missing-context failures.
     </p>`;
 

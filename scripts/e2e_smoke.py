@@ -110,7 +110,7 @@ def _schema_applied(url: str) -> bool:
 
 
 def _apply_schema(url: str) -> bool:
-    sql_path = REPO_ROOT / "packages/hermes_store/schema/postgres.sql"
+    sql_path = REPO_ROOT / "packages/nimbusware_store/schema/postgres.sql"
     scripts_dir = Path(__file__).resolve().parent
     if str(scripts_dir) not in sys.path:
         sys.path.insert(0, str(scripts_dir))
@@ -129,18 +129,18 @@ def check_bootstrap() -> CheckResult:
 
 
 def check_poetry_env() -> CheckResult:
-    code = _poetry_run_python("import nimbusware_api, hermes_orchestrator")
+    code = _poetry_run_python("import nimbusware_api, nimbusware_orchestrator")
     return CheckResult(
         "poetry_env",
         code == 0,
-        "imports nimbusware_api, hermes_orchestrator",
+        "imports nimbusware_api, nimbusware_orchestrator",
         required=True,
     )
 
 
 def check_unit_tests(*, full_suite: bool) -> CheckResult:
     env = os.environ.copy()
-    env.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+    env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
     if full_suite:
         gate = REPO_ROOT / ".cursor/loop-artifacts/_round_gates.ps1"
@@ -191,7 +191,7 @@ def check_integration(url: str) -> CheckResult:
     env = os.environ.copy()
     env["NIMBUSWARE_DATABASE_URL"] = url
     env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
-    env.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+    env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     code = _run(
         [_poetry(), "run", "pytest", "tests", "-q", "-m", "integration", "--maxfail=3"],
         env=env,
@@ -202,7 +202,7 @@ def check_integration(url: str) -> CheckResult:
 def check_api_smoke() -> CheckResult:
     snippet = """
 import os
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
 from fastapi.testclient import TestClient
 from nimbusware_api.app import app
@@ -222,7 +222,7 @@ print("api_smoke ok")
 def check_web_ui_smoke() -> CheckResult:
     snippet = """
 import os
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", %r)
 from fastapi.testclient import TestClient
 from nimbusware_api.app import app

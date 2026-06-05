@@ -6,4 +6,4 @@ Model fit tiers, governor caps, and ranked-model UX in `nimbusware_hw` adapt pat
 
 ## Other
 
-See package READMEs and gitignored `hermes-orchestrator-local-plan.md` (repo root) for additional lineage notes.
+See package READMEs and gitignored `nimbusware-orchestrator-local-plan.md` (repo root) for additional lineage notes.

@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any
 
 from agent_core.models import EventType
-from hermes_orchestrator.critic_matrix_live import (
+from nimbusware_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )
-from hermes_orchestrator.llm.common import (
+from nimbusware_orchestrator.llm.common import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from hermes_orchestrator.stage_graph import stage_graph_timeline_summary_from_metadata
+from nimbusware_orchestrator.stage_graph import stage_graph_timeline_summary_from_metadata
 
 _WRITER_GATE_STAGE: dict[str, str] = {
     "implementation": IMPLEMENTATION_CRITIQUE_STAGE,

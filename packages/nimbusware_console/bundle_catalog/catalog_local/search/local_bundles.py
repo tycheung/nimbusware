@@ -21,7 +21,7 @@ def bundle_catalog_local_bundles(repo_root: Path) -> list[dict[str, Any]]:
         return []
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_self_refinement import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )

@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.stage_graph import (
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.stage_graph import (
     KNOWN_STAGE_GRAPH_STAGES,
     default_stage_graph,
     stage_graph_from_workflow_profile,
@@ -15,7 +15,7 @@ from hermes_orchestrator.stage_graph import (
     topological_order,
     validate_stage_graph,
 )
-from hermes_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 from nimbusware_config.keys import NS_WORKFLOWS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo

@@ -1101,8 +1101,8 @@ def test_bundle_search_operator_metrics_export_filename_slug() -> None:
     slug = bundle_search_operator_metrics_export_filename_slug()
     assert slug == "bundle_search_operator_metrics"
     query_slug = bundle_search_filename_slug("auth rbac")
-    assert f"hermes_{slug}_{query_slug}_20260101T000000Z.json".startswith(
-        "hermes_bundle_search_operator_metrics_",
+    assert f"nimbusware_{slug}_{query_slug}_20260101T000000Z.json".startswith(
+        "nimbusware_bundle_search_operator_metrics_",
     )
 
 

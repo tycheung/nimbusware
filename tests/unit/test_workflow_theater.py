@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.workflow_theater import (
+from nimbusware_orchestrator.workflow_theater import (
     parse_theater_workflow_block,
     theater_effective_metadata,
 )

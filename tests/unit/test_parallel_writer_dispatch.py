@@ -8,15 +8,15 @@ import time
 from unittest.mock import patch
 
 from agent_core.models import EventType
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 @patch.dict(
     os.environ,
-    {"HERMES_PARALLEL_WRITERS": "1", "HERMES_STUB_IMPLEMENTATION_CRITICS": "1"},
+    {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_parallel_on_emits_both_writer_starts_before_critique(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("parallel_writers_on")
@@ -39,7 +39,7 @@ def test_parallel_on_emits_both_writer_starts_before_critique(_mock: object) -> 
     assert all(idx < first_critique_idx for idx in writer_indices)
 
 
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_parallel_off_matches_sequential_metadata(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
@@ -56,9 +56,9 @@ def test_parallel_off_matches_sequential_metadata(_mock: object) -> None:
 @patch.dict(
     os.environ,
     {
-        "HERMES_PARALLEL_WRITERS": "1",
-        "HERMES_PARALLEL_WRITER_TEST_DELAY_SECONDS": "0.15",
-        "HERMES_STUB_IMPLEMENTATION_CRITICS": "1",
+        "NIMBUSWARE_PARALLEL_WRITERS": "1",
+        "NIMBUSWARE_PARALLEL_WRITER_TEST_DELAY_SECONDS": "0.15",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
     },
     clear=False,
 )
@@ -81,7 +81,7 @@ def test_parallel_writers_overlap_timing() -> None:
         return 0, "ok"
 
     with patch(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         side_effect=fast_impl,
     ):
         orch, mem = make_dev_orchestrator()
@@ -100,16 +100,16 @@ def test_parallel_writers_overlap_timing() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_PARALLEL_WRITERS": "1", "HERMES_TEST_WRITER_STAGE": "1"},
+    {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_TEST_WRITER_STAGE": "1"},
     clear=False,
 )
 def test_parallel_real_test_writer_emits_exit_code_metadata() -> None:
     with patch(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         with patch(
-            "hermes_orchestrator.pipeline.run_test_writer_stage",
+            "nimbusware_orchestrator.pipeline.run_test_writer_stage",
             return_value=(3, "test failure", "subprocess"),
         ):
             orch, mem = make_dev_orchestrator()
@@ -128,17 +128,17 @@ def test_parallel_real_test_writer_emits_exit_code_metadata() -> None:
 @patch.dict(
     os.environ,
     {
-        "HERMES_PARALLEL_WRITERS": "1",
-        "HERMES_TEST_WRITER_STAGE": "1",
-        "HERMES_TEST_WRITER_LLM_BODY": "1",
-        "HERMES_TEST_WRITER_LLM_STUB": "1",
-        "HERMES_USE_LLM": "1",
+        "NIMBUSWARE_PARALLEL_WRITERS": "1",
+        "NIMBUSWARE_TEST_WRITER_STAGE": "1",
+        "NIMBUSWARE_TEST_WRITER_LLM_BODY": "1",
+        "NIMBUSWARE_TEST_WRITER_LLM_STUB": "1",
+        "NIMBUSWARE_USE_LLM": "1",
     },
     clear=False,
 )
 def test_parallel_test_writer_llm_stub_body_mode_metadata() -> None:
     with patch(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         return_value=(0, "ok"),
     ):
         orch, mem = make_dev_orchestrator()

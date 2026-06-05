@@ -64,7 +64,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 ## Worker (optional)
 
-Redis fleet dispatch uses `hermes-run-worker` on the host or a separate container — see `scripts/run_dispatch_fleet_runbook.md`.
+Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate container — see `scripts/run_dispatch_fleet_runbook.md`.
 
 ## Kubernetes
 
@@ -81,4 +81,4 @@ Use the uploaded `sbom.cdx.json` artifact as the release bill of materials.
 
 ## External SLI
 
-Fleet Ollama SLI: `scripts/fleet_ollama_sli_runbook.md` and `poetry run hermes-fleet-ollama-sli`.
+Fleet Ollama SLI: `scripts/fleet_ollama_sli_runbook.md` and `poetry run nimbusware-fleet-ollama-sli`.

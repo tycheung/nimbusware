@@ -1,6 +1,6 @@
 # Enterprise Redis Fleet Worker Runbook (fo205)
 
-Multi-node verify workers share one Redis queue (`HERMES_RUN_DISPATCH=redis`).
+Multi-node verify workers share one Redis queue (`NIMBUSWARE_RUN_DISPATCH=redis`).
 
 ## Prerequisites
 
@@ -12,11 +12,11 @@ Multi-node verify workers share one Redis queue (`HERMES_RUN_DISPATCH=redis`).
 
 ```powershell
 $env:NIMBUSWARE_EDITION = "enterprise"
-$env:HERMES_RUN_DISPATCH = "redis"
-$env:HERMES_REDIS_URL = "redis://127.0.0.1:6379/0"
+$env:NIMBUSWARE_RUN_DISPATCH = "redis"
+$env:NIMBUSWARE_REDIS_URL = "redis://127.0.0.1:6379/0"
 # Optional back-pressure thresholds (defaults: pending=100, in_flight=20)
-$env:HERMES_FLEET_QUEUE_BACKPRESSURE_DEPTH = "100"
-$env:HERMES_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT = "20"
+$env:NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH = "100"
+$env:NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT = "20"
 ```
 
 ## Start Redis (compose)

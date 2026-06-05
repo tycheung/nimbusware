@@ -15,7 +15,7 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
 def _seed_stale_artifact(repo_root: Path) -> Path:
-    base = repo_root / ".cache" / "hermes_scraper"
+    base = repo_root / ".cache" / "nimbusware_scraper"
     run_dir = base / "00000000-0000-4000-8000-000000000001"
     run_dir.mkdir(parents=True)
     stale = run_dir / "url00_deadbeef.bin"
@@ -94,7 +94,7 @@ def test_summary_path_flag_writes_state_file(tmp_path: Path) -> None:
     assert parsed.tzinfo is not None, "wrote_at must be a tz-aware UTC ISO 8601 string"
 
 
-# Axis 2: HERMES_PRUNE_STATUS_PATH env writes the same file
+# Axis 2: NIMBUSWARE_PRUNE_STATUS_PATH env writes the same file
 
 
 def test_env_var_alone_writes_state_file(tmp_path: Path) -> None:
@@ -103,7 +103,7 @@ def test_env_var_alone_writes_state_file(tmp_path: Path) -> None:
     proc = _run_prune_script(
         tmp_path,
         extra_args=[],
-        env_overrides={"HERMES_PRUNE_STATUS_PATH": str(status_path)},
+        env_overrides={"NIMBUSWARE_PRUNE_STATUS_PATH": str(status_path)},
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
     assert status_path.is_file()
@@ -123,7 +123,7 @@ def test_cli_flag_overrides_env(tmp_path: Path) -> None:
     proc = _run_prune_script(
         tmp_path,
         extra_args=["--summary-path", str(cli_path)],
-        env_overrides={"HERMES_PRUNE_STATUS_PATH": str(env_path)},
+        env_overrides={"NIMBUSWARE_PRUNE_STATUS_PATH": str(env_path)},
     )
     assert proc.returncode == 0, proc.stderr + proc.stdout
     assert cli_path.is_file(), "CLI --summary-path should win and create the file"

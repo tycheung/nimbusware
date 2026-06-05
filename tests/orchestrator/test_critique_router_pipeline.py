@@ -26,20 +26,20 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
-from hermes_orchestrator.critique_routing import (
+from nimbusware_orchestrator.critique_routing import (
     load_critique_router,
     taxonomy_keys_for_run_lifecycle,
 )
-from hermes_orchestrator.llm_plan import (
+from nimbusware_orchestrator.llm_plan import (
     FRONTEND_WRITER_CRITIQUE_STAGE,
     IMPLEMENTATION_CRITIQUE_STAGE,
     MODULE_INTEGRATOR_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.registry import RoleRegistry
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
 )
@@ -74,7 +74,7 @@ def test_plan_stub_emits_verdicts_for_yaml_planner_critics() -> None:
     assert actor_roles == {pr, dc}
 
 
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_implementation_critique_stub_off_by_default(
     _mock_verifier: object,
 ) -> None:
@@ -89,8 +89,8 @@ def test_implementation_critique_stub_off_by_default(
     )
 
 
-@patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_implementation_critique_stub_emits_backend_writer_panel(
     _mock_verifier: object,
 ) -> None:
@@ -121,12 +121,12 @@ def test_implementation_critique_stub_emits_backend_writer_panel(
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_LLM": "1", "HERMES_STUB_IMPLEMENTATION_CRITICS": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.execute_implementation_critique_llm",
+    "nimbusware_orchestrator.pipeline.execute_implementation_critique_llm",
     return_value=True,
 )
 def test_implementation_skips_stub_when_llm_path_succeeds(
@@ -147,12 +147,12 @@ def test_implementation_skips_stub_when_llm_path_succeeds(
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_LLM": "1", "HERMES_STUB_IMPLEMENTATION_CRITICS": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.execute_implementation_critique_llm",
+    "nimbusware_orchestrator.pipeline.execute_implementation_critique_llm",
     return_value=False,
 )
 def test_implementation_stub_after_llm_returns_false(
@@ -173,7 +173,7 @@ def test_implementation_stub_after_llm_returns_false(
     assert len(impl_critics) == len(orch._critique_router.pairing_for("backend_writer"))
 
 
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_test_writer_critique_off_by_default(
     _mock_verifier: object,
 ) -> None:
@@ -191,12 +191,12 @@ def test_test_writer_critique_off_by_default(
 @patch.dict(
     os.environ,
     {
-        "HERMES_ENABLE_TEST_WRITER_CRITIQUE": "1",
-        "HERMES_STUB_TEST_WRITER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "1",
+        "NIMBUSWARE_STUB_TEST_WRITER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_test_writer_stub_emits_panel_after_verify(
     _mock_verifier: object,
 ) -> None:
@@ -228,15 +228,15 @@ def test_test_writer_stub_emits_panel_after_verify(
 @patch.dict(
     os.environ,
     {
-        "HERMES_ENABLE_TEST_WRITER_CRITIQUE": "1",
-        "HERMES_TEST_WRITER_CRITIQUE_LLM": "1",
-        "HERMES_STUB_TEST_WRITER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "1",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_LLM": "1",
+        "NIMBUSWARE_STUB_TEST_WRITER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.execute_test_writer_critique_llm",
+    "nimbusware_orchestrator.pipeline.execute_test_writer_critique_llm",
     return_value=True,
 )
 def test_test_writer_skips_stub_when_llm_path_succeeds(
@@ -257,7 +257,7 @@ def test_test_writer_skips_stub_when_llm_path_succeeds(
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_impl_critique_gate_is_fail() -> None:
@@ -289,7 +289,7 @@ def test_stage_failed_emitted_when_last_impl_critique_gate_is_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_dedupes_second_call() -> None:
@@ -342,7 +342,7 @@ def test_stage_failed_not_emitted_without_env_on_gate_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_test_writer_critique_gate_is_fail() -> None:
@@ -374,7 +374,7 @@ def test_stage_failed_emitted_when_last_test_writer_critique_gate_is_fail() -> N
 
 @patch.dict(
     os.environ,
-    {"HERMES_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_test_writer_stage_failed_dedupes_second_call() -> None:
@@ -453,7 +453,7 @@ def test_impl_stage_failed_emitted_from_workflow_profile_without_env() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "0"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "0"},
     clear=False,
 )
 def test_impl_stage_failed_env_overrides_workflow_true() -> None:
@@ -481,7 +481,7 @@ def test_impl_stage_failed_env_overrides_workflow_true() -> None:
     )
 
 
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_profile_stub_critique_yaml_without_env_emits_five_panels(
     _mock_verifier: object,
 ) -> None:
@@ -510,8 +510,8 @@ def test_profile_stub_critique_yaml_without_env_emits_five_panels(
     assert reg is not None
 
 
-@patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "0"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "0"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_stub_impl_env_false_overrides_yaml_stub_true(
     _mock_verifier: object,
 ) -> None:
@@ -535,7 +535,7 @@ def test_stub_impl_env_false_overrides_yaml_stub_true(
     assert len(pll) == 2
 
 
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_planner_critique_off_by_default(
     _mock_verifier: object,
 ) -> None:
@@ -553,12 +553,12 @@ def test_planner_critique_off_by_default(
 @patch.dict(
     os.environ,
     {
-        "HERMES_ENABLE_PLANNER_CRITIQUE": "1",
-        "HERMES_STUB_PLANNER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE": "1",
+        "NIMBUSWARE_STUB_PLANNER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_planner_stub_emits_panel_after_verify(
     _mock_verifier: object,
 ) -> None:
@@ -583,15 +583,15 @@ def test_planner_stub_emits_panel_after_verify(
 @patch.dict(
     os.environ,
     {
-        "HERMES_ENABLE_PLANNER_CRITIQUE": "1",
-        "HERMES_PLANNER_CRITIQUE_LLM": "1",
-        "HERMES_STUB_PLANNER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE": "1",
+        "NIMBUSWARE_PLANNER_CRITIQUE_LLM": "1",
+        "NIMBUSWARE_STUB_PLANNER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.execute_planner_critique_llm",
+    "nimbusware_orchestrator.pipeline.execute_planner_critique_llm",
     return_value=True,
 )
 def test_planner_skips_stub_when_llm_path_succeeds(
@@ -612,7 +612,7 @@ def test_planner_skips_stub_when_llm_path_succeeds(
 
 @patch.dict(
     os.environ,
-    {"HERMES_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_planner_critique_gate_is_fail() -> None:
@@ -644,7 +644,7 @@ def test_stage_failed_emitted_when_last_planner_critique_gate_is_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_planner_stage_failed_dedupes_second_call() -> None:
@@ -888,7 +888,7 @@ def test_critique_gate_fail_finding_not_emitted_by_default() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_once_when_enabled() -> None:
@@ -920,7 +920,7 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
     _append_impl_gate_fail(orch, rid)
     with patch.dict(
         os.environ,
-        {"HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "0"},
+        {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "0"},
         clear=False,
     ):
         eff = effective_universal_critique(
@@ -934,14 +934,14 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
 @patch.dict(
     os.environ,
     {
-        "HERMES_STUB_IMPLEMENTATION_CRITICS": "1",
-        "HERMES_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL": "false",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
+        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL": "false",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+    "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
     return_value=False,
 )
 def test_hard_block_off_runs_integrator_and_self_refinement(
@@ -966,13 +966,13 @@ def test_hard_block_off_runs_integrator_and_self_refinement(
     )
 
 
-@patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 @patch(
-    "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+    "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
     return_value=False,
 )
-@patch("hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel")
+@patch("nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel")
 def test_hard_block_on_skips_integrator_and_self_refinement(
     mock_emit_stub: object,
     _mock_ig_emit: object,
@@ -1003,9 +1003,9 @@ def test_hard_block_on_skips_integrator_and_self_refinement(
     )
 
 
-@patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
-@patch("hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel")
+@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel")
 def test_short_circuit_skips_test_writer_and_planner_after_impl_hard_block_fail(
     mock_emit_impl: object,
     _mock_verifier: object,
@@ -1028,15 +1028,15 @@ def test_short_circuit_skips_test_writer_and_planner_after_impl_hard_block_fail(
 @patch.dict(
     os.environ,
     {
-        "HERMES_STUB_IMPLEMENTATION_CRITICS": "1",
-        "HERMES_STUB_TEST_WRITER_CRITICS": "1",
-        "HERMES_ENABLE_PLANNER_CRITIQUE": "1",
-        "HERMES_STUB_PLANNER_CRITICS": "1",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
+        "NIMBUSWARE_STUB_TEST_WRITER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE": "1",
+        "NIMBUSWARE_STUB_PLANNER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
-@patch("hermes_orchestrator.pipeline.emit_stub_test_writer_critique_panel")
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.emit_stub_test_writer_critique_panel")
 def test_short_circuit_skips_planner_after_test_writer_hard_block_fail(
     mock_emit_tw: object,
     _mock_verifier: object,
@@ -1059,14 +1059,14 @@ def test_short_circuit_skips_planner_after_test_writer_hard_block_fail(
 @patch.dict(
     os.environ,
     {
-        "HERMES_STUB_IMPLEMENTATION_CRITICS": "1",
-        "HERMES_STUB_TEST_WRITER_CRITICS": "1",
-        "HERMES_ENABLE_PLANNER_CRITIQUE": "1",
-        "HERMES_STUB_PLANNER_CRITICS": "1",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
+        "NIMBUSWARE_STUB_TEST_WRITER_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE": "1",
+        "NIMBUSWARE_STUB_PLANNER_CRITICS": "1",
     },
     clear=False,
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_hard_block_chain_profile_runs_all_critique_panels_when_impl_passes(
     _mock_verifier: object,
 ) -> None:
@@ -1104,7 +1104,7 @@ def test_universal_critique_router_pairing_is_case_insensitive() -> None:
 def test_universal_critique_router_from_yaml_without_pairings_returns_empty(
     tmp_path: Path,
 ) -> None:
-    from hermes_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text("version: 1\n", encoding="utf-8")
@@ -1126,7 +1126,7 @@ def test_taxonomy_keys_for_run_lifecycle_is_sorted_and_unique() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_impl_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1144,7 +1144,7 @@ def test_impl_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_test_writer_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1162,7 +1162,7 @@ def test_test_writer_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_planner_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1180,7 +1180,7 @@ def test_planner_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"HERMES_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_for_test_writer_stage_when_enabled() -> None:
@@ -1207,7 +1207,7 @@ def test_critique_gate_fail_finding_emitted_for_test_writer_stage_when_enabled()
 
 @patch.dict(
     os.environ,
-    {"HERMES_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_for_planner_stage_when_enabled() -> None:
@@ -1243,7 +1243,7 @@ def test_universal_critique_router_from_yaml_ignores_non_string_keys(
     its taxonomy contract. A valid string-keyed entry alongside the bogus one proves the
     drop is selective (not a whole-file abort).
     """
-    from hermes_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(
@@ -1272,7 +1272,7 @@ def test_universal_critique_router_from_yaml_ignores_non_list_values(
     must be ignored while a valid sibling entry is preserved, so a typo in one row cannot
     silently corrupt every other pairing in the same YAML.
     """
-    from hermes_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 
     p = tmp_path / "critique_pairings.yaml"
     p.write_text(

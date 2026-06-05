@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-import hermes_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
+import nimbusware_orchestrator.pipeline  # noqa: F401 — break extensions↔orchestrator cycle
 from nimbusware_console.persona_catalog import (
     critique_pairings_critic_counts_all_export_json,
     critique_pairings_critic_counts_all_table_rows,

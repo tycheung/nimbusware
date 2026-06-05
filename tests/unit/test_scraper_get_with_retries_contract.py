@@ -6,9 +6,9 @@ from uuid import uuid4
 import httpx
 import pytest
 
-from hermes_executor.fetch import EgressResponseTooLarge
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.scraper_stage import ScraperFetchConfig
+from nimbusware_executor.fetch import EgressResponseTooLarge
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig
 
 
 def _make_cfg(max_attempts: int = 1, backoff_seconds: float = 0.0) -> ScraperFetchConfig:
@@ -39,10 +39,10 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
     orch_a1, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[resp_mock],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a1,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_a1,
     ):
         result_a1 = orch_a1._scraper_get_with_retries(  # noqa: SLF001
             uuid4(),
@@ -60,10 +60,10 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
     orch_a2, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("net"), resp_mock],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a2,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_a2,
     ):
         result_a2 = orch_a2._scraper_get_with_retries(  # noqa: SLF001
             uuid4(),
@@ -83,10 +83,10 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
     orch_a3, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("a"), ValueError("b"), resp_mock],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_a3,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_a3,
     ):
         result_a3 = orch_a3._scraper_get_with_retries(  # noqa: SLF001
             uuid4(),
@@ -110,10 +110,10 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
     sentinel_client = MagicMock(spec=httpx.Client)
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[resp_mock],
         ) as egress_a4,
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
     ):
         orch_a4._scraper_get_with_retries(  # noqa: SLF001
             run_id_a4,
@@ -154,10 +154,10 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
     orch_b1, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=PermissionError("denied"),
         ) as egress_b1,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_b1,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_b1,
         pytest.raises(PermissionError, match="denied"),
     ):
         orch_b1._scraper_get_with_retries(  # noqa: SLF001
@@ -175,10 +175,10 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
     orch_b2, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=PermissionError("denied-wide"),
         ) as egress_b2,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_b2,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_b2,
         pytest.raises(PermissionError, match="denied-wide"),
     ):
         orch_b2._scraper_get_with_retries(  # noqa: SLF001
@@ -197,10 +197,10 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
     orch_b3, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=EgressResponseTooLarge("too big"),
         ) as egress_b3,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_b3,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_b3,
         pytest.raises(EgressResponseTooLarge, match="too big"),
     ):
         orch_b3._scraper_get_with_retries(  # noqa: SLF001
@@ -218,10 +218,10 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
     orch_b4, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=EgressResponseTooLarge("too big wide"),
         ) as egress_b4,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_b4,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_b4,
         pytest.raises(EgressResponseTooLarge, match="too big wide"),
     ):
         orch_b4._scraper_get_with_retries(  # noqa: SLF001
@@ -256,10 +256,10 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
     orch_c1, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("net 1"), OSError("net 2")],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
         pytest.raises(RuntimeError) as exc_c1,
     ):
         orch_c1._scraper_get_with_retries(  # noqa: SLF001
@@ -278,10 +278,10 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
     orch_c2, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[RuntimeError("rt 1"), inner_rt],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
         pytest.raises(RuntimeError) as exc_c2,
     ):
         orch_c2._scraper_get_with_retries(  # noqa: SLF001
@@ -302,10 +302,10 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
     orch_c3, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[ValueError("v 1"), ValueError("v 2")],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
         pytest.raises(RuntimeError) as exc_c3,
     ):
         orch_c3._scraper_get_with_retries(  # noqa: SLF001
@@ -323,10 +323,10 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
     orch_c4, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[httpx.ConnectError("c 1"), httpx.ReadTimeout("c 2")],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
         pytest.raises(RuntimeError) as exc_c4,
     ):
         orch_c4._scraper_get_with_retries(  # noqa: SLF001
@@ -358,10 +358,10 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
     orch_d1, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("a"), OSError("b"), OSError("c")],
         ) as egress_d1,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_d1,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_d1,
         pytest.raises(RuntimeError, match="^c$"),
     ):
         orch_d1._scraper_get_with_retries(  # noqa: SLF001
@@ -382,10 +382,10 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
     orch_d23, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("a"), OSError("b"), OSError("c")],
         ) as egress_d23,
-        patch("hermes_orchestrator.pipeline.time.sleep") as sleep_d23,
+        patch("nimbusware_orchestrator.pipeline.time.sleep") as sleep_d23,
         pytest.raises(RuntimeError, match="^c$"),
     ):
         orch_d23._scraper_get_with_retries(  # noqa: SLF001
@@ -408,10 +408,10 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
     orch_d4, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[OSError("x" * 5000)],
         ),
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
         pytest.raises(RuntimeError) as exc_d4,
     ):
         orch_d4._scraper_get_with_retries(  # noqa: SLF001
@@ -430,10 +430,10 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
     orch_d5a, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[resp_mock],
         ) as egress_d5a,
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
     ):
         orch_d5a._scraper_get_with_retries(  # noqa: SLF001
             uuid4(),
@@ -450,10 +450,10 @@ def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -
     orch_d5b, _ = make_dev_orchestrator()
     with (
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=[resp_mock],
         ) as egress_d5b,
-        patch("hermes_orchestrator.pipeline.time.sleep"),
+        patch("nimbusware_orchestrator.pipeline.time.sleep"),
     ):
         orch_d5b._scraper_get_with_retries(  # noqa: SLF001
             uuid4(),

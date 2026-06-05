@@ -6,8 +6,8 @@ from uuid import UUID
 from fastapi import HTTPException
 
 from agent_core.models import EventType
-from hermes_extensions.personas import ALLOWED_SHELVES, PersonaShelf
-from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
+from nimbusware_extensions.personas import ALLOWED_SHELVES, PersonaShelf
+from nimbusware_orchestrator.persona_catalog_audit import persona_catalog_run_id
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.personas import PersonaShelvesResponse
 from nimbusware_config.persist import load_persona_shelf, persist_persona_shelf

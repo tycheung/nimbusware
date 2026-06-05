@@ -19,7 +19,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     env: {
-      HERMES_SKIP_PREFLIGHT: "1",
+      NIMBUSWARE_SKIP_PREFLIGHT: "1",
       NIMBUSWARE_REPO_ROOT: process.env.NIMBUSWARE_REPO_ROOT || repoRoot,
     },
   },

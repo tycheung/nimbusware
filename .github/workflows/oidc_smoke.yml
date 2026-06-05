@@ -16,7 +16,7 @@ jobs:
       - name: OIDC mock route tests
         run: poetry run pytest tests/api/test_admin_oauth.py tests/unit/test_oidc_config.py -q
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_EDITION: enterprise
           NIMBUSWARE_OIDC_ENABLED: "1"
           NIMBUSWARE_OIDC_MOCK: "1"

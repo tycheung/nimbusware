@@ -65,7 +65,7 @@ def test_get_bundle_search_openapi_documents_200_example(client: TestClient) -> 
 
 def test_get_bundle_search_reports_faiss_index_ready_bool(client: TestClient) -> None:
     """``faiss_index_ready`` / ``faiss_index_stale`` mirror on-disk FAISS sync helpers."""
-    from hermes_extensions.catalog import (
+    from nimbusware_extensions.catalog import (
         bundle_faiss_index_ready,
         bundle_faiss_index_sync_state,
     )
@@ -153,7 +153,7 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
     """
     import yaml as _yaml  # local import keeps test module imports tidy
 
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
     from nimbusware_api.deps import get_orchestrator, get_store
 
     personas_dir = tmp_path / "configs" / "personas"

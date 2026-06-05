@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )

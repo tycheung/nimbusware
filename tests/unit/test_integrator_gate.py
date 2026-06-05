@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_extensions.phase2 import ModuleIntegrator
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_extensions.phase2 import ModuleIntegrator
+from nimbusware_orchestrator.integrator_gate import (
     load_integrator_gate_emit_enabled,
     rank_bundle_compatibility_candidates,
     select_bundle_id_for_workflow,

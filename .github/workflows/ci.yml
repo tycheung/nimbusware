@@ -51,7 +51,7 @@ jobs:
           poetry run python scripts/coverage_package_floors.py --report .ci_coverage.json
           rm -f .ci_coverage.json
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
 
   web:
     runs-on: ubuntu-latest
@@ -113,7 +113,7 @@ jobs:
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
 
   e2e:
     runs-on: ubuntu-latest
@@ -147,4 +147,4 @@ jobs:
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.models import EventType
-from hermes_research.stitch_outcome_stats import (
+from nimbusware_research.stitch_outcome_stats import (
     compute_stitch_transplant_stats,
     fetch_stitch_analytics_event_rows,
 )

@@ -48,7 +48,7 @@ def resolve_run_workspace(
 ) -> Path:
     if override is not None:
         return override.resolve()
-    env_ws = os.environ.get("HERMES_WORKSPACE", "").strip()
+    env_ws = os.environ.get("NIMBUSWARE_WORKSPACE", "").strip()
     if env_ws:
         return Path(env_ws).resolve()
     meta = run_created_metadata_from_rows(rows)

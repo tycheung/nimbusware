@@ -18,15 +18,15 @@ from agent_core.models import (
     RunCreatedEvent,
     RunCreatedPayload,
 )
-from hermes_orchestrator.outbound_http import (
+from nimbusware_orchestrator.outbound_http import (
     egress_checked_get_for_run,
     network_egress_from_run_created,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.scraper_stage import ScraperFetchConfig
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig
+from nimbusware_store.memory import InMemoryEventStore
 
-# follow-on 65: shared fixtures + helper for HERMES_OUTBOUND_FETCH_ENABLED
+# follow-on 65: shared fixtures + helper for NIMBUSWARE_OUTBOUND_FETCH_ENABLED
 # string-arm contract tests at both call sites in ``pipeline.py``.
 
 _SITE1_ACTOR_UUID = UUID("11111111-1111-4111-8111-111111111101")
@@ -165,7 +165,7 @@ def test_egress_checked_get_wrong_role_raises() -> None:
 
 
 def test_orchestrator_egress_fetch_requires_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_OUTBOUND_FETCH_ENABLED", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raising=False)
     orch, _mem = make_dev_orchestrator()
     rid = orch.create_run(
         "default",
@@ -176,7 +176,7 @@ def test_orchestrator_egress_fetch_requires_env(monkeypatch: pytest.MonkeyPatch)
             },
         },
     )
-    with pytest.raises(RuntimeError, match="HERMES_OUTBOUND_FETCH_ENABLED"):
+    with pytest.raises(RuntimeError, match="NIMBUSWARE_OUTBOUND_FETCH_ENABLED"):
         orch.egress_checked_fetch_url(
             rid,
             "https://www.example.test/",
@@ -187,11 +187,11 @@ def test_orchestrator_egress_fetch_requires_env(monkeypatch: pytest.MonkeyPatch)
 def test_outbound_fetch_env_force_on_at_egress_checked_fetch_url_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §14 #10 ``HERMES_OUTBOUND_FETCH_ENABLED`` force-on contract at site 1.
+    """Pin §14 #10 ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED`` force-on contract at site 1.
 
     :meth:`RunOrchestrator.egress_checked_fetch_url` ([pipeline.py lines
-    214-218](packages\\hermes_orchestrator\\pipeline.py)) gates the
-    outbound GET on ``os.environ.get("HERMES_OUTBOUND_FETCH_ENABLED",
+    214-218](packages\\nimbusware_orchestrator\\pipeline.py)) gates the
+    outbound GET on ``os.environ.get("NIMBUSWARE_OUTBOUND_FETCH_ENABLED",
     "").lower() not in ("1", "true", "yes")``. Existing
     ``test_orchestrator_egress_fetch_requires_env`` only pins the
     env-absent branch (raises ``RuntimeError``); this test pins the
@@ -220,7 +220,7 @@ def test_outbound_fetch_env_force_on_at_egress_checked_fetch_url_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", raw)
+        monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raw)
         orch, _mem = make_dev_orchestrator()
         rid = orch.create_run("default", run_policy_overrides=_SITE1_RUN_EGRESS)
         mock_resp = MagicMock(spec=httpx.Response)
@@ -239,10 +239,10 @@ def test_outbound_fetch_env_force_on_at_egress_checked_fetch_url_contract(
 def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §14 #10 ``HERMES_OUTBOUND_FETCH_ENABLED`` force-on contract at site 2.
+    """Pin §14 #10 ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED`` force-on contract at site 2.
 
     :meth:`RunOrchestrator.run_optional_scraper_fetch_stage` ([pipeline.py
-    lines 379-398](packages\\hermes_orchestrator\\pipeline.py))
+    lines 379-398](packages\\nimbusware_orchestrator\\pipeline.py))
     uses the **identical** coercion as site 1 to decide whether to emit a
     ``stage.failed`` ``outbound_fetch_disabled`` and return early. This
     test mirrors Part A across the same force-on variants asserting NO
@@ -268,11 +268,11 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", raw)
+        monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             mock_resp = MagicMock(spec=httpx.Response)
@@ -333,7 +333,7 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
         ("near_miss_true_bang", "true!"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", raw)
+        monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raw)
         orch1, _mem1 = make_dev_orchestrator()
         rid1 = orch1.create_run("default", run_policy_overrides=_SITE1_RUN_EGRESS)
         try:
@@ -343,7 +343,7 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
                 _SITE1_ACTOR_UUID,
             )
         except RuntimeError as exc:
-            assert "HERMES_OUTBOUND_FETCH_ENABLED" in str(exc), (
+            assert "NIMBUSWARE_OUTBOUND_FETCH_ENABLED" in str(exc), (
                 f"fail_closed_site1 raw={raw!r} wrong message: {exc!s}"
             )
         else:
@@ -351,7 +351,7 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
         orch2, mem2 = make_dev_orchestrator()
         rid2 = orch2.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             orch2.run_optional_scraper_fetch_stage(rid2)

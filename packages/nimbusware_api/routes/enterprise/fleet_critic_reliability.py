@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from hermes_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 

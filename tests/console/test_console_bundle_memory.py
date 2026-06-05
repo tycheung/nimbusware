@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import Verdict
-from hermes_extensions.bundle_memory import (
+from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
 )

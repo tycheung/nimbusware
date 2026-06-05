@@ -6,8 +6,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models import EventType
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.verifier_escalation import load_escalate_on_first_verifier_failure
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.verifier_escalation import load_escalate_on_first_verifier_failure
 from nimbusware_env import find_repo_root
 
 
@@ -18,7 +18,7 @@ def test_load_escalate_on_first_verifier_failure_default() -> None:
 
 def test_verifier_failure_checkpoint_once() -> None:
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_on_first_verifier_failure",
+        "nimbusware_orchestrator.pipeline.load_escalate_on_first_verifier_failure",
         return_value=True,
     ):
         orch, mem = make_dev_orchestrator()

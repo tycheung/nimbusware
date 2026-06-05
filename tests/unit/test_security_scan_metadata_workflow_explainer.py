@@ -184,7 +184,7 @@ def test_security_scan_metadata_effective_enabled_caption() -> None:
 def test_security_scan_metadata_env_gate_caption() -> None:
     cap_off = security_scan_metadata_env_gate_caption(
         {
-            "HERMES_ATTACH_SECURITY_SCAN_METADATA": {
+            "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": {
                 "forces_off": True,
                 "raw": "0",
             },
@@ -194,7 +194,7 @@ def test_security_scan_metadata_env_gate_caption() -> None:
     assert "kill-switch" in cap_off
     cap_on = security_scan_metadata_env_gate_caption(
         {
-            "HERMES_ATTACH_SECURITY_SCAN_METADATA": {
+            "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": {
                 "forces_on": True,
                 "raw": "1",
             },
@@ -204,7 +204,7 @@ def test_security_scan_metadata_env_gate_caption() -> None:
     assert "force-on" in cap_on
     cap_unset = security_scan_metadata_env_gate_caption(
         {
-            "HERMES_ATTACH_SECURITY_SCAN_METADATA": {
+            "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": {
                 "unset_follows_yaml": True,
             },
         },
@@ -329,7 +329,7 @@ def test_explainer_workflow_yaml_top_level_string_key_count_none_without_profile
 
 
 def test_explainer_env_force_on_overrides_yaml_off(monkeypatch: object, tmp_path: Path) -> None:
-    monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", "1")
+    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "1")
     _write_profile(
         tmp_path,
         "sec_off",
@@ -341,7 +341,7 @@ def test_explainer_env_force_on_overrides_yaml_off(monkeypatch: object, tmp_path
     )
     assert pl["yaml_parsed_bool"] is False
     assert pl["effective_enabled"] is True
-    env = pl["HERMES_ATTACH_SECURITY_SCAN_METADATA"]
+    env = pl["NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA"]
     assert isinstance(env, dict)
     assert env.get("forces_on") is True
     assert pl["security_scan_metadata_yaml_parsed_bool_matches_effective"] is False
@@ -382,7 +382,7 @@ def test_explainer_yaml_raw_type_for_string_scalar(tmp_path: Path) -> None:
 
 
 def test_explainer_env_kill_switch_overrides_yaml_on(monkeypatch: object, tmp_path: Path) -> None:
-    monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", "0")
+    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "0")
     _write_profile(
         tmp_path,
         "sec_on",
@@ -394,7 +394,7 @@ def test_explainer_env_kill_switch_overrides_yaml_on(monkeypatch: object, tmp_pa
     )
     assert pl["yaml_parsed_bool"] is True
     assert pl["effective_enabled"] is False
-    env = pl["HERMES_ATTACH_SECURITY_SCAN_METADATA"]
+    env = pl["NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA"]
     assert isinstance(env, dict)
     assert env.get("forces_off") is True
     assert pl["security_scan_metadata_yaml_parsed_bool_matches_effective"] is False
@@ -484,7 +484,7 @@ def test_security_scan_metadata_explainer_table_rows_export_json_and_csv(
     fields = {r["field"] for r in rows}
     assert "effective_enabled" in fields
     assert "yaml_parsed_bool" in fields
-    env_row = next(r for r in rows if r["field"] == "HERMES_ATTACH_SECURITY_SCAN_METADATA")
+    env_row = next(r for r in rows if r["field"] == "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA")
     assert '"unset_follows_yaml"' in env_row["value"]
     assert len(rows) == len(payload)
     parsed = json.loads(security_scan_metadata_explainer_export_json(payload))
@@ -514,7 +514,7 @@ def test_security_scan_metadata_workflow_explainer_operator_metrics_env_forces_o
         "yaml_parsed_bool": False,
         "effective_enabled": True,
         "security_scan_metadata_yaml_parsed_bool_matches_effective": False,
-        "HERMES_ATTACH_SECURITY_SCAN_METADATA": {
+        "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": {
             "forces_on": True,
             "forces_off": False,
             "unset": False,

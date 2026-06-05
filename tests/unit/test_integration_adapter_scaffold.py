@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from hermes_orchestrator.integration_adapter_scaffold import (
+from nimbusware_orchestrator.integration_adapter_scaffold import (
     execute_target_adapter_integration,
     validate_integration_manifest,
 )

@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from nimbusware_env import find_repo_root
 from nimbusware_env.admin_token import DEFAULT_NIMBUSWARE_ADMIN_TOKEN
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", DEFAULT_NIMBUSWARE_ADMIN_TOKEN)
 
 from nimbusware_api.app import app  # noqa: E402
@@ -75,7 +75,7 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
         headers=ADMIN_HEADERS,
     )
     with patch("nimbusware_api.routes.ollama.start_pull_job") as start_job:
-        from hermes_orchestrator.ollama_pull_jobs import PullJob
+        from nimbusware_orchestrator.ollama_pull_jobs import PullJob
 
         start_job.return_value = PullJob(
             job_id="job-1", model="tiny", host="http://127.0.0.1:11434"
@@ -88,7 +88,7 @@ def test_user_pull_allowed_after_policy(client: TestClient) -> None:
 
 
 def test_get_ollama_pull_job_status(client: TestClient) -> None:
-    from hermes_orchestrator.ollama_pull_jobs import PullJob, reset_pull_jobs_for_tests
+    from nimbusware_orchestrator.ollama_pull_jobs import PullJob, reset_pull_jobs_for_tests
 
     reset_pull_jobs_for_tests()
     with patch("nimbusware_api.routes.ollama.get_pull_job") as get_job:
@@ -104,7 +104,7 @@ def test_get_ollama_pull_job_status(client: TestClient) -> None:
 
 
 def test_filter_query_param(client: TestClient) -> None:
-    from hermes_orchestrator.ollama_manage import OllamaModelRow
+    from nimbusware_orchestrator.ollama_manage import OllamaModelRow
 
     rows = [
         OllamaModelRow(name="llama3.1:8b"),

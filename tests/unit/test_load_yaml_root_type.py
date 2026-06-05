@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.workflow_escalation import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )
-from hermes_orchestrator.workflow_security_metadata import (
+from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 
@@ -29,7 +29,7 @@ def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
     """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
 
     Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](packages\\hermes_orchestrator\\workflow_profiles.py)
+    [workflow_profiles.py](packages\\nimbusware_orchestrator\\workflow_profiles.py)
     expectations: file must exist at
     ``{repo_root}/configs/workflows/{profile}.yaml``.
     """
@@ -146,9 +146,9 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
 
     The **tie-in to the upcoming fo76 zero-behavior cleanup** -- pins
     that both ``parse_escalation_workflow_block`` in
-    [workflow_escalation.py](packages\\hermes_orchestrator\\workflow_escalation.py)
+    [workflow_escalation.py](packages\\nimbusware_orchestrator\\workflow_escalation.py)
     and ``parse_security_scan_metadata_on_verify_workflow`` in
-    [workflow_security_metadata.py](packages\\hermes_orchestrator\\workflow_security_metadata.py)
+    [workflow_security_metadata.py](packages\\nimbusware_orchestrator\\workflow_security_metadata.py)
     cascade to their respective defaults for every non-dict YAML root.
 
     The cascade chain:
@@ -161,9 +161,9 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
        ``parse_security_scan_metadata_on_verify_workflow`` returns
        ``False``).
     4. The outer ``if isinstance(raw, dict)`` guard at line 35 of
-       [workflow_escalation.py](packages\\hermes_orchestrator\\workflow_escalation.py)
+       [workflow_escalation.py](packages\\nimbusware_orchestrator\\workflow_escalation.py)
        and line 60 of
-       [workflow_security_metadata.py](packages\\hermes_orchestrator\\workflow_security_metadata.py)
+       [workflow_security_metadata.py](packages\\nimbusware_orchestrator\\workflow_security_metadata.py)
        **never executes** because the try/except returned first.
 
     Step 4 is the dead-code observation that justifies the fo76

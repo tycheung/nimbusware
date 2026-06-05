@@ -4,19 +4,19 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
+from nimbusware_orchestrator.scraper_artifacts import resolve_scraper_artifact_base_dir
 
-_ENV_NAME = "HERMES_SCRAPER_ARTIFACT_DIR"
-_DEFAULT_REL = (".cache", "hermes_scraper")
+_ENV_NAME = "NIMBUSWARE_SCRAPER_ARTIFACT_DIR"
+_DEFAULT_REL = (".cache", "nimbusware_scraper")
 
 
 def _default_for(repo_root: Path) -> Path:
     """Return the canonical default ``base_dir`` for ``repo_root``.
 
     Mirrors the production fallthrough expression
-    ``(repo_root / ".cache" / "hermes_scraper").resolve()`` and is the
+    ``(repo_root / ".cache" / "nimbusware_scraper").resolve()`` and is the
     single source of truth for Parts B and C so a refactor that renames
-    ``.cache/hermes_scraper`` surfaces as a per-block assertion failure.
+    ``.cache/nimbusware_scraper`` surfaces as a per-block assertion failure.
     """
     return repo_root.joinpath(*_DEFAULT_REL).resolve()
 
@@ -78,7 +78,7 @@ def test_scraper_artifact_dir_env_default_fallthrough_convergence_contract(
     The sharpest fo74 part -- mirror of fo73 Part B's three-path
     floor-convergence applied to the default-fallthrough branch. Five
     blocks pin the multi-path convergence on
-    ``(repo_root / ".cache" / "hermes_scraper").resolve()``:
+    ``(repo_root / ".cache" / "nimbusware_scraper").resolve()``:
 
     * **Block 1 -- env-absent path:** ``os.environ.get(..., "")``
       default-arg supplies the empty string.

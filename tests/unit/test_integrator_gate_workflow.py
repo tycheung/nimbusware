@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
     integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,
@@ -134,9 +134,9 @@ def test_effective_integrator_min_score_env_overrides_workflow(
         "version: 1\nenabled: false\nmin_score_to_pass: 0.5\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "0.99")
+    monkeypatch.setenv("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "0.99")
     assert effective_integrator_min_score_to_pass(tmp_path, "ms") == pytest.approx(0.99)
-    monkeypatch.delenv("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", raising=False)
     assert effective_integrator_min_score_to_pass(tmp_path, "ms") == pytest.approx(0.1)
     assert load_integrator_min_score_from_thresholds(tmp_path) == pytest.approx(0.5)
 

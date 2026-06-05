@@ -109,7 +109,7 @@ def prune_status_freshness_caption(
     if not status:
         return (
             "No prune status file yet (run scripts/prune_scraper_artifacts.py "
-            "with --summary-path or HERMES_PRUNE_STATUS_PATH set)."
+            "with --summary-path or NIMBUSWARE_PRUNE_STATUS_PATH set)."
         )
     wrote_at = _parse_wrote_at(status.get("wrote_at"))
     if wrote_at is None:

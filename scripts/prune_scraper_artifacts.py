@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Remove scraper response artifact files older than a TTL.
 
-Requires ``--max-age-days`` or ``HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS`` (positive integer).
-Uses ``HERMES_SCRAPER_ARTIFACT_DIR`` when set, else ``<NIMBUSWARE_REPO_ROOT>/.cache/hermes_scraper``.
+Requires ``--max-age-days`` or ``NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS`` (positive integer).
+Uses ``NIMBUSWARE_SCRAPER_ARTIFACT_DIR`` when set, else ``<NIMBUSWARE_REPO_ROOT>/.cache/nimbusware_scraper``.
 
 Scheduled pruning (no in-repo daemon): point a system scheduler at this entrypoint after exporting
 the same env vars you use for runs (at minimum ``NIMBUSWARE_REPO_ROOT``).
@@ -10,7 +10,7 @@ the same env vars you use for runs (at minimum ``NIMBUSWARE_REPO_ROOT``).
 Examples:
 
 - **cron** (daily 03:15, 14-day TTL): ``15 3 * * * cd /path/to/nimbusware &&``
-  ``NIMBUSWARE_REPO_ROOT=/path/to/nimbusware HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
+  ``NIMBUSWARE_REPO_ROOT=/path/to/nimbusware NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS=14``
   ``poetry run python scripts/prune_scraper_artifacts.py``
 - **Dry-run** (count only): add ``--dry-run`` to the same command to print how many files
   would be removed without deleting.
@@ -25,19 +25,19 @@ Examples:
   operators may write to pin a specific run's artifacts from auto-prune. Exclude wins
   on overlap with ``--include-pattern``.
 - **Env pattern defaults**: when no CLI include/exclude flags are passed,
-  ``HERMES_PRUNE_INCLUDE_PATTERN`` / ``HERMES_PRUNE_EXCLUDE_PATTERN`` supply comma-separated
+  ``NIMBUSWARE_PRUNE_INCLUDE_PATTERN`` / ``NIMBUSWARE_PRUNE_EXCLUDE_PATTERN`` supply comma-separated
   globs (same semantics as repeating ``--include-pattern`` / ``--exclude-pattern``).
   CLI flags always win when present.
-- **State file**: ``--summary-path ~/.cache/hermes_scraper/.prune_status.json``
+- **State file**: ``--summary-path ~/.cache/nimbusware_scraper/.prune_status.json``
   writes the same JSON object as ``--json-summary`` plus a UTC ``wrote_at`` timestamp,
   atomically (tmp + ``os.replace``), so operator prune-status UIs can render
-  the last-run summary. ``HERMES_PRUNE_STATUS_PATH`` is the env equivalent; the CLI
+  the last-run summary. ``NIMBUSWARE_PRUNE_STATUS_PATH`` is the env equivalent; the CLI
   flag wins when both are set. Independent of ``--json-summary``: you can write the
   file without printing the extra stdout line, or do both.
 - **Windows Task Scheduler**: Action ``Program`` = ``powershell.exe``; ``Arguments`` =
   ``-NoProfile -Command "Set-Location 'D:\\Nimbusware';``
   ``$env:NIMBUSWARE_REPO_ROOT='D:\\Nimbusware';``
-  ``$env:HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS='14';``
+  ``$env:NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS='14';``
   ``poetry run python scripts/prune_scraper_artifacts.py"``
 """
 
@@ -51,7 +51,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.scraper_artifacts import (
+from nimbusware_orchestrator.scraper_artifacts import (
     prune_scraper_artifacts,
     resolve_scraper_artifact_base_dir,
 )
@@ -63,8 +63,8 @@ def _patterns_from_cli_or_env(
 ) -> list[str] | None:
     """CLI ``--include-pattern`` / ``--exclude-pattern`` win over env defaults.
 
-    Env uses comma-separated globs (``HERMES_PRUNE_INCLUDE_PATTERN``,
-    ``HERMES_PRUNE_EXCLUDE_PATTERN``) so operators can set one var in cron/Task
+    Env uses comma-separated globs (``NIMBUSWARE_PRUNE_INCLUDE_PATTERN``,
+    ``NIMBUSWARE_PRUNE_EXCLUDE_PATTERN``) so operators can set one var in cron/Task
     Scheduler without repeating CLI flags.
     """
     if cli_patterns:
@@ -77,10 +77,10 @@ def _patterns_from_cli_or_env(
 
 
 def _resolve_summary_path(cli_value: str | None) -> Path | None:
-    """CLI flag overrides ``HERMES_PRUNE_STATUS_PATH``; blank / unset ⇒ no file written."""
+    """CLI flag overrides ``NIMBUSWARE_PRUNE_STATUS_PATH``; blank / unset ⇒ no file written."""
     if cli_value:
         return Path(cli_value).expanduser()
-    raw = os.environ.get("HERMES_PRUNE_STATUS_PATH", "").strip()
+    raw = os.environ.get("NIMBUSWARE_PRUNE_STATUS_PATH", "").strip()
     if raw:
         return Path(raw).expanduser()
     return None
@@ -148,17 +148,17 @@ def main() -> int:
         help=(
             "Atomically write the JSON summary (same shape as --json-summary, plus "
             "wrote_at UTC timestamp) to PATH so operator prune-status panels can "
-            "render it. Overrides HERMES_PRUNE_STATUS_PATH when both are set."
+            "render it. Overrides NIMBUSWARE_PRUNE_STATUS_PATH when both are set."
         ),
     )
     args = parser.parse_args()
     days = args.max_age_days
     if days is None:
-        raw = os.environ.get("HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "").strip()
+        raw = os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "").strip()
         days = int(raw) if raw else None
     if days is None or days < 1:
         print(
-            "Set --max-age-days or HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS (positive integer).",
+            "Set --max-age-days or NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS (positive integer).",
             file=sys.stderr,
         )
         return 1
@@ -166,11 +166,11 @@ def main() -> int:
     base = resolve_scraper_artifact_base_dir(root)
     include_patterns = _patterns_from_cli_or_env(
         args.include_pattern,
-        "HERMES_PRUNE_INCLUDE_PATTERN",
+        "NIMBUSWARE_PRUNE_INCLUDE_PATTERN",
     )
     exclude_patterns = _patterns_from_cli_or_env(
         args.exclude_pattern,
-        "HERMES_PRUNE_EXCLUDE_PATTERN",
+        "NIMBUSWARE_PRUNE_EXCLUDE_PATTERN",
     )
     prune_result = prune_scraper_artifacts(
         base,

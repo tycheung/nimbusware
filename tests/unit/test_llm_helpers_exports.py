@@ -6,7 +6,7 @@ import ast
 from pathlib import Path
 
 _COMMON = (
-    Path(__file__).resolve().parents[2] / "packages" / "hermes_orchestrator" / "llm" / "common.py"
+    Path(__file__).resolve().parents[2] / "packages" / "nimbusware_orchestrator" / "llm" / "common.py"
 )
 
 _REQUIRED = frozenset(
@@ -49,7 +49,7 @@ def test_llm_critique_modules_use_explicit_common_imports() -> None:
     offenders: list[str] = []
     for path in sorted(root.glob("*_critique.py")):
         text = path.read_text(encoding="utf-8")
-        if "from hermes_orchestrator.llm.common import *" in text:
+        if "from nimbusware_orchestrator.llm.common import *" in text:
             offenders.append(path.name)
     assert not offenders, "Critique modules must not star-import common:\n" + "\n".join(
         offenders,

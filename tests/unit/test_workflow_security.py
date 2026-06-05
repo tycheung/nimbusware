@@ -7,13 +7,13 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from nimbusware_env import find_repo_root
 
 
 def test_security_scan_env_forces_true(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", "1")
+    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "1")
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     assert security_scan_metadata_on_verify_enabled(root, "default") is True
 
@@ -21,13 +21,13 @@ def test_security_scan_env_forces_true(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_security_scan_env_kill_switch_overrides_workflow(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", "0")
+    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "0")
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     assert security_scan_metadata_on_verify_enabled(root, "security_scan_metadata_on") is False
 
 
 def test_security_scan_workflow_yaml(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raising=False)
     (tmp_path / "configs" / "workflows").mkdir(parents=True)
     (tmp_path / "configs" / "workflows" / "customsec.yaml").write_text(
         "version: 1\nsecurity_scan_metadata_on_verify: true\n",
@@ -37,22 +37,22 @@ def test_security_scan_workflow_yaml(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
 
 def test_repo_profile_security_scan_metadata_on(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raising=False)
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     assert security_scan_metadata_on_verify_enabled(root, "security_scan_metadata_on") is True
 
 
 @patch(
-    "hermes_orchestrator.pipeline.run_security_scan",
+    "nimbusware_orchestrator.pipeline.run_security_scan",
     return_value=(2, "scanlog\nline2\n", 1, 2, 0, 0, 0, 0),
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
 def test_verifier_failure_attaches_security_metadata_when_workflow_on(
     _mock_vf: object,
     _mock_scan: object,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("security_scan_metadata_on")
     orch.execute_writer_verifier_pass(rid)
@@ -67,16 +67,16 @@ def test_verifier_failure_attaches_security_metadata_when_workflow_on(
 
 
 @patch(
-    "hermes_orchestrator.pipeline.run_security_scan",
+    "nimbusware_orchestrator.pipeline.run_security_scan",
     return_value=(0, "should_not_attach", 0, 0, 0, 0, 0, 0),
 )
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
 def test_env_kill_skips_security_scan_metadata(
     _mock_vf: object,
     _mock_scan: object,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", "false")
+    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "false")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("security_scan_metadata_on")
     orch.execute_writer_verifier_pass(rid)
@@ -110,7 +110,7 @@ def test_security_scan_metadata_env_force_on_string_arm_contract(
     """Pin §14 #18 env force-on tuple ``.strip().lower() in ("1", "true", "yes")``.
 
     :func:`security_scan_metadata_on_verify_enabled` consults
-    ``HERMES_ATTACH_SECURITY_SCAN_METADATA`` *before* the YAML coercion ladder.
+    ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA`` *before* the YAML coercion ladder.
     Existing tests sample only `"1"`; this test exhaustively pins the
     case-folded + whitespace-trimmed variants of the force-on tuple. The
     workflow profile is ``off.yaml`` (``security_scan_metadata_on_verify:
@@ -138,7 +138,7 @@ def test_security_scan_metadata_env_force_on_string_arm_contract(
         ("ws_upper_true_pad", "  TRUE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raw)
+        monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raw)
         assert security_scan_metadata_on_verify_enabled(tmp_path, "off") is True, (
             f"force_on raw={raw!r}"
         )
@@ -174,7 +174,7 @@ def test_security_scan_metadata_env_kill_switch_string_arm_contract(
         ("ws_upper_false_pad", "  FALSE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raw)
+        monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raw)
         assert security_scan_metadata_on_verify_enabled(tmp_path, "on") is False, (
             f"kill_switch raw={raw!r}"
         )
@@ -190,7 +190,7 @@ def test_security_scan_metadata_env_fallthrough_to_yaml_string_arm_contract(
     ``"on"`` / ``"off"`` in its truthy tuple, but the **env** layer's tuples
     are ``("1", "true", "yes")`` and ``("0", "false", "no")`` —
     they **exclude** ``"on"`` / ``"off"``. So
-    ``HERMES_ATTACH_SECURITY_SCAN_METADATA=on`` falls past both tuples to
+    ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA=on`` falls past both tuples to
     YAML rather than forcing-on. This is the parallel of follow-on 51's
     :func:`env_over_yaml` asymmetry slice for
     :mod:`workflow_universal_critique`.
@@ -213,7 +213,7 @@ def test_security_scan_metadata_env_fallthrough_to_yaml_string_arm_contract(
 
     A future "unify the env tuple with the YAML tuple" refactor (adding
     ``"on"`` / ``"off"`` to the env tuples) would silently flip the
-    semantics of ``HERMES_ATTACH_SECURITY_SCAN_METADATA=on`` from "follow
+    semantics of ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA=on`` from "follow
     YAML" to "force on" — this test fails loudly on exactly that change.
     """
     _write_security_profile(tmp_path, "off", enabled=False)
@@ -230,7 +230,7 @@ def test_security_scan_metadata_env_fallthrough_to_yaml_string_arm_contract(
         ("fall_interior_ws", " ye s "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_ATTACH_SECURITY_SCAN_METADATA", raw)
+        monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raw)
         assert security_scan_metadata_on_verify_enabled(tmp_path, "off") is False, (
             f"fall_through workflow=off raw={raw!r}"
         )

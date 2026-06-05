@@ -5,9 +5,9 @@ import json
 import tarfile
 from uuid import uuid4
 
-from hermes_orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
-from hermes_research.enterprise_index import append_enterprise_research_index
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
+from nimbusware_research.enterprise_index import append_enterprise_research_index
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_iam.store import InMemoryIamStore
 
 

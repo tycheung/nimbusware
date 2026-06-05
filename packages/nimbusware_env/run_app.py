@@ -140,7 +140,7 @@ def start_servers(
     os.environ["NIMBUSWARE_API_HOST"] = api_host
     os.environ["PORT"] = str(api_port)
     os.environ["NIMBUSWARE_API_BASE"] = f"http://{api_host}:{api_port}/v1"
-    os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+    os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
     py_cmd = resolve_python_command(root)
     env = os.environ.copy()

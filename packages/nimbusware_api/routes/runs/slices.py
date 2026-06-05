@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
-from hermes_orchestrator.slice_diff_api import build_slice_diff_response
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_orchestrator.slice_diff_api import build_slice_diff_response
+from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import (

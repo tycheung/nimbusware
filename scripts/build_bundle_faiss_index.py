@@ -38,7 +38,7 @@ def build_bundle_faiss_index(*, catalog_path: Path, out_dir: Path) -> int:
         print("faiss not installed; run: poetry install --with faiss", file=sys.stderr)
         return 1
 
-    from hermes_extensions import BundleCatalog
+    from nimbusware_extensions import BundleCatalog
 
     out_dir.mkdir(parents=True, exist_ok=True)
 

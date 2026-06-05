@@ -10,7 +10,7 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.captions impor
     security_scan_metadata_yaml_raw_type_caption,
 )
 from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
-    _hermes_attach_security_scan_metadata_env_summary,
+    _nimbusware_attach_security_scan_metadata_env_summary,
 )
 from nimbusware_console.security_scan_metadata_workflow_explainer.exports import (
     _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS,

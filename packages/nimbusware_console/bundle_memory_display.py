@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from hermes_extensions.bundle_memory import BundleOutcomeStore, aggregate_bundle_success_stats
-from hermes_extensions.bundle_memory_models import BundleSuccessStats
+from nimbusware_extensions.bundle_memory import BundleOutcomeStore, aggregate_bundle_success_stats
+from nimbusware_extensions.bundle_memory_models import BundleSuccessStats
 
 
 def bundle_success_stats_table_rows(

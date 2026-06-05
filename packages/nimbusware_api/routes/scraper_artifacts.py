@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from hermes_orchestrator.scraper_artifacts import (
+from nimbusware_orchestrator.scraper_artifacts import (
     resolve_scraper_artifact_base_dir,
     scraper_artifact_inventory,
 )
@@ -42,7 +42,7 @@ def get_scraper_artifact_inventory(
 ) -> ScraperArtifactInventoryResponse:
     """On-disk scraper artifact inventory under the configured cache directory."""
     base = resolve_scraper_artifact_base_dir(orch.repo_root)
-    env_days = os.environ.get("HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "").strip()
+    env_days = os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "").strip()
     retention_days: int | None = None
     if env_days:
         try:

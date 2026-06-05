@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from hermes_orchestrator.micro_slice import parse_slice_plan
-from hermes_orchestrator.slice_context_packet import build_slice_context_packet
-from hermes_orchestrator.slice_gate import run_slice_gate_chain
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.slice_context_packet import build_slice_context_packet
+from nimbusware_orchestrator.slice_gate import run_slice_gate_chain
 
 
 def test_packet_caps_size() -> None:

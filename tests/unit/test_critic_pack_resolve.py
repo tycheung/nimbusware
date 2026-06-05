@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.critic_pack_resolve import (
+from nimbusware_orchestrator.critic_pack_resolve import (
     critic_pack_id_from_workflow,
     load_critic_pack,
     resolve_critic_pack_for_workflow,

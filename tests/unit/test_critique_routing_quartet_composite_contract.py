@@ -8,14 +8,14 @@ from uuid import UUID
 
 import pytest
 
-from hermes_extensions.phase2 import UniversalCritiqueRouter
-from hermes_orchestrator.critique_routing import (
+from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_orchestrator.critique_routing import (
     default_critique_pairings_path,
     load_critique_router,
     registry_producer_taxonomy_keys,
     taxonomy_keys_for_run_lifecycle,
 )
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_env import find_repo_root
 
 # Builder helpers (no fixtures beyond pytest built-ins)

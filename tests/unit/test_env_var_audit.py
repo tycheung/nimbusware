@@ -31,14 +31,14 @@ def test_env_over_yaml_resolved_honors_explicit_env(
 ) -> None:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
-    monkeypatch.delenv("HERMES_STUB_IMPLEMENTATION_CRITICS", raising=False)
-    assert env_over_yaml_resolved("HERMES_STUB_IMPLEMENTATION_CRITICS", True) is True
-    monkeypatch.setenv("HERMES_STUB_IMPLEMENTATION_CRITICS", "1")
-    assert env_over_yaml_resolved("HERMES_STUB_IMPLEMENTATION_CRITICS", False) is True
+    monkeypatch.delenv("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", raising=False)
+    assert env_over_yaml_resolved("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", True) is True
+    monkeypatch.setenv("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", "1")
+    assert env_over_yaml_resolved("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", False) is True
 
 
 def test_catalog_tri_state_parallel_writers(monkeypatch) -> None:
     from nimbusware_env.env_flags import env_force_on
 
-    monkeypatch.setenv("HERMES_PARALLEL_WRITERS", "1")
-    assert env_force_on("HERMES_PARALLEL_WRITERS") is True
+    monkeypatch.setenv("NIMBUSWARE_PARALLEL_WRITERS", "1")
+    assert env_force_on("NIMBUSWARE_PARALLEL_WRITERS") is True

@@ -9,14 +9,14 @@
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icon-192.png" />
-    <title>Hermes Maker</title>
+    <title>Nimbusware Maker</title>
     <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body x-data="makerShell" x-init="init()" @maker-toast.window="showToast($event.detail)">
     <div class="app-layout">
       <aside class="sidebar" x-show="!mobileMode">
-        <h1 class="brand">Hermes Maker</h1>
+        <h1 class="brand">Nimbusware Maker</h1>
         <nav class="nav sidebar-nav">
           <template x-for="tab in tabs" :key="tab.id">
             <a

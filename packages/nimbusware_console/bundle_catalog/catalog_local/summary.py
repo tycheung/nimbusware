@@ -29,7 +29,7 @@ def bundle_catalog_local_summary(repo_root: Path) -> dict[str, Any]:
         return out
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)

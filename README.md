@@ -1,6 +1,6 @@
 # Nimbusware
 
-Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, **Maker** and **Admin** web apps (Alpine + Preact at `/v1/maker/app/` and `/v1/admin/app/`), optional **desktop shells** (pywebview), and local integration with the **Hermes** online agentic system (multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages via `hermes_*` packages).
+Nimbusware is a **local-first** platform for operating adversarial agentic software workflows. It combines a **FastAPI control plane**, **Maker** and **Admin** web apps (Alpine + Preact at `/v1/maker/app/` and `/v1/admin/app/`), optional **desktop shells** (pywebview), and an event-sourced **agent runtime** (multi-role pipeline, unanimous gates, verifiers, optional Ollama-backed LLM stages via `nimbusware_*` packages).
 
 **Default install:** Maker only. The Admin Console is optional and gated behind an admin token.
 
@@ -18,7 +18,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 **Enterprise capabilities** (when edition is `enterprise`):
 
 - **IAM** — API keys, tenants, row-level isolation on events/config/memory (`X-Nimbusware-Api-Key`)
-- **Fleet memory** — org-scoped index, canonical store sync (`hermes-memory-sync`), search API
+- **Fleet memory** — org-scoped index, canonical store sync (`nimbusware-memory-sync`), search API
 - **Config NOTIFY** — Postgres `LISTEN/NOTIFY` + `config.document.updated` cache invalidation
 - **Object-store primary** — S3-compatible scraper artifact backend (optional local mirror)
 - **Redis fleet worker** — shared verify queue, health/back-pressure metrics
@@ -32,27 +32,27 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
 | **Maker app** | `nimbusware_maker` + `nimbusware_maker_web` | **User console** — web UI at `/v1/maker/app/` |
 | **Admin Console** | `nimbusware_console` + `nimbusware_admin_ui` | **Admin/dev console** — web UI at `/v1/admin/app/` (Enterprise **Fleet** at `/v1/admin/app/fleet`) |
-| **Agent tools** | `hermes_agent_tools` | Allowlisted tools; filesystem jail; sandbox (`none`/`stub`/`docker`/`kubernetes`/`e2b`); per-slice risk caps |
-| **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
-| **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
+| **Agent tools** | `nimbusware_agent_tools` | Allowlisted tools; filesystem jail; sandbox (`none`/`stub`/`docker`/`kubernetes`/`e2b`); per-slice risk caps |
+| **Nimbusware orchestrator** | `nimbusware_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
+| **Event store** | `nimbusware_store` | Append-only Postgres (or in-memory without DB URL) |
 | **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
-| **Memory** | `hermes_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
+| **Memory** | `nimbusware_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
-| **Extensions** | `hermes_extensions` | Personas, bundles, escalation, integrator helpers |
-| **Research / stitch** | `hermes_research` | Research briefs, stitch stages, outcome analytics |
+| **Extensions** | `nimbusware_extensions` | Personas, bundles, escalation, integrator helpers |
+| **Research / stitch** | `nimbusware_research` | Research briefs, stitch stages, outcome analytics |
 | **Projections** | `nimbusware_projections` | Pure event → timeline read models (no API import from orchestrator) |
 | **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
 | **Desktop / env** | `nimbusware_env` | Edition gate, `env_flags`, admin token guards, desktop launchers |
 
-Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`). **Pyright LSP** for slice symbol sketch ships with default `poetry install` (dev dependency); installer sets `HERMES_SLICE_LSP_ENABLED=1` in `.env`.
+Optional: **Ollama** for LLM stages (`NIMBUSWARE_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`). **Pyright LSP** for slice symbol sketch ships with default `poetry install` (dev dependency); installer sets `NIMBUSWARE_SLICE_LSP_ENABLED=1` in `.env`.
 
-Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
+Environment toggles use the **`NIMBUSWARE_*`** prefix and are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
 Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (canonical package map), [docs/README.md](docs/README.md) (doc index), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [tests/README.md](tests/README.md). Operators: [bundle catalog promotion](docs/operator-bundle-catalog-promotion.md), [enterprise buyer checklist](docs/enterprise-buyer.md), [security CI gates](docs/security-quality-gates.md). Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python display helpers use `packages/*/services/` (no direct HTTP in `*_display.py`).
 
-## Hermes agent runtime (online system, local integration)
+## Agent runtime
 
-Capabilities below are provided by the Hermes agentic system; Nimbusware hosts the control plane and wires `hermes_orchestrator`, `hermes_store`, and related packages.
+The orchestrator and related packages provide:
 
 - **Run lifecycle** — `run.created` → plan → implement/verify paths with frozen `policy_snapshot` from materialized config
 - **Adversarial critics** — domain-bound critique stages (security, performance, network/resilience, refactor on production profile)
@@ -61,12 +61,12 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate; optional GitHub Checks bridge ([docs/deploy/external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic; **probation automation** (reliability auto-shelve, promote notice; `GET /v1/personas/{shelf}/{persona_id}/probation-reliability`)
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
-- **Fast slice** (`fast_slice: true` or `HERMES_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH
-- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `HERMES_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
-- **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `HERMES_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. Default PR **unit** CI does not run slice browsers; PR **web** job runs Playwright smoke in [`tests/e2e/web`](tests/e2e/web) (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+- **Fast slice** (`fast_slice: true` or `NIMBUSWARE_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH
+- **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `NIMBUSWARE_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
+- **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `NIMBUSWARE_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. Default PR **unit** CI does not run slice browsers; PR **web** job runs Playwright smoke in [`tests/e2e/web`](tests/e2e/web) (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 - **Mid-run pressure warnings** — rate-limited `resource.pressure.warn` events when the hardware governor throttles RAM mid-run; Admin **Hardware** timeline and competitive-summary projections surface the tail
-- **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
-- **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`HERMES_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `HERMES_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
+- **Slice implement agent** — optional `NIMBUSWARE_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
+- **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`NIMBUSWARE_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `NIMBUSWARE_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
@@ -81,9 +81,9 @@ Optional **SWE-bench-style** regression harness for the `micro_slice` workflow p
   - `--dry-run --json` — validate manifest + fixture layout
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
-- Published metrics: gitignored [`benchmarks/`](benchmarks/) — set `HERMES_SWE_BENCH_WRITE_JSON=1` to write `benchmarks/latest_swe_bench.json`
+- Published metrics: gitignored [`benchmarks/`](benchmarks/) — set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` to write `benchmarks/latest_swe_bench.json`
 - CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics)
-- Env: `HERMES_SWE_BENCH_ENABLED`, `HERMES_SWE_BENCH_MANIFEST`, `HERMES_SWE_BENCH_WRITE_JSON`
+- Env: `NIMBUSWARE_SWE_BENCH_ENABLED`, `NIMBUSWARE_SWE_BENCH_MANIFEST`, `NIMBUSWARE_SWE_BENCH_WRITE_JSON`
 
 Example scored output:
 
@@ -105,18 +105,18 @@ Example scored output:
 ```
 packages/
   agent_core/           Event models and validation
-  hermes_orchestrator/  Pipeline, critics, slice, preflight, dispatch
-  hermes_store/         Postgres + in-memory event store
-  hermes_memory/        Memory chunks, FAISS, fleet sync
-  hermes_executor/      Role-gated outbound HTTP
-  hermes_extensions/    Personas, bundles, catalog
+  nimbusware_orchestrator/  Pipeline, critics, slice, preflight, dispatch
+  nimbusware_store/         Postgres + in-memory event store
+  nimbusware_memory/        Memory chunks, FAISS, fleet sync
+  nimbusware_executor/      Role-gated outbound HTTP
+  nimbusware_extensions/    Personas, bundles, catalog
   nimbusware_api/       FastAPI app
   nimbusware_maker/     Maker services, slice workflow, onboarding helpers
   nimbusware_maker_web/ Maker web UI static assets (Alpine)
   nimbusware_admin_ui/  Admin Preact SPA (built to dist/)
   nimbusware_hw/        Hardware probe, resource governor, model fit ranking
   nimbusware_console/   Admin display helpers + services (ops/dev)
-  hermes_agent_tools/   Allowlisted agent tool runtime for slice implement
+  nimbusware_agent_tools/   Allowlisted agent tool runtime for slice implement
   nimbusware_config/    Config store + NOTIFY
   nimbusware_iam/       Enterprise IAM
   nimbusware_client/    Shared HTTP client for Maker + Admin UIs
@@ -127,7 +127,7 @@ scripts/                Install, FAISS build, workers, e2e smoke, runbooks
 tests/                  Pytest suite (unit/api/console/orchestrator/integration/e2e)
 ```
 
-Generated/local paths are **gitignored** (`.cache/`, `.hermes/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
+Generated/local paths are **gitignored** (`.cache/`, `.nimbusware/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
 
 ## Quick start
 
@@ -146,10 +146,10 @@ poetry install --with redis    # Enterprise Redis dispatch (included for --editi
 python scripts/install_nimbusware.py
 # Enterprise:
 python scripts/install_nimbusware.py --edition enterprise
-# Installer also sets HERMES_SLICE_LSP_ENABLED=1 in .env (default; use --no-enable-slice-lsp to skip)
+# Installer also sets NIMBUSWARE_SLICE_LSP_ENABLED=1 in .env (default; use --no-enable-slice-lsp to skip)
 ```
 
-The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/hermes_store/schema/postgres.sql`](packages/hermes_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`.
+The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/nimbusware_store/schema/postgres.sql`](packages/nimbusware_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`.
 
 Model catalog maintenance (offline-first): `python scripts/sync_model_catalog.py --help`.
 
@@ -252,7 +252,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`); `resource_pressure` banner when governor throttles RAM
-- Optional theater LLM one-liners: `HERMES_THEATER_LLM_SUMMARY=1` or `theater.llm_summary` on `run.created` (off by default)
+- Optional theater LLM one-liners: `NIMBUSWARE_THEATER_LLM_SUMMARY=1` or `theater.llm_summary` on `run.created` (off by default)
 - Tabbed web UI: Home, Build, Review, Progress (SSE theater + maker-progress), Models, Settings; PWA manifest; `?run_id=` deep links
 
 **Review**
@@ -260,7 +260,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject); stitch panel (`GET /v1/runs/{id}/stitch-summary`)
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
-- Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `HERMES_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
+- Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `NIMBUSWARE_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
 
 **Admin console link**
 
@@ -352,18 +352,18 @@ Admin header: `X-Nimbusware-Admin-Token` (from `NIMBUSWARE_ADMIN_TOKEN`). Enterp
 |---------|---------|
 | `poetry run nimbusware-api` | Start FastAPI/uvicorn |
 | `poetry run nimbusware-config` | Import/export/seed Postgres config |
-| `poetry run hermes-preflight` | Ad-hoc Ollama preflight probe + JSON histogram |
-| `poetry run hermes-memory-index` | Build repo-scoped memory FAISS index |
-| `poetry run hermes-memory-sync` | Enterprise fleet memory push/pull (canonical store) |
-| `poetry run hermes-memory-replay` | Replay runs against memory fixtures |
-| `poetry run hermes-role-telemetry` | Aggregate role telemetry from events |
-| `poetry run hermes-routing-suggest` | Read-only `model-routing.yaml` suggestions |
-| `poetry run hermes-run-worker` | Redis/in-memory run-dispatch worker |
-| `poetry run hermes-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
+| `poetry run nimbusware-preflight` | Ad-hoc Ollama preflight probe + JSON histogram |
+| `poetry run nimbusware-memory-index` | Build repo-scoped memory FAISS index |
+| `poetry run nimbusware-memory-sync` | Enterprise fleet memory push/pull (canonical store) |
+| `poetry run nimbusware-memory-replay` | Replay runs against memory fixtures |
+| `poetry run nimbusware-role-telemetry` | Aggregate role telemetry from events |
+| `poetry run nimbusware-routing-suggest` | Read-only `model-routing.yaml` suggestions |
+| `poetry run nimbusware-run-worker` | Redis/in-memory run-dispatch worker |
+| `poetry run nimbusware-fleet-ollama-sli` | Enterprise sustained Ollama p95 export job |
 | `poetry run nimbusware-run` | Desktop API + Maker window (default) |
 | `poetry run nimbusware-admin` | Desktop API + Admin Console window |
 | `poetry run nimbusware-maker` | Start API + open Maker web UI (`/v1/maker/app/`); add `--quick` for in-memory solo dev |
-| `poetry run nimbusware-git-pr` | Open GitHub PR for a Hermes run branch (`gh` CLI required) |
+| `poetry run nimbusware-git-pr` | Open GitHub PR for a Nimbusware run branch (`gh` CLI required) |
 | `poetry run nimbusware-mcp` | Stdio MCP server for IDE run status, theater, slice diff, plan approve ([`docs/ide-bridge.md`](docs/ide-bridge.md)) |
 | `poetry run nimbusware-launcher` | Install/update/run launcher UI |
 
@@ -381,7 +381,7 @@ docker compose --profile api up -d api
 docker compose --profile fleet up -d redis
 ```
 
-Set `HERMES_RUN_DISPATCH=redis` and `HERMES_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
+Set `NIMBUSWARE_RUN_DISPATCH=redis` and `NIMBUSWARE_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
 
 Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) — API, Redis, schema Job, dispatch worker, optional Admin Console ([`docs/deploy/k8s/`](docs/deploy/k8s/)). Enterprise OIDC console gate: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
 
@@ -399,7 +399,7 @@ poetry run nimbusware-api
 #   Body: { "label": "maker-user", "api_scopes": ["maker_user"] }
 ```
 
-Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
+Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
 
 Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
 
@@ -448,25 +448,25 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_REPO_ROOT` | install | Repo root for configs and artifacts |
 | `NIMBUSWARE_ADMIN_TOKEN` | install | Admin Console + admin API |
 | `NIMBUSWARE_API_BASE` | install | UI → API URL |
-| `HERMES_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
-| `HERMES_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
-| `HERMES_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
-| `HERMES_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` (host+jail), `stub`, or `docker` (Individual v1; requires local Docker CLI) |
-| `HERMES_SANDBOX_DOCKER_IMAGE` | user | Image for docker sandbox (default `python:3.11-slim`) |
-| `HERMES_FAST_SLICE` | user | Env override for workflow `fast_slice` opt-in |
-| `HERMES_PROBATION_AUTO_SHELVE` | user | Disable auto-shelve on probation reliability failure (unset = on) |
-| `HERMES_PROBATION_NOTIFY_BEFORE_PROMOTE` | user | Disable promotion notice finding (unset = on) |
+| `NIMBUSWARE_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
+| `NIMBUSWARE_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
+| `NIMBUSWARE_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
+| `NIMBUSWARE_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` (host+jail), `stub`, or `docker` (Individual v1; requires local Docker CLI) |
+| `NIMBUSWARE_SANDBOX_DOCKER_IMAGE` | user | Image for docker sandbox (default `python:3.11-slim`) |
+| `NIMBUSWARE_FAST_SLICE` | user | Env override for workflow `fast_slice` opt-in |
+| `NIMBUSWARE_PROBATION_AUTO_SHELVE` | user | Disable auto-shelve on probation reliability failure (unset = on) |
+| `NIMBUSWARE_PROBATION_NOTIFY_BEFORE_PROMOTE` | user | Disable promotion notice finding (unset = on) |
 | `NIMBUSWARE_HW_SSH_HOST` | install | Enterprise remote SSH hardware probe target |
 | `NIMBUSWARE_HW_FLEET_HOSTS` | install | Comma-separated hosts for fleet hardware tier dashboard |
-| `HERMES_SLICE_BUDGET_PRESET` | user | Micro-slice budget: `tiny`, `standard`, or `careful` |
-| `HERMES_SLICE_E2E_COMMAND` | user | Custom command when workflow `slice.e2e.enabled` is true |
+| `NIMBUSWARE_SLICE_BUDGET_PRESET` | user | Micro-slice budget: `tiny`, `standard`, or `careful` |
+| `NIMBUSWARE_SLICE_E2E_COMMAND` | user | Custom command when workflow `slice.e2e.enabled` is true |
 | `NIMBUSWARE_OIDC_ENABLED` | install | Enterprise Admin Console OIDC SSO gate |
 | `NIMBUSWARE_AUDIT_RETENTION_DAYS` | install | Enterprise audit export retention window |
-| `HERMES_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
-| `HERMES_RUN_DISPATCH` / `HERMES_REDIS_URL` | install | Fleet worker dispatch |
+| `NIMBUSWARE_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
+| `NIMBUSWARE_RUN_DISPATCH` / `NIMBUSWARE_REDIS_URL` | install | Fleet worker dispatch |
 
 Full catalog: `poetry run python scripts/audit_operator_env.py` (155+ keys).
 
 ## License
 
-Nimbusware (including Hermes) is free software under the [GNU General Public License v3.0](LICENSE). Copyright © 2026 Nimbusware contributors.
+Nimbusware (including Nimbusware) is free software under the [GNU General Public License v3.0](LICENSE). Copyright © 2026 Nimbusware contributors.

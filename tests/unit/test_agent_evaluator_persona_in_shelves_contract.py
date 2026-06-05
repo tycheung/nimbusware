@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -115,7 +115,7 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
       (previously only ``match="agent_evaluator"`` was asserted).
     * Adding the **default-short-circuit** axis: persona_id=default
       + MISSING shelves.yaml returns None, proving the default
-      check at [ingress.py:40-41](packages\\hermes_orchestrator\\ingress.py)
+      check at [ingress.py:40-41](packages\\nimbusware_orchestrator\\ingress.py)
       fires BEFORE PersonaShelf load at line 43.
     """
     _copy_real_personas(tmp_path)
@@ -188,7 +188,7 @@ def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_
 
     * **Sub-loop 1** -- shelves-load failures propagate uncaught.
       ``PersonaShelf.__init__`` at
-      [personas.py:14-15](packages\\hermes_extensions\\personas.py)
+      [personas.py:14-15](packages\\nimbusware_extensions\\personas.py)
       calls ``load_yaml(shelves_path)`` which raises FNF for
       missing files and ValueError for non-mapping roots; neither
       is caught by the wrapper.
@@ -196,7 +196,7 @@ def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_
     * **Sub-loop 2** -- graceful degradation when YAML root is a
       mapping but ``business_area`` / ``development_role`` entries
       are missing or wrong-type. ``all_persona_ids()`` at
-      [personas.py:46-60](packages\\hermes_extensions\\personas.py)
+      [personas.py:46-60](packages\\nimbusware_extensions\\personas.py)
       gracefully returns ``frozenset()`` / partial; the wrapper
       then raises the friendly ValueError with the resulting
       ``known`` list. 3 sub-cases pin the contract by asserting
@@ -238,12 +238,12 @@ def test_assert_agent_evaluator_persona_in_shelves_workflow_cascade_no_op_unifor
     """Workflow-profile-cascade no-op uniformity.
 
     ``parse_agent_evaluator_workflow_block`` at
-    [workflow_agent_evaluator.py:28-35](packages\\hermes_orchestrator\\workflow_agent_evaluator.py)
+    [workflow_agent_evaluator.py:28-35](packages\\nimbusware_orchestrator\\workflow_agent_evaluator.py)
     cascades to defaults (``enabled=False``) when
     ``workflow_profile_path`` raises FNF/OSError/ValueError or
     when ``load_yaml`` raises ValueError/OSError/UnicodeDecodeError.
     The wrapper then no-ops at
-    [ingress.py:38-39](packages\\hermes_orchestrator\\ingress.py).
+    [ingress.py:38-39](packages\\nimbusware_orchestrator\\ingress.py).
 
     This is the **structural complement** to Part B: where Part B
     pins that shelves-load failures DO propagate, Part C pins that

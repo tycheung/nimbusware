@@ -71,7 +71,7 @@
         "chunks_skipped": 0,
         "generation_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
         "embedding_mode": "deterministic",
-        "embedding_model_id": "hermes-memory-deterministic-v1",
+        "embedding_model_id": "nimbusware-memory-deterministic-v1",
         "index_dir": "configs/memory/index"
       }
     },

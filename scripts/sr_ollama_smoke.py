@@ -24,11 +24,11 @@ def main() -> int:
         help="Nimbusware repository root",
     )
     args = parser.parse_args()
-    os.environ.setdefault("HERMES_SELF_REFINEMENT_STAGE_MARKER", "1")
+    os.environ.setdefault("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", "1")
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(args.repo_root.resolve()))
 
-    from hermes_orchestrator.pipeline import make_dev_orchestrator
-    from hermes_orchestrator.workflow_self_refinement import (
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+    from nimbusware_orchestrator.workflow_self_refinement import (
         self_refinement_production_llm_critique_effective,
     )
 

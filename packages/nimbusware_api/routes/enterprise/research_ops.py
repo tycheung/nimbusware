@@ -5,7 +5,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, Response
 
-from hermes_research.enterprise_index import (
+from nimbusware_research.enterprise_index import (
     export_egress_audit_rows,
     list_enterprise_research_index,
     tenant_namespace,

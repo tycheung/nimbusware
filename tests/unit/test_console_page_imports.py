@@ -8,7 +8,7 @@ import pytest
 
 _REPO = Path(__file__).resolve().parents[2]
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault("NIMBUSWARE_ADMIN_TOKEN", "test-admin-token-for-import-smoke")
 
 _CONSOLE_MODULES: tuple[str, ...] = (

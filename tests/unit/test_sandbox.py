@@ -5,28 +5,28 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_agent_tools.sandbox import (
+from nimbusware_agent_tools.sandbox import (
     build_docker_run_argv,
     docker_cli_available,
     resolve_sandbox_backend,
     resolve_sandbox_docker_image,
     run_subprocess_in_sandbox,
 )
-from hermes_agent_tools.tools import tool_run_shell
+from nimbusware_agent_tools.tools import tool_run_shell
 
 
 def test_resolve_sandbox_backend_defaults_none(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_SANDBOX_BACKEND", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_SANDBOX_BACKEND", raising=False)
     assert resolve_sandbox_backend() == "none"
 
 
 def test_resolve_sandbox_backend_docker(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_SANDBOX_BACKEND", "docker")
+    monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "docker")
     assert resolve_sandbox_backend() == "docker"
 
 
 def test_resolve_sandbox_docker_image_default(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_SANDBOX_DOCKER_IMAGE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_SANDBOX_DOCKER_IMAGE", raising=False)
     assert resolve_sandbox_docker_image() == "python:3.11-slim"
 
 
@@ -41,8 +41,8 @@ def test_build_docker_run_argv(tmp_path: Path) -> None:
 
 
 def test_docker_unavailable_falls_back_local(tmp_path: Path) -> None:
-    with patch("hermes_agent_tools.sandbox.docker_cli_available", return_value=False):
-        with patch("hermes_agent_tools.sandbox.subprocess.run") as mock_run:
+    with patch("nimbusware_agent_tools.sandbox.docker_cli_available", return_value=False):
+        with patch("nimbusware_agent_tools.sandbox.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="ok\n", stderr="")
             result = run_subprocess_in_sandbox(
                 tmp_path,
@@ -58,8 +58,8 @@ def test_docker_unavailable_falls_back_local(tmp_path: Path) -> None:
 
 
 def test_docker_backend_invokes_container(tmp_path: Path) -> None:
-    with patch("hermes_agent_tools.sandbox.docker_cli_available", return_value=True):
-        with patch("hermes_agent_tools.sandbox.subprocess.run") as mock_run:
+    with patch("nimbusware_agent_tools.sandbox.docker_cli_available", return_value=True):
+        with patch("nimbusware_agent_tools.sandbox.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0, stdout="ok\n", stderr="")
             result = run_subprocess_in_sandbox(
                 tmp_path,
@@ -75,7 +75,7 @@ def test_docker_backend_invokes_container(tmp_path: Path) -> None:
 
 
 def test_stub_backend_tags_output(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_SANDBOX_BACKEND", "stub")
+    monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "stub")
     if Path("python").exists() or Path("python3").exists():
         result = tool_run_shell(tmp_path, "python", ["-c", "print('ok')"])
         assert "[sandbox:stub]" in result.output or result.ok
@@ -94,7 +94,7 @@ def test_run_subprocess_in_sandbox_none_prefix(tmp_path: Path) -> None:
 
 def test_docker_cli_available_false_on_missing_binary(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "hermes_agent_tools.sandbox.subprocess.run",
+        "nimbusware_agent_tools.sandbox.subprocess.run",
         MagicMock(side_effect=FileNotFoundError),
     )
     assert docker_cli_available() is False

@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from hermes_orchestrator.gate_override_execution import append_gate_overridden
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.gate_override_execution import append_gate_overridden
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_append_gate_overridden() -> None:

@@ -5,29 +5,29 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "nimbusware"
 version = "0.5.0"
-description = "Nimbusware local-first platform integrating the Hermes online agentic system. Python >=3.10; use 3.11+ when available."
+description = "Nimbusware local-first platform integrating the Nimbusware online agentic system. Python >=3.10; use 3.11+ when available."
 authors = []
 license = "GPL-3.0-only"
 package-mode = true
 packages = [
   { include = "agent_core", from = "packages" },
-  { include = "hermes_store", from = "packages" },
-  { include = "hermes_orchestrator", from = "packages" },
+  { include = "nimbusware_store", from = "packages" },
+  { include = "nimbusware_orchestrator", from = "packages" },
   { include = "nimbusware_api", from = "packages" },
-  { include = "hermes_executor", from = "packages" },
+  { include = "nimbusware_executor", from = "packages" },
   { include = "nimbusware_console", from = "packages" },
-  { include = "hermes_extensions", from = "packages" },
+  { include = "nimbusware_extensions", from = "packages" },
   { include = "nimbusware_config", from = "packages" },
   { include = "nimbusware_env", from = "packages" },
   { include = "nimbusware_iam", from = "packages" },
-  { include = "hermes_memory", from = "packages" },
-  { include = "hermes_research", from = "packages" },
+  { include = "nimbusware_memory", from = "packages" },
+  { include = "nimbusware_research", from = "packages" },
   { include = "nimbusware_projections", from = "packages" },
   { include = "nimbusware_maker", from = "packages" },
   { include = "nimbusware_maker_web", from = "packages" },
   { include = "nimbusware_mcp", from = "packages" },
   { include = "nimbusware_client", from = "packages" },
-  { include = "hermes_agent_tools", from = "packages" },
+  { include = "nimbusware_agent_tools", from = "packages" },
   { include = "nimbusware_hw", from = "packages" },
 ]
 
@@ -75,15 +75,15 @@ e2b = ">=1.0,<3"
 
 [tool.poetry.scripts]
 nimbusware-api = "nimbusware_api.cli:main"
-hermes-preflight = "hermes_orchestrator.preflight_cli:main"
+nimbusware-preflight = "nimbusware_orchestrator.preflight_cli:main"
 nimbusware-config = "nimbusware_config.cli:main"
-hermes-run-worker = "hermes_orchestrator.run_worker:main"
-hermes-memory-index = "hermes_memory.cli:main"
-hermes-memory-sync = "hermes_memory.sync_cli:main"
-hermes-memory-replay = "hermes_orchestrator.replay_cli:main"
-hermes-role-telemetry = "hermes_orchestrator.telemetry_cli:main"
-hermes-routing-suggest = "hermes_orchestrator.routing_suggestions_cli:main"
-hermes-fleet-ollama-sli = "hermes_orchestrator.fleet_ollama_sli_cli:main"
+nimbusware-run-worker = "nimbusware_orchestrator.run_worker:main"
+nimbusware-memory-index = "nimbusware_memory.cli:main"
+nimbusware-memory-sync = "nimbusware_memory.sync_cli:main"
+nimbusware-memory-replay = "nimbusware_orchestrator.replay_cli:main"
+nimbusware-role-telemetry = "nimbusware_orchestrator.telemetry_cli:main"
+nimbusware-routing-suggest = "nimbusware_orchestrator.routing_suggestions_cli:main"
+nimbusware-fleet-ollama-sli = "nimbusware_orchestrator.fleet_ollama_sli_cli:main"
 nimbusware-run = "nimbusware_env.run_app:main"
 nimbusware-admin = "nimbusware_env.admin_app:main"
 nimbusware-maker = "nimbusware_maker.cli:main"
@@ -122,25 +122,25 @@ ignore = ["E501"]
 "packages/nimbusware_console/bundle_catalog/catalog_local/__init__.py" = ["F811"]
 "packages/nimbusware_console/bundle_catalog/faiss_status/__init__.py" = ["F811"]
 "packages/nimbusware_console/pages/_state.py" = ["F403", "F405"]
-"packages/hermes_orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
-"packages/hermes_orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405"]
-"packages/hermes_orchestrator/llm/**" = ["F401", "F403", "F405"]
+"packages/nimbusware_orchestrator/_pipeline/**" = ["F401", "F403", "F405"]
+"packages/nimbusware_orchestrator/_pipeline/_helpers.py" = ["F401", "F403", "F405"]
+"packages/nimbusware_orchestrator/llm/**" = ["F401", "F403", "F405"]
 "packages/nimbusware_api/app.py" = ["E402"]
 "packages/nimbusware_console/custom_agents_ui.py" = ["E402"]
 "packages/nimbusware_console/agent_evaluator_display/metrics.py" = ["E402"]
 "packages/nimbusware_console/prune_status_display/*.py" = ["E402"]
 "packages/nimbusware_api/routes/preflight.py" = ["E402"]
 "packages/nimbusware_maker/app.py" = ["E402"]
-"packages/hermes_orchestrator/merge.py" = ["F401"]
-"packages/hermes_orchestrator/run_worker.py" = ["F401"]
+"packages/nimbusware_orchestrator/merge.py" = ["F401"]
+"packages/nimbusware_orchestrator/run_worker.py" = ["F401"]
 "packages/nimbusware_client/http.py" = ["F401"]
-"packages/hermes_memory/store.py" = ["F401"]
+"packages/nimbusware_memory/store.py" = ["F401"]
 "packages/agent_core/models/events.py" = ["F403", "F405"]
 "packages/nimbusware_api/schemas/openapi.py" = ["F401"]
-"packages/hermes_orchestrator/scraper_artifacts.py" = ["F401"]
-"packages/hermes_orchestrator/scraper_artifacts_inventory.py" = ["F401"]
-"packages/hermes_orchestrator/scraper_artifacts_prune.py" = ["F401"]
-"packages/hermes_orchestrator/scraper_artifacts_retention.py" = ["F401"]
+"packages/nimbusware_orchestrator/scraper_artifacts.py" = ["F401"]
+"packages/nimbusware_orchestrator/scraper_artifacts_inventory.py" = ["F401"]
+"packages/nimbusware_orchestrator/scraper_artifacts_prune.py" = ["F401"]
+"packages/nimbusware_orchestrator/scraper_artifacts_retention.py" = ["F401"]
 "packages/nimbusware_console/bundle_catalog/catalog_local/search.py" = ["F401"]
 "packages/nimbusware_console/bundle_catalog/faiss_status/drilldown.py" = ["F401"]
 "packages/nimbusware_console/integrator_gate/latest_delta.py" = ["F401"]
@@ -157,7 +157,7 @@ omit = [
   "*/__main__.py",
   "packages/**/*_cli.py",
   # Postgres adapter: integration tests only (fo742).
-  "packages/hermes_store/postgres.py",
+  "packages/nimbusware_store/postgres.py",
   "packages/nimbusware_api/cli.py",
   "packages/nimbusware_config/cli.py",
   "packages/nimbusware_maker/cli.py",
@@ -201,54 +201,54 @@ python_version = "3.10"
 strict = true
 packages = [
   "agent_core",
-  "hermes_store",
-  "hermes_orchestrator",
+  "nimbusware_store",
+  "nimbusware_orchestrator",
   "nimbusware_api",
-  "hermes_executor",
+  "nimbusware_executor",
   "nimbusware_console",
-  "hermes_extensions",
+  "nimbusware_extensions",
   "nimbusware_config",
   "nimbusware_env",
   "nimbusware_iam",
-  "hermes_memory",
-  "hermes_research",
+  "nimbusware_memory",
+  "nimbusware_research",
   "nimbusware_projections",
   "nimbusware_maker",
   "nimbusware_client",
-  "hermes_agent_tools",
+  "nimbusware_agent_tools",
 ]
 mypy_path = "packages"
 
 # Pipeline mypy strict islands.
 [[tool.mypy.overrides]]
 module = [
-  "hermes_orchestrator._pipeline.base",
-  "hermes_orchestrator._pipeline._helpers",
-  "hermes_orchestrator._pipeline.create_run",
-  "hermes_orchestrator._pipeline.micro_slice",
-  "hermes_orchestrator._pipeline.lifecycle_verify",
-  "hermes_orchestrator._pipeline.writers",
-  "hermes_orchestrator._pipeline.lifecycle_plan",
-  "hermes_orchestrator._pipeline.optional_critique",
-  "hermes_orchestrator._pipeline.escalation",
-  "hermes_orchestrator._pipeline.critique_gates_helpers",
-  "hermes_orchestrator._pipeline.critique_gates_optional_emit",
-  "hermes_orchestrator._pipeline.critique_gates_stage_failed",
-  "hermes_orchestrator._pipeline.critique_gates",
-  "hermes_orchestrator._pipeline.lifecycle",
-  "hermes_orchestrator._pipeline.lifecycle_start",
-  "hermes_orchestrator._pipeline.optional_stages_research",
-  "hermes_orchestrator._pipeline.optional_stages_stitch",
-  "hermes_orchestrator._pipeline.optional_stages_integrator",
-  "hermes_orchestrator._pipeline.optional_stages_integration",
-  "hermes_orchestrator._pipeline.optional_stages_self_refinement",
-  "hermes_orchestrator._pipeline.optional_stages_agent_evaluator",
-  "hermes_orchestrator._pipeline.optional_stages",
-  "hermes_orchestrator._pipeline.compose",
-  "hermes_orchestrator._pipeline.protocol_hosts",
-  "hermes_orchestrator._pipeline.pipeline_scraper",
-  "hermes_orchestrator._pipeline.dev_factory",
-  "hermes_orchestrator._pipeline.__init__",
+  "nimbusware_orchestrator._pipeline.base",
+  "nimbusware_orchestrator._pipeline._helpers",
+  "nimbusware_orchestrator._pipeline.create_run",
+  "nimbusware_orchestrator._pipeline.micro_slice",
+  "nimbusware_orchestrator._pipeline.lifecycle_verify",
+  "nimbusware_orchestrator._pipeline.writers",
+  "nimbusware_orchestrator._pipeline.lifecycle_plan",
+  "nimbusware_orchestrator._pipeline.optional_critique",
+  "nimbusware_orchestrator._pipeline.escalation",
+  "nimbusware_orchestrator._pipeline.critique_gates_helpers",
+  "nimbusware_orchestrator._pipeline.critique_gates_optional_emit",
+  "nimbusware_orchestrator._pipeline.critique_gates_stage_failed",
+  "nimbusware_orchestrator._pipeline.critique_gates",
+  "nimbusware_orchestrator._pipeline.lifecycle",
+  "nimbusware_orchestrator._pipeline.lifecycle_start",
+  "nimbusware_orchestrator._pipeline.optional_stages_research",
+  "nimbusware_orchestrator._pipeline.optional_stages_stitch",
+  "nimbusware_orchestrator._pipeline.optional_stages_integrator",
+  "nimbusware_orchestrator._pipeline.optional_stages_integration",
+  "nimbusware_orchestrator._pipeline.optional_stages_self_refinement",
+  "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator",
+  "nimbusware_orchestrator._pipeline.optional_stages",
+  "nimbusware_orchestrator._pipeline.compose",
+  "nimbusware_orchestrator._pipeline.protocol_hosts",
+  "nimbusware_orchestrator._pipeline.pipeline_scraper",
+  "nimbusware_orchestrator._pipeline.dev_factory",
+  "nimbusware_orchestrator._pipeline.__init__",
 ]
 ignore_errors = false
 
@@ -259,11 +259,11 @@ module = [
   "nimbusware_api.schemas.ollama",
   "nimbusware_api.routes.ollama",
   "nimbusware_api.errors",
-  "hermes_orchestrator.ollama_manage",
-  "hermes_orchestrator.ollama_user_policy",
-  "hermes_orchestrator.preflight",
-  "hermes_orchestrator.merge",
-  "hermes_orchestrator.workflow_profiles",
+  "nimbusware_orchestrator.ollama_manage",
+  "nimbusware_orchestrator.ollama_user_policy",
+  "nimbusware_orchestrator.preflight",
+  "nimbusware_orchestrator.merge",
+  "nimbusware_orchestrator.workflow_profiles",
   "nimbusware_console.services.ollama",
   "nimbusware_maker.services.ollama",
 ]
@@ -317,8 +317,8 @@ module = [
   "nimbusware_projections.*",
   "nimbusware_client",
   "nimbusware_client.*",
-  "hermes_agent_tools",
-  "hermes_agent_tools.*",
+  "nimbusware_agent_tools",
+  "nimbusware_agent_tools.*",
 ]
 ignore_errors = false
 
@@ -340,16 +340,16 @@ ignore_errors = false
 module = [
   "agent_core",
   "agent_core.*",
-  "hermes_store",
-  "hermes_store.*",
+  "nimbusware_store",
+  "nimbusware_store.*",
   "nimbusware_config",
   "nimbusware_config.*",
-  "hermes_executor",
-  "hermes_executor.*",
-  "hermes_extensions",
-  "hermes_extensions.*",
-  "hermes_memory",
-  "hermes_memory.*",
+  "nimbusware_executor",
+  "nimbusware_executor.*",
+  "nimbusware_extensions",
+  "nimbusware_extensions.*",
+  "nimbusware_memory",
+  "nimbusware_memory.*",
   "nimbusware_iam",
   "nimbusware_iam.*",
   "nimbusware_env",

@@ -20,7 +20,7 @@ If you discover a security issue, report it privately to the repository maintain
 
 ## Network egress
 
-Slice implement agents and scraper stages use role-gated egress allowlists in [`packages/hermes_executor/egress.py`](packages/hermes_executor/egress.py). Outbound HTTP is denied unless the actor role and target host match configured allowlists.
+Slice implement agents and scraper stages use role-gated egress allowlists in [`packages/nimbusware_executor/egress.py`](packages/nimbusware_executor/egress.py). Outbound HTTP is denied unless the actor role and target host match configured allowlists.
 
 ## Dependency and static analysis
 

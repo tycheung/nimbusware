@@ -15,10 +15,10 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 
 | Control | Implementation |
 |---------|----------------|
-| Run auditability | Append-only event store (`hermes_store`); per-run `GET /v1/runs/{id}/audit-export` |
+| Run auditability | Append-only event store (`nimbusware_store`); per-run `GET /v1/runs/{id}/audit-export` |
 | Enterprise export | `GET /v1/enterprise/audit-export` — IAM actions, event index, research/egress ledgers |
-| Egress policy | Role-gated allowlists in `hermes_executor.egress` |
-| Research index | Tenant JSONL under `.hermes/enterprise/{tenant}/` — `docs/enterprise-research-index.md` |
+| Egress policy | Role-gated allowlists in `nimbusware_executor.egress` |
+| Research index | Tenant JSONL under `.nimbusware/enterprise/{tenant}/` — `docs/enterprise-research-index.md` |
 
 ## Fleet and operations
 

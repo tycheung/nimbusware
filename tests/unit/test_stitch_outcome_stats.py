@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import EventType, Verdict
-from hermes_research.stitch_outcome_stats import compute_stitch_transplant_stats
+from nimbusware_research.stitch_outcome_stats import compute_stitch_transplant_stats
 
 
 def _row(

@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from hermes_agent_tools.risk_caps import AgentRiskCaps, resolve_agent_risk_caps
-from hermes_agent_tools.runtime import execute_slice_implement_agent
-from hermes_orchestrator.micro_slice import parse_slice_plan
-from hermes_orchestrator.slice_implement import slice_implement_mode
+from nimbusware_agent_tools.risk_caps import AgentRiskCaps, resolve_agent_risk_caps
+from nimbusware_agent_tools.runtime import execute_slice_implement_agent
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.slice_implement import slice_implement_mode
 
 
 def test_resolve_agent_risk_caps_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_AGENT_MAX_TOOL_STEPS", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_MAX_TOOL_STEPS", raising=False)
     caps = resolve_agent_risk_caps()
     assert caps.max_tool_steps == 20
     assert caps.max_shell_invocations == 5
@@ -21,7 +21,7 @@ def test_agent_risk_cap_stops_excess_steps(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_SLICE_IMPLEMENT", "agent")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_IMPLEMENT", "agent")
     assert slice_implement_mode() == "agent"
     ws = tmp_path / "proj"
     ws.mkdir()

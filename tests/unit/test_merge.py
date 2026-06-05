@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import UUID
 
-from hermes_orchestrator.merge import merge_policy_snapshot, policy_snapshot_from_files
+from nimbusware_orchestrator.merge import merge_policy_snapshot, policy_snapshot_from_files
 from nimbusware_env import find_repo_root
 
 

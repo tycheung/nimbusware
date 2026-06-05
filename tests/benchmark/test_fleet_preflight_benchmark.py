@@ -12,7 +12,7 @@ import pytest
 pytest.importorskip("pytest_benchmark")
 
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(Path(__file__).resolve().parents[2]))
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -21,7 +21,7 @@ from agent_core.models import (  # noqa: E402
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
 )
-from hermes_orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
+from nimbusware_orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 
 

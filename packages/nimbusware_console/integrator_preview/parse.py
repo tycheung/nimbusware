@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-from hermes_extensions.personas import ALLOWED_SHELVES
+from nimbusware_extensions.personas import ALLOWED_SHELVES
 
 _FULL_WORKFLOW_MAPPING_KEYS: frozenset[str] = frozenset(
     {

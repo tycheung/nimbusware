@@ -9,7 +9,7 @@ from fastapi import Header, HTTPException
 from fastapi.routing import APIRouter
 from pydantic import BaseModel, Field
 
-from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
 from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import OrchDep, ProjectStoreDep
 from nimbusware_api.errors import problem

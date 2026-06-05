@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from hermes_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
+from nimbusware_orchestrator.network_egress_normalize import normalize_domain_allowlist_entry
 
 
 def test_ipv4_canonical() -> None:

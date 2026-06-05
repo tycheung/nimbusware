@@ -8,10 +8,10 @@ from uuid import UUID
 import pytest
 
 from agent_core.models import EventType, Verdict
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 _GATE_EMITTED = EventType.GATE_DECISION_EMITTED.value
@@ -82,12 +82,12 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     A4 -- all gates off + env unset -> no emit (canonical control).
     A5 -- workflow YAML on + loader False -> emit via ``wf_on`` alone.
     """
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch.object(Path, "is_file", return_value=False),
@@ -100,19 +100,19 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
         "fires AFTER the OR-gate, so workflow-on cannot rescue missing thresholds)"
     )
 
-    monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", "1")
+    monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "1")
     orch_a2, mem_a2 = make_dev_orchestrator()
     rid_a2 = orch_a2.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch.object(Path, "is_file", return_value=False),
     ):
         orch_a2._emit_bundle_integrator_gate(rid_a2)  # noqa: SLF001
     assert _gate_rows(mem_a2, rid_a2) == [], (
-        "A2: env `HERMES_EMIT_INTEGRATOR_GATE=1` (force-on) + thresholds.yaml "
+        "A2: env `NIMBUSWARE_EMIT_INTEGRATOR_GATE=1` (force-on) + thresholds.yaml "
         "absent -> STILL no emit. Pins the absent-arm sits AFTER the env "
         "force-on check at pipeline.py:1494-1498 (env force-on cannot "
         "rescue missing thresholds; a refactor that moved the absent check "
@@ -120,15 +120,15 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
         "to emit-on-env)"
     )
 
-    monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", "0")
+    monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "0")
     orch_a3, mem_a3 = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("integrator_gate_on")
     class_spy_a3, _ = _make_fake_mi_class()
-    with patch("hermes_extensions.phase2.ModuleIntegrator", class_spy_a3):
+    with patch("nimbusware_extensions.phase2.ModuleIntegrator", class_spy_a3):
         orch_a3._emit_bundle_integrator_gate(rid_a3)  # noqa: SLF001
     assert class_spy_a3.call_count == 0, (
-        f"A3: env kill-switch `HERMES_EMIT_INTEGRATOR_GATE=0` short-circuits "
-        f"BEFORE the lazy `from hermes_extensions.phase2 import ModuleIntegrator` "
+        f"A3: env kill-switch `NIMBUSWARE_EMIT_INTEGRATOR_GATE=0` short-circuits "
+        f"BEFORE the lazy `from nimbusware_extensions.phase2 import ModuleIntegrator` "
         f"+ subsequent `ModuleIntegrator(min_score_to_pass=...)` at "
         f"pipeline.py:1486-1500; got class_spy_a3.call_count="
         f"{class_spy_a3.call_count}. A 'move the kill-switch below the "
@@ -138,11 +138,11 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
         "A3 cross-cut: kill-switch also produces zero emitted rows"
     )
 
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a4, mem_a4 = make_dev_orchestrator()
     rid_a4 = orch_a4.create_run("default")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_a4._emit_bundle_integrator_gate(rid_a4)  # noqa: SLF001
@@ -152,11 +152,11 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
         "returns. Canonical all-off control pin"
     )
 
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a5, mem_a5 = make_dev_orchestrator()
     rid_a5 = orch_a5.create_run("integrator_gate_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_a5._emit_bundle_integrator_gate(rid_a5)  # noqa: SLF001
@@ -181,17 +181,17 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
 
     B5 pins the structural boundary between B3 (None) and B4 ([]).
     """
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=["foo", "bar"],
         ),
     ):
@@ -208,11 +208,11 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b2 = orch_b2.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=None,
         ),
     ):
@@ -234,15 +234,15 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b3 = orch_b3.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=None,
         ),
         patch(
-            "hermes_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
+            "nimbusware_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
     ):
@@ -260,11 +260,11 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b4 = orch_b4.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=[],
         ),
     ):
@@ -302,17 +302,17 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     C1/C2 spy ``ModuleIntegrator.score_fit`` to inspect the profile arg shape.
     C3/C4/C5 inspect the emitted ``metadata.integrator_matched_tags``.
     """
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     class_spy_c1, mi_c1 = _make_fake_mi_class()
     orch_c1, _ = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
-        patch("hermes_extensions.phase2.ModuleIntegrator", class_spy_c1),
+        patch("nimbusware_extensions.phase2.ModuleIntegrator", class_spy_c1),
     ):
         orch_c1._emit_bundle_integrator_gate(rid_c1)  # noqa: SLF001
     profile_c1 = mi_c1.score_fit.call_args_list[0].args[1]
@@ -331,14 +331,14 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c2 = orch_c2.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
+            "nimbusware_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
-        patch("hermes_extensions.phase2.ModuleIntegrator", class_spy_c2),
+        patch("nimbusware_extensions.phase2.ModuleIntegrator", class_spy_c2),
     ):
         orch_c2._emit_bundle_integrator_gate(rid_c2)  # noqa: SLF001
     profile_c2 = mi_c2.score_fit.call_args_list[0].args[1]
@@ -358,11 +358,11 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c3 = orch_c3.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=["AUTH", "RBAC"],
         ),
     ):
@@ -379,11 +379,11 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c4 = orch_c4.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=["auth", "   ", "rbac"],
         ),
     ):
@@ -402,15 +402,15 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c5 = orch_c5.create_run("integrator_gate_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
-            "hermes_orchestrator.pipeline.parse_integrator_gate_project_tags",
+            "nimbusware_orchestrator.pipeline.parse_integrator_gate_project_tags",
             return_value=["auth", "rbac"],
         ),
         patch(
-            "hermes_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
+            "nimbusware_orchestrator.pipeline.load_bundle_tags_for_bundle_id",
             return_value=[],
         ),
     ):
@@ -437,12 +437,12 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     default' refactor would silently flip the field from False to True,
     invisible to callers but materially different in downstream gate logic.
     """
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     orch_pass, mem_pass = make_dev_orchestrator()
     rid_pass = orch_pass.create_run("integrator_gate_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_pass._emit_bundle_integrator_gate(rid_pass)  # noqa: SLF001
@@ -454,7 +454,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     orch_fail, mem_fail = make_dev_orchestrator()
     rid_fail = orch_fail.create_run("integrator_gate_mismatch")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_fail._emit_bundle_integrator_gate(rid_fail)  # noqa: SLF001

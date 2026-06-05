@@ -31,7 +31,7 @@ jobs:
       - name: Live SSH hardware fleet probe
         env:
           NIMBUSWARE_EDITION: enterprise
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_HW_FLEET_HOSTS: ${{ secrets.NIMBUSWARE_HW_FLEET_HOSTS }}
           NIMBUSWARE_HW_SSH_HOST: ${{ secrets.NIMBUSWARE_HW_SSH_HOST }}
           NIMBUSWARE_HW_SSH_IDENTITY: ${{ secrets.NIMBUSWARE_HW_SSH_IDENTITY }}

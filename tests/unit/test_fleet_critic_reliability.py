@@ -15,8 +15,8 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
-from hermes_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_iam.constants import DEFAULT_TENANT_ID
 from nimbusware_iam.context import reset_auth_context, set_auth_context
 from nimbusware_iam.models import AuthContext
@@ -101,7 +101,7 @@ def test_tenant_critic_reliability_metrics(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_critic_reliability_out_of_domain_metrics() -> None:
-    from hermes_orchestrator.fleet_critic_reliability import (
+    from nimbusware_orchestrator.fleet_critic_reliability import (
         critic_reliability_summary_from_events,
     )
 

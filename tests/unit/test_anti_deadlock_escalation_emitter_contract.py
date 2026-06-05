@@ -12,10 +12,10 @@ from agent_core.models import (
     StageFailedEvent,
     StageFailedPayload,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 _RUN_ESCALATED = "run.escalated"
@@ -74,7 +74,7 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
     orch_a1, _ = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("escalation_suppress_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+        "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
         return_value=(True, 15, 3),
     ) as loader_spy_a1:
         orch_a1._maybe_emit_anti_deadlock_escalation(rid_a1)  # noqa: SLF001
@@ -90,7 +90,7 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
     orch_a2, _ = make_dev_orchestrator()
     rid_a2 = orch_a2.create_run("default")
     with patch(
-        "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+        "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
         return_value=(True, 15, 3),
     ) as loader_spy_a2:
         orch_a2._maybe_emit_anti_deadlock_escalation(rid_a2)  # noqa: SLF001
@@ -105,7 +105,7 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
     orch_a3, _ = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("default")
     with patch(
-        "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+        "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
         return_value=(True, 15, 3),
     ) as loader_spy_a3:
         orch_a3._maybe_emit_anti_deadlock_escalation(rid_a3)  # noqa: SLF001
@@ -118,7 +118,7 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
     orch_a4, _ = make_dev_orchestrator()
     rid_a4 = orch_a4.create_run("default")
     with patch(
-        "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+        "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
         return_value=(False, 15, 3),
     ):
         orch_a4._maybe_emit_anti_deadlock_escalation(rid_a4)  # noqa: SLF001
@@ -130,7 +130,7 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
     orch_a5, _ = make_dev_orchestrator()
     rid_a5 = orch_a5.create_run("default")
     with patch(
-        "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+        "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
         return_value=(True, 0, 3),
     ):
         orch_a5._maybe_emit_anti_deadlock_escalation(rid_a5)  # noqa: SLF001
@@ -156,11 +156,11 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
     should_emit_spy_b1 = MagicMock(return_value=False)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             should_emit_spy_b1,
         ),
     ):
@@ -182,11 +182,11 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
     should_emit_spy_b2 = MagicMock(return_value=False)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 17, 5),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             should_emit_spy_b2,
         ),
     ):
@@ -209,11 +209,11 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
     rid_b3 = orch_b3.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=False,
         ),
     ):
@@ -226,11 +226,11 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
     rid_b4 = orch_b4.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -244,11 +244,11 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
     should_emit_spy_b5 = MagicMock(return_value=False)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             should_emit_spy_b5,
         ),
     ):
@@ -281,11 +281,11 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
     _append_escalation(mem_c1, rid_c1, _ANTI_DEADLOCK)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -301,11 +301,11 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
     _append_escalation(mem_c2, rid_c2, "cumulative_stage_failures")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -329,11 +329,11 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
     _append_stage_failed(mem_c3, rid_c3, "fo104_c3_stage")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -353,11 +353,11 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
     _append_escalation(mem_c4, rid_c4, _ANTI_DEADLOCK)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -374,11 +374,11 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
     should_emit_spy_c5 = MagicMock(return_value=True)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             should_emit_spy_c5,
         ),
     ):
@@ -405,11 +405,11 @@ def test_anti_deadlock_escalation_emit_shape_and_notes_5_axis() -> None:
     rid_d1 = orch_d1.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 15, 3),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -439,11 +439,11 @@ def test_anti_deadlock_escalation_emit_shape_and_notes_5_axis() -> None:
     rid_d4 = orch_d4.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 99, 0),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):

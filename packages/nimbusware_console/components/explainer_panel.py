@@ -8,7 +8,7 @@ def explainer_utc_timestamp_slug() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
-def hermes_download_filename(
+def nimbusware_download_filename(
     slug: str,
     ts: str,
     *,
@@ -16,8 +16,8 @@ def hermes_download_filename(
     ext: str,
 ) -> str:
     if kind == "explainer":
-        return f"hermes_{slug}_explainer_{ts}.{ext}"
-    return f"hermes_{slug}_{ts}.{ext}"
+        return f"nimbusware_{slug}_explainer_{ts}.{ext}"
+    return f"nimbusware_{slug}_{ts}.{ext}"
 
 
 def render_operator_metrics_explainer(*_args: Any, **_kwargs: Any) -> None:

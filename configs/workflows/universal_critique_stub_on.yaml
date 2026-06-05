@@ -1,5 +1,5 @@
 # Optional profile: stub-only universal critique panels after verify (no LLM, no env required).
-# Env ``HERMES_STUB_IMPLEMENTATION_CRITICS`` etc. still override YAML when set non-empty.
+# Env ``NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS`` etc. still override YAML when set non-empty.
 version: 1
 finding_fix_strictness:
   minimum_severity_requiring_fixes: MEDIUM

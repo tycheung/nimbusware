@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from nimbusware_env.env_flags import hermes_slice_p3_evidence_enabled, hermes_use_llm_enabled
+from nimbusware_env.env_flags import nimbusware_slice_p3_evidence_enabled, nimbusware_use_llm_enabled
 from nimbusware_maker.approval import (
     STAGE_SLICE_APPLIED,
     STAGE_SLICE_PENDING,
@@ -59,7 +59,7 @@ def complete_slice_after_implement(
 
     critique_verdicts = ["PASS"]
     critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
-    if hermes_slice_p3_evidence_enabled():
+    if nimbusware_slice_p3_evidence_enabled():
         sec_exit, perf_exit = _complete_slice_p3_evidence(ws, timeout_seconds=timeout)
         critique_meta["phase3_evidence"] = {
             "security_scan_exit": sec_exit,
@@ -67,7 +67,7 @@ def complete_slice_after_implement(
         }
         if sec_exit != 0 or perf_exit != 0:
             critique_verdicts = ["FAIL"]
-    if hermes_use_llm_enabled():
+    if nimbusware_use_llm_enabled():
         model = orch._selected_model_for_run(run_id)
         if model:
             critique_verdicts = _execute_slice_critique_llm(
@@ -138,7 +138,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
     mode = str(pending.get("implement_mode") or slice_implement_mode())
 
     if mode == "agent":
-        from hermes_agent_tools.runtime import execute_slice_implement_agent
+        from nimbusware_agent_tools.runtime import execute_slice_implement_agent
 
         impl_result = execute_slice_implement_agent(
             ws,
@@ -206,7 +206,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
     gate = complete_slice_after_implement(orch, run_id, ws, plan, duration_ms=duration_ms)
     commit_result: dict[str, Any] = {"status": "skipped", "reason": "gate_not_passed"}
     if gate.passed:
-        from hermes_orchestrator.slice_git_commit import maybe_commit_slice
+        from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
 
         run_meta = orch._run_created_metadata(run_id)
         commit_result = maybe_commit_slice(

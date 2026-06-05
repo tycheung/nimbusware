@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.slice_symbol_sketch import build_symbol_sketch
+from nimbusware_orchestrator.slice_symbol_sketch import build_symbol_sketch
 
 
 def test_symbol_sketch_lists_class_and_def() -> None:

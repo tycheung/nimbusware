@@ -3,13 +3,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from hermes_store.allowed_types import allowed_event_type_values
+from nimbusware_store.allowed_types import allowed_event_type_values
 from nimbusware_env import find_repo_root
 
 _SCHEMA_SQL = (
     find_repo_root(start=Path(__file__).resolve().parents[1])
     / "packages"
-    / "hermes_store"
+    / "nimbusware_store"
     / "schema"
     / "postgres.sql"
 )

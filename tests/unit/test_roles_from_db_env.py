@@ -8,17 +8,17 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-import hermes_orchestrator.runtime_bootstrap as _runtime_bootstrap
+import nimbusware_orchestrator.runtime_bootstrap as _runtime_bootstrap
 import nimbusware_api.app as _nimbusware_api_app_pkg  # noqa: F401 -- ensures submodule loads
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_api.app import app
 from nimbusware_iam.store import InMemoryIamStore
 
-_FAKE_DB_URL = "postgresql://test:test@localhost/hermes"
+_FAKE_DB_URL = "postgresql://test:test@localhost/nimbusware"
 _SENTINEL_REGISTRY = RoleRegistry.from_mapping(
     {},
     yaml_version=0,
-    content_digest_sha256_16="db:hermes_roles_registry",
+    content_digest_sha256_16="db:nimbusware_roles_registry",
 )
 
 _APP_MODULE = sys.modules["nimbusware_api.app"]

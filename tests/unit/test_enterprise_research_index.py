@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from uuid import uuid4
 
-from hermes_research.enterprise_index import (
+from nimbusware_research.enterprise_index import (
     append_enterprise_research_index,
     export_egress_audit_rows,
     list_enterprise_research_index,
@@ -30,7 +30,7 @@ def test_append_and_list_research_index(tmp_path: Path, monkeypatch) -> None:
 def test_export_egress_audit_reads_jsonl(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
     monkeypatch.setenv("NIMBUSWARE_TENANT_ID", "acme")
-    rel = Path(".hermes") / "enterprise" / "acme" / "egress_audit.jsonl"
+    rel = Path(".nimbusware") / "enterprise" / "acme" / "egress_audit.jsonl"
     path = tmp_path / rel
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(

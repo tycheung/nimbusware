@@ -1,4 +1,4 @@
-"""HERMES_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE."""
+"""NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE."""
 
 from __future__ import annotations
 
@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.anti_deadlock import load_anti_deadlock_settings
+from nimbusware_orchestrator.anti_deadlock import load_anti_deadlock_settings
 
-_ENV_NAME = "HERMES_DEADLOCK_ESCALATION_MINUTES"
+_ENV_NAME = "NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES"
 
 
 def _write_policy(
@@ -77,7 +77,7 @@ def test_deadlock_minutes_env_accept_arm_int_contract(
     2. **Zero boundary** -- ``"0"`` returns ``0`` literally; downstream
        ``should_emit_anti_deadlock_escalation`` short-circuits on
        ``stall_minutes <= 0`` separately in
-       [anti_deadlock.py](packages\\hermes_orchestrator\\anti_deadlock.py)
+       [anti_deadlock.py](packages\\nimbusware_orchestrator\\anti_deadlock.py)
        (line 68) but the LOAD function returns 0 verbatim.
     3. **NO clamping** -- negatives and large positives pass through
        (KEY DIVERGENCE from fo71 which clamps to ``[0.0, 1.0]``). A

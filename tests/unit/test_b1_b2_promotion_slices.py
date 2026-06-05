@@ -6,22 +6,22 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.escalation_policy_breadth import escalation_policy_breadth
-from hermes_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from hermes_orchestrator.security_scan import (
+from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
+from nimbusware_orchestrator.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     agent_evaluator_production_default_on,
 )
-from hermes_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-from hermes_orchestrator.workflow_self_refinement import (
+from nimbusware_orchestrator.workflow_self_refinement import (
     self_refinement_production_ungated_effective,
 )
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.workflow_universal_critique import (
     universal_critique_production_default_on,
 )
 from nimbusware_env import find_repo_root
@@ -75,7 +75,7 @@ def test_escalation_policy_breadth() -> None:
 
 
 def test_create_run_freezes_production_effective_metadata() -> None:
-    from hermes_orchestrator.pipeline import make_dev_orchestrator
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("nimbusware_production")
@@ -89,8 +89,8 @@ def test_create_run_freezes_production_effective_metadata() -> None:
 @pytest.mark.parametrize(
     "env_key,env_val",
     [
-        ("HERMES_AGENT_EVALUATOR_LLM_STUB", "1"),
-        ("HERMES_USE_LLM", "0"),
+        ("NIMBUSWARE_AGENT_EVALUATOR_LLM_STUB", "1"),
+        ("NIMBUSWARE_USE_LLM", "0"),
     ],
 )
 def test_agent_evaluator_production_default_kill_switch(

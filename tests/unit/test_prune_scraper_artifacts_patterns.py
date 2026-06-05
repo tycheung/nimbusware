@@ -6,7 +6,7 @@ import os
 import time
 from pathlib import Path
 
-from hermes_orchestrator.scraper_artifacts import (
+from nimbusware_orchestrator.scraper_artifacts import (
     _matches_any,
     prune_scraper_artifacts,
 )
@@ -48,7 +48,7 @@ def test_matches_any_handles_none_and_empty_list() -> None:
 
 def test_include_pattern_alone_only_matches_subset(tmp_path: Path) -> None:
     """``include_patterns`` restricts the deletion set; non-matches stay on disk."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["url00.bin", "url01.bin", "meta.txt", "log.json"], stale=True)
     pruned = _local_removed(
         base,
@@ -61,7 +61,7 @@ def test_include_pattern_alone_only_matches_subset(tmp_path: Path) -> None:
 
 def test_exclude_pattern_alone_preserves_matches(tmp_path: Path) -> None:
     """``exclude_patterns`` removes matches from the deletion set; rest is deleted."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["url00.bin", "url00.keep", "url01.bin"], stale=True)
     pruned = _local_removed(
         base,
@@ -74,7 +74,7 @@ def test_exclude_pattern_alone_preserves_matches(tmp_path: Path) -> None:
 
 def test_exclude_wins_over_include_on_overlap(tmp_path: Path) -> None:
     """When a file matches BOTH lists, exclude takes precedence (documented contract)."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["url00.bin", "pinned.bin", "url01.bin", "data.txt"], stale=True)
     pruned = _local_removed(
         base,
@@ -88,7 +88,7 @@ def test_exclude_wins_over_include_on_overlap(tmp_path: Path) -> None:
 
 def test_empty_list_behaves_like_none(tmp_path: Path) -> None:
     """``[]`` ⇒ no filter, matching ``None`` semantics (argparse ``action='append'`` ergonomics)."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["url00.bin", "meta.txt"], stale=True)
     pruned = _local_removed(
         base,
@@ -102,7 +102,7 @@ def test_empty_list_behaves_like_none(tmp_path: Path) -> None:
 
 def test_patterns_evaluated_after_mtime_cutoff(tmp_path: Path) -> None:
     """A fresh file matching ``include_pattern`` MUST NOT be deleted (mtime gate first)."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["stale.bin"], stale=True)
     _seed(base, ["fresh.bin"], stale=False)
     pruned = _local_removed(
@@ -116,7 +116,7 @@ def test_patterns_evaluated_after_mtime_cutoff(tmp_path: Path) -> None:
 
 def test_backward_compat_no_pattern_args(tmp_path: Path) -> None:
     """Calling without the fo125 kwargs preserves the pre-fo125 4-arg signature behaviour."""
-    base = tmp_path / "hermes_scraper"
+    base = tmp_path / "nimbusware_scraper"
     _seed(base, ["url00.bin", "meta.txt"], stale=True)
     pruned = _local_removed(base, max_age_days=7)
     assert pruned == 2

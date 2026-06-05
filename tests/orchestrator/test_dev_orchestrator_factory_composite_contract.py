@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.pipeline import (
+from nimbusware_orchestrator.pipeline import (
     RunOrchestrator,
     default_paths,
     make_dev_orchestrator,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_env import find_repo_root
 
 # -- Part A -- ``default_paths`` shape + path-suffix wire-format (5 axes) ------
@@ -21,7 +21,7 @@ def test_default_paths_shape_and_suffix_wire_format_5_axis(tmp_path: Path) -> No
     """Pin ``default_paths`` shape + path-suffix wire format (5 axes).
 
     Implementation at
-    [pipeline.py:1556-1561](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:1556-1561](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -42,7 +42,7 @@ def test_default_paths_shape_and_suffix_wire_format_5_axis(tmp_path: Path) -> No
     assert isinstance(paths, tuple), (
         f"A1: ``default_paths`` must return a ``tuple`` (callers do "
         f"tuple-unpack at e.g. [pipeline.py:1568]"
-        f"(packages/hermes_orchestrator/pipeline.py) "
+        f"(packages/nimbusware_orchestrator/pipeline.py) "
         f"``base, _ = default_paths(root)``); got {type(paths).__name__}"
     )
     assert len(paths) == 2, (
@@ -85,7 +85,7 @@ def test_default_paths_shape_and_suffix_wire_format_5_axis(tmp_path: Path) -> No
             f"URLs but break downstream ``path.read_bytes()`` and "
             f"``path.parent`` operations used by ``RoleRegistry.from_yaml`` and "
             f"``RunOrchestrator._base_cfg()`` at "
-            f"[pipeline.py:143-144](packages/hermes_orchestrator/pipeline.py). "
+            f"[pipeline.py:143-144](packages/nimbusware_orchestrator/pipeline.py). "
             f"Got type({idx})={type(p).__name__} value={p!r}"
         )
 
@@ -121,7 +121,7 @@ def test_default_paths_root_resolution_5_axis(tmp_path: Path) -> None:
     """Pin ``default_paths`` repo-root resolution (5 axes).
 
     Implementation at
-    [pipeline.py:1557](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:1557](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -158,16 +158,16 @@ def test_default_paths_root_resolution_5_axis(tmp_path: Path) -> None:
     assert (resolved_root / "configs").is_dir(), (
         f"B3: resolved root must contain a ``configs/`` directory -- pins "
         f"that ``parents[2]`` is the CORRECT index for ``pipeline.py`` "
-        f"located at ``packages/hermes_orchestrator/pipeline.py``. "
+        f"located at ``packages/nimbusware_orchestrator/pipeline.py``. "
         f"``parents[1]`` would land in ``packages/`` (no ``configs/`` "
         f"sibling); ``parents[3]`` would land in the parent-of-repo (no "
         f"``configs/`` child of THE repo). A refactor that drifted the index "
         f"would silently break every default-root caller. Resolved root: "
         f"{resolved_root!r}"
     )
-    assert (resolved_root / "packages" / "hermes_orchestrator" / "pipeline.py").is_file(), (
+    assert (resolved_root / "packages" / "nimbusware_orchestrator" / "pipeline.py").is_file(), (
         f"B3: as a paired sanity check, the resolved root must contain "
-        f"``packages/hermes_orchestrator/pipeline.py`` (the source of the "
+        f"``packages/nimbusware_orchestrator/pipeline.py`` (the source of the "
         f"helper). Pins that ``parents[2]`` of ``pipeline.py`` IS the repo "
         f"root (NOT the package or the parent-of-repo). Resolved root: "
         f"{resolved_root!r}"
@@ -218,7 +218,7 @@ def test_make_dev_orchestrator_shape_and_wiring_5_axis() -> None:
     """Pin ``make_dev_orchestrator`` return shape + wiring (5 axes).
 
     Implementation at
-    [pipeline.py:1564-1572](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:1564-1572](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -313,13 +313,13 @@ def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
     assert orch._base_path == paths[0], (
         f"D1 KEY DIVERGENCE: ``make_dev_orchestrator`` unpacks "
         f"``base, _ = default_paths(root)`` at [pipeline.py:1568]"
-        f"(packages/hermes_orchestrator/pipeline.py) -- the FIRST path "
+        f"(packages/nimbusware_orchestrator/pipeline.py) -- the FIRST path "
         f"(``model-routing.yaml``) becomes ``base``, NOT the second. A "
         f"refactor swapping to ``_, base = ...`` or ``*_, base = ...`` "
         f"would silently wire ``RunOrchestrator(base_config_path=...)`` "
         f"to ``workflows/default.yaml`` -- the WRONG file -- and "
         f"``orch._base_cfg()`` at [pipeline.py:143-144]"
-        f"(packages/hermes_orchestrator/pipeline.py) would load workflow "
+        f"(packages/nimbusware_orchestrator/pipeline.py) would load workflow "
         f"YAML when the orchestrator expected model-routing YAML. Got: "
         f"orch._base_path={orch._base_path!r} vs default_paths()[0]={paths[0]!r}"
     )
@@ -337,7 +337,7 @@ def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
     assert orch.repo_root == via_first, (
         f"D2 KEY DIVERGENCE: ``make_dev_orchestrator`` re-computes "
         f"``Path(__file__).resolve().parents[2]`` independently at "
-        f"[pipeline.py:1567](packages/hermes_orchestrator/pipeline.py) "
+        f"[pipeline.py:1567](packages/nimbusware_orchestrator/pipeline.py) "
         f"rather than delegating to ``default_paths(None)`` and walking "
         f"back via ``.parent.parent``. The two sites MUST agree. Pin via "
         f"``orch.repo_root == default_paths()[0].parent.parent``. A refactor "
@@ -363,7 +363,7 @@ def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
     paths_str = [str(p) for p in paths]
     assert all("roles.yaml" not in s for s in paths_str), (
         f"D3 KEY DIVERGENCE: ``roles.yaml`` is the THIRD hardcoded path at "
-        f"[pipeline.py:1569](packages/hermes_orchestrator/pipeline.py) "
+        f"[pipeline.py:1569](packages/nimbusware_orchestrator/pipeline.py) "
         f"(``RoleRegistry.from_yaml(root / 'configs' / 'roles.yaml')``) "
         f"and is NOT included in ``default_paths``'s 2-tuple. A refactor "
         f"that broadened ``default_paths`` to a 3-tuple including "
@@ -405,8 +405,8 @@ def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
         f"D5 KEY DIVERGENCE: ``make_dev_orchestrator(nonexistent_root)`` "
         f"MUST raise ``FileNotFoundError`` -- the impure helper reads "
         f"``roles.yaml`` via ``RoleRegistry.from_yaml(...).read_bytes()`` "
-        f"at [pipeline.py:1569](packages/hermes_orchestrator/pipeline.py) / "
-        f"[registry.py:26](packages/hermes_orchestrator/registry.py). "
+        f"at [pipeline.py:1569](packages/nimbusware_orchestrator/pipeline.py) / "
+        f"[registry.py:26](packages/nimbusware_orchestrator/registry.py). "
         f"The error message must mention ``roles.yaml`` (pins that "
         f"``roles.yaml`` -- NOT ``model-routing.yaml`` or ``default.yaml`` "
         f"-- is the first file hit). A refactor that swapped the I/O order "

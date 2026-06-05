@@ -1,4 +1,4 @@
-"""Agent evaluator LLM branch without mandatory HERMES_USE_LLM."""
+"""Agent evaluator LLM branch without mandatory NIMBUSWARE_USE_LLM."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     agent_evaluator_llm_branch_effective,
     persona_coverage_critique_llm_branch_effective,
@@ -25,12 +25,12 @@ def test_agent_evaluator_llm_branch_kill_switch(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     block = AgentEvaluatorWorkflowBlock(enabled=True, llm_evaluation_enabled=True)
-    monkeypatch.setenv("HERMES_USE_LLM", "0")
+    monkeypatch.setenv("NIMBUSWARE_USE_LLM", "0")
     assert agent_evaluator_llm_branch_effective(block) is False
 
 
 def test_persona_coverage_llm_branch_yaml_only() -> None:
-    from hermes_orchestrator.workflow_agent_evaluator import PersonaCoverageCritiqueBlock
+    from nimbusware_orchestrator.workflow_agent_evaluator import PersonaCoverageCritiqueBlock
 
     block = AgentEvaluatorWorkflowBlock(
         enabled=True,

@@ -6,14 +6,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.integration_adapter_writer_stage import (
+from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
-from hermes_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
 )
-from hermes_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
 from nimbusware_console.config_materializer import console_config_materializer
 
 
@@ -35,8 +35,8 @@ def _json_safe_yaml_fragment(raw: object) -> object:
     return str(raw)
 
 
-def _hermes_integration_adapter_writer_env_summary() -> dict[str, Any]:
-    raw = os.environ.get("HERMES_INTEGRATION_ADAPTER_WRITER", "")
+def _nimbusware_integration_adapter_writer_env_summary() -> dict[str, Any]:
+    raw = os.environ.get("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER", "")
     low = raw.strip().lower()
     if not low:
         return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}
@@ -58,17 +58,17 @@ def integration_adapter_writer_env_gate_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    env = payload.get("HERMES_INTEGRATION_ADAPTER_WRITER")
+    env = payload.get("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER")
     if not isinstance(env, Mapping):
         return None
     if env.get("forces_off"):
         return (
-            "Integration Adapter Writer env: **HERMES_INTEGRATION_ADAPTER_WRITER** "
+            "Integration Adapter Writer env: **NIMBUSWARE_INTEGRATION_ADAPTER_WRITER** "
             "kill-switch active — workflow enable ignored."
         )
     if env.get("forces_on"):
         return (
-            "Integration Adapter Writer env: **HERMES_INTEGRATION_ADAPTER_WRITER** "
+            "Integration Adapter Writer env: **NIMBUSWARE_INTEGRATION_ADAPTER_WRITER** "
             "force-on — scaffold may activate when pipeline wiring lands."
         )
     if env.get("unset"):
@@ -80,7 +80,7 @@ def integration_adapter_writer_env_gate_caption(
 
 
 def integration_adapter_writer_fleet_manifest_count(repo_root: Path) -> int:
-    manifest_dir = repo_root / ".hermes" / "integration_adapter_writer"
+    manifest_dir = repo_root / ".nimbusware" / "integration_adapter_writer"
     if not manifest_dir.is_dir():
         return 0
     return sum(1 for path in manifest_dir.rglob("manifest.json") if path.is_file())
@@ -104,7 +104,7 @@ def integration_adapter_writer_workflow_explainer_payload(
     )
     out: dict[str, Any] = {
         "workflow_profile": workflow_profile,
-        "HERMES_INTEGRATION_ADAPTER_WRITER": _hermes_integration_adapter_writer_env_summary(),
+        "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER": _nimbusware_integration_adapter_writer_env_summary(),
         "workflow_block": {
             "enabled": block.enabled,
             "target_adapter_kind": block.target_adapter_kind,
@@ -274,7 +274,7 @@ def integration_adapter_writer_from_events(
     rows: list[Mapping[str, Any]],
 ) -> dict[str, Any] | None:
     """Latest IAW metadata from ``stage.started`` rows."""
-    from hermes_orchestrator.integration_adapter_writer_stage import (
+    from nimbusware_orchestrator.integration_adapter_writer_stage import (
         INTEGRATION_ADAPTER_WRITER_STAGE,
     )
 

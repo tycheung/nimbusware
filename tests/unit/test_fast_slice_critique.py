@@ -5,11 +5,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent_core.models import EventType, Severity
-from hermes_orchestrator.fast_slice_critique import (
+from nimbusware_orchestrator.fast_slice_critique import (
     fast_slice_skips_optional_critique_matrix,
     max_open_finding_severity,
 )
-from hermes_orchestrator.workflow_fast_slice import parse_fast_slice_workflow_block
+from nimbusware_orchestrator.workflow_fast_slice import parse_fast_slice_workflow_block
 
 
 def test_parse_fast_slice_top_level(tmp_path: Path) -> None:

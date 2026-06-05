@@ -11,9 +11,9 @@ import pytest
 from pydantic import ValidationError
 
 from agent_core.models.events import FindingFixStrictnessSettings, Severity
-from hermes_orchestrator import pipeline as pipeline_module
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from nimbusware_orchestrator import pipeline as pipeline_module
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 
 def _all_false_effective_critique() -> EffectiveUniversalCritique:
@@ -58,7 +58,7 @@ def _inject_raw_run_created_row(
     (which the normal path would reject at the
     ``RunCreatedPayload(workflow_profile=...)`` step). The row shape
     matches what ``InMemoryEventStore.append`` would have produced
-    -- see [packages/hermes_store/memory.py](packages/hermes_store/memory.py)
+    -- see [packages/nimbusware_store/memory.py](packages/nimbusware_store/memory.py)
     lines 25-60 for the canonical row dict shape.
     """
     store._seq += 1  # noqa: SLF001
@@ -93,7 +93,7 @@ def test_strictness_context_fs_input_matrix_5_axis() -> None:
     """Pin ``_strictness_context`` ``fs``-input matrix via ``patch.object`` (5 axes).
 
     Implementation at
-    [pipeline.py:554-559](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:554-559](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -256,8 +256,8 @@ def test_strictness_context_real_path_integration_5_axis() -> None:
     )
     assert fs_b1.minimum_severity_requiring_fixes == Severity.MEDIUM, (
         f"B1: bare-default severity must be MEDIUM (set in "
-        f"[packages/hermes_orchestrator/merge.py:37-41]"
-        f"(packages/hermes_orchestrator/merge.py) when no layer "
+        f"[packages/nimbusware_orchestrator/merge.py:37-41]"
+        f"(packages/nimbusware_orchestrator/merge.py) when no layer "
         f"provides strictness). Got: "
         f"{fs_b1.minimum_severity_requiring_fixes!r}"
     )
@@ -356,7 +356,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     """Pin ``_effective_universal_critique_for_run`` direct seam (5 axes).
 
     Implementation at
-    [pipeline.py:700-702](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:700-702](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -437,7 +437,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     assert captured_args["wf"] == "123", (
         f"C4 KEY DIVERGENCE: non-string ``workflow_profile=123`` must "
         f"be ``str()``-coerced to ``'123'`` at "
-        f"[integrator_gate.py:84](packages/hermes_orchestrator/integrator_gate.py): "
+        f"[integrator_gate.py:84](packages/nimbusware_orchestrator/integrator_gate.py): "
         f"``return str(wf) if wf is not None else None``. A refactor "
         f"that dropped the ``str()`` cast would let ``int`` flow "
         f"downstream and break ``workflow_profile_path(repo_root, "
@@ -572,7 +572,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
     assert captured_d4["repo_root"] == orch_d4.repo_root, (
         f"D4 KEY DIVERGENCE: ``effective_universal_critique`` must "
         f"receive ``self._repo_root`` as the FIRST positional argument "
-        f"(per [pipeline.py:702](packages/hermes_orchestrator/pipeline.py) "
+        f"(per [pipeline.py:702](packages/nimbusware_orchestrator/pipeline.py) "
         f"``effective_universal_critique(self._repo_root, wf)``). A "
         f"refactor that hardcoded a path or used a module-level global "
         f"would break this. Got: repo_root={captured_d4['repo_root']!r} "

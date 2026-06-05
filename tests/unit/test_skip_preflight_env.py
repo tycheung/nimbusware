@@ -6,14 +6,14 @@ from unittest.mock import patch
 import httpx
 import pytest
 
-from hermes_orchestrator.preflight import PreflightError, run_model_preflight
+from nimbusware_orchestrator.preflight import PreflightError, run_model_preflight
 
 _PRIMARY_MODEL_ID = "dev:primary"
 _FALLBACK_MODEL_IDS: list[str] = ["dev:fallback"]
 
 _SKIPPED_EVIDENCE: dict[str, Any] = {
     "skipped": True,
-    "reason": "HERMES_SKIP_PREFLIGHT",
+    "reason": "NIMBUSWARE_SKIP_PREFLIGHT",
     "checks_passed": ["skipped"],
     "context_tokens": 8192,
     "p95_latency_ms": 0,
@@ -30,7 +30,7 @@ def _call_preflight() -> tuple[str, dict[str, Any], bool]:
     """Invoke ``run_model_preflight`` with the shared test fixture.
 
     All three parts share the same call shape so the only varying input
-    is ``HERMES_SKIP_PREFLIGHT``. ``base_url="http://invalid.test"`` is
+    is ``NIMBUSWARE_SKIP_PREFLIGHT``. ``base_url="http://invalid.test"`` is
     deliberately unreachable so any fall-through (Parts A / B) would
     raise ``PreflightError`` and surface immediately on the assertion
     line if the env-gate misbehaved.
@@ -46,9 +46,9 @@ def _call_preflight() -> tuple[str, dict[str, Any], bool]:
 def test_skip_preflight_env_force_on_string_arm_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §14 #1 ``HERMES_SKIP_PREFLIGHT`` force-on truthy tuple membership.
+    """Pin §14 #1 ``NIMBUSWARE_SKIP_PREFLIGHT`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:115](packages\\hermes_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:115](packages\\nimbusware_orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")`` so truthy variants short-circuit
     BEFORE any ``httpx.get`` call. No network mocking is needed -- if
     the env-gate had rejected a variant, the test would fall through to
@@ -69,7 +69,7 @@ def test_skip_preflight_env_force_on_string_arm_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", raw)
+        monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", raw)
         result = _call_preflight()
         assert result == _SKIPPED_TUPLE, f"force_on raw={raw!r}"
 
@@ -99,7 +99,7 @@ def test_skip_preflight_env_skipped_tuple_shape_contract(
     ]
     expected_keys = set(_SKIPPED_EVIDENCE.keys())
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", raw)
+        monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", raw)
         result = _call_preflight()
         assert isinstance(result, tuple) and len(result) == 3, (
             f"shape raw={raw!r}: outer tuple arity"
@@ -175,11 +175,11 @@ def test_skip_preflight_env_fail_closed_string_arm_contract(
     ]
     for _name, raw in cases:
         if raw is None:
-            monkeypatch.delenv("HERMES_SKIP_PREFLIGHT", raising=False)
+            monkeypatch.delenv("NIMBUSWARE_SKIP_PREFLIGHT", raising=False)
         else:
-            monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", raw)
+            monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", raw)
         with patch(
-            "hermes_orchestrator.preflight.httpx.get",
+            "nimbusware_orchestrator.preflight.httpx.get",
             side_effect=httpx.ConnectError("connection refused"),
         ):
             try:

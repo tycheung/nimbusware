@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from hermes_orchestrator.git_outputs import (
+from nimbusware_orchestrator.git_outputs import (
     gh_pr_on_complete_enabled,
     git_native_outputs_enabled,
     maybe_finalize_git_outputs,
@@ -14,12 +14,12 @@ from hermes_orchestrator.git_outputs import (
     run_complete_commit_message,
     slice_commit_message,
 )
-from hermes_orchestrator.micro_slice import SlicePlan
+from nimbusware_orchestrator.micro_slice import SlicePlan
 
 
 def test_run_branch_name() -> None:
     rid = "abc-123"
-    assert run_branch_name(rid) == f"hermes/run-{rid}"
+    assert run_branch_name(rid) == f"nimbusware/run-{rid}"
 
 
 def test_slice_commit_message() -> None:
@@ -37,13 +37,13 @@ def test_run_complete_message() -> None:
 
 
 def test_git_native_env_flag(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_GIT_NATIVE_OUTPUTS", "1")
+    monkeypatch.setenv("NIMBUSWARE_GIT_NATIVE_OUTPUTS", "1")
     assert git_native_outputs_enabled({}) is True
     assert gh_pr_on_complete_enabled({}) is False
 
 
 def test_maybe_open_gh_pr_skips_without_gh(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr("hermes_orchestrator.git_outputs.shutil.which", lambda _: None)
+    monkeypatch.setattr("nimbusware_orchestrator.git_outputs.shutil.which", lambda _: None)
     (tmp_path / ".git").mkdir()
     out = maybe_open_gh_pr(tmp_path, uuid4())
     assert out["status"] == "skipped"
@@ -59,7 +59,7 @@ def test_maybe_finalize_git_branch_checkout(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("HERMES_GIT_NATIVE_OUTPUTS", "1")
+    monkeypatch.setenv("NIMBUSWARE_GIT_NATIVE_OUTPUTS", "1")
     (tmp_path / ".git").mkdir()
     calls: list[list[str]] = []
 
@@ -73,7 +73,7 @@ def test_maybe_finalize_git_branch_checkout(
 
         return R()
 
-    monkeypatch.setattr("hermes_orchestrator.git_outputs.subprocess.run", fake_run)
+    monkeypatch.setattr("nimbusware_orchestrator.git_outputs.subprocess.run", fake_run)
     rid = uuid4()
     out = maybe_finalize_git_outputs(tmp_path, rid, {}, slice_count=2)
     assert out["branch"] == run_branch_name(rid)

@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_orchestrator.ollama_manage import (
+from nimbusware_orchestrator.ollama_manage import (
     OllamaManageError,
     OllamaModelRow,
     delete_model,
@@ -55,7 +55,7 @@ def test_ollama_reachable_false_on_error() -> None:
 
 
 def test_pull_model_requires_reachable() -> None:
-    with patch("hermes_orchestrator.ollama_manage.ollama_reachable", return_value=False):
+    with patch("nimbusware_orchestrator.ollama_manage.ollama_reachable", return_value=False):
         with pytest.raises(OllamaManageError, match="not reachable"):
             pull_model("x")
 

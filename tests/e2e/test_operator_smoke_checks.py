@@ -14,7 +14,7 @@ pytestmark = pytest.mark.e2e
 
 @pytest.fixture
 def client() -> TestClient:
-    os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+    os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     with TestClient(app) as c:
         yield c
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_research.prompt_security import sanitize_fetched_content, wrap_researcher_prompt
+from nimbusware_research.prompt_security import sanitize_fetched_content, wrap_researcher_prompt
 
 
 def test_sanitize_filters_injection() -> None:

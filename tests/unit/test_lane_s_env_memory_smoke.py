@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agent_core.models import EventType
-from hermes_memory.timeline import (
+from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
@@ -48,6 +48,6 @@ def test_memory_timeline_with_sample_events() -> None:
 
 
 def test_env_flags_public_helpers() -> None:
-    assert isinstance(env_flags.hermes_skip_preflight_enabled(), bool)
-    assert isinstance(env_flags.hermes_use_llm_enabled(), bool)
-    assert isinstance(env_flags.env_truthy("HERMES_NOT_SET_TEST_FLAG_XYZ"), bool)
+    assert isinstance(env_flags.nimbusware_skip_preflight_enabled(), bool)
+    assert isinstance(env_flags.nimbusware_use_llm_enabled(), bool)
+    assert isinstance(env_flags.env_truthy("NIMBUSWARE_NOT_SET_TEST_FLAG_XYZ"), bool)

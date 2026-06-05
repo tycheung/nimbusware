@@ -30,7 +30,7 @@ def bundle_faiss_index_stale_caption(repo_root: Path) -> str | None:
 
 
 def bundle_faiss_index_status(repo_root: Path) -> dict[str, Any]:
-    from hermes_extensions.catalog import bundle_faiss_index_sync_state
+    from nimbusware_extensions.catalog import bundle_faiss_index_sync_state
 
     sync = bundle_faiss_index_sync_state(repo_root)
     idx_dir = repo_root / "configs" / "bundles" / "index"

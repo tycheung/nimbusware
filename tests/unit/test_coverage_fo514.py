@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.ollama_manage import (
+from nimbusware_orchestrator.ollama_manage import (
     OllamaModelRow,
     filter_models,
     runtime_base_url_from_routing,
 )
-from hermes_orchestrator.ollama_user_policy import policy_from_routing
+from nimbusware_orchestrator.ollama_user_policy import policy_from_routing
 from nimbusware_api.routes.ollama import _routing_models
 from nimbusware_api.schemas.ollama import (
     OllamaModelEntry,

@@ -6,7 +6,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
-from hermes_orchestrator.fleet_worker import (
+from nimbusware_orchestrator.fleet_worker import (
     collect_fleet_worker_metrics,
     fleet_redis_worker_enabled,
     fleet_worker_health_snapshot,
@@ -29,6 +29,6 @@ def fleet_worker_metrics(_gate: EnterpriseDep) -> dict[str, Any]:
             "feature": "redis_fleet_worker",
             "enabled": enterprise_feature_enabled("redis_fleet_worker"),
             "fleet_profile_enabled": False,
-            "message": "Set HERMES_RUN_DISPATCH=redis and HERMES_REDIS_URL with Enterprise edition.",
+            "message": "Set NIMBUSWARE_RUN_DISPATCH=redis and NIMBUSWARE_REDIS_URL with Enterprise edition.",
         }
     return collect_fleet_worker_metrics()

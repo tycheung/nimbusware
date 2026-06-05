@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.merge import atomic_write_yaml, dump_yaml, load_yaml
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_orchestrator.merge import atomic_write_yaml, dump_yaml, load_yaml
 
 PAYLOAD: dict = {
     "version": 1,
@@ -70,7 +70,7 @@ def test_atomic_write_yaml_failure_leaves_original_file(
     def _broken_replace(*_a: object, **_kw: object) -> None:
         raise OSError("simulated replace failure")
 
-    monkeypatch.setattr("hermes_orchestrator.merge.os.replace", _broken_replace)
+    monkeypatch.setattr("nimbusware_orchestrator.merge.os.replace", _broken_replace)
     with pytest.raises(OSError, match="simulated replace failure"):
         atomic_write_yaml(target, {"version": 99, "business_area": [], "development_role": []})
     # Original file content untouched

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.escalation_policy_breadth import escalation_policy_breadth
+from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -28,17 +28,17 @@ def test_escalation_policy_breadth_malformed_yaml(tmp_path: Path) -> None:
 def test_anti_deadlock_escalation_includes_policy_breadth_metadata() -> None:
     from unittest.mock import patch
 
-    from hermes_orchestrator.pipeline import make_dev_orchestrator
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("default")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 1, 99),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):

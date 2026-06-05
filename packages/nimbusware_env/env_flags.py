@@ -62,23 +62,23 @@ def env_falsy(name: str) -> bool:
     return str(raw).strip().lower() in FALSY_VALUES
 
 
-def hermes_slice_auto_advance_enabled() -> bool:
+def nimbusware_slice_auto_advance_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_AUTO_ADVANCE", default=True)
+    return resolve_bool("NIMBUSWARE_SLICE_AUTO_ADVANCE", default=True)
 
 
-def hermes_use_llm_enabled() -> bool:
+def nimbusware_use_llm_enabled() -> bool:
     """Fail-closed truthy tuple on raw env (no strip)."""
-    return env_truthy_raw("HERMES_USE_LLM")
+    return env_truthy_raw("NIMBUSWARE_USE_LLM")
 
 
-def hermes_skip_preflight_enabled() -> bool:
-    return env_truthy_raw("HERMES_SKIP_PREFLIGHT")
+def nimbusware_skip_preflight_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_SKIP_PREFLIGHT")
 
 
-def hermes_outbound_fetch_enabled() -> bool:
-    return env_truthy_raw("HERMES_OUTBOUND_FETCH_ENABLED")
+def nimbusware_outbound_fetch_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_OUTBOUND_FETCH_ENABLED")
 
 
 def env_tri_state(name: str) -> str | None:
@@ -108,16 +108,13 @@ def env_force_off(name: str) -> bool:
     return env_tri_state(name) == "off"
 
 
-def hermes_preflight_json_probe_enabled() -> bool:
-    return env_truthy_raw("HERMES_PREFLIGHT_JSON_PROBE")
+def nimbusware_preflight_json_probe_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_PREFLIGHT_JSON_PROBE")
 
 
 def nimbusware_api_host(default: str = "0.0.0.0") -> str:
     raw = env_str("NIMBUSWARE_API_HOST")
-    if raw:
-        return raw
-    legacy = env_str("HERMES_API_HOST")
-    return legacy or default
+    return raw or default
 
 
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
@@ -127,14 +124,13 @@ def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
         raw = resolve_explicit_raw(name)
         if raw:
             return raw
-    legacy = resolve_explicit_raw("HERMES_WORKFLOW_PROFILE")
-    return legacy or default
+    return default
 
 
-def hermes_preflight_latency_sample_count(default: int = 1) -> int:
+def nimbusware_preflight_latency_sample_count(default: int = 1) -> int:
     from nimbusware_env.settings_resolve import resolve_int as _ri
 
-    return min(max(_ri("HERMES_PREFLIGHT_LATENCY_SAMPLES", default=default), 1), 20)
+    return min(max(_ri("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", default=default), 1), 20)
 
 
 def env_default_on(name: str, *, default: str = "1") -> bool:
@@ -142,120 +138,120 @@ def env_default_on(name: str, *, default: str = "1") -> bool:
     return str(raw).strip().lower() not in FALSY_VALUES
 
 
-def hermes_run_bandit_enabled() -> bool:
-    return env_truthy_raw("HERMES_RUN_BANDIT")
+def nimbusware_run_bandit_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_RUN_BANDIT")
 
 
-def hermes_run_semgrep_enabled() -> bool:
+def nimbusware_run_semgrep_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_RUN_SEMGREP", default=True)
+    return resolve_bool("NIMBUSWARE_RUN_SEMGREP", default=True)
 
 
-def hermes_run_perf_scan_enabled() -> bool:
+def nimbusware_run_perf_scan_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_RUN_PERF_SCAN", default=True)
+    return resolve_bool("NIMBUSWARE_RUN_PERF_SCAN", default=True)
 
 
-def hermes_run_mypy_enabled() -> bool:
+def nimbusware_run_mypy_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_RUN_MYPY", default=False)
+    return resolve_bool("NIMBUSWARE_RUN_MYPY", default=False)
 
 
-def hermes_use_llm_explicitly_off() -> bool:
-    raw = os.environ.get("HERMES_USE_LLM")
+def nimbusware_use_llm_explicitly_off() -> bool:
+    raw = os.environ.get("NIMBUSWARE_USE_LLM")
     if raw is None or not str(raw).strip():
         return False
     return str(raw).strip().lower() in FALSY_VALUES
 
 
-def hermes_slice_implement_mode() -> str:
-    raw = resolve_str("HERMES_SLICE_IMPLEMENT", default="scoped").lower()
+def nimbusware_slice_implement_mode() -> str:
+    raw = resolve_str("NIMBUSWARE_SLICE_IMPLEMENT", default="scoped").lower()
     if raw in ("stub", "0", "false", "no"):
         return "stub"
     if raw == "agent":
         return "agent"
-    if raw == "llm" or (raw in ("auto", "1", "true", "yes") and hermes_use_llm_enabled()):
+    if raw == "llm" or (raw in ("auto", "1", "true", "yes") and nimbusware_use_llm_enabled()):
         return "llm"
     return "scoped"
 
 
-def hermes_research_enabled() -> bool:
+def nimbusware_research_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_RESEARCH", default=False)
+    return resolve_bool("NIMBUSWARE_RESEARCH", default=False)
 
 
-def hermes_stitch_enabled() -> bool:
+def nimbusware_stitch_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_STITCH", default=False)
+    return resolve_bool("NIMBUSWARE_STITCH", default=False)
 
 
-def hermes_git_native_outputs_enabled() -> bool:
+def nimbusware_git_native_outputs_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_GIT_NATIVE_OUTPUTS", default=False)
+    return resolve_bool("NIMBUSWARE_GIT_NATIVE_OUTPUTS", default=False)
 
 
-def hermes_git_pr_on_complete_enabled() -> bool:
+def nimbusware_git_pr_on_complete_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_GIT_PR_ON_COMPLETE", default=False)
+    return resolve_bool("NIMBUSWARE_GIT_PR_ON_COMPLETE", default=False)
 
 
-def hermes_slice_auto_commit_enabled() -> bool:
+def nimbusware_slice_auto_commit_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_AUTO_COMMIT", default=False)
+    return resolve_bool("NIMBUSWARE_SLICE_AUTO_COMMIT", default=False)
 
 
-def hermes_slice_p3_evidence_enabled() -> bool:
+def nimbusware_slice_p3_evidence_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_P3_EVIDENCE", default=True)
+    return resolve_bool("NIMBUSWARE_SLICE_P3_EVIDENCE", default=True)
 
 
-def hermes_slice_branch_prefix(default: str = "hermes/run-") -> str:
-    return resolve_str("HERMES_SLICE_BRANCH_PREFIX", default=default)
+def nimbusware_slice_branch_prefix(default: str = "nimbusware/run-") -> str:
+    return resolve_str("NIMBUSWARE_SLICE_BRANCH_PREFIX", default=default)
 
 
-def hermes_slice_packet_max_chars(default: int = 12000) -> int:
-    return resolve_int("HERMES_SLICE_PACKET_MAX_CHARS", default=default)
+def nimbusware_slice_packet_max_chars(default: int = 12000) -> int:
+    return resolve_int("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", default=default)
 
 
-def hermes_slice_repo_map_enabled() -> bool:
+def nimbusware_slice_repo_map_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_REPO_MAP_ENABLED", default=True)
+    return resolve_bool("NIMBUSWARE_SLICE_REPO_MAP_ENABLED", default=True)
 
 
-def hermes_slice_repo_map_max_chars(default: int = 4000) -> int:
-    return resolve_int("HERMES_SLICE_REPO_MAP_MAX_CHARS", default=default)
+def nimbusware_slice_repo_map_max_chars(default: int = 4000) -> int:
+    return resolve_int("NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS", default=default)
 
 
-def hermes_slice_lsp_enabled() -> bool:
+def nimbusware_slice_lsp_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
-    return resolve_bool("HERMES_SLICE_LSP_ENABLED", default=True)
+    return resolve_bool("NIMBUSWARE_SLICE_LSP_ENABLED", default=True)
 
 
-def hermes_slice_lsp_command() -> str | None:
+def nimbusware_slice_lsp_command() -> str | None:
     from nimbusware_env.settings_resolve import resolve_raw
 
-    raw = resolve_raw("HERMES_SLICE_LSP_COMMAND")
+    raw = resolve_raw("NIMBUSWARE_SLICE_LSP_COMMAND")
     if raw is None:
         return None
     text = str(raw).strip()
     return text or None
 
 
-def hermes_slice_lsp_timeout_sec(default: float = 8.0) -> float:
+def nimbusware_slice_lsp_timeout_sec(default: float = 8.0) -> float:
     from nimbusware_env.settings_resolve import resolve_raw
 
-    raw = resolve_raw("HERMES_SLICE_LSP_TIMEOUT_SEC")
+    raw = resolve_raw("NIMBUSWARE_SLICE_LSP_TIMEOUT_SEC")
     if raw is None or not str(raw).strip():
         return default
     try:
@@ -264,8 +260,8 @@ def hermes_slice_lsp_timeout_sec(default: float = 8.0) -> float:
         return default
 
 
-def hermes_slice_symbol_sketch_max_chars(default: int = 3000) -> int:
-    return resolve_int("HERMES_SLICE_SYMBOL_SKETCH_MAX_CHARS", default=default)
+def nimbusware_slice_symbol_sketch_max_chars(default: int = 3000) -> int:
+    return resolve_int("NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS", default=default)
 
 
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:

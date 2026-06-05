@@ -1,8 +1,8 @@
 from nimbusware_console.agent_evaluator_workflow_explainer import (
     _agent_evaluator_explainer_cell,
-    _hermes_agent_evaluator_auto_create_env_summary,
-    _hermes_agent_evaluator_auto_promote_env_summary,
-    _hermes_agent_evaluator_env_summary,
+    _nimbusware_agent_evaluator_auto_create_env_summary,
+    _nimbusware_agent_evaluator_auto_promote_env_summary,
+    _nimbusware_agent_evaluator_env_summary,
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
     agent_evaluator_auto_create_env_gate_caption,

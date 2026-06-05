@@ -16,7 +16,7 @@ from agent_core.models import (
     RunStartedEvent,
     RunStartedPayload,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_iam.constants import DEFAULT_TENANT_ID
 
 

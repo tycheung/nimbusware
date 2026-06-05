@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_full_workflow_yaml,

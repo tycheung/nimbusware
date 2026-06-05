@@ -8,13 +8,13 @@ from uuid import uuid4
 
 import pytest
 
-from hermes_orchestrator.fleet_worker import (
+from nimbusware_orchestrator.fleet_worker import (
     collect_fleet_worker_metrics,
     evaluate_backpressure,
     fleet_redis_worker_enabled,
     read_worker_heartbeat,
 )
-from hermes_orchestrator.run_dispatch import InMemoryRunQueue, RedisRunQueue, RunDispatchTask
+from nimbusware_orchestrator.run_dispatch import InMemoryRunQueue, RedisRunQueue, RunDispatchTask
 from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 
 
@@ -72,21 +72,21 @@ def test_redis_queue_stats() -> None:
 
 def test_fleet_worker_disabled_on_individual(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, DEFAULT_EDITION)
-    monkeypatch.setenv("HERMES_RUN_DISPATCH", "redis")
-    monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
+    monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "redis")
+    monkeypatch.setenv("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0")
     assert not fleet_redis_worker_enabled()
 
 
 def test_fleet_metrics_with_memory_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
-    monkeypatch.setenv("HERMES_RUN_DISPATCH", "memory")
+    monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "memory")
     assert not fleet_redis_worker_enabled()
 
 
 def test_fleet_metrics_redis_dispatch(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
-    monkeypatch.setenv("HERMES_RUN_DISPATCH", "redis")
-    monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
+    monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "redis")
+    monkeypatch.setenv("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0")
     fake = _FakeRedis()
     q = RedisRunQueue("redis://example", client=fake)
     q.enqueue(RunDispatchTask(run_id=str(uuid4()), step="verify"))
@@ -106,12 +106,12 @@ def test_read_worker_heartbeat(tmp_path: Path) -> None:
 
 def test_enterprise_fleet_worker_health_api(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
-    monkeypatch.setenv("HERMES_RUN_DISPATCH", "redis")
-    monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
+    monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "redis")
+    monkeypatch.setenv("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0")
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
     from fastapi.testclient import TestClient
 
-    from hermes_orchestrator.run_dispatch import set_run_queue
+    from nimbusware_orchestrator.run_dispatch import set_run_queue
     from nimbusware_api.app import app
     from nimbusware_iam.constants import API_KEY_HEADER
 
@@ -134,11 +134,11 @@ def test_worker_heartbeat_includes_fleet_metrics(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
-    monkeypatch.setenv("HERMES_RUN_DISPATCH", "redis")
-    monkeypatch.setenv("HERMES_REDIS_URL", "redis://127.0.0.1:6379/0")
+    monkeypatch.setenv("NIMBUSWARE_RUN_DISPATCH", "redis")
+    monkeypatch.setenv("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0")
     from datetime import datetime, timezone
 
-    from hermes_orchestrator.run_worker import _write_worker_heartbeat
+    from nimbusware_orchestrator.run_worker import _write_worker_heartbeat
 
     fake = _FakeRedis()
     q = RedisRunQueue("redis://example", client=fake)

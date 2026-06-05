@@ -9,23 +9,23 @@ from typing import Any
 import pytest
 import yaml
 
-from hermes_orchestrator.integrator_gate import _integrator_gate_workflow_dict
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.integrator_gate import _integrator_gate_workflow_dict
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     parse_agent_evaluator_workflow_block,
 )
-from hermes_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.workflow_escalation import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )
-from hermes_orchestrator.workflow_security_metadata import (
+from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from hermes_orchestrator.workflow_self_refinement import (
+from nimbusware_orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     parse_universal_critique_workflow_block,
 )
@@ -97,7 +97,7 @@ def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
     """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
 
     Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](packages\\hermes_orchestrator\\workflow_profiles.py)
+    [workflow_profiles.py](packages\\nimbusware_orchestrator\\workflow_profiles.py)
     expectations: file must exist at
     ``{repo_root}/configs/workflows/{profile}.yaml``.
     """

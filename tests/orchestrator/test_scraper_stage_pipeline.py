@@ -9,9 +9,9 @@ import httpx
 import pytest
 
 from agent_core.models import EventType
-from hermes_executor.fetch import EgressResponseTooLarge
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
+from nimbusware_executor.fetch import EgressResponseTooLarge
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
 from nimbusware_env import find_repo_root
 
 _DEFAULT_CFG = ScraperFetchConfig(
@@ -34,7 +34,7 @@ _RUN_EGRESS = {
 
 
 def test_scraper_stage_skipped_when_workflow_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_OUTBOUND_FETCH_ENABLED", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     orch.run_optional_scraper_fetch_stage(rid)
@@ -47,11 +47,11 @@ def test_scraper_stage_skipped_when_workflow_disabled(monkeypatch: pytest.Monkey
 
 
 def test_scraper_stage_fails_when_env_off(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_OUTBOUND_FETCH_ENABLED", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         orch.run_optional_scraper_fetch_stage(rid)
@@ -94,11 +94,11 @@ def test_scraper_no_disk_artifact_when_persist_cap_none(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """YAML ``null`` / config ``None`` for persist cap skips on-disk response writes."""
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         mock_resp = MagicMock(spec=httpx.Response)
@@ -116,11 +116,11 @@ def test_scraper_no_disk_artifact_when_persist_cap_none(
 
 
 def test_scraper_stage_success_with_mock_client(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         mock_resp = MagicMock(spec=httpx.Response)
@@ -143,7 +143,7 @@ def test_scraper_stage_success_with_mock_client(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_scraper_multi_url_sequence(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     cfg = ScraperFetchConfig(
@@ -179,8 +179,8 @@ def test_scraper_multi_url_sequence(monkeypatch: pytest.MonkeyPatch) -> None:
         return mock_resp
 
     with (
-        patch("hermes_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
-        patch("hermes_orchestrator.pipeline.egress_checked_get_for_run", side_effect=fake_get),
+        patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
+        patch("nimbusware_orchestrator.pipeline.egress_checked_get_for_run", side_effect=fake_get),
     ):
         orch.run_optional_scraper_fetch_stage(rid)
     assert len(urls_seen) == 2
@@ -192,16 +192,16 @@ def test_scraper_multi_url_sequence(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_scraper_budget_exceeded_reason(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
             return_value=_DEFAULT_CFG,
         ),
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=EgressResponseTooLarge("over"),
         ),
     ):
@@ -215,7 +215,7 @@ def test_scraper_budget_exceeded_reason(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 def test_scraper_retries_then_success(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     cfg = ScraperFetchConfig(
@@ -244,9 +244,9 @@ def test_scraper_retries_then_success(monkeypatch: pytest.MonkeyPatch) -> None:
         return mock_resp
 
     with (
-        patch("hermes_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
+        patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
         patch(
-            "hermes_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
             side_effect=side_effect,
         ),
     ):
@@ -260,8 +260,8 @@ def test_scraper_writes_artifact_when_configured(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("HERMES_OUTBOUND_FETCH_ENABLED", "1")
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(tmp_path / "art"))
+    monkeypatch.setenv("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(tmp_path / "art"))
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     cfg = ScraperFetchConfig(
@@ -281,7 +281,7 @@ def test_scraper_writes_artifact_when_configured(
     mock_resp.headers = httpx.Headers({})
     client = MagicMock(spec=httpx.Client)
     client.get.return_value = mock_resp
-    with patch("hermes_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg):
+    with patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg):
         orch.run_optional_scraper_fetch_stage(rid, client=client)
     evs = mem.list_run_events(str(rid))
     passed = [r for r in evs if r["event_type"] == EventType.STAGE_PASSED.value]

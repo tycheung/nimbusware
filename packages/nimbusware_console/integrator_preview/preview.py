@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-from hermes_extensions.phase2 import ModuleIntegrator
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_extensions.phase2 import ModuleIntegrator
+from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,
     load_integrator_gate_emit_enabled,
@@ -24,7 +24,7 @@ def preview_effective_min_score_to_pass(
     workflow_profile: str | None,
     pasted_block: dict[str, Any] | None,
 ) -> float:
-    env_raw = os.environ.get("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
+    env_raw = os.environ.get("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
     if env_raw:
         try:
             return max(0.0, min(1.0, float(env_raw)))

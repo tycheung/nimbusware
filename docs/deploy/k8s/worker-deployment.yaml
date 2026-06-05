@@ -27,11 +27,11 @@ spec:
               value: /app
             - name: NIMBUSWARE_EDITION
               value: enterprise
-            - name: HERMES_RUN_DISPATCH
+            - name: NIMBUSWARE_RUN_DISPATCH
               value: redis
-            - name: HERMES_REDIS_URL
+            - name: NIMBUSWARE_REDIS_URL
               value: redis://nimbusware-redis:6379/0
-            - name: HERMES_SKIP_PREFLIGHT
+            - name: NIMBUSWARE_SKIP_PREFLIGHT
               value: "1"
           resources:
             requests:

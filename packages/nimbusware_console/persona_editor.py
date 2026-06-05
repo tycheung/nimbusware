@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from hermes_extensions.personas import collect_persona_entry_validation_errors
+from nimbusware_extensions.personas import collect_persona_entry_validation_errors
 
 EDITABLE_FIELDS: tuple[str, ...] = (
     "display_name",

@@ -1,4 +1,4 @@
-"""Bounded context passed between Hermes roles for one micro-slice."""
+"""Bounded context passed between Nimbusware roles for one micro-slice."""
 
 from __future__ import annotations
 

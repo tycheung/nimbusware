@@ -8,7 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
-if (-not $env:HERMES_SKIP_PREFLIGHT) { $env:HERMES_SKIP_PREFLIGHT = "1" }
+if (-not $env:NIMBUSWARE_SKIP_PREFLIGHT) { $env:NIMBUSWARE_SKIP_PREFLIGHT = "1" }
 
 $CovJson = Join-Path $Root ".ci_coverage.json"
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_orchestrator.integrator_gate import (
     load_integrator_gate_emit_enabled,
     load_integrator_min_score_from_thresholds,
     parse_integrator_gate_min_score_to_pass,
@@ -122,7 +122,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
 
     The implementation uses Python's built-in ``bool()`` coercion (NOT
     ``_coerce_yaml_bool`` from
-    [workflow_universal_critique.py:30-38](packages/hermes_orchestrator/workflow_universal_critique.py)
+    [workflow_universal_critique.py:30-38](packages/nimbusware_orchestrator/workflow_universal_critique.py)
     which accepts only ``("1", "true", "yes", "on")``). The
     consequences of choosing Python ``bool()`` are subtle and
     operator-visible: a string ``"false"`` is truthy, but a non-zero

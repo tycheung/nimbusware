@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 
 _MODEL_ID = "dev:primary"
 
@@ -28,7 +28,7 @@ def _patched_execute(
 
     ``llm_raises``: when True, the patched LLM raises ``Exception("simulated
     llm failure")`` so the ``except Exception: pass`` arm at
-    [pipeline.py:696](packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:696](packages\\nimbusware_orchestrator\\pipeline.py)
     swallows it and the stub fallback fires (Part B's LLM-raises branch).
     """
     llm_kwargs: dict[str, Any] = (
@@ -36,9 +36,9 @@ def _patched_execute(
     )
     with (
         patch.object(orch, "_selected_model_for_run", return_value=model_id),
-        patch("hermes_orchestrator.pipeline.execute_plan_stage_llm", **llm_kwargs) as mock_llm,
+        patch("nimbusware_orchestrator.pipeline.execute_plan_stage_llm", **llm_kwargs) as mock_llm,
         patch(
-            "hermes_orchestrator.pipeline.emit_stub_plan_stage",
+            "nimbusware_orchestrator.pipeline.emit_stub_plan_stage",
         ) as mock_stub,
     ):
         yield mock_llm, mock_stub
@@ -47,9 +47,9 @@ def _patched_execute(
 def test_use_llm_env_force_on_string_arm_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §14 #16 ``HERMES_USE_LLM`` force-on truthy tuple membership.
+    """Pin §14 #16 ``NIMBUSWARE_USE_LLM`` force-on truthy tuple membership.
 
-    The env-gate at [pipeline.py:679](packages\\hermes_orchestrator\\pipeline.py)
+    The env-gate at [pipeline.py:679](packages\\nimbusware_orchestrator\\pipeline.py)
     uses ``in ("1", "true", "yes")``. With ``_selected_model_for_run``
     returning a valid model and the LLM mock returning normally, truthy
     variants must reach the LLM-ok branch where ``execute_plan_stage_llm``
@@ -75,7 +75,7 @@ def test_use_llm_env_force_on_string_arm_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_USE_LLM", raw)
+        monkeypatch.setenv("NIMBUSWARE_USE_LLM", raw)
         with _patched_execute(orch) as (mock_llm, mock_stub):
             orch.execute_plan_stage(rid)
         assert mock_llm.call_count == 1, (
@@ -109,7 +109,7 @@ def test_use_llm_env_fallback_arm_contract(
     """
     orch, _store = make_dev_orchestrator()
     rid = orch.create_run("default")
-    monkeypatch.setenv("HERMES_USE_LLM", "1")
+    monkeypatch.setenv("NIMBUSWARE_USE_LLM", "1")
 
     with _patched_execute(orch, model_id=None) as (mock_llm, mock_stub):
         orch.execute_plan_stage(rid)
@@ -183,9 +183,9 @@ def test_use_llm_env_fail_closed_string_arm_contract(
     ]
     for _name, raw in cases:
         if raw is None:
-            monkeypatch.delenv("HERMES_USE_LLM", raising=False)
+            monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
         else:
-            monkeypatch.setenv("HERMES_USE_LLM", raw)
+            monkeypatch.setenv("NIMBUSWARE_USE_LLM", raw)
         with _patched_execute(orch) as (mock_llm, mock_stub):
             orch.execute_plan_stage(rid)
         assert mock_llm.call_count == 0, (

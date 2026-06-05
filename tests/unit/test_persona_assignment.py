@@ -7,9 +7,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_orchestrator.ingress import assert_persona_assignment_valid
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.ingress import assert_persona_assignment_valid
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo

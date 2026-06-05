@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_config.export import export_config_to_repo
 from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from nimbusware_config.seed import seed_config_from_repo

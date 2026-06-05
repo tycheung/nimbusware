@@ -77,18 +77,18 @@ def prepare_next_pending_slice(orch: Any, run_id: UUID) -> dict[str, Any]:
 
     symbol_sketch = ""
     from nimbusware_env.env_flags import (
-        hermes_slice_lsp_enabled,
-        hermes_slice_symbol_sketch_max_chars,
+        nimbusware_slice_lsp_enabled,
+        nimbusware_slice_symbol_sketch_max_chars,
     )
 
     if plan.target_paths:
-        from hermes_orchestrator.slice_lsp_client import build_symbol_sketch_with_lsp_fallback
+        from nimbusware_orchestrator.slice_lsp_client import build_symbol_sketch_with_lsp_fallback
 
         symbol_sketch, _ = build_symbol_sketch_with_lsp_fallback(
             ws,
             plan.target_paths,
-            max_chars=hermes_slice_symbol_sketch_max_chars(),
-            lsp_enabled=hermes_slice_lsp_enabled(),
+            max_chars=nimbusware_slice_symbol_sketch_max_chars(),
+            lsp_enabled=nimbusware_slice_lsp_enabled(),
         )
 
     pending_meta = {

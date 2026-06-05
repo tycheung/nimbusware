@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.workflow_escalation import (
     EscalationWorkflowBlock,
     parse_escalation_workflow_block,
 )

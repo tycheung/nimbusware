@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from hermes_orchestrator import preflight_cli, preflight_histogram
-from hermes_orchestrator.preflight import PreflightError
+from nimbusware_orchestrator import preflight_cli, preflight_histogram
+from nimbusware_orchestrator.preflight import PreflightError
 
 # build_histogram
 
@@ -111,23 +111,23 @@ def test_samples_from_evidence_returns_empty_on_garbage() -> None:
 def test_env_overrides_restores_prior_env_on_exit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_PREFLIGHT_LATENCY_SAMPLES", "7")
-    monkeypatch.delenv("HERMES_PREFLIGHT_JSON_PROBE", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", "7")
+    monkeypatch.delenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raising=False)
     with preflight_cli._env_overrides(samples=3, json_probe=True):
-        assert os.environ["HERMES_PREFLIGHT_LATENCY_SAMPLES"] == "3"
-        assert os.environ["HERMES_PREFLIGHT_JSON_PROBE"] == "1"
+        assert os.environ["NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES"] == "3"
+        assert os.environ["NIMBUSWARE_PREFLIGHT_JSON_PROBE"] == "1"
     # Both restored: SAMPLES back to "7", JSON_PROBE removed (was unset)
-    assert os.environ["HERMES_PREFLIGHT_LATENCY_SAMPLES"] == "7"
-    assert "HERMES_PREFLIGHT_JSON_PROBE" not in os.environ
+    assert os.environ["NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES"] == "7"
+    assert "NIMBUSWARE_PREFLIGHT_JSON_PROBE" not in os.environ
 
 
 def test_env_overrides_noop_when_both_args_unset(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_PREFLIGHT_LATENCY_SAMPLES", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", raising=False)
     with preflight_cli._env_overrides(samples=None, json_probe=False):
-        assert "HERMES_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
-    assert "HERMES_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
+        assert "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
+    assert "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
 
 
 # _extract_routing
@@ -229,7 +229,7 @@ def test_main_happy_path_emits_full_schema_json_to_stdout(
     assert rc == 0
     payload = _read_capsys_json(capsys)
     assert payload["schema_version"] == 1
-    assert payload["tool"] == "hermes-preflight"
+    assert payload["tool"] == "nimbusware-preflight"
     assert payload["samples_requested"] == 3
     assert payload["samples_used"] == 3
     assert payload["result"]["status"] == "ok"
@@ -306,24 +306,24 @@ def test_main_samples_flag_propagates_into_run_model_preflight_env(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """`--samples N` sets HERMES_PREFLIGHT_LATENCY_SAMPLES inside the probe."""
+    """`--samples N` sets NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES inside the probe."""
     observed: dict[str, str | None] = {}
 
     def spy_preflight(**kwargs: object) -> tuple[str, dict[str, Any], bool]:
-        observed["env_samples"] = os.environ.get("HERMES_PREFLIGHT_LATENCY_SAMPLES")
-        observed["env_json_probe"] = os.environ.get("HERMES_PREFLIGHT_JSON_PROBE")
+        observed["env_samples"] = os.environ.get("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES")
+        observed["env_json_probe"] = os.environ.get("NIMBUSWARE_PREFLIGHT_JSON_PROBE")
         return _stub_preflight_ok(**kwargs)  # type: ignore[arg-type]
 
     monkeypatch.setattr(preflight_cli, "run_model_preflight", spy_preflight)
-    monkeypatch.delenv("HERMES_PREFLIGHT_LATENCY_SAMPLES", raising=False)
-    monkeypatch.delenv("HERMES_PREFLIGHT_JSON_PROBE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raising=False)
     rc = preflight_cli.main(["--samples", "5", "--json-probe"])
     assert rc == 0
     assert observed["env_samples"] == "5"
     assert observed["env_json_probe"] == "1"
     # Env restored after main returns
-    assert "HERMES_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
-    assert "HERMES_PREFLIGHT_JSON_PROBE" not in os.environ
+    assert "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES" not in os.environ
+    assert "NIMBUSWARE_PREFLIGHT_JSON_PROBE" not in os.environ
     _ = capsys.readouterr()  # consume stdout JSON
 
 
@@ -333,13 +333,13 @@ def test_main_env_is_reentrant_after_repeated_calls(
 ) -> None:
     """Two back-to-back main() calls leave env in its original state."""
     monkeypatch.setattr(preflight_cli, "run_model_preflight", _stub_preflight_ok)
-    monkeypatch.setenv("HERMES_PREFLIGHT_LATENCY_SAMPLES", "9")
+    monkeypatch.setenv("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", "9")
     rc1 = preflight_cli.main(["--samples", "2"])
     rc2 = preflight_cli.main(["--samples", "4"])
     assert rc1 == 0
     assert rc2 == 0
     # Original "9" preserved across both invocations
-    assert os.environ["HERMES_PREFLIGHT_LATENCY_SAMPLES"] == "9"
+    assert os.environ["NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES"] == "9"
     _ = capsys.readouterr()
 
 

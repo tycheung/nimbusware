@@ -76,58 +76,58 @@ def _install(
 
 def extended_defs() -> tuple[SettingDef, ...]:
     uc_keys: tuple[tuple[str, str], ...] = (
-        ("HERMES_IMPLEMENTATION_CRITIQUE_LLM", "Implementation critique LLM"),
+        ("NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM", "Implementation critique LLM"),
         (
-            "HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+            "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
             "Impl stage failed on gate fail",
         ),
         (
-            "HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+            "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
             "Impl emit finding on gate fail",
         ),
-        ("HERMES_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "Impl hard block on gate fail"),
-        ("HERMES_ENABLE_TEST_WRITER_CRITIQUE", "Enable test writer critique"),
-        ("HERMES_TEST_WRITER_CRITIQUE_LLM", "Test writer critique LLM"),
-        ("HERMES_STUB_TEST_WRITER_CRITICS", "Stub test writer critics"),
-        ("HERMES_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL", "TW stage failed on gate fail"),
-        ("HERMES_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "TW emit finding on gate fail"),
-        ("HERMES_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "TW hard block on gate fail"),
-        ("HERMES_ENABLE_PLANNER_CRITIQUE", "Enable planner critique"),
-        ("HERMES_PLANNER_CRITIQUE_LLM", "Planner critique LLM"),
-        ("HERMES_STUB_PLANNER_CRITICS", "Stub planner critics"),
-        ("HERMES_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL", "Planner stage failed on gate fail"),
-        ("HERMES_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "Planner emit finding on gate fail"),
-        ("HERMES_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "Planner hard block on gate fail"),
-        ("HERMES_ENABLE_FRONTEND_WRITER_CRITIQUE", "Enable frontend writer critique"),
-        ("HERMES_FRONTEND_WRITER_CRITIQUE_LLM", "Frontend writer critique LLM"),
-        ("HERMES_STUB_FRONTEND_WRITER_CRITICS", "Stub frontend writer critics"),
+        ("NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "Impl hard block on gate fail"),
+        ("NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE", "Enable test writer critique"),
+        ("NIMBUSWARE_TEST_WRITER_CRITIQUE_LLM", "Test writer critique LLM"),
+        ("NIMBUSWARE_STUB_TEST_WRITER_CRITICS", "Stub test writer critics"),
+        ("NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL", "TW stage failed on gate fail"),
+        ("NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "TW emit finding on gate fail"),
+        ("NIMBUSWARE_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "TW hard block on gate fail"),
+        ("NIMBUSWARE_ENABLE_PLANNER_CRITIQUE", "Enable planner critique"),
+        ("NIMBUSWARE_PLANNER_CRITIQUE_LLM", "Planner critique LLM"),
+        ("NIMBUSWARE_STUB_PLANNER_CRITICS", "Stub planner critics"),
+        ("NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL", "Planner stage failed on gate fail"),
+        ("NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "Planner emit finding on gate fail"),
+        ("NIMBUSWARE_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "Planner hard block on gate fail"),
+        ("NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE", "Enable frontend writer critique"),
+        ("NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_LLM", "Frontend writer critique LLM"),
+        ("NIMBUSWARE_STUB_FRONTEND_WRITER_CRITICS", "Stub frontend writer critics"),
         (
-            "HERMES_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+            "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
             "FW stage failed on gate fail",
         ),
         (
-            "HERMES_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+            "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
             "FW emit finding on gate fail",
         ),
-        ("HERMES_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "FW hard block on gate fail"),
-        ("HERMES_ENABLE_MODULE_INTEGRATOR_CRITIQUE", "Enable module integrator critique"),
-        ("HERMES_MODULE_INTEGRATOR_CRITIQUE_LLM", "Module integrator critique LLM"),
-        ("HERMES_STUB_MODULE_INTEGRATOR_CRITICS", "Stub module integrator critics"),
+        ("NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "FW hard block on gate fail"),
+        ("NIMBUSWARE_ENABLE_MODULE_INTEGRATOR_CRITIQUE", "Enable module integrator critique"),
+        ("NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_LLM", "Module integrator critique LLM"),
+        ("NIMBUSWARE_STUB_MODULE_INTEGRATOR_CRITICS", "Stub module integrator critics"),
         (
-            "HERMES_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+            "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
             "MI stage failed on gate fail",
         ),
         (
-            "HERMES_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+            "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
             "MI emit finding on gate fail",
         ),
-        ("HERMES_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "MI hard block on gate fail"),
+        ("NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "MI hard block on gate fail"),
     )
     uc = tuple(_uc(k, label) for k, label in uc_keys)
 
     install = (
         _install("NIMBUSWARE_API_HOST", "API bind host", default="0.0.0.0"),
-        _install("HERMES_API_HOST", "Legacy API bind host"),
+        _install("NIMBUSWARE_API_HOST", "Legacy API bind host"),
         _install(
             "NIMBUSWARE_UI",
             "Desktop UI mode",
@@ -149,17 +149,17 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _install("NIMBUSWARE_FLEET_MEMORY_STORE_DIR", "Fleet memory store directory"),
         _install("OLLAMA_HOST", "Ollama API URL", default="http://127.0.0.1:11434"),
         _install("NIMBUSWARE_POSTGRES_SUPERPASSWORD", "Postgres superuser password"),
-        _install("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_URL", "Scraper object store URL"),
-        _install("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "Scraper object store bucket"),
+        _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL", "Scraper object store URL"),
+        _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "Scraper object store bucket"),
         _install(
-            "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY",
             "Object store primary",
             kind=_BOOL,
             default="0",
         ),
         _install("NIMBUSWARE_TENANT_ID", "Enterprise tenant id"),
         _install("NIMBUSWARE_MAKER_STATE_DIR", "Maker session state directory"),
-        _install("HERMES_OLLAMA_BASE_URL", "Ollama base URL override"),
+        _install("NIMBUSWARE_OLLAMA_BASE_URL", "Ollama base URL override"),
         _install("NIMBUSWARE_HW_SSH_HOST", "Enterprise SSH hardware probe host"),
         _install("NIMBUSWARE_HW_SSH_IDENTITY", "SSH private key path for hardware probe"),
         _install(
@@ -167,16 +167,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "Comma-separated SSH hosts for fleet hardware tier aggregate",
         ),
         _install("NIMBUSWARE_WEBHOOK_SECRET", "External chat webhook HMAC secret"),
-        _install("HERMES_SANDBOX_K8S_EXEC_POD", "Fleet sandbox pod for kubectl exec"),
-        _install("HERMES_SANDBOX_K8S_NAMESPACE", "Fleet sandbox Kubernetes namespace"),
-        _install("HERMES_SANDBOX_K8S_WORKDIR", "Working directory inside fleet sandbox pod"),
-        _install("HERMES_E2B_API_KEY", "Enterprise E2B fleet sandbox API key"),
-        _install("HERMES_E2B_TEMPLATE", "Optional E2B sandbox template id"),
+        _install("NIMBUSWARE_SANDBOX_K8S_EXEC_POD", "Fleet sandbox pod for kubectl exec"),
+        _install("NIMBUSWARE_SANDBOX_K8S_NAMESPACE", "Fleet sandbox Kubernetes namespace"),
+        _install("NIMBUSWARE_SANDBOX_K8S_WORKDIR", "Working directory inside fleet sandbox pod"),
+        _install("NIMBUSWARE_E2B_API_KEY", "Enterprise E2B fleet sandbox API key"),
+        _install("NIMBUSWARE_E2B_TEMPLATE", "Optional E2B sandbox template id"),
     )
 
     system_extra = (
         SettingDef(
-            "HERMES_PREFLIGHT_JSON_PROBE",
+            "NIMBUSWARE_PREFLIGHT_JSON_PROBE",
             _SYSTEM,
             _BOOL,
             "0",
@@ -185,7 +185,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — runtime",
         ),
         SettingDef(
-            "HERMES_PREFLIGHT_LATENCY_SAMPLES",
+            "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES",
             _SYSTEM,
             _INT,
             "1",
@@ -194,7 +194,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — runtime",
         ),
         SettingDef(
-            "HERMES_RUN_MYPY",
+            "NIMBUSWARE_RUN_MYPY",
             _SYSTEM,
             _BOOL,
             "0",
@@ -203,7 +203,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
-            "HERMES_SEMGREP_CONFIG",
+            "NIMBUSWARE_SEMGREP_CONFIG",
             _SYSTEM,
             _STR,
             "p/ci",
@@ -212,7 +212,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
-            "HERMES_AGENT_EVALUATOR_AUTO_PROMOTE",
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
             _SYSTEM,
             _BOOL,
             "0",
@@ -221,7 +221,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_AGENT_EVALUATOR_AUTO_CREATE",
+            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
             _SYSTEM,
             _BOOL,
             "0",
@@ -230,7 +230,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_AGENT_EVALUATOR_LLM_STUB",
+            "NIMBUSWARE_AGENT_EVALUATOR_LLM_STUB",
             _SYSTEM,
             _BOOL,
             "0",
@@ -239,7 +239,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_PROBATION_AUTO_SHELVE",
+            "NIMBUSWARE_PROBATION_AUTO_SHELVE",
             _SYSTEM,
             _BOOL,
             "1",
@@ -248,7 +248,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_PROBATION_NOTIFY_BEFORE_PROMOTE",
+            "NIMBUSWARE_PROBATION_NOTIFY_BEFORE_PROMOTE",
             _SYSTEM,
             _BOOL,
             "1",
@@ -257,7 +257,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_FAST_SLICE",
+            "NIMBUSWARE_FAST_SLICE",
             _SYSTEM,
             _BOOL,
             "",
@@ -266,7 +266,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_PERSONA_COVERAGE_CRITIQUE",
+            "NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE",
             _SYSTEM,
             _BOOL,
             "",
@@ -275,7 +275,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_PERSONA_COVERAGE_CRITIQUE_LLM",
+            "NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE_LLM",
             _SYSTEM,
             _BOOL,
             "",
@@ -284,7 +284,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_SELF_REFINEMENT_UNGATED_LOOP",
+            "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
             _SYSTEM,
             _BOOL,
             "",
@@ -293,7 +293,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_SELF_REFINEMENT_AUTO_PROMOTE",
+            "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE",
             _SYSTEM,
             _BOOL,
             "0",
@@ -302,7 +302,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_SELF_REFINEMENT_CRITIQUE_STUB",
+            "NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB",
             _SYSTEM,
             _BOOL,
             "",
@@ -311,7 +311,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_INTEGRATION_ADAPTER_WRITER",
+            "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER",
             _SYSTEM,
             _BOOL,
             "",
@@ -320,7 +320,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
-            "HERMES_NETWORK_RESILIENCE_CRITIQUE",
+            "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE",
             _SYSTEM,
             _BOOL,
             "",
@@ -329,7 +329,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_NETWORK_RESILIENCE_CRITIQUE_LLM",
+            "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE_LLM",
             _SYSTEM,
             _BOOL,
             "",
@@ -338,7 +338,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_PERFORMANCE_CRITIQUE",
+            "NIMBUSWARE_PERFORMANCE_CRITIQUE",
             _SYSTEM,
             _BOOL,
             "",
@@ -347,7 +347,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_PERFORMANCE_CRITIQUE_LLM",
+            "NIMBUSWARE_PERFORMANCE_CRITIQUE_LLM",
             _SYSTEM,
             _BOOL,
             "",
@@ -356,7 +356,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_SECURITY_CRITIQUE",
+            "NIMBUSWARE_SECURITY_CRITIQUE",
             _SYSTEM,
             _BOOL,
             "",
@@ -365,7 +365,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_SECURITY_CRITIQUE_LLM",
+            "NIMBUSWARE_SECURITY_CRITIQUE_LLM",
             _SYSTEM,
             _BOOL,
             "",
@@ -374,7 +374,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — critics",
         ),
         SettingDef(
-            "HERMES_TEST_WRITER_STAGE",
+            "NIMBUSWARE_TEST_WRITER_STAGE",
             _SYSTEM,
             _BOOL,
             "",
@@ -383,7 +383,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — pipeline",
         ),
         SettingDef(
-            "HERMES_TEST_WRITER_LLM_BODY",
+            "NIMBUSWARE_TEST_WRITER_LLM_BODY",
             _SYSTEM,
             _BOOL,
             "",
@@ -392,7 +392,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — pipeline",
         ),
         SettingDef(
-            "HERMES_TEST_WRITER_LLM_STUB",
+            "NIMBUSWARE_TEST_WRITER_LLM_STUB",
             _SYSTEM,
             _BOOL,
             "",
@@ -401,7 +401,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — pipeline",
         ),
         SettingDef(
-            "HERMES_BUNDLE_MEMORY_RANK_WEIGHT",
+            "NIMBUSWARE_BUNDLE_MEMORY_RANK_WEIGHT",
             _SYSTEM,
             _STR,
             "0.2",
@@ -410,7 +410,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — memory",
         ),
         SettingDef(
-            "HERMES_MEMORY_EMBEDDING_MODEL",
+            "NIMBUSWARE_MEMORY_EMBEDDING_MODEL",
             _SYSTEM,
             _STR,
             "",
@@ -419,7 +419,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — memory",
         ),
         SettingDef(
-            "HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS",
+            "NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS",
             _SYSTEM,
             _INT,
             "",
@@ -428,7 +428,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — egress",
         ),
         SettingDef(
-            "HERMES_FLEET_OLLAMA_SLI_SAMPLES",
+            "NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES",
             _SYSTEM,
             _INT,
             "60",
@@ -437,7 +437,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — fleet",
         ),
         SettingDef(
-            "HERMES_FLEET_OLLAMA_SLI_INTERVAL_SEC",
+            "NIMBUSWARE_FLEET_OLLAMA_SLI_INTERVAL_SEC",
             _SYSTEM,
             _INT,
             "5",
@@ -449,7 +449,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
 
     user_extra = (
         SettingDef(
-            "HERMES_SLICE_P3_EVIDENCE",
+            "NIMBUSWARE_SLICE_P3_EVIDENCE",
             _USER,
             _BOOL,
             "1",
@@ -458,16 +458,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_BRANCH_PREFIX",
+            "NIMBUSWARE_SLICE_BRANCH_PREFIX",
             _USER,
             _STR,
-            "hermes/run-",
+            "nimbusware/run-",
             "Git branch prefix",
             "Prefix for auto-created git branches.",
             "User — git outputs",
         ),
         SettingDef(
-            "HERMES_SLICE_PACKET_MAX_CHARS",
+            "NIMBUSWARE_SLICE_PACKET_MAX_CHARS",
             _USER,
             _INT,
             "12000",
@@ -476,7 +476,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_REPO_MAP_ENABLED",
+            "NIMBUSWARE_SLICE_REPO_MAP_ENABLED",
             _USER,
             _BOOL,
             "1",
@@ -485,7 +485,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_REPO_MAP_MAX_CHARS",
+            "NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS",
             _USER,
             _INT,
             "4000",
@@ -494,7 +494,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_LSP_ENABLED",
+            "NIMBUSWARE_SLICE_LSP_ENABLED",
             _USER,
             _BOOL,
             "1",
@@ -503,7 +503,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_LSP_COMMAND",
+            "NIMBUSWARE_SLICE_LSP_COMMAND",
             _USER,
             _STR,
             "",
@@ -512,7 +512,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_LSP_TIMEOUT_SEC",
+            "NIMBUSWARE_SLICE_LSP_TIMEOUT_SEC",
             _USER,
             _INT,
             "8",
@@ -521,7 +521,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_SYMBOL_SKETCH_MAX_CHARS",
+            "NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS",
             _USER,
             _INT,
             "3000",
@@ -530,7 +530,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SWE_BENCH_ENABLED",
+            "NIMBUSWARE_SWE_BENCH_ENABLED",
             _USER,
             _BOOL,
             "1",
@@ -539,7 +539,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — benchmarks",
         ),
         SettingDef(
-            "HERMES_SWE_BENCH_MANIFEST",
+            "NIMBUSWARE_SWE_BENCH_MANIFEST",
             _USER,
             _STR,
             "",
@@ -584,16 +584,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_WORKFLOW_PROFILE",
+            "NIMBUSWARE_WORKFLOW_PROFILE",
             _USER,
             _STR,
             "",
-            "Hermes workflow profile (legacy)",
-            "Legacy Hermes workflow profile name.",
+            "Nimbusware workflow profile (legacy)",
+            "Legacy Nimbusware workflow profile name.",
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_REPLAN_MAX",
+            "NIMBUSWARE_SLICE_REPLAN_MAX",
             _USER,
             _INT,
             "",
@@ -602,7 +602,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
-            "HERMES_SLICE_STUB_LOC_PER_FILE",
+            "NIMBUSWARE_SLICE_STUB_LOC_PER_FILE",
             _USER,
             _INT,
             "",
@@ -613,11 +613,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
     )
 
     internal = (
-        _internal("HERMES_WORKSPACE", "Dev workspace path override"),
-        _internal("HERMES_REFACTOR_FORCE_FAIL", "Force refactor stage fail", kind=_BOOL),
-        _internal("HERMES_REFACTOR_STAGE", "Refactor stage override"),
+        _internal("NIMBUSWARE_WORKSPACE", "Dev workspace path override"),
+        _internal("NIMBUSWARE_REFACTOR_FORCE_FAIL", "Force refactor stage fail", kind=_BOOL),
+        _internal("NIMBUSWARE_REFACTOR_STAGE", "Refactor stage override"),
         _internal(
-            "HERMES_PARALLEL_WRITER_TEST_DELAY_SECONDS", "Parallel writer test delay", kind=_INT
+            "NIMBUSWARE_PARALLEL_WRITER_TEST_DELAY_SECONDS", "Parallel writer test delay", kind=_INT
         ),
         _internal(
             "NIMBUSWARE_HW_FIXTURE",
@@ -627,21 +627,21 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _internal("NIMBUSWARE_HW_SSH_MOCK", "Mock SSH hardware probe", kind=_BOOL),
         _internal(
-            "HERMES_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL
+            "NIMBUSWARE_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL
         ),
-        _internal("HERMES_CI_GITHUB_REPO", "CI GitHub repo slug"),
-        _internal("HERMES_CI_HEAD_SHA", "CI head SHA"),
-        _internal("HERMES_TIMELINE_BASE_URL", "Timeline base URL for CI"),
-        _internal("HERMES_FLEET_OLLAMA_SLI_BASE_URL", "Fleet Ollama SLI base URL"),
-        _internal("HERMES_FLEET_OLLAMA_SLI_EXPORT_PATH", "Fleet Ollama SLI export path"),
-        _internal("HERMES_FLEET_OLLAMA_SLI_HEALTH_PATH", "Fleet Ollama SLI health path"),
-        _internal("HERMES_WORKSPACE_SNAPSHOT_DIR", "Workspace snapshot directory"),
-        _internal("HERMES_MEMORY_INDEX_DIR", "Memory index directory"),
-        _internal("HERMES_SCRAPER_ARTIFACT_DIR", "Scraper artifact directory"),
-        _internal("HERMES_PRUNE_STATUS_PATH", "Prune status export path"),
-        _internal("HERMES_SQL_QUERY_COUNT_MAX", "SQL query count max", kind=_INT),
-        _internal("HERMES_TEST_SQL_QUERY_COUNT", "Test SQL query count flag", kind=_BOOL),
-        _internal("HERMES_TEST_WRITER_STAGE_CMD", "Test writer stage command override"),
+        _internal("NIMBUSWARE_CI_GITHUB_REPO", "CI GitHub repo slug"),
+        _internal("NIMBUSWARE_CI_HEAD_SHA", "CI head SHA"),
+        _internal("NIMBUSWARE_TIMELINE_BASE_URL", "Timeline base URL for CI"),
+        _internal("NIMBUSWARE_FLEET_OLLAMA_SLI_BASE_URL", "Fleet Ollama SLI base URL"),
+        _internal("NIMBUSWARE_FLEET_OLLAMA_SLI_EXPORT_PATH", "Fleet Ollama SLI export path"),
+        _internal("NIMBUSWARE_FLEET_OLLAMA_SLI_HEALTH_PATH", "Fleet Ollama SLI health path"),
+        _internal("NIMBUSWARE_WORKSPACE_SNAPSHOT_DIR", "Workspace snapshot directory"),
+        _internal("NIMBUSWARE_MEMORY_INDEX_DIR", "Memory index directory"),
+        _internal("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", "Scraper artifact directory"),
+        _internal("NIMBUSWARE_PRUNE_STATUS_PATH", "Prune status export path"),
+        _internal("NIMBUSWARE_SQL_QUERY_COUNT_MAX", "SQL query count max", kind=_INT),
+        _internal("NIMBUSWARE_TEST_SQL_QUERY_COUNT", "Test SQL query count flag", kind=_BOOL),
+        _internal("NIMBUSWARE_TEST_WRITER_STAGE_CMD", "Test writer stage command override"),
         _internal("NIMBUSWARE_QUICK_MODE", "Quick mode bootstrap", kind=_BOOL),
     )
 

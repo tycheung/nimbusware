@@ -6,10 +6,10 @@ import ast
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-PIPELINE = REPO / "packages/hermes_orchestrator/_pipeline"
+PIPELINE = REPO / "packages/nimbusware_orchestrator/_pipeline"
 HELPERS = PIPELINE / "_helpers.py"
 
-STAR = "from hermes_orchestrator._pipeline._helpers import *  # noqa: F403\n"
+STAR = "from nimbusware_orchestrator._pipeline._helpers import *  # noqa: F403\n"
 
 SKIP = {
     "__init__.py",
@@ -58,9 +58,9 @@ def _used_names(path: Path) -> set[str]:
 def _format_import(symbols: list[str]) -> str:
     symbols = sorted(symbols)
     if len(symbols) <= 5:
-        return f"from hermes_orchestrator._pipeline._helpers import {', '.join(symbols)}"
+        return f"from nimbusware_orchestrator._pipeline._helpers import {', '.join(symbols)}"
     joined = ",\n    ".join(symbols)
-    return f"from hermes_orchestrator._pipeline._helpers import (\n    {joined},\n)"
+    return f"from nimbusware_orchestrator._pipeline._helpers import (\n    {joined},\n)"
 
 
 def explicitize(path: Path, exports: set[str]) -> bool:

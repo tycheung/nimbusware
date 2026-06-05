@@ -4,8 +4,8 @@ from typing import Annotated, cast
 
 from fastapi import Depends, Request
 
-from hermes_orchestrator.pipeline import RunOrchestrator
-from hermes_store.protocol import EventStore
+from nimbusware_orchestrator.pipeline import RunOrchestrator
+from nimbusware_store.protocol import EventStore
 from nimbusware_iam.store import InMemoryIamStore, PostgresIamStore
 from nimbusware_maker.store import InMemoryProjectStore, PostgresProjectStore
 

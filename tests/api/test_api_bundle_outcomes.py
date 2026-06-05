@@ -7,11 +7,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent_core.models import Verdict
-from hermes_extensions.bundle_memory import (
+from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 
 

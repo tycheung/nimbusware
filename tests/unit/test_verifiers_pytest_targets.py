@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.verifiers import run_pytest_targets
+from nimbusware_orchestrator.verifiers import run_pytest_targets
 from nimbusware_env import find_repo_root
 
 

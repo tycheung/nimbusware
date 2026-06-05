@@ -76,7 +76,7 @@ export async function mountProgress(root) {
   const exportLink = document.createElement("a");
   exportLink.href = `/v1/runs/${encodeURIComponent(id)}/theater/export`;
   exportLink.textContent = "Export theater transcript (.md)";
-  exportLink.setAttribute("download", `hermes-theater-${id}.md`);
+  exportLink.setAttribute("download", `nimbusware-theater-${id}.md`);
   mount?.prepend(exportBar);
   exportBar.appendChild(exportLink);
 

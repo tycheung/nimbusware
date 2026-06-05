@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from hermes_memory.timeline import (
+from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,

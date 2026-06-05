@@ -18,7 +18,7 @@ from nimbusware_console.integrator_workflow_preview import (
     validate_integrator_gate_block,
 )
 
-ALLOW_WORKFLOW_YAML_WRITE_ENV = "HERMES_ALLOW_WORKFLOW_YAML_WRITE"
+ALLOW_WORKFLOW_YAML_WRITE_ENV = "NIMBUSWARE_ALLOW_WORKFLOW_YAML_WRITE"
 
 
 def _config_materializer(repo_root: Path) -> Any | None:

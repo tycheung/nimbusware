@@ -10,33 +10,33 @@ def agent_evaluator_env_gate_caption(payload: Mapping[str, Any] | None) -> str |
     load_error = payload.get("load_error")
     if isinstance(load_error, str) and load_error.strip():
         return None
-    env = payload.get("HERMES_AGENT_EVALUATOR")
+    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR")
     if not isinstance(env, Mapping):
         return None
     if env.get("forces_off"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Agent evaluator env: **HERMES_AGENT_EVALUATOR** kill-switch active"
+            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** kill-switch active"
             f"{detail} — stage.started will not emit from env alone."
         )
     if env.get("forces_on"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Agent evaluator env: **HERMES_AGENT_EVALUATOR** force-on"
+            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** force-on"
             f"{detail} — stage.started may emit when workflow gate allows."
         )
     if env.get("unset"):
         return (
-            "Agent evaluator env: **HERMES_AGENT_EVALUATOR** unset — "
+            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** unset — "
             "workflow YAML ``agent_evaluator.enabled`` controls emission."
         )
     if env.get("unrecognised_value"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Agent evaluator env: **HERMES_AGENT_EVALUATOR** unrecognised value"
+            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** unrecognised value"
             f"{detail} — treated like unset; workflow YAML gate applies."
         )
     return None
@@ -50,7 +50,7 @@ def agent_evaluator_auto_promote_env_gate_caption(
     load_error = payload.get("load_error")
     if isinstance(load_error, str) and load_error.strip():
         return None
-    env = payload.get("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE")
+    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE")
     if not isinstance(env, Mapping):
         return None
     if env.get("disables_auto_promote"):
@@ -58,13 +58,13 @@ def agent_evaluator_auto_promote_env_gate_caption(
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
             "Agent evaluator auto-promote env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_PROMOTE** kill-switch active"
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** kill-switch active"
             f"{detail}."
         )
     if env.get("unset"):
         return (
             "Agent evaluator auto-promote env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_PROMOTE** unset — "
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** unset — "
             "workflow ``agent_evaluator.auto_promote_probation`` controls promotion."
         )
     if env.get("unrecognised_value"):
@@ -72,7 +72,7 @@ def agent_evaluator_auto_promote_env_gate_caption(
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
             "Agent evaluator auto-promote env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_PROMOTE** unrecognised value"
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** unrecognised value"
             f"{detail} — treated like unset."
         )
     return None
@@ -100,7 +100,7 @@ def agent_evaluator_auto_create_env_gate_caption(
     load_error = payload.get("load_error")
     if isinstance(load_error, str) and load_error.strip():
         return None
-    env = payload.get("HERMES_AGENT_EVALUATOR_AUTO_CREATE")
+    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE")
     if not isinstance(env, Mapping):
         return None
     if env.get("disables_auto_create"):
@@ -108,13 +108,13 @@ def agent_evaluator_auto_create_env_gate_caption(
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
             "Agent evaluator auto-create env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_CREATE** kill-switch active"
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** kill-switch active"
             f"{detail}."
         )
     if env.get("unset"):
         return (
             "Agent evaluator auto-create env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_CREATE** unset — "
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** unset — "
             "workflow ``agent_evaluator.auto_create_persona`` controls creation."
         )
     if env.get("unrecognised_value"):
@@ -122,7 +122,7 @@ def agent_evaluator_auto_create_env_gate_caption(
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
             "Agent evaluator auto-create env: "
-            "**HERMES_AGENT_EVALUATOR_AUTO_CREATE** unrecognised value"
+            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** unrecognised value"
             f"{detail} — treated like unset."
         )
     return None
@@ -211,7 +211,7 @@ def agent_evaluator_llm_evaluation_enabled_caption(
     if enabled:
         return (
             "Agent evaluator LLM policy branch: workflow ``llm_evaluation_enabled`` is **on** "
-            "(requires ``HERMES_USE_LLM`` at runtime)."
+            "(requires ``NIMBUSWARE_USE_LLM`` at runtime)."
         )
     return (
         "Agent evaluator LLM policy branch: workflow ``llm_evaluation_enabled`` is **off** "
@@ -252,8 +252,8 @@ def agent_evaluator_probation_automation_caption(
     if enabled is False:
         return "Probation automation: workflow ``probation_automation.enabled`` is **off**."
     for key, label in (
-        ("HERMES_PROBATION_AUTO_SHELVE", "auto-shelve"),
-        ("HERMES_PROBATION_NOTIFY_BEFORE_PROMOTE", "promote notice"),
+        ("NIMBUSWARE_PROBATION_AUTO_SHELVE", "auto-shelve"),
+        ("NIMBUSWARE_PROBATION_NOTIFY_BEFORE_PROMOTE", "promote notice"),
     ):
         env = payload.get(key)
         if not isinstance(env, Mapping):

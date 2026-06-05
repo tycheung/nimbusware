@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from hermes_orchestrator.network_resilience_scan import (
+from nimbusware_orchestrator.network_resilience_scan import (
     check_sql_query_count_budget,
     run_network_resilience_scan_summary,
     scan_http_resilience_heuristic,
@@ -21,33 +21,33 @@ def test_scan_http_resilience_clean_repo() -> None:
 
 
 def test_sql_query_budget_noop_without_fixture() -> None:
-    old_max = os.environ.pop("HERMES_SQL_QUERY_COUNT_MAX", None)
-    old_count = os.environ.pop("HERMES_TEST_SQL_QUERY_COUNT", None)
+    old_max = os.environ.pop("NIMBUSWARE_SQL_QUERY_COUNT_MAX", None)
+    old_count = os.environ.pop("NIMBUSWARE_TEST_SQL_QUERY_COUNT", None)
     try:
-        os.environ["HERMES_SQL_QUERY_COUNT_MAX"] = "10"
+        os.environ["NIMBUSWARE_SQL_QUERY_COUNT_MAX"] = "10"
         code, msg, meta = check_sql_query_count_budget()
         assert code == 0
         assert "no-op" in msg.lower() or meta.get("sql_query_count") is None
     finally:
         if old_max is not None:
-            os.environ["HERMES_SQL_QUERY_COUNT_MAX"] = old_max
+            os.environ["NIMBUSWARE_SQL_QUERY_COUNT_MAX"] = old_max
         else:
-            os.environ.pop("HERMES_SQL_QUERY_COUNT_MAX", None)
+            os.environ.pop("NIMBUSWARE_SQL_QUERY_COUNT_MAX", None)
         if old_count is not None:
-            os.environ["HERMES_TEST_SQL_QUERY_COUNT"] = old_count
+            os.environ["NIMBUSWARE_TEST_SQL_QUERY_COUNT"] = old_count
 
 
 def test_sql_query_budget_exceeded() -> None:
-    os.environ["HERMES_SQL_QUERY_COUNT_MAX"] = "5"
-    os.environ["HERMES_TEST_SQL_QUERY_COUNT"] = "9"
+    os.environ["NIMBUSWARE_SQL_QUERY_COUNT_MAX"] = "5"
+    os.environ["NIMBUSWARE_TEST_SQL_QUERY_COUNT"] = "9"
     try:
         code, msg, meta = check_sql_query_count_budget()
         assert code == 1
         assert meta["sql_query_count"] == 9
         assert "exceeded" in msg
     finally:
-        os.environ.pop("HERMES_SQL_QUERY_COUNT_MAX", None)
-        os.environ.pop("HERMES_TEST_SQL_QUERY_COUNT", None)
+        os.environ.pop("NIMBUSWARE_SQL_QUERY_COUNT_MAX", None)
+        os.environ.pop("NIMBUSWARE_TEST_SQL_QUERY_COUNT", None)
 
 
 def test_run_network_resilience_scan_summary_shape() -> None:

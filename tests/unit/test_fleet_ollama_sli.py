@@ -8,7 +8,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from hermes_orchestrator.fleet_ollama_sli import (
+from nimbusware_orchestrator.fleet_ollama_sli import (
     merge_preflight_history_aggregate,
     probe_health_latency_ms,
     read_sli_export,
@@ -42,8 +42,8 @@ def test_probe_health_latency_ms_success(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_sustained_probe_collects_samples(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_SAMPLES", "3")
-    monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_INTERVAL_SEC", "0")
+    monkeypatch.setenv("NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES", "3")
+    monkeypatch.setenv("NIMBUSWARE_FLEET_OLLAMA_SLI_INTERVAL_SEC", "0")
 
     class _Resp:
         def raise_for_status(self) -> None:
@@ -77,7 +77,7 @@ def test_merge_preflight_history_aggregate() -> None:
 
 def test_fleet_ollama_sli_disabled_on_individual(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_EDITION, DEFAULT_EDITION)
-    from hermes_orchestrator.fleet_ollama_sli import fleet_ollama_sli_enabled
+    from nimbusware_orchestrator.fleet_ollama_sli import fleet_ollama_sli_enabled
 
     assert not fleet_ollama_sli_enabled()
 
@@ -88,7 +88,7 @@ def test_enterprise_fleet_ollama_sli_api(
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
     monkeypatch.setenv("NIMBUSWARE_ADMIN_TOKEN", "test-admin-secret")
-    monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_EXPORT_PATH", str(tmp_path / "sli.json"))
+    monkeypatch.setenv("NIMBUSWARE_FLEET_OLLAMA_SLI_EXPORT_PATH", str(tmp_path / "sli.json"))
     write_sli_export(
         {"p95_latency_ms": 99, "schema_version": 1, "kind": "fleet_ollama_sustained_sli"},
         tmp_path / "sli.json",
@@ -122,15 +122,15 @@ def test_cli_stdout_only(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
-    monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_SAMPLES", "1")
-    monkeypatch.setenv("HERMES_FLEET_OLLAMA_SLI_INTERVAL_SEC", "0")
+    monkeypatch.setenv("NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES", "1")
+    monkeypatch.setenv("NIMBUSWARE_FLEET_OLLAMA_SLI_INTERVAL_SEC", "0")
 
     class _Resp:
         def raise_for_status(self) -> None:
             return None
 
     monkeypatch.setattr(httpx, "get", lambda *_a, **_k: _Resp())
-    from hermes_orchestrator.fleet_ollama_sli_cli import main
+    from nimbusware_orchestrator.fleet_ollama_sli_cli import main
 
     code = main(["--stdout-only", "--base-url", "http://example"])
     assert code == 0

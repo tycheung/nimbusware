@@ -8,15 +8,15 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_extensions.personas import PersonaShelf
-from hermes_extensions.phase2 import (
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_extensions.phase2 import (
     AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
     AGENT_EVALUATOR_STRONG_SCORE_THRESHOLD,
     AgentEvaluator,
     agent_evaluator_score_band,
 )
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.materializer import ConfigMaterializer
@@ -94,7 +94,7 @@ def test_agent_evaluator_evaluate_gap_default_without_assignment() -> None:
 def test_agent_evaluator_hook_attaches_evaluation_metadata(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run(
         "default",
@@ -119,7 +119,7 @@ def test_agent_evaluator_hook_attaches_evaluation_metadata(
 def test_timeline_agent_evaluator_includes_evaluation_fields(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     base, _ = default_paths(root)
     store_cfg = InMemoryConfigStore()

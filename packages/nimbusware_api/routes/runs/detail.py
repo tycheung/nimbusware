@@ -9,12 +9,12 @@ from fastapi import HTTPException, Response
 from fastapi.routing import APIRouter
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
-from hermes_memory.timeline import (
+from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
 )
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
@@ -131,13 +131,13 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     ss_hist = security_scan_on_verify_timeline_history(events)
     ss_sum = ss_hist[-1] if ss_hist else None
     sr_markers = self_refinement_marker_timeline_history(events)
-    from hermes_orchestrator.micro_slice import micro_slice_timeline_summary
-    from hermes_orchestrator.network_resilience_critique import (
+    from nimbusware_orchestrator.micro_slice import micro_slice_timeline_summary
+    from nimbusware_orchestrator.network_resilience_critique import (
         network_resilience_critique_timeline_summary,
     )
-    from hermes_orchestrator.performance_critique import performance_critique_timeline_summary
-    from hermes_orchestrator.refactor_stage import refactor_critique_timeline_summary
-    from hermes_orchestrator.security_critique import security_critique_timeline_summary
+    from nimbusware_orchestrator.performance_critique import performance_critique_timeline_summary
+    from nimbusware_orchestrator.refactor_stage import refactor_critique_timeline_summary
+    from nimbusware_orchestrator.security_critique import security_critique_timeline_summary
 
     custom_agent_summary: dict[str, Any] | None = None
     for ev in events:

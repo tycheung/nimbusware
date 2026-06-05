@@ -38,7 +38,7 @@ from nimbusware_console.prune_status_display import (
 _FULL_STATUS: dict[str, object] = {
     "schema_version": 1,
     "pruned": 3,
-    "base": "/tmp/hermes_scraper",
+    "base": "/tmp/nimbusware_scraper",
     "dry_run": True,
     "max_age_days": 14,
     "include_patterns": ["*.bin"],
@@ -106,7 +106,7 @@ def test_prune_status_summary_rows_renders_full_status_in_stable_order() -> None
     by_field = {r["field"]: r["value"] for r in rows}
     assert by_field["Summary schema version"] == "1"
     assert by_field["Pruned"] == "3"
-    assert by_field["Base dir"] == "/tmp/hermes_scraper"
+    assert by_field["Base dir"] == "/tmp/nimbusware_scraper"
     assert by_field["Dry run"] == "True"
     assert by_field["Max age (days)"] == "14"
     # Lists are JSON-stringified by the helper
@@ -121,7 +121,7 @@ def test_prune_status_summary_rows_renders_none_values_as_em_dash() -> None:
     """``None`` ⇒ em-dash; absent keys are skipped (matches preflight_history_display)."""
     status: dict[str, object | None] = {
         "pruned": 0,
-        "base": "/tmp/hermes_scraper",
+        "base": "/tmp/nimbusware_scraper",
         "dry_run": False,
         "include_patterns": None,
         "exclude_patterns": None,
@@ -193,7 +193,7 @@ def test_freshness_caption_no_status_points_at_summary_path() -> None:
     caption = prune_status_freshness_caption(None)
     assert "No prune status file yet" in caption
     assert "--summary-path" in caption
-    assert "HERMES_PRUNE_STATUS_PATH" in caption
+    assert "NIMBUSWARE_PRUNE_STATUS_PATH" in caption
 
 
 def test_freshness_caption_missing_wrote_at() -> None:
@@ -275,9 +275,9 @@ def test_prune_status_pruned_outcome_caption() -> None:
 
 
 def test_prune_status_base_dir_caption() -> None:
-    cap = prune_status_base_dir_caption({"base": "/tmp/hermes_scraper"})
+    cap = prune_status_base_dir_caption({"base": "/tmp/nimbusware_scraper"})
     assert cap is not None
-    assert "/tmp/hermes_scraper" in cap
+    assert "/tmp/nimbusware_scraper" in cap
     assert prune_status_base_dir_caption(None) is None
     assert prune_status_base_dir_caption({}) is None
     assert prune_status_base_dir_caption({"base": ""}) is None

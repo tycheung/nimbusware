@@ -4,8 +4,8 @@ When research stages index a pattern, Nimbusware writes a **catalog candidate** 
 
 ## Flow
 
-1. **Code Researcher** completes `research.pattern.indexed` and calls `write_catalog_candidate()` (see `packages/hermes_research/stages.py`).
-2. Candidate files land at `.hermes/research/catalog_candidates/{run_id}/{pattern_id}.json` with `status: pending_integrator_review`.
+1. **Code Researcher** completes `research.pattern.indexed` and calls `write_catalog_candidate()` (see `packages/nimbusware_research/stages.py`).
+2. Candidate files land at `.nimbusware/research/catalog_candidates/{run_id}/{pattern_id}.json` with `status: pending_integrator_review`.
 3. **Admin Console** — use bundle catalog search and integrator preview/apply to validate compatibility; promote rows into the YAML catalog via `PUT /v1/bundles/catalog` or the catalog editor panel.
 4. **Integrator / Stitcher** stages consume the promoted catalog metadata on subsequent runs.
 

@@ -7,13 +7,13 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 
 _MIN_LINES: dict[str, int] = {
-    "packages/hermes_orchestrator/_pipeline/_helpers.py": 200,
+    "packages/nimbusware_orchestrator/_pipeline/_helpers.py": 200,
     "packages/agent_core/models/events_foundation.py": 50,
     "packages/nimbusware_maker_web/static/js/app-shell.js": 20,
 }
 
 _REQUIRED_SNIPPETS: dict[str, tuple[str, ...]] = {
-    "packages/hermes_orchestrator/_pipeline/_helpers.py": ("InMemoryEventStore",),
+    "packages/nimbusware_orchestrator/_pipeline/_helpers.py": ("InMemoryEventStore",),
     "packages/nimbusware_maker_web/static/js/api-client.js": ("apiJson",),
 }
 

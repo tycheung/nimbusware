@@ -20,10 +20,10 @@ from agent_core.models import (
     StagePassedPayload,
     Verdict,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 _BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
@@ -148,7 +148,7 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
     _append_stage_failed(mem_a1, rid_a1, "s1")
     _append_stage_failed(mem_a1, rid_a1, "s2")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
         return_value=None,
     ):
         orch_a1._maybe_escalate_after_cumulative_stage_failures(rid_a1)  # noqa: SLF001
@@ -163,7 +163,7 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
     _append_stage_failed(mem_a2, rid_a2, "s2")
     _append_escalation(mem_a2, rid_a2, "cumulative_stage_failures")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch_a2._maybe_escalate_after_cumulative_stage_failures(rid_a2)  # noqa: SLF001
@@ -177,7 +177,7 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
     rid_a3 = orch_a3.create_run("default")
     _append_stage_failed(mem_a3, rid_a3, "s1")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch_a3._maybe_escalate_after_cumulative_stage_failures(rid_a3)  # noqa: SLF001
@@ -191,7 +191,7 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
     _append_stage_failed(mem_a4, rid_a4, "s1")
     _append_stage_failed(mem_a4, rid_a4, "s2")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch_a4._maybe_escalate_after_cumulative_stage_failures(rid_a4)  # noqa: SLF001
@@ -214,7 +214,7 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
     _append_stage_passed(mem_a5, rid_a5, "p1")
     _append_finding(mem_a5, rid_a5)
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch_a5._maybe_escalate_after_cumulative_stage_failures(rid_a5)  # noqa: SLF001
@@ -240,7 +240,7 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
     for i in range(3):
         _append_fail_gate(mem_b1, rid_b1, f"g{i}")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=None,
     ):
         orch_b1._maybe_escalate_after_cumulative_gate_failures(rid_b1)  # noqa: SLF001
@@ -255,7 +255,7 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
     _append_fail_gate(mem_b2, rid_b2, "g2")
     _append_escalation(mem_b2, rid_b2, "cumulative_gate_failures")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch_b2._maybe_escalate_after_cumulative_gate_failures(rid_b2)  # noqa: SLF001
@@ -269,7 +269,7 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
     _append_fail_gate(mem_b3, rid_b3, "g1")
     _append_fail_gate(mem_b3, rid_b3, "g2")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=3,
     ):
         orch_b3._maybe_escalate_after_cumulative_gate_failures(rid_b3)  # noqa: SLF001
@@ -282,7 +282,7 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
     _append_fail_gate(mem_b4, rid_b4, "g1")
     _append_fail_gate(mem_b4, rid_b4, "g2")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch_b4._maybe_escalate_after_cumulative_gate_failures(rid_b4)  # noqa: SLF001
@@ -301,7 +301,7 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
     _append_pass_gate(mem_b5, rid_b5, "g2")
     _append_fail_gate(mem_b5, rid_b5, "g3")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch_b5._maybe_escalate_after_cumulative_gate_failures(rid_b5)  # noqa: SLF001
@@ -327,7 +327,7 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
     for _ in range(3):
         _append_finding(mem_c1, rid_c1)
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=None,
     ):
         orch_c1._maybe_auto_escalate(rid_c1)  # noqa: SLF001
@@ -342,7 +342,7 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_c2, rid_c2)
     _append_escalation(mem_c2, rid_c2, "anti_deadlock_insufficient_progress")
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=2,
     ):
         orch_c2._maybe_auto_escalate(rid_c2)  # noqa: SLF001
@@ -365,7 +365,7 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_c3, rid_c3)
     _append_finding(mem_c3, rid_c3)
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=3,
     ):
         orch_c3._maybe_auto_escalate(rid_c3)  # noqa: SLF001
@@ -378,7 +378,7 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_c4, rid_c4)
     _append_finding(mem_c4, rid_c4)
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=2,
     ):
         orch_c4._maybe_auto_escalate(rid_c4)  # noqa: SLF001
@@ -398,7 +398,7 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
     _append_stage_failed(mem_c5, rid_c5, "s1")
     _append_fail_gate(mem_c5, rid_c5, "g1")
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=2,
     ):
         orch_c5._maybe_auto_escalate(rid_c5)  # noqa: SLF001
@@ -426,7 +426,7 @@ def test_notice_escalate_findings_emitter_5_axis() -> None:
     for _ in range(3):
         _append_finding(mem_d1, rid_d1)
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=None,
     ):
         orch_d1._maybe_notice_escalate_findings(rid_d1)  # noqa: SLF001
@@ -441,7 +441,7 @@ def test_notice_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_d2, rid_d2)
     _append_escalation(mem_d2, rid_d2, "cumulative_findings_notice")
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=2,
     ):
         orch_d2._maybe_notice_escalate_findings(rid_d2)  # noqa: SLF001
@@ -456,7 +456,7 @@ def test_notice_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_d3, rid_d3)
     _append_finding(mem_d3, rid_d3)
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=3,
     ):
         orch_d3._maybe_notice_escalate_findings(rid_d3)  # noqa: SLF001
@@ -469,7 +469,7 @@ def test_notice_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_d4, rid_d4)
     _append_finding(mem_d4, rid_d4)
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=2,
     ):
         orch_d4._maybe_notice_escalate_findings(rid_d4)  # noqa: SLF001
@@ -490,11 +490,11 @@ def test_notice_escalate_findings_emitter_5_axis() -> None:
     _append_finding(mem_d5, rid_d5)
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+            "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
             return_value=2,
         ),
         patch(
-            "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+            "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
             return_value=2,
         ),
     ):

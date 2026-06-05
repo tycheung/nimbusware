@@ -24,7 +24,7 @@ jobs:
       - name: Pytest web + API
         run: poetry run pytest tests/web tests/api/test_memory_influence_route.py tests/api/test_admin_ui_bff.py -q
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

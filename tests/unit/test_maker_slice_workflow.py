@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_maker.approval import has_plan_approved, pending_slice_from_rows
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_maker.slice_workflow import (
@@ -22,14 +22,14 @@ from nimbusware_maker.slice_workflow import (
 def maker_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple:
     from nimbusware_env import find_repo_root
 
-    monkeypatch.setenv("HERMES_SLICE_IMPLEMENT", "stub")
-    monkeypatch.setenv("HERMES_SLICE_AUTO_ADVANCE", "0")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_AUTO_ADVANCE", "0")
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     ws = tmp_path / "project"
     ws.mkdir()
-    (ws / "packages/hermes_orchestrator/micro_slice.py").parent.mkdir(parents=True, exist_ok=True)
-    (ws / "packages/hermes_orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
-    (ws / "packages/hermes_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/nimbusware_orchestrator/micro_slice.py").parent.mkdir(parents=True, exist_ok=True)
+    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
     orch, store = make_dev_orchestrator(repo)
     requirements = build_requirements_artifact(business_prompt="Inventory app")
     run_id = orch.create_run(
@@ -69,7 +69,7 @@ def test_apply_pending_slice_stub(maker_run: tuple) -> None:
     approve_run_plan(orch, run_id)
     prep = prepare_next_pending_slice(orch, run_id)
     slice_id = prep["pending"]["slice_id"]
-    os.environ["HERMES_SKIP_PREFLIGHT"] = "1"
+    os.environ["NIMBUSWARE_SKIP_PREFLIGHT"] = "1"
     result = apply_pending_slice(orch, run_id, slice_id)
     assert result["status"] == "applied"
     rows = store.list_run_events(str(run_id))
@@ -78,12 +78,12 @@ def test_apply_pending_slice_stub(maker_run: tuple) -> None:
 
 def test_revert_workspace_after_apply(maker_run: tuple) -> None:
     orch, store, run_id, ws = maker_run
-    target = ws / "packages/hermes_orchestrator/micro_slice.py"
+    target = ws / "packages/nimbusware_orchestrator/micro_slice.py"
     before = target.read_text(encoding="utf-8")
     approve_run_plan(orch, run_id)
     prep = prepare_next_pending_slice(orch, run_id)
     slice_id = prep["pending"]["slice_id"]
-    os.environ["HERMES_SKIP_PREFLIGHT"] = "1"
+    os.environ["NIMBUSWARE_SKIP_PREFLIGHT"] = "1"
     apply_pending_slice(orch, run_id, slice_id)
     target.write_text("corrupted\n", encoding="utf-8")
     result = revert_workspace(orch, run_id)

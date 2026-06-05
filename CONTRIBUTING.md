@@ -54,13 +54,13 @@ See [tests/README.md](tests/README.md) for test layout and markers.
 
 Architecture is enforced by [`tests/unit/test_import_graph.py`](tests/unit/test_import_graph.py):
 
-- `hermes_orchestrator` must not import `nimbusware_api` at module level
-- `hermes_extensions` must not import `hermes_orchestrator` at module level
+- `nimbusware_orchestrator` must not import `nimbusware_api` at module level
+- `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level
 - Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repo; **Hermes** = online agentic system).
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repo; **Nimbusware** = online agentic system).
 
-Do not use “Hermes” to mean the Nimbusware platform, API, Maker, or Admin Console.
+Do not use “Nimbusware” to mean the Nimbusware platform, API, Maker, or Admin Console.
 
 ### Linting
 
@@ -69,9 +69,9 @@ Do not use “Hermes” to mean the Nimbusware platform, API, Maker, or Admin Co
 
 ### Typing
 
-Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py`. All `hermes_orchestrator._pipeline` modules are strict-checked islands (including `dev_factory`); there is no blanket `_pipeline.*` ignore.
+Global mypy strict mode is configured in `pyproject.toml`. CI checks explicit tranches (B–E) via `mypy_ci_targets.py`. All `nimbusware_orchestrator._pipeline` modules are strict-checked islands (including `dev_factory`); there is no blanket `_pipeline.*` ignore.
 
-Docker agent sandbox (`HERMES_SANDBOX_BACKEND=docker`) requires a local Docker CLI; it is the Individual v1 container backend (multi-tenant VM sandboxes are deferred).
+Docker agent sandbox (`NIMBUSWARE_SANDBOX_BACKEND=docker`) requires a local Docker CLI; it is the Individual v1 container backend (multi-tenant VM sandboxes are deferred).
 
 ### Module size
 

@@ -9,15 +9,15 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from hermes_memory.factory import build_memory_chunk_store
-from hermes_memory.fleet_index import rebuild_fleet_memory_index
-from hermes_memory.fleet_sync import (
+from nimbusware_memory.factory import build_memory_chunk_store
+from nimbusware_memory.fleet_index import rebuild_fleet_memory_index
+from nimbusware_memory.fleet_sync import (
     fleet_memory_remote_status,
     pull_fleet_memory_from_canonical,
     push_fleet_memory_to_canonical,
 )
-from hermes_memory.org_scope import fleet_scope_hash, resolve_fleet_scope
-from hermes_memory.search import format_memory_excerpt, search_fleet_memory
+from nimbusware_memory.org_scope import fleet_scope_hash, resolve_fleet_scope
+from nimbusware_memory.search import format_memory_excerpt, search_fleet_memory
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep

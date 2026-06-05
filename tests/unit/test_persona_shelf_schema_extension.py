@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from hermes_extensions.personas import (
+from nimbusware_extensions.personas import (
     ALLOWED_PROBATION_STATUSES,
     PERSONA_ALLOWED_TOOL_MAX_CHARS,
     PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,

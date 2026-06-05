@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID

@@ -272,13 +272,13 @@ def test_env_kill_switch_marks_effective_emit_false(
         "version: 1\nself_refinement:\n  enabled: false\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("HERMES_SELF_REFINEMENT_STAGE_MARKER", "0")
+    monkeypatch.setenv("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", "0")
     policy_path = tmp_path / "configs" / "self_refinement" / "policy.yaml"
     out = self_refinement_workflow_explainer_payload(tmp_path, workflow_profile="w")
     assert out["policy_yaml"]["policy_yaml_file_bytes"] == policy_path.stat().st_size
     assert out["marker_merge"]["would_emit_self_refinement_marker"] is True
     assert out["marker_merge"]["would_emit_marker_after_env"] is False
-    assert out["marker_merge"]["HERMES_SELF_REFINEMENT_STAGE_MARKER"]["disables_marker"] is True
+    assert out["marker_merge"]["NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER"]["disables_marker"] is True
 
 
 def test_marker_merge_vs_timeline_rows_no_timeline() -> None:
@@ -426,7 +426,7 @@ def test_self_refinement_marker_merge_compare_export_json_and_csv() -> None:
 def test_self_refinement_ungated_loop_env_gate_caption() -> None:
     cap_on = self_refinement_ungated_loop_env_gate_caption(
         {
-            "HERMES_SELF_REFINEMENT_UNGATED_LOOP": {
+            "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": {
                 "forces_on": True,
                 "forces_off": False,
                 "unset": False,
@@ -438,7 +438,7 @@ def test_self_refinement_ungated_loop_env_gate_caption() -> None:
     assert "force-on" in cap_on
     cap_unset = self_refinement_ungated_loop_env_gate_caption(
         {
-            "HERMES_SELF_REFINEMENT_UNGATED_LOOP": {
+            "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": {
                 "forces_on": False,
                 "forces_off": False,
                 "unset": True,
@@ -457,7 +457,7 @@ def test_self_refinement_workflow_explainer_payload_includes_ungated_env(
         repo_sr_policy_and_workflow,
         workflow_profile="on",
     )
-    env = out.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP")
+    env = out.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
     assert isinstance(env, dict)
     assert "unset" in env
 
@@ -491,7 +491,7 @@ def test_self_refinement_workflow_explainer_operator_metrics_merged_max_iteratio
 
 def test_self_refinement_workflow_explainer_operator_metrics_ungated_env() -> None:
     payload = {
-        "HERMES_SELF_REFINEMENT_UNGATED_LOOP": {
+        "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": {
             "forces_on": True,
             "forces_off": False,
             "unset": False,

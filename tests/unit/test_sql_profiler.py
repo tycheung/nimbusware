@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from hermes_orchestrator.sql_profiler import (
+from nimbusware_orchestrator.sql_profiler import (
     check_runtime_sql_budget,
     record_sql_query,
     reset_sql_query_counter,
@@ -24,13 +24,13 @@ def test_record_sql_query_session_counter() -> None:
 def test_runtime_budget_uses_session() -> None:
     reset_sql_query_counter()
     record_sql_query(count=4)
-    os.environ["HERMES_SQL_QUERY_COUNT_MAX"] = "3"
+    os.environ["NIMBUSWARE_SQL_QUERY_COUNT_MAX"] = "3"
     try:
         code, msg, meta = check_runtime_sql_budget()
         assert code == 1
         assert meta["sql_query_count"] == 4
     finally:
-        os.environ.pop("HERMES_SQL_QUERY_COUNT_MAX", None)
+        os.environ.pop("NIMBUSWARE_SQL_QUERY_COUNT_MAX", None)
         reset_sql_query_counter()
 
 

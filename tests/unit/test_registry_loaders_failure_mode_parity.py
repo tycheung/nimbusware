@@ -9,8 +9,8 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from hermes_orchestrator.registry import RoleRegistry
-from hermes_orchestrator.registry_db import load_registry_from_postgres
+from nimbusware_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.registry_db import load_registry_from_postgres
 
 
 def _write_yaml(tmp_path: Path, content: str, *, name: str = "roles.yaml") -> Path:
@@ -187,15 +187,15 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
 def test_load_registry_from_postgres_failure_and_happy_path_parity_5_axis() -> None:
     """Pin the empty-table ValueError + happy-path DB-sentinel contracts.
 
-    D1 -- empty rows -> ValueError matching 'hermes_roles_registry is empty'.
+    D1 -- empty rows -> ValueError matching 'nimbusware_roles_registry is empty'.
     D2 -- same setup -> error message includes 'schema/postgres.sql' for actionability.
     D3 -- non-empty rows -> keys lower+stripped via str(key).strip().lower().
-    D4 -- non-empty rows -> content_digest_sha256_16 == 'db:hermes_roles_registry' sentinel.
+    D4 -- non-empty rows -> content_digest_sha256_16 == 'db:nimbusware_roles_registry' sentinel.
     D5 -- non-empty rows -> yaml_version == 0 (asymmetric vs from_yaml file-driven).
     """
     empty_connect = _mock_psycopg_connect([])
-    with patch("hermes_orchestrator.registry_db.psycopg.connect", new=empty_connect):
-        with pytest.raises(ValueError, match="hermes_roles_registry is empty") as exc_d1:
+    with patch("nimbusware_orchestrator.registry_db.psycopg.connect", new=empty_connect):
+        with pytest.raises(ValueError, match="nimbusware_roles_registry is empty") as exc_d1:
             load_registry_from_postgres("postgresql://fake")
     assert "schema/postgres.sql" in str(exc_d1.value), (
         "D2: error message must include bootstrap schema path for actionability"
@@ -205,14 +205,14 @@ def test_load_registry_from_postgres_failure_and_happy_path_parity_5_axis() -> N
     uuid_b = str(uuid4())
     rows = [("  BackendWriter  ", uuid_a), ("Planner", uuid_b)]
     happy_connect = _mock_psycopg_connect(rows)
-    with patch("hermes_orchestrator.registry_db.psycopg.connect", new=happy_connect):
+    with patch("nimbusware_orchestrator.registry_db.psycopg.connect", new=happy_connect):
         reg_d = load_registry_from_postgres("postgresql://fake")
 
     assert reg_d.known_taxonomy_keys() == frozenset({"backendwriter", "planner"}), (
         "D3: DB rows must be normalized via str(key).strip().lower() before from_mapping"
     )
-    assert reg_d.content_digest_sha256_16 == "db:hermes_roles_registry", (
-        "D4: DB path must set content_digest_sha256_16 to the 'db:hermes_roles_registry' "
+    assert reg_d.content_digest_sha256_16 == "db:nimbusware_roles_registry", (
+        "D4: DB path must set content_digest_sha256_16 to the 'db:nimbusware_roles_registry' "
         "sentinel (distinct from from_yaml's sha256 hex)"
     )
     assert reg_d.yaml_version == 0, (

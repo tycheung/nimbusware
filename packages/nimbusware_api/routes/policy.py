@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 
-from hermes_orchestrator.policy_snapshot_diff import (
+from nimbusware_orchestrator.policy_snapshot_diff import (
     diff_policy_snapshots,
     policy_snapshot_from_run_created_metadata,
 )

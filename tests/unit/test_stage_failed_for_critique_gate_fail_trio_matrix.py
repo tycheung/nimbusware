@@ -13,16 +13,16 @@ from agent_core.models import (
     StageFailedPayload,
     Verdict,
 )
-from hermes_orchestrator.llm_plan import (
+from nimbusware_orchestrator.llm_plan import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 def _make_eff(**overrides: bool) -> EffectiveUniversalCritique:

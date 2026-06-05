@@ -17,7 +17,7 @@ from agent_core.models import (
     StitchAppliedPayload,
     Verdict,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 
 

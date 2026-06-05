@@ -10,26 +10,26 @@ import pytest
 import yaml
 
 from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-from hermes_extensions.personas import PersonaShelf
-from hermes_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
-from hermes_orchestrator.persona_probation_automation import (
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_orchestrator.persona_probation_automation import (
     emit_probation_promotion_notice,
     run_probation_automation,
 )
-from hermes_orchestrator.persona_probation_reliability import (
+from nimbusware_orchestrator.persona_probation_reliability import (
     ProbationReliabilityMetrics,
     collect_persona_eval_metrics,
     reliability_decision,
 )
-from hermes_orchestrator.persona_shelf_promotion import (
+from nimbusware_orchestrator.persona_shelf_promotion import (
     auto_shelve_probation_correlation_id,
     try_auto_shelve_probation_persona,
 )
-from hermes_orchestrator.workflow_probation_automation import (
+from nimbusware_orchestrator.workflow_probation_automation import (
     ProbationAutomationWorkflowBlock,
     parse_probation_automation_workflow_block,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def _minimal_shelves(tmp: Path, *, commerce_on_probation: bool) -> None:
@@ -134,7 +134,7 @@ def test_run_probation_automation_shelve(
     mem = InMemoryEventStore()
     for _ in range(3):
         _append_eval_stage(mem, uuid4(), "commerce", 0.2)
-    monkeypatch.delenv("HERMES_PROBATION_AUTO_SHELVE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_PROBATION_AUTO_SHELVE", raising=False)
     block = ProbationAutomationWorkflowBlock(
         enabled=True,
         auto_shelve=True,

@@ -73,7 +73,7 @@ def self_refinement_would_emit_marker_caption(
         if would is True:
             return (
                 "Self-refinement marker: **would not emit** — "
-                "**HERMES_SELF_REFINEMENT_STAGE_MARKER** kill-switch active."
+                "**NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER** kill-switch active."
             )
         return (
             "Self-refinement marker: **would not emit** "

@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from agent_core.models import EventType
-from hermes_research.stitch_outcome_stats import transplant_outcome_for_run
+from nimbusware_research.stitch_outcome_stats import transplant_outcome_for_run
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404

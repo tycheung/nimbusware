@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from agent_core.models import EventType
-from nimbusware_env.env_flags import hermes_slice_auto_advance_enabled
+from nimbusware_env.env_flags import nimbusware_slice_auto_advance_enabled
 
 STAGE_PLAN_APPROVED = "slice.plan.approved"
 STAGE_SLICE_PENDING = "slice.pending"
@@ -14,7 +14,7 @@ STAGE_WORKSPACE_REVERTED = "workspace.reverted"
 
 
 def slice_auto_advance_enabled(metadata: dict[str, Any] | None) -> bool:
-    if not hermes_slice_auto_advance_enabled():
+    if not nimbusware_slice_auto_advance_enabled():
         return False
     if isinstance(metadata, dict):
         maker = metadata.get("maker_approval")
@@ -99,7 +99,7 @@ def slice_is_resolved(rows: list[dict[str, Any]], slice_id: str) -> bool:
 
 
 def last_revert_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
-    from hermes_research.stitch_read_model import (
+    from nimbusware_research.stitch_read_model import (
         stitch_applied_snapshot_from_events,
         stitch_events_present,
     )

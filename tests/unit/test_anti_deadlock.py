@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from hermes_orchestrator.anti_deadlock import should_emit_anti_deadlock_escalation
+from nimbusware_orchestrator.anti_deadlock import should_emit_anti_deadlock_escalation
 
 
 def test_no_escalation_when_disabled() -> None:

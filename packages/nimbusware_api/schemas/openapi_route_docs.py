@@ -310,7 +310,7 @@ SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200: dict[str, Any] = {
                 },
             },
             "example": {
-                "base_dir": "/repo/.cache/hermes_scraper",
+                "base_dir": "/repo/.cache/nimbusware_scraper",
                 "exists": True,
                 "file_count": 2,
                 "total_bytes": 4096,

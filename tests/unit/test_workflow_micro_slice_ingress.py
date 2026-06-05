@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
+from nimbusware_orchestrator.ingress import assert_known_workflow, assert_stage_graph_valid
 from nimbusware_env import find_repo_root
 
 

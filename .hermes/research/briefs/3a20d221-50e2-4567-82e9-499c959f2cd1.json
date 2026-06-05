@@ -1,0 +1,13 @@
+{
+  "brief_kind": "code",
+  "domain_tag": "auth",
+  "summary": "Code research brief: candidate OSS patterns and libraries for the requested capability (stub; indexed for planner context).",
+  "artifact_id": "3a20d221-50e2-4567-82e9-499c959f2cd1",
+  "sources": [
+    {
+      "url": "stub://oss/pattern-index",
+      "license": "MIT",
+      "trust_tier": "high"
+    }
+  ]
+}

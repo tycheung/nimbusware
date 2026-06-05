@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from hermes_orchestrator.micro_slice import parse_slice_plan
-from hermes_orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
 
 
 def test_slice_gate_chain_pass() -> None:

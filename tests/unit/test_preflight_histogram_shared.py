@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator import preflight_cli, preflight_histogram
+from nimbusware_orchestrator import preflight_cli, preflight_histogram
 
 
 def test_bucket_edges_ms_is_fixed_tuple() -> None:
@@ -44,7 +44,7 @@ def test_nearest_rank_p95_matches_orchestrator_parity() -> None:
     # private one to confirm algorithm parity. The shared version is the only
     # one called by the CLI / console, but parity is important for downstream
     # operators correlating CLI output with orchestrator-side evidence.
-    from hermes_orchestrator import preflight as _orch_preflight
+    from nimbusware_orchestrator import preflight as _orch_preflight
 
     seq = [10, 50, 200, 1500, 9000]
     assert preflight_histogram.nearest_rank_p95(seq) == _orch_preflight._nearest_rank_p95(seq)

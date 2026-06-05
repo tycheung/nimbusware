@@ -6,11 +6,11 @@ import os
 from unittest.mock import patch
 
 from agent_core.models import EventType, Verdict
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
-@patch.dict(os.environ, {"HERMES_AGENT_EVALUATOR": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_AGENT_EVALUATOR": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_missing_persona_assignment_fails_coverage_gate(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_default_on")
@@ -28,12 +28,12 @@ def test_missing_persona_assignment_fails_coverage_gate(_mock: object) -> None:
     assert (gate.get("payload") or {}).get("failing_critics")
 
 
-@patch.dict(os.environ, {"HERMES_AGENT_EVALUATOR": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_AGENT_EVALUATOR": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_persona_coverage_kill_switch_disables_panel(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_on")
-    with patch.dict(os.environ, {"HERMES_PERSONA_COVERAGE_CRITIQUE": "0"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE": "0"}, clear=False):
         orch.execute_writer_verifier_pass(rid)
     rows = mem.list_run_events(str(rid))
     assert not any(
@@ -43,8 +43,8 @@ def test_persona_coverage_kill_switch_disables_panel(_mock: object) -> None:
     )
 
 
-@patch.dict(os.environ, {"HERMES_AGENT_EVALUATOR": "1"}, clear=False)
-@patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(os.environ, {"NIMBUSWARE_AGENT_EVALUATOR": "1"}, clear=False)
+@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_valid_assignment_passes_coverage_gate(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run(

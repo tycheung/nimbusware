@@ -6,7 +6,7 @@ import ast
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_STAGES = _REPO / "packages" / "hermes_research" / "stages.py"
+_STAGES = _REPO / "packages" / "nimbusware_research" / "stages.py"
 
 # Call sites allowed to read business_prompt (classification / routing only).
 _ALLOWED_LINES = {37, 38, 39, 40, 41, 42}

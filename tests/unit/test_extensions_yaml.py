@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_extensions import (
+from nimbusware_extensions import (
     BundleCatalog,
     EscalationPolicy,
     PersonaShelf,
@@ -13,9 +13,9 @@ from hermes_extensions import (
     bundle_faiss_index_ready,
     search_bundles,
 )
-from hermes_extensions.phase2 import ModuleIntegrator, SecurityScanner, UniversalCritiqueRouter
-from hermes_orchestrator.ingress import assert_bundle_catalog_maps_resolve
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_extensions.phase2 import ModuleIntegrator, SecurityScanner, UniversalCritiqueRouter
+from nimbusware_orchestrator.ingress import assert_bundle_catalog_maps_resolve
+from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -150,13 +150,13 @@ def test_persona_shelf_validate_structure_rejects_missing_id(tmp_path: Path) -> 
 
 
 def test_assert_persona_shelves_valid_accepts_repo_root() -> None:
-    from hermes_orchestrator.ingress import assert_persona_shelves_valid
+    from nimbusware_orchestrator.ingress import assert_persona_shelves_valid
 
     assert_persona_shelves_valid(ROOT)
 
 
 def test_assert_agent_evaluator_persona_in_shelves_rejects_unknown(tmp_path: Path) -> None:
-    from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+    from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 
     (tmp_path / "configs/workflows").mkdir(parents=True)
     shutil.copytree(ROOT / "configs/personas", tmp_path / "configs/personas")
@@ -170,7 +170,7 @@ def test_assert_agent_evaluator_persona_in_shelves_rejects_unknown(tmp_path: Pat
 
 
 def test_assert_agent_evaluator_persona_allows_reserved_default(tmp_path: Path) -> None:
-    from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+    from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 
     (tmp_path / "configs/workflows").mkdir(parents=True)
     shutil.copytree(ROOT / "configs/personas", tmp_path / "configs/personas")
@@ -185,7 +185,7 @@ def test_assert_agent_evaluator_persona_allows_reserved_default(tmp_path: Path) 
 def test_assert_agent_evaluator_persona_allows_unknown_when_auto_create_configured(
     tmp_path: Path,
 ) -> None:
-    from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+    from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 
     (tmp_path / "configs/workflows").mkdir(parents=True)
     shutil.copytree(ROOT / "configs/personas", tmp_path / "configs/personas")
@@ -203,7 +203,7 @@ def test_assert_agent_evaluator_persona_allows_unknown_when_auto_create_configur
 
 
 def test_assert_agent_evaluator_skips_when_disabled(tmp_path: Path) -> None:
-    from hermes_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+    from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 
     (tmp_path / "configs/workflows").mkdir(parents=True)
     shutil.copytree(ROOT / "configs/personas", tmp_path / "configs/personas")

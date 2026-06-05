@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 
 def _make_eff(**overrides: bool) -> EffectiveUniversalCritique:
@@ -66,12 +66,12 @@ def test_implementation_critique_llm_seam_path_matrix_5_axis() -> None:
     """
     with (
         patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ),
-        patch("hermes_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
         patch(
-            "hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel",
+            "nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel",
         ) as m_stub,
     ):
         m_llm.return_value = True
@@ -167,11 +167,11 @@ def test_implementation_critique_llm_seam_argument_propagation_5_axis() -> None:
 
     with (
         patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ),
-        patch("hermes_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
-        patch("hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
+        patch("nimbusware_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
     ):
         m_llm.return_value = True
 
@@ -273,11 +273,11 @@ def test_implementation_critique_llm_seam_log_snippet_60_line_truncation_4_axis(
     def _run_with_log(log: str) -> str:
         with (
             patch(
-                "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+                "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
                 return_value=(0, log),
             ),
-            patch("hermes_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
-            patch("hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
+            patch("nimbusware_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
+            patch("nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
         ):
             m_llm.return_value = True
             orch, _ = make_dev_orchestrator()
@@ -327,11 +327,11 @@ def test_implementation_critique_llm_seam_verifier_exit_code_propagation_3_axis(
     def _run_with_code(code: int) -> tuple[int, int]:
         with (
             patch(
-                "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+                "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
                 return_value=(code, "ok"),
             ),
-            patch("hermes_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
-            patch("hermes_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
+            patch("nimbusware_orchestrator.pipeline.execute_implementation_critique_llm") as m_llm,
+            patch("nimbusware_orchestrator.pipeline.emit_stub_implementation_critique_panel"),
         ):
             m_llm.return_value = True
             orch, _ = make_dev_orchestrator()

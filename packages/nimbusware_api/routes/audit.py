@@ -5,9 +5,9 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Response
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
-from hermes_orchestrator.audit_export import build_audit_bundle_bytes
-from hermes_orchestrator.policy_snapshot_diff import policy_snapshot_from_run_created_metadata
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_orchestrator.audit_export import build_audit_bundle_bytes
+from nimbusware_orchestrator.policy_snapshot_diff import policy_snapshot_from_run_created_metadata
+from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.read_models.run_theater import build_run_theater_messages
@@ -59,5 +59,5 @@ def audit_export(run_id: UUID, store: StoreDep) -> Response:
     return Response(
         content=payload,
         media_type="application/gzip",
-        headers={"Content-Disposition": f'attachment; filename="hermes-audit-{rid}.tar.gz"'},
+        headers={"Content-Disposition": f'attachment; filename="nimbusware-audit-{rid}.tar.gz"'},
     )

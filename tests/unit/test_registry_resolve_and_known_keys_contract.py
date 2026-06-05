@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.registry import RoleRegistry
 
 
 def _uuid() -> UUID:

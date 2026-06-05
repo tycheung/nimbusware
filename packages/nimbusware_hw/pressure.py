@@ -49,4 +49,4 @@ def should_defer_memory_rebuild(level: PressureLevel) -> bool:
 def should_degrade_llm_to_stub(level: PressureLevel) -> bool:
     if level != "block":
         return False
-    return env_bool("HERMES_PRESSURE_DEGRADE_STUB", default=True)
+    return env_bool("NIMBUSWARE_PRESSURE_DEGRADE_STUB", default=True)

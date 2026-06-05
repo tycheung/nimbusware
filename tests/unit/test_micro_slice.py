@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.micro_slice import (
+from nimbusware_orchestrator.micro_slice import (
     micro_slice_timeline_summary,
     parse_slice_plan,
     validate_diff_budget,
 )
-from hermes_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 from nimbusware_env import find_repo_root
 
 
@@ -27,7 +27,7 @@ def test_parse_slice_plan() -> None:
 
 
 def test_validate_diff_budget_rejects_large_slice() -> None:
-    from hermes_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+    from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 
     cfg = MicroSliceWorkflowBlock(enabled=True, max_files=2, max_loc=50)
     result = validate_diff_budget(

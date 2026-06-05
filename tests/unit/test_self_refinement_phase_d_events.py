@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_self_refinement_marker_emits_phase_d_loop_signal() -> None:
@@ -13,7 +13,7 @@ def test_self_refinement_marker_emits_phase_d_loop_signal() -> None:
         business_area_persona_id="commerce",
         development_role_persona_id="backend_engineer",
     )
-    with patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     rows = mem.list_run_events(str(rid))
     phase_d = [r for r in rows if r.get("event_type") == "self_refinement.loop.signalled"]
@@ -38,13 +38,13 @@ def test_self_refinement_marker_llm_critique_branch_when_hold() -> None:
         development_role_persona_id="backend_engineer",
     )
     env = {
-        "HERMES_SELF_REFINEMENT_STAGE_MARKER": "1",
-        "HERMES_USE_LLM": "1",
+        "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1",
+        "NIMBUSWARE_USE_LLM": "1",
     }
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "hermes_orchestrator.pipeline.execute_self_refinement_critique_llm",
+                "nimbusware_orchestrator.pipeline.execute_self_refinement_critique_llm",
                 return_value={
                     "verdict": "PASS",
                     "gate_decision": "proceed",
@@ -71,14 +71,14 @@ def test_self_refinement_stub_critique_panel_when_llm_misses() -> None:
         development_role_persona_id="backend_engineer",
     )
     env = {
-        "HERMES_SELF_REFINEMENT_STAGE_MARKER": "1",
-        "HERMES_USE_LLM": "1",
-        "HERMES_SELF_REFINEMENT_CRITIQUE_STUB": "1",
+        "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1",
+        "NIMBUSWARE_USE_LLM": "1",
+        "NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB": "1",
     }
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "hermes_orchestrator.pipeline.execute_self_refinement_critique_llm",
+                "nimbusware_orchestrator.pipeline.execute_self_refinement_critique_llm",
                 return_value=None,
             ):
                 orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001

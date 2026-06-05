@@ -12,25 +12,25 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
 def test_default_workflow_profile_is_nimbusware_production() -> None:
-    from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+    from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
 
     os.environ.pop("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", None)
     assert default_workflow_profile() == "nimbusware_production"
 
 
 def test_default_workflow_profile_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    from hermes_orchestrator.default_workflow_profile import default_workflow_profile
+    from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
 
     monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "default")
     assert default_workflow_profile() == "default"
 
 
 def test_self_refinement_production_llm_without_global_use_llm() -> None:
-    from hermes_orchestrator.workflow_self_refinement import (
+    from nimbusware_orchestrator.workflow_self_refinement import (
         self_refinement_production_llm_critique_effective,
     )
 
-    os.environ.pop("HERMES_USE_LLM", None)
+    os.environ.pop("NIMBUSWARE_USE_LLM", None)
     assert (
         self_refinement_production_llm_critique_effective(
             ROOT,
@@ -41,16 +41,16 @@ def test_self_refinement_production_llm_without_global_use_llm() -> None:
 
 
 def test_scan_n_plus_one_heuristic_clean_repo() -> None:
-    from hermes_orchestrator.performance_scan import scan_n_plus_one_heuristic
+    from nimbusware_orchestrator.performance_scan import scan_n_plus_one_heuristic
 
     code, out = scan_n_plus_one_heuristic(ROOT)
     assert code in (0, 1)
     assert isinstance(out, str)
 
 
-@patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
+@patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
 @patch(
-    "hermes_orchestrator.pipeline.execute_self_refinement_critique_llm",
+    "nimbusware_orchestrator.pipeline.execute_self_refinement_critique_llm",
     return_value={
         "verdict": "PASS",
         "gate_decision": "proceed",
@@ -58,21 +58,21 @@ def test_scan_n_plus_one_heuristic_clean_repo() -> None:
     },
 )
 @patch(
-    "hermes_orchestrator.pipeline.RunOrchestrator._selected_model_for_run",
+    "nimbusware_orchestrator.pipeline.RunOrchestrator._selected_model_for_run",
     return_value="test-model",
 )
 @patch(
-    "hermes_extensions.self_refinement.SelfRefinementEvaluator.evaluate",
+    "nimbusware_extensions.self_refinement.SelfRefinementEvaluator.evaluate",
     return_value={"status": "gap", "gaps": ["missing persona depth"]},
 )
-def test_production_sr_llm_path_without_hermes_use_llm(
+def test_production_sr_llm_path_without_nimbusware_use_llm(
     _mock_eval: object,
     _mock_llm: object,
     _mock_model: object,
 ) -> None:
-    from hermes_orchestrator.pipeline import make_dev_orchestrator
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
-    os.environ.pop("HERMES_USE_LLM", None)
+    os.environ.pop("NIMBUSWARE_USE_LLM", None)
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("nimbusware_production")
     orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001

@@ -3,7 +3,7 @@
 from .events import (
     DEFAULT_FINDING_FIX_STRICTNESS,
     FINDING_FIX_STRICTNESS_CONTEXT_KEY,
-    BaseHermesEvent,
+    BaseNimbuswareEvent,
     BasePayload,
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
@@ -25,8 +25,8 @@ from .events import (
     GateOverriddenPayload,
     HardwareProfileDetectedEvent,
     HardwareProfileDetectedPayload,
-    HermesEvent,
-    HermesEventUnion,
+    NimbuswareEvent,
+    NimbuswareEventUnion,
     JsonValue,
     MemoryIndexedEvent,
     MemoryIndexedPayload,
@@ -97,7 +97,7 @@ from .events import (
 )
 
 __all__ = [
-    "BaseHermesEvent",
+    "BaseNimbuswareEvent",
     "BasePayload",
     "DEFAULT_FINDING_FIX_STRICTNESS",
     "FINDING_FIX_STRICTNESS_CONTEXT_KEY",
@@ -147,8 +147,8 @@ __all__ = [
     "StitchPlanEmittedEvent",
     "StitchPlanEmittedPayload",
     "finding_severity_requires_fixes",
-    "HermesEvent",
-    "HermesEventUnion",
+    "NimbuswareEvent",
+    "NimbuswareEventUnion",
     "JsonValue",
     "ModelPreflightFailedEvent",
     "ModelPreflightFailedPayload",

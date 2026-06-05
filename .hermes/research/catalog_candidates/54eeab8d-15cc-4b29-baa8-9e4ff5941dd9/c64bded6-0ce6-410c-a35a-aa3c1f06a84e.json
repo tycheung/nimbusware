@@ -1,0 +1,8 @@
+{
+  "run_id": "54eeab8d-15cc-4b29-baa8-9e4ff5941dd9",
+  "candidate_id": "c64bded6-0ce6-410c-a35a-aa3c1f06a84e",
+  "status": "pending_integrator_review",
+  "repo_url": "stub://oss/example",
+  "license": "MIT",
+  "domain_tag": "auth"
+}

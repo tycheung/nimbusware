@@ -17,4 +17,4 @@ jobs:
       - name: Pytest slow
         run: poetry run pytest tests -q -m slow
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"

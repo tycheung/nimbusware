@@ -1,0 +1,8 @@
+{
+  "run_id": "1b024bac-d0ba-4249-a7d0-9f5e5f76806f",
+  "candidate_id": "5ff3dbaa-7746-4cd3-940a-6668a24664ef",
+  "status": "pending_integrator_review",
+  "repo_url": "stub://oss/example",
+  "license": "MIT",
+  "domain_tag": "golf"
+}

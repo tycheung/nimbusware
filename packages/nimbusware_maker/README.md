@@ -26,7 +26,7 @@ First-run onboarding uses `GET /v1/platform/onboarding` (wizard tab in maker web
 | Module | Role |
 |--------|------|
 | `slice_workflow/` | Approval orchestration (events, pending slice, revert) |
-| `slice_engine.py` | **Sole** module-level import site for `hermes_orchestrator` slice execution |
+| `slice_engine.py` | **Sole** module-level import site for `nimbusware_orchestrator` slice execution |
 | `approval.py` | Read models from run events (pending, snapshots, git commits) |
 | `workspace*.py` | Run workspace paths and snapshot restore |
 
@@ -34,6 +34,6 @@ Maker intentionally depends on the orchestrator for slice implement/verify/criti
 
 ## Git outputs (per-slice commit)
 
-When `HERMES_SLICE_AUTO_COMMIT` is enabled, applying a slice that passes the gate runs `maybe_commit_slice` on the run workspace. The Review tab shows branch, short SHA, or skip reason via `GET /v1/runs/{id}/maker/git-status`; events include `git_commit` metadata on `slice.applied` stages.
+When `NIMBUSWARE_SLICE_AUTO_COMMIT` is enabled, applying a slice that passes the gate runs `maybe_commit_slice` on the run workspace. The Review tab shows branch, short SHA, or skip reason via `GET /v1/runs/{id}/maker/git-status`; events include `git_commit` metadata on `slice.applied` stages.
 
 HTTP to the API uses `NIMBUSWARE_API_BASE` and optional `NIMBUSWARE_API_KEY` / admin token headers from `nimbusware_client`.

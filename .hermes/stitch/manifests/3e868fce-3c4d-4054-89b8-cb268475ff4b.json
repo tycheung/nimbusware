@@ -1,0 +1,13 @@
+{
+  "manifest_id": "3e868fce-3c4d-4054-89b8-cb268475ff4b",
+  "source_kind": "stub",
+  "source_tree_hash": "stub:3e868fce",
+  "file_paths": [
+    "packages/stub_transplant/__init__.py",
+    "packages/stub_transplant/auth_helpers.py"
+  ],
+  "license_paths": [
+    "LICENSE"
+  ],
+  "required_env_vars": []
+}

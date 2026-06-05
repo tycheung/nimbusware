@@ -9,11 +9,11 @@ from nimbusware_console.preflight_cross_run_display import (
 )
 from nimbusware_console.services import enterprise as enterprise_svc
 
-SS_API_KEY = "hermes_enterprise_api_key"
-SS_TENANT_KEYS = "hermes_enterprise_tenant_api_keys"
-SS_SELECTED_TENANT = "hermes_enterprise_selected_tenant_slug"
-SS_IAM_ME = "hermes_enterprise_iam_me"
-SS_EDITION_MANIFEST = "hermes_enterprise_edition_manifest"
+SS_API_KEY = "nimbusware_enterprise_api_key"
+SS_TENANT_KEYS = "nimbusware_enterprise_tenant_api_keys"
+SS_SELECTED_TENANT = "nimbusware_enterprise_selected_tenant_slug"
+SS_IAM_ME = "nimbusware_enterprise_iam_me"
+SS_EDITION_MANIFEST = "nimbusware_enterprise_edition_manifest"
 
 
 build_enterprise_headers = enterprise_svc.build_enterprise_headers

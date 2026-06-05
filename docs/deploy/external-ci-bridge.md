@@ -1,10 +1,10 @@
 # External CI bridge (GitHub Checks)
 
-Maps Hermes **integrator gate** outcomes to GitHub Check Runs so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` in [`packages/hermes_orchestrator/ci_bridge/external_ci.py`](../../packages/hermes_orchestrator/ci_bridge/external_ci.py).
+Maps Nimbusware **integrator gate** outcomes to GitHub Check Runs so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py).
 
 ## When it fires
 
-The bridge runs **best-effort** after the integrator stage emits `gate.decision.emitted` (see [`optional_stages_integrator.py`](../../packages/hermes_orchestrator/_pipeline/optional_stages_integrator.py)). It does **not** post checks for every slice gate or critic verdict — only the integrator gate path wired today.
+The bridge runs **best-effort** after the integrator stage emits `gate.decision.emitted` (see [`optional_stages_integrator.py`](../../packages/nimbusware_orchestrator/_pipeline/optional_stages_integrator.py)). It does **not** post checks for every slice gate or critic verdict — only the integrator gate path wired today.
 
 Other gates remain visible via the Nimbusware timeline and audit export.
 
@@ -13,7 +13,7 @@ Other gates remain visible via the Nimbusware timeline and audit export.
 | Variable | Required | Notes |
 |----------|----------|--------|
 | `GITHUB_TOKEN` | Yes | Personal access token or GitHub App installation token with **`checks:write`** on the target repo |
-| `HERMES_CI_GITHUB_REPO` | Yes | Repository slug `owner/name` (e.g. `acme/widget`) |
+| `NIMBUSWARE_CI_GITHUB_REPO` | Yes | Repository slug `owner/name` (e.g. `acme/widget`) |
 
 When either is unset, the bridge returns `{"status": "skipped", "reason": "github_not_configured"}` and the run continues normally.
 
@@ -21,14 +21,14 @@ When either is unset, the bridge returns `{"status": "skipped", "reason": "githu
 
 | Variable | Purpose |
 |----------|---------|
-| `HERMES_CI_HEAD_SHA` | Commit SHA for the check run (default: forty-zero placeholder if unset) |
-| `HERMES_TIMELINE_BASE_URL` | Public API base URL prepended to `/v1/runs/{id}/timeline` in check output |
+| `NIMBUSWARE_CI_HEAD_SHA` | Commit SHA for the check run (default: forty-zero placeholder if unset) |
+| `NIMBUSWARE_TIMELINE_BASE_URL` | Public API base URL prepended to `/v1/runs/{id}/timeline` in check output |
 
 ## Check run shape
 
-- **Name:** `hermes/{stage_name}` (stage name from gate payload)
+- **Name:** `nimbusware/{stage_name}` (stage name from gate payload)
 - **Conclusion:** `success` when verdict is `PASS`, otherwise `failure`
-- **Output title:** `Hermes gate {stage_name}`
+- **Output title:** `Nimbusware gate {stage_name}`
 - **Output summary:** `Verdict: {verdict}`
 
 ## Operator setup
@@ -38,9 +38,9 @@ When either is unset, the bridge returns `{"status": "skipped", "reason": "githu
 
 ```bash
 export GITHUB_TOKEN=ghp_...
-export HERMES_CI_GITHUB_REPO=your-org/your-repo
-export HERMES_CI_HEAD_SHA="${GITHUB_SHA}"   # optional; set in CI-driven runs
-export HERMES_TIMELINE_BASE_URL=https://nimbusware.example.com/v1  # optional
+export NIMBUSWARE_CI_GITHUB_REPO=your-org/your-repo
+export NIMBUSWARE_CI_HEAD_SHA="${GITHUB_SHA}"   # optional; set in CI-driven runs
+export NIMBUSWARE_TIMELINE_BASE_URL=https://nimbusware.example.com/v1  # optional
 ```
 
 3. Run a workflow with integrator gate enabled; inspect gate metadata `external_ci` on the timeline event when posting succeeds.
@@ -49,7 +49,7 @@ export HERMES_TIMELINE_BASE_URL=https://nimbusware.example.com/v1  # optional
 
 - Never commit tokens to the repo or Helm values in plain text.
 - Use least-privilege tokens scoped to the single repository.
-- The bridge catches network/API errors and returns `status: error` without failing the Hermes run.
+- The bridge catches network/API errors and returns `status: error` without failing the Nimbusware run.
 
 ## GitLab
 

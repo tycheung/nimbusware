@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_extensions.personas import (
+from nimbusware_extensions.personas import (
     PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,
     PERSONA_INSTRUCTIONS_MAX_CHARS,
 )

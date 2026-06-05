@@ -11,8 +11,8 @@ _TRANCHE_B_MODULES = frozenset(
         "nimbusware_projections.*",
         "nimbusware_client",
         "nimbusware_client.*",
-        "hermes_agent_tools",
-        "hermes_agent_tools.*",
+        "nimbusware_agent_tools",
+        "nimbusware_agent_tools.*",
     },
 )
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Optional SWE-bench-style harness for Hermes micro_slice profile.
+"""Optional SWE-bench-style harness for Nimbusware micro_slice profile.
 
 Dry-run (default): validate manifest + fixture layout, emit JSON summary.
 ``--run``: in-memory orchestrator against fixture workspace; score slice.gate outcomes.
@@ -68,7 +68,7 @@ def _apply_benchmark_env(manifest: dict[str, Any]) -> None:
 
 
 def _fixture_slice_plan_factory(target_paths: list[str]):
-    from hermes_orchestrator.micro_slice import parse_slice_plan
+    from nimbusware_orchestrator.micro_slice import parse_slice_plan
 
     def _plan(slice_index: int):
         return parse_slice_plan(
@@ -91,15 +91,15 @@ def _run_micro_slice_benchmark(
     manifest: dict[str, Any] | None = None,
 ) -> SweBenchSummary:
     checks: list[str] = ["benchmark_start"]
-    os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
-    os.environ.setdefault("HERMES_MICRO_SLICE_COUNT", "1")
+    os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
+    os.environ.setdefault("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(repo_root))
     if manifest:
         _apply_benchmark_env(manifest)
 
     from unittest.mock import patch
 
-    from hermes_orchestrator.pipeline import make_dev_orchestrator
+    from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
     target_paths = ["calc.py"]
     if manifest:
@@ -113,7 +113,7 @@ def _run_micro_slice_benchmark(
     checks.append("run_created")
     plan_factory = _fixture_slice_plan_factory(target_paths)
     with patch(
-        "hermes_orchestrator.micro_slice_executor.default_stub_slice_plan",
+        "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
         plan_factory,
     ):
         results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
@@ -211,7 +211,7 @@ def run_harness(
             summary.checks.append("min_pass_rate_ok")
 
     out_dir = root / "benchmarks"
-    if os.environ.get("HERMES_SWE_BENCH_WRITE_JSON", "").lower() in ("1", "true", "yes"):
+    if os.environ.get("NIMBUSWARE_SWE_BENCH_WRITE_JSON", "").lower() in ("1", "true", "yes"):
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / "latest_swe_bench.json"
         out_path.write_text(json.dumps(asdict(summary), indent=2), encoding="utf-8")
@@ -221,25 +221,25 @@ def run_harness(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Hermes SWE-bench harness")
+    parser = argparse.ArgumentParser(description="Nimbusware SWE-bench harness")
     parser.add_argument(
         "--manifest",
         type=Path,
         default=Path(
-            os.environ.get("HERMES_SWE_BENCH_MANIFEST", str(DEFAULT_MANIFEST)),
+            os.environ.get("NIMBUSWARE_SWE_BENCH_MANIFEST", str(DEFAULT_MANIFEST)),
         ),
     )
     parser.add_argument("--dry-run", action="store_true", default=True)
     parser.add_argument("--run", action="store_true", help="Run scored micro_slice benchmark")
     parser.add_argument("--json", action="store_true", help="Print JSON summary to stdout")
     args = parser.parse_args(argv)
-    enabled = os.environ.get("HERMES_SWE_BENCH_ENABLED", "1").lower() not in (
+    enabled = os.environ.get("NIMBUSWARE_SWE_BENCH_ENABLED", "1").lower() not in (
         "0",
         "false",
         "no",
     )
     if not enabled:
-        print("HERMES_SWE_BENCH_ENABLED=0 — skipping", file=sys.stderr)
+        print("NIMBUSWARE_SWE_BENCH_ENABLED=0 — skipping", file=sys.stderr)
         return 0
     dry = not args.run
     summary = run_harness(manifest_path=args.manifest.resolve(), dry_run=dry)

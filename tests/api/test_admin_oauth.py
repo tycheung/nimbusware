@@ -8,7 +8,7 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 from nimbusware_api.app import app  # noqa: E402
 from nimbusware_api.routes.admin_oauth import _SESSION_COOKIE, _sign_payload

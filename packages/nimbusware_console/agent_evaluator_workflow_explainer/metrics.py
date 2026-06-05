@@ -36,15 +36,15 @@ def agent_evaluator_workflow_explainer_operator_metrics(
     metrics["llm_evaluation_enabled"] = payload.get("yaml_parsed_llm_evaluation_enabled") is True
     metrics["would_emit_stage_started"] = payload.get("would_emit_stage_started") is True
     metrics["would_emit_llm_evaluation"] = payload.get("would_emit_llm_evaluation") is True
-    env = payload.get("HERMES_AGENT_EVALUATOR")
+    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR")
     if isinstance(env, dict):
         metrics["env_forces_on"] = env.get("forces_on") is True
         metrics["env_forces_off"] = env.get("forces_off") is True
         metrics["env_unset"] = env.get("unset") is True
-    ap = payload.get("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE")
+    ap = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE")
     if isinstance(ap, dict):
         metrics["auto_promote_disabled"] = ap.get("disables_auto_promote") is True
-    ac = payload.get("HERMES_AGENT_EVALUATOR_AUTO_CREATE")
+    ac = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE")
     if isinstance(ac, dict):
         metrics["auto_create_disabled"] = ac.get("disables_auto_create") is True
     pid = payload.get("yaml_parsed_persona_id")

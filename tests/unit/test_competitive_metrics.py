@@ -18,7 +18,7 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_projections.builders.competitive_metrics import build_competitive_summary
 
 

@@ -25,12 +25,12 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from hermes_orchestrator.read_models import (
+from nimbusware_orchestrator.read_models import (
     RUN_LIST_FILTER_STATUSES,
     build_run_summary,
     run_has_started,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 
 _BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
 

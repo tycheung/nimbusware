@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import hermes_orchestrator.pipeline as pipeline_module
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
+import nimbusware_orchestrator.pipeline as pipeline_module
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 from nimbusware_env import find_repo_root
 
 
@@ -34,13 +34,13 @@ def test_make_dev_orchestrator_returns_orchestrator() -> None:
 
 
 def test_pipeline_internal_package_exists() -> None:
-    from hermes_orchestrator._pipeline import compose
+    from nimbusware_orchestrator._pipeline import compose
 
     assert hasattr(compose, "build_run_orchestrator_class")
 
 
 def test_pipeline_mixin_modules_exist() -> None:
-    from hermes_orchestrator._pipeline import (
+    from nimbusware_orchestrator._pipeline import (
         base,
         create_run,
         critique_gates,
@@ -57,7 +57,7 @@ def test_pipeline_mixin_modules_exist() -> None:
         critique_gates,
         optional_stages,
     ):
-        assert mod.__name__.startswith("hermes_orchestrator._pipeline.")
+        assert mod.__name__.startswith("nimbusware_orchestrator._pipeline.")
 
 
 def test_run_orchestrator_has_core_methods() -> None:

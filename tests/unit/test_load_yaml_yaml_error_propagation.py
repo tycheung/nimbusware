@@ -7,11 +7,11 @@ from pathlib import Path
 import pytest
 import yaml
 
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.workflow_escalation import (
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.workflow_escalation import (
     parse_escalation_workflow_block,
 )
-from hermes_orchestrator.workflow_security_metadata import (
+from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
 
@@ -38,7 +38,7 @@ def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
     """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
 
     Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](packages\\hermes_orchestrator\\workflow_profiles.py)
+    [workflow_profiles.py](packages\\nimbusware_orchestrator\\workflow_profiles.py)
     expectations: file must exist at
     ``{repo_root}/configs/workflows/{profile}.yaml``.
     """
@@ -62,7 +62,7 @@ def test_load_yaml_malformed_yaml_propagates_yaml_error_contract(
     1. **``yaml.YAMLError``** -- the umbrella class for every PyYAML
        parsing error. Asserted via ``pytest.raises(yaml.YAMLError)``;
        a future refactor that wraps the exception in a custom class
-       (e.g. ``HermesYamlError``) would fail with "DID NOT RAISE"
+       (e.g. ``NimbuswareYamlError``) would fail with "DID NOT RAISE"
        unless that class extends ``yaml.YAMLError``.
     2. **Non-membership in the cascade-catchable tuple** --
        ``not isinstance(exc, (OSError, ValueError, UnicodeDecodeError))``.

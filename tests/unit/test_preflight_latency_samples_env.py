@@ -1,12 +1,12 @@
-"""HERMES_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default."""
+"""NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default."""
 
 from __future__ import annotations
 
 import pytest
 
-from hermes_orchestrator.preflight import _latency_sample_count
+from nimbusware_orchestrator.preflight import _latency_sample_count
 
-_ENV_NAME = "HERMES_PREFLIGHT_LATENCY_SAMPLES"
+_ENV_NAME = "NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES"
 _FLOOR = 1
 _CEILING = 20
 _DEFAULT = 1

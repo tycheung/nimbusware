@@ -6,7 +6,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
-from hermes_orchestrator.fleet_ollama_sli import (
+from nimbusware_orchestrator.fleet_ollama_sli import (
     fleet_ollama_sli_enabled,
     fleet_ollama_sli_status_snapshot,
     merge_preflight_history_aggregate,

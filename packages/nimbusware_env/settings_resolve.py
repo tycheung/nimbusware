@@ -14,7 +14,7 @@ TRUTHY_VALUES = frozenset({"1", "true", "yes"})
 FALSY_VALUES = frozenset({"0", "false", "no"})
 
 _run_overrides: contextvars.ContextVar[dict[str, str] | None] = contextvars.ContextVar(
-    "hermes_run_operator_settings",
+    "nimbusware_run_operator_settings",
     default=None,
 )
 
@@ -23,10 +23,10 @@ _system_cache: dict[str, str] | None = None
 
 FAIL_CLOSED_RAW_KEYS = frozenset(
     {
-        "HERMES_SKIP_PREFLIGHT",
-        "HERMES_RUN_BANDIT",
-        "HERMES_OUTBOUND_FETCH_ENABLED",
-        "HERMES_PREFLIGHT_JSON_PROBE",
+        "NIMBUSWARE_SKIP_PREFLIGHT",
+        "NIMBUSWARE_RUN_BANDIT",
+        "NIMBUSWARE_OUTBOUND_FETCH_ENABLED",
+        "NIMBUSWARE_PREFLIGHT_JSON_PROBE",
     },
 )
 

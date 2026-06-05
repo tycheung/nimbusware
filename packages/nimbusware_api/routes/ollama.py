@@ -4,7 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from hermes_orchestrator.ollama_manage import (
+from nimbusware_orchestrator.ollama_manage import (
     OllamaManageError,
     delete_model,
     filter_models,
@@ -13,8 +13,8 @@ from hermes_orchestrator.ollama_manage import (
     pull_model,
     runtime_base_url_from_routing,
 )
-from hermes_orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
-from hermes_orchestrator.ollama_user_policy import (
+from nimbusware_orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
+from nimbusware_orchestrator.ollama_user_policy import (
     assert_user_may,
     merge_policy_into_routing,
     policy_from_routing,

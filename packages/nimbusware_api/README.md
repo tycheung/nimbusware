@@ -6,7 +6,7 @@ FastAPI control plane for runs, timelines, bundles, config, and Enterprise IAM.
 
 - `poetry run nimbusware-api` — uvicorn on `NIMBUSWARE_API_HOST` / `PORT`
 - App factory: `nimbusware_api.app:app`
-- Lifespan builds store/orchestrator via `hermes_orchestrator.runtime_bootstrap` (IAM/project stores stay in `app.py`).
+- Lifespan builds store/orchestrator via `nimbusware_orchestrator.runtime_bootstrap` (IAM/project stores stay in `app.py`).
 
 ## Dependencies
 
@@ -36,4 +36,4 @@ Errors use Problem+JSON (`nimbusware_api.errors.problem`). Edition gating via `n
 | `POST` | `/admin/ollama/pull` | Admin |
 | `DELETE` | `/admin/ollama/models/{name}` | Admin |
 
-Policy defaults live in `configs/model-routing.yaml` (`ollama_user_policy`). Implementation: `hermes_orchestrator.ollama_manage`, `ollama_user_policy`; persistence via `nimbusware_config.persist`.
+Policy defaults live in `configs/model-routing.yaml` (`ollama_user_policy`). Implementation: `nimbusware_orchestrator.ollama_manage`, `ollama_user_policy`; persistence via `nimbusware_config.persist`.

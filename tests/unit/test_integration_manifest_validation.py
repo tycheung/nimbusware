@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator.integration_adapter_scaffold import validate_integration_manifest
+from nimbusware_orchestrator.integration_adapter_scaffold import validate_integration_manifest
 
 
 def test_validate_integration_manifest_rejects_stub() -> None:

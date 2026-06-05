@@ -5,8 +5,8 @@ from typing import Any
 from nimbusware_env.env_flags import env_tri_state
 
 
-def _hermes_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
-    raw = env_tri_state("HERMES_ATTACH_SECURITY_SCAN_METADATA")
+def _nimbusware_attach_security_scan_metadata_env_summary() -> dict[str, Any]:
+    raw = env_tri_state("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA")
     if raw is None:
         return {
             "raw": "",

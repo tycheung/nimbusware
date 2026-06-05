@@ -70,7 +70,7 @@ def main() -> None:
                 60,
                 147,
                 "from nimbusware_console.security_scan_metadata_workflow_explainer.env import (\n"
-                "    _hermes_attach_security_scan_metadata_env_summary,\n"
+                "    _nimbusware_attach_security_scan_metadata_env_summary,\n"
                 ")\n",
             ),
             ("captions.py", 147, 316, ""),
@@ -129,8 +129,8 @@ def main() -> None:
                 245,
                 377,
                 "from nimbusware_console.self_refinement_workflow_explainer.env import (\n"
-                "    _hermes_self_refinement_stage_marker_env_summary,\n"
-                "    _hermes_self_refinement_ungated_loop_env_summary,\n"
+                "    _nimbusware_self_refinement_stage_marker_env_summary,\n"
+                "    _nimbusware_self_refinement_ungated_loop_env_summary,\n"
                 ")\n",
             ),
             (
@@ -138,7 +138,7 @@ def main() -> None:
                 377,
                 441,
                 "from nimbusware_console.self_refinement_workflow_explainer.env import (\n"
-                "    _hermes_self_refinement_ungated_loop_env_summary,\n"
+                "    _nimbusware_self_refinement_ungated_loop_env_summary,\n"
                 "    _load_policy_or_default,\n"
                 "    _marker_preview,\n"
                 ")\n",

@@ -10,22 +10,22 @@ import pytest
 import yaml
 
 from agent_core.models import EventType
-from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
-from hermes_orchestrator.persona_shelf_auto_create import (
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_orchestrator.persona_catalog_audit import persona_catalog_run_id
+from nimbusware_orchestrator.persona_shelf_auto_create import (
     auto_create_persona_correlation_id,
     try_auto_create_persona_if_missing,
 )
-from hermes_orchestrator.persona_shelf_promotion import (
+from nimbusware_orchestrator.persona_shelf_promotion import (
     auto_promote_probation_correlation_id,
     try_auto_promote_probation_persona,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorAutoCreatePersonaBlock,
     parse_agent_evaluator_workflow_block,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.routes.runs import agent_evaluator_timeline_summary
 from nimbusware_env import find_repo_root
 
@@ -214,8 +214,8 @@ def test_pipeline_env_suppresses_auto_promote(
             ),
             encoding="utf-8",
         )
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR", raising=False)
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE", "0")
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE", "0")
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run("agent_evaluator_on")
@@ -271,8 +271,8 @@ def test_pipeline_maybe_emit_promotes_commerce_on_probation(
             ),
             encoding="utf-8",
         )
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR", raising=False)
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR_AUTO_PROMOTE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE", raising=False)
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run("agent_evaluator_on")
@@ -441,8 +441,8 @@ def test_pipeline_env_suppresses_auto_create(
         "    display_name: Env Block\n",
         encoding="utf-8",
     )
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR", raising=False)
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR_AUTO_CREATE", "0")
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE", "0")
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run("ae_auto_create")
@@ -479,8 +479,8 @@ def test_pipeline_auto_create_net_new_persona(
         "    display_name: Orch Net New\n",
         encoding="utf-8",
     )
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR", raising=False)
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR_AUTO_CREATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE", raising=False)
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run("ae_auto_create_ok")

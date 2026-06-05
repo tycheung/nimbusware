@@ -26,7 +26,7 @@ def security_scan_metadata_timeline_workflow_alignment_caption(
         return (
             "Timeline shows **security_scan_on_verify** scan output, but "
             "**security_scan_metadata_on_verify** is **effective false** for the selected "
-            "workflow profile (YAML + ``HERMES_ATTACH_SECURITY_SCAN_METADATA``). "
+            "workflow profile (YAML + ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA``). "
             "Cross-check **Module Integrator** > Security scan metadata on verify."
         )
     if (not has_scan) and eff:

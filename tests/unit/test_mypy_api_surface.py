@@ -14,7 +14,7 @@ _STRICT_MODULES = frozenset(
     },
 )
 
-_PIPELINE_BLANKET_IGNORE = 'module = ["hermes_orchestrator._pipeline.*"]'
+_PIPELINE_BLANKET_IGNORE = 'module = ["nimbusware_orchestrator._pipeline.*"]'
 
 
 def test_api_listed_in_mypy_strict_override() -> None:

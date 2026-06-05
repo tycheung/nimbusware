@@ -19,7 +19,7 @@ from nimbusware_hw.pressure import PressureLevel, sample_pressure
 from nimbusware_hw.profile import HardwareProfile
 
 if TYPE_CHECKING:
-    from hermes_store.protocol import EventStore
+    from nimbusware_store.protocol import EventStore
 
 
 def _profile_fingerprint(profile: HardwareProfile) -> str:

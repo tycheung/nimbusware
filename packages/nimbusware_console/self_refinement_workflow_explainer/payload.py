@@ -11,7 +11,7 @@ from nimbusware_console.components.workflow_explainer_helpers import relative_un
 from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
 from nimbusware_console.self_refinement_workflow_explainer.env import (
-    _hermes_self_refinement_ungated_loop_env_summary,
+    _nimbusware_self_refinement_ungated_loop_env_summary,
     _load_policy_or_default,
     _marker_preview,
 )
@@ -75,5 +75,5 @@ def self_refinement_workflow_explainer_payload(
         "workflow_self_refinement": asdict(wf_sr),
         "policy_yaml": pol_snap,
         "marker_merge": marker,
-        "HERMES_SELF_REFINEMENT_UNGATED_LOOP": _hermes_self_refinement_ungated_loop_env_summary(),
+        "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": _nimbusware_self_refinement_ungated_loop_env_summary(),
     }

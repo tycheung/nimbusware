@@ -3,26 +3,26 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 @patch.dict(
     os.environ,
     {
-        "HERMES_AGENT_EVALUATOR": "1",
-        "HERMES_PERSONA_COVERAGE_CRITIQUE": "1",
-        "HERMES_PERSONA_COVERAGE_CRITIQUE_LLM": "1",
-        "HERMES_USE_LLM": "1",
+        "NIMBUSWARE_AGENT_EVALUATOR": "1",
+        "NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE": "1",
+        "NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE_LLM": "1",
+        "NIMBUSWARE_USE_LLM": "1",
     },
     clear=False,
 )
 def test_persona_coverage_llm_branch_emits_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_coverage_llm_on")
-    with patch("hermes_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "hermes_orchestrator.persona_coverage_critique.ollama_chat_json",
+                "nimbusware_orchestrator.persona_coverage_critique.ollama_chat_json",
                 return_value={"status": "invalid", "gaps": ["x"], "summary": "coverage gap"},
             ):
                 orch.execute_writer_verifier_pass(rid)

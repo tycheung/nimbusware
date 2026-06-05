@@ -36,44 +36,44 @@ def _clear_caches() -> None:
 
 
 def test_catalog_covers_managed_keys() -> None:
-    assert "HERMES_RERESARCH_MISSING_CONTEXT" in CATALOG
-    assert CATALOG["HERMES_RERESARCH_MISSING_CONTEXT"].scope == SettingScope.SYSTEM
+    assert "NIMBUSWARE_RERESARCH_MISSING_CONTEXT" in CATALOG
+    assert CATALOG["NIMBUSWARE_RERESARCH_MISSING_CONTEXT"].scope == SettingScope.SYSTEM
     assert CATALOG["NIMBUSWARE_DATABASE_URL"].scope == SettingScope.INSTALL
     assert len(CATALOG) >= 100
 
 
 def test_validate_patch_bool_coercion() -> None:
     out = validate_patch(
-        {"HERMES_USE_LLM": "yes"},
+        {"NIMBUSWARE_USE_LLM": "yes"},
         scope=SettingScope.USER,
         admin=False,
     )
-    assert out["HERMES_USE_LLM"] == "1"
+    assert out["NIMBUSWARE_USE_LLM"] == "1"
 
 
 def test_resolve_precedence_user_over_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_USE_LLM", "0")
+    monkeypatch.setenv("NIMBUSWARE_USE_LLM", "0")
     store = InMemoryConfigStore()
     store.upsert(
         NS_OPERATOR_SETTINGS,
         KEY_USER,
-        {"values": {"HERMES_USE_LLM": "1"}},
+        {"values": {"NIMBUSWARE_USE_LLM": "1"}},
     )
     monkeypatch.setattr(
         "nimbusware_env.settings_store._load_store",
         lambda: store,
     )
     refresh_scope_caches()
-    assert resolve_bool("HERMES_USE_LLM", default=False) is True
+    assert resolve_bool("NIMBUSWARE_USE_LLM", default=False) is True
 
 
 def test_resolve_run_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_MICRO_SLICE_COUNT", raising=False)
-    token = set_run_operator_settings({"HERMES_MICRO_SLICE_COUNT": "5"})
+    monkeypatch.delenv("NIMBUSWARE_MICRO_SLICE_COUNT", raising=False)
+    token = set_run_operator_settings({"NIMBUSWARE_MICRO_SLICE_COUNT": "5"})
     try:
         from nimbusware_env.settings_resolve import resolve_int
 
-        assert resolve_int("HERMES_MICRO_SLICE_COUNT", default=2) == 5
+        assert resolve_int("NIMBUSWARE_MICRO_SLICE_COUNT", default=2) == 5
     finally:
         from nimbusware_env.settings_resolve import reset_run_operator_settings
 
@@ -86,7 +86,7 @@ def test_merge_system_applies_to_environ(monkeypatch: pytest.MonkeyPatch) -> Non
         "nimbusware_env.settings_store._load_store",
         lambda: store,
     )
-    key = "HERMES_RERESARCH_MISSING_CONTEXT"
+    key = "NIMBUSWARE_RERESARCH_MISSING_CONTEXT"
     try:
         merge_scope_values(
             SettingScope.SYSTEM,
@@ -106,7 +106,7 @@ def test_env_over_yaml_resolved_after_postgres_sync(
 ) -> None:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
-    key = "HERMES_STUB_IMPLEMENTATION_CRITICS"
+    key = "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS"
     monkeypatch.delenv(key, raising=False)
     store = InMemoryConfigStore()
     monkeypatch.setattr(

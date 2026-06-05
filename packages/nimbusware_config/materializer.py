@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from hermes_extensions.custom_agents import CustomAgentRegistry
-from hermes_extensions.personas import PersonaShelf
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_extensions.custom_agents import CustomAgentRegistry
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_config.flags import config_from_db_enabled
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
@@ -222,7 +222,7 @@ class ConfigMaterializer:
 
 
 def _default_paths(repo_root: Path) -> tuple[Path, Path]:
-    from hermes_orchestrator.pipeline import default_paths
+    from nimbusware_orchestrator.pipeline import default_paths
 
     return default_paths(repo_root)
 

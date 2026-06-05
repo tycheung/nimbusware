@@ -8,10 +8,10 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 
 1. **Postgres** — Production: managed Postgres DSN. Lab only: `kubectl apply -f postgres-deployment.yaml` (emptyDir, `nimbusware.io/lab-only` label).
 2. **Secrets** — Edit `api-secrets.yaml`: set `NIMBUSWARE_DATABASE_URL` (host `postgres` when using lab manifest) and `NIMBUSWARE_ADMIN_TOKEN`. `kubectl apply -f api-secrets.yaml`.
-3. **Redis** — `kubectl apply -f redis-deployment.yaml` (required when `HERMES_RUN_DISPATCH=redis`).
+3. **Redis** — `kubectl apply -f redis-deployment.yaml` (required when `NIMBUSWARE_RUN_DISPATCH=redis`).
 4. **Schema** — `kubectl apply -f schema-job.yaml`; wait for Job `Complete` (runs `scripts/apply_event_store.sh` / greenfield `postgres.sql`).
 5. **API** — `kubectl apply -f api-deployment.yaml`. Maker PWA: `/v1/maker/app/`. Admin UI: `/v1/admin/app/` (Enterprise fleet: `/v1/admin/app/fleet`). Both ship in the API image.
-6. **Worker (optional)** — `kubectl apply -f worker-deployment.yaml` when edition is Enterprise and dispatch mode is Redis (`NIMBUSWARE_EDITION=enterprise`, `HERMES_RUN_DISPATCH=redis`, `HERMES_REDIS_URL`).
+6. **Worker (optional)** — `kubectl apply -f worker-deployment.yaml` when edition is Enterprise and dispatch mode is Redis (`NIMBUSWARE_EDITION=enterprise`, `NIMBUSWARE_RUN_DISPATCH=redis`, `NIMBUSWARE_REDIS_URL`).
 
 ## Apply order (quick)
 
@@ -39,7 +39,7 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 | Component | Required env |
 |-----------|----------------|
 | API | `NIMBUSWARE_DATABASE_URL`, `NIMBUSWARE_REPO_ROOT`, secrets ref |
-| Worker | Above + `NIMBUSWARE_EDITION=enterprise`, `HERMES_RUN_DISPATCH=redis`, `HERMES_REDIS_URL` |
+| Worker | Above + `NIMBUSWARE_EDITION=enterprise`, `NIMBUSWARE_RUN_DISPATCH=redis`, `NIMBUSWARE_REDIS_URL` |
 | Schema job | `NIMBUSWARE_DATABASE_URL` via secrets |
 | Console | `NIMBUSWARE_API_BASE`, admin token in secrets |
 

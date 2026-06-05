@@ -4,17 +4,17 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import Verdict
-from hermes_extensions.bundle_memory import (
+from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
 )
-from hermes_extensions.bundle_memory_models import BundleSuccessStats
-from hermes_extensions.catalog import apply_bundle_memory_ranking, search_bundles
+from nimbusware_extensions.bundle_memory_models import BundleSuccessStats
+from nimbusware_extensions.catalog import apply_bundle_memory_ranking, search_bundles
 from nimbusware_env import find_repo_root
 
 
 def test_apply_bundle_memory_ranking_promotes_high_success_bundle(monkeypatch) -> None:
-    monkeypatch.setenv("HERMES_BUNDLE_MEMORY_RANK_WEIGHT", "0.8")
+    monkeypatch.setenv("NIMBUSWARE_BUNDLE_MEMORY_RANK_WEIGHT", "0.8")
     hits = [
         {"id": "low-success", "tags": ["auth"]},
         {"id": "high-success", "tags": ["auth"]},
@@ -40,7 +40,7 @@ def test_apply_bundle_memory_ranking_promotes_high_success_bundle(monkeypatch) -
 
 
 def test_search_bundles_memory_bias_changes_order(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("HERMES_BUNDLE_MEMORY_RANK_WEIGHT", "1.0")
+    monkeypatch.setenv("NIMBUSWARE_BUNDLE_MEMORY_RANK_WEIGHT", "1.0")
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     store = InMemoryBundleOutcomeStore()
     store.append(

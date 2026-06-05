@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.merge import (
+from nimbusware_orchestrator.merge import (
     policy_snapshot_from_files,
     policy_snapshot_from_materializer,
 )
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.workflow_profiles import workflow_profile_path
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_path
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore

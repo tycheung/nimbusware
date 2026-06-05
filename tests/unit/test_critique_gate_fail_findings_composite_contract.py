@@ -16,17 +16,17 @@ from agent_core.models import (
     GateDecisionEmittedPayload,
     Verdict,
 )
-from hermes_orchestrator.llm_plan import (
+from nimbusware_orchestrator.llm_plan import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import effective_universal_critique
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import effective_universal_critique
 from nimbusware_env import find_repo_root
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -34,12 +34,12 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _FINDING_CREATED = "finding.created"
 
 _ENV_ALL_ON = {
-    "HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "HERMES_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "HERMES_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
+    "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
+    "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
+    "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
 }
 
-_ENV_IMPL_ONLY = {"HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
+_ENV_IMPL_ONLY = {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
 
 
 def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:

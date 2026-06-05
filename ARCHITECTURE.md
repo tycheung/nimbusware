@@ -4,12 +4,11 @@
 
 | Name | Meaning |
 |------|---------|
-| **Nimbusware** | This repository and product: local-first platform (API, Maker, Admin Console, config, IAM). Use `NIMBUSWARE_*` env vars and `nimbusware_*` packages. |
-| **Hermes** | The **online agentic system** (adversarial multi-role runs, critics, gates, verifiers). This codebase integrates it locally via `hermes_*` packages and `HERMES_*` env vars — not a second product name for Nimbusware. |
+| **Nimbusware** | This repository and product: local-first adversarial agent platform (API, Maker, Admin Console, orchestrator, event store, config, IAM). Use `NIMBUSWARE_*` env vars and `nimbusware_*` packages. |
 
-Legacy checkout paths (e.g. `D:\Hermes`) and artifact dirs (`.hermes/`) are historical; prefer **Nimbusware** in user-facing text.
+Legacy checkout paths (e.g. `D:\Hermes`) and artifact dirs (`.nimbusware/`) are historical.
 
-One-page map of packages, data flow, and auth. Normative Hermes agent contract: gitignored `hermes-orchestrator-local-plan.md` (repo root). Maturity backlog: gitignored `plan_gap.md`. ADR index: [docs/architecture.md](docs/architecture.md).
+One-page map of packages, data flow, and auth. Normative Nimbusware agent contract: gitignored `nimbusware-orchestrator-local-plan.md` (repo root). Maturity backlog: gitignored `plan_gap.md`. ADR index: [docs/architecture.md](docs/architecture.md).
 
 ## Layer diagram
 
@@ -26,11 +25,11 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 └─────┬──────────────────┬──────────────────┬─────────────────┘
       │                  │                  │
       ▼                  ▼                  ▼
- hermes_orchestrator  nimbusware_projections  nimbusware_iam
+ nimbusware_orchestrator  nimbusware_projections  nimbusware_iam
  (RunOrchestrator)    (timeline read models)   (Enterprise keys)
       │
       ▼
- hermes_store (append-only events)  +  nimbusware_config (YAML→Postgres)
+ nimbusware_store (append-only events)  +  nimbusware_config (YAML→Postgres)
       │
       ▼
  PostgreSQL (or InMemoryEventStore without NIMBUSWARE_DATABASE_URL)
@@ -41,13 +40,13 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | Package | Role |
 |---------|------|
 | `agent_core` | Event models, validation |
-| `hermes_store` | Event store (Postgres / memory) |
-| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
-| `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
-| `hermes_extensions` | Personas, bundles, escalation helpers |
-| `hermes_executor` | Role-gated outbound HTTP |
-| `hermes_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
-| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`/`stub`/`docker` (Individual); `kubernetes`/`e2b` fleet sandboxes; per-slice risk caps |
+| `nimbusware_store` | Event store (Postgres / memory) |
+| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
+| `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
+| `nimbusware_extensions` | Personas, bundles, escalation helpers |
+| `nimbusware_executor` | Role-gated outbound HTTP |
+| `nimbusware_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
+| `nimbusware_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`/`stub`/`docker` (Individual); `kubernetes`/`e2b` fleet sandboxes; per-slice risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
@@ -70,7 +69,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 
 ## Data flow
 
-1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `hermes_store`.
+1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `nimbusware_store`.
 2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress without API imports from orchestrator.
 3. **Read** — HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
 4. **Maker loop** — Pending slices, research approve/reject, and stitch summary are read models over the same event log (`nimbusware_maker` + maker web tabs).
@@ -85,9 +84,9 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 
 ## Import rules (enforced)
 
-- `hermes_extensions` must not import `hermes_orchestrator` at module level (`tests/unit/test_import_graph.py`).
-- `hermes_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
-- Legacy `packages/hermes_{api,console,config,env}/` shims removed (Lane R-B).
+- `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
+- `nimbusware_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
+- Legacy `packages/nimbusware_{api,console,config,env}/` shims removed (Lane R-B).
 
 ## Architecture decision records
 
@@ -108,20 +107,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `hermes_store`, `hermes_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/coverage_package_floors.py`. Web static assets (`nimbusware_maker_web`, `nimbusware_admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
+**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/coverage_package_floors.py`. Web static assets (`nimbusware_maker_web`, `nimbusware_admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
 
 **Typing:** Global mypy `strict = true`. CI checks paths from `scripts/mypy_ci_targets.py`:
 
 | Tranche | Packages / paths |
 |---------|------------------|
-| B | `nimbusware_projections`, `nimbusware_client`, `hermes_agent_tools` |
-| C | `agent_core`, `hermes_store`, `nimbusware_config`, `hermes_executor`, `hermes_extensions`, `hermes_memory`, `nimbusware_iam`, `nimbusware_env` |
+| B | `nimbusware_projections`, `nimbusware_client`, `nimbusware_agent_tools` |
+| C | `agent_core`, `nimbusware_store`, `nimbusware_config`, `nimbusware_executor`, `nimbusware_extensions`, `nimbusware_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
 | E | Orchestrator islands: orchestrator root modules plus full `_pipeline/*` (including `dev_factory`, `compose`, `protocol_hosts`, `pipeline_scraper`); probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
 
-All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
+All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `nimbusware_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
 **Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Mid-run governor sampling may append rate-limited `resource.pressure.warn` events (projections: pressure headline + pressure-history timeline). Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
 
@@ -133,7 +132,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **Pipeline typing:** All `_pipeline` mixin modules import `_helpers` symbols without `attr-defined` ignores; `_helpers.py` exports an explicit `__all__` (size-guard allowlisted in `test_package_module_size.py`).
 
-**PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
+**PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
 **CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%.
 

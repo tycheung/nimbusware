@@ -9,8 +9,8 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
@@ -38,7 +38,7 @@ def test_golden_golf_domain_research_brief(monkeypatch: pytest.MonkeyPatch) -> N
         base_config_path=base,
         config_materializer=mat,
     )
-    monkeypatch.setenv("HERMES_RESEARCH", "1")
+    monkeypatch.setenv("NIMBUSWARE_RESEARCH", "1")
     run_id = orch.create_run(
         "default",
         requirements={"business_prompt": req["business_prompt"]},
@@ -76,8 +76,8 @@ def test_golden_auth_transplant_pipeline(monkeypatch: pytest.MonkeyPatch, tmp_pa
         base_config_path=base,
         config_materializer=mat,
     )
-    monkeypatch.setenv("HERMES_RESEARCH", "1")
-    monkeypatch.setenv("HERMES_STITCH", "1")
+    monkeypatch.setenv("NIMBUSWARE_RESEARCH", "1")
+    monkeypatch.setenv("NIMBUSWARE_STITCH", "1")
     run_id = orch.create_run(
         "default",
         project_id=uuid4(),

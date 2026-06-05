@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
@@ -21,7 +21,7 @@ _GATE_NAMES: list[str] = [
     "assert_taxonomy_keys_resolve",
 ]
 
-_GATE_MODULE = "hermes_orchestrator.pipeline"
+_GATE_MODULE = "nimbusware_orchestrator.pipeline"
 
 
 # Sentinel exception classes/messages, one per gate, so each test
@@ -98,7 +98,7 @@ def test_create_run_gate_chain_forward_call_order_contract(
     real-repo orchestrator (which proceeds past the gates and emits
     a ``RUN_CREATED`` event -- irrelevant to this test). After the
     call, the recorder list MUST equal the canonical sequence at
-    [pipeline.py:154-158](packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:154-158](packages\\nimbusware_orchestrator\\pipeline.py)
     AND each gate MUST have fired exactly once (a future refactor
     that adds caching / retry around a gate without thinking about
     invariants would fail loudly here).
@@ -140,7 +140,7 @@ def test_create_run_per_gate_isolation_and_early_fail_order_matrix(
 
     This is the **architectural guarantee** that a future refactor
     moving any gate AFTER ``self._store.append`` at
-    [pipeline.py:198](packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:198](packages\\nimbusware_orchestrator\\pipeline.py)
     would break -- and this test catches it.
     """
     for gate_name, exc_class, message in _GATE_EXCEPTIONS:

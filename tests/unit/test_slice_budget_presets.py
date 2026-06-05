@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from hermes_orchestrator.micro_slice_executor import slice_replan_max_for_run
-from hermes_orchestrator.slice_budget_presets import (
+from nimbusware_orchestrator.micro_slice_executor import slice_replan_max_for_run
+from nimbusware_orchestrator.slice_budget_presets import (
     resolve_slice_budget_preset,
     slice_budget_preset,
 )
@@ -18,7 +18,7 @@ def test_slice_budget_preset_values() -> None:
 
 def test_resolve_from_operator_settings() -> None:
     preset = resolve_slice_budget_preset(
-        operator_settings={"HERMES_SLICE_BUDGET_PRESET": "careful"},
+        operator_settings={"NIMBUSWARE_SLICE_BUDGET_PRESET": "careful"},
     )
     assert preset.name == "careful"
     assert preset.max_loc == 80

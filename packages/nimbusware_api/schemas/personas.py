@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from hermes_extensions.personas import (
+from nimbusware_extensions.personas import (
     ALLOWED_PROBATION_STATUSES,
     PERSONA_ALLOWED_TOOL_MAX_CHARS,
     PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,

@@ -18,7 +18,7 @@ For managed keys: **run override → user profile → system defaults → proces
 
 YAML override knobs (universal critique): only explicit `os.environ` or run overrides replace workflow YAML — catalog defaults do not.
 
-Fail-closed §14 keys (`HERMES_SKIP_PREFLIGHT`, `HERMES_RUN_BANDIT`, `HERMES_OUTBOUND_FETCH_ENABLED`, `HERMES_PREFLIGHT_JSON_PROBE`) use raw env reads after Postgres sync on startup.
+Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NIMBUSWARE_OUTBOUND_FETCH_ENABLED`, `NIMBUSWARE_PREFLIGHT_JSON_PROBE`) use raw env reads after Postgres sync on startup.
 
 ## API
 
@@ -28,7 +28,7 @@ Fail-closed §14 keys (`HERMES_SKIP_PREFLIGHT`, `HERMES_RUN_BANDIT`, `HERMES_OUT
 
 ## CI guard
 
-`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `HERMES_*` / `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist.
+`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist.
 
 ## Implementation
 

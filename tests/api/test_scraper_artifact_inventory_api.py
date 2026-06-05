@@ -13,12 +13,12 @@ from nimbusware_env import find_repo_root
 os.environ.setdefault(
     "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))
 )
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault(
     "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
 )
 
-from hermes_orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
+from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 
 
@@ -73,7 +73,7 @@ def test_scraper_artifact_inventory_api(
     sub = base / "run-1"
     sub.mkdir(parents=True)
     (sub / "page.html").write_text("<html/>")
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(base))
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(base))
     r = client.get("/v1/scraper-artifacts/inventory", params={"max_entries": 50})
     assert r.status_code == 200
     body = r.json()
@@ -117,11 +117,11 @@ def test_scraper_artifact_inventory_object_store_ready_signals(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
+        "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
         "https://s3.example.com",
     )
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "hermes-artifacts")
-    from hermes_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
+    from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["storage_backend"] == "object_store_ready"
@@ -136,13 +136,13 @@ def test_scraper_artifact_inventory_object_store_ready_signals(
 def test_scraper_artifact_inventory_object_store_prune_requested_signal(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE", "1")
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE", "1")
     monkeypatch.setenv(
-        "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
+        "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
         "https://s3.example.com",
     )
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "hermes-artifacts")
-    from hermes_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
+    from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["object_store_prune_requested"] is True
@@ -153,13 +153,13 @@ def test_scraper_artifact_inventory_object_store_delete_tuning_from_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
+        "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL",
         "https://s3.example.com",
     )
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "hermes-artifacts")
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS", "17")
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS", "3")
-    from hermes_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "nimbusware-artifacts")
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS", "17")
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS", "3")
+    from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_storage_backend_signals
 
     sig = scraper_artifact_storage_backend_signals()
     assert sig["object_store_timeout_seconds"] == 17
@@ -173,8 +173,8 @@ def test_scraper_artifact_inventory_api_includes_retention_days(
 ) -> None:
     base = tmp_path / "artifacts"
     base.mkdir(parents=True)
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(base))
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "14")
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(base))
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "14")
     r = client.get("/v1/scraper-artifacts/inventory", params={"max_entries": 5})
     assert r.status_code == 200
     body = r.json()

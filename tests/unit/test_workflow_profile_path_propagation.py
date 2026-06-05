@@ -18,16 +18,16 @@ _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 # tests/test_api.py:11-13). Set BEFORE importing the FastAPI app so
 # the lifespan / preflight gating reads the expected values.
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO_ROOT))
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault(
     "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
 )
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from hermes_orchestrator.ingress import assert_known_workflow  # noqa: E402
-from hermes_orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
-from hermes_orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402
+from nimbusware_orchestrator.ingress import assert_known_workflow  # noqa: E402
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
+from nimbusware_orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 
 _VALUE_ERROR_PREFIX = "invalid workflow_profile: "
@@ -157,7 +157,7 @@ def test_run_orchestrator_create_run_propagates_workflow_profile_path_exceptions
     """Pin ``RunOrchestrator.create_run`` propagation + early-fail-order contract.
 
     ``create_run`` calls ``assert_known_workflow`` at
-    [pipeline.py:154](packages\\hermes_orchestrator\\pipeline.py)
+    [pipeline.py:154](packages\\nimbusware_orchestrator\\pipeline.py)
     as its FIRST gate (BEFORE
     ``assert_bundle_catalog_maps_resolve`` / ``assert_persona_shelves_valid``
     / ``assert_agent_evaluator_persona_in_shelves`` /

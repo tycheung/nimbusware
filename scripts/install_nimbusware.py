@@ -12,7 +12,7 @@ Or clone first (requires git)::
 If PostgreSQL is not running, the script shows an interactive menu (Docker,
 Windows ``.exe``, winget, manual, custom URL, or skip). Ollama can be installed
 via winget/brew/curl (see ``--ollama-choice``). ``poetry install`` includes Pyright
-langserver (dev dependency); the installer enables ``HERMES_SLICE_LSP_ENABLED=1`` in
+langserver (dev dependency); the installer enables ``NIMBUSWARE_SLICE_LSP_ENABLED=1`` in
 ``.env`` by default. Use ``--non-interactive`` for CI.
 Use ``--install-postgres-native`` or ``--postgres-choice native`` to skip the Postgres menu.
 
@@ -35,7 +35,7 @@ from pathlib import Path
 DEFAULT_DATABASE_URL = "postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware"
 MIN_PYTHON = (3, 10)
 REC_PYTHON = (3, 11)
-SCHEMA_REL = Path("packages/hermes_store/schema/postgres.sql")
+SCHEMA_REL = Path("packages/nimbusware_store/schema/postgres.sql")
 COMPOSE_FILE = "docker-compose.yml"
 
 
@@ -507,9 +507,9 @@ def _enable_slice_lsp_in_env(repo: Path, *, log) -> None:
         sys.path.insert(0, str(packages))
     from nimbusware_env import set_env_var  # noqa: PLC0415
 
-    path = set_env_var("HERMES_SLICE_LSP_ENABLED", "1", repo_root=repo)
-    os.environ["HERMES_SLICE_LSP_ENABLED"] = "1"
-    log(f"Enabled HERMES_SLICE_LSP_ENABLED=1 in {path}")
+    path = set_env_var("NIMBUSWARE_SLICE_LSP_ENABLED", "1", repo_root=repo)
+    os.environ["NIMBUSWARE_SLICE_LSP_ENABLED"] = "1"
+    log(f"Enabled NIMBUSWARE_SLICE_LSP_ENABLED=1 in {path}")
 
 
 def _bootstrap_slice_lsp(
@@ -526,7 +526,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from hermes_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from nimbusware_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
                 "import sys; sys.exit(0 if resolve_lsp_command_argv() else 1)"
             ),
         ],
@@ -537,7 +537,7 @@ def _bootstrap_slice_lsp(
     if check.returncode != 0:
         _warn(
             "pyright-langserver not found after `poetry install`. "
-            "Re-run `poetry install` or set HERMES_SLICE_LSP_COMMAND.",
+            "Re-run `poetry install` or set NIMBUSWARE_SLICE_LSP_COMMAND.",
         )
         return False
     resolved = subprocess.run(
@@ -547,7 +547,7 @@ def _bootstrap_slice_lsp(
             "python",
             "-c",
             (
-                "from hermes_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
+                "from nimbusware_orchestrator.slice_lsp_client import resolve_lsp_command_argv; "
                 "argv = resolve_lsp_command_argv() or []; print(' '.join(argv))"
             ),
         ],
@@ -639,12 +639,12 @@ def _print_next_steps(
     _log("PowerShell environment (current session; optional if using .env):")
     _log(f'  $env:NIMBUSWARE_REPO_ROOT = "{repo}"')
     _log(f'  $env:NIMBUSWARE_DATABASE_URL = "{url}"')
-    _log('  $env:HERMES_SKIP_PREFLIGHT = "1"   # optional for tests')
+    _log('  $env:NIMBUSWARE_SKIP_PREFLIGHT = "1"   # optional for tests')
     _log("")
     _log("Unix:")
     _log(f'  export NIMBUSWARE_REPO_ROOT="{repo}"')
     _log(f'  export NIMBUSWARE_DATABASE_URL="{url}"')
-    _log('  export HERMES_SKIP_PREFLIGHT=1')
+    _log('  export NIMBUSWARE_SKIP_PREFLIGHT=1')
     _log("")
     _log("Verify:")
     _log("  poetry run pytest tests -q -m \"not integration\"")
@@ -660,13 +660,13 @@ def _print_next_steps(
     _log("  python scripts/sync_model_catalog.py --help")
     if ollama_ok:
         _log("")
-        _log("Ollama: ready (HERMES_USE_LLM=1 if enabled in .env)")
-        _log("  poetry run hermes-preflight   # verify model routing")
+        _log("Ollama: ready (NIMBUSWARE_USE_LLM=1 if enabled in .env)")
+        _log("  poetry run nimbusware-preflight   # verify model routing")
     else:
         _log("")
         _warn(
             "Ollama was not configured. Re-run install with an Ollama menu choice, "
-            "or install from https://ollama.com and set HERMES_USE_LLM=1 in .env.",
+            "or install from https://ollama.com and set NIMBUSWARE_USE_LLM=1 in .env.",
         )
     if edition_name == "enterprise":
         _log("")
@@ -680,7 +680,7 @@ def _print_next_steps(
     if slice_lsp_ok:
         _log("")
         _log("Slice LSP (Pyright documentSymbol):")
-        _log("  HERMES_SLICE_LSP_ENABLED=1 in .env (use --no-enable-slice-lsp to skip)")
+        _log("  NIMBUSWARE_SLICE_LSP_ENABLED=1 in .env (use --no-enable-slice-lsp to skip)")
         _log("  AST fallback when langserver is off or unavailable")
 
 
@@ -799,7 +799,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--no-enable-slice-lsp",
         action="store_true",
-        help="Do not set HERMES_SLICE_LSP_ENABLED=1 in .env during install",
+        help="Do not set NIMBUSWARE_SLICE_LSP_ENABLED=1 in .env during install",
     )
     parser.add_argument(
         "--seed-config",
@@ -909,7 +909,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--no-enable-llm",
         action="store_true",
-        help="Do not set HERMES_USE_LLM=1 in .env after Ollama is ready",
+        help="Do not set NIMBUSWARE_USE_LLM=1 in .env after Ollama is ready",
     )
     parser.add_argument(
         "--skip-linux-desktop-deps",
@@ -919,7 +919,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--verify-ollama",
         action="store_true",
-        help="Run poetry run hermes-preflight after Ollama setup (slow; needs models)",
+        help="Run poetry run nimbusware-preflight after Ollama setup (slow; needs models)",
     )
     args = parser.parse_args(argv)
 
@@ -1022,14 +1022,14 @@ def main(argv: list[str] | None = None) -> int:
             _log("\nVerifying Ollama preflight...")
             env = os.environ.copy()
             env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
-            _run([poetry, "run", "hermes-preflight"], cwd=repo, env=env)
+            _run([poetry, "run", "nimbusware-preflight"], cwd=repo, env=env)
     else:
         ollama_ok = _check_ollama(args.ollama_host)
 
     if args.run_unit_tests:
         _log("\nRunning unit tests (not integration)...")
         env = os.environ.copy()
-        env.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+        env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
         _run(
             [poetry, "run", "pytest", "tests", "-q", "-m", "not integration"],
             cwd=repo,

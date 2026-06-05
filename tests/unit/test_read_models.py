@@ -4,9 +4,9 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from agent_core.models import EventType, RunCreatedEvent, RunCreatedPayload
-from hermes_orchestrator.read_models import build_run_summary
-from hermes_store.memory import InMemoryEventStore
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_orchestrator.read_models import build_run_summary
+from nimbusware_store.memory import InMemoryEventStore
+from nimbusware_store.protocol import serialized_event_from_row
 
 
 def test_build_run_summary_created() -> None:

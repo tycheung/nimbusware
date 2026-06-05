@@ -75,6 +75,6 @@ class BundleSearchResponse(BaseModel):
             "newer than the index files (rebuild recommended). ``False`` when both index "
             "files exist and the catalog is not newer. ``None`` when the index is incomplete "
             "or the catalog is missing — same semantics as ``bundle_faiss_index_sync_state`` "
-            "``stale`` in ``hermes_extensions.catalog``."
+            "``stale`` in ``nimbusware_extensions.catalog``."
         ),
     )

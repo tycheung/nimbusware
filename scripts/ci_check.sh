@@ -4,7 +4,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-export HERMES_SKIP_PREFLIGHT="${HERMES_SKIP_PREFLIGHT:-1}"
+export NIMBUSWARE_SKIP_PREFLIGHT="${NIMBUSWARE_SKIP_PREFLIGHT:-1}"
 COV_JSON="${ROOT}/.ci_coverage.json"
 SKIP_WEB=0
 WITH_INTEGRATION=0

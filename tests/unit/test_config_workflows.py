@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.ingress import assert_known_workflow
-from hermes_orchestrator.merge import load_yaml
-from hermes_orchestrator.pipeline import RunOrchestrator, default_paths
-from hermes_orchestrator.workflow_profiles import workflow_profile_dict
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.ingress import assert_known_workflow
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.keys import NS_WORKFLOWS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
@@ -53,7 +53,7 @@ def test_create_run_with_materialized_config(monkeypatch: pytest.MonkeyPatch) ->
         base_config_path=base,
         config_materializer=mat,
     )
-    monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     run_id = orch.create_run("default")
     assert run_id is not None
 
@@ -65,7 +65,7 @@ def test_materializer_stage_graph_profile_round_trip() -> None:
     mat = ConfigMaterializer(root, store=store, use_db=True)
     loaded = mat.get_workflow_profile_dict("default")
     assert isinstance(loaded.get("stage_graph"), list)
-    from hermes_orchestrator.stage_graph import (
+    from nimbusware_orchestrator.stage_graph import (
         KNOWN_STAGE_GRAPH_STAGES,
         stage_graph_from_workflow_profile,
         validate_stage_graph,

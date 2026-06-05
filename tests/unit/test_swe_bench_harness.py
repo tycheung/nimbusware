@@ -25,7 +25,7 @@ def test_swe_bench_dry_run_json_ok() -> None:
         check=False,
         env={
             **os.environ,
-            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
             "NIMBUSWARE_REPO_ROOT": str(ROOT),
         },
     )
@@ -47,9 +47,9 @@ def test_swe_bench_run_json_scores() -> None:
         check=False,
         env={
             **os.environ,
-            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
             "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "HERMES_MICRO_SLICE_COUNT": "1",
+            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
         },
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout
@@ -78,9 +78,9 @@ def test_swe_bench_min_pass_rate_failure(tmp_path: Path) -> None:
                 "min_pass_rate": 2.0,
                 "fixture_target_paths": ["calc.py"],
                 "benchmark_env": {
-                    "HERMES_USE_LLM": "0",
-                    "HERMES_SLICE_IMPLEMENT": "stub",
-                    "HERMES_SLICE_P3_EVIDENCE": "0",
+                    "NIMBUSWARE_USE_LLM": "0",
+                    "NIMBUSWARE_SLICE_IMPLEMENT": "stub",
+                    "NIMBUSWARE_SLICE_P3_EVIDENCE": "0",
                 },
             },
         ),
@@ -95,9 +95,9 @@ def test_swe_bench_min_pass_rate_failure(tmp_path: Path) -> None:
         check=False,
         env={
             **os.environ,
-            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
             "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "HERMES_MICRO_SLICE_COUNT": "1",
+            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
         },
     )
     assert proc.returncode != 0, proc.stdout
@@ -116,11 +116,11 @@ def test_swe_bench_writes_json_snapshot() -> None:
         check=False,
         env={
             **os.environ,
-            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
             "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "HERMES_MICRO_SLICE_COUNT": "1",
-            "HERMES_SWE_BENCH_WRITE_JSON": "1",
-            "HERMES_SWE_BENCH_MANIFEST": str(MANIFEST),
+            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
+            "NIMBUSWARE_SWE_BENCH_WRITE_JSON": "1",
+            "NIMBUSWARE_SWE_BENCH_MANIFEST": str(MANIFEST),
         },
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.micro_slice import micro_slice_timeline_summary, parse_slice_plan
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.micro_slice import micro_slice_timeline_summary, parse_slice_plan
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_env import find_repo_root
 
 

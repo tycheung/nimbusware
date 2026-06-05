@@ -8,7 +8,7 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 
 from nimbusware_api.app import app  # noqa: E402
 from nimbusware_console.services import enterprise as enterprise_svc  # noqa: E402
@@ -139,7 +139,7 @@ def test_integration_adapter_writer_bff_present() -> None:
     from datetime import datetime, timezone
 
     from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     rid = uuid4()
@@ -154,7 +154,7 @@ def test_integration_adapter_writer_bff_present() -> None:
                     "scaffold_status": "target_integrated",
                     "target_integration_status": "integrated",
                     "target_adapter_kind": "api_bridge",
-                    "workspace_manifest_path": ".hermes/integration_adapter_writer/x/manifest.json",
+                    "workspace_manifest_path": ".nimbusware/integration_adapter_writer/x/manifest.json",
                 },
             },
             payload=StageStartedPayload(

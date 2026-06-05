@@ -37,7 +37,7 @@ def _catalog_bundle_row_counts(repo_root: Path) -> tuple[int | None, int | None,
         return None, None, None
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)
@@ -79,7 +79,7 @@ def _catalog_nonempty_stripped_id_set(repo_root: Path) -> tuple[set[str] | None,
         return None, None
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
 
-from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
-from hermes_extensions.personas import normalize_entry
-from hermes_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
-from hermes_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
-from hermes_orchestrator.persona_probation_reliability import (
+from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
+from nimbusware_extensions.personas import normalize_entry
+from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
+from nimbusware_orchestrator.persona_probation_reliability import (
     collect_persona_eval_metrics,
     reliability_decision,
 )

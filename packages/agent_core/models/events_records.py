@@ -48,7 +48,7 @@ from agent_core.models.events_payloads import (
 )
 
 
-class BaseHermesEvent(BaseModel):
+class BaseNimbuswareEvent(BaseModel):
     """Shared envelope fields (DB assigns store_seq separately at persist time).
 
     ``actor_role`` is a Role Registry UUID when set.
@@ -81,187 +81,187 @@ class BaseHermesEvent(BaseModel):
     )
 
 
-class RunCreatedEvent(BaseHermesEvent):
+class RunCreatedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RUN_CREATED]
     payload: RunCreatedPayload
 
 
-class RunStartedEvent(BaseHermesEvent):
+class RunStartedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RUN_STARTED]
     payload: RunStartedPayload
 
 
-class RunFailedEvent(BaseHermesEvent):
+class RunFailedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RUN_FAILED]
     payload: RunFailedPayload
 
 
-class RunCompletedEvent(BaseHermesEvent):
+class RunCompletedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RUN_COMPLETED]
     payload: RunCompletedPayload
 
 
-class RunEscalatedEvent(BaseHermesEvent):
+class RunEscalatedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RUN_ESCALATED]
     payload: RunEscalatedPayload
 
 
-class GateOverriddenEvent(BaseHermesEvent):
+class GateOverriddenEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.GATE_OVERRIDDEN]
     payload: GateOverriddenPayload
 
 
-class ModelPreflightStartedEvent(BaseHermesEvent):
+class ModelPreflightStartedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_PREFLIGHT_STARTED]
     payload: ModelPreflightStartedPayload
 
 
-class ModelPreflightPassedEvent(BaseHermesEvent):
+class ModelPreflightPassedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_PREFLIGHT_PASSED]
     payload: ModelPreflightPassedPayload
 
 
-class ModelPreflightFailedEvent(BaseHermesEvent):
+class ModelPreflightFailedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_PREFLIGHT_FAILED]
     payload: ModelPreflightFailedPayload
 
 
-class ModelSelectedPrimaryEvent(BaseHermesEvent):
+class ModelSelectedPrimaryEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_SELECTED_PRIMARY]
     payload: ModelSelectedPrimaryPayload
 
 
-class ModelSelectedFallbackEvent(BaseHermesEvent):
+class ModelSelectedFallbackEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_SELECTED_FALLBACK]
     payload: ModelSelectedFallbackPayload
 
 
-class StageStartedEvent(BaseHermesEvent):
+class StageStartedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STAGE_STARTED]
     payload: StageStartedPayload
 
 
-class StageBlockedEvent(BaseHermesEvent):
+class StageBlockedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STAGE_BLOCKED]
     payload: StageBlockedPayload
 
 
-class StagePassedEvent(BaseHermesEvent):
+class StagePassedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STAGE_PASSED]
     payload: StagePassedPayload
 
 
-class StageFailedEvent(BaseHermesEvent):
+class StageFailedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STAGE_FAILED]
     payload: StageFailedPayload
 
 
-class CriticVerdictEmittedEvent(BaseHermesEvent):
+class CriticVerdictEmittedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.CRITIC_VERDICT_EMITTED]
     payload: CriticVerdictEmittedPayload
 
 
-class FindingCreatedEvent(BaseHermesEvent):
+class FindingCreatedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.FINDING_CREATED]
     payload: FindingCreatedPayload
 
 
-class FindingRoutedEvent(BaseHermesEvent):
+class FindingRoutedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.FINDING_ROUTED]
     payload: FindingRoutedPayload
 
 
-class FindingClosedEvent(BaseHermesEvent):
+class FindingClosedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.FINDING_CLOSED]
     payload: FindingClosedPayload
 
 
-class GateDecisionEmittedEvent(BaseHermesEvent):
+class GateDecisionEmittedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.GATE_DECISION_EMITTED]
     payload: GateDecisionEmittedPayload
 
 
-class PersonaShelfUpdatedEvent(BaseHermesEvent):
+class PersonaShelfUpdatedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.PERSONA_SHELF_UPDATED]
     payload: PersonaShelfUpdatedPayload
 
 
-class SelfRefinementLoopSignalledEvent(BaseHermesEvent):
+class SelfRefinementLoopSignalledEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.SELF_REFINEMENT_LOOP_SIGNALLED]
     payload: SelfRefinementLoopSignalledPayload
 
 
-class MemoryIndexedEvent(BaseHermesEvent):
+class MemoryIndexedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MEMORY_INDEXED]
     payload: MemoryIndexedPayload
 
 
-class MemoryRetrievalEmittedEvent(BaseHermesEvent):
+class MemoryRetrievalEmittedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MEMORY_RETRIEVAL_EMITTED]
     payload: MemoryRetrievalEmittedPayload
 
 
-class ResearchBriefEmittedEvent(BaseHermesEvent):
+class ResearchBriefEmittedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RESEARCH_BRIEF_EMITTED]
     payload: ResearchBriefEmittedPayload
 
 
-class ResearchBriefApprovedEvent(BaseHermesEvent):
+class ResearchBriefApprovedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RESEARCH_BRIEF_APPROVED]
     payload: ResearchBriefReviewPayload
 
 
-class ResearchBriefRejectedEvent(BaseHermesEvent):
+class ResearchBriefRejectedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RESEARCH_BRIEF_REJECTED]
     payload: ResearchBriefReviewPayload
 
 
-class ResearchPatternIndexedEvent(BaseHermesEvent):
+class ResearchPatternIndexedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RESEARCH_PATTERN_INDEXED]
     payload: ResearchPatternIndexedPayload
 
 
-class DomainCriticProposedEvent(BaseHermesEvent):
+class DomainCriticProposedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.DOMAIN_CRITIC_PROPOSED]
     payload: DomainCriticProposedPayload
 
 
-class StitchLicenseCheckedEvent(BaseHermesEvent):
+class StitchLicenseCheckedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STITCH_LICENSE_CHECKED]
     payload: StitchLicenseCheckedPayload
 
 
-class StitchDependencyCheckedEvent(BaseHermesEvent):
+class StitchDependencyCheckedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STITCH_DEPENDENCY_CHECKED]
     payload: StitchDependencyCheckedPayload
 
 
-class StitchPlanEmittedEvent(BaseHermesEvent):
+class StitchPlanEmittedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STITCH_PLAN_EMITTED]
     payload: StitchPlanEmittedPayload
 
 
-class StitchAppliedEvent(BaseHermesEvent):
+class StitchAppliedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STITCH_APPLIED]
     payload: StitchAppliedPayload
 
 
-class StitchFailedEvent(BaseHermesEvent):
+class StitchFailedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.STITCH_FAILED]
     payload: StitchFailedPayload
 
 
-class HardwareProfileDetectedEvent(BaseHermesEvent):
+class HardwareProfileDetectedEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.HARDWARE_PROFILE_DETECTED]
     payload: HardwareProfileDetectedPayload
 
 
-class ResourcePressureWarnEvent(BaseHermesEvent):
+class ResourcePressureWarnEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.RESOURCE_PRESSURE_WARN]
     payload: ResourcePressureWarnPayload
 
 
-HermesEventUnion: TypeAlias = (
+NimbuswareEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
     | RunFailedEvent
@@ -300,18 +300,18 @@ HermesEventUnion: TypeAlias = (
     | ResourcePressureWarnEvent
 )
 
-HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]
+NimbuswareEvent: TypeAlias = Annotated[NimbuswareEventUnion, Field(discriminator="event_type")]
 
-EventEnvelope: TypeAlias = HermesEvent
+EventEnvelope: TypeAlias = NimbuswareEvent
 
-event_envelope_adapter: TypeAdapter[HermesEvent] = TypeAdapter(HermesEvent)
+event_envelope_adapter: TypeAdapter[NimbuswareEvent] = TypeAdapter(NimbuswareEvent)
 
 
 def validate_event_dict(
     data: object,
     *,
     context: dict[str, Any] | None = None,
-) -> HermesEventUnion:
+) -> NimbuswareEventUnion:
     """Parse and enforce event_type -> payload coupling.
 
     Pass ``context={finding_fix_strictness: FindingFixStrictnessSettings(...)}`` (or a dict with
@@ -326,6 +326,6 @@ def validate_event_dict(
     return event_envelope_adapter.validate_python(data, context=merged)
 
 
-def serialize_event_persistent(event: HermesEventUnion) -> dict[str, Any]:
+def serialize_event_persistent(event: NimbuswareEventUnion) -> dict[str, Any]:
     """JSON-shaped dict suitable for columns / payloads (aliases, enums as primitives)."""
     return event.model_dump(mode="json", by_alias=True)

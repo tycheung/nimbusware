@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from hermes_orchestrator.integration_adapter_writer_stage import INTEGRATION_ADAPTER_WRITER_STAGE
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
+from nimbusware_orchestrator.integration_adapter_writer_stage import INTEGRATION_ADAPTER_WRITER_STAGE
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from nimbusware_env import find_repo_root
@@ -26,7 +26,7 @@ def test_target_adapter_integration_writes_state_and_sync(tmp_path: Path) -> Non
     assert out["adapter_generation_status"] == "target_integrated"
     assert out["target_integration_status"] == "integrated"
     assert out["target_connected"] is True
-    state = tmp_path / ".hermes" / "integration_adapter_writer" / str(rid) / "target_state.json"
+    state = tmp_path / ".nimbusware" / "integration_adapter_writer" / str(rid) / "target_state.json"
     assert state.is_file()
 
 

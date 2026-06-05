@@ -28,7 +28,7 @@ spec:
               value: {{ .Values.edition | quote }}
             - name: NIMBUSWARE_REPO_ROOT
               value: /app
-            - name: HERMES_SKIP_PREFLIGHT
+            - name: NIMBUSWARE_SKIP_PREFLIGHT
               value: "1"
           readinessProbe:
             httpGet:

@@ -5,11 +5,11 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_orchestrator.verifiers import run_bandit
+from nimbusware_orchestrator.verifiers import run_bandit
 
 _ENV_GATE_SKIP: tuple[int, str] = (
     0,
-    "bandit skipped (set HERMES_RUN_BANDIT=1 to enable)\n",
+    "bandit skipped (set NIMBUSWARE_RUN_BANDIT=1 to enable)\n",
 )
 _PATH_MISSING_SKIP: tuple[int, str] = (0, "bandit not on PATH; skipped\n")
 
@@ -18,9 +18,9 @@ def test_run_bandit_env_force_on_string_arm_contract(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    """Pin §14 #18 ``HERMES_RUN_BANDIT`` force-on truthy tuple membership.
+    """Pin §14 #18 ``NIMBUSWARE_RUN_BANDIT`` force-on truthy tuple membership.
 
-    The env-gate at [verifiers.py:36](packages\\hermes_orchestrator\\verifiers.py)
+    The env-gate at [verifiers.py:36](packages\\nimbusware_orchestrator\\verifiers.py)
     uses ``not in ("1", "true", "yes")`` so truthy variants reach the
     downstream ``shutil.which("bandit")`` branch. Patching ``shutil.which``
     to ``None`` collapses that branch to a deterministic
@@ -44,9 +44,9 @@ def test_run_bandit_env_force_on_string_arm_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_RUN_BANDIT", raw)
+        monkeypatch.setenv("NIMBUSWARE_RUN_BANDIT", raw)
         with patch(
-            "hermes_orchestrator.verifiers.shutil.which",
+            "nimbusware_orchestrator.verifiers.shutil.which",
             return_value=None,
         ):
             result = run_bandit(tmp_path)
@@ -59,10 +59,10 @@ def test_run_bandit_env_skip_message_format_contract(
 ) -> None:
     """Pin §14 #18 operator-facing skip message text exactly.
 
-    The skip tuple ``(0, "bandit skipped (set HERMES_RUN_BANDIT=1 to
+    The skip tuple ``(0, "bandit skipped (set NIMBUSWARE_RUN_BANDIT=1 to
     enable)\\n")`` is documented operator output -- a refactor that
     changes the exit code, drops the trailing newline, or alters the
-    ``HERMES_RUN_BANDIT=1`` hint (e.g. to ``HERMES_RUN_BANDIT=true``)
+    ``NIMBUSWARE_RUN_BANDIT=1`` hint (e.g. to ``NIMBUSWARE_RUN_BANDIT=true``)
     silently breaks operator runbooks.
 
     Four canonical fail-closed cases cover the "documented falsy" inputs
@@ -82,9 +82,9 @@ def test_run_bandit_env_skip_message_format_contract(
     ]
     for _name, raw in cases:
         if raw is None:
-            monkeypatch.delenv("HERMES_RUN_BANDIT", raising=False)
+            monkeypatch.delenv("NIMBUSWARE_RUN_BANDIT", raising=False)
         else:
-            monkeypatch.setenv("HERMES_RUN_BANDIT", raw)
+            monkeypatch.setenv("NIMBUSWARE_RUN_BANDIT", raw)
         result = run_bandit(tmp_path)
         assert result == _ENV_GATE_SKIP, f"skip_message raw={raw!r}"
 
@@ -96,7 +96,7 @@ def test_run_bandit_env_fail_closed_string_arm_contract(
     """Pin §14 #18 asymmetric fail-closed string-arm at the inverted gate.
 
     Loops 11 fail-closed variants spanning four sub-contracts (parallel
-    to follow-on 65 Part C for ``HERMES_OUTBOUND_FETCH_ENABLED``):
+    to follow-on 65 Part C for ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED``):
 
     1. **No ``.strip()``** -- whitespace-padded canonical
        (``"  1  "`` / ``" true "`` / ``"\\tyes\\n"``) fail-closed
@@ -134,6 +134,6 @@ def test_run_bandit_env_fail_closed_string_arm_contract(
         ("interior_ws", " ye s "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_RUN_BANDIT", raw)
+        monkeypatch.setenv("NIMBUSWARE_RUN_BANDIT", raw)
         result = run_bandit(tmp_path)
         assert result == _ENV_GATE_SKIP, f"fail_closed raw={raw!r}"

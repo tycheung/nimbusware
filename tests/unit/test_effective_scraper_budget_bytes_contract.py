@@ -3,8 +3,8 @@ from __future__ import annotations
 from unittest.mock import patch
 from uuid import uuid4
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.scraper_stage import ScraperFetchConfig
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig
 
 
 def _make_cfg(max_bytes: int | None = None) -> ScraperFetchConfig:

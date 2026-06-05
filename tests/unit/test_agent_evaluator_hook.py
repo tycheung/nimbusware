@@ -8,8 +8,8 @@ from unittest.mock import patch
 import pytest
 
 from agent_core.models import EventType
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorAutoCreatePersonaBlock,
     AgentEvaluatorWorkflowBlock,
 )
@@ -32,7 +32,7 @@ def _has_agent_eval_stage(events: list[dict[str, Any]]) -> bool:
 
 
 def test_agent_evaluator_emits_when_env_set(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
@@ -47,9 +47,9 @@ def test_agent_evaluator_emits_when_env_set(monkeypatch: pytest.MonkeyPatch) -> 
 def test_agent_evaluator_llm_policy_branch_metadata(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "1")
-    monkeypatch.setenv("HERMES_USE_LLM", "1")
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR_LLM_STUB", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
+    monkeypatch.setenv("NIMBUSWARE_USE_LLM", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR_LLM_STUB", "1")
     block = AgentEvaluatorWorkflowBlock(
         enabled=True,
         persona_id="commerce",
@@ -60,12 +60,12 @@ def test_agent_evaluator_llm_policy_branch_metadata(
     rid = orch.create_run("agent_evaluator_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.parse_agent_evaluator_workflow_block",
+            "nimbusware_orchestrator.pipeline.parse_agent_evaluator_workflow_block",
             return_value=block,
         ),
         patch.object(orch, "_selected_model_for_run", return_value="stub-model"),
         patch(
-            "hermes_orchestrator.pipeline.execute_agent_evaluator_policy_llm",
+            "nimbusware_orchestrator.pipeline.execute_agent_evaluator_policy_llm",
             return_value=None,
         ),
     ):
@@ -92,7 +92,7 @@ def test_agent_evaluator_llm_policy_branch_metadata(
 
 
 def test_agent_eval_yaml_emits_without_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_on")
     orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
@@ -105,7 +105,7 @@ def test_agent_eval_yaml_emits_without_env(monkeypatch: pytest.MonkeyPatch) -> N
 
 
 def test_agent_eval_env_kill_switch(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR", "0")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "0")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_on")
     orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
@@ -123,7 +123,7 @@ def test_agent_evaluator_env_force_on_string_arm_contract(
     """Pin §14 #15 env force-on tuple ``.strip().lower() in ("1", "true", "yes")``.
 
     :meth:`RunOrchestrator._maybe_emit_agent_evaluator_stage` consults
-    ``HERMES_AGENT_EVALUATOR`` *before* the workflow YAML check. Existing
+    ``NIMBUSWARE_AGENT_EVALUATOR`` *before* the workflow YAML check. Existing
     tests sample only `"1"`; this test exhaustively pins the case-folded +
     whitespace-trimmed variants of the force-on tuple. The workflow profile is
     ``default`` (``agent_evaluator.enabled: false`` in
@@ -151,7 +151,7 @@ def test_agent_evaluator_env_force_on_string_arm_contract(
         ("ws_upper_true_pad", "  TRUE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_AGENT_EVALUATOR", raw)
+        monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default")
         orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
@@ -186,7 +186,7 @@ def test_agent_evaluator_env_kill_switch_string_arm_contract(
         ("ws_upper_false_pad", "  FALSE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_AGENT_EVALUATOR", raw)
+        monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("agent_evaluator_on")
         orch._maybe_emit_agent_evaluator_stage(rid)  # noqa: SLF001
@@ -204,7 +204,7 @@ def test_agent_evaluator_env_fallthrough_to_yaml_string_arm_contract(
     parser, see follow-on 60 Part B), but the env layer's tuples in
     :meth:`_maybe_emit_agent_evaluator_stage` are ``("1", "true", "yes")``
     and ``("0", "false", "no")`` — they **exclude** ``"on"`` / ``"off"``. So
-    ``HERMES_AGENT_EVALUATOR=on`` falls past both tuples to the workflow YAML
+    ``NIMBUSWARE_AGENT_EVALUATOR=on`` falls past both tuples to the workflow YAML
     check rather than forcing-on. Parallel to follow-on 51 (:func:`env_over_yaml`
     asymmetry) and follow-on 62 (security-metadata env layer).
 
@@ -220,7 +220,7 @@ def test_agent_evaluator_env_fallthrough_to_yaml_string_arm_contract(
 
     A future "unify the env tuple with the workflow coercion tuple" refactor
     (adding ``"on"`` / ``"off"`` to the env tuples) would silently flip the
-    semantics of ``HERMES_AGENT_EVALUATOR=on`` from "follow YAML" to "force
+    semantics of ``NIMBUSWARE_AGENT_EVALUATOR=on`` from "follow YAML" to "force
     on" — this test fails loudly on exactly that change.
     """
     cases: list[tuple[str, str]] = [
@@ -235,7 +235,7 @@ def test_agent_evaluator_env_fallthrough_to_yaml_string_arm_contract(
         ("fall_interior_ws", " ye s "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_AGENT_EVALUATOR", raw)
+        monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", raw)
         orch_off, mem_off = make_dev_orchestrator()
         rid_off = orch_off.create_run("default")
         orch_off._maybe_emit_agent_evaluator_stage(rid_off)  # noqa: SLF001

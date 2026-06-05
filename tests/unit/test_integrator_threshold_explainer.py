@@ -119,7 +119,7 @@ def test_integrator_threshold_gate_emission_caption_would_not_emit() -> None:
         {
             "gate_event_emission": {
                 "would_emit_integrator_gate_event": False,
-                "not_emit_reason": "HERMES_EMIT_INTEGRATOR_GATE forces off",
+                "not_emit_reason": "NIMBUSWARE_EMIT_INTEGRATOR_GATE forces off",
             },
         },
     )
@@ -182,7 +182,7 @@ def test_env_min_score_overrides_workflow(
     repo_workflow_and_thresholds: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "0.15")
+    monkeypatch.setenv("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "0.15")
     out = integrator_threshold_explainer_payload(
         repo_workflow_and_thresholds,
         workflow_profile="demo",
@@ -197,7 +197,7 @@ def test_emit_forced_off(
     repo_workflow_and_thresholds: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", "0")
+    monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "0")
     out = integrator_threshold_explainer_payload(
         repo_workflow_and_thresholds,
         workflow_profile="demo",

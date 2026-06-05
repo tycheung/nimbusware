@@ -529,9 +529,9 @@ def test_timeline_parallel_writer_groups_after_writer_pass(client: TestClient) -
     from unittest.mock import patch
 
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
-    with patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             ex = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -552,9 +552,9 @@ def test_timeline_parallel_dispatch_mode_when_enabled(client: TestClient) -> Non
         "/v1/runs",
         json={"workflow_profile": "parallel_writers_on"},
     ).json()["run_id"]
-    with patch.dict(os.environ, {"HERMES_PARALLEL_WRITERS": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -575,15 +575,15 @@ def test_timeline_parallel_stage_details_include_test_writer_failure(client: Tes
     ).json()["run_id"]
     with patch.dict(
         os.environ,
-        {"HERMES_PARALLEL_WRITERS": "1", "HERMES_TEST_WRITER_STAGE": "1"},
+        {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_TEST_WRITER_STAGE": "1"},
         clear=False,
     ):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             with patch(
-                "hermes_orchestrator.pipeline.run_test_writer_stage",
+                "nimbusware_orchestrator.pipeline.run_test_writer_stage",
                 return_value=(7, "boom", "subprocess"),
             ):
                 resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -610,16 +610,16 @@ def test_timeline_parallel_stage_details_include_test_writer_body_mode_stub(
     with patch.dict(
         os.environ,
         {
-            "HERMES_PARALLEL_WRITERS": "1",
-            "HERMES_TEST_WRITER_STAGE": "1",
-            "HERMES_TEST_WRITER_LLM_BODY": "1",
-            "HERMES_TEST_WRITER_LLM_STUB": "1",
-            "HERMES_USE_LLM": "1",
+            "NIMBUSWARE_PARALLEL_WRITERS": "1",
+            "NIMBUSWARE_TEST_WRITER_STAGE": "1",
+            "NIMBUSWARE_TEST_WRITER_LLM_BODY": "1",
+            "NIMBUSWARE_TEST_WRITER_LLM_STUB": "1",
+            "NIMBUSWARE_USE_LLM": "1",
         },
         clear=False,
     ):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -636,7 +636,7 @@ def test_lifecycle_verify_returns_dispatch_queued(client: TestClient) -> None:
     from unittest.mock import patch
 
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
-    with patch.dict(os.environ, {"HERMES_RUN_DISPATCH": "memory"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_RUN_DISPATCH": "memory"}, clear=False):
         resp = client.post(f"/v1/runs/{run_id}/lifecycle/verify")
         assert resp.status_code == 200
         body = resp.json()
@@ -651,9 +651,9 @@ def test_timeline_agent_evaluator_coverage_gate(client: TestClient) -> None:
         "/v1/runs",
         json={"workflow_profile": "agent_evaluator_default_on"},
     ).json()["run_id"]
-    with patch.dict(os.environ, {"HERMES_AGENT_EVALUATOR": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_AGENT_EVALUATOR": "1"}, clear=False):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             client.post(f"/v1/runs/{run_id}/lifecycle/verify")
@@ -667,9 +667,9 @@ def test_timeline_critic_matrix_live_when_gates_exist(client: TestClient) -> Non
     from unittest.mock import patch
 
     run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
-    with patch.dict(os.environ, {"HERMES_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False):
         with patch(
-            "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+            "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
             return_value=(0, "ok"),
         ):
             client.post(

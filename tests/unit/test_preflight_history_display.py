@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 
-from hermes_orchestrator.preflight_histogram import BUCKET_EDGES_MS
+from nimbusware_orchestrator.preflight_histogram import BUCKET_EDGES_MS
 from nimbusware_console.preflight_history_display import (
     preflight_history_checks_passed_caption,
     preflight_history_context_tokens_caption,

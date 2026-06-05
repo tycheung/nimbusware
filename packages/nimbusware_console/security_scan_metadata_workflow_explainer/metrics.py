@@ -36,7 +36,7 @@ def security_scan_metadata_workflow_explainer_operator_metrics(
     metrics["yaml_matches_effective"] = matches is True
     if matches is False:
         metrics["yaml_effective_mismatch"] = True
-    env = payload.get("HERMES_ATTACH_SECURITY_SCAN_METADATA")
+    env = payload.get("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA")
     if isinstance(env, dict):
         metrics["env_forces_on"] = env.get("forces_on") is True
         metrics["env_forces_off"] = env.get("forces_off") is True

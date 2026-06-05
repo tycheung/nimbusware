@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     universal_critique_production_default_on,
 )
@@ -35,5 +35,5 @@ def test_create_run_freezes_production_critique_flags() -> None:
 def test_kill_switch_disables_production_default(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_STUB_IMPLEMENTATION_CRITICS", "0")
+    monkeypatch.setenv("NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", "0")
     assert universal_critique_production_default_on(ROOT, "nimbusware_production") is False

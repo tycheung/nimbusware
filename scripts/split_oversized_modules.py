@@ -96,11 +96,11 @@ from agent_core.models.events_records import *  # noqa: F403
 
 
 def split_scraper_artifacts() -> None:
-    lines = _read("packages/hermes_orchestrator/scraper_artifacts.py")
-    _write(REPO / "packages/hermes_orchestrator/scraper_artifacts_retention.py", "".join(lines[:81]))
+    lines = _read("packages/nimbusware_orchestrator/scraper_artifacts.py")
+    _write(REPO / "packages/nimbusware_orchestrator/scraper_artifacts_retention.py", "".join(lines[:81]))
     _write(
-        REPO / "packages/hermes_orchestrator/scraper_artifacts_inventory.py",
-        """from hermes_orchestrator.scraper_artifacts_retention import (
+        REPO / "packages/nimbusware_orchestrator/scraper_artifacts_inventory.py",
+        """from nimbusware_orchestrator.scraper_artifacts_retention import (
     RetentionAlertLevel,
     RetentionExecutionMode,
     StorageBackend,
@@ -113,12 +113,12 @@ def split_scraper_artifacts() -> None:
         + "".join(lines[81:315]),
     )
     _write(
-        REPO / "packages/hermes_orchestrator/scraper_artifacts_prune.py",
-        """from hermes_orchestrator.scraper_artifacts_inventory import (
+        REPO / "packages/nimbusware_orchestrator/scraper_artifacts_prune.py",
+        """from nimbusware_orchestrator.scraper_artifacts_inventory import (
     object_store_delete_artifact,
     scraper_artifact_storage_backend_signals,
 )
-from hermes_orchestrator.scraper_artifacts_retention import (
+from nimbusware_orchestrator.scraper_artifacts_retention import (
     object_store_prune_enabled,
     retention_alert_level,
     retention_execution_mode,
@@ -129,21 +129,21 @@ from hermes_orchestrator.scraper_artifacts_retention import (
         + "".join(lines[381:]),
     )
     _write(
-        REPO / "packages/hermes_orchestrator/scraper_artifacts.py",
+        REPO / "packages/nimbusware_orchestrator/scraper_artifacts.py",
         '''"""On-disk scraper response artifact helpers."""
 
-from hermes_orchestrator.scraper_artifacts_inventory import (
+from nimbusware_orchestrator.scraper_artifacts_inventory import (
     object_store_delete_artifact,
     scraper_artifact_inventory,
     scraper_artifact_storage_backend_signals,
 )
-from hermes_orchestrator.scraper_artifacts_prune import (
+from nimbusware_orchestrator.scraper_artifacts_prune import (
     persist_scraper_artifact,
     prune_scraper_artifacts,
     prune_scraper_artifacts_local_removed,
     resolve_scraper_artifact_base_dir,
 )
-from hermes_orchestrator.scraper_artifacts_retention import (
+from nimbusware_orchestrator.scraper_artifacts_retention import (
     RetentionAlertLevel,
     RetentionExecutionMode,
     StorageBackend,

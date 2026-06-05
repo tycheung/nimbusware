@@ -7,10 +7,10 @@ from typing import Any
 
 
 def snapshot_root() -> Path:
-    raw = os.environ.get("HERMES_WORKSPACE_SNAPSHOT_DIR", "").strip()
+    raw = os.environ.get("NIMBUSWARE_WORKSPACE_SNAPSHOT_DIR", "").strip()
     if raw:
         return Path(raw).resolve()
-    return Path(".cache/hermes_workspace_snapshots").resolve()
+    return Path(".cache/nimbusware_workspace_snapshots").resolve()
 
 
 def create_workspace_snapshot(

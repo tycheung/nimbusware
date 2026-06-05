@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_agent_tools.runtime import AgentStep
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_agent_tools.runtime import AgentStep
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_client.http import admin_headers, api_base, user_headers
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.slice_preview import (
@@ -76,7 +76,7 @@ def test_agent_step_dataclass() -> None:
 
 
 def test_readiness_with_full_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     cfg = tmp_path / "configs"
     cfg.mkdir()
     (cfg / "model-routing.yaml").write_text(

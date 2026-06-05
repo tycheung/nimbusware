@@ -16,7 +16,7 @@ def quick_mode_enabled() -> bool:
 def _apply_quick(target: MutableMapping[str, str]) -> None:
     target[QUICK_MODE_ENV] = "1"
     target.pop("NIMBUSWARE_DATABASE_URL", None)
-    target["HERMES_SKIP_PREFLIGHT"] = "1"
+    target["NIMBUSWARE_SKIP_PREFLIGHT"] = "1"
     target["NIMBUSWARE_CONFIG_FROM_FILES"] = "1"
     target.pop("NIMBUSWARE_CONFIG_FROM_DB", None)
     target.pop("NIMBUSWARE_ROLES_FROM_DB", None)

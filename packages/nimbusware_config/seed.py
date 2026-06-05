@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,

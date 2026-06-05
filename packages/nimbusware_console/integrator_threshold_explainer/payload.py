@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.integrator_gate import (
+from nimbusware_orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
     load_integrator_gate_workflow_block,
     parse_integrator_gate_min_score_to_pass,

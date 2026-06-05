@@ -1,6 +1,6 @@
 """Orchestrator slice execution boundary for Maker.
 
-``slice_workflow`` imports this module only — not ``hermes_orchestrator`` directly.
+``slice_workflow`` imports this module only — not ``nimbusware_orchestrator`` directly.
 Lazy helpers wrap optional LLM / scan imports used during approve/apply paths.
 """
 
@@ -9,20 +9,20 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from hermes_orchestrator.micro_slice import (
+from nimbusware_orchestrator.micro_slice import (
     SlicePlan,
     micro_slice_count_for_run,
     parse_slice_plan,
 )
-from hermes_orchestrator.micro_slice_executor import (
+from nimbusware_orchestrator.micro_slice_executor import (
     _custom_agent_system_prompt,
     _emit_slice_stage,
     _plan_one_slice,
     _resolve_slice_block,
     _run_slice_verify_and_test,
 )
-from hermes_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
-from hermes_orchestrator.slice_patch_apply import apply_slice_file_edits
+from nimbusware_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
+from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
 
 __all__ = [
     "SlicePlan",
@@ -54,7 +54,7 @@ def _execute_slice_implement_llm(
     timeout_seconds: float,
     system_prompt: str,
 ) -> list[dict[str, str]] | None:
-    from hermes_orchestrator.llm_slice import execute_slice_implement_llm
+    from nimbusware_orchestrator.llm_slice import execute_slice_implement_llm
 
     return execute_slice_implement_llm(
         plan=plan,
@@ -74,7 +74,7 @@ def _execute_slice_critique_llm(
     verify_log: str,
     timeout_seconds: float,
 ) -> list[str]:
-    from hermes_orchestrator.llm_slice import execute_slice_critique_llm
+    from nimbusware_orchestrator.llm_slice import execute_slice_critique_llm
 
     return execute_slice_critique_llm(
         plan=plan,
@@ -86,13 +86,13 @@ def _execute_slice_critique_llm(
 
 
 def _collect_slice_diff_stats(workspace: Path, plan: SlicePlan) -> Any:
-    from hermes_orchestrator.slice_diff import collect_slice_diff_stats
+    from nimbusware_orchestrator.slice_diff import collect_slice_diff_stats
 
     return collect_slice_diff_stats(workspace, plan)
 
 
 def check_slice_diff_budget(stats: Any, block: Any) -> Any:
-    from hermes_orchestrator.slice_diff import check_slice_diff_budget
+    from nimbusware_orchestrator.slice_diff import check_slice_diff_budget
 
     return check_slice_diff_budget(stats, block)
 
@@ -102,8 +102,8 @@ def _complete_slice_p3_evidence(
     *,
     timeout_seconds: float,
 ) -> tuple[int, int]:
-    from hermes_orchestrator.performance_scan import run_ruff_perf
-    from hermes_orchestrator.security_scan import run_security_scan
+    from nimbusware_orchestrator.performance_scan import run_ruff_perf
+    from nimbusware_orchestrator.security_scan import run_security_scan
 
     sec = run_security_scan(workspace)
     perf_code, _perf_log = run_ruff_perf(workspace, timeout_seconds=timeout_seconds)

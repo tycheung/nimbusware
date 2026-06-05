@@ -15,7 +15,7 @@ from agent_core.models import (
     RunStartedEvent,
     RunStartedPayload,
 )
-from hermes_store.postgres import PostgresEventStore
+from nimbusware_store.postgres import PostgresEventStore
 from nimbusware_projections.builders.maker_progress import maker_progress_from_events
 
 pytestmark = pytest.mark.integration

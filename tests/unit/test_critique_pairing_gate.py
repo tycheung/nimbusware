@@ -9,13 +9,13 @@ import pytest
 import yaml
 from fastapi.testclient import TestClient
 
-from hermes_extensions.phase2 import UniversalCritiqueRouter
-from hermes_orchestrator.critique_routing import (
+from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_orchestrator.critique_routing import (
     assert_critique_coverage_complete,
     critique_coverage_snapshot,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_api.app import app
 from nimbusware_env import find_repo_root
 

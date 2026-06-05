@@ -9,9 +9,9 @@ from typing import Any
 import httpx
 import yaml
 
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_env.edition import edition_manifest
-from nimbusware_env.env_flags import hermes_skip_preflight_enabled
+from nimbusware_env.env_flags import nimbusware_skip_preflight_enabled
 
 INSTALL_GUIDE = "python scripts/install_nimbusware.py  (see README Quick start)"
 
@@ -70,7 +70,7 @@ def _check_database(store: Any) -> dict[str, Any]:
 
 
 def _check_ollama(repo_root: Path) -> dict[str, Any]:
-    if hermes_skip_preflight_enabled():
+    if nimbusware_skip_preflight_enabled():
         routing = _load_model_routing(repo_root)
         runtime_raw = routing.get("runtime")
         runtime = runtime_raw if isinstance(runtime_raw, dict) else {}
@@ -79,7 +79,7 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         primary = _primary_model_id(models) or "unknown"
         return {
             "status": "degraded",
-            "message": "Preflight skipped (HERMES_SKIP_PREFLIGHT) — model checks not run",
+            "message": "Preflight skipped (NIMBUSWARE_SKIP_PREFLIGHT) — model checks not run",
             "skipped": True,
             "primary_model": primary,
             "base_url": str(runtime.get("base_url") or "http://localhost:11434"),

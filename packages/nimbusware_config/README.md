@@ -12,6 +12,6 @@ Versioned YAML config documents (workflows, personas, bundles) with Postgres mat
 
 ## Consumers
 
-`nimbusware_api` admin routes, `nimbusware_console` config tooling, `hermes_orchestrator` workflow merge at run start.
+`nimbusware_api` admin routes, `nimbusware_console` config tooling, `nimbusware_orchestrator` workflow merge at run start.
 
-Normative Hermes contract: gitignored `hermes-orchestrator-local-plan.md` at repo root.
+Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

@@ -17,7 +17,7 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from hermes_orchestrator.role_execute import (
+from nimbusware_orchestrator.role_execute import (
     resolve_taxonomy_key,
     supported_role_taxonomy_keys,
 )

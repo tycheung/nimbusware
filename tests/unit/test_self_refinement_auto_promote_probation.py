@@ -10,10 +10,10 @@ import pytest
 import yaml
 
 from agent_core.models import EventType
-from hermes_orchestrator.persona_catalog_audit import persona_catalog_run_id
-from hermes_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_self_refinement import parse_self_refinement_workflow_block
+from nimbusware_orchestrator.persona_catalog_audit import persona_catalog_run_id
+from nimbusware_orchestrator.persona_shelf_promotion import try_auto_promote_probation_persona
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_self_refinement import parse_self_refinement_workflow_block
 from nimbusware_api.routes.runs import self_refinement_timeline_summary
 from nimbusware_env import find_repo_root
 
@@ -66,7 +66,7 @@ def test_parse_self_refinement_auto_promote_probation(tmp_path: Path) -> None:
 
 def test_try_auto_promote_with_self_refinement_actor(tmp_path: Path) -> None:
     _minimal_shelves(tmp_path, commerce_on_probation=True)
-    mem = __import__("hermes_store.memory", fromlist=["InMemoryEventStore"]).InMemoryEventStore()
+    mem = __import__("nimbusware_store.memory", fromlist=["InMemoryEventStore"]).InMemoryEventStore()
     run_id = uuid4()
     meta = try_auto_promote_probation_persona(
         tmp_path,
@@ -117,8 +117,8 @@ def test_pipeline_env_suppresses_sr_auto_promote(
             "  enabled: true\n  auto_promote_probation: true\n",
         )
     wf_path.write_text(wtxt, encoding="utf-8")
-    monkeypatch.delenv("HERMES_SELF_REFINEMENT_STAGE_MARKER", raising=False)
-    monkeypatch.setenv("HERMES_SELF_REFINEMENT_AUTO_PROMOTE", "0")
+    monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE", "0")
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run(
@@ -178,8 +178,8 @@ def test_pipeline_maybe_emit_sr_promotes_commerce_on_probation(
             "  enabled: true\n  auto_promote_probation: true\n",
         )
     wf_path.write_text(wtxt, encoding="utf-8")
-    monkeypatch.delenv("HERMES_SELF_REFINEMENT_STAGE_MARKER", raising=False)
-    monkeypatch.delenv("HERMES_SELF_REFINEMENT_AUTO_PROMOTE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE", raising=False)
 
     orch, mem = make_dev_orchestrator(tmp_path)
     rid = orch.create_run(

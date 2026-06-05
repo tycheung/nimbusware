@@ -14,7 +14,7 @@ Add to your MCP settings:
 ```json
 {
   "mcpServers": {
-    "hermes": {
+    "nimbusware": {
       "command": "nimbusware-mcp",
       "env": {
         "NIMBUSWARE_API_BASE": "http://127.0.0.1:8000/v1"
@@ -28,7 +28,7 @@ Add to your MCP settings:
 
 | Tool | Description |
 |------|-------------|
-| `hermes_run_status` | `GET /v1/runs/{run_id}` |
-| `hermes_run_theater` | `GET /v1/runs/{run_id}/theater` |
-| `hermes_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |
-| `hermes_approve_plan` | `POST /v1/runs/{run_id}/maker/plan/approve` |
+| `nimbusware_run_status` | `GET /v1/runs/{run_id}` |
+| `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
+| `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |
+| `nimbusware_approve_plan` | `POST /v1/runs/{run_id}/maker/plan/approve` |

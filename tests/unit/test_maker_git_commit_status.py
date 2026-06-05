@@ -21,7 +21,7 @@ def test_last_git_commit_from_rows() -> None:
             STAGE_SLICE_APPLIED,
             {
                 "slice_id": "s1",
-                "git_commit": {"status": "committed", "branch": "hermes/run-1", "sha": "abc123"},
+                "git_commit": {"status": "committed", "branch": "nimbusware/run-1", "sha": "abc123"},
             },
             10,
         ),
@@ -29,5 +29,5 @@ def test_last_git_commit_from_rows() -> None:
     out = last_git_commit_from_rows(rows)
     assert out is not None
     assert out["status"] == "committed"
-    assert out["branch"] == "hermes/run-1"
+    assert out["branch"] == "nimbusware/run-1"
     assert out["slice_id"] == "s1"

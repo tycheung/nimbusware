@@ -15,14 +15,14 @@ from nimbusware_env import find_repo_root
 os.environ.setdefault(
     "NIMBUSWARE_REPO_ROOT", str(find_repo_root(start=Path(__file__).resolve().parents[1]))
 )
-os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
+os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
 os.environ.setdefault(
     "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
 )
 
 from nimbusware_api.app import (  # noqa: E402
     app,
-    hermes_uncaught_exception_handler,
+    nimbusware_uncaught_exception_handler,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from nimbusware_api.schemas.problem import Problem
@@ -55,7 +55,7 @@ def test_uncaught_exception_handler_returns_problem_json() -> None:
     scope = {"type": "http", "method": "GET", "path": "/boom", "headers": []}
     request = Request(scope)
     response = asyncio.run(
-        hermes_uncaught_exception_handler(request, RuntimeError("deliberate")),
+        nimbusware_uncaught_exception_handler(request, RuntimeError("deliberate")),
     )
     assert response.status_code == 500
     assert response.media_type == "application/problem+json"

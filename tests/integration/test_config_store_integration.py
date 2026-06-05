@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_extensions.personas import PersonaShelf
+from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_config.keys import KEY_PERSONA_SHELVES, NS_PERSONAS
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo

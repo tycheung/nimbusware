@@ -5,7 +5,7 @@ from typing import Any
 
 
 def run_bundle_catalog_search(repo_root: Path, query: str, *, k: int) -> dict[str, Any]:
-    from hermes_extensions.catalog import bundle_faiss_index_sync_state, search_bundles
+    from nimbusware_extensions.catalog import bundle_faiss_index_sync_state, search_bundles
 
     kk = max(1, min(20, int(k)))
     q = query.strip()

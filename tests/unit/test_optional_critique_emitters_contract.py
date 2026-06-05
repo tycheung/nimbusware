@@ -12,11 +12,11 @@ from agent_core.models import (
     ModelSelectedPrimaryEvent,
     ModelSelectedPrimaryPayload,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 
 def _make_eff(**overrides: bool) -> EffectiveUniversalCritique:
@@ -90,9 +90,9 @@ def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
     -> LLM + stub fallback (AND-gated fallback).
     """
     with (
-        patch("hermes_orchestrator.pipeline.execute_test_writer_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.execute_test_writer_critique_llm") as m_llm,
         patch(
-            "hermes_orchestrator.pipeline.emit_stub_test_writer_critique_panel",
+            "nimbusware_orchestrator.pipeline.emit_stub_test_writer_critique_panel",
         ) as m_stub,
     ):
         m_llm.return_value = True
@@ -204,9 +204,9 @@ def test_emit_planner_critique_optional_path_matrix_6_axis() -> None:
     to A1-A6 prove symmetric implementation across the two methods.
     """
     with (
-        patch("hermes_orchestrator.pipeline.execute_planner_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.execute_planner_critique_llm") as m_llm,
         patch(
-            "hermes_orchestrator.pipeline.emit_stub_planner_critique_panel",
+            "nimbusware_orchestrator.pipeline.emit_stub_planner_critique_panel",
         ) as m_stub,
     ):
         m_llm.return_value = True
@@ -325,8 +325,8 @@ def test_emit_test_writer_critique_optional_argument_propagation_5_axis() -> Non
     eff = _make_eff(tw_enabled=True, tw_llm=True, tw_stub=False)
 
     with (
-        patch("hermes_orchestrator.pipeline.execute_test_writer_critique_llm") as m_llm,
-        patch("hermes_orchestrator.pipeline.emit_stub_test_writer_critique_panel"),
+        patch("nimbusware_orchestrator.pipeline.execute_test_writer_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.emit_stub_test_writer_critique_panel"),
     ):
         m_llm.return_value = True
 
@@ -436,8 +436,8 @@ def test_emit_planner_critique_optional_argument_propagation_5_axis() -> None:
     eff = _make_eff(pll_enabled=True, pll_llm=True, pll_stub=False)
 
     with (
-        patch("hermes_orchestrator.pipeline.execute_planner_critique_llm") as m_llm,
-        patch("hermes_orchestrator.pipeline.emit_stub_planner_critique_panel"),
+        patch("nimbusware_orchestrator.pipeline.execute_planner_critique_llm") as m_llm,
+        patch("nimbusware_orchestrator.pipeline.emit_stub_planner_critique_panel"),
     ):
         m_llm.return_value = True
 

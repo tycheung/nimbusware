@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_agent_evaluator import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_agent_evaluator import (
     agent_evaluator_llm_branch_effective,
     agent_evaluator_production_default_on,
     parse_agent_evaluator_workflow_block,
@@ -24,8 +24,8 @@ def test_production_default_on_nimbusware_production_profile() -> None:
 
 
 def test_pipeline_agent_evaluator_production_metadata(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("HERMES_AGENT_EVALUATOR_LLM_STUB", raising=False)
-    monkeypatch.delenv("HERMES_USE_LLM", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_AGENT_EVALUATOR_LLM_STUB", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
     orch, mem = make_dev_orchestrator(repo_root=ROOT)
     rid = orch.create_run("nimbusware_production")
     rows = mem.list_run_events(str(rid))
@@ -47,5 +47,5 @@ def test_pipeline_agent_evaluator_production_metadata(monkeypatch: pytest.Monkey
 
 
 def test_production_default_blocked_by_stub_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_AGENT_EVALUATOR_LLM_STUB", "1")
+    monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR_LLM_STUB", "1")
     assert agent_evaluator_production_default_on(ROOT, "nimbusware_production") is False

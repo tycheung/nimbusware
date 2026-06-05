@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from hermes_agent_tools.fleet_sandbox import run_e2b_sandbox, run_kubernetes_sandbox
-from hermes_agent_tools.sandbox import resolve_sandbox_backend, run_subprocess_in_sandbox
+from nimbusware_agent_tools.fleet_sandbox import run_e2b_sandbox, run_kubernetes_sandbox
+from nimbusware_agent_tools.sandbox import resolve_sandbox_backend, run_subprocess_in_sandbox
 
 
 def test_resolve_sandbox_backend_accepts_fleet_backends(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("HERMES_SANDBOX_BACKEND", "kubernetes")
+    monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "kubernetes")
     assert resolve_sandbox_backend() == "kubernetes"
-    monkeypatch.setenv("HERMES_SANDBOX_BACKEND", "e2b")
+    monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "e2b")
     assert resolve_sandbox_backend() == "e2b"
 
 
@@ -48,7 +48,7 @@ def test_e2b_sandbox_remote_when_key_and_sdk_present(
     ws = tmp_path / "ws"
     ws.mkdir()
     (ws / "main.py").write_text("print('ok')\n", encoding="utf-8")
-    monkeypatch.setenv("HERMES_E2B_API_KEY", "e2b_test_key")
+    monkeypatch.setenv("NIMBUSWARE_E2B_API_KEY", "e2b_test_key")
 
     class FakeResult:
         exit_code = 0
@@ -97,7 +97,7 @@ def test_e2b_sandbox_import_missing_falls_back_to_host(
 ) -> None:
     ws = tmp_path / "ws"
     ws.mkdir()
-    monkeypatch.setenv("HERMES_E2B_API_KEY", "e2b_test_key")
+    monkeypatch.setenv("NIMBUSWARE_E2B_API_KEY", "e2b_test_key")
     monkeypatch.delitem(sys.modules, "e2b", raising=False)
 
     result = run_e2b_sandbox(ws, ["python", "-c", "print(9)"], timeout_seconds=30.0)
@@ -109,7 +109,7 @@ def test_run_subprocess_routes_kubernetes_backend(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_SANDBOX_BACKEND", "kubernetes")
+    monkeypatch.setenv("NIMBUSWARE_SANDBOX_BACKEND", "kubernetes")
     ws = tmp_path / "ws"
     ws.mkdir()
     proc = run_subprocess_in_sandbox(ws, ["python", "-c", "print(2)"], timeout_seconds=30.0)

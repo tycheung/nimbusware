@@ -3,15 +3,15 @@ from __future__ import annotations
 import os
 from unittest.mock import patch
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_api.routes.runs import self_refinement_timeline_summary
 
 
-@patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
+@patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
 def test_self_refinement_ungated_loop_forces_proceed() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("self_refinement_ungated_on")
-    with patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_UNGATED_LOOP": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": "1"}, clear=False):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     signal = next(
         r
@@ -37,11 +37,11 @@ def test_self_refinement_ungated_loop_forces_proceed() -> None:
     assert sr.get("loop_signal_count") == 1
 
 
-@patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
+@patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
 def test_self_refinement_ungated_loop_multi_iteration_progression() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("self_refinement_ungated_on")
-    with patch.dict(os.environ, {"HERMES_SELF_REFINEMENT_UNGATED_LOOP": "1"}, clear=False):
+    with patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP": "1"}, clear=False):
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
         orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001
     phase_d = [

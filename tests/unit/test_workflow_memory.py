@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.micro_slice import parse_slice_plan
-from hermes_orchestrator.workflow_memory import (
+from nimbusware_orchestrator.micro_slice import parse_slice_plan
+from nimbusware_orchestrator.workflow_memory import (
     memory_effective_metadata,
     memory_query_from_slice_plan,
     memory_settings_from_run_metadata,

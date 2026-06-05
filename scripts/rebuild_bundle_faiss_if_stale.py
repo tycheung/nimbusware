@@ -26,7 +26,7 @@ def main() -> int:
     args = parser.parse_args()
     repo = args.repo_root.resolve()
 
-    from hermes_extensions.catalog import bundle_faiss_index_sync_state
+    from nimbusware_extensions.catalog import bundle_faiss_index_sync_state
 
     state = bundle_faiss_index_sync_state(repo)
     stale = state.get("stale")

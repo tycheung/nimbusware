@@ -12,17 +12,17 @@ def _module_level_orchestrator_imports(path: Path) -> list[str]:
     for node in tree.body:
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.startswith("hermes_orchestrator"):
+                if alias.name.startswith("nimbusware_orchestrator"):
                     hits.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
             mod = node.module or ""
-            if mod.startswith("hermes_orchestrator"):
+            if mod.startswith("nimbusware_orchestrator"):
                 hits.append(mod)
     return hits
 
 
 def test_extensions_has_no_module_level_orchestrator_imports() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "hermes_extensions"
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_extensions"
     offenders: list[str] = []
     for path in sorted(root.glob("*.py")):
         hits = _module_level_orchestrator_imports(path)
@@ -47,7 +47,7 @@ def _module_level_imports_matching(path: Path, prefix: str) -> list[str]:
 
 
 def test_orchestrator_has_no_module_level_api_imports() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "hermes_orchestrator"
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_orchestrator"
     offenders: list[str] = []
     for path in sorted(root.rglob("*.py")):
         hits = _module_level_imports_matching(path, "nimbusware_api")
@@ -138,7 +138,7 @@ def test_maker_slice_workflow_uses_slice_engine_boundary() -> None:
         rel = path.relative_to(root).as_posix()
         if rel == "slice_engine.py":
             continue
-        hits = _module_level_imports_matching(path, "hermes_orchestrator")
+        hits = _module_level_imports_matching(path, "nimbusware_orchestrator")
         if hits:
             offenders.append(f"{rel}: {hits}")
     assert not offenders, "\n".join(offenders)
@@ -163,7 +163,7 @@ def test_api_runs_use_projections_run_summary() -> None:
     )
     offenders: list[str] = []
     for path in sorted(api_runs.glob("*.py")):
-        hits = _module_level_imports_matching(path, "hermes_orchestrator.read_models")
+        hits = _module_level_imports_matching(path, "nimbusware_orchestrator.read_models")
         if hits:
             offenders.append(f"{path.name}: {hits}")
     assert not offenders, "\n".join(offenders)
@@ -185,10 +185,10 @@ def test_workflow_explainers_use_config_workflow_read_facade() -> None:
             continue
         hits = [
             mod
-            for mod in _module_level_imports_matching(path, "hermes_orchestrator")
+            for mod in _module_level_imports_matching(path, "nimbusware_orchestrator")
             if mod
             not in {
-                "hermes_orchestrator.integrator_gate",
+                "nimbusware_orchestrator.integrator_gate",
             }
         ]
         if hits:

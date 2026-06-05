@@ -7,7 +7,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 
-from hermes_extensions.custom_agents import CustomAgent, CustomAgentRegistry
+from nimbusware_extensions.custom_agents import CustomAgent, CustomAgentRegistry
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem

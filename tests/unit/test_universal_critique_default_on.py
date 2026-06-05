@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
     universal_critique_production_default_on,
@@ -37,9 +37,9 @@ def test_effective_universal_critique_default_on_flags() -> None:
 @pytest.mark.parametrize(
     "env_key",
     [
-        "HERMES_ENABLE_TEST_WRITER_CRITIQUE",
-        "HERMES_ENABLE_PLANNER_CRITIQUE",
-        "HERMES_STUB_IMPLEMENTATION_CRITICS",
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS",
     ],
 )
 def test_env_kill_switch_overrides_default_on(
@@ -48,11 +48,11 @@ def test_env_kill_switch_overrides_default_on(
 ) -> None:
     monkeypatch.setenv(env_key, "0")
     eff = effective_universal_critique(ROOT, "universal_critique_on")
-    if env_key == "HERMES_STUB_IMPLEMENTATION_CRITICS":
+    if env_key == "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS":
         assert eff.impl_stub is False
-    elif env_key == "HERMES_ENABLE_TEST_WRITER_CRITIQUE":
+    elif env_key == "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE":
         assert eff.tw_enabled is False
-    elif env_key == "HERMES_ENABLE_PLANNER_CRITIQUE":
+    elif env_key == "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE":
         assert eff.pll_enabled is False
 
 
@@ -87,7 +87,7 @@ def test_universal_critique_production_default_on_without_env_kill() -> None:
 def test_universal_critique_production_default_on_kill_switch(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_ENABLE_TEST_WRITER_CRITIQUE", "0")
+    monkeypatch.setenv("NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE", "0")
     assert universal_critique_production_default_on(ROOT, "universal_critique_on") is False
 
 

@@ -18,11 +18,11 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
-from hermes_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 if TYPE_CHECKING:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
 _RUN_ESCALATED = "run.escalated"
 
@@ -156,11 +156,11 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
     rid_b1 = orch_b1.create_run("escalation_suppress_on")
     with (
         patch(
-            "hermes_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
             return_value=(True, 0, 0),
         ),
         patch(
-            "hermes_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):
@@ -175,7 +175,7 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
     _append_fail_gate_row(mem_b2, rid_b2, "implementation.critique")
     _append_fail_gate_row(mem_b2, rid_b2, "test_writer.critique")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch_b2._maybe_escalate_after_cumulative_gate_failures(rid_b2)  # noqa: SLF001
@@ -192,7 +192,7 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
     _append_finding_row(mem_b3, rid_b3_default)
     _append_finding_row(mem_b3, rid_b3_default)
     with patch(
-        "hermes_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_auto_escalate_after_cumulative_findings",
         return_value=2,
     ):
         orch_b3._maybe_auto_escalate(rid_b3_suppress)  # noqa: SLF001
@@ -211,7 +211,7 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
     _append_finding_row(mem_b4, rid_b4)
     _append_finding_row(mem_b4, rid_b4)
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=2,
     ):
         orch_b4._maybe_notice_escalate_findings(rid_b4)  # noqa: SLF001
@@ -223,7 +223,7 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
     orch_b5, mem_b5 = make_dev_orchestrator()
     rid_b5 = orch_b5.create_run("escalation_suppress_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_escalate_on_first_verifier_failure",
+        "nimbusware_orchestrator.pipeline.load_escalate_on_first_verifier_failure",
         return_value=True,
     ):
         orch_b5._maybe_escalate_verifier_failure_checkpoint(rid_b5)  # noqa: SLF001

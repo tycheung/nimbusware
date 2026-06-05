@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from hermes_extensions.self_refinement import (
+from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
     load_self_refinement_policy,
     self_refinement_policy_from_mapping,
@@ -88,12 +88,12 @@ def _load_policy_or_default(
 
 
 def _self_refinement_stage_marker_env_disabled() -> bool:
-    raw = os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "").strip().lower()
+    raw = os.environ.get("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", "").strip().lower()
     return raw in ("0", "false", "no")
 
 
-def _hermes_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
-    raw = os.environ.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP", "")
+def _nimbusware_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
+    raw = os.environ.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP", "")
     low = raw.strip().lower()
     if not low:
         return {
@@ -133,40 +133,40 @@ def self_refinement_ungated_loop_env_gate_caption(
     load_error = payload.get("load_error")
     if isinstance(load_error, str) and load_error.strip():
         return None
-    env = payload.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP")
+    env = payload.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
     if not isinstance(env, Mapping):
         return None
     if env.get("forces_on"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Self-refinement ungated env: **HERMES_SELF_REFINEMENT_UNGATED_LOOP** force-on"
+            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** force-on"
             f"{detail} — overrides workflow ``ungated_loop`` when set."
         )
     if env.get("forces_off"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Self-refinement ungated env: **HERMES_SELF_REFINEMENT_UNGATED_LOOP** force-off"
+            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** force-off"
             f"{detail}."
         )
     if env.get("unset"):
         return (
-            "Self-refinement ungated env: **HERMES_SELF_REFINEMENT_UNGATED_LOOP** unset — "
+            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** unset — "
             "workflow ``self_refinement.ungated_loop`` controls ungated progression."
         )
     if env.get("unrecognised_value"):
         raw = env.get("raw")
         detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
         return (
-            "Self-refinement ungated env: **HERMES_SELF_REFINEMENT_UNGATED_LOOP** "
+            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** "
             f"unrecognised value{detail} — treated like unset."
         )
     return None
 
 
-def _hermes_self_refinement_stage_marker_env_summary() -> dict[str, Any]:
-    raw = os.environ.get("HERMES_SELF_REFINEMENT_STAGE_MARKER", "")
+def _nimbusware_self_refinement_stage_marker_env_summary() -> dict[str, Any]:
+    raw = os.environ.get("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER", "")
     low = raw.strip().lower()
     if not low:
         return {
@@ -205,7 +205,7 @@ def _marker_preview(
     bounded = (description or "")[:2000]
     would_emit = bool(pol.enabled or wf_sr.enabled)
     env_off = _self_refinement_stage_marker_env_disabled()
-    ap_raw = os.environ.get("HERMES_SELF_REFINEMENT_AUTO_PROMOTE", "").strip().lower()
+    ap_raw = os.environ.get("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE", "").strip().lower()
     auto_promote_env_off = ap_raw in ("0", "false", "no")
     return {
         "would_emit_self_refinement_marker": would_emit,
@@ -215,9 +215,9 @@ def _marker_preview(
         "merged_description_len": len(bounded),
         "merged_max_iterations": max_iterations,
         "merged_auto_promote_probation": auto_promote,
-        "HERMES_SELF_REFINEMENT_STAGE_MARKER": _hermes_self_refinement_stage_marker_env_summary(),
-        "HERMES_SELF_REFINEMENT_AUTO_PROMOTE": os.environ.get(
-            "HERMES_SELF_REFINEMENT_AUTO_PROMOTE",
+        "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": _nimbusware_self_refinement_stage_marker_env_summary(),
+        "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE": os.environ.get(
+            "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE",
             "",
         ).strip()
         or None,

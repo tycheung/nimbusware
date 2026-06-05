@@ -11,7 +11,7 @@ from nimbusware_console.components.workflow_explainer_helpers import relative_un
 from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
 from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
-    _hermes_attach_security_scan_metadata_env_summary,
+    _nimbusware_attach_security_scan_metadata_env_summary,
 )
 
 
@@ -93,6 +93,6 @@ def security_scan_metadata_workflow_explainer_payload(
         "security_scan_metadata_yaml_parsed_bool_matches_effective": (
             yaml_parsed_bool_matches_effective
         ),
-        "HERMES_ATTACH_SECURITY_SCAN_METADATA": _hermes_attach_security_scan_metadata_env_summary(),
+        "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": _nimbusware_attach_security_scan_metadata_env_summary(),
         "load_error": load_error,
     }

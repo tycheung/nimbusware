@@ -16,7 +16,7 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 def _has_integrator_gate_event(events: list[dict[str, Any]]) -> bool:
@@ -34,7 +34,7 @@ def _has_integrator_gate_event(events: list[dict[str, Any]]) -> bool:
 def test_emit_integrator_gate_when_yaml_enabled_via_monkeypatch() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled", return_value=True):
+    with patch("nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled", return_value=True):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
     types = [r["event_type"] for r in mem.list_run_events(str(rid))]
     assert EventType.GATE_DECISION_EMITTED.value in types
@@ -43,11 +43,11 @@ def test_emit_integrator_gate_when_yaml_enabled_via_monkeypatch() -> None:
 def test_emit_integrator_gate_includes_score_metadata(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -78,11 +78,11 @@ def test_emit_integrator_gate_includes_score_metadata(
 def test_emit_integrator_gate_fail_when_workflow_project_tags_mismatch_bundle(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_mismatch")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -103,12 +103,12 @@ def test_emit_integrator_gate_fail_when_workflow_project_tags_mismatch_bundle(
 def test_emit_integrator_gate_env_min_score_overrides_threshold_yaml(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
-    monkeypatch.setenv("HERMES_INTEGRATOR_MIN_SCORE_TO_PASS", "0.99")
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "0.99")
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -124,11 +124,11 @@ def test_emit_integrator_gate_env_min_score_overrides_threshold_yaml(
 def test_emit_integrator_gate_when_workflow_profile_enables_integrator_gate(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -142,10 +142,10 @@ def test_emit_integrator_gate_env_force_on_string_arm_contract(
     """Pin §14 #13 env force-on tuple ``.strip().lower() in ("1", "true", "yes")``.
 
     :meth:`RunOrchestrator._emit_bundle_integrator_gate` consults
-    ``HERMES_EMIT_INTEGRATOR_GATE`` *before* the workflow / thresholds-YAML
+    ``NIMBUSWARE_EMIT_INTEGRATOR_GATE`` *before* the workflow / thresholds-YAML
     OR-gate. Existing tests in this module never set the env to a non-empty
     value — every prior test starts with
-    ``monkeypatch.delenv("HERMES_EMIT_INTEGRATOR_GATE", raising=False)`` — so
+    ``monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)`` — so
     the full env-layer string-arm surface is unpinned. This test exhaustively
     pins the case-folded + whitespace-trimmed variants of the force-on tuple.
 
@@ -177,11 +177,11 @@ def test_emit_integrator_gate_env_force_on_string_arm_contract(
         ("ws_upper_true_pad", "  TRUE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", raw)
+        monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default")
         with patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -221,11 +221,11 @@ def test_emit_integrator_gate_env_kill_switch_string_arm_contract(
         ("ws_upper_false_pad", "  FALSE  "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", raw)
+        monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("integrator_gate_on")
         with patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -242,7 +242,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
     Critical asymmetry pinned: the env layer's tuples in
     :meth:`_emit_bundle_integrator_gate` are ``("1", "true", "yes")`` and
     ``("0", "false", "no")`` — they **exclude** ``"on"`` / ``"off"``. So
-    ``HERMES_EMIT_INTEGRATOR_GATE=on`` falls past both tuples to the workflow
+    ``NIMBUSWARE_EMIT_INTEGRATOR_GATE=on`` falls past both tuples to the workflow
     / thresholds-YAML OR-gate ``yaml_on or wf_on`` rather than forcing-on.
     With ``load_integrator_gate_emit_enabled`` patched to ``False`` the
     OR-gate collapses to ``wf_on`` only, matching the sibling pattern pinned
@@ -260,7 +260,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
 
     A future "unify the env tuple with the YAML coercion tuple" refactor
     (adding ``"on"`` / ``"off"`` to the env tuples) would silently flip the
-    semantics of ``HERMES_EMIT_INTEGRATOR_GATE=on`` from "follow OR-gate" to
+    semantics of ``NIMBUSWARE_EMIT_INTEGRATOR_GATE=on`` from "follow OR-gate" to
     "force on" — this test fails loudly on that change. Closes the env-layer
     trilogy: all three sibling env layers in ``pipeline.py`` now share an
     identical pinned string-arm contract.
@@ -277,11 +277,11 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
         ("fall_interior_ws", " ye s "),
     ]
     for _name, raw in cases:
-        monkeypatch.setenv("HERMES_EMIT_INTEGRATOR_GATE", raw)
+        monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raw)
         orch_off, mem_off = make_dev_orchestrator()
         rid_off = orch_off.create_run("default")
         with patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch_off._emit_bundle_integrator_gate(rid_off)  # noqa: SLF001
@@ -291,7 +291,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
         orch_on, mem_on = make_dev_orchestrator()
         rid_on = orch_on.create_run("integrator_gate_on")
         with patch(
-            "hermes_orchestrator.pipeline.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch_on._emit_bundle_integrator_gate(rid_on)  # noqa: SLF001
@@ -302,7 +302,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
 
 def test_notice_escalate_findings_once() -> None:
     with patch(
-        "hermes_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
         return_value=1,
     ):
         orch, mem = make_dev_orchestrator()

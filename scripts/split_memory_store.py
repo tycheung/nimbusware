@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-STORE = REPO / "packages/hermes_memory/store.py"
+STORE = REPO / "packages/nimbusware_memory/store.py"
 
 
 def _normalize(text: str) -> str:
@@ -38,7 +38,7 @@ def main() -> None:
     text = _normalize(raw)
     header, mem, pg, tail = _split_blocks(text)
 
-    pkg = REPO / "packages/hermes_memory"
+    pkg = REPO / "packages/nimbusware_memory"
     protocol_header = '''"""Memory store protocol and shared row types."""
 
 '''
@@ -47,8 +47,8 @@ def main() -> None:
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-from hermes_memory.models import EmbeddingMode, MemoryChunkRecord
-from hermes_memory.store_protocol import IndexGenerationRow, MemoryChunkStore, _resolve_tenant
+from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord
+from nimbusware_memory.store_protocol import IndexGenerationRow, MemoryChunkStore, _resolve_tenant
 
 '''
     postgres_header = '''"""Postgres-backed memory chunk store."""
@@ -65,8 +65,8 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
-from hermes_memory.models import EmbeddingMode, MemoryChunkRecord
-from hermes_memory.store_protocol import IndexGenerationRow, _resolve_tenant
+from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord
+from nimbusware_memory.store_protocol import IndexGenerationRow, _resolve_tenant
 
 '''
 
@@ -76,9 +76,9 @@ from hermes_memory.store_protocol import IndexGenerationRow, _resolve_tenant
 
     facade = '''"""Memory chunk persistence (Postgres + in-memory for tests)."""
 
-from hermes_memory.store_memory import InMemoryMemoryChunkStore
-from hermes_memory.store_postgres import PostgresMemoryChunkStore
-from hermes_memory.store_protocol import IndexGenerationRow, MemoryChunkStore
+from nimbusware_memory.store_memory import InMemoryMemoryChunkStore
+from nimbusware_memory.store_postgres import PostgresMemoryChunkStore
+from nimbusware_memory.store_protocol import IndexGenerationRow, MemoryChunkStore
 
 __all__ = [
     "IndexGenerationRow",
@@ -90,7 +90,7 @@ __all__ = [
     STORE.write_text(facade, encoding="utf-8")
     for rel in ("store_protocol.py", "store_memory.py", "store_postgres.py", "store.py"):
         n = len((pkg / rel).read_text(encoding="utf-8").splitlines())
-        print(f"wrote hermes_memory/{rel} ({n} lines)")
+        print(f"wrote nimbusware_memory/{rel} ({n} lines)")
 
 
 if __name__ == "__main__":

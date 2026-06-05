@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     DEFAULT_ADAPTER_KIND,
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
@@ -58,7 +58,7 @@ def test_integration_adapter_writer_effective_env_kill_switch(
         "integration_adapter_writer:\n  enabled: true\n",
     )
     block = parse_integration_adapter_writer_workflow_block(tmp_path, "adapter_on")
-    monkeypatch.setenv("HERMES_INTEGRATION_ADAPTER_WRITER", "0")
+    monkeypatch.setenv("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER", "0")
     assert integration_adapter_writer_effective(block) is False
 
 
@@ -79,7 +79,7 @@ def test_integration_adapter_writer_explainer_payload(tmp_path: Path) -> None:
 
 
 def test_integration_adapter_writer_fleet_manifest_count(tmp_path: Path) -> None:
-    run_dir = tmp_path / ".hermes" / "integration_adapter_writer" / "run-a"
+    run_dir = tmp_path / ".nimbusware" / "integration_adapter_writer" / "run-a"
     run_dir.mkdir(parents=True)
     (run_dir / "manifest.json").write_text("{}", encoding="utf-8")
     assert integration_adapter_writer_fleet_manifest_count(tmp_path) == 1
@@ -129,7 +129,7 @@ def test_integration_adapter_writer_explainer_operator_metrics_live() -> None:
 def test_integration_adapter_writer_env_gate_caption() -> None:
     cap = integration_adapter_writer_env_gate_caption(
         {
-            "HERMES_INTEGRATION_ADAPTER_WRITER": {
+            "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER": {
                 "forces_on": True,
                 "raw": "1",
             },

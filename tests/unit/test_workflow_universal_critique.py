@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.workflow_universal_critique import (
+from nimbusware_orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     effective_universal_critique,
     parse_universal_critique_workflow_block,
@@ -96,7 +96,7 @@ def test_parse_universal_critique_malformed_block_defaults(tmp_path: Path) -> No
 
 
 def test_effective_universal_critique_blank_env_uses_yaml() -> None:
-    env = {"HERMES_ENABLE_TEST_WRITER_CRITIQUE": " "}
+    env = {"NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": " "}
     # Local import avoids global env bleed in other tests.
     import os
     from unittest.mock import patch
@@ -144,7 +144,7 @@ def test_parse_universal_critique_root_scalar_or_list_yields_defaults(
 def test_env_over_yaml_empty_or_whitespace_uses_yaml(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    key = "HERMES_TEST_ENV_OVER_YAML_EMPTY"
+    key = "NIMBUSWARE_TEST_ENV_OVER_YAML_EMPTY"
     monkeypatch.delenv(key, raising=False)
     assert env_over_yaml(key, True) is True
     monkeypatch.setenv(key, "")
@@ -156,7 +156,7 @@ def test_env_over_yaml_empty_or_whitespace_uses_yaml(
 def test_env_over_yaml_truthy_tokens_override_yaml(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    key = "HERMES_TEST_ENV_OVER_YAML_TRUTHY"
+    key = "NIMBUSWARE_TEST_ENV_OVER_YAML_TRUTHY"
     monkeypatch.setenv(key, "yes")
     assert env_over_yaml(key, False) is True
     monkeypatch.setenv(key, "TRUE")
@@ -168,7 +168,7 @@ def test_env_over_yaml_truthy_tokens_override_yaml(
 def test_env_over_yaml_non_truthy_token_overrides_yaml_to_false(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    key = "HERMES_TEST_ENV_OVER_YAML_FALSY"
+    key = "NIMBUSWARE_TEST_ENV_OVER_YAML_FALSY"
     for val in ("no", "0", "false", "off", "junk"):
         monkeypatch.setenv(key, val)
         assert env_over_yaml(key, True) is False, val
@@ -177,7 +177,7 @@ def test_env_over_yaml_non_truthy_token_overrides_yaml_to_false(
 def test_effective_universal_critique_impl_emit_finding_env_overrides_yaml(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "yes")
+    monkeypatch.setenv("NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL", "yes")
     eff = effective_universal_critique(ROOT, "universal_critique_stub_on")
     assert eff.impl_emit_finding_on_gate_fail is True
 
@@ -189,8 +189,8 @@ def test_effective_universal_critique_non_truthy_env_disables_yaml() -> None:
     with patch.dict(
         os.environ,
         {
-            "HERMES_ENABLE_TEST_WRITER_CRITIQUE": "0",
-            "HERMES_STUB_TEST_WRITER_CRITICS": "no",
+            "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "0",
+            "NIMBUSWARE_STUB_TEST_WRITER_CRITICS": "no",
         },
         clear=False,
     ):
@@ -207,14 +207,14 @@ def test_env_over_yaml_on_token_does_not_enable_knob(
 
     The YAML coercion accepts ``"on"`` as truthy (see ``_coerce_yaml_bool``: ``"1" / "true" /
     "yes" / "on"``) but :func:`env_over_yaml` deliberately accepts only ``"1" / "true" / "yes"``
-    so a bare ``HERMES_*_LLM=on`` falls into the non-truthy override branch and *disables* the
+    so a bare ``NIMBUSWARE_*_LLM=on`` falls into the non-truthy override branch and *disables* the
     knob even when YAML had it on. This mirrors the existing ``"off"`` coverage in
     :func:`test_env_over_yaml_non_truthy_token_overrides_yaml_to_false` and locks the contract
     so any future env-layer unification (e.g. extending the tuple to include ``"on"``) must
     update this pin on purpose. Whitespace and case parity are checked alongside to match how
     operators actually export env vars.
     """
-    key = "HERMES_TEST_ENV_OVER_YAML_ON"
+    key = "NIMBUSWARE_TEST_ENV_OVER_YAML_ON"
     for val in ("on", "ON", " on ", "  On  "):
         monkeypatch.setenv(key, val)
         assert env_over_yaml(key, False) is False, val
@@ -441,108 +441,108 @@ def test_coerce_yaml_bool_falsy_and_unknown_strings_via_parse(
 # ``effective_universal_critique`` so any reorder / copy-paste error in either body
 # fails Part A / B / C with a per-knob assertion message identifying the regression.
 _WIRING_MAP: list[tuple[str, str, str, str]] = [
-    ("implementation", "llm", "HERMES_IMPLEMENTATION_CRITIQUE_LLM", "impl_llm"),
-    ("implementation", "stub", "HERMES_STUB_IMPLEMENTATION_CRITICS", "impl_stub"),
+    ("implementation", "llm", "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM", "impl_llm"),
+    ("implementation", "stub", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS", "impl_stub"),
     (
         "implementation",
         "stage_failed_on_gate_fail",
-        "HERMES_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
         "impl_stage_failed_on_gate_fail",
     ),
     (
         "implementation",
         "emit_finding_on_gate_fail",
-        "HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
         "impl_emit_finding_on_gate_fail",
     ),
     (
         "implementation",
         "hard_block_on_gate_fail",
-        "HERMES_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
         "impl_hard_block_on_gate_fail",
     ),
-    ("test_writer", "enabled", "HERMES_ENABLE_TEST_WRITER_CRITIQUE", "tw_enabled"),
-    ("test_writer", "llm", "HERMES_TEST_WRITER_CRITIQUE_LLM", "tw_llm"),
-    ("test_writer", "stub", "HERMES_STUB_TEST_WRITER_CRITICS", "tw_stub"),
+    ("test_writer", "enabled", "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE", "tw_enabled"),
+    ("test_writer", "llm", "NIMBUSWARE_TEST_WRITER_CRITIQUE_LLM", "tw_llm"),
+    ("test_writer", "stub", "NIMBUSWARE_STUB_TEST_WRITER_CRITICS", "tw_stub"),
     (
         "test_writer",
         "stage_failed_on_gate_fail",
-        "HERMES_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
         "tw_stage_failed_on_gate_fail",
     ),
     (
         "test_writer",
         "emit_finding_on_gate_fail",
-        "HERMES_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
         "tw_emit_finding_on_gate_fail",
     ),
     (
         "test_writer",
         "hard_block_on_gate_fail",
-        "HERMES_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
         "tw_hard_block_on_gate_fail",
     ),
-    ("planner", "enabled", "HERMES_ENABLE_PLANNER_CRITIQUE", "pll_enabled"),
-    ("planner", "llm", "HERMES_PLANNER_CRITIQUE_LLM", "pll_llm"),
-    ("planner", "stub", "HERMES_STUB_PLANNER_CRITICS", "pll_stub"),
+    ("planner", "enabled", "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE", "pll_enabled"),
+    ("planner", "llm", "NIMBUSWARE_PLANNER_CRITIQUE_LLM", "pll_llm"),
+    ("planner", "stub", "NIMBUSWARE_STUB_PLANNER_CRITICS", "pll_stub"),
     (
         "planner",
         "stage_failed_on_gate_fail",
-        "HERMES_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        "NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
         "pll_stage_failed_on_gate_fail",
     ),
     (
         "planner",
         "emit_finding_on_gate_fail",
-        "HERMES_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
         "pll_emit_finding_on_gate_fail",
     ),
     (
         "planner",
         "hard_block_on_gate_fail",
-        "HERMES_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        "NIMBUSWARE_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
         "pll_hard_block_on_gate_fail",
     ),
-    ("frontend_writer", "enabled", "HERMES_ENABLE_FRONTEND_WRITER_CRITIQUE", "fw_enabled"),
-    ("frontend_writer", "llm", "HERMES_FRONTEND_WRITER_CRITIQUE_LLM", "fw_llm"),
-    ("frontend_writer", "stub", "HERMES_STUB_FRONTEND_WRITER_CRITICS", "fw_stub"),
+    ("frontend_writer", "enabled", "NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE", "fw_enabled"),
+    ("frontend_writer", "llm", "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_LLM", "fw_llm"),
+    ("frontend_writer", "stub", "NIMBUSWARE_STUB_FRONTEND_WRITER_CRITICS", "fw_stub"),
     (
         "frontend_writer",
         "stage_failed_on_gate_fail",
-        "HERMES_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
         "fw_stage_failed_on_gate_fail",
     ),
     (
         "frontend_writer",
         "emit_finding_on_gate_fail",
-        "HERMES_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
         "fw_emit_finding_on_gate_fail",
     ),
     (
         "frontend_writer",
         "hard_block_on_gate_fail",
-        "HERMES_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
         "fw_hard_block_on_gate_fail",
     ),
-    ("module_integrator", "enabled", "HERMES_ENABLE_MODULE_INTEGRATOR_CRITIQUE", "mi_enabled"),
-    ("module_integrator", "llm", "HERMES_MODULE_INTEGRATOR_CRITIQUE_LLM", "mi_llm"),
-    ("module_integrator", "stub", "HERMES_STUB_MODULE_INTEGRATOR_CRITICS", "mi_stub"),
+    ("module_integrator", "enabled", "NIMBUSWARE_ENABLE_MODULE_INTEGRATOR_CRITIQUE", "mi_enabled"),
+    ("module_integrator", "llm", "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_LLM", "mi_llm"),
+    ("module_integrator", "stub", "NIMBUSWARE_STUB_MODULE_INTEGRATOR_CRITICS", "mi_stub"),
     (
         "module_integrator",
         "stage_failed_on_gate_fail",
-        "HERMES_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
         "mi_stage_failed_on_gate_fail",
     ),
     (
         "module_integrator",
         "emit_finding_on_gate_fail",
-        "HERMES_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
         "mi_emit_finding_on_gate_fail",
     ),
     (
         "module_integrator",
         "hard_block_on_gate_fail",
-        "HERMES_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
         "mi_hard_block_on_gate_fail",
     ),
 ]
@@ -562,7 +562,7 @@ def _one_knob_on_yaml(stage: str, leaf: str) -> str:
 def _clear_all_wiring_envs(monkeypatch: pytest.MonkeyPatch) -> None:
     """Unset every env var referenced by ``_WIRING_MAP`` (defensive isolation).
 
-    Outer environment may export a subset of ``HERMES_*_CRITIQUE_*`` for local
+    Outer environment may export a subset of ``NIMBUSWARE_*_CRITIQUE_*`` for local
     runs; Parts B / C need a known-empty starting state before flipping one
     target env to "1" / "0" so the unset siblings cleanly fall through to YAML.
     """

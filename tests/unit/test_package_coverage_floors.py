@@ -19,8 +19,8 @@ def test_package_floors_include_core_contract_packages() -> None:
     text = _FLOORS_SCRIPT.read_text(encoding="utf-8")
     for pkg in (
         "agent_core",
-        "hermes_store",
-        "hermes_executor",
+        "nimbusware_store",
+        "nimbusware_executor",
         "nimbusware_config",
         "nimbusware_projections",
     ):

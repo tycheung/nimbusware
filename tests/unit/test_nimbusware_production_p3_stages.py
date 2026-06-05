@@ -8,20 +8,20 @@ from unittest.mock import patch
 
 import pytest
 
-from hermes_orchestrator.network_resilience_critique import NETWORK_RESILIENCE_CRITIQUE_STAGE
-from hermes_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_STAGE
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
-from hermes_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
-from hermes_orchestrator.workflow_network_resilience_critique import (
+from nimbusware_orchestrator.network_resilience_critique import NETWORK_RESILIENCE_CRITIQUE_STAGE
+from nimbusware_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_STAGE
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
+from nimbusware_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
+from nimbusware_orchestrator.workflow_network_resilience_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
 )
-from hermes_orchestrator.workflow_performance_critique import (
+from nimbusware_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
 )
-from hermes_orchestrator.workflow_security_critique import (
+from nimbusware_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
 )
@@ -44,11 +44,11 @@ def test_nimbusware_production_verify_emits_p3_stages(monkeypatch: pytest.Monkey
     run_id = orch.create_run("nimbusware_production")
 
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
         lambda ws: (0, "ok\n"),
     )
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_security_scan_summary",
+        "nimbusware_orchestrator.pipeline.run_security_scan_summary",
         lambda ws: {
             "security_scan_tools": {
                 "ruff": 0,
@@ -63,7 +63,7 @@ def test_nimbusware_production_verify_emits_p3_stages(monkeypatch: pytest.Monkey
         },
     )
     monkeypatch.setattr(
-        "hermes_orchestrator.pipeline.run_network_resilience_scan_summary",
+        "nimbusware_orchestrator.pipeline.run_network_resilience_scan_summary",
         lambda ws: {
             "network_resilience_exit": 0,
             "http_resilience_exit": 0,
@@ -73,7 +73,7 @@ def test_nimbusware_production_verify_emits_p3_stages(monkeypatch: pytest.Monkey
 
     with patch.dict(
         os.environ,
-        {"HERMES_STUB_IMPLEMENTATION_CRITICS": "0"},
+        {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "0"},
         clear=False,
     ):
         orch.execute_writer_verifier_pass(run_id, workspace=root)

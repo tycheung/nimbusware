@@ -12,8 +12,8 @@ from uuid import uuid4
 
 import pytest
 
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.scraper_artifacts import prune_scraper_artifacts
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.scraper_artifacts import prune_scraper_artifacts
 
 
 def _local_removed(*args: object, **kwargs: object) -> int:
@@ -51,7 +51,7 @@ def test_prune_scraper_artifacts_value_error_boundary_contract(tmp_path: Path) -
     """Pin ``prune_scraper_artifacts`` ValueError boundary arm (5 axes).
 
     The function begins with a strict input guard at
-    [scraper_artifacts.py:33-35](packages/hermes_orchestrator/scraper_artifacts.py):
+    [scraper_artifacts.py:33-35](packages/nimbusware_orchestrator/scraper_artifacts.py):
 
     .. code-block:: python
 
@@ -115,7 +115,7 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     """Pin nested ``rglob`` + mixed stale/fresh + cutoff inclusive + ``now=None`` (5 axes).
 
     The traversal at
-    [scraper_artifacts.py:40](packages/hermes_orchestrator/scraper_artifacts.py)
+    [scraper_artifacts.py:40](packages/nimbusware_orchestrator/scraper_artifacts.py)
     uses ``base_dir.rglob("*")`` (recursive) so files at any depth must
     be reachable. The cutoff comparison at line 45 uses
     ``mtime >= cutoff`` -> preserve, ``<`` -> remove (strict inclusive
@@ -249,7 +249,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     """Pin empty-dir cleanup + dry_run divergence + OSError + ordering (5 axes).
 
     The second-pass cleanup at
-    [scraper_artifacts.py:50-57](packages/hermes_orchestrator/scraper_artifacts.py):
+    [scraper_artifacts.py:50-57](packages/nimbusware_orchestrator/scraper_artifacts.py):
 
     .. code-block:: python
 
@@ -405,7 +405,7 @@ def test_persist_scraper_response_artifact_value_error_fallback_contract(
     """Pin ``_persist_scraper_response_artifact`` ValueError fallback (5 axes).
 
     Source at
-    [pipeline.py:288-291](packages/hermes_orchestrator/pipeline.py):
+    [pipeline.py:288-291](packages/nimbusware_orchestrator/pipeline.py):
 
     .. code-block:: python
 
@@ -435,7 +435,7 @@ def test_persist_scraper_response_artifact_value_error_fallback_contract(
       raise); plus a control comparison vs the happy path that pins
       the divergence is SOLELY in the relpath shape.
     """
-    monkeypatch.setenv("HERMES_SCRAPER_ARTIFACT_DIR", str(tmp_path))
+    monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(tmp_path))
     orch, _ = make_dev_orchestrator()
     base_dir = Path(str(tmp_path)).expanduser().resolve()
 

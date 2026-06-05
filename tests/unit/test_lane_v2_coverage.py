@@ -7,13 +7,13 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_extensions.phase2 import UniversalCritiqueRouter
-from hermes_orchestrator.llm.test_writer_role_critique import (
+from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_orchestrator.llm.test_writer_role_critique import (
     emit_stub_test_writer_critique_panel,
     execute_test_writer_critique_llm,
 )
-from hermes_orchestrator.registry import RoleRegistry
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_orchestrator.registry import RoleRegistry
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 
 _ROOT = __import__("pathlib").Path(__file__).resolve().parents[2]
@@ -67,7 +67,7 @@ def test_execute_test_writer_role_critique_llm_success() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch("hermes_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
+    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
         ok = execute_test_writer_critique_llm(
             store,
             registry,

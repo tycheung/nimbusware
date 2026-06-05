@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build optional FAISS index for repo-scoped Hermes memory chunks.
+"""Build optional FAISS index for repo-scoped Nimbusware memory chunks.
 
 Requires: ``poetry install --with faiss`` when building the vector index.
 
@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Build Hermes memory FAISS index (Phase 4).")
+    p = argparse.ArgumentParser(description="Build Nimbusware memory FAISS index (Phase 4).")
     p.add_argument(
         "--repo-root",
         type=Path,
@@ -48,16 +48,16 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_arg_parser().parse_args(argv)
     repo = args.repo_root.resolve()
-    from hermes_memory.manifest import default_memory_index_dir
-    from hermes_memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
-    from hermes_memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
+    from nimbusware_memory.manifest import default_memory_index_dir
+    from nimbusware_memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
+    from nimbusware_memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
 
     out_dir = (args.out_dir or default_memory_index_dir(repo)).resolve()
     conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
     if args.rebuild_metadata:
         from uuid import UUID
 
-        from hermes_memory.indexer import rebuild_memory_index
+        from nimbusware_memory.indexer import rebuild_memory_index
 
         if conninfo:
             mem_store: InMemoryMemoryChunkStore | PostgresMemoryChunkStore = PostgresMemoryChunkStore(
@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
             audit_store = None
             audit_run_id = None
             if args.audit_run_id:
-                from hermes_store.postgres import PostgresEventStore
+                from nimbusware_store.postgres import PostgresEventStore
 
                 audit_store = PostgresEventStore(conninfo)
                 audit_run_id = UUID(str(args.audit_run_id))
@@ -91,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 1
         mem_store = PostgresMemoryChunkStore(conninfo)
-        from hermes_memory.repo_scope import repo_scope_hash
+        from nimbusware_memory.repo_scope import repo_scope_hash
 
         scope = repo_scope_hash(repo)
         chunks = mem_store.list_chunks_for_scope(scope)

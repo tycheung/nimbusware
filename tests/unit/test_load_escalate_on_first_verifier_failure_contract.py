@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from hermes_orchestrator.verifier_escalation import (
+from nimbusware_orchestrator.verifier_escalation import (
     load_escalate_on_first_verifier_failure,
 )
 

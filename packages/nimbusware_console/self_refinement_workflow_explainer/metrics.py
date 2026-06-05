@@ -44,7 +44,7 @@ def self_refinement_workflow_explainer_operator_metrics(
     merged = payload.get("merged_max_iterations")
     if isinstance(merged, int) and not isinstance(merged, bool) and merged >= 0:
         metrics["merged_max_iterations"] = merged
-    ul = payload.get("HERMES_SELF_REFINEMENT_UNGATED_LOOP")
+    ul = payload.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
     if isinstance(ul, dict):
         metrics["ungated_loop_forces_on"] = ul.get("forces_on") is True
         metrics["ungated_loop_forces_off"] = ul.get("forces_off") is True

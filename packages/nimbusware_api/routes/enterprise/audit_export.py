@@ -6,7 +6,7 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
-from hermes_orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
+from nimbusware_orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
 from nimbusware_api.deps import IamStoreDep, StoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_env.desktop_common import repo_root

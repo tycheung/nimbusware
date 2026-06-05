@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import pytest
 
-from hermes_orchestrator.preflight import run_model_preflight
+from nimbusware_orchestrator.preflight import run_model_preflight
 
 _PRIMARY_MODEL_ID = "dev:primary"
 _FALLBACK_MODEL_IDS: list[str] = ["dev:fallback"]
@@ -60,11 +60,11 @@ def _mocked_httpx(*, probe_fails: bool = False) -> Iterator[None]:
 
     with (
         patch(
-            "hermes_orchestrator.preflight.httpx.get",
+            "nimbusware_orchestrator.preflight.httpx.get",
             return_value=_mock_response(_OLLAMA_TAGS_RESPONSE),
         ),
         patch(
-            "hermes_orchestrator.preflight.httpx.post",
+            "nimbusware_orchestrator.preflight.httpx.post",
             side_effect=post_side_effect,
         ),
     ):
@@ -74,9 +74,9 @@ def _mocked_httpx(*, probe_fails: bool = False) -> Iterator[None]:
 def test_preflight_json_probe_env_force_on_string_arm_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin §14 #1 ``HERMES_PREFLIGHT_JSON_PROBE`` force-on truthy tuple membership.
+    """Pin §14 #1 ``NIMBUSWARE_PREFLIGHT_JSON_PROBE`` force-on truthy tuple membership.
 
-    The env-gate at [preflight.py:194](packages\\hermes_orchestrator\\preflight.py)
+    The env-gate at [preflight.py:194](packages\\nimbusware_orchestrator\\preflight.py)
     uses ``in ("1", "true", "yes")``. Truthy variants reach
     ``_optional_json_probe`` which, with ``_mocked_httpx`` returning the
     canonical OK response for ``/api/chat``, succeeds and adds two
@@ -101,8 +101,8 @@ def test_preflight_json_probe_env_force_on_string_arm_contract(
         ("mixed_yes", "yEs"),
     ]
     for _name, raw in cases:
-        monkeypatch.delenv("HERMES_SKIP_PREFLIGHT", raising=False)
-        monkeypatch.setenv("HERMES_PREFLIGHT_JSON_PROBE", raw)
+        monkeypatch.delenv("NIMBUSWARE_SKIP_PREFLIGHT", raising=False)
+        monkeypatch.setenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raw)
         with _mocked_httpx(probe_fails=False):
             _selected, evidence, _used_primary = _call_preflight()
         assert "json_probe_latency_ms" in evidence, (
@@ -137,8 +137,8 @@ def test_preflight_json_probe_env_probe_arm_contract(
     breaks operator-facing evidence -- per-arm messages catch each
     independently.
     """
-    monkeypatch.delenv("HERMES_SKIP_PREFLIGHT", raising=False)
-    monkeypatch.setenv("HERMES_PREFLIGHT_JSON_PROBE", "1")
+    monkeypatch.delenv("NIMBUSWARE_SKIP_PREFLIGHT", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", "1")
 
     with _mocked_httpx(probe_fails=False):
         _selected, ok_evidence, _used_primary = _call_preflight()
@@ -208,11 +208,11 @@ def test_preflight_json_probe_env_fail_closed_string_arm_contract(
         ("interior_ws", " ye s "),
     ]
     for _name, raw in cases:
-        monkeypatch.delenv("HERMES_SKIP_PREFLIGHT", raising=False)
+        monkeypatch.delenv("NIMBUSWARE_SKIP_PREFLIGHT", raising=False)
         if raw is None:
-            monkeypatch.delenv("HERMES_PREFLIGHT_JSON_PROBE", raising=False)
+            monkeypatch.delenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raising=False)
         else:
-            monkeypatch.setenv("HERMES_PREFLIGHT_JSON_PROBE", raw)
+            monkeypatch.setenv("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raw)
         with _mocked_httpx(probe_fails=False):
             _selected, evidence, _used_primary = _call_preflight()
         assert "json_probe_latency_ms" not in evidence, (

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace import (
     project_metadata_block,
@@ -28,7 +28,7 @@ def test_resolve_run_workspace_prefers_project(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("HERMES_WORKSPACE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_WORKSPACE", raising=False)
     rows = [
         {
             "event_type": "run.created",
@@ -44,7 +44,7 @@ def test_build_platform_readiness_in_memory_store(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("HERMES_SKIP_PREFLIGHT", "1")
+    monkeypatch.setenv("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     repo = tmp_path
     (repo / "configs").mkdir()
     (repo / "configs" / "model-routing.yaml").write_text(

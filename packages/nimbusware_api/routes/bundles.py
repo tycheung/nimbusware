@@ -5,7 +5,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from hermes_extensions.catalog import (
+from nimbusware_extensions.catalog import (
     bundle_faiss_index_ready,
     bundle_faiss_index_sync_state,
     search_bundles,
@@ -423,7 +423,7 @@ def promote_bundle_catalog_candidate(
     _admin: AdminDep,
     expected_version: Annotated[int, Query(ge=1)],
 ) -> BundleCatalogResponse:
-    from hermes_research.bundle_promotion import (
+    from nimbusware_research.bundle_promotion import (
         candidate_to_bundle_entry,
         load_catalog_candidate,
         mark_catalog_candidate_promoted,
@@ -486,6 +486,6 @@ def list_bundle_catalog_candidates(
     _admin: AdminDep,
     limit: Annotated[int, Query(ge=1, le=500)] = 100,
 ) -> dict[str, Any]:
-    from hermes_research.bundle_promotion import list_catalog_candidates
+    from nimbusware_research.bundle_promotion import list_catalog_candidates
 
     return {"candidates": list_catalog_candidates(orch.repo_root, limit=limit)}

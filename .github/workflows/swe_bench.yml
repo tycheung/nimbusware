@@ -17,9 +17,9 @@ jobs:
       - name: SWE-bench harness dry-run
         run: poetry run python scripts/swe_bench_harness.py --dry-run --json
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-          HERMES_SWE_BENCH_ENABLED: "1"
+          NIMBUSWARE_SWE_BENCH_ENABLED: "1"
 
   swe-bench-scored:
     runs-on: ubuntu-latest
@@ -36,11 +36,11 @@ jobs:
           pass_rate=$(python -c "import json; print(json.load(open('swe_bench_out.json'))['pass_rate'])")
           echo "pass_rate=$pass_rate" >> "$GITHUB_OUTPUT"
         env:
-          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-          HERMES_SWE_BENCH_ENABLED: "1"
-          HERMES_SWE_BENCH_WRITE_JSON: "1"
-          HERMES_MICRO_SLICE_COUNT: "1"
+          NIMBUSWARE_SWE_BENCH_ENABLED: "1"
+          NIMBUSWARE_SWE_BENCH_WRITE_JSON: "1"
+          NIMBUSWARE_MICRO_SLICE_COUNT: "1"
       - name: Publish SWE-bench summary
         run: |
           echo "## SWE-bench scored run" >> "$GITHUB_STEP_SUMMARY"

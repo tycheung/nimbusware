@@ -12,9 +12,9 @@ from nimbusware_console.agent_evaluator_workflow_explainer.captions import (
     agent_evaluator_yaml_true_bool_count_caption,
 )
 from nimbusware_console.agent_evaluator_workflow_explainer.env import (
-    _hermes_agent_evaluator_auto_create_env_summary,
-    _hermes_agent_evaluator_auto_promote_env_summary,
-    _hermes_agent_evaluator_env_summary,
+    _nimbusware_agent_evaluator_auto_create_env_summary,
+    _nimbusware_agent_evaluator_auto_promote_env_summary,
+    _nimbusware_agent_evaluator_env_summary,
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )

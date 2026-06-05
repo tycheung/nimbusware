@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hermes_extensions.custom_agents import CustomAgent
+from nimbusware_extensions.custom_agents import CustomAgent
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.persist import load_custom_agent_registry, persist_custom_agent_registry
 from nimbusware_config.seed import seed_config_from_repo

@@ -30,7 +30,7 @@ def bundle_catalog_distinct_tags_sample(
         return []
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)
@@ -71,7 +71,7 @@ def bundle_catalog_top_tag_counts(
         return []
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)
@@ -148,7 +148,7 @@ def bundle_catalog_bundle_ids_sample(
         return []
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)
@@ -201,7 +201,7 @@ def bundle_catalog_bundle_count_caption(repo_root: Path) -> str | None:
         return None
     import yaml
 
-    from hermes_orchestrator.merge import load_yaml
+    from nimbusware_orchestrator.merge import load_yaml
 
     try:
         doc = load_yaml(path)

@@ -13,7 +13,7 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from hermes_store.memory import InMemoryEventStore
+from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID

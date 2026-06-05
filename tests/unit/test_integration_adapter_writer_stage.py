@@ -7,14 +7,14 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
-from hermes_orchestrator.integration_adapter_writer_stage import (
+from nimbusware_orchestrator.integration_adapter_writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
     emit_live_integration_adapter_writer_stage,
     emit_stub_integration_adapter_writer_stage,
     integration_adapter_writer_stage_would_emit,
 )
-from hermes_orchestrator.pipeline import make_dev_orchestrator
-from hermes_orchestrator.workflow_integration_adapter_writer import (
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
 from nimbusware_env import find_repo_root
@@ -92,7 +92,7 @@ def test_explainer_would_emit_stage_started(
 def test_emit_live_integration_adapter_writer_stage_direct() -> None:
     from uuid import uuid4
 
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     rid = uuid4()
@@ -174,7 +174,7 @@ def test_explainer_live_path_payload_and_metrics(
 
 
 def test_emit_stub_integration_adapter_writer_stage_direct() -> None:
-    from hermes_store.memory import InMemoryEventStore
+    from nimbusware_store.memory import InMemoryEventStore
 
     store = InMemoryEventStore()
     from uuid import uuid4

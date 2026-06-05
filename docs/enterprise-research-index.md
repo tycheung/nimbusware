@@ -1,6 +1,6 @@
 # Enterprise research index and egress audit
 
-Enterprise edition maintains tenant-scoped JSONL ledgers under `.hermes/enterprise/{tenant_id}/` on the repo root (`NIMBUSWARE_REPO_ROOT`).
+Enterprise edition maintains tenant-scoped JSONL ledgers under `.nimbusware/enterprise/{tenant_id}/` on the repo root (`NIMBUSWARE_REPO_ROOT`).
 
 ## Ledgers
 

@@ -102,6 +102,6 @@ def security_scan_linter_nonzero_caption(summary: Mapping[str, Any] | None) -> s
         return None
     tail = (
         "Review snippet and finding fields above; cross-check **Security scan metadata on "
-        "verify** under Module Integrator (workflow + ``HERMES_ATTACH_SECURITY_SCAN_METADATA``)."
+        "verify** under Module Integrator (workflow + ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA``)."
     )
     return " ".join(hints) + " " + tail

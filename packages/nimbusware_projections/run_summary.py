@@ -9,7 +9,7 @@ from agent_core.models import (
     validate_event_dict,
 )
 from agent_core.timeline_metadata import persona_assignment_from_run_created_metadata
-from hermes_store.protocol import serialized_event_from_row
+from nimbusware_store.protocol import serialized_event_from_row
 
 # ``build_run_summary`` status values for non-empty runs; ``GET /v1/runs?status=`` filters on these.
 RUN_LIST_FILTER_STATUSES: frozenset[str] = frozenset({"created", "running", "terminal"})

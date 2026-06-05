@@ -1,14 +1,14 @@
 {
-  "name": "hermes-swe-bench-fixture",
+  "name": "nimbusware-swe-bench-fixture",
   "description": "Local micro_slice benchmark fixture (no network clone in unit CI).",
   "workflow_profile": "micro_slice",
   "fixture_subdir": "repo",
   "expected_gate_stages": ["slice.plan", "slice.implement", "slice.gate"],
   "fixture_target_paths": ["calc.py"],
   "benchmark_env": {
-    "HERMES_USE_LLM": "0",
-    "HERMES_SLICE_IMPLEMENT": "stub",
-    "HERMES_SLICE_P3_EVIDENCE": "0"
+    "NIMBUSWARE_USE_LLM": "0",
+    "NIMBUSWARE_SLICE_IMPLEMENT": "stub",
+    "NIMBUSWARE_SLICE_P3_EVIDENCE": "0"
   },
   "min_pass_rate": 1.0
 }

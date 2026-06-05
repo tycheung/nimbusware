@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PIPE = ROOT / "packages/hermes_orchestrator/_pipeline"
+PIPE = ROOT / "packages/nimbusware_orchestrator/_pipeline"
 
-HELPERS_IMPORT = "from hermes_orchestrator._pipeline._helpers import *  # noqa: F403\n\n"
+HELPERS_IMPORT = "from nimbusware_orchestrator._pipeline._helpers import *  # noqa: F403\n\n"
 
 
 def _write(path: Path, header: str, body: str, class_name: str) -> None:
@@ -66,16 +66,16 @@ def split_optional_stages() -> None:
 
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline.optional_stages_agent_evaluator import (
+from nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator import (
     AgentEvaluatorOptionalStagesMixin,
 )
-from hermes_orchestrator._pipeline.optional_stages_integrator import (
+from nimbusware_orchestrator._pipeline.optional_stages_integrator import (
     IntegratorOptionalStagesMixin,
 )
-from hermes_orchestrator._pipeline.optional_stages_integration import (
+from nimbusware_orchestrator._pipeline.optional_stages_integration import (
     IntegrationOptionalStagesMixin,
 )
-from hermes_orchestrator._pipeline.optional_stages_self_refinement import (
+from nimbusware_orchestrator._pipeline.optional_stages_self_refinement import (
     SelfRefinementOptionalStagesMixin,
 )
 
@@ -128,11 +128,11 @@ def split_critique_gates() -> None:
 
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline.critique_gates_helpers import CritiqueGateHelpersMixin
-from hermes_orchestrator._pipeline.critique_gates_optional_emit import (
+from nimbusware_orchestrator._pipeline.critique_gates_helpers import CritiqueGateHelpersMixin
+from nimbusware_orchestrator._pipeline.critique_gates_optional_emit import (
     CritiqueGateOptionalEmitMixin,
 )
-from hermes_orchestrator._pipeline.critique_gates_stage_failed import (
+from nimbusware_orchestrator._pipeline.critique_gates_stage_failed import (
     CritiqueGateStageFailedMixin,
 )
 
