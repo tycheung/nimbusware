@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from agent_core.context_budget import truncate_for_llm_history
 from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 
 
@@ -133,31 +134,40 @@ def execute_slice_plan_llm(
         '{"slice_id":"string","rationale":"string","target_paths":["path"],'
         '"acceptance_criteria":"string"}'
     )
-    system = (
-        f"{agent_prompt}\n\n"
-        "Reply with JSON only matching this schema: "
-        f"{schema}. "
-        "Keep target_paths to at most 3 Python files under packages/. "
-        "Prefer existing modules related to the requested change."
+    stable = stable_slice_agent_block(
+        tool_rules=(
+            f"{agent_prompt}\n"
+            "Reply with JSON only matching this schema: "
+            f"{schema}. "
+            "Keep target_paths to at most 3 Python files under packages/. "
+            "Prefer existing modules related to the requested change."
+        ),
     )
-    user = f"Propose micro-slice #{slice_index} for this Nimbusware run. Use slice_id like slice-{{n}}."
+    volatile_parts = [
+        f"Propose micro-slice #{slice_index} for this Nimbusware run. "
+        "Use slice_id like slice-{n}.",
+    ]
     if handoff_summary.strip():
-        user = (
-            f"{user}\n\nPrior slice handoff:\n"
-            f"{truncate_for_llm_history(handoff_summary, max_chars=4000)}"
+        volatile_parts.append(
+            "Prior slice handoff:\n"
+            f"{truncate_for_llm_history(handoff_summary, max_chars=4000)}",
         )
     if memory_excerpt.strip():
-        user = f"{user}\n\nPrior failure memory (advisory):\n{truncate_for_llm_history(memory_excerpt)}"
+        volatile_parts.append(
+            "Prior failure memory (advisory):\n"
+            f"{truncate_for_llm_history(memory_excerpt)}",
+        )
     if budget_feedback:
-        user = f"{user}\nPrior budget feedback: {budget_feedback}"
+        volatile_parts.append(f"Prior budget feedback: {budget_feedback}")
+    messages = assemble_prompt(
+        stable=stable,
+        volatile="\n\n".join(volatile_parts),
+    )
     try:
         data = ollama_chat_json(
             base_url=base_url,
             model=model_id,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
+            messages=messages,
             timeout_seconds=timeout_seconds,
         )
         parsed = LlmSlicePlanResponse.model_validate(data)

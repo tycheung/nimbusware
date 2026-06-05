@@ -12,6 +12,7 @@ from agent_core.context_budget import truncate_for_llm_history
 from nimbusware_agent_tools.risk_caps import AgentRiskCaps
 from nimbusware_agent_tools.runtime import AgentStep, _allowed_paths, _execute_step
 from nimbusware_orchestrator.micro_slice import SlicePlan
+from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
 
 ChatFn = Callable[..., dict[str, Any]]
 
@@ -24,16 +25,18 @@ class AgentLoopResult:
     tool_steps: int = 0
 
 
-def _stable_system_prompt(plan: SlicePlan, *, base_prompt: str | None) -> str:
-    return (
-        f"{base_prompt or 'You are a careful coding agent.'}\n"
-        "Implement one micro-slice using ONLY these tools: read, write, edit, grep, shell.\n"
-        "Rules: read before edit; prefer edit over write for existing files; "
-        "shell only for pytest or ruff; writes must use plan target paths.\n"
-        "Reply with JSON each turn:\n"
-        '{"done":false,"tool_calls":[{"tool":"read","path":"..."}],'
-        '"summary":"optional"}\n'
-        'When finished: {"done":true,"summary":"..."}.'
+def _stable_system_prompt(*, base_prompt: str | None) -> str:
+    return stable_slice_agent_block(
+        tool_rules=(
+            f"{base_prompt or 'You are a careful coding agent.'}\n"
+            "Implement one micro-slice using ONLY these tools: read, write, edit, grep, shell.\n"
+            "Rules: read before edit; prefer edit over write for existing files; "
+            "shell only for pytest or ruff; writes must use plan target paths.\n"
+            "Reply with JSON each turn:\n"
+            '{"done":false,"tool_calls":[{"tool":"read","path":"..."}],'
+            '"summary":"optional"}\n'
+            'When finished: {"done":true,"summary":"..."}.'
+        ),
     )
 
 
@@ -114,17 +117,14 @@ def run(
     caps = risk_caps or resolve_agent_risk_caps()
     chat = chat_fn or ollama_chat_json
 
-    messages: list[dict[str, str]] = [
-        {"role": "system", "content": _stable_system_prompt(plan, base_prompt=system_prompt)},
-        {
-            "role": "user",
-            "content": _volatile_user_prompt(
-                plan,
-                handoff_summary=handoff_summary,
-                memory_excerpt=memory_excerpt,
-            ),
-        },
-    ]
+    messages = assemble_prompt(
+        stable=_stable_system_prompt(base_prompt=system_prompt),
+        volatile=_volatile_user_prompt(
+            plan,
+            handoff_summary=handoff_summary,
+            memory_excerpt=memory_excerpt,
+        ),
+    )
 
     result = AgentLoopResult()
     shell_invocations = 0

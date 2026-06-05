@@ -186,19 +186,18 @@ def execute_plan_stage_llm(
         "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
         "validation_steps, acceptance_criteria. Prefer PASS for a generic plan."
     )
-    if skill_block:
-        system = f"{system}\n\n{skill_block}"
-    if plan_skill.strip():
-        system = f"{system}\n\nLoaded skill plan-quality:\n{plan_skill.strip()}"
     user = _plan_stage_user_prompt(store, run_id)
+    from nimbusware_orchestrator.prompt_tiers import assemble_prompt
+
+    context_tier = skill_block or ""
+    if plan_skill.strip():
+        context_tier = f"{context_tier}\n\nLoaded skill plan-quality:\n{plan_skill.strip()}".strip()
+    messages = assemble_prompt(stable=system, context=context_tier, volatile=user)
     try:
         data = _ollama_chat_json(
             base_url=base_url,
             model=model_id,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
+            messages=messages,
             timeout_seconds=timeout_seconds,
         )
         plan = LlmPlanResponse.model_validate(data)
