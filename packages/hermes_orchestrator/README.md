@@ -16,6 +16,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 | `LifecycleMixin` | `lifecycle.py` | start / plan / verify / slice API transitions |
 | `CritiqueGatesMixin` | `critique_gates.py` | Composed: `critique_gates_{stage_failed,helpers,optional_emit}.py` |
 | `WritersMixin` | `writers.py` | Parallel frontend/backend writers |
+| `RoleExecuteMixin` | `role_execute.py` | `POST /roles/{id}/execute` dispatcher into pipeline stage entry points |
 | `OptionalCritiqueMixin` | `optional_critique.py` | Universal critique, agent evaluator |
 | `EscalationMixin` | `escalation.py` | Anti-deadlock escalation |
 | `OptionalStagesMixin` | `optional_stages.py` | Composed: `optional_stages_{integration,agent_evaluator,self_refinement,integrator}.py` |

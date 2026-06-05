@@ -48,8 +48,8 @@ Normative detail: **§19.5**. Implementation tracking: [plan_gap.md](plan_gap.md
 
 **Nimbusware** is the operator product; **Hermes** remains the orchestration agent. **fo150–fo155**,
 **PZ-1–PZ-10**, **Phase 4 (fo160–fo191)**, and **Lane D (fo200–fo207)** shipped at core (May 2026).
-**Status (Jun 2026):** Ranked backlog **#1–21** and close-out **A1–A3** shipped. **Individual v1 contract (§14, Phases 1–3, P, 4, §19.5): ~99%.** **Lane M (fo300–fo308): ~98%.** **Enterprise core (Lane D): ~97%** (ops polish optional). **Overall Individual coding-factory product: ~97%.**
-**Status and backlog:** [plan_gap.md](plan_gap.md) (close-out items **A4+** only). This document remains the **normative contract**.
+**Status (Jun 2026):** Ranked backlog **#1–21**, close-out **A1–A9**, product gaps **B1–B8**, **C-track**, **D-track** (Admin polish + pressure warn + role execute), and **E-track** (Helm, SSH probe cadence, CI parity) shipped. **Individual v1 contract (§14, Phases 1–3, P, 4, §19.5): ~99%.** **Lane M (fo300–fo308): ~98%.** **Enterprise core (Lane D): ~98%.** **Overall Individual coding-factory product: ~98%.**
+**Status and backlog:** [plan_gap.md](plan_gap.md) (local ledger — D/E items archived as shipped). This document remains the **normative contract**.
 
 | Epic | Normative outcome |
 |------|-------------------|
@@ -1462,7 +1462,7 @@ Policy:
 
 ## 18) Maintenance and backlog (May 2026)
 
-**Status (Jun 2026):** Core orchestrator, §14 checklist (**21/21**), Phase 4, Lane M web Maker, Lane D enterprise core, §20.6 metrics, ranked backlog **#1–21**, and close-out **A1–A3** are **shipped** (~**97%** overall Individual product per [plan_gap.md](plan_gap.md)). **No v1 blockers.** Further work is optional close-out (**A4+**) or maintenance.
+**Status (Jun 2026):** Core orchestrator, §14 checklist (**21/21**), Phase 4, Lane M web Maker, Lane D enterprise core, §20.6 metrics, ranked backlog **#1–21**, close-out **A1–A9**, **D-track**, and **E-track** are **shipped** (~**98%** overall Individual product per [plan_gap.md](plan_gap.md)). **No v1 blockers.** Further work is maintenance or new epics — not greenfield v1.
 
 **Operators should use:** [plan_gap.md](plan_gap.md) for close-out items and CI evidence. This file stays the **normative contract**; do not duplicate the sprint board here.
 

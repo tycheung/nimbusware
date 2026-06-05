@@ -63,7 +63,8 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
 - **Fast slice** (`fast_slice: true` or `HERMES_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH
 - **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `HERMES_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`HERMES_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
-- **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `HERMES_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. PR CI does not install Playwright (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+- **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `HERMES_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. Default PR **unit** CI does not run slice browsers; PR **web** job runs Playwright smoke in [`tests/e2e/web`](tests/e2e/web) (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+- **Mid-run pressure warnings** — rate-limited `resource.pressure.warn` events when the hardware governor throttles RAM mid-run; Admin **Hardware** timeline and competitive-summary projections surface the tail
 - **Slice implement agent** — optional `HERMES_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
 - **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`HERMES_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `HERMES_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
@@ -274,7 +275,7 @@ Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher
 **Runs & timeline**
 
 - Filtered run list (workflow profile, dates, escalation, status), pagination, CSV/JSON export
-- Run detail: summary, append-only timeline, findings, live critic matrix, **run theater** panel (evidence expand, jump to timeline `store_seq`)
+- Run detail: summary, append-only timeline, findings, live critic matrix, **run theater** panel (evidence expand, jump to timeline `store_seq`), **policy compare** (side-by-side frozen snapshots), **probation promotion notices**, **role execute (debug)** panel
 - Lifecycle actions: retry, escalate; drill-downs for integrator gate, personas, agent evaluator, self-refinement, security scan, universal critique, scraper fetch, preflight
 
 **Configuration & search**
@@ -283,7 +284,8 @@ Launch: `poetry run nimbusware-admin`, `nimbusware-run --admin`, or the launcher
 - Operator chat — start runs, steer workflow from the UI
 - Custom agents — CRUD + system prompt editor (Postgres registry in DB mode)
 - Bundle catalog search (local + API parity), FAISS index status, catalog editor
-- Persona shelves and editor, workflow explainers, integrator preview/apply
+- Persona shelves and editor (overlap report, probation reliability thresholds), workflow explainers, integrator preview/apply
+- **Blast radius** and **Critic packs** Config tabs (dry-run workflow impact, Postgres pack editor)
 - Cross-run preflight trends and fleet metrics export
 
 **Enterprise only** (Admin **Fleet** tab at `/v1/admin/app/fleet`): set Enterprise API key at sign-in, optional tenant switcher, fleet memory status, Ollama SLI + preflight aggregate, Redis worker health, hardware fleet tiers. Cross-run preflight **history** remains on the **Preflight** tab.
@@ -423,9 +425,9 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 Layout and CI subsets: [`tests/README.md`](tests/README.md).
 
 ```bash
-# Matches GitHub CI (ruff, format, mypy via scripts/mypy_ci_targets.py, bandit, pip-audit, floors, pytest @ 75%):
+# Matches GitHub CI unit + web jobs (ruff, audit_operator_env, format, mypy, bandit, pip-audit, floors, pytest @ 75%; optional vitest + Playwright when node is installed):
 ./scripts/ci_check.ps1   # Windows
-./scripts/ci_check.sh    # Linux/macOS
+./scripts/ci_check.sh    # Linux/macOS (--skip-web to skip vitest/Playwright)
 
 poetry run pytest tests/ -q
 poetry run pytest tests/ -q -m "not integration and not slow and not benchmark"

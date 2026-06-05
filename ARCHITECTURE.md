@@ -42,7 +42,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 |---------|------|
 | `agent_core` | Event models, validation |
 | `hermes_store` | Event store (Postgres / memory) |
-| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), fleet analytics, blast-radius preview, audit export |
+| `hermes_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
 | `hermes_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
@@ -123,7 +123,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 
 All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
-**Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
+**Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Mid-run governor sampling may append rate-limited `resource.pressure.warn` events (projections: pressure headline + pressure-history timeline). Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
+
+**Deploy:** Production Kubernetes installs use the Helm chart at [`charts/nimbusware`](charts/nimbusware) ([`docs/deploy/helm.md`](docs/deploy/helm.md)); raw manifests under [`docs/deploy/k8s/`](docs/deploy/k8s/README.md) remain a reference path verified by quarterly `k8s_reference_smoke.yml`.
+
+**CI layout (PR):** `.github/workflows/ci.yml` runs **unit** (ruff, `audit_operator_env`, mypy, bandit, pip-audit, pytest @ 75%), **web** (vitest maker + admin, Playwright `tests/e2e/web`), **integration**, and **e2e** jobs in parallel. Local parity: `scripts/ci_check.ps1` / `ci_check.sh` (unit + optional web when Node is present).
 
 **Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics**; stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
 

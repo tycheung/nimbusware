@@ -1,6 +1,8 @@
 # Reference Kubernetes manifests (Lane V5)
 
-Not production-hardened — starting point for Enterprise ops. CI verifies manifests with `kubectl apply --dry-run=client` via `.github/workflows/k8s_reference_smoke.yml` (quarterly cron + manual dispatch).
+**Production installs:** use the Helm chart at [`charts/nimbusware`](../../charts/nimbusware) ([helm.md](../helm.md)). This directory is a **raw YAML reference** for operators who prefer `kubectl apply` or need to diff against chart templates.
+
+Not production-hardened — starting point for Enterprise ops. CI verifies manifests with `kubectl apply --dry-run=client` and `helm lint` via `.github/workflows/k8s_reference_smoke.yml` (quarterly cron + manual dispatch).
 
 ## End-to-end install path
 

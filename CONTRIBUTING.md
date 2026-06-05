@@ -24,7 +24,9 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci_check.sh
 ```
 
-This runs: ruff check + format, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available, and Playwright smoke in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present.
+This runs: ruff check, [`scripts/audit_operator_env.py`](scripts/audit_operator_env.py), format check, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available, and Playwright smoke in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+
+GitHub PR CI mirrors the same steps via parallel **unit** and **web** jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (`tests/unit/test_ci_check_parity.py` guards drift).
 
 Integration tests (Postgres required):
 
@@ -76,5 +78,6 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/`
+- Optional docstring hygiene: `poetry run python scripts/trim_redundant_docstrings.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

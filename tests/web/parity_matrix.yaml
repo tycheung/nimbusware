@@ -137,3 +137,12 @@ admin:
   - id: policy_compare_run
     web: true
     notes: Run detail policy compare panel via policy/compare API
+  - id: probation_reliability_config
+    web: true
+    notes: Config Personas tab probation reliability threshold editor
+  - id: probation_notice_run
+    web: true
+    notes: Run detail ProbationNoticePanel for promotion notices
+  - id: role_execute_debug
+    web: true
+    notes: Run detail role execute debug panel wired to POST /roles/{id}/execute

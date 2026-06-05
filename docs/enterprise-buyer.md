@@ -27,7 +27,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped index + canonical sync |
 | Config propagation | Postgres `LISTEN/NOTIFY` + `config.document.updated` invalidation |
 | Worker health | Redis dispatch worker metrics; Admin **Fleet** tab at `/v1/admin/app/fleet` |
-| Hardware tiers | Local + optional SSH fleet probe (`docs/deploy/README.md`) |
+| Hardware tiers | Local + optional SSH fleet probe; weekly scheduled workflow with failure alerts ([`docs/deploy/ssh-hardware-probe.md`](deploy/ssh-hardware-probe.md)) |
 
 ## Supply chain
 
@@ -40,5 +40,6 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 ## Deployment references
 
 - [deploy/README.md](deploy/README.md) — Docker, schema, secrets rotation
-- [deploy/k8s/README.md](deploy/k8s/README.md) — reference manifests (verified by `k8s_reference_smoke` workflow dry-run)
+- [deploy/helm.md](deploy/helm.md) — production Helm chart (`charts/nimbusware`)
+- [deploy/k8s/README.md](deploy/k8s/README.md) — raw reference manifests (verified by `k8s_reference_smoke` workflow dry-run + Helm lint)
 - [SECURITY.md](../SECURITY.md) — vulnerability reporting and production checklist
