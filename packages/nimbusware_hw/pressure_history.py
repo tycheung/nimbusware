@@ -20,32 +20,45 @@ def _ram_used_pct_from_payload(pl: dict[str, Any]) -> float | None:
     return round((total_f - avail_f) / total_f * 100.0, 1)
 
 
+def _pressure_row_from_event(row: dict[str, Any]) -> dict[str, Any] | None:
+    et = row.get("event_type")
+    if et not in (
+        EventType.HARDWARE_PROFILE_DETECTED.value,
+        EventType.RESOURCE_PRESSURE_WARN.value,
+    ):
+        return None
+    pl = row.get("payload")
+    if not isinstance(pl, dict):
+        return None
+    level = str(pl.get("pressure_level") or "ok").strip().lower()
+    occurred = row.get("occurred_at")
+    ram_pct = pl.get("ram_used_pct")
+    if ram_pct is None:
+        ram_pct = _ram_used_pct_from_payload(pl)
+    return {
+        "occurred_at": occurred.isoformat() if hasattr(occurred, "isoformat") else occurred,
+        "pressure_level": level,
+        "pressure_reason": pl.get("pressure_reason"),
+        "hardware_tier": pl.get("hardware_tier") or pl.get("tier"),
+        "ram_used_pct": ram_pct,
+        "run_id": str(row["run_id"]) if row.get("run_id") is not None else None,
+        "event_type": et,
+    }
+
+
 def pressure_history_from_event_rows(
     rows: list[dict[str, Any]],
     *,
     limit: int = 20,
 ) -> list[dict[str, Any]]:
-    """Return newest ``hardware.profile.detected`` rows with pressure fields."""
+    """Return newest hardware profile and mid-run pressure warn rows."""
     cap = max(1, min(int(limit), 200))
     hits: list[dict[str, Any]] = []
     for row in reversed(rows):
-        if row.get("event_type") != EventType.HARDWARE_PROFILE_DETECTED.value:
+        entry = _pressure_row_from_event(row)
+        if entry is None:
             continue
-        pl = row.get("payload")
-        if not isinstance(pl, dict):
-            continue
-        level = str(pl.get("pressure_level") or "ok").strip().lower()
-        occurred = row.get("occurred_at")
-        hits.append(
-            {
-                "occurred_at": occurred.isoformat() if hasattr(occurred, "isoformat") else occurred,
-                "pressure_level": level,
-                "pressure_reason": pl.get("pressure_reason"),
-                "hardware_tier": pl.get("hardware_tier") or pl.get("tier"),
-                "ram_used_pct": _ram_used_pct_from_payload(pl),
-                "run_id": str(row["run_id"]) if row.get("run_id") is not None else None,
-            },
-        )
+        hits.append(entry)
         if len(hits) >= cap:
             break
     return hits

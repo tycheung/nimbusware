@@ -45,3 +45,25 @@ def test_pressure_history_from_event_rows() -> None:
     assert hist[0]["ram_used_pct"] == 25.0
     assert hist[1]["pressure_level"] == "warn"
     assert hist[1]["ram_used_pct"] == 75.0
+
+
+def test_pressure_history_includes_resource_pressure_warn() -> None:
+    run_id = uuid4()
+    rows = [
+        {
+            "event_type": EventType.RESOURCE_PRESSURE_WARN.value,
+            "run_id": run_id,
+            "occurred_at": datetime(2026, 2, 1, tzinfo=timezone.utc),
+            "payload": {
+                "pressure_level": "throttle",
+                "pressure_reason": "ram_near_cap",
+                "hardware_tier": "weak",
+                "ram_used_pct": 88.0,
+            },
+        },
+    ]
+    hist = pressure_history_from_event_rows(rows, limit=5)
+    assert len(hist) == 1
+    assert hist[0]["pressure_level"] == "throttle"
+    assert hist[0]["ram_used_pct"] == 88.0
+    assert hist[0]["event_type"] == EventType.RESOURCE_PRESSURE_WARN.value

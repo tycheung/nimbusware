@@ -425,6 +425,14 @@ class HardwareProfileDetectedPayload(BasePayload):
     pressure_reason: str | None = Field(default=None, max_length=64)
 
 
+class ResourcePressureWarnPayload(BasePayload):
+    pressure_level: str = Field(min_length=1, max_length=16)
+    pressure_reason: str | None = Field(default=None, max_length=64)
+    hardware_tier: str | None = Field(default=None, max_length=32)
+    ram_used_pct: float | None = None
+    hook: str | None = Field(default=None, max_length=64)
+
+
 class MemoryIndexedPayload(BasePayload):
     """Audit record after a repo-scoped memory index rebuild."""
 

@@ -23,7 +23,11 @@ def latest_resource_pressure_from_events(events: list[dict[str, Any]]) -> dict[s
 
     latest: dict[str, Any] | None = None
     for row in events:
-        if row.get("event_type") != EventType.HARDWARE_PROFILE_DETECTED.value:
+        et = row.get("event_type")
+        if et not in (
+            EventType.HARDWARE_PROFILE_DETECTED.value,
+            EventType.RESOURCE_PRESSURE_WARN.value,
+        ):
             continue
         pl = row.get("payload")
         if not isinstance(pl, dict):

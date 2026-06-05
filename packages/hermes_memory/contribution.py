@@ -30,8 +30,21 @@ def maybe_rebuild_memory_index_for_run(
         gov = governor_from_metadata(run_created_metadata)
         from nimbusware_hw.pressure import should_defer_memory_rebuild
 
-        level, _ = sample_pressure(gov)
+        level, details = sample_pressure(gov)
         if should_defer_memory_rebuild(level):
+            try:
+                from nimbusware_hw.audit import maybe_append_resource_pressure_warn
+
+                maybe_append_resource_pressure_warn(
+                    event_store,
+                    run_id=run_id,
+                    governor=gov,
+                    hook="memory_rebuild_defer",
+                    level=level,
+                    details=details if isinstance(details, dict) else {},
+                )
+            except ImportError:
+                pass
             return None
     except ImportError:
         pass

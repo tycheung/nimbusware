@@ -71,9 +71,9 @@ def test_maybe_rebuild_defers_under_ram_pressure(
         },
     )
     assert result is None
-    assert not any(
-        r["event_type"] == EventType.MEMORY_INDEXED.value for r in store.list_all_event_rows()
-    )
+    rows = store.list_all_event_rows()
+    assert not any(r["event_type"] == EventType.MEMORY_INDEXED.value for r in rows)
+    assert any(r["event_type"] == EventType.RESOURCE_PRESSURE_WARN.value for r in rows)
 
 
 def test_maybe_rebuild_emits_memory_indexed(tmp_path, monkeypatch) -> None:

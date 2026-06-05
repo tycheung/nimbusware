@@ -300,6 +300,19 @@ class WritersMixin:
         cap = max_parallel_writer_stages_from_governor()
         if not env_force_on("HERMES_PARALLEL_WRITERS") and cap is not None and len(runners) > cap:
             runners = runners[:cap]
+            try:
+                from nimbusware_hw.audit import maybe_append_resource_pressure_warn
+                from nimbusware_hw.cache import get_cached_profile
+                from nimbusware_hw.governor import governor_for_profile
+
+                maybe_append_resource_pressure_warn(
+                    self._store,
+                    run_id=run_id,
+                    governor=governor_for_profile(get_cached_profile()),
+                    hook="parallel_writers_cap",
+                )
+            except ImportError:
+                pass
         results = asyncio.run(run_parallel_writer_group(runners))
         impl = next(
             (r for r in results if r.stage_name == "implementation"),

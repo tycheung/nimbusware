@@ -29,6 +29,7 @@ from agent_core.models.events_payloads import (
     ResearchBriefEmittedPayload,
     ResearchBriefReviewPayload,
     ResearchPatternIndexedPayload,
+    ResourcePressureWarnPayload,
     RunCompletedPayload,
     RunCreatedPayload,
     RunEscalatedPayload,
@@ -255,6 +256,11 @@ class HardwareProfileDetectedEvent(BaseHermesEvent):
     payload: HardwareProfileDetectedPayload
 
 
+class ResourcePressureWarnEvent(BaseHermesEvent):
+    event_type: Literal[EventType.RESOURCE_PRESSURE_WARN]
+    payload: ResourcePressureWarnPayload
+
+
 HermesEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -291,6 +297,7 @@ HermesEventUnion: TypeAlias = (
     | StitchAppliedEvent
     | StitchFailedEvent
     | HardwareProfileDetectedEvent
+    | ResourcePressureWarnEvent
 )
 
 HermesEvent: TypeAlias = Annotated[HermesEventUnion, Field(discriminator="event_type")]
