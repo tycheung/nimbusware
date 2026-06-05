@@ -40,6 +40,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Integration** — Postgres `-m integration` on PR.
 - **E2E** — `tests/e2e -m e2e` on PR (import smoke + API `run.created` with Postgres).
 - **Weekly** — `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + required scored `--run` with `min_pass_rate: 1.0`).
+- **Quarterly / manual** — `k8s_reference_smoke.yml` (`kubectl apply --dry-run=client` on [`docs/deploy/k8s/`](k8s/README.md) manifests).
 - **PR / manual** — `oidc_smoke.yml` (mock Enterprise OIDC session tests).
 
 ## Secrets

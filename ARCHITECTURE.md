@@ -123,7 +123,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 
 All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`); `protocol_hosts.py` documents host protocols for pipeline mixins. API lifespan and the run worker share `hermes_orchestrator.runtime_bootstrap.build_runtime_orchestrator`.
 
-**Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Stitch transplant pass rate: `GET /v1/platform/analytics/stitch-outcomes` (Admin Console panel under Config → Workflows).
+**Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
+
+**Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics**; stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
+
+**Pipeline typing:** All `_pipeline` mixin modules import `_helpers` symbols without `attr-defined` ignores; `_helpers.py` exports an explicit `__all__` (size-guard allowlisted in `test_package_module_size.py`).
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `hermes_store`, `hermes_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `hermes_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 

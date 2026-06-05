@@ -43,7 +43,7 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 
 ## Refactor notes
 
-- **Mypy:** Tranche E strict-checks `_pipeline/_helpers` (explicit `__all__`), `create_run.py`, `lifecycle_plan.py`, `lifecycle_start.py`, and other orchestrator islands. Remaining mixin modules may keep `# type: ignore[attr-defined]` on `_helpers` imports until migrated. Ships PEP 561 marker (`py.typed`).
+- **Mypy:** Tranche E strict-checks `_pipeline/_helpers` (explicit `__all__`) and all `_pipeline` mixin modules without `attr-defined` ignores on `_helpers` imports. Ships PEP 561 marker (`py.typed`).
 - **Compose-time patch seam:** `compose.py` binds mixin method globals to `pipeline` during each call so tests can patch `hermes_orchestrator.pipeline.*` without star-import barrels in mixins. Mixins still import from `_helpers` explicitly at module level.
 - After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
 - Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.

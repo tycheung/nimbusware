@@ -24,7 +24,7 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci_check.sh
 ```
 
-This runs: ruff check + format, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs.
+This runs: ruff check + format, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available, and Playwright smoke in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present.
 
 Integration tests (Postgres required):
 

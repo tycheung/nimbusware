@@ -23,7 +23,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 - **Object-store primary** — S3-compatible scraper artifact backend (optional local mirror)
 - **Redis fleet worker** — shared verify queue, health/back-pressure metrics
 - **Fleet Ollama SLI** — sustained health p95 export + preflight aggregate API
-- **Enterprise fleet (Admin)** — **Fleet** tab at `/v1/admin/app/fleet` (tenant switcher, fleet memory, Ollama SLI aggregate, worker health, hardware tiers; requires `X-Nimbusware-Api-Key` in Admin sign-in)
+- **Enterprise fleet (Admin)** — **Fleet** tab at `/v1/admin/app/fleet` (tenant switcher, fleet memory, Ollama SLI aggregate, worker health, hardware tiers, cross-tenant gate comparison; requires `X-Nimbusware-Api-Key` in Admin sign-in)
 
 ## Architecture
 
@@ -212,7 +212,7 @@ Smoke check (no GUI): `python run.py --smoke` or `python scripts/e2e_smoke.py`. 
 
 API docs: http://127.0.0.1:8000/docs — operations are tagged **user** (Maker) vs **admin** (Admin Console) in OpenAPI.
 
-Operator analytics snapshot: `GET /v1/platform/analytics/competitive-summary` (Admin **Metrics** tab).
+Operator analytics: `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` (Admin **Metrics** tab); `GET /v1/platform/analytics/pressure-history` (Admin **Hardware** tab).
 
 ## User vs Admin
 
@@ -238,7 +238,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 **Home & onboarding**
 
 - First-run wizard: folder → readiness → **fit-ranked model** → intent → create run (`GET /v1/platform/hardware` + ranked models)
-- **Models** tab: Model Manager (hardware strip, ranked table, Quality/Balanced/Speed apply, dependency warnings)
+- **Models** tab: three-step preset wizard (`GET /platform/models/ranked` → preset → `POST /platform/models/apply-preset`); Ollama pull unchanged
 - Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (hardware tier + resource governor sliders, Ollama model list, readiness presets, auto-advance hint)
 
@@ -313,7 +313,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Maker web** | `GET /maker/app/` (PWA: theater, research approve, slice approval) | User |
 | **Research / stitch** | `GET /runs/{id}/research`, POST `.../research/{brief_id}/approve|reject`, `GET /runs/{id}/stitch-summary` | User |
 | **Maker approval** | `GET .../maker/pending`, plan approve, slice prepare/apply/skip, workspace revert | User |
-| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id`), `GET /platform/analytics/stitch-outcomes` | User |
+| **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id`), `GET /platform/analytics/stitch-outcomes`, `GET /platform/analytics/competitive-summary`, `GET /platform/analytics/bundle-outcomes`, `GET /platform/analytics/pressure-history` | User |
 | **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
@@ -324,7 +324,8 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Critic packs** | `GET/PUT /config/critic-packs/{id}` | Admin (Postgres writes) |
 | **Fleet critic reliability** | `GET /enterprise/fleet/critic-reliability` | Enterprise |
 | **Personas** | Shelf read | User |
-| **Personas** | Admin CRUD | Admin |
+| **Personas** | Admin CRUD, `GET /personas/overlap-report` | Admin |
+| **Admin BFF** | Run detail panels (`/admin/ui/runs/{id}/…`), fleet compare (`/admin/ui/enterprise/fleet-compare`), persona overlap (`/admin/ui/personas/overlap-report`) | Admin |
 | **Custom agents** | `GET` list | User |
 | **Custom agents** | `POST/PATCH/DELETE` | Admin |
 | **Preflight** | `GET /preflight-history` | User |
