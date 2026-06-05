@@ -110,3 +110,6 @@ admin:
   - id: bundle_catalog_crud
     web: true
     notes: Config Bundles tab CRUD, workflow map, candidate promote
+  - id: integration_adapter_run
+    web: true
+    notes: Run detail IntegrationAdapterPanel via admin BFF

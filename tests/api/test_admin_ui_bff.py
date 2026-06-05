@@ -135,6 +135,57 @@ def test_fleet_dashboard_enterprise_formatted(monkeypatch: pytest.MonkeyPatch) -
     assert "Fleet worker" in (body["worker_caption"] or "")
 
 
+def test_integration_adapter_writer_bff_present() -> None:
+    from datetime import datetime, timezone
+
+    from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
+    from hermes_store.memory import InMemoryEventStore
+
+    store = InMemoryEventStore()
+    rid = uuid4()
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "integration_adapter_writer": {
+                    "scaffold_status": "target_integrated",
+                    "target_integration_status": "integrated",
+                    "target_adapter_kind": "api_bridge",
+                    "workspace_manifest_path": ".hermes/integration_adapter_writer/x/manifest.json",
+                },
+            },
+            payload=StageStartedPayload(
+                stage_name="integration_adapter_writer",
+                attempt=1,
+            ),
+        ),
+    )
+    with TestClient(app) as client:
+        client.app.state.store = store
+        client.app.state.orchestrator.store = store
+        r = client.get(
+            f"/v1/admin/ui/runs/{rid}/integration-adapter-writer",
+            headers=ADMIN_HEADERS,
+        )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["present"] is True
+    assert body["caption"]
+    assert any(row["field"] == "Target integration" for row in body["rows"])
+
+
+def test_integration_adapter_writer_bff_not_found(client: TestClient) -> None:
+    rid = str(uuid4())
+    r = client.get(
+        f"/v1/admin/ui/runs/{rid}/integration-adapter-writer",
+        headers=ADMIN_HEADERS,
+    )
+    assert r.status_code == 404
+
+
 def test_critic_reliability_table_not_found(client: TestClient) -> None:
     rid = str(uuid4())
     r = client.get(
