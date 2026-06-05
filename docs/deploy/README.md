@@ -43,6 +43,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Quarterly / manual** — `k8s_reference_smoke.yml` (`helm lint` + `kubectl apply --dry-run=client` on [`docs/deploy/k8s/`](k8s/README.md) manifests).
 - **Weekly / manual** — `ssh_hardware_probe.yml` (Enterprise fleet SSH tier probe; [runbook](ssh-hardware-probe.md)).
 - **PR / manual** — `oidc_smoke.yml` (mock Enterprise OIDC session tests).
+- **Optional ops** — GitHub Checks bridge for integrator gates: [external-ci-bridge.md](external-ci-bridge.md).
 
 ## Secrets
 

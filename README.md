@@ -58,7 +58,7 @@ Capabilities below are provided by the Hermes agentic system; Nimbusware hosts t
 - **Adversarial critics** — domain-bound critique stages (security, performance, network/resilience, refactor on production profile)
 - **Unanimous gates** — stage progression blocked until critics/verifiers pass (with escalation anti-deadlock)
 - **Parallel writers** — frontend/backend writers with role taxonomy and failure routing
-- **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate
+- **Bundle integrator** — catalog search, FAISS ranking, compatibility scoring, integrator gate; optional GitHub Checks bridge ([docs/deploy/external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
 - **Personas** — business + development shelves, persona assignment, agent evaluator + persona coverage critic; **probation automation** (reliability auto-shelve, promote notice; `GET /v1/personas/{shelf}/{persona_id}/probation-reliability`)
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
 - **Fast slice** (`fast_slice: true` or `HERMES_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH
