@@ -42,6 +42,7 @@ export function App() {
         <a href="/v1/admin/app/agents">Agents</a>
         <a href="/v1/admin/app/preflight">Preflight</a>
         <a href="/v1/admin/app/metrics">Metrics</a>
+        {fleetUi ? <a href="/v1/admin/app/fleet">Fleet</a> : null}
       </nav>
       <main>
         <Router>

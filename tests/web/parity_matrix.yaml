@@ -92,3 +92,9 @@ admin:
   - id: preflight_fleet
     web: true
     notes: Preflight history tab; fleet SLI aggregate on Admin Fleet tab
+  - id: critic_reliability_run
+    web: true
+    notes: Run detail CriticReliabilityPanel via admin BFF
+  - id: critic_reliability_fleet
+    web: true
+    notes: Fleet tab structured critic reliability table

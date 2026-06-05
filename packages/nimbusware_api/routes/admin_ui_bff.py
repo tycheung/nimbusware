@@ -11,11 +11,18 @@ from pydantic import BaseModel, Field
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from hermes_store.protocol import serialized_event_from_row
 from nimbusware_api.admin import AdminDep
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import IamStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_console import enterprise_console as ent_console
 from nimbusware_console.critic_matrix_display import critic_matrix_rows_from_events
+from nimbusware_console.critic_reliability_display import (
+    critic_reliability_caption,
+    critic_reliability_summary_from_events,
+    critic_reliability_table_rows,
+    fleet_critic_reliability_caption,
+    fleet_critic_reliability_table_rows,
+)
 from nimbusware_console.findings_display import findings_list_from_response, findings_table_rows
 from nimbusware_console.operator_chat_core import ChatState, process_user_message
 from nimbusware_console.services import enterprise as enterprise_svc
@@ -90,6 +97,40 @@ def critic_matrix_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict
     return {"run_id": str(run_id), "rows": critic_matrix_rows_from_events(events)}
 
 
+@router.get(
+    "/runs/{run_id}/critic-reliability",
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def critic_reliability_table(run_id: UUID, store: StoreDep, _admin: AdminDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    summary = critic_reliability_summary_from_events(rows)
+    return {
+        "run_id": str(run_id),
+        "caption": critic_reliability_caption(summary),
+        "rows": critic_reliability_table_rows(summary),
+        "summary": summary,
+    }
+
+
+def _resolve_tenant_uuid(iam: Any, tenant_ref: str) -> str:
+    ref = tenant_ref.strip()
+    if not ref:
+        return ""
+    try:
+        return str(UUID(ref))
+    except ValueError:
+        pass
+    for tenant in iam.list_tenants():
+        if tenant.slug == ref:
+            return str(tenant.tenant_id)
+    return ref
+
+
 def _require_enterprise_api_key(
     x_nimbusware_api_key: str | None = Header(default=None, alias=API_KEY_HEADER),
 ) -> str:
@@ -116,6 +157,7 @@ def _require_enterprise_api_key(
 @router.get("/enterprise/fleet-dashboard")
 def enterprise_fleet_dashboard(
     _admin: AdminDep,
+    iam: IamStoreDep,
     api_key: Annotated[str, Depends(_require_enterprise_api_key)],
     tenant_id: Annotated[str | None, Query()] = None,
     preflight_limit: Annotated[int, Query(ge=1, le=50)] = 10,
@@ -128,12 +170,17 @@ def enterprise_fleet_dashboard(
     worker = enterprise_svc.fetch_fleet_worker_health(api_key=api_key)
     hardware = enterprise_svc.fetch_platform_hardware_fleet()
     critic: dict[str, Any] | None = None
-    tid = (tenant_id or "").strip()
-    if tid:
+    critic_caption: str | None = None
+    critic_rows: list[dict[str, str]] = []
+    tid_ref = (tenant_id or "").strip()
+    tid_uuid = _resolve_tenant_uuid(iam, tid_ref) if tid_ref else ""
+    if tid_uuid:
         critic = enterprise_svc.fetch_fleet_critic_reliability(
             api_key=api_key,
-            tenant_id=tid,
+            tenant_id=tid_uuid,
         )
+        critic_caption = fleet_critic_reliability_caption(critic)
+        critic_rows = fleet_critic_reliability_table_rows(critic)
     return {
         "memory_rows": ent_console.fleet_memory_status_table_rows(memory),
         "worker_caption": ent_console.fleet_worker_health_caption(worker),
@@ -150,4 +197,6 @@ def enterprise_fleet_dashboard(
         "fleet_worker": worker,
         "hardware_fleet": hardware,
         "critic_reliability": critic,
+        "critic_reliability_caption": critic_caption,
+        "critic_reliability_rows": critic_rows,
     }

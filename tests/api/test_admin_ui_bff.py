@@ -133,3 +133,84 @@ def test_fleet_dashboard_enterprise_formatted(monkeypatch: pytest.MonkeyPatch) -
     assert any(row["field"] == "local_chunk_count" for row in body["memory_rows"])
     assert len(body["hardware_rows"]) == 1
     assert "Fleet worker" in (body["worker_caption"] or "")
+
+
+def test_critic_reliability_table_not_found(client: TestClient) -> None:
+    rid = str(uuid4())
+    r = client.get(
+        f"/v1/admin/ui/runs/{rid}/critic-reliability",
+        headers=ADMIN_HEADERS,
+    )
+    assert r.status_code == 404
+
+
+def test_fleet_dashboard_critic_reliability_formatted(monkeypatch: pytest.MonkeyPatch) -> None:
+    import importlib
+
+    from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
+    from nimbusware_iam.constants import API_KEY_HEADER
+    from nimbusware_iam.scopes import MAKER_ADMIN_SCOPE
+    from nimbusware_iam.store import InMemoryIamStore
+
+    monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
+    monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
+    iam = InMemoryIamStore()
+    tenant = iam.create_tenant(slug="ops", display_name="Ops")
+    created = iam.create_api_key(
+        tenant_id=tenant.tenant_id,
+        label="fleet-admin",
+        api_scopes=[MAKER_ADMIN_SCOPE],
+    )
+    monkeypatch.setattr("nimbusware_iam.store.build_iam_store", lambda _url: iam)
+    api_module = importlib.import_module("nimbusware_api.app")
+    monkeypatch.setattr(api_module, "build_iam_store", lambda _url: iam)
+
+    critic = {
+        "tenant_id": str(tenant.tenant_id),
+        "runs_scanned": 2,
+        "runs_with_critics": 1,
+        "critic_verdict_count": 4,
+        "critic_fail_count": 1,
+        "critic_fail_rate": 0.25,
+        "out_of_domain_verdict_count": 1,
+        "out_of_domain_rate": 0.25,
+        "gate_block_count": 0,
+        "repeat_finding_paths": 0,
+    }
+
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_memory_status",
+        lambda *, api_key, timeout=30.0: {},
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_preflight_aggregate",
+        lambda *, api_key, limit=10, timeout=30.0: {},
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_worker_health",
+        lambda *, api_key, timeout=30.0: {},
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_platform_hardware_fleet",
+        lambda *, timeout=30.0: {"hosts": []},
+    )
+    monkeypatch.setattr(
+        enterprise_svc,
+        "fetch_fleet_critic_reliability",
+        lambda *, api_key, tenant_id, run_limit=100, timeout=30.0: critic,
+    )
+
+    with TestClient(api_module.app) as client:
+        r = client.get(
+            "/v1/admin/ui/enterprise/fleet-dashboard",
+            headers={**ADMIN_HEADERS, API_KEY_HEADER: created.api_key},
+            params={"tenant_id": "ops"},
+        )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["critic_reliability_caption"]
+    assert any(row["metric"] == "Runs scanned" for row in body["critic_reliability_rows"])

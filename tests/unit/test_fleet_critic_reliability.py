@@ -98,3 +98,30 @@ def test_tenant_critic_reliability_metrics(monkeypatch: pytest.MonkeyPatch) -> N
     assert metrics["critic_verdict_count"] >= 1
     assert metrics["critic_fail_count"] >= 1
     assert metrics["critic_fail_rate"] > 0
+
+
+def test_critic_reliability_out_of_domain_metrics() -> None:
+    from hermes_orchestrator.fleet_critic_reliability import (
+        critic_reliability_summary_from_events,
+    )
+
+    events = [
+        {
+            "event_type": "critic.verdict.emitted",
+            "payload": {"verdict": "FAIL", "is_in_domain": False},
+        },
+        {
+            "event_type": "critic.verdict.emitted",
+            "payload": {"verdict": "FAIL", "is_in_domain": True},
+        },
+        {
+            "event_type": "critic.verdict.emitted",
+            "payload": {"verdict": "PASS", "is_in_domain": True},
+        },
+    ]
+    summary = critic_reliability_summary_from_events(events)
+    assert summary["out_of_domain_verdict_count"] == 1
+    assert summary["out_of_domain_fail_count"] == 1
+    assert summary["in_domain_fail_count"] == 1
+    assert summary["in_domain_fail_rate"] == 0.5
+    assert summary["out_of_domain_rate"] == pytest.approx(1 / 3, rel=0.01)

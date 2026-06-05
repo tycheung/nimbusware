@@ -16,26 +16,30 @@ type FleetDashboard = {
   export_json?: string;
   export_filename_slug?: string;
   critic_reliability?: Record<string, unknown> | null;
+  critic_reliability_caption?: string | null;
+  critic_reliability_rows?: { metric: string; value: string }[];
 };
 
-type TenantRow = { slug?: string; display_name?: string };
+type TenantRow = { tenant_id?: string; slug?: string; display_name?: string };
 
-function tenantOptions(tenants: TenantRow[]): { slug: string; label: string }[] {
-  const out: { slug: string; label: string }[] = [];
+function tenantOptions(tenants: TenantRow[]): { id: string; slug: string; label: string }[] {
+  const out: { id: string; slug: string; label: string }[] = [];
   for (const row of tenants) {
+    const id = String(row.tenant_id || "").trim();
     const slug = String(row.slug || "").trim();
-    if (!slug) continue;
+    if (!id && !slug) continue;
     const display = String(row.display_name || "").trim();
-    out.push({ slug, label: display ? `${slug} — ${display}` : slug });
+    const label = display ? `${slug || id} — ${display}` : slug || id;
+    out.push({ id: id || slug, slug: slug || id, label });
   }
-  out.sort((a, b) => a.slug.localeCompare(b.slug));
+  out.sort((a, b) => a.label.localeCompare(b.label));
   return out;
 }
 
 export function FleetPage() {
   const [dashboard, setDashboard] = useState<FleetDashboard | null>(null);
-  const [tenants, setTenants] = useState<{ slug: string; label: string }[]>([]);
-  const [tenantSlug, setTenantSlug] = useState(selectedEnterpriseTenantSlug);
+  const [tenants, setTenants] = useState<{ id: string; slug: string; label: string }[]>([]);
+  const [tenantId, setTenantId] = useState(selectedEnterpriseTenantSlug);
   const [error, setError] = useState("");
 
   const loadDashboard = useCallback(() => {
@@ -44,8 +48,10 @@ export function FleetPage() {
       setDashboard(null);
       return;
     }
-    const q = tenantSlug ? `?tenant_id=${encodeURIComponent(tenantSlug)}` : "";
-    const key = resolveEnterpriseApiKeyForTenant(tenantSlug || null);
+    const q = tenantId ? `?tenant_id=${encodeURIComponent(tenantId)}` : "";
+    const slug =
+      tenants.find((t) => t.id === tenantId)?.slug || tenantId || null;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
     apiJson<FleetDashboard>(`/admin/ui/enterprise/fleet-dashboard${q}`, {
       headers: { "X-Nimbusware-Api-Key": key },
     })
@@ -54,7 +60,7 @@ export function FleetPage() {
         setError("");
       })
       .catch((e) => setError(String((e as Error).message || e)));
-  }, [tenantSlug]);
+  }, [tenantId, tenants]);
 
   useEffect(() => {
     if (!enterpriseApiKey()) {
@@ -69,8 +75,9 @@ export function FleetPage() {
     loadDashboard();
   }, [loadDashboard]);
 
-  const onTenantChange = (slug: string) => {
-    setTenantSlug(slug);
+  const onTenantChange = (id: string) => {
+    setTenantId(id);
+    const slug = tenants.find((t) => t.id === id)?.slug || id;
     setEnterpriseTenantSlug(slug);
   };
 
@@ -97,12 +104,12 @@ export function FleetPage() {
         <label class="fleet-tenant">
           Tenant{" "}
           <select
-            value={tenantSlug}
+            value={tenantId}
             onChange={(e) => onTenantChange((e.target as HTMLSelectElement).value)}
           >
             <option value="">(primary API key)</option>
             {tenants.map((t) => (
-              <option key={t.slug} value={t.slug}>
+              <option key={t.id} value={t.id}>
                 {t.label}
               </option>
             ))}
@@ -161,10 +168,28 @@ export function FleetPage() {
               ))}
             </tbody>
           </table>
-          {dashboard.critic_reliability ? (
+          {dashboard.critic_reliability_rows && dashboard.critic_reliability_rows.length > 0 ? (
             <>
               <h3>Critic reliability</h3>
-              <pre class="json-block">{JSON.stringify(dashboard.critic_reliability, null, 2)}</pre>
+              {dashboard.critic_reliability_caption ? (
+                <p>{dashboard.critic_reliability_caption}</p>
+              ) : null}
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.critic_reliability_rows.map((row, i) => (
+                    <tr key={i}>
+                      <td>{row.metric}</td>
+                      <td>{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </>
           ) : null}
           <button type="button" onClick={downloadExport} disabled={!dashboard.export_json}>

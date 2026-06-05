@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
 import { TheaterPanel } from "../components/TheaterPanel";
 import { TimelineAccordion } from "../components/TimelineAccordion";
 
@@ -18,6 +19,7 @@ export function RunDetailPage({ id }: { id?: string }) {
   const [timeline, setTimeline] = useState<Record<string, unknown> | null>(null);
   const [findings, setFindings] = useState<Record<string, string>[]>([]);
   const [critics, setCritics] = useState<Record<string, string>[]>([]);
+  const [timelineSeq, setTimelineSeq] = useState<number | null>(null);
   const [actionMsg, setActionMsg] = useState("");
 
   useEffect(() => {
@@ -129,6 +131,8 @@ export function RunDetailPage({ id }: { id?: string }) {
       <FindingsTable rows={findings} />
       <h3>Critic matrix</h3>
       <CriticTable rows={critics} />
+      <h3>Critic reliability</h3>
+      <CriticReliabilityPanel runId={id} />
     </section>
   );
 }
