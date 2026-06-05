@@ -14,7 +14,12 @@ type CatalogSource = { authoritative?: string; path?: string };
 type Candidate = { run_id?: string; candidate_id?: string; status?: string; summary?: string };
 
 export function ConfigPage() {
-  const [tab, setTab] = useState<"ollama" | "bundles" | "personas" | "settings">("ollama");
+  const [tab, setTab] = useState<"ollama" | "bundles" | "blast" | "personas" | "settings">("ollama");
+  const [blastProfile, setBlastProfile] = useState("micro_slice");
+  const [blastCaption, setBlastCaption] = useState("");
+  const [blastRows, setBlastRows] = useState<
+    { run_id: string; frozen: string; proposed: string }[]
+  >([]);
   const [overlapRows, setOverlapRows] = useState<
     { business_area: string; development_role: string; overlap: string; count: string }[]
   >([]);
@@ -63,7 +68,7 @@ export function ConfigPage() {
         .then((b) => setOllamaModels((b.models || []).map((m) => m.name || "").filter(Boolean)))
         .catch(() => setOllamaModels([]));
     }
-    if (tab === "bundles") {
+    if (tab === "bundles" || tab === "blast") {
       loadCatalog();
     }
     if (tab === "settings") {
@@ -212,6 +217,9 @@ export function ConfigPage() {
         <button type="button" class={tab === "bundles" ? "active" : ""} onClick={() => setTab("bundles")}>
           Bundles
         </button>
+        <button type="button" class={tab === "blast" ? "active" : ""} onClick={() => setTab("blast")}>
+          Blast radius
+        </button>
         <button type="button" class={tab === "personas" ? "active" : ""} onClick={() => setTab("personas")}>
           Personas
         </button>
@@ -344,6 +352,66 @@ export function ConfigPage() {
               })}
             </ul>
           )}
+        </div>
+      ) : null}
+      {tab === "blast" ? (
+        <div>
+          <h3>Workflow edit blast radius</h3>
+          <p class="muted">
+            Preview which recent runs would see different frozen gate settings if the workflow profile
+            were materialized again.
+          </p>
+          <label>
+            Workflow profile{" "}
+            <select
+              value={blastProfile}
+              onChange={(e) => setBlastProfile((e.target as HTMLSelectElement).value)}
+            >
+              {Object.keys(catalog?.workflow_bundle_map || {}).length === 0 ? (
+                <option value="micro_slice">micro_slice</option>
+              ) : (
+                Object.keys(catalog?.workflow_bundle_map || {}).map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
+          <button type="button" onClick={() => void previewBlastRadius()}>
+            Preview
+          </button>
+          {blastCaption ? <p class="hint">{blastCaption}</p> : null}
+          {blastRows.length ? (
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Run</th>
+                  <th>Frozen effective</th>
+                  <th>Proposed effective</th>
+                </tr>
+              </thead>
+              <tbody>
+                {blastRows.map((row) => (
+                  <tr key={row.run_id}>
+                    <td>
+                      {row.run_id ? (
+                        <a href={`/v1/admin/app/runs/${row.run_id}`}>{row.run_id}</a>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      <code>{row.frozen}</code>
+                    </td>
+                    <td>
+                      <code>{row.proposed}</code>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
         </div>
       ) : null}
       {tab === "personas" ? (

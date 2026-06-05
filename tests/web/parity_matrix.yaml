@@ -128,3 +128,6 @@ admin:
   - id: persona_scope_overlap
     web: true
     notes: Config Personas tab overlap report via overlap-report BFF
+  - id: config_blast_radius
+    web: true
+    notes: Config Blast radius tab previews workflow edit impact via blast-radius API
