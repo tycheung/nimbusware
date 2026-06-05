@@ -1,6 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
 import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
+import { ResearchPanel } from "../components/ResearchPanel";
+import { StitchSummaryPanel } from "../components/StitchSummaryPanel";
 import { TheaterPanel } from "../components/TheaterPanel";
 import { TimelineAccordion } from "../components/TimelineAccordion";
 
@@ -127,6 +129,10 @@ export function RunDetailPage({ id }: { id?: string }) {
       ) : (
         <p>No timeline.</p>
       )}
+      <h3>Research briefs</h3>
+      <ResearchPanel runId={id} />
+      <h3>Stitch / transplant</h3>
+      <StitchSummaryPanel runId={id} />
       <h3>Findings</h3>
       <FindingsTable rows={findings} />
       <h3>Critic matrix</h3>

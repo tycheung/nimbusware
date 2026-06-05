@@ -98,3 +98,9 @@ admin:
   - id: critic_reliability_fleet
     web: true
     notes: Fleet tab structured critic reliability table
+  - id: research_briefs
+    web: true
+    notes: Run detail ResearchPanel with approve/reject
+  - id: stitch_summary
+    web: true
+    notes: Run detail StitchSummaryPanel with transplant outcome
