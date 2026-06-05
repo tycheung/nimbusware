@@ -30,6 +30,7 @@ export function RunDetailPage({ id }: { id?: string }) {
   const [policyDiffRows, setPolicyDiffRows] = useState<
     { key: string; run_a: string; run_b: string }[]
   >([]);
+  const [executeRoleId, setExecuteRoleId] = useState("planner");
 
   useEffect(() => {
     if (!id) return;
@@ -48,6 +49,23 @@ export function RunDetailPage({ id }: { id?: string }) {
     try {
       const res = await apiJson<Record<string, string>>(`/runs/${id}/lifecycle/${path}`, { method: "POST" });
       setActionMsg(res.status || "ok");
+      setRun(await apiJson(`/runs/${id}`));
+    } catch (e) {
+      setActionMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function executeRole() {
+    if (!id) return;
+    const roleId = executeRoleId.trim();
+    if (!roleId) return;
+    try {
+      const res = await apiJson<Record<string, string>>(`/roles/${encodeURIComponent(roleId)}/execute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: id }),
+      });
+      setActionMsg(`${res.status || "ok"}: ${res.stage_name || res.taxonomy_key || roleId}`);
       setRun(await apiJson(`/runs/${id}`));
     } catch (e) {
       setActionMsg(String((e as Error).message || e));
@@ -184,6 +202,18 @@ export function RunDetailPage({ id }: { id?: string }) {
       <CriticTable rows={critics} />
       <h3>Critic reliability</h3>
       <CriticReliabilityPanel runId={id} />
+      <h3>Role execute (debug)</h3>
+      <p class="muted">Dispatch a single producer role stage for this run (admin §6.6).</p>
+      <label>
+        Role UUID or taxonomy{" "}
+        <input
+          value={executeRoleId}
+          onInput={(e) => setExecuteRoleId((e.target as HTMLInputElement).value)}
+        />
+      </label>
+      <button type="button" onClick={() => void executeRole()}>
+        Execute role
+      </button>
       <h3>Policy compare</h3>
       <p class="muted">Compare frozen policy snapshots on run.created for this run vs another.</p>
       <label>

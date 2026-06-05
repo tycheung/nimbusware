@@ -427,3 +427,24 @@ class LifecycleVerifyHost(Protocol):
     def _maybe_escalate_after_cumulative_high_severity_findings(self, run_id: UUID) -> None: ...
     def _maybe_emit_self_refinement_stage_marker(self, run_id: UUID) -> None: ...
     def _maybe_continue_ungated_self_refinement_loop(self, run_id: UUID) -> None: ...
+
+
+class RoleExecuteHost(
+    LifecyclePlanHost,
+    LifecycleVerifyHost,
+    IntegratorOptionalStagesHost,
+    IntegrationOptionalStagesHost,
+    AgentEvaluatorOptionalStagesHost,
+    ResearchOptionalStagesHost,
+    StitchOptionalStagesHost,
+    Protocol,
+):
+    _registry: RoleRegistry
+
+    def execute_role_for_run(
+        self,
+        run_id: UUID,
+        role_id: str,
+        *,
+        workspace: Path | None = None,
+    ) -> dict[str, object]: ...

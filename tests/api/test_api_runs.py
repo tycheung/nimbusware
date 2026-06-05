@@ -455,18 +455,42 @@ def test_timeline_404_problem_envelope(client: TestClient) -> None:
 
 
 def test_execute_role_requires_admin_token(client: TestClient) -> None:
-    r = client.post("/v1/roles/00000000-0000-4000-8000-000000000001/execute")
+    r = client.post(
+        "/v1/roles/planner/execute",
+        json={"run_id": "00000000-0000-4000-8000-000000000099"},
+    )
     assert r.status_code == 401
     body = r.json()
     assert body.get("code") == "unauthorized"
     assert "message" in body
+
+
+def test_execute_role_planner_on_run(client: TestClient) -> None:
+    run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
+    client.post(f"/v1/runs/{run_id}/lifecycle/start")
     ok = client.post(
-        "/v1/roles/00000000-0000-4000-8000-000000000001/execute",
+        "/v1/roles/planner/execute",
+        json={"run_id": run_id},
         headers={
             "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
         },
     )
     assert ok.status_code == 200
+    body = ok.json()
+    assert body.get("status") == "executed"
+    assert body.get("taxonomy_key") == "planner"
+
+
+def test_execute_role_unsupported_critic(client: TestClient) -> None:
+    run_id = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
+    r = client.post(
+        "/v1/roles/security_critic/execute",
+        json={"run_id": run_id},
+        headers={
+            "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+        },
+    )
+    assert r.status_code == 422
 
 
 @_SLOW

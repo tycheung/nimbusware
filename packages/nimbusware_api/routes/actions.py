@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from agent_core.models import (
     EventType,
@@ -16,8 +17,12 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
+from hermes_orchestrator.role_execute import (
+    resolve_taxonomy_key,
+    supported_role_taxonomy_keys,
+)
 from nimbusware_api.admin import AdminDep
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_401,
@@ -28,6 +33,13 @@ from nimbusware_api.schemas.openapi import (
 )
 
 router = APIRouter(tags=["actions"])
+
+
+class RoleExecuteRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    run_id: UUID
+    workspace_path: str | None = Field(default=None, max_length=512)
 
 
 class EscalateBody(BaseModel):
@@ -161,26 +173,54 @@ def override_gate(run_id: UUID, body: OverrideGateBody, store: StoreDep) -> dict
     "/roles/{role_id}/execute",
     responses={
         200: {
-            "description": "Stub response (executor not wired)",
+            "description": "Role stage dispatched",
             "content": {
                 "application/json": {
                     "example": {
-                        "role_id": "backend_writer",
-                        "status": "not_implemented",
-                        "detail": "Authenticated stub; wire executor when ready (plan §6.6).",
+                        "status": "executed",
+                        "taxonomy_key": "planner",
+                        "stage_name": "planner",
+                        "run_id": "00000000-0000-4000-8000-000000000001",
                     },
                 },
             },
         },
         401: PROBLEM_RESPONSE_401,
+        404: PROBLEM_RESPONSE_404,
         422: PROBLEM_RESPONSE_422,
         500: PROBLEM_RESPONSE_500,
         503: PROBLEM_RESPONSE_503,
     },
 )
-def execute_role(role_id: str, _: AdminDep) -> dict[str, Any]:
-    return {
-        "role_id": role_id,
-        "status": "not_implemented",
-        "detail": "Authenticated stub; wire executor when ready (plan §6.6).",
-    }
+def execute_role(
+    role_id: str,
+    body: RoleExecuteRequest,
+    _admin: AdminDep,
+    orch: OrchDep,
+    store: StoreDep,
+) -> dict[str, Any]:
+    rows = store.list_run_events(str(body.run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(body.run_id)}),
+        )
+    try:
+        resolve_taxonomy_key(orch._registry, role_id)
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("role_not_found", f"unknown role: {role_id}"),
+        ) from None
+    ws = Path(body.workspace_path).resolve() if body.workspace_path else None
+    try:
+        return orch.execute_role_for_run(body.run_id, role_id, workspace=ws)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "role_execute_unsupported",
+                str(exc),
+                details={"supported_roles": supported_role_taxonomy_keys(orch._registry)},
+            ),
+        ) from exc

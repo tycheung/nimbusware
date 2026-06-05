@@ -16,6 +16,7 @@ from hermes_orchestrator._pipeline.optional_stages import OptionalStagesMixin
 from hermes_orchestrator._pipeline.optional_stages_research import ResearchOptionalStagesMixin
 from hermes_orchestrator._pipeline.optional_stages_stitch import StitchOptionalStagesMixin
 from hermes_orchestrator._pipeline.pipeline_scraper import PipelineScraperMixin
+from hermes_orchestrator._pipeline.role_execute import RoleExecuteMixin
 from hermes_orchestrator._pipeline.writers import WritersMixin
 
 _MIXINS = (
@@ -30,6 +31,7 @@ _MIXINS = (
     OptionalStagesMixin,
     ResearchOptionalStagesMixin,
     StitchOptionalStagesMixin,
+    RoleExecuteMixin,
     RunOrchestratorBase,
 )
 
@@ -90,6 +92,7 @@ class RunOrchestrator(
     OptionalStagesMixin,
     ResearchOptionalStagesMixin,
     StitchOptionalStagesMixin,
+    RoleExecuteMixin,
     RunOrchestratorBase,
 ):
     """MVP run lifecycle: create → preflight → plan stage → writer loop."""
