@@ -1,5 +1,3 @@
-"""Tests for console API error handling (web UI)."""
-
 from __future__ import annotations
 
 import pytest
