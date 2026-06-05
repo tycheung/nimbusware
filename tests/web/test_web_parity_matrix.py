@@ -49,6 +49,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "models_gpu_filter",
         "ollama_pull",
         "settings_operator",
+        "maker_governor_sliders",
         "hardware_panel",
         "deep_link_run_id",
         "memory_influence",

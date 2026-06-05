@@ -44,6 +44,9 @@ maker:
     web: true
   - id: settings_operator
     web: true
+  - id: maker_governor_sliders
+    web: true
+    notes: Settings tab resource governor RAM/VRAM sliders with live limit preview
   - id: hardware_panel
     web: true
   - id: deep_link_run_id

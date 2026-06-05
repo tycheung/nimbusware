@@ -442,6 +442,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — hardware governor",
         ),
         SettingDef(
+            "NIMBUSWARE_MAX_VRAM_PCT",
+            user,
+            i,
+            "85",
+            "Max VRAM %",
+            "Discrete GPU memory cap for resource governor.",
+            "User — hardware governor",
+        ),
+        SettingDef(
             "NIMBUSWARE_HW_AUTO_ADJUST",
             user,
             b,
