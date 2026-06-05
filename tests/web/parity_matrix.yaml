@@ -113,3 +113,6 @@ admin:
   - id: integration_adapter_run
     web: true
     notes: Run detail IntegrationAdapterPanel via admin BFF
+  - id: bundle_outcome_analytics
+    web: true
+    notes: Metrics page BundleOutcomePanel via bundle-outcomes API

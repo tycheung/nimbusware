@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+import { BundleOutcomePanel } from "../components/BundleOutcomePanel";
 
 type Summary = {
   generated_at?: string;
@@ -109,6 +110,7 @@ export function MetricsPage() {
       ) : (
         !error && <p>Loading…</p>
       )}
+      <BundleOutcomePanel />
     </section>
   );
 }
