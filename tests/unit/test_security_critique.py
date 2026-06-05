@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.security_critique import (
@@ -20,7 +21,6 @@ from nimbusware_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_security_scan_tools_failed_detects_ruff() -> None:

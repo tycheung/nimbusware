@@ -6,13 +6,13 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
+from nimbusware_env import find_repo_root
 from nimbusware_memory import InMemoryMemoryChunkStore
 from nimbusware_memory.contribution import maybe_rebuild_memory_index_for_run
 from nimbusware_memory.embeddings import deterministic_embed, embed_text
 from nimbusware_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_env import find_repo_root
 
 
 def test_embed_text_deterministic_stable() -> None:

@@ -7,12 +7,12 @@ import pytest
 from fastapi.testclient import TestClient
 
 from agent_core.models import Verdict
+from nimbusware_api.app import app
 from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
 )
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_api.app import app
 
 
 @pytest.fixture

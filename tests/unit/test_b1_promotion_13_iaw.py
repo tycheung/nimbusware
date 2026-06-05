@@ -4,13 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
-from nimbusware_orchestrator.integration_adapter_writer_stage import INTEGRATION_ADAPTER_WRITER_STAGE
+from nimbusware_orchestrator.integration_adapter_writer_stage import (
+    INTEGRATION_ADAPTER_WRITER_STAGE,
+)
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_target_adapter_integration_writes_state_and_sync(tmp_path: Path) -> None:

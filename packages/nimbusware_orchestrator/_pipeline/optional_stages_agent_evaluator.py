@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_tri_state
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     AgentEvaluator,
@@ -26,7 +27,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import AgentEvaluatorOptionalStagesHost
-from nimbusware_env.env_flags import env_tri_state
 
 _AgentEvaluatorBranch = Literal["rules", "rules_with_llm_policy"]
 
@@ -70,8 +70,8 @@ class AgentEvaluatorOptionalStagesMixin:
                     cfg=ac_cfg,
                     config_materializer=self._config_materializer,
                 )
-        from nimbusware_orchestrator.read_models import persona_assignment_from_run_created_metadata
         from nimbusware_config.persist import load_persona_shelf
+        from nimbusware_orchestrator.read_models import persona_assignment_from_run_created_metadata
 
         rows = self._store.list_run_events(str(run_id))
         pa_for_eval: dict[str, Any] | None = None

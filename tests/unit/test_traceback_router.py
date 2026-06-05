@@ -5,9 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import UUID
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.traceback_router import suggest_owner_role_from_verifier_log
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

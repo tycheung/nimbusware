@@ -7,12 +7,12 @@ import json
 import sys
 from pathlib import Path
 
+from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION, edition
 from nimbusware_orchestrator.fleet_ollama_sli import (
     export_path,
     run_sustained_health_probe,
     write_sli_export,
 )
-from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION, edition
 
 
 def main(argv: list[str] | None = None) -> int:

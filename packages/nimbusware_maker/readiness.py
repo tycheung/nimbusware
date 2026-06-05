@@ -9,9 +9,9 @@ from typing import Any
 import httpx
 import yaml
 
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_env.edition import edition_manifest
 from nimbusware_env.env_flags import nimbusware_skip_preflight_enabled
+from nimbusware_store.memory import InMemoryEventStore
 
 INSTALL_GUIDE = "python scripts/install_nimbusware.py  (see README Quick start)"
 

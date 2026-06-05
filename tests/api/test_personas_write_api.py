@@ -21,10 +21,10 @@ os.environ.setdefault(
 )
 
 from agent_core.models import EventType  # noqa: E402
-from nimbusware_extensions.personas import PERSONA_INSTRUCTIONS_MAX_CHARS  # noqa: E402
-from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
 from nimbusware_api.deps import get_orchestrator, get_store  # noqa: E402
+from nimbusware_extensions.personas import PERSONA_INSTRUCTIONS_MAX_CHARS  # noqa: E402
+from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
 
 ADMIN_HEADERS = {
     "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"

@@ -5,8 +5,8 @@ from collections.abc import Iterator
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
+from nimbusware_store.memory import InMemoryEventStore
 
 
 @pytest.fixture

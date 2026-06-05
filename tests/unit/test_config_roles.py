@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.registry import RoleRegistry
 
 
 def test_db_registry_matches_yaml_seed() -> None:

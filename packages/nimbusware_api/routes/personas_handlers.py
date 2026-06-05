@@ -2,14 +2,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
 
-from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
-from nimbusware_extensions.personas import normalize_entry
-from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
-from nimbusware_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
-from nimbusware_orchestrator.persona_probation_reliability import (
-    collect_persona_eval_metrics,
-    reliability_decision,
-)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
@@ -40,6 +32,14 @@ from nimbusware_api.schemas.personas import (
     PersonaShelfUpsertRequest,
     PersonaShelvesResponse,
     ProbationReliabilityResponse,
+)
+from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
+from nimbusware_extensions.personas import normalize_entry
+from nimbusware_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+from nimbusware_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
+from nimbusware_orchestrator.persona_probation_reliability import (
+    collect_persona_eval_metrics,
+    reliability_decision,
 )
 
 router = APIRouter(prefix="/personas", tags=["personas"])

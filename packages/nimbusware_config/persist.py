@@ -5,10 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, cast
 
-from nimbusware_extensions.custom_agents import CustomAgentRegistry, default_registry_path
-from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_orchestrator.merge import atomic_write_yaml, load_yaml
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_path
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
     KEY_CUSTOM_AGENTS_REGISTRY,
@@ -19,6 +15,10 @@ from nimbusware_config.keys import (
     NS_POLICY,
     NS_WORKFLOWS,
 )
+from nimbusware_extensions.custom_agents import CustomAgentRegistry, default_registry_path
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_orchestrator.merge import atomic_write_yaml, load_yaml
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_path
 
 _MODEL_ROUTING_PATH = ("configs", "model-routing.yaml")
 

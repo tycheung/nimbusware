@@ -8,6 +8,7 @@ from uuid import UUID
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.critique_routing import (
     default_critique_pairings_path,
@@ -16,7 +17,6 @@ from nimbusware_orchestrator.critique_routing import (
     taxonomy_keys_for_run_lifecycle,
 )
 from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_env import find_repo_root
 
 # Builder helpers (no fixtures beyond pytest built-ins)
 

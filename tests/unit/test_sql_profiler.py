@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.sql_profiler import (
     check_runtime_sql_budget,
     record_sql_query,
@@ -12,7 +13,6 @@ from nimbusware_orchestrator.sql_profiler import (
     run_sql_profiler_summary,
     scan_sql_query_hotspots,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_record_sql_query_session_counter() -> None:

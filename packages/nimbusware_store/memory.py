@@ -7,10 +7,10 @@ from typing import Any
 from uuid import UUID
 
 from agent_core.models import NimbuswareEventUnion, validate_event_dict
+from nimbusware_iam.constants import DEFAULT_TENANT_ID
 from nimbusware_store.allowed_types import assert_event_type_registered
 from nimbusware_store.protocol import event_row_from_serialized, serialized_event_from_row
 from nimbusware_store.tenant_scope import store_tenant_id
-from nimbusware_iam.constants import DEFAULT_TENANT_ID
 
 
 def _json_safe(obj: Any) -> Any:
@@ -301,7 +301,9 @@ class InMemoryEventStore:
         has_more = len(chunk) > lim
         return chunk[:lim], has_more
 
-    def replay_validate(self, *, context: dict[str, Any] | None = None) -> list[NimbuswareEventUnion]:
+    def replay_validate(
+        self, *, context: dict[str, Any] | None = None
+    ) -> list[NimbuswareEventUnion]:
         """Round-trip all events through Pydantic (parity with Postgres read path)."""
         events: list[NimbuswareEventUnion] = []
         for r in self._scoped_rows():

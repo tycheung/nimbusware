@@ -6,11 +6,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.routing import APIRouter as _APIRouter
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
-from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_console.integrator_gate._helpers import integrator_gate_from_timeline
 from nimbusware_console.integrator_gate.latest_delta.exports import integrator_gate_summary_rows
+from nimbusware_store.protocol import serialized_event_from_row
 
 router: _APIRouter = APIRouter()
 

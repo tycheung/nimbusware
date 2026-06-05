@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_orchestrator.fleet_ollama_sli import (
     merge_preflight_history_aggregate,
     probe_health_latency_ms,
@@ -15,7 +16,6 @@ from nimbusware_orchestrator.fleet_ollama_sli import (
     run_sustained_health_probe,
     write_sli_export,
 )
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 
 
 def test_probe_health_latency_ms_success(monkeypatch: pytest.MonkeyPatch) -> None:

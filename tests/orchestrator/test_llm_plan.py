@@ -8,6 +8,7 @@ from uuid import uuid4
 
 import httpx
 
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm_plan import (
     execute_implementation_critique_llm,
@@ -17,7 +18,6 @@ from nimbusware_orchestrator.llm_plan import (
 )
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"

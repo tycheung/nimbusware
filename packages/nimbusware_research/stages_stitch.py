@@ -20,6 +20,8 @@ from agent_core.models import (
     StitchPlanEmittedPayload,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+from nimbusware_maker.workspace import workspace_path_from_run_created_metadata
+from nimbusware_maker.workspace_snapshot import create_workspace_snapshot
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_research.stages import _emit_critique_panel
 from nimbusware_research.stitch_manifests import persist_transplant_manifest
@@ -31,8 +33,6 @@ from nimbusware_research.stitch_verifiers import (
     scan_manifest_licenses,
 )
 from nimbusware_store.protocol import EventStore
-from nimbusware_maker.workspace import workspace_path_from_run_created_metadata
-from nimbusware_maker.workspace_snapshot import create_workspace_snapshot
 
 STITCH_CRITIQUE_STAGE = "stitcher.critique"
 _STUB_TARGET_PATHS = (

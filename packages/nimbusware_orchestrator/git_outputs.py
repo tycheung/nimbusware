@@ -6,12 +6,12 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_env.env_flags import (
     nimbusware_git_native_outputs_enabled,
     nimbusware_git_pr_on_complete_enabled,
     nimbusware_slice_branch_prefix,
 )
+from nimbusware_orchestrator.micro_slice import SlicePlan
 
 
 def run_branch_name(run_id: str | UUID, *, prefix: str | None = None) -> str:

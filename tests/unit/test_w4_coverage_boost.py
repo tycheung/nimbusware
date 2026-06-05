@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 from nimbusware_agent_tools.runtime import AgentStep
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_client.http import admin_headers, api_base, user_headers
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.slice_preview import (
@@ -17,6 +16,7 @@ from nimbusware_maker.slice_preview import (
 from nimbusware_maker.store import InMemoryProjectStore
 from nimbusware_projections.builders.maker_progress import maker_progress_from_events
 from nimbusware_projections.builders.run_escalated import run_escalated_timeline_summary
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_slice_preview_unified_diff(tmp_path: Path) -> None:

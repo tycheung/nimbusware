@@ -6,9 +6,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models import EventType
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.verifier_escalation import load_escalate_on_first_verifier_failure
-from nimbusware_env import find_repo_root
 
 
 def test_load_escalate_on_first_verifier_failure_default() -> None:

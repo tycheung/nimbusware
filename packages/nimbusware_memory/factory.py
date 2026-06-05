@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import os
 
-from nimbusware_memory.store import InMemoryMemoryChunkStore, MemoryChunkStore, PostgresMemoryChunkStore
+from nimbusware_memory.store import (
+    InMemoryMemoryChunkStore,
+    MemoryChunkStore,
+    PostgresMemoryChunkStore,
+)
 
 
 def build_memory_chunk_store(

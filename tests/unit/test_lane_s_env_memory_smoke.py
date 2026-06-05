@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from agent_core.models import EventType
+from nimbusware_env import env_flags
 from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
     memory_retrieval_timeline_entries,
     memory_retrieval_timeline_summary,
 )
-from nimbusware_env import env_flags
 
 
 def test_memory_timeline_summaries_empty() -> None:

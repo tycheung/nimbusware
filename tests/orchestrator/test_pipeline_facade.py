@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import nimbusware_orchestrator.pipeline as pipeline_module
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 
 
 def test_pipeline_exports_public_api() -> None:

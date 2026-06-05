@@ -8,6 +8,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType, FindingCreatedEvent, FindingCreatedPayload, Severity
+from nimbusware_env.env_flags import env_falsy
 from nimbusware_orchestrator.persona_probation_reliability import (
     collect_persona_eval_metrics,
     reliability_decision,
@@ -15,7 +16,6 @@ from nimbusware_orchestrator.persona_probation_reliability import (
 from nimbusware_orchestrator.persona_shelf_promotion import try_auto_shelve_probation_persona
 from nimbusware_orchestrator.workflow_probation_automation import ProbationAutomationWorkflowBlock
 from nimbusware_store.protocol import EventStore
-from nimbusware_env.env_flags import env_falsy
 
 
 def _probation_auto_shelve_env_disabled() -> bool:

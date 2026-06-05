@@ -39,14 +39,14 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 | Package | Role |
 |---------|------|
-| `agent_core` | Event models, validation |
+| `agent_core` | Event models, `context_budget`, slice handoff models |
 | `nimbusware_store` | Event store (Postgres / memory) |
 | `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
 | `nimbusware_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
-| `nimbusware_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`/`stub`/`docker` (Individual); `kubernetes`/`e2b` fleet sandboxes; per-slice risk caps |
+| `nimbusware_agent_tools` | JIT `agent_loop`, `edit`/`read`/`write` tools; jail + sandbox backends; per-slice risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |

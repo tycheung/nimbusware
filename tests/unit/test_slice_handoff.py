@@ -32,7 +32,9 @@ def _gate(passed: bool, *, slice_id: str = "slice-x") -> SliceGateChainResult:
 
 def test_handoff_merge_three_slices() -> None:
     h1 = build_slice_handoff_summary(
-        _plan("slice-1"), gate=_gate(True, slice_id="slice-1"), diff_stat="2 lines",
+        _plan("slice-1"),
+        gate=_gate(True, slice_id="slice-1"),
+        diff_stat="2 lines",
     )
     h2 = build_slice_handoff_summary(
         _plan("slice-2"),
@@ -57,7 +59,8 @@ def test_handoff_merge_three_slices() -> None:
 
 def test_handoff_fail_updates_next_steps() -> None:
     summary = build_slice_handoff_summary(
-        _plan("slice-2"), gate=_gate(False, slice_id="slice-2"),
+        _plan("slice-2"),
+        gate=_gate(False, slice_id="slice-2"),
     )
     assert any("failure" in step.lower() for step in summary.next_steps)
 

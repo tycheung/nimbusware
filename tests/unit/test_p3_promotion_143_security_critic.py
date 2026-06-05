@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.llm_plan import IMPLEMENTATION_CRITIQUE_STAGE
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
-from nimbusware_env import find_repo_root
 
 
 def test_security_gate_fail_skips_implementation_critique(monkeypatch: pytest.MonkeyPatch) -> None:

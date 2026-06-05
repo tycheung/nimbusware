@@ -9,12 +9,12 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_store.memory import InMemoryEventStore
 
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
 

@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-from nimbusware_extensions.personas import (
-    PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,
-    PERSONA_INSTRUCTIONS_MAX_CHARS,
-)
 from nimbusware_console.persona_editor import (
     EDITABLE_FIELDS,
     build_patch_request,
@@ -23,6 +19,10 @@ from nimbusware_console.persona_editor import (
     persona_editor_validation_table_rows,
     persona_field_metrics,
     persona_list_field_line_counts_caption,
+)
+from nimbusware_extensions.personas import (
+    PERSONA_ALLOWED_TOOLS_MAX_ENTRIES,
+    PERSONA_INSTRUCTIONS_MAX_CHARS,
 )
 
 SNAPSHOT: dict = {

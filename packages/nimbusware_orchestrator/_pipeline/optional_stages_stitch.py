@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_tri_state
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     emit_refactor_post_stitch_stage_and_critique,
@@ -7,7 +8,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import StitchOptionalStagesHost
-from nimbusware_env.env_flags import env_tri_state
 
 
 class StitchOptionalStagesMixin:

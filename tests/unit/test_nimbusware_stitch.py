@@ -8,18 +8,21 @@ from uuid import uuid4
 import pytest
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_research.stitch_manifests import persist_transplant_manifest, read_transplant_manifest
-from nimbusware_research.stitch_models import TransplantManifest
-from nimbusware_research.stitch_read_model import stitch_applied_snapshot_from_events
-from nimbusware_store.allowed_types import allowed_event_type_values
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
 from nimbusware_maker.slice_workflow.approval_panel import revert_workspace
 from nimbusware_maker.workspace import project_metadata_block
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_research.stitch_manifests import (
+    persist_transplant_manifest,
+    read_transplant_manifest,
+)
+from nimbusware_research.stitch_models import TransplantManifest
+from nimbusware_research.stitch_read_model import stitch_applied_snapshot_from_events
+from nimbusware_store.allowed_types import allowed_event_type_values
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_stitch_event_types_in_db_allowlist() -> None:

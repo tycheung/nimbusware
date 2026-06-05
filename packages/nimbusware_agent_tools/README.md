@@ -1,6 +1,6 @@
 # nimbusware_agent_tools
 
-Allowlisted tools for slice implement agent mode (file reads, bounded shell, etc.). Tool names and schemas are validated before orchestrator dispatch.
+Allowlisted tools for slice implement agent mode. The JIT loop (`agent_loop.py`) calls `read`, `edit`, `write`, `grep`, and `shell` across multiple LLM turns without upfront context preload.
 
 ## Consumers
 
@@ -33,6 +33,11 @@ Per-slice limits (frozen on `run.created` as `agent_tools_effective.risk_caps`):
 |-----|---------|---------|
 | `NIMBUSWARE_AGENT_MAX_TOOL_STEPS` | 20 | Max read/grep/write/shell steps |
 | `NIMBUSWARE_AGENT_MAX_SHELL_INVOCATIONS` | 5 | Max shell tool calls |
-| `NIMBUSWARE_AGENT_MAX_WRITE_BYTES` | 262144 | Total write payload bytes |
+| `NIMBUSWARE_AGENT_MAX_WRITE_BYTES` | 262144 | Total write + net edit bytes |
+| `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn tool loop |
+| `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Read tool cap |
+| `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Shell output cap |
 
-Implementation: [`sandbox.py`](sandbox.py), [`filesystem_jail.py`](filesystem_jail.py).
+`edit` performs single-occurrence replacements; prefer it over `write` for existing files.
+
+Implementation: [`agent_loop.py`](agent_loop.py), [`tools.py`](tools.py), [`sandbox.py`](sandbox.py), [`filesystem_jail.py`](filesystem_jail.py).

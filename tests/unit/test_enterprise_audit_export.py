@@ -5,10 +5,10 @@ import json
 import tarfile
 from uuid import uuid4
 
+from nimbusware_iam.store import InMemoryIamStore
 from nimbusware_orchestrator.enterprise_audit_export import build_enterprise_audit_bundle_bytes
 from nimbusware_research.enterprise_index import append_enterprise_research_index
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_iam.store import InMemoryIamStore
 
 
 def test_enterprise_audit_bundle_contains_iam_actions(tmp_path, monkeypatch) -> None:

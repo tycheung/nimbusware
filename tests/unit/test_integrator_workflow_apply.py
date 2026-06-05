@@ -4,8 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
 from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_agent_evaluator_yaml,
@@ -16,6 +14,8 @@ from nimbusware_console.integrator_workflow_apply import (
     prepare_integrator_gate_apply,
     workflow_yaml_write_enabled,
 )
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_workflow_block
 
 
 @pytest.fixture()

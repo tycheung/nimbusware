@@ -15,13 +15,21 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
+from nimbusware_env.env_flags import (
+    nimbusware_slice_p3_evidence_enabled,
+    nimbusware_use_llm_enabled,
+)
 from nimbusware_orchestrator.fast_slice_critique import fast_slice_env_effective
 from nimbusware_orchestrator.llm_slice import (
     execute_slice_critique_llm,
     execute_slice_plan_llm,
     execute_slice_replan_llm,
 )
-from nimbusware_orchestrator.micro_slice import SlicePlan, micro_slice_count_for_run, parse_slice_plan
+from nimbusware_orchestrator.micro_slice import (
+    SlicePlan,
+    micro_slice_count_for_run,
+    parse_slice_plan,
+)
 from nimbusware_orchestrator.slice_diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
@@ -32,10 +40,6 @@ from nimbusware_orchestrator.slice_gate import SliceGateChainResult, map_paths_t
 from nimbusware_orchestrator.slice_implement import execute_slice_implement
 from nimbusware_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
-from nimbusware_env.env_flags import (
-    nimbusware_slice_p3_evidence_enabled,
-    nimbusware_use_llm_enabled,
-)
 
 if TYPE_CHECKING:
     from nimbusware_orchestrator.pipeline import RunOrchestrator

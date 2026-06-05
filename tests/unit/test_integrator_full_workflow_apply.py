@@ -12,7 +12,6 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_console.integrator_workflow_apply import (
     ALLOW_WORKFLOW_YAML_WRITE_ENV,
     apply_full_workflow_yaml,
@@ -60,6 +59,7 @@ from nimbusware_console.integrator_workflow_preview import (
     parse_full_workflow_yaml_paste,
     validate_full_workflow_document,
 )
+from nimbusware_orchestrator.merge import load_yaml
 
 
 @pytest.fixture()

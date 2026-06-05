@@ -34,7 +34,9 @@ def _has_integrator_gate_event(events: list[dict[str, Any]]) -> bool:
 def test_emit_integrator_gate_when_yaml_enabled_via_monkeypatch() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled", return_value=True):
+    with patch(
+        "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled", return_value=True
+    ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
     types = [r["event_type"] for r in mem.list_run_events(str(rid))]
     assert EventType.GATE_DECISION_EMITTED.value in types

@@ -7,7 +7,6 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
 
-from nimbusware_store.protocol import serialized_event_from_row
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
@@ -23,6 +22,7 @@ from nimbusware_api.schemas.preflight import (
     PreflightMetricsExport,
     PreflightMetricsExportFilters,
 )
+from nimbusware_store.protocol import serialized_event_from_row
 
 router = APIRouter(tags=["preflight"])
 

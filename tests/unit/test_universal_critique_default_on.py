@@ -7,13 +7,13 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
+from nimbusware_api.routes.runs import universal_critique_timeline_summary
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
     universal_critique_production_default_on,
 )
-from nimbusware_api.routes.runs import universal_critique_timeline_summary
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

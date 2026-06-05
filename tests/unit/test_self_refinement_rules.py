@@ -9,17 +9,17 @@ from uuid import UUID
 
 from fastapi.testclient import TestClient
 
-from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
-from nimbusware_orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_api.deps import get_orchestrator, get_store
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
+from nimbusware_orchestrator.workflow_self_refinement import SelfRefinementWorkflowBlock
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def _minimal_shelf(

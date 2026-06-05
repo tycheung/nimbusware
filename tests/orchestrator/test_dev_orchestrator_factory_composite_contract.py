@@ -6,13 +6,13 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import (
     RunOrchestrator,
     default_paths,
     make_dev_orchestrator,
 )
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_env import find_repo_root
 
 # -- Part A -- ``default_paths`` shape + path-suffix wire-format (5 axes) ------
 

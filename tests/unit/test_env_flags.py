@@ -7,6 +7,8 @@ from nimbusware_env.env_flags import (
     env_force_on,
     env_truthy,
     env_truthy_raw,
+    nimbusware_api_host,
+    nimbusware_config_from_db_enabled,
     nimbusware_preflight_latency_sample_count,
     nimbusware_run_bandit_enabled,
     nimbusware_run_semgrep_enabled,
@@ -14,8 +16,6 @@ from nimbusware_env.env_flags import (
     nimbusware_slice_auto_advance_enabled,
     nimbusware_slice_implement_mode,
     nimbusware_use_llm_explicitly_off,
-    nimbusware_api_host,
-    nimbusware_config_from_db_enabled,
     nimbusware_workflow_profile,
 )
 

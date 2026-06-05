@@ -11,9 +11,9 @@ from nimbusware_console.components.workflow_explainer_helpers import relative_un
 from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
 from nimbusware_console.self_refinement_workflow_explainer.env import (
-    _nimbusware_self_refinement_ungated_loop_env_summary,
     _load_policy_or_default,
     _marker_preview,
+    _nimbusware_self_refinement_ungated_loop_env_summary,
 )
 
 

@@ -153,8 +153,8 @@ def test_persona_edit_round_trip_through_event_store(tmp_path: Path) -> None:
     """
     import yaml as _yaml  # local import keeps test module imports tidy
 
-    from nimbusware_store.memory import InMemoryEventStore
     from nimbusware_api.deps import get_orchestrator, get_store
+    from nimbusware_store.memory import InMemoryEventStore
 
     personas_dir = tmp_path / "configs" / "personas"
     personas_dir.mkdir(parents=True, exist_ok=True)

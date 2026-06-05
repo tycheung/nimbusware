@@ -5,10 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_force_off, env_force_on
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from nimbusware_env.env_flags import env_force_off, env_force_on
 
 
 def security_scan_metadata_on_verify_enabled(

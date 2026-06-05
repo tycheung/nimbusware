@@ -6,10 +6,6 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
 
-from nimbusware_orchestrator.policy_snapshot_diff import (
-    diff_policy_snapshots,
-    policy_snapshot_from_run_created_metadata,
-)
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import (
@@ -18,6 +14,10 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
 )
 from nimbusware_maker.workspace import run_created_metadata_from_rows
+from nimbusware_orchestrator.policy_snapshot_diff import (
+    diff_policy_snapshots,
+    policy_snapshot_from_run_created_metadata,
+)
 
 router = APIRouter(tags=["policy"])
 

@@ -6,7 +6,6 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_maker.approval import has_plan_approved, pending_slice_from_rows
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_maker.slice_workflow import (
@@ -16,6 +15,7 @@ from nimbusware_maker.slice_workflow import (
     revert_workspace,
     skip_pending_slice,
 )
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 @pytest.fixture
@@ -27,8 +27,12 @@ def maker_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     ws = tmp_path / "project"
     ws.mkdir()
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").parent.mkdir(parents=True, exist_ok=True)
-    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text("# stub\n", encoding="utf-8")
+    (ws / "packages/nimbusware_orchestrator/micro_slice.py").parent.mkdir(
+        parents=True, exist_ok=True
+    )
+    (ws / "packages/nimbusware_orchestrator/micro_slice.py").write_text(
+        "# stub\n", encoding="utf-8"
+    )
     (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
     orch, store = make_dev_orchestrator(repo)
     requirements = build_requirements_artifact(business_prompt="Inventory app")

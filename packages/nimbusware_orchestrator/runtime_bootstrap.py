@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 from nimbusware_extensions.bundle_memory_factory import build_bundle_outcome_store
 from nimbusware_memory.factory import build_memory_chunk_store
 from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
@@ -16,7 +17,6 @@ from nimbusware_orchestrator.registry_db import load_registry_from_postgres
 from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_store.postgres import PostgresEventStore
 from nimbusware_store.protocol import EventStore
-from nimbusware_config import ConfigMaterializer, config_from_db_enabled
 
 if TYPE_CHECKING:
     from nimbusware_config.notify import ConfigNotifyHub

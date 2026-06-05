@@ -5,9 +5,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
 
 router = APIRouter(prefix="/enterprise/fleet/critic-reliability", tags=["enterprise"])
 

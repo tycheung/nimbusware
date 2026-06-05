@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_str, env_truthy
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
@@ -28,7 +29,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     stage_graph_node_lookup,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import OptionalCritiqueHost
-from nimbusware_env.env_flags import env_str, env_truthy
 
 
 class OptionalCritiqueMixin:

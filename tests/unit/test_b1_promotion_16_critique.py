@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     universal_critique_production_default_on,
 )
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

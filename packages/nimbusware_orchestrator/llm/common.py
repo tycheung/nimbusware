@@ -67,7 +67,9 @@ def append_gate_decision_event(
     extra_metadata: dict[str, Any] | None = None,
 ) -> None:
     """Append gate decision with stage-graph + live critic-matrix metadata when available."""
-    from nimbusware_orchestrator.critic_matrix_live import enrich_gate_metadata_with_critic_matrix_live
+    from nimbusware_orchestrator.critic_matrix_live import (
+        enrich_gate_metadata_with_critic_matrix_live,
+    )
     from nimbusware_orchestrator.stage_graph import (
         event_metadata_for_stage,
         stage_graph_from_run_created_metadata,

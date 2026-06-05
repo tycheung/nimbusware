@@ -17,10 +17,6 @@ from agent_core.models import (
     StageStartedEvent,
     StageStartedPayload,
 )
-from nimbusware_orchestrator.role_execute import (
-    resolve_taxonomy_key,
-    supported_role_taxonomy_keys,
-)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
@@ -30,6 +26,10 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
+)
+from nimbusware_orchestrator.role_execute import (
+    resolve_taxonomy_key,
+    supported_role_taxonomy_keys,
 )
 
 router = APIRouter(tags=["actions"])

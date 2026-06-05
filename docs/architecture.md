@@ -13,6 +13,8 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [003-projections-layer.md](adr/003-projections-layer.md) | `nimbusware_projections` read models |
 | [004-api-request-logging.md](adr/004-api-request-logging.md) | Request logging |
 | [005-request-correlation-id.md](adr/005-request-correlation-id.md) | Correlation IDs |
+| [006-prompt-tiers.md](adr/006-prompt-tiers.md) | Stable/context/volatile LLM prompt tiers |
+| [007-context-compaction.md](adr/007-context-compaction.md) | Campaign handoff compaction |
 
 ## Related docs
 

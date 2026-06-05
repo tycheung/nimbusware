@@ -7,10 +7,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from nimbusware_orchestrator.scraper_artifacts import (
-    resolve_scraper_artifact_base_dir,
-    scraper_artifact_inventory,
-)
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
@@ -18,6 +14,10 @@ from nimbusware_api.schemas.openapi import (
     SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200,
 )
 from nimbusware_api.schemas.scraper_artifacts import ScraperArtifactInventoryResponse
+from nimbusware_orchestrator.scraper_artifacts import (
+    resolve_scraper_artifact_base_dir,
+    scraper_artifact_inventory,
+)
 
 router = APIRouter(tags=["scraper-artifacts"])
 

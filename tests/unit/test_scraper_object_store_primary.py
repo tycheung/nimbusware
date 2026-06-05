@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import pytest
 
+from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_orchestrator.scraper_artifacts import (
     persist_scraper_artifact,
     prune_scraper_artifacts,
@@ -18,7 +19,6 @@ from nimbusware_orchestrator.scraper_object_store import (
     object_store_primary_enabled,
     object_store_put_artifact,
 )
-from nimbusware_env.edition import DEFAULT_EDITION, ENTERPRISE_EDITION, ENV_EDITION
 
 
 def test_object_store_primary_disabled_on_individual(monkeypatch: pytest.MonkeyPatch) -> None:

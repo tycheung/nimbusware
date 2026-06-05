@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.run_dispatch import (
     InMemoryRunQueue,
@@ -18,7 +19,6 @@ from nimbusware_orchestrator.run_dispatch import (
     set_run_queue,
 )
 from nimbusware_orchestrator.run_worker import run_worker_loop
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

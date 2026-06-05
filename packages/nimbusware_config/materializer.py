@@ -7,10 +7,6 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from nimbusware_extensions.custom_agents import CustomAgentRegistry
-from nimbusware_extensions.personas import PersonaShelf
-from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_config.flags import config_from_db_enabled
 from nimbusware_config.keys import (
     KEY_BUNDLE_CATALOG,
@@ -35,6 +31,10 @@ from nimbusware_config.store import (
     PostgresConfigStore,
     _maybe_publish_config_notify,
 )
+from nimbusware_extensions.custom_agents import CustomAgentRegistry
+from nimbusware_extensions.personas import PersonaShelf
+from nimbusware_orchestrator.merge import load_yaml
+from nimbusware_orchestrator.registry import RoleRegistry
 
 
 class ConfigMaterializer:

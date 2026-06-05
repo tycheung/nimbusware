@@ -19,7 +19,9 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 def test_persona_coverage_llm_branch_emits_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("agent_evaluator_coverage_llm_on")
-    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch(
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")
+    ):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
                 "nimbusware_orchestrator.persona_coverage_critique.ollama_chat_json",

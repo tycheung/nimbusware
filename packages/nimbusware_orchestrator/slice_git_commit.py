@@ -6,9 +6,9 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import nimbusware_slice_auto_commit_enabled
 from nimbusware_orchestrator.git_outputs import run_branch_name, slice_commit_message
 from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_env.env_flags import nimbusware_slice_auto_commit_enabled
 
 
 def slice_auto_commit_enabled(run_metadata: dict[str, Any]) -> bool:

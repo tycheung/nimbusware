@@ -18,6 +18,7 @@ from agent_core.models import (
     Severity,
     Verdict,
 )
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.llm_plan import (
     IMPLEMENTATION_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
@@ -25,7 +26,6 @@ from nimbusware_orchestrator.llm_plan import (
 )
 from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 from nimbusware_orchestrator.workflow_universal_critique import effective_universal_critique
-from nimbusware_env import find_repo_root
 
 if TYPE_CHECKING:
     from nimbusware_store.memory import InMemoryEventStore

@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 from nimbusware_env.env_flags import env_tri_state, nimbusware_use_llm_explicitly_off
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 
 @dataclass(frozen=True)

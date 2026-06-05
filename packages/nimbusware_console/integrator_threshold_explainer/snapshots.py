@@ -4,12 +4,12 @@ import os
 from pathlib import Path
 from typing import Any
 
+from nimbusware_config.workflow_read import (
+    load_yaml,
+)
 from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
     load_integrator_gate_emit_enabled,
-)
-from nimbusware_config.workflow_read import (
-    load_yaml,
 )
 
 

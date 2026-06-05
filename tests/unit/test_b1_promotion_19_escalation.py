@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

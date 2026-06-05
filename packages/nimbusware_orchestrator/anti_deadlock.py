@@ -6,9 +6,9 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 from nimbusware_orchestrator.merge import load_yaml
-from nimbusware_env.env_flags import env_str
 
 _PROGRESS_IGNORE: frozenset[str] = frozenset(
     {

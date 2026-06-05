@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
@@ -30,7 +31,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import LifecycleVerifyHost
-from nimbusware_env.env_flags import env_str
 
 
 class LifecycleVerifyMixin:

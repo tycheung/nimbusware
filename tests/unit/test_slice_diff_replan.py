@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.micro_slice import parse_slice_plan, validate_diff_budget
 from nimbusware_orchestrator.slice_diff import (
     check_slice_diff_budget,
@@ -11,7 +12,6 @@ from nimbusware_orchestrator.slice_diff import (
     subdivide_slice_plan,
 )
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
-from nimbusware_env import find_repo_root
 
 
 def test_subdivide_slice_plan_reduces_file_count() -> None:

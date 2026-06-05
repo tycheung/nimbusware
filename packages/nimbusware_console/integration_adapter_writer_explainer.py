@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
@@ -14,7 +15,6 @@ from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     parse_integration_adapter_writer_workflow_block,
 )
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, workflow_profile_path
-from nimbusware_console.config_materializer import console_config_materializer
 
 
 def _relative_under(repo_root: Path, path: Path) -> str:

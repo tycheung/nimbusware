@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace import (
     project_metadata_block,
     resolve_run_workspace,
     workspace_path_from_run_created_metadata,
 )
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_workspace_from_metadata() -> None:

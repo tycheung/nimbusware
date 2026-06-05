@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.security_scan import (
     SECURITY_SCAN_CATEGORIES,
     security_scan_tool_summary,
 )
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

@@ -4,12 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.ollama_manage import (
-    OllamaModelRow,
-    filter_models,
-    runtime_base_url_from_routing,
-)
-from nimbusware_orchestrator.ollama_user_policy import policy_from_routing
 from nimbusware_api.routes.ollama import _routing_models
 from nimbusware_api.schemas.ollama import (
     OllamaModelEntry,
@@ -18,6 +12,12 @@ from nimbusware_api.schemas.ollama import (
     OllamaUserPolicyBody,
 )
 from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
+from nimbusware_orchestrator.ollama_manage import (
+    OllamaModelRow,
+    filter_models,
+    runtime_base_url_from_routing,
+)
+from nimbusware_orchestrator.ollama_user_policy import policy_from_routing
 
 
 def test_load_and_persist_model_routing_roundtrip(tmp_path: Path) -> None:

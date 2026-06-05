@@ -6,13 +6,13 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
+from nimbusware_env.env_flags import env_over_yaml
 from nimbusware_orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     effective_universal_critique,
     parse_universal_critique_workflow_block,
 )
-from nimbusware_env import find_repo_root
-from nimbusware_env.env_flags import env_over_yaml
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

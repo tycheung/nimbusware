@@ -34,11 +34,7 @@ def test_record_micro_slice_plan_and_gate() -> None:
     assert summary["slice_count_planned"] == 1
     assert summary["slices_completed"] == 1
     handoff_rows = [
-        r
-        for r in rows
-        if (r.get("payload") or {}).get("stage_name") == "slice.handoff"
+        r for r in rows if (r.get("payload") or {}).get("stage_name") == "slice.handoff"
     ]
     assert len(handoff_rows) == 1
     assert (handoff_rows[0].get("metadata") or {}).get("slice_handoff")
-
-

@@ -9,10 +9,10 @@ import httpx
 import pytest
 
 from agent_core.models import EventType
+from nimbusware_env import find_repo_root
 from nimbusware_executor.fetch import EgressResponseTooLarge
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
-from nimbusware_env import find_repo_root
 
 _DEFAULT_CFG = ScraperFetchConfig(
     enabled=True,

@@ -9,12 +9,12 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.models import EventType
+from nimbusware_projections.builders.maker_progress import _slice_gate_rows, _stage_name
+from nimbusware_projections.builders.run_research import run_research_briefs_from_events
 from nimbusware_research.stitch_outcome_stats import (
     compute_stitch_transplant_stats,
     fetch_stitch_analytics_event_rows,
 )
-from nimbusware_projections.builders.maker_progress import _slice_gate_rows, _stage_name
-from nimbusware_projections.builders.run_research import run_research_briefs_from_events
 
 _SLICE_APPLIED = "slice.applied"
 _PLAN_STAGES = frozenset({"plan", "slice.plan"})

@@ -45,6 +45,13 @@ from agent_core.models import (
     Verdict,
     validate_event_dict,
 )
+from nimbusware_env.env_flags import (
+    env_str,
+    env_tri_state,
+    env_truthy,
+    nimbusware_outbound_fetch_enabled,
+    nimbusware_use_llm_enabled,
+)
 from nimbusware_executor.fetch import EgressResponseTooLarge
 from nimbusware_extensions import SelfRefinementPolicy, load_self_refinement_policy
 from nimbusware_extensions.phase2 import AgentEvaluator, agent_evaluator_score_band
@@ -237,13 +244,6 @@ from nimbusware_orchestrator.workflow_universal_critique import (
 )
 from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_store.protocol import EventStore, serialized_event_from_row
-from nimbusware_env.env_flags import (
-    env_str,
-    env_tri_state,
-    env_truthy,
-    nimbusware_outbound_fetch_enabled,
-    nimbusware_use_llm_enabled,
-)
 
 
 def _coerce_samples_ms(raw: Any) -> list[int] | None:

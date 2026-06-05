@@ -5,14 +5,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from nimbusware_config.workflow_read import (
+    SelfRefinementWorkflowBlock,
+    load_yaml,
+)
 from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
     load_self_refinement_policy,
     self_refinement_policy_from_mapping,
-)
-from nimbusware_config.workflow_read import (
-    SelfRefinementWorkflowBlock,
-    load_yaml,
 )
 
 

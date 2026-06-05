@@ -13,13 +13,13 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
 from nimbusware_iam.constants import API_KEY_HEADER, DEFAULT_TENANT_ID
 from nimbusware_iam.context import reset_auth_context, set_auth_context
 from nimbusware_iam.models import AuthContext
 from nimbusware_iam.store import InMemoryIamStore
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def _auth(tenant_id) -> AuthContext:

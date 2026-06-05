@@ -11,8 +11,8 @@ from pydantic import BaseModel, Field, ValidationError
 
 from agent_core.context_budget import truncate_for_llm_history
 from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
-from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
 
 
 class LlmSlicePlanResponse(BaseModel):
@@ -149,13 +149,11 @@ def execute_slice_plan_llm(
     ]
     if handoff_summary.strip():
         volatile_parts.append(
-            "Prior slice handoff:\n"
-            f"{truncate_for_llm_history(handoff_summary, max_chars=4000)}",
+            f"Prior slice handoff:\n{truncate_for_llm_history(handoff_summary, max_chars=4000)}",
         )
     if memory_excerpt.strip():
         volatile_parts.append(
-            "Prior failure memory (advisory):\n"
-            f"{truncate_for_llm_history(memory_excerpt)}",
+            f"Prior failure memory (advisory):\n{truncate_for_llm_history(memory_excerpt)}",
         )
     if budget_feedback:
         volatile_parts.append(f"Prior budget feedback: {budget_feedback}")

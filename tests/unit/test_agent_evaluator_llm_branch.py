@@ -6,12 +6,12 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.workflow_agent_evaluator import (
     AgentEvaluatorWorkflowBlock,
     agent_evaluator_llm_branch_effective,
     persona_coverage_critique_llm_branch_effective,
 )
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

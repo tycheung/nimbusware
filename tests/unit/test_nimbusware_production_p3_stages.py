@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.network_resilience_critique import NETWORK_RESILIENCE_CRITIQUE_STAGE
 from nimbusware_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_STAGE
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
@@ -25,7 +26,6 @@ from nimbusware_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
     security_critique_effective,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_nimbusware_production_yaml_enables_p3_blocks() -> None:

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
     integrator_gate_workflow_enabled,
@@ -15,7 +16,6 @@ from nimbusware_orchestrator.integrator_gate import (
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_integrator_gate_workflow_enabled_false_when_missing_block(

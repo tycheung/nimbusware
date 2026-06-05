@@ -8,6 +8,12 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
+from nimbusware_api.app import app
+from nimbusware_api.deps import get_orchestrator, get_store
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_extensions.phase2 import (
     AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
@@ -17,12 +23,6 @@ from nimbusware_extensions.phase2 import (
 )
 from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths, make_dev_orchestrator
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_api.app import app
-from nimbusware_api.deps import get_orchestrator, get_store
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
 
 
 def _minimal_shelf() -> PersonaShelf:

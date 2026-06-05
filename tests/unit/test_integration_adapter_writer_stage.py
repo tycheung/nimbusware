@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     INTEGRATION_ADAPTER_WRITER_STAGE,
     emit_live_integration_adapter_writer_stage,
@@ -17,7 +18,6 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-from nimbusware_env import find_repo_root
 
 
 def _write_profile(tmp_path: Path, name: str, body: str) -> None:

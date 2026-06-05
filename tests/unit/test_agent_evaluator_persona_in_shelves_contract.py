@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _REAL_PERSONAS_DIR = _REPO_ROOT / "configs" / "personas"

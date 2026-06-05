@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from agent_core.models.slice_handoff import SliceHandoffSummary
 from uuid import uuid4
 
+from agent_core.models.slice_handoff import SliceHandoffSummary
 from nimbusware_orchestrator.context_compaction import (
     compact_campaign_context,
     maybe_emit_compaction_event,
@@ -83,6 +83,5 @@ def test_maybe_emit_compaction_event_appends_marker() -> None:
     assert result is not None
     rows = store.list_run_events(str(run_id))
     assert any(
-        (r.get("payload") or {}).get("stage_name") == "campaign.context.compacted"
-        for r in rows
+        (r.get("payload") or {}).get("stage_name") == "campaign.context.compacted" for r in rows
     )

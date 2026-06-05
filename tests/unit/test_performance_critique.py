@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.performance_critique import (
     PERFORMANCE_CRITIQUE_STAGE,
     performance_scan_tools_failed,
@@ -15,7 +16,6 @@ from nimbusware_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_performance_scan_tools_failed() -> None:

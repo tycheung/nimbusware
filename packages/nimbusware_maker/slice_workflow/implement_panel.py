@@ -5,7 +5,10 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from nimbusware_env.env_flags import nimbusware_slice_p3_evidence_enabled, nimbusware_use_llm_enabled
+from nimbusware_env.env_flags import (
+    nimbusware_slice_p3_evidence_enabled,
+    nimbusware_use_llm_enabled,
+)
 from nimbusware_maker.approval import (
     STAGE_SLICE_APPLIED,
     STAGE_SLICE_PENDING,

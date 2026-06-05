@@ -5,6 +5,10 @@ from pathlib import Path
 import pytest
 
 from agent_core.models import EventType
+from nimbusware_config.materializer import ConfigMaterializer
+from nimbusware_config.seed import seed_config_from_repo
+from nimbusware_config.store import InMemoryConfigStore
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
 from nimbusware_orchestrator.workflow_research import (
     parse_research_workflow_block,
@@ -15,10 +19,6 @@ from nimbusware_research.models import ResearchBrief, ResearchBriefSource
 from nimbusware_research.planner_context import planner_research_context_from_events
 from nimbusware_store.allowed_types import allowed_event_type_values
 from nimbusware_store.memory import InMemoryEventStore
-from nimbusware_config.materializer import ConfigMaterializer
-from nimbusware_config.seed import seed_config_from_repo
-from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_env import find_repo_root
 
 
 def test_research_event_types_in_db_allowlist() -> None:

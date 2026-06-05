@@ -25,10 +25,10 @@ os.environ.setdefault(
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from nimbusware_api.app import app  # noqa: E402
 from nimbusware_orchestrator.ingress import assert_known_workflow  # noqa: E402
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator  # noqa: E402
 from nimbusware_orchestrator.scraper_stage import load_scraper_fetch_config  # noqa: E402
-from nimbusware_api.app import app  # noqa: E402
 
 _VALUE_ERROR_PREFIX = "invalid workflow_profile: "
 _FILE_NOT_FOUND_PREFIX = "unknown workflow_profile (no file): "

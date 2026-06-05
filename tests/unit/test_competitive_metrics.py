@@ -18,8 +18,8 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_projections.builders.competitive_metrics import build_competitive_summary
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def _seq(rows: list[dict]) -> None:

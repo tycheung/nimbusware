@@ -4,13 +4,13 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import Verdict
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
 )
 from nimbusware_extensions.bundle_memory_models import BundleSuccessStats
 from nimbusware_extensions.catalog import apply_bundle_memory_ranking, search_bundles
-from nimbusware_env import find_repo_root
 
 
 def test_apply_bundle_memory_ranking_promotes_high_success_bundle(monkeypatch) -> None:

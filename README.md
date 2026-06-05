@@ -65,13 +65,33 @@ The orchestrator and related packages provide:
 - **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `NIMBUSWARE_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
 - **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `NIMBUSWARE_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. Default PR **unit** CI does not run slice browsers; PR **web** job runs Playwright smoke in [`tests/e2e/web`](tests/e2e/web) (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 - **Mid-run pressure warnings** — rate-limited `resource.pressure.warn` events when the hardware governor throttles RAM mid-run; Admin **Hardware** timeline and competitive-summary projections surface the tail
-- **Slice implement agent** — optional `NIMBUSWARE_SLICE_IMPLEMENT=agent` path uses jail-bound allowlisted tools instead of a single-shot writer stub
+- **Slice implement agent** — `NIMBUSWARE_SLICE_IMPLEMENT=agent` uses a multi-turn JIT tool loop (`agent_loop.py`) with `read`, `edit`, `write`, `grep`, and `shell`; no upfront file preload when `NIMBUSWARE_AGENT_JIT_LOOP=1` (default)
+- **Cross-slice handoffs** — deterministic `slice.handoff` summaries feed planner and agent volatile prompts (not full unified diffs)
+- **Campaign compaction** — `campaign.context.compacted` events summarize older handoffs in long runs (`NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED`)
 - **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`NIMBUSWARE_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `NIMBUSWARE_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
 - **Preflight** — Ollama/model health at run start; CLI and fleet history APIs
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles, `critic_packs/`). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`). Bundle catalog authority is YAML under the repo root unless `NIMBUSWARE_DATABASE_URL` is set, in which case `policy/bundle-catalog` in Postgres is authoritative (`GET /v1/bundles/catalog/source`).
+Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles, `critic_packs/`, `skills/`). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`). Bundle catalog authority is YAML under the repo root unless `NIMBUSWARE_DATABASE_URL` is set, in which case `policy/bundle-catalog` in Postgres is authoritative (`GET /v1/bundles/catalog/source`).
+
+## Context efficiency (Pi-inspired)
+
+Token-aware caps keep LLM prompts bounded without deleting raw audit events. See [ADR 006](docs/adr/006-prompt-tiers.md) and [ADR 007](docs/adr/007-context-compaction.md).
+
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `NIMBUSWARE_LLM_HISTORY_MAX_CHARS` | 2000 | Secondary LLM stages and tool message history |
+| `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Agent `read` tool output |
+| `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Agent `shell` output |
+| `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn agent loop vs single-shot plan |
+| `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff block |
+| `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
+| `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in long campaigns |
+| `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS` | (from HW) | Verbatim recent handoff window |
+| `NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS` | 8000 | Output reservation subtracted from keep window |
+
+Shared helpers: `packages/agent_core/context_budget.py`. Skills progressive disclosure: `configs/skills/` + `nimbusware_config.skills_index`.
 
 ## Benchmarks
 
@@ -104,8 +124,8 @@ Example scored output:
 
 ```
 packages/
-  agent_core/           Event models and validation
-  nimbusware_orchestrator/  Pipeline, critics, slice, preflight, dispatch
+  agent_core/           Event models, context_budget, slice handoff models
+  nimbusware_orchestrator/  Pipeline, critics, slice, handoff, compaction, prompt_tiers
   nimbusware_store/         Postgres + in-memory event store
   nimbusware_memory/        Memory chunks, FAISS, fleet sync
   nimbusware_executor/      Role-gated outbound HTTP

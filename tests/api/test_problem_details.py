@@ -24,8 +24,8 @@ os.environ.setdefault(
 
 from nimbusware_api.app import (  # noqa: E402
     app,
-    nimbusware_validation_handler,
     nimbusware_http_exception_handler,
+    nimbusware_validation_handler,
 )
 from nimbusware_api.errors import problem  # noqa: E402
 

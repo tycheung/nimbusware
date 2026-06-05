@@ -8,11 +8,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-import nimbusware_orchestrator.runtime_bootstrap as _runtime_bootstrap
 import nimbusware_api.app as _nimbusware_api_app_pkg  # noqa: F401 -- ensures submodule loads
-from nimbusware_orchestrator.registry import RoleRegistry
+import nimbusware_orchestrator.runtime_bootstrap as _runtime_bootstrap
 from nimbusware_api.app import app
 from nimbusware_iam.store import InMemoryIamStore
+from nimbusware_orchestrator.registry import RoleRegistry
 
 _FAKE_DB_URL = "postgresql://test:test@localhost/nimbusware"
 _SENTINEL_REGISTRY = RoleRegistry.from_mapping(

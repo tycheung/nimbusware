@@ -5,13 +5,13 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, Response
 
+from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_env.desktop_common import repo_root
 from nimbusware_research.enterprise_index import (
     export_egress_audit_rows,
     list_enterprise_research_index,
     tenant_namespace,
 )
-from nimbusware_api.routes.enterprise.core import EnterpriseDep
-from nimbusware_env.desktop_common import repo_root
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 

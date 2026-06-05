@@ -17,8 +17,8 @@ from agent_core.models import (  # noqa: E402
     StagePassedEvent,
     StagePassedPayload,
 )
-from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
+from nimbusware_store.memory import InMemoryEventStore  # noqa: E402
 
 
 @pytest.fixture

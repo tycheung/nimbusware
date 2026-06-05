@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_env import find_repo_root
 from nimbusware_maker.store import InMemoryProjectStore
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 def test_create_run_with_project_metadata(tmp_path: Path) -> None:

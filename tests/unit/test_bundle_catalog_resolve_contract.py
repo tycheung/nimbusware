@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_extensions.catalog import assert_workflow_bundle_map_ids_resolve
 from nimbusware_orchestrator.ingress import assert_bundle_catalog_maps_resolve
-from nimbusware_env import find_repo_root
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

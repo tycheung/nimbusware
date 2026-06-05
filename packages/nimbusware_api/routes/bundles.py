@@ -5,12 +5,6 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from nimbusware_extensions.catalog import (
-    bundle_faiss_index_ready,
-    bundle_faiss_index_sync_state,
-    search_bundles,
-    validate_bundle_catalog_content,
-)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
@@ -35,6 +29,12 @@ from nimbusware_config.persist import (
     bundle_catalog_document_version,
     load_bundle_catalog_dict,
     persist_bundle_catalog_dict,
+)
+from nimbusware_extensions.catalog import (
+    bundle_faiss_index_ready,
+    bundle_faiss_index_sync_state,
+    search_bundles,
+    validate_bundle_catalog_content,
 )
 
 router = APIRouter(prefix="/bundles", tags=["bundles"])

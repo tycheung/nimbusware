@@ -23,12 +23,12 @@ os.environ.setdefault(
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from nimbusware_api.app import app  # noqa: E402
 from nimbusware_orchestrator.ingress import (  # noqa: E402
     assert_persona_shelves_valid,
     assert_taxonomy_keys_resolve,
 )
 from nimbusware_orchestrator.registry import RoleRegistry  # noqa: E402
-from nimbusware_api.app import app  # noqa: E402
 
 _TAXONOMY_KEY_ERROR_PREFIX = "Unknown role taxonomy_key:"
 _SHELVES_FNF_PREFIX = "missing persona catalog shelves:"

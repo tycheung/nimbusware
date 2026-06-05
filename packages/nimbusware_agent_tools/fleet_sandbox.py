@@ -35,7 +35,9 @@ def run_kubernetes_sandbox(
     timeout_seconds: float,
 ) -> SandboxRunResult:
     pod = resolve_str("NIMBUSWARE_SANDBOX_K8S_EXEC_POD", default="").strip()
-    namespace = resolve_str("NIMBUSWARE_SANDBOX_K8S_NAMESPACE", default="default").strip() or "default"
+    namespace = (
+        resolve_str("NIMBUSWARE_SANDBOX_K8S_NAMESPACE", default="default").strip() or "default"
+    )
     workdir = (
         resolve_str("NIMBUSWARE_SANDBOX_K8S_WORKDIR", default="/workspace").strip() or "/workspace"
     )

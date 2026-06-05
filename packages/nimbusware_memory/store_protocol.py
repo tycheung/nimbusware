@@ -7,8 +7,8 @@ from datetime import datetime
 from typing import Protocol, runtime_checkable
 from uuid import UUID
 
-from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord
 from nimbusware_iam.context import resolve_store_tenant_id
+from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord
 
 
 @dataclass(frozen=True)

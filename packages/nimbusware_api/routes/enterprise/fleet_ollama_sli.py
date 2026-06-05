@@ -6,15 +6,15 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
+from nimbusware_api.deps import StoreDep
+from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_api.routes.preflight import get_preflight_history
+from nimbusware_env.edition import enterprise_feature_enabled
 from nimbusware_orchestrator.fleet_ollama_sli import (
     fleet_ollama_sli_enabled,
     fleet_ollama_sli_status_snapshot,
     merge_preflight_history_aggregate,
 )
-from nimbusware_api.deps import StoreDep
-from nimbusware_api.routes.enterprise.core import EnterpriseDep
-from nimbusware_api.routes.preflight import get_preflight_history
-from nimbusware_env.edition import enterprise_feature_enabled
 
 router = APIRouter(prefix="/enterprise/fleet-ollama-sli", tags=["enterprise"])
 

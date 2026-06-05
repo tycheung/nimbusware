@@ -5,6 +5,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+from nimbusware_console.integrator_preview.parse import (
+    parse_integrator_gate_yaml_fragment,
+    validate_integrator_gate_block,
+)
 from nimbusware_extensions.phase2 import ModuleIntegrator
 from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
@@ -12,10 +16,6 @@ from nimbusware_orchestrator.integrator_gate import (
     load_integrator_gate_emit_enabled,
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,
-)
-from nimbusware_console.integrator_preview.parse import (
-    parse_integrator_gate_yaml_fragment,
-    validate_integrator_gate_block,
 )
 
 

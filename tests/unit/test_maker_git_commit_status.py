@@ -21,7 +21,11 @@ def test_last_git_commit_from_rows() -> None:
             STAGE_SLICE_APPLIED,
             {
                 "slice_id": "s1",
-                "git_commit": {"status": "committed", "branch": "nimbusware/run-1", "sha": "abc123"},
+                "git_commit": {
+                    "status": "committed",
+                    "branch": "nimbusware/run-1",
+                    "sha": "abc123",
+                },
             },
             10,
         ),

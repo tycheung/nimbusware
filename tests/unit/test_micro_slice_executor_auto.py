@@ -7,9 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.micro_slice import micro_slice_count_for_run, micro_slice_timeline_summary
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.micro_slice import (
+    micro_slice_count_for_run,
+    micro_slice_timeline_summary,
+)
+from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 @pytest.fixture(autouse=True)

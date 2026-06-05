@@ -4,10 +4,10 @@ from pathlib import Path
 from uuid import uuid4
 
 from agent_core.models import EventType
+from nimbusware_env import find_repo_root
 from nimbusware_memory import InMemoryMemoryChunkStore, rebuild_memory_index
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_env import find_repo_root
 
 
 def _sample_rows() -> list[dict]:

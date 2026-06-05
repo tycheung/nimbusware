@@ -17,8 +17,8 @@ from agent_core.models import (
     StitchAppliedPayload,
     Verdict,
 )
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
+from nimbusware_store.memory import InMemoryEventStore
 
 
 @pytest.fixture

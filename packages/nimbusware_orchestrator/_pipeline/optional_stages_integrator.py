@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_tri_state
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
@@ -21,7 +22,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegratorOptionalStagesHost
-from nimbusware_env.env_flags import env_tri_state
 
 
 class IntegratorOptionalStagesMixin:
@@ -31,8 +31,10 @@ class IntegratorOptionalStagesMixin:
         *,
         bundle_id: str,
     ) -> None:
-        from nimbusware_orchestrator.integrator_dep_preflight import analyze_integrator_dep_conflicts
         from nimbusware_config.persist import load_bundle_catalog_dict
+        from nimbusware_orchestrator.integrator_dep_preflight import (
+            analyze_integrator_dep_conflicts,
+        )
 
         if env_tri_state("NIMBUSWARE_INTEGRATOR_DEP_PREFLIGHT") != "on":
             return

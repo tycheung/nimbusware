@@ -13,10 +13,10 @@ from nimbusware_console.self_refinement_workflow_explainer.compare import (
     self_refinement_marker_merge_vs_timeline_rows,
 )
 from nimbusware_console.self_refinement_workflow_explainer.env import (
-    _nimbusware_self_refinement_stage_marker_env_summary,
-    _nimbusware_self_refinement_ungated_loop_env_summary,
     _load_policy_or_default,
     _marker_preview,
+    _nimbusware_self_refinement_stage_marker_env_summary,
+    _nimbusware_self_refinement_ungated_loop_env_summary,
     _self_refinement_stage_marker_env_disabled,
     self_refinement_ungated_loop_env_gate_caption,
 )

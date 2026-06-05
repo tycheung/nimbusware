@@ -1,8 +1,8 @@
 from nimbusware_console.self_refinement_workflow_explainer import (
-    _nimbusware_self_refinement_stage_marker_env_summary,
-    _nimbusware_self_refinement_ungated_loop_env_summary,
     _load_policy_or_default,
     _marker_preview,
+    _nimbusware_self_refinement_stage_marker_env_summary,
+    _nimbusware_self_refinement_ungated_loop_env_summary,
     _self_refinement_explainer_cell,
     _self_refinement_stage_marker_env_disabled,
     _timeline_self_refinement_description_len,

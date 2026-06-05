@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.network_resilience_critique import (
     NETWORK_RESILIENCE_CRITIQUE_STAGE,
     scan_summary_failed,
@@ -15,7 +16,6 @@ from nimbusware_orchestrator.workflow_network_resilience_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_scan_summary_failed() -> None:

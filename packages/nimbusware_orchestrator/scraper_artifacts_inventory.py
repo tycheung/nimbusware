@@ -49,7 +49,9 @@ def scraper_artifact_storage_backend_signals() -> dict[str, Any]:
         "object_store_local_mirror": object_store_local_mirror_enabled(primary=primary),
         "object_store_timeout_seconds": object_store_timeout_seconds(),
         "object_store_delete_max_attempts": object_store_delete_max_attempts(),
-        "object_store_prune_requested": _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")
+        "object_store_prune_requested": _truthy_env(
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE"
+        )
         or primary,
         "object_store_prune_effective": (
             ready and _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")

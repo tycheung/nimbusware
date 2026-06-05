@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import nimbusware_outbound_fetch_enabled
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
@@ -24,7 +25,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import PipelineScraperHost
-from nimbusware_env.env_flags import nimbusware_outbound_fetch_enabled
 
 
 class PipelineScraperMixin:
@@ -42,9 +42,7 @@ class PipelineScraperMixin:
         Set ``NIMBUSWARE_OUTBOUND_FETCH_ENABLED=1`` (or ``true``/``yes``) to allow network I/O.
         """
         if not nimbusware_outbound_fetch_enabled():
-            msg = (
-                "Set NIMBUSWARE_OUTBOUND_FETCH_ENABLED=1 to perform outbound GET from the orchestrator"
-            )
+            msg = "Set NIMBUSWARE_OUTBOUND_FETCH_ENABLED=1 to perform outbound GET from the orchestrator"
             raise RuntimeError(msg)
         return egress_checked_get_for_run(
             self._store,

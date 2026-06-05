@@ -5,10 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import nimbusware_run_perf_scan_enabled
 from nimbusware_orchestrator.performance_scan import run_ruff_perf, scan_n_plus_one_heuristic
 from nimbusware_orchestrator.security_semgrep import run_semgrep_scan
 from nimbusware_orchestrator.verifiers import run_bandit, run_mypy, run_ruff_check
-from nimbusware_env.env_flags import nimbusware_run_perf_scan_enabled
 
 SECURITY_SCAN_CATEGORIES: tuple[str, ...] = (
     "ruff",

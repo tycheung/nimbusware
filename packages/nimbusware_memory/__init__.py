@@ -1,6 +1,9 @@
 """Nimbusware agent retrieval memory: repo-scoped failure/fix index."""
 
-from nimbusware_memory.audit import append_memory_indexed_event, append_memory_retrieval_emitted_event
+from nimbusware_memory.audit import (
+    append_memory_indexed_event,
+    append_memory_retrieval_emitted_event,
+)
 from nimbusware_memory.chunking import chunks_from_event_rows, run_index_contribution_enabled
 from nimbusware_memory.embeddings import deterministic_embed, embedding_model_id_for_mode
 from nimbusware_memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.escalation_policy_breadth import escalation_policy_breadth
 from nimbusware_orchestrator.integration_adapter_scaffold import write_integration_adapter_scaffold
 from nimbusware_orchestrator.security_scan import (
@@ -24,7 +25,6 @@ from nimbusware_orchestrator.workflow_self_refinement import (
 from nimbusware_orchestrator.workflow_universal_critique import (
     universal_critique_production_default_on,
 )
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

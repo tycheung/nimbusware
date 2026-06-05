@@ -5,11 +5,11 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Path
 
-from nimbusware_orchestrator.critic_pack_resolve import list_critic_pack_ids, load_critic_pack
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
 from nimbusware_config.keys import NS_CRITIC_PACKS
+from nimbusware_orchestrator.critic_pack_resolve import list_critic_pack_ids, load_critic_pack
 
 router = APIRouter(prefix="/config/critic-packs", tags=["config"])
 

@@ -21,8 +21,8 @@ from agent_core.models import (  # noqa: E402
     ModelPreflightPassedEvent,
     ModelPreflightPassedPayload,
 )
-from nimbusware_orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
+from nimbusware_orchestrator.fleet_benchmark import benchmark_preflight_history_scan  # noqa: E402
 
 
 @pytest.fixture

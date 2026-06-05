@@ -18,8 +18,8 @@ os.environ.setdefault(
     "NIMBUSWARE_ADMIN_TOKEN", "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
 )
 
-from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
 from nimbusware_api.app import app  # noqa: E402
+from nimbusware_orchestrator.scraper_artifacts import scraper_artifact_inventory  # noqa: E402
 
 
 @pytest.fixture

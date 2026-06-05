@@ -4,11 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nimbusware_orchestrator.critique_routing import load_critique_router
-from nimbusware_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
-from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
-from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
-from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_config.keys import (
     KEY_CRITIQUE_PAIRINGS,
     KEY_INTEGRATOR_THRESHOLDS,
@@ -19,6 +14,11 @@ from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo
 from nimbusware_config.store import InMemoryConfigStore
 from nimbusware_env import find_repo_root
+from nimbusware_orchestrator.critique_routing import load_critique_router
+from nimbusware_orchestrator.integrator_gate import load_integrator_gate_emit_enabled
+from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
+from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflow_block
+from nimbusware_store.memory import InMemoryEventStore
 
 
 def _seed_minimal_run_store(root: Path, tmp_path: Path) -> ConfigMaterializer:

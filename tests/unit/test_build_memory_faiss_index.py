@@ -9,10 +9,10 @@ from uuid import uuid4
 import numpy as np
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_memory import InMemoryMemoryChunkStore, rebuild_memory_index
 from nimbusware_memory.faiss_index import memory_faiss_index_ready
 from nimbusware_memory.models import MemoryChunkRecord
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

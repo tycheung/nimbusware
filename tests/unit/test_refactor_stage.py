@@ -6,13 +6,13 @@ from pathlib import Path
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE, REFACTOR_STAGE
 from nimbusware_orchestrator.workflow_refactor import (
     parse_refactor_workflow_block,
     refactor_stage_effective,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_refactor_workflow_block() -> None:

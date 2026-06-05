@@ -10,7 +10,9 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 def test_default_profile_enforces_unanimous_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch(
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")
+    ):
         orch.execute_writer_verifier_pass(rid)
     gates = [
         r
@@ -30,7 +32,9 @@ def test_default_profile_enforces_unanimous_gate() -> None:
 def test_env_override_can_disable_unanimous_gate() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    with patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")):
+    with patch(
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok")
+    ):
         orch.execute_writer_verifier_pass(rid)
     run_created = next(
         r for r in mem.list_run_events(str(rid)) if r.get("event_type") == "run.created"

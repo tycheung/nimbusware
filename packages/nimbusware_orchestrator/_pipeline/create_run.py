@@ -87,8 +87,8 @@ class CreateRunMixin:
             config_materializer=mat,
         )
         if business_area_persona_id or development_role_persona_id:
-            from nimbusware_orchestrator.ingress import assert_persona_assignment_valid
             from nimbusware_config.persist import load_persona_shelf
+            from nimbusware_orchestrator.ingress import assert_persona_assignment_valid
 
             shelf = load_persona_shelf(self._repo_root, materializer=mat)
             assert_persona_assignment_valid(

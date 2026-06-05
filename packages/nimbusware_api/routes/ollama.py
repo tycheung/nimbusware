@@ -4,21 +4,6 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from nimbusware_orchestrator.ollama_manage import (
-    OllamaManageError,
-    delete_model,
-    filter_models,
-    list_installed_models,
-    ollama_reachable,
-    pull_model,
-    runtime_base_url_from_routing,
-)
-from nimbusware_orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
-from nimbusware_orchestrator.ollama_user_policy import (
-    assert_user_may,
-    merge_policy_into_routing,
-    policy_from_routing,
-)
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
@@ -34,6 +19,21 @@ from nimbusware_api.schemas.ollama import (
 )
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
+from nimbusware_orchestrator.ollama_manage import (
+    OllamaManageError,
+    delete_model,
+    filter_models,
+    list_installed_models,
+    ollama_reachable,
+    pull_model,
+    runtime_base_url_from_routing,
+)
+from nimbusware_orchestrator.ollama_pull_jobs import get_pull_job, start_pull_job
+from nimbusware_orchestrator.ollama_user_policy import (
+    assert_user_may,
+    merge_policy_into_routing,
+    policy_from_routing,
+)
 
 router = APIRouter(tags=["platform", "ollama"])
 

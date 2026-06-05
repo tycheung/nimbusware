@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_str, env_truthy, nimbusware_use_llm_enabled
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
@@ -25,7 +26,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     uuid4,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import WritersHost
-from nimbusware_env.env_flags import env_str, env_truthy, nimbusware_use_llm_enabled
 
 
 class WritersMixin:
@@ -292,13 +292,17 @@ class WritersMixin:
             )
         if not runners:
             return self._run_writers_sequential(run_id, sg_snapshot, workspace=workspace)
+        from nimbusware_env.env_flags import env_force_on
         from nimbusware_orchestrator.workflow_parallel_writers import (
             max_parallel_writer_stages_from_governor,
         )
-        from nimbusware_env.env_flags import env_force_on
 
         cap = max_parallel_writer_stages_from_governor()
-        if not env_force_on("NIMBUSWARE_PARALLEL_WRITERS") and cap is not None and len(runners) > cap:
+        if (
+            not env_force_on("NIMBUSWARE_PARALLEL_WRITERS")
+            and cap is not None
+            and len(runners) > cap
+        ):
             runners = runners[:cap]
             try:
                 from nimbusware_hw.audit import maybe_append_resource_pressure_warn

@@ -3,12 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.integrator_gate import (
-    effective_integrator_min_score_to_pass,
-    load_integrator_gate_workflow_block,
-    parse_integrator_gate_min_score_to_pass,
-    parse_integrator_gate_project_tags,
-)
 from nimbusware_config.workflow_read import (
     workflow_profile_path,
 )
@@ -25,6 +19,12 @@ from nimbusware_console.integrator_threshold_explainer.snapshots import (
 from nimbusware_console.integrator_workflow_preview import (
     parse_integrator_gate_yaml_fragment,
     preview_effective_min_score_to_pass,
+)
+from nimbusware_orchestrator.integrator_gate import (
+    effective_integrator_min_score_to_pass,
+    load_integrator_gate_workflow_block,
+    parse_integrator_gate_min_score_to_pass,
+    parse_integrator_gate_project_tags,
 )
 
 

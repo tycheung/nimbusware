@@ -3,14 +3,14 @@ from __future__ import annotations
 from uuid import uuid4
 
 from agent_core.models import Verdict
-from nimbusware_extensions.bundle_memory import (
-    InMemoryBundleOutcomeStore,
-    build_bundle_outcome_from_gate,
-)
 from nimbusware_console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
     bundle_success_stats_table_rows,
+)
+from nimbusware_extensions.bundle_memory import (
+    InMemoryBundleOutcomeStore,
+    build_bundle_outcome_from_gate,
 )
 
 

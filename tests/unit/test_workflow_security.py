@@ -7,9 +7,9 @@ from unittest.mock import patch
 
 import pytest
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
-from nimbusware_env import find_repo_root
 
 
 def test_security_scan_env_forces_true(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -46,7 +46,9 @@ def test_repo_profile_security_scan_metadata_on(monkeypatch: pytest.MonkeyPatch)
     "nimbusware_orchestrator.pipeline.run_security_scan",
     return_value=(2, "scanlog\nline2\n", 1, 2, 0, 0, 0, 0),
 )
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
+@patch(
+    "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail")
+)
 def test_verifier_failure_attaches_security_metadata_when_workflow_on(
     _mock_vf: object,
     _mock_scan: object,
@@ -70,7 +72,9 @@ def test_verifier_failure_attaches_security_metadata_when_workflow_on(
     "nimbusware_orchestrator.pipeline.run_security_scan",
     return_value=(0, "should_not_attach", 0, 0, 0, 0, 0, 0),
 )
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail"))
+@patch(
+    "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail")
+)
 def test_env_kill_skips_security_scan_metadata(
     _mock_vf: object,
     _mock_scan: object,

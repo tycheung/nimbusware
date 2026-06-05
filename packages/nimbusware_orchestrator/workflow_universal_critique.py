@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 from nimbusware_env.env_flags import env_falsy, env_over_yaml
+from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 
 def _coerce_yaml_bool(raw: object, default: bool = False) -> bool:

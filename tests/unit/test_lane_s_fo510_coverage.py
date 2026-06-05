@@ -3,9 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent_core.models import EventType, Verdict
-from nimbusware_memory.event_scan import fetch_event_rows_for_memory_index
-from nimbusware_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
-from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_api.access import assert_run_accessible
 from nimbusware_config import keys
 from nimbusware_config.notify import (
@@ -20,6 +17,9 @@ from nimbusware_config.persist import (
     load_persona_shelf,
     load_workflow_profile_dict,
 )
+from nimbusware_memory.event_scan import fetch_event_rows_for_memory_index
+from nimbusware_memory.sync import memory_index_sync_state, memory_sync_manifest_stub
+from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_projections.builders import stage_timeline
 from nimbusware_projections.builders.integrator_gate import integrator_gate_timeline_summary
 

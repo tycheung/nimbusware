@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 

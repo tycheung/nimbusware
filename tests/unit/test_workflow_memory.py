@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.workflow_memory import (
     memory_effective_metadata,
@@ -10,7 +11,6 @@ from nimbusware_orchestrator.workflow_memory import (
     parse_memory_workflow_block,
     run_memory_retrieval_enabled,
 )
-from nimbusware_env import find_repo_root
 
 
 def test_parse_memory_workflow_block_defaults() -> None:
