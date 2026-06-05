@@ -12,6 +12,7 @@
 | [enterprise-research-index.md](enterprise-research-index.md) | Enterprise ops | Tenant research index + egress audit |
 | [enterprise-buyer.md](enterprise-buyer.md) | Buyers / security | Enterprise compliance checklist |
 | [security-quality-gates.md](security-quality-gates.md) | Maintainers | bandit, pip-audit, CI gates |
+| [integrations-external-chat.md](integrations-external-chat.md) | Ops | External chat webhook boundary (§20.5) |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 

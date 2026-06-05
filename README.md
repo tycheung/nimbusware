@@ -32,7 +32,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Nimbusware API** | `nimbusware_api` | `/v1` REST, OpenAPI, Problem+JSON errors |
 | **Maker app** | `nimbusware_maker` + `nimbusware_maker_web` | **User console** — web UI at `/v1/maker/app/` |
 | **Admin Console** | `nimbusware_console` + `nimbusware_admin_ui` | **Admin/dev console** — web UI at `/v1/admin/app/` (Enterprise **Fleet** at `/v1/admin/app/fleet`) |
-| **Agent tools** | `hermes_agent_tools` | Allowlisted read/grep/write/shell; filesystem jail + sandbox (`none` / `stub` / opt-in `docker` for Individual v1) |
+| **Agent tools** | `hermes_agent_tools` | Allowlisted tools; filesystem jail; sandbox (`none`/`stub`/`docker`/`kubernetes`/`e2b`); per-slice risk caps |
 | **Hermes orchestrator** | `hermes_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `hermes_store` | Append-only Postgres (or in-memory without DB URL) |
 | **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
@@ -399,6 +399,8 @@ poetry run nimbusware-api
 Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `HERMES_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
 
 Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
+
+External chat (§20.5 boundary — not in-product workspace): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token ([docs/integrations-external-chat.md](docs/integrations-external-chat.md)).
 
 ## Linux desktop (GTK / pywebview)
 

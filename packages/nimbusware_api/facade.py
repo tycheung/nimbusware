@@ -14,6 +14,7 @@ from nimbusware_api.routes import (
     config_ops,
     critic_packs,
     custom_agents,
+    integrations,
     ollama,
     operator_settings,
     personas,
@@ -53,4 +54,5 @@ def build_v1_router() -> APIRouter:
     router.include_router(web_bootstrap_router)
     router.include_router(admin_ui_bff.router)
     router.include_router(admin_oauth.router)
+    router.include_router(integrations.router)
     return router
