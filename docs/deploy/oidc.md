@@ -36,11 +36,65 @@ OIDC unlocks the Admin **shell** (httpOnly session cookie). **API calls still re
 | GET | `/v1/admin/oauth/session` | `{ "authenticated": true/false }` |
 | POST | `/v1/admin/oauth/logout` | Clear session cookie |
 
+## IdP matrix (operator reference)
+
+| IdP | Issuer pattern | Redirect URI | Client type | Scopes |
+|-----|----------------|--------------|-------------|--------|
+| **Okta** | `https://{org}.okta.com/oauth2/default` | `https://{host}/v1/admin/oauth/callback` | Confidential (secret) | `openid profile email` |
+| **Azure AD** | `https://login.microsoftonline.com/{tenant}/v2.0` | Same | Confidential | `openid profile email` |
+| **Google Workspace** | `https://accounts.google.com` | Same | Confidential or public + PKCE | `openid email` |
+| **Keycloak** | `https://{host}/realms/{realm}` | Same | Confidential | `openid profile email` |
+
+Register the redirect URI exactly as `NIMBUSWARE_OIDC_REDIRECT_URI`. Use HTTPS in production. PKCE (S256) is always used for the authorization request.
+
 ## Session and logout
 
 - Session cookie TTL: **3600 seconds** (see `admin_oauth.py`).
 - Logout: `POST /v1/admin/oauth/logout` or SSO logout button in Admin header.
 - IdP token exchange in production: configure issuer token endpoint separately; v1 validates authorization code + PKCE state only (mock path for CI).
+
+### Session edge cases
+
+| Case | Behavior |
+|------|----------|
+| PKCE cookie missing on callback | `400` `oidc_pkce_missing` — restart login |
+| OAuth `state` mismatch | `401` `oidc_callback_failed` |
+| Session `exp` past TTL | `GET /session` → `{ "authenticated": false }` |
+| Tampered session HMAC | Treated as unauthenticated |
+| Logout | Clears `nimbusware_oidc_session`; API still needs admin token |
+| SSO without admin token | Shell unlocks only; `/v1` API calls fail until token entered |
+
+## Rotation runbook
+
+### Client secret rotation (confidential clients)
+
+1. Create a new client secret in the IdP (keep old secret valid during overlap).
+2. Update `NIMBUSWARE_OIDC_CLIENT_SECRET` in the deployment secret store.
+3. Rolling restart API pods / reload env (no cookie impact).
+4. Revoke the old IdP secret after all instances use the new value.
+
+### Admin token rotation (`NIMBUSWARE_ADMIN_TOKEN`)
+
+Session cookies are **HMAC-signed with the admin token secret**. Rotating the admin token **invalidates all existing OIDC session cookies** immediately.
+
+1. Announce maintenance window (operators re-login + re-enter admin token).
+2. Set new `NIMBUSWARE_ADMIN_TOKEN` on API and Admin bootstrap.
+3. Operators: SSO login again if needed, then paste new admin token in LoginGate.
+4. Verify `GET /v1/admin/oauth/session` and a sample `/v1` admin API call.
+
+### Zero-downtime tips
+
+- Rotate IdP client secret before admin token when possible.
+- Keep `NIMBUSWARE_OIDC_MOCK=0` in production; use mock only in CI (`oidc_smoke.yml`).
+
+## Mock smoke checklist (CI / dev)
+
+1. `NIMBUSWARE_EDITION=enterprise`, `NIMBUSWARE_OIDC_ENABLED=1`, `NIMBUSWARE_OIDC_MOCK=1`.
+2. `GET /v1/admin/oauth/login` → mock authorize → callback → `session.authenticated=true`.
+3. `POST /v1/admin/oauth/logout` → `session.authenticated=false`.
+4. API route with only SSO (no admin token) must still return `401` for protected admin APIs.
+
+Automated: `.github/workflows/oidc_smoke.yml` runs `tests/api/test_admin_oauth.py`.
 
 ## Group mapping (future)
 

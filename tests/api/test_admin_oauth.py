@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 
 import pytest
 from fastapi.testclient import TestClient
@@ -10,6 +11,7 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
 
 from nimbusware_api.app import app  # noqa: E402
+from nimbusware_api.routes.admin_oauth import _SESSION_COOKIE, _sign_payload
 from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION
 
 ADMIN_HEADERS = {
@@ -75,3 +77,63 @@ def test_oauth_callback_bad_state(
         follow_redirects=False,
     )
     assert r.status_code == 401
+
+
+def _enable_enterprise_oidc_mock(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
+    monkeypatch.setenv("NIMBUSWARE_OIDC_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_ISSUER", "https://idp.example.com")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_CLIENT_ID", "test-client")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_REDIRECT_URI", "http://testserver/v1/admin/oauth/callback")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_MOCK", "1")
+
+
+def test_oauth_callback_pkce_missing(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_enterprise_oidc_mock(monkeypatch)
+    r = client.get(
+        "/v1/admin/oauth/callback?code=mock_oidc_code&state=any",
+        follow_redirects=False,
+    )
+    assert r.status_code == 400
+    assert r.json()["code"] == "oidc_pkce_missing"
+
+
+def test_oauth_session_expired(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_enterprise_oidc_mock(monkeypatch)
+    expired = _sign_payload({"ok": True, "exp": time.time() - 60})
+    client.cookies.set(_SESSION_COOKIE, expired)
+    sess = client.get("/v1/admin/oauth/session")
+    assert sess.status_code == 200
+    assert sess.json()["authenticated"] is False
+
+
+def test_oauth_session_tampered_hmac(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_enterprise_oidc_mock(monkeypatch)
+    client.cookies.set(_SESSION_COOKIE, "not.valid.signature")
+    sess = client.get("/v1/admin/oauth/session")
+    assert sess.status_code == 200
+    assert sess.json()["authenticated"] is False
+
+
+def test_oauth_logout_clears_session(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _enable_enterprise_oidc_mock(monkeypatch)
+    r = client.get("/v1/admin/oauth/login", follow_redirects=False)
+    r2 = client.get(r.headers["location"], follow_redirects=False)
+    client.get(r2.headers["location"], follow_redirects=False)
+    assert client.get("/v1/admin/oauth/session").json()["authenticated"] is True
+
+    out = client.post("/v1/admin/oauth/logout")
+    assert out.status_code == 200
+    assert client.get("/v1/admin/oauth/session").json()["authenticated"] is False

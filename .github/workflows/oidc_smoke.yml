@@ -1,0 +1,25 @@
+name: OIDC mock smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  oidc-mock-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: OIDC mock route tests
+        run: poetry run pytest tests/api/test_admin_oauth.py tests/unit/test_oidc_config.py -q
+        env:
+          HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_EDITION: enterprise
+          NIMBUSWARE_OIDC_ENABLED: "1"
+          NIMBUSWARE_OIDC_MOCK: "1"
+          NIMBUSWARE_OIDC_ISSUER: https://idp.example.com
+          NIMBUSWARE_OIDC_CLIENT_ID: test-client
+          NIMBUSWARE_OIDC_REDIRECT_URI: http://testserver/v1/admin/oauth/callback
