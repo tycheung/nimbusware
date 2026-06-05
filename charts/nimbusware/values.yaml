@@ -1,0 +1,41 @@
+edition: individual
+
+image:
+  api: nimbusware-api:latest
+  worker: nimbusware-api:latest
+  pullPolicy: IfNotPresent
+
+api:
+  replicas: 1
+  servicePort: 8000
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+worker:
+  enabled: true
+  replicas: 1
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+
+labPostgres:
+  enabled: false
+  image: postgres:16-alpine
+  user: nimbusware
+  password: nimbusware
+  database: nimbusware
+
+secrets:
+  databaseUrl: postgresql://nimbusware:nimbusware@postgres:5432/nimbusware
+  adminToken: change-me-before-prod
+
+ingress:
+  enabled: false
+  host: nimbusware.local
+  tls: false

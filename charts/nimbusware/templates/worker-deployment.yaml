@@ -1,0 +1,29 @@
+{{- if .Values.worker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nimbusware-worker
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: nimbusware-worker
+  template:
+    metadata:
+      labels:
+        app: nimbusware-worker
+    spec:
+      containers:
+        - name: worker
+          image: {{ .Values.image.worker }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "scripts/run_dispatch_worker.py"]
+          envFrom:
+            - secretRef:
+                name: nimbusware-api-secrets
+          env:
+            - name: NIMBUSWARE_EDITION
+              value: {{ .Values.edition | quote }}
+            - name: NIMBUSWARE_REPO_ROOT
+              value: /app
+{{- end }}

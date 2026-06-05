@@ -12,6 +12,13 @@ jobs:
       - uses: actions/checkout@v6
       - name: Install kubectl
         uses: azure/setup-kubectl@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+      - name: Helm lint and template
+        run: |
+          helm lint charts/nimbusware
+          helm template nimbusware-smoke charts/nimbusware > /tmp/nimbusware-rendered.yaml
+          grep -q 'kind: Deployment' /tmp/nimbusware-rendered.yaml
       - name: Dry-run apply reference manifests
         run: |
           set -euo pipefail

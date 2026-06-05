@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nimbusware-schema-apply
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: schema
+          image: {{ .Values.image.api }}
+          command: ["bash", "scripts/apply_event_store.sh"]
+          envFrom:
+            - secretRef:
+                name: nimbusware-api-secrets

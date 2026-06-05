@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nimbusware-api
+  labels:
+    app: nimbusware-api
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: nimbusware-api
+  template:
+    metadata:
+      labels:
+        app: nimbusware-api
+    spec:
+      containers:
+        - name: api
+          image: {{ .Values.image.api }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.api.servicePort }}
+          envFrom:
+            - secretRef:
+                name: nimbusware-api-secrets
+          env:
+            - name: NIMBUSWARE_EDITION
+              value: {{ .Values.edition | quote }}
+            - name: NIMBUSWARE_REPO_ROOT
+              value: /app
+            - name: HERMES_SKIP_PREFLIGHT
+              value: "1"
+          readinessProbe:
+            httpGet:
+              path: /v1/platform/edition
+              port: {{ .Values.api.servicePort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /v1/platform/edition
+              port: {{ .Values.api.servicePort }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.api.resources | nindent 12 }}

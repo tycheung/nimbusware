@@ -1,0 +1,8 @@
+Nimbusware Helm release installed.
+
+API service: nimbusware-api:{{ .Values.api.servicePort }}
+Maker UI: http://<api-host>/v1/maker/app/
+Admin UI: http://<api-host>/v1/admin/app/
+
+Apply schema once: kubectl apply -f (schema job) or helm upgrade with --set worker.enabled=true after DB is ready.
+Rotate secrets: update values.secrets and helm upgrade.
