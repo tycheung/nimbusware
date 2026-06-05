@@ -46,3 +46,14 @@ def test_ci_yml_has_web_job_with_vitest_and_playwright() -> None:
     assert "nimbusware_maker_web" in web_block
     assert "nimbusware_admin_ui" in web_block
     assert "playwright install chromium" in web_block
+
+
+def test_ci_check_scripts_document_optional_integration_flags() -> None:
+    ps1 = _PS1.read_text(encoding="utf-8")
+    sh = _SH.read_text(encoding="utf-8")
+    assert "WithIntegration" in ps1
+    assert "WithE2e" in ps1
+    assert "with-integration" in sh
+    assert "with-e2e" in sh
+    assert "run_integration_like_ci" in ps1
+    assert "run_integration_like_ci" in sh

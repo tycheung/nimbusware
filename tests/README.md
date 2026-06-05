@@ -35,7 +35,8 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - **Per-package floors** (`scripts/coverage_package_floors.py`, ≥85%): `agent_core`, `hermes_store`, `hermes_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.
 - **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api/test_api_runs.py`) and Maker flows (`tests/api/test_maker_approval_api.py`, `tests/api/test_projects_api.py`) run on every PR.
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
-- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API `run.created` timeline). Local opt-in: set `NIMBUSWARE_DATABASE_URL` and run the same command; `ci_check.ps1` stays unit-only.
+- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API `run.created` timeline). Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
+- **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** `-m slow`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
 

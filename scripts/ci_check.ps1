@@ -1,4 +1,10 @@
 # Mirror the default CI unit job locally (see .github/workflows/ci.yml).
+# Optional: -WithIntegration (Postgres integration pytest), -WithE2e (pytest tests/e2e -m e2e).
+param(
+    [switch]$WithIntegration,
+    [switch]$WithE2e
+)
+
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
@@ -67,6 +73,24 @@ if ($node) {
         }
         Pop-Location
     }
+}
+
+if ($WithIntegration -or $WithE2e) {
+    if (-not $env:NIMBUSWARE_DATABASE_URL) {
+        Write-Error "NIMBUSWARE_DATABASE_URL is required when using -WithIntegration or -WithE2e"
+        exit 1
+    }
+    if (-not $env:NIMBUSWARE_REPO_ROOT) { $env:NIMBUSWARE_REPO_ROOT = $Root }
+}
+
+if ($WithIntegration) {
+    & "$PSScriptRoot\run_integration_like_ci.ps1"
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
+if ($WithE2e) {
+    poetry run pytest tests/e2e -q -m e2e
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 exit 0
