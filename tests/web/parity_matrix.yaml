@@ -37,6 +37,9 @@ maker:
   - id: apply_preset_wizard
     web: true
     notes: Models tab three-step preset wizard wired to apply-preset API
+  - id: models_gpu_filter
+    web: true
+    notes: Models tab GPU-only and GPU pool filters on ranked list API
   - id: ollama_pull
     web: true
   - id: settings_operator

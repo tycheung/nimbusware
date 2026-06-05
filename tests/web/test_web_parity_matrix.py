@@ -46,6 +46,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "workspace_revert",
         "models_ranked_table",
         "apply_preset_wizard",
+        "models_gpu_filter",
         "ollama_pull",
         "settings_operator",
         "hardware_panel",

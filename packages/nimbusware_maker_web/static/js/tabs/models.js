@@ -6,14 +6,30 @@ const PRESETS = [
   { id: "speed", label: "Speed", hint: "Smaller context, faster" },
 ];
 
+function gpuGroupLabel(group, index) {
+  if (!Array.isArray(group) || !group.length) return `Pool ${index}`;
+  return `Pool ${index}: ${group.join(", ")}`;
+}
+
 export async function mountModels(root) {
   root.innerHTML = `
+    <div id="models-hardware-strip" class="models-hardware-strip muted"></div>
+    <div id="models-filter-bar" class="models-filter-bar">
+      <label class="models-filter-item">
+        <input type="checkbox" id="models-gpu-only" />
+        GPU-only ranking (no CPU spill)
+      </label>
+      <label id="models-gpu-pool-wrap" class="models-filter-item" hidden>
+        GPU pool
+        <select id="models-gpu-pool"></select>
+      </label>
+    </div>
     <div id="models-wizard" class="wizard-panel">
       <p class="muted">Apply an Ollama preset to model routing in three steps.</p>
       <div id="models-step-1">
         <h3>1. Select model</h3>
         <table id="models-ranked-table" class="data-table">
-          <thead><tr><th></th><th>Model</th><th>Fit</th></tr></thead>
+          <thead><tr><th></th><th>Model</th><th>Fit</th><th></th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -38,6 +54,8 @@ export async function mountModels(root) {
   let selectedModel = null;
   let selectedPreset = "balanced";
   let wizardStep = 1;
+  let gpuOnly = false;
+  let gpuGroupIndex = 0;
 
   function showStep(step) {
     wizardStep = step;
@@ -72,6 +90,68 @@ export async function mountModels(root) {
     el.textContent = `Apply preset "${selectedPreset}" to model "${selectedModel.model_id}" (${selectedModel.fit_level || "unknown fit"}) for model-routing.`;
   }
 
+  function renderHardwareStrip(profile) {
+    const strip = root.querySelector("#models-hardware-strip");
+    if (!strip || !profile) return;
+    const tier = profile.tier || "unknown";
+    const ram = profile.ram_available_gb != null ? `${profile.ram_available_gb} GB free` : "RAM n/a";
+    const gpuCount = Array.isArray(profile.gpus) ? profile.gpus.length : 0;
+    strip.textContent = `Hardware tier: ${tier} · ${ram} · ${gpuCount} GPU(s) detected`;
+  }
+
+  function setupGpuPoolSelect(gpuGroups) {
+    const wrap = root.querySelector("#models-gpu-pool-wrap");
+    const select = root.querySelector("#models-gpu-pool");
+    if (!wrap || !select) return;
+    if (!Array.isArray(gpuGroups) || gpuGroups.length <= 1) {
+      wrap.hidden = true;
+      gpuGroupIndex = 0;
+      return;
+    }
+    wrap.hidden = false;
+    select.innerHTML = gpuGroups
+      .map((group, index) => `<option value="${index}">${gpuGroupLabel(group, index)}</option>`)
+      .join("");
+    select.value = String(gpuGroupIndex);
+    select.onchange = () => {
+      gpuGroupIndex = Number.parseInt(select.value, 10) || 0;
+      void loadRanked();
+    };
+  }
+
+  async function loadRanked() {
+    const tbody = root.querySelector("#models-ranked-table tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    selectedModel = null;
+    const params = new URLSearchParams({ limit: "30" });
+    if (gpuOnly) params.set("gpu_only", "true");
+    if (gpuGroupIndex > 0) params.set("gpu_group_index", String(gpuGroupIndex));
+    const rankedBody = await apiJson(`/platform/models/ranked?${params.toString()}`);
+    for (const row of rankedBody.models || []) {
+      const tr = document.createElement("tr");
+      const modelId = row.model_id || row.model || row.name || "?";
+      tr.innerHTML = `<td><input type="radio" name="models-select" value="${modelId}" /></td>
+        <td>${modelId}</td><td>${row.fit_level || ""}</td>`;
+      const radio = tr.querySelector('input[name="models-select"]');
+      radio?.addEventListener("change", () => {
+        selectedModel = { ...row, model_id: modelId };
+        renderPresetCards();
+        showStep(2);
+      });
+      const pullBtn = document.createElement("button");
+      pullBtn.type = "button";
+      pullBtn.textContent = "Pull";
+      pullBtn.onclick = () => startPull(modelId);
+      const actions = document.createElement("td");
+      actions.appendChild(pullBtn);
+      tr.appendChild(actions);
+      tbody.appendChild(tr);
+    }
+    renderPresetCards();
+    showStep(1);
+  }
+
   try {
     const info = await apiJson("/platform/models/catalog-info");
     const el = root.querySelector("#models-catalog-info");
@@ -82,31 +162,22 @@ export async function mountModels(root) {
     /* optional */
   }
 
-  const rankedBody = await apiJson("/platform/models/ranked?limit=30");
-  const tbody = root.querySelector("#models-ranked-table tbody");
-  for (const row of rankedBody.models || []) {
-    const tr = document.createElement("tr");
-    const modelId = row.model_id || row.model || row.name || "?";
-    tr.innerHTML = `<td><input type="radio" name="models-select" value="${modelId}" /></td>
-      <td>${modelId}</td><td>${row.fit_level || ""}</td>`;
-    const radio = tr.querySelector('input[name="models-select"]');
-    radio?.addEventListener("change", () => {
-      selectedModel = { ...row, model_id: modelId };
-      renderPresetCards();
-      showStep(2);
-    });
-    const pullBtn = document.createElement("button");
-    pullBtn.type = "button";
-    pullBtn.textContent = "Pull";
-    pullBtn.onclick = () => startPull(modelId);
-    const actions = document.createElement("td");
-    actions.appendChild(pullBtn);
-    tr.appendChild(actions);
-    tbody?.appendChild(tr);
+  try {
+    const hw = await apiJson("/platform/hardware");
+    const profile = hw.profile || {};
+    renderHardwareStrip(profile);
+    setupGpuPoolSelect(profile.gpu_groups);
+  } catch {
+    /* optional */
   }
 
-  renderPresetCards();
-  showStep(1);
+  const gpuOnlyInput = root.querySelector("#models-gpu-only");
+  gpuOnlyInput?.addEventListener("change", () => {
+    gpuOnly = Boolean(gpuOnlyInput.checked);
+    void loadRanked();
+  });
+
+  await loadRanked();
 
   root.querySelector("#models-back-btn")?.addEventListener("click", () => {
     if (wizardStep === 3) showStep(2);

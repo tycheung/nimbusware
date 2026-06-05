@@ -47,6 +47,10 @@ def test_maker_models_preset_wizard_paths() -> None:
     models_js = (_STATIC / "js" / "tabs" / "models.js").read_text(encoding="utf-8")
     assert "/platform/models/ranked" in models_js
     assert "/platform/models/apply-preset" in models_js
+    assert "/platform/hardware" in models_js
+    assert "gpu_only" in models_js
+    assert "gpu_group_index" in models_js
+    assert "models-gpu-only" in models_js
     assert "model_id" in models_js
     assert "models-wizard" in models_js
     assert 'preset: "recommended"' not in models_js

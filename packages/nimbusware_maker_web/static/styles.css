@@ -244,6 +244,30 @@ body.mobile-mode #rev-stitch {
   display: none !important;
 }
 
+.models-hardware-strip {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.models-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.models-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 720px) {
   .app-layout {
     flex-direction: column;
