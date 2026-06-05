@@ -578,6 +578,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_AGENT_JIT_LOOP",
+            _USER,
+            _BOOL,
+            "1",
+            "Agent JIT tool loop",
+            "Multi-turn tool loop for slice implement agent mode (vs single-shot plan).",
+            "User — context efficiency",
+        ),
+        SettingDef(
             "NIMBUSWARE_SWE_BENCH_ENABLED",
             _USER,
             _BOOL,

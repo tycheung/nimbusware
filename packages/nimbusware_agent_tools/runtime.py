@@ -186,6 +186,35 @@ def execute_slice_implement_agent(
     if use_llm and llm_base_url is not None and llm_model_id is not None:
         base_url = llm_base_url
         model_id = llm_model_id
+        from nimbusware_env.env_flags import nimbusware_agent_jit_loop_enabled
+
+        if nimbusware_agent_jit_loop_enabled():
+            from nimbusware_agent_tools.agent_loop import run as run_agent_loop
+
+            try:
+                loop_result = run_agent_loop(
+                    ws,
+                    plan,
+                    base_url=base_url,
+                    model_id=model_id,
+                    timeout_seconds=timeout_seconds,
+                    system_prompt=llm_system_prompt,
+                    risk_caps=caps,
+                )
+            except Exception as exc:  # noqa: BLE001
+                logs.append(f"agent JIT loop failed: {exc}")
+                loop_result = None
+            if loop_result is not None and (
+                loop_result.exit_code == 0 or loop_result.paths_touched
+            ):
+                return SliceImplementResult(
+                    mode="agent",
+                    exit_code=loop_result.exit_code,
+                    log="\n".join(loop_result.logs) + "\n",
+                    paths_touched=tuple(loop_result.paths_touched),
+                )
+            if loop_result is not None:
+                logs.extend(loop_result.logs)
         try:
             steps = _steps_from_llm(
                 workspace=ws,

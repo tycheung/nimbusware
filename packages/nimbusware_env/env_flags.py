@@ -276,6 +276,12 @@ def nimbusware_shell_output_max_chars(default: int = 4000) -> int:
     return resolve_int("NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS", default=default)
 
 
+def nimbusware_agent_jit_loop_enabled() -> bool:
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
+
+
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
     raw = resolve_raw("NIMBUSWARE_MAX_PARALLEL_WRITERS")
     if raw is None or not str(raw).strip():
