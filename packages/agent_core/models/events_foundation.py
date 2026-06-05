@@ -96,4 +96,4 @@ class EventType(str, Enum):
 
 
 RoleId: TypeAlias = UUID
-"""Role Registry ``role_id`` on persisted paths (plan ?3, ?5, ?6.4). JSON wire: UUID string."""
+"""Role Registry ``role_id`` on persisted events. JSON wire: UUID string."""

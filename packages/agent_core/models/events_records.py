@@ -50,7 +50,7 @@ from agent_core.models.events_payloads import (
 class BaseHermesEvent(BaseModel):
     """Shared envelope fields (DB assigns store_seq separately at persist time).
 
-    ``actor_role`` is a Role Registry UUID when set (plan ?6.4, ?19.2).
+    ``actor_role`` is a Role Registry UUID when set.
     """
 
     model_config = ConfigDict(

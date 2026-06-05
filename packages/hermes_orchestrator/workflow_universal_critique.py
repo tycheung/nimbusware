@@ -1,4 +1,4 @@
-"""Workflow YAML knobs for universal post-verify critique panels. When ``HERMES_<KNOB>`` is unset, the frozen workflow YAML ``universal_critique`` block applies for that knob. Non-empty env values override YAML (truthy vs non-truthy same semantics as existing critique env gates). Optional critique gate FAIL → ``finding.created`` uses ``emit_finding_on_gate_fail`` per stage and env ``HERMES_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL``, ``HERMES_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL``, ``HERMES_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL``. Optional **hard-block** (skip integrator / agent-evaluator / self-refinement tail after verify) uses ``hard_block_on_gate_fail`` per stage and env ``HERMES_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL``, ``HERMES_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL``, ``HERMES_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL``."""
+"""Workflow YAML and env overrides for universal post-verify critique panels."""
 
 from __future__ import annotations
 

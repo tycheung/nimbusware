@@ -1,4 +1,4 @@
-"""OpenAPI access-level tagging (Lane U — user vs admin route groups)."""
+"""OpenAPI access-level tagging (user vs admin route groups)."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Shared OpenAPI response fragments. Routes import the ``PROBLEM_RESPONSE_*``, ``CREATE_RUN_RESPONSE_200``, and ``RUN_TIMELINE_RESPONSE_200`` dicts for ``responses=`` (timeline **200** merges description + ``Link`` header with ``response_model``). Timeline optional-key policy matches ``packages/nimbusware_api/routes/runs.py`` (presence-gated timeline helpers). Problem bodies are documented under both ``application/json`` and ``application/problem+json`` (same schema). A full OpenAPI ``$ref`` component registry is optional if generated schema size or fragment reuse becomes a problem; the Problem JSON shape is single-sourced via ``Problem.model_json_schema()`` in ``_PROBLEM_JSON_CONTENT``. **Read-path 5xx policy:** document ``500: PROBLEM_RESPONSE_500`` on each ``GET`` handler for OpenAPI parity with the app-level default and uncaught-exception handler; do not introduce a separate component ``$ref`` registry unless schema duplication becomes costly."""
+"""Shared OpenAPI Problem+JSON response fragments for route ``responses=`` kwargs."""
 
 from __future__ import annotations
 

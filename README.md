@@ -319,7 +319,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
 | **Actions** | Retry, escalate | Admin |
 | **Bundles** | `GET /bundles/search`, `GET /catalog` | User |
-| **Bundles** | `PUT/PATCH /bundles/catalog`, `GET /bundles/catalog/source` | Admin / read |
+| **Bundles** | `PUT/PATCH /bundles/catalog`, `GET /bundles/catalog/source`, `GET /bundles/catalog-candidates` | Admin |
 | **Critic packs** | `GET/PUT /config/critic-packs/{id}` | Admin (Postgres writes) |
 | **Fleet critic reliability** | `GET /enterprise/fleet/critic-reliability` | Enterprise |
 | **Personas** | Shelf read | User |

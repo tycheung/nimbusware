@@ -49,7 +49,7 @@ DEFAULT_FINDING_FIX_STRICTNESS = FindingFixStrictnessSettings()
 
 
 class NetworkEgressPolicySnapshot(BasePayload):
-    """Frozen ``policy_snapshot.network_egress`` (plan ?6.3A).
+    """Frozen ``policy_snapshot.network_egress`` allowlist snapshot.
 
     Layer merge is orchestration's job; this model validates the merged shape only.
     """
@@ -63,13 +63,13 @@ class NetworkEgressPolicySnapshot(BasePayload):
     def budget_non_negative(cls, v: int | None) -> int | None:
         if v is not None and v < 0:
             raise ValueError(
-                "budget_bytes_per_run must be null or a non-negative integer (plan ?6.3A)",
+                "budget_bytes_per_run must be null or a non-negative integer",
             )
         return v
 
 
 class PolicySnapshotV1(BasePayload):
-    """Immutable policy snapshot at run start (plan ?6.3A)."""
+    """Immutable policy snapshot at run start."""
 
     finding_fix_strictness: FindingFixStrictnessSettings
     network_egress: NetworkEgressPolicySnapshot
@@ -123,9 +123,7 @@ class RunCreatedPayload(BasePayload):
     config_snapshot_id: str
     policy_snapshot: PolicySnapshotV1 | None = Field(
         default=None,
-        description=(
-            "Frozen policy at run start (plan ?6.3A); omit until orchestration supplies it."
-        ),
+        description=("Frozen policy at run start; omit until orchestration supplies it."),
     )
 
 
@@ -143,7 +141,7 @@ class RunCompletedPayload(BasePayload):
 
 
 class RunEscalatedPayload(BasePayload):
-    """Human escalation / arbiter checkpoint (plan ?6.6)."""
+    """Human escalation / arbiter checkpoint."""
 
     actor_id: str = Field(min_length=1, description="Human or system actor identifier.")
     reason_code: str = Field(min_length=1)
@@ -152,7 +150,7 @@ class RunEscalatedPayload(BasePayload):
 
 
 class GateOverriddenPayload(BasePayload):
-    """Recorded human override of a gate outcome (plan ?6.6)."""
+    """Recorded human override of a gate outcome."""
 
     actor_id: str = Field(min_length=1)
     reason_code: str = Field(min_length=1)
@@ -176,7 +174,7 @@ class ModelPreflightPassedPayload(BasePayload):
         default=None,
         ge=1,
         le=20,
-        description="Health endpoint multisample count when measured (plan ?4.4).",
+        description="Health endpoint multisample count when measured.",
     )
     p95_latency_source: str | None = Field(
         default=None,
@@ -187,9 +185,8 @@ class ModelPreflightPassedPayload(BasePayload):
         default=None,
         max_length=20,
         description=(
-            "Per-sample health probe latencies in ms when multisample "
-            "(plan ?4.4). Defaults to None when omitted from stored payloads / "
-            "single-sample runs; aligned with `preflight_latency_sample_count`."
+            "Per-sample health probe latencies in ms when multisample preflight ran. "
+            "Omitted on single-sample runs."
         ),
     )
 
@@ -330,7 +327,7 @@ class GateDecisionEmittedPayload(BasePayload):
     unanimous_pass_required: bool = True
     failing_critics: list[RoleId] = Field(
         default_factory=list,
-        description="Role Registry ids for critics that failed the gate (plan ?3).",
+        description="Role Registry ids for critics that failed the gate.",
     )
     failing_finding_ids: list[UUID] = Field(default_factory=list)
     failure_reason_code: str | None = Field(

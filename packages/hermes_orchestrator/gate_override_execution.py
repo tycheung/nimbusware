@@ -1,4 +1,4 @@
-"""Append ``gate.overridden`` for human audit trail (plan ?6.6; audit-only, no auto-unblock)."""
+"""Append ``gate.overridden`` for operator audit (no auto-unblock)."""
 
 from __future__ import annotations
 
