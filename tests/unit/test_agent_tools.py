@@ -6,7 +6,12 @@ import pytest
 
 from nimbusware_agent_tools.allowlist import path_in_plan, validate_shell_invocation
 from nimbusware_agent_tools.runtime import execute_slice_implement_agent
-from nimbusware_agent_tools.tools import tool_grep, tool_read_file, tool_write_file
+from nimbusware_agent_tools.tools import (
+    tool_edit_file,
+    tool_grep,
+    tool_read_file,
+    tool_write_file,
+)
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.slice_implement import slice_implement_mode
 
@@ -43,6 +48,50 @@ def test_tool_grep_finds_line(tmp_path: Path) -> None:
     result = tool_grep(ws, "inventory", paths=["app.py"])
     assert result.ok
     assert "inventory" in result.output
+
+
+def test_tool_edit_happy_path(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "app.py").write_text("def foo():\n    return 1\n", encoding="utf-8")
+    allowed = {"app.py"}
+    result = tool_edit_file(
+        ws,
+        "app.py",
+        "return 1",
+        "return 2",
+        allowed_paths=allowed,
+    )
+    assert result.ok
+    assert "edited app.py" in result.output
+    assert "return 2" in (ws / "app.py").read_text(encoding="utf-8")
+
+
+def test_tool_edit_not_found(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "app.py").write_text("x = 1\n", encoding="utf-8")
+    result = tool_edit_file(ws, "app.py", "missing", "y", allowed_paths={"app.py"})
+    assert not result.ok
+    assert "not found" in result.output
+
+
+def test_tool_edit_ambiguous(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "app.py").write_text("a=1\na=1\n", encoding="utf-8")
+    result = tool_edit_file(ws, "app.py", "a=1", "a=2", allowed_paths={"app.py"})
+    assert not result.ok
+    assert "ambiguous" in result.output
+
+
+def test_tool_edit_path_jail(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "app.py").write_text("x\n", encoding="utf-8")
+    result = tool_edit_file(ws, "secret.py", "x", "y", allowed_paths={"app.py"})
+    assert not result.ok
+    assert "rejected path" in result.output
 
 
 def test_execute_slice_implement_agent_stub(

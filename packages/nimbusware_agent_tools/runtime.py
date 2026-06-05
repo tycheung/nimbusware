@@ -12,6 +12,7 @@ from nimbusware_agent_tools.risk_caps import (
 )
 from nimbusware_agent_tools.tools import (
     ToolResult,
+    tool_edit_file,
     tool_grep,
     tool_read_file,
     tool_run_shell,
@@ -86,6 +87,15 @@ def _execute_step(
         paths = step.arguments.get("paths")
         path_tuple = tuple(paths) if isinstance(paths, list) else None
         return tool_grep(workspace, pattern, paths=path_tuple)
+    if step.tool == "edit":
+        return tool_edit_file(
+            workspace,
+            str(step.arguments.get("path") or ""),
+            str(step.arguments.get("old_text") or ""),
+            str(step.arguments.get("new_text") or ""),
+            allowed_paths=allowed,
+            replace_all=bool(step.arguments.get("replace_all")),
+        )
     if step.tool == "write":
         return tool_write_file(
             workspace,
@@ -114,15 +124,15 @@ def _steps_from_llm(
 
     context = _gather_context(workspace, plan)
     schema = (
-        '{"steps":[{"tool":"read|grep|write|shell","path":"...","content":"...",'
-        '"pattern":"...","command":"pytest","args":["..."]}]}'
+        '{"steps":[{"tool":"read|grep|edit|write|shell","path":"...","old_text":"...",'
+        '"new_text":"...","content":"...","pattern":"...","command":"pytest","args":["..."]}]}'
     )
     system = (
         f"{system_prompt or 'You are a careful coding agent.'}\n"
         f"Implement slice {plan.slice_id} using ONLY allowlisted tools.\n"
         f"Reply with JSON: {schema}. "
         f"Writes must use paths from: {list(plan.target_paths)}. "
-        "Prefer small edits; use shell only for pytest or ruff."
+        "Prefer edit over write for existing files; use shell only for pytest or ruff."
     )
     user = (
         f"Rationale: {plan.rationale}\n"
@@ -215,6 +225,30 @@ def execute_slice_implement_agent(
             logs.append(f"risk cap: max_tool_steps={caps.max_tool_steps}")
             exit_code = max(exit_code, 1)
             break
+        if step.tool == "edit":
+            rel = str(step.arguments.get("path") or "")
+            old_text = str(step.arguments.get("old_text") or "")
+            new_text = str(step.arguments.get("new_text") or "")
+            delta = abs(len(new_text.encode("utf-8")) - len(old_text.encode("utf-8")))
+            write_bytes += delta
+            if write_bytes > caps.max_write_bytes:
+                logs.append(f"risk cap: max_write_bytes={caps.max_write_bytes}")
+                exit_code = max(exit_code, 1)
+                break
+            result = tool_edit_file(
+                ws,
+                rel,
+                old_text,
+                new_text,
+                allowed_paths=allowed,
+                replace_all=bool(step.arguments.get("replace_all")),
+            )
+            logs.append(f"{result.tool}: {result.output[:500]}")
+            if result.ok:
+                touched.append(rel.replace("\\", "/").lstrip("/"))
+            else:
+                exit_code = max(exit_code, 1)
+            continue
         if step.tool == "write":
             rel = str(step.arguments.get("path") or "")
             content = str(step.arguments.get("content") or "")

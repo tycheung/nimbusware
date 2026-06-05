@@ -80,6 +80,43 @@ def tool_grep(
     return ToolResult("grep", True, "\n".join(matches))
 
 
+def tool_edit_file(
+    workspace: Path,
+    path: str,
+    old_text: str,
+    new_text: str,
+    *,
+    allowed_paths: set[str],
+    replace_all: bool = False,
+) -> ToolResult:
+    rel = normalise_rel(path)
+    if not path_in_plan(rel, allowed_paths):
+        return ToolResult("edit", False, f"rejected path outside slice plan: {rel!r}")
+    if not old_text:
+        return ToolResult("edit", False, "old_text required")
+    try:
+        target = resolve_workspace_file(workspace, rel)
+        if not target.is_file():
+            return ToolResult("edit", False, f"not a file: {rel}")
+        content = target.read_text(encoding="utf-8")
+        count = content.count(old_text)
+        if count == 0:
+            return ToolResult("edit", False, f"old_text not found in {rel}")
+        if count > 1 and not replace_all:
+            return ToolResult("edit", False, f"ambiguous: {count} matches in {rel}")
+        updated = content.replace(old_text, new_text, count if replace_all else 1)
+        target.write_text(updated, encoding="utf-8")
+        added = new_text.count("\n") + (1 if new_text and not new_text.endswith("\n") else 0)
+        removed = old_text.count("\n") + (1 if old_text and not old_text.endswith("\n") else 0)
+        if new_text.endswith("\n") and added > 0:
+            added = new_text.count("\n")
+        if old_text.endswith("\n") and removed > 0:
+            removed = old_text.count("\n")
+        return ToolResult("edit", True, f"edited {rel} (+{added}/-{removed} lines)")
+    except (OSError, ValueError) as exc:
+        return ToolResult("edit", False, str(exc))
+
+
 def tool_write_file(
     workspace: Path,
     path: str,
