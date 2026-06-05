@@ -282,6 +282,16 @@ def nimbusware_agent_jit_loop_enabled() -> bool:
     return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
 
 
+def nimbusware_handoff_max_chars(default: int = 4000) -> int:
+    return resolve_int("NIMBUSWARE_HANDOFF_MAX_CHARS", default=default)
+
+
+def nimbusware_handoff_llm_summary_enabled() -> bool:
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("NIMBUSWARE_HANDOFF_LLM_SUMMARY", default=False)
+
+
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
     raw = resolve_raw("NIMBUSWARE_MAX_PARALLEL_WRITERS")
     if raw is None or not str(raw).strip():

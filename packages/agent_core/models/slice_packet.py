@@ -20,6 +20,7 @@ class SliceContextPacket(BaseModel):
     policy_excerpt: str = ""
     memory_excerpt: str = ""
     repo_map_excerpt: str = ""
+    handoff_summary: str = ""
 
     def capped(self, *, max_chars: int) -> SliceContextPacket:
         if max_chars <= 0:
@@ -27,7 +28,8 @@ class SliceContextPacket(BaseModel):
         budget = max_chars
         mem_cap = min(len(self.memory_excerpt), max(0, budget // 5))
         repo_cap = min(len(self.repo_map_excerpt), max(0, budget * 3 // 20))
-        body_cap = max(0, budget - mem_cap - repo_cap)
+        handoff_cap = min(len(self.handoff_summary), max(0, budget // 10))
+        body_cap = max(0, budget - mem_cap - repo_cap - handoff_cap)
         return SliceContextPacket(
             slice_id=self.slice_id,
             paths=self.paths,
@@ -37,6 +39,7 @@ class SliceContextPacket(BaseModel):
             policy_excerpt=_truncate(self.policy_excerpt, body_cap // 4),
             memory_excerpt=_truncate(self.memory_excerpt, mem_cap),
             repo_map_excerpt=_truncate(self.repo_map_excerpt, repo_cap),
+            handoff_summary=_truncate(self.handoff_summary, handoff_cap),
         )
 
     def char_count(self) -> int:
@@ -49,6 +52,7 @@ class SliceContextPacket(BaseModel):
             + len(self.policy_excerpt)
             + len(self.memory_excerpt)
             + len(self.repo_map_excerpt)
+            + len(self.handoff_summary)
         )
 
 

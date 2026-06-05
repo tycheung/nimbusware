@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.micro_slice import micro_slice_timeline_summary, parse_slice_plan
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_env import find_repo_root
 
 
 def test_record_micro_slice_plan_and_gate() -> None:
@@ -33,3 +33,10 @@ def test_record_micro_slice_plan_and_gate() -> None:
     summary = micro_slice_timeline_summary(events)
     assert summary["slice_count_planned"] == 1
     assert summary["slices_completed"] == 1
+    handoff_rows = [
+        r
+        for r in rows
+        if (r.get("payload") or {}).get("stage_name") == "slice.handoff"
+    ]
+    assert len(handoff_rows) == 1
+    assert (handoff_rows[0].get("metadata") or {}).get("slice_handoff")

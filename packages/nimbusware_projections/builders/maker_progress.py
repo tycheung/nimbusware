@@ -20,8 +20,26 @@ _SLICE_STAGE_NAMES = frozenset(
         "slice.critique",
         "slice.test",
         "slice.gate",
+        "slice.handoff",
     },
 )
+
+
+def _latest_handoff_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    latest: dict[str, Any] | None = None
+    for row in events:
+        if _stage_name(row) != "slice.handoff":
+            continue
+        meta = _metadata(row)
+        summary = meta.get("handoff_summary")
+        handoff = meta.get("slice_handoff")
+        if isinstance(summary, str) and summary.strip():
+            latest = {
+                "summary": summary,
+                "handoff": handoff if isinstance(handoff, dict) else None,
+                "slice_id": meta.get("slice_id"),
+            }
+    return latest
 
 
 def _stage_name(row: dict[str, Any]) -> str:
@@ -254,6 +272,9 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     }
     if pressure:
         out["resource_pressure"] = pressure
+    handoff = _latest_handoff_summary(events)
+    if handoff:
+        out["latest_handoff"] = handoff
     return out
 
 

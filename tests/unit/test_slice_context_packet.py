@@ -40,3 +40,13 @@ def test_packet_includes_repo_map_when_root_provided(tmp_path) -> None:
     )
     assert packet.repo_map_excerpt
     assert packet.char_count() <= 8500
+
+
+def test_packet_includes_handoff_summary() -> None:
+    plan = parse_slice_plan({"slice_id": "s-h", "target_paths": ["a.py"]})
+    packet = build_slice_context_packet(
+        plan,
+        handoff_summary="## Goal\ncampaign\n",
+        max_chars=3000,
+    )
+    assert "campaign" in packet.handoff_summary

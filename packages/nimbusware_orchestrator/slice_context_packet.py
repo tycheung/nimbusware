@@ -5,13 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from agent_core.models.slice_packet import SliceContextPacket, SliceVerdictSummary
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 from nimbusware_env.env_flags import (
     nimbusware_slice_packet_max_chars,
     nimbusware_slice_repo_map_enabled,
     nimbusware_slice_repo_map_max_chars,
 )
+from nimbusware_orchestrator.micro_slice import SlicePlan
+from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 
 
 def default_packet_max_chars() -> int:
@@ -27,6 +27,7 @@ def build_slice_context_packet(
     policy_excerpt: str = "",
     memory_excerpt: str = "",
     repo_map_excerpt: str = "",
+    handoff_summary: str = "",
     repo_root: Path | None = None,
     max_chars: int | None = None,
 ) -> SliceContextPacket:
@@ -63,6 +64,7 @@ def build_slice_context_packet(
         policy_excerpt=policy_excerpt,
         memory_excerpt=memory_excerpt,
         repo_map_excerpt=repo_excerpt,
+        handoff_summary=handoff_summary,
     )
     cap = max_chars if max_chars is not None else default_packet_max_chars()
     return packet.capped(max_chars=cap)

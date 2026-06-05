@@ -64,6 +64,11 @@ class MicroSliceMixin:
         from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from nimbusware_orchestrator.slice_context_packet import build_slice_context_packet
         from nimbusware_orchestrator.slice_gate import run_slice_gate_chain
+        from nimbusware_orchestrator.slice_handoff import (
+            build_slice_handoff_summary,
+            handoff_markdown_capped,
+            latest_handoff_from_events,
+        )
         from nimbusware_orchestrator.workflow_memory import (
             memory_settings_from_run_metadata,
             pinned_generation_for_scope,
@@ -93,6 +98,22 @@ class MicroSliceMixin:
                 repo_root=self._repo_root,
                 settings=memory_settings,
             )
+        prior_handoff = latest_handoff_from_events(
+            self._store.list_run_events(str(run_id)),
+        )
+        diff_stat = (
+            f"{diff_unified.count(chr(10))} diff lines"
+            if diff_unified.strip()
+            else "no diff captured"
+        )
+        handoff = build_slice_handoff_summary(
+            p,
+            prior=prior_handoff,
+            gate=gate,
+            paths_touched=tuple(p.target_paths),
+            diff_stat=diff_stat,
+        )
+        handoff_md = handoff_markdown_capped(handoff)
         packet = build_slice_context_packet(
             p,
             diff_unified=diff_unified,
@@ -100,12 +121,14 @@ class MicroSliceMixin:
             gate=gate,
             memory_excerpt=memory_excerpt,
             repo_root=self._repo_root,
+            handoff_summary=handoff_md,
         )
+        now = datetime.now(timezone.utc)
         meta = {
             **gate.to_metadata(),
             "slice_context_packet": packet.model_dump(mode="json"),
+            "slice_handoff": handoff.model_dump(mode="json"),
         }
-        now = datetime.now(timezone.utc)
         if memory_hits:
             from nimbusware_memory.audit import append_memory_retrieval_emitted_event
 
@@ -131,6 +154,20 @@ class MicroSliceMixin:
                     repo_root=self._repo_root,
                 ),
             )
+        self._store.append(
+            StageStartedEvent(
+                event_type=EventType.STAGE_STARTED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=now,
+                metadata={
+                    "slice_id": p.slice_id,
+                    "slice_handoff": handoff.model_dump(mode="json"),
+                    "handoff_summary": handoff_md,
+                },
+                payload=StageStartedPayload(stage_name="slice.handoff", attempt=1),
+            ),
+        )
         if gate.passed:
             self._store.append(
                 StagePassedEvent(
