@@ -292,6 +292,35 @@ def nimbusware_handoff_llm_summary_enabled() -> bool:
     return resolve_bool("NIMBUSWARE_HANDOFF_LLM_SUMMARY", default=False)
 
 
+def nimbusware_campaign_keep_recent_tokens(default: int = 12_000) -> int:
+    raw = resolve_raw("NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS")
+    if raw is None or not str(raw).strip():
+        return _campaign_tokens_from_hw(default)
+    try:
+        return max(1000, int(str(raw).strip()))
+    except ValueError:
+        return default
+
+
+def nimbusware_campaign_reserve_tokens(default: int = 8000) -> int:
+    return resolve_int("NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS", default=default)
+
+
+def _campaign_tokens_from_hw(default: int) -> int:
+    try:
+        from nimbusware_hw.cache import get_cached_profile
+
+        profile = get_cached_profile()
+        if profile is None:
+            return default
+        ctx = getattr(profile, "context_tokens", None) or getattr(profile, "context", None)
+        if isinstance(ctx, int) and ctx > 2048:
+            return max(4000, ctx // 3)
+    except (ImportError, OSError, TypeError, ValueError):
+        pass
+    return default
+
+
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
     raw = resolve_raw("NIMBUSWARE_MAX_PARALLEL_WRITERS")
     if raw is None or not str(raw).strip():

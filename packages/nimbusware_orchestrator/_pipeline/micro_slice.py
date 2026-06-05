@@ -168,6 +168,13 @@ class MicroSliceMixin:
                 payload=StageStartedPayload(stage_name="slice.handoff", attempt=1),
             ),
         )
+        from nimbusware_orchestrator.context_compaction import maybe_emit_compaction_event
+
+        maybe_emit_compaction_event(
+            self._store,
+            run_id=run_id,
+            events=self._store.list_run_events(str(run_id)),
+        )
         if gate.passed:
             self._store.append(
                 StagePassedEvent(

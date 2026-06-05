@@ -40,3 +40,5 @@ def test_record_micro_slice_plan_and_gate() -> None:
     ]
     assert len(handoff_rows) == 1
     assert (handoff_rows[0].get("metadata") or {}).get("slice_handoff")
+
+
