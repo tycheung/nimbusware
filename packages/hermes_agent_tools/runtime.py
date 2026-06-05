@@ -6,6 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from hermes_agent_tools.risk_caps import (
+    AgentRiskCaps,
+    resolve_agent_risk_caps,
+)
 from hermes_agent_tools.tools import (
     ToolResult,
     tool_grep,
@@ -152,11 +156,16 @@ def execute_slice_implement_agent(
     llm_base_url: str | None = None,
     llm_model_id: str | None = None,
     llm_system_prompt: str | None = None,
+    risk_caps: AgentRiskCaps | None = None,
 ) -> SliceImplementResult:
     ws = Path(workspace).resolve()
     allowed = _allowed_paths(plan)
+    caps = risk_caps or resolve_agent_risk_caps()
     logs: list[str] = []
     touched: list[str] = []
+    tool_steps = 0
+    shell_invocations = 0
+    write_bytes = 0
 
     steps: list[AgentStep] = []
     use_llm = (
@@ -201,9 +210,20 @@ def execute_slice_implement_agent(
 
     exit_code = 0
     for step in steps:
+        tool_steps += 1
+        if tool_steps > caps.max_tool_steps:
+            logs.append(f"risk cap: max_tool_steps={caps.max_tool_steps}")
+            exit_code = max(exit_code, 1)
+            break
         if step.tool == "write":
             rel = str(step.arguments.get("path") or "")
-            edits = [{"path": rel, "content": str(step.arguments.get("content") or "")}]
+            content = str(step.arguments.get("content") or "")
+            write_bytes += len(content.encode("utf-8"))
+            if write_bytes > caps.max_write_bytes:
+                logs.append(f"risk cap: max_write_bytes={caps.max_write_bytes}")
+                exit_code = max(exit_code, 1)
+                break
+            edits = [{"path": rel, "content": content}]
             applied, errors = apply_slice_file_edits(ws, plan, edits)
             touched.extend(applied)
             if errors:
@@ -212,6 +232,12 @@ def execute_slice_implement_agent(
             else:
                 logs.append(f"write {rel}")
             continue
+        if step.tool == "shell":
+            shell_invocations += 1
+            if shell_invocations > caps.max_shell_invocations:
+                logs.append(f"risk cap: max_shell_invocations={caps.max_shell_invocations}")
+                exit_code = max(exit_code, 1)
+                break
         result = _execute_step(ws, step, allowed=allowed, timeout_seconds=timeout_seconds)
         logs.append(f"{result.tool}: {result.output[:500]}")
         if not result.ok:

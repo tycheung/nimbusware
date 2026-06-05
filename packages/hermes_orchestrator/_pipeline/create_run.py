@@ -302,6 +302,7 @@ class CreateRunMixin:
                 run_policy_overrides,
             )
         from hermes_agent_tools.filesystem_jail import default_jail_policy
+        from hermes_agent_tools.risk_caps import resolve_agent_risk_caps
         from hermes_agent_tools.sandbox import resolve_sandbox_backend
         from nimbusware_hw.cache import get_cached_profile
         from nimbusware_hw.governor import governor_for_profile
@@ -311,6 +312,7 @@ class CreateRunMixin:
         agent_tools_effective = {
             "sandbox_backend": resolve_sandbox_backend(),
             "filesystem_jail": default_jail_policy().enabled,
+            "risk_caps": resolve_agent_risk_caps().to_metadata(),
         }
         from hermes_orchestrator.slice_budget_presets import resolve_slice_budget_preset
 
