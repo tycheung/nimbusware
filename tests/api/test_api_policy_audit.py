@@ -11,6 +11,17 @@ def test_compare_run_policies(client: TestClient) -> None:
     body = r.json()
     assert body["run_a"] == a
     assert body["run_b"] == b
+    assert "identical" in body
+    assert "changed" in body
+
+
+def test_compare_run_policies_404_missing_run(client: TestClient) -> None:
+    a = client.post("/v1/runs", json={"workflow_profile": "default"}).json()["run_id"]
+    r = client.get(
+        "/v1/policy/compare",
+        params={"run_a": a, "run_b": "00000000-0000-4000-8000-000000000099"},
+    )
+    assert r.status_code == 404
 
 
 def test_audit_export(client: TestClient) -> None:

@@ -24,6 +24,11 @@ export function RunDetailPage({ id }: { id?: string }) {
   const [critics, setCritics] = useState<Record<string, string>[]>([]);
   const [timelineSeq, setTimelineSeq] = useState<number | null>(null);
   const [actionMsg, setActionMsg] = useState("");
+  const [compareRunB, setCompareRunB] = useState("");
+  const [policyDiffCaption, setPolicyDiffCaption] = useState("");
+  const [policyDiffRows, setPolicyDiffRows] = useState<
+    { key: string; run_a: string; run_b: string }[]
+  >([]);
 
   useEffect(() => {
     if (!id) return;
@@ -44,6 +49,40 @@ export function RunDetailPage({ id }: { id?: string }) {
       setActionMsg(res.status || "ok");
       setRun(await apiJson(`/runs/${id}`));
     } catch (e) {
+      setActionMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function comparePolicies() {
+    if (!id) return;
+    const other = compareRunB.trim();
+    if (!other) {
+      setActionMsg("Enter a run ID to compare.");
+      return;
+    }
+    try {
+      const body = await apiJson<{
+        identical?: boolean;
+        changed_count?: number;
+        changed?: { key?: string; run_a?: unknown; run_b?: unknown }[];
+      }>(`/policy/compare?run_a=${encodeURIComponent(id)}&run_b=${encodeURIComponent(other)}`);
+      if (body.identical) {
+        setPolicyDiffCaption("Policy snapshots are identical.");
+        setPolicyDiffRows([]);
+      } else {
+        setPolicyDiffCaption(`${body.changed_count ?? 0} key(s) differ between runs.`);
+        setPolicyDiffRows(
+          (body.changed || []).map((row) => ({
+            key: row.key || "",
+            run_a: JSON.stringify(row.run_a ?? null),
+            run_b: JSON.stringify(row.run_b ?? null),
+          })),
+        );
+      }
+      setActionMsg("");
+    } catch (e) {
+      setPolicyDiffCaption("");
+      setPolicyDiffRows([]);
       setActionMsg(String((e as Error).message || e));
     }
   }
@@ -142,6 +181,44 @@ export function RunDetailPage({ id }: { id?: string }) {
       <CriticTable rows={critics} />
       <h3>Critic reliability</h3>
       <CriticReliabilityPanel runId={id} />
+      <h3>Policy compare</h3>
+      <p class="muted">Compare frozen policy snapshots on run.created for this run vs another.</p>
+      <label>
+        Compare with run ID{" "}
+        <input
+          value={compareRunB}
+          onInput={(e) => setCompareRunB((e.target as HTMLInputElement).value)}
+          placeholder="other run uuid"
+        />
+      </label>
+      <button type="button" onClick={() => void comparePolicies()}>
+        Compare
+      </button>
+      {policyDiffCaption ? <p class="hint">{policyDiffCaption}</p> : null}
+      {policyDiffRows.length ? (
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>This run</th>
+              <th>Other run</th>
+            </tr>
+          </thead>
+          <tbody>
+            {policyDiffRows.map((row) => (
+              <tr key={row.key}>
+                <td>{row.key}</td>
+                <td>
+                  <code>{row.run_a}</code>
+                </td>
+                <td>
+                  <code>{row.run_b}</code>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
     </section>
   );
 }

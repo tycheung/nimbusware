@@ -134,3 +134,6 @@ admin:
   - id: critic_pack_crud
     web: true
     notes: Config Critic packs tab list and editor wired to critic-packs API
+  - id: policy_compare_run
+    web: true
+    notes: Run detail policy compare panel via policy/compare API
