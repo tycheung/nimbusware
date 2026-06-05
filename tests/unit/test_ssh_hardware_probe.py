@@ -4,7 +4,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_hw.fleet_hardware import parse_fleet_hosts_env, probe_fleet_hardware_hosts
+from nimbusware_hw.fleet_hardware import (
+    parse_fleet_hosts_env,
+    probe_fleet_hardware_hosts,
+    run_probe_matrix,
+)
 from nimbusware_hw.probe import probe_hardware_remote_ssh
 from nimbusware_hw.ssh_probe import parse_remote_probe_output, run_ssh_hardware_probe
 
@@ -78,3 +82,37 @@ def test_probe_fleet_hardware_hosts_mock(monkeypatch: pytest.MonkeyPatch) -> Non
     assert body["host_count"] == 2
     assert len(body["hosts"]) == 2
     assert body["hosts"][0]["tier"] == "medium"
+
+
+def test_run_ssh_hardware_probe_ci_skips_without_hosts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_HW_FLEET_HOSTS", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_HW_SSH_HOST", raising=False)
+    summary = run_probe_matrix()
+    assert summary["skipped"] is True
+    assert summary["host_count"] == 0
+
+
+def test_run_ssh_hardware_probe_ci_fleet_mock_pass(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
+    monkeypatch.setenv("NIMBUSWARE_HW_FLEET_HOSTS", "host-a,host-b")
+    monkeypatch.setenv("NIMBUSWARE_HW_SSH_MOCK", "1")
+    summary = run_probe_matrix()
+    assert summary["skipped"] is False
+    assert summary["failed"] == 0
+    assert summary["passed"] == 2
+
+
+def test_run_ssh_hardware_probe_ci_min_tier_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("NIMBUSWARE_EDITION", "enterprise")
+    monkeypatch.setenv("NIMBUSWARE_HW_SSH_HOST", "host-a")
+    monkeypatch.setenv("NIMBUSWARE_HW_SSH_MOCK", "1")
+    monkeypatch.setenv("NIMBUSWARE_HW_EXPECT_MIN_TIER", "strong")
+    summary = run_probe_matrix()
+    assert summary["failed"] == 1
+    assert "tier_below_expectation" in summary["hosts"][0]["errors"][0]

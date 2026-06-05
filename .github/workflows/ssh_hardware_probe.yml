@@ -1,34 +1,51 @@
+# Optional: live SSH hardware tier probe for Enterprise fleet hosts (not part of default PR CI).
+#
+# Secrets: NIMBUSWARE_HW_FLEET_HOSTS (comma-separated) and NIMBUSWARE_HW_SSH_IDENTITY (PEM).
+# Legacy single-host secret NIMBUSWARE_HW_SSH_HOST is still honored when the fleet env is unset.
+# Optional NIMBUSWARE_HW_EXPECT_MIN_TIER (weak | medium | strong) fails scheduled runs when a
+# host classifies below the expectation. See docs/deploy/ssh-hardware-probe.md.
 name: SSH hardware probe (optional)
 
 on:
+  schedule:
+    - cron: "30 4 * * 0"
   workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: ssh-hardware-probe
+  cancel-in-progress: false
 
 jobs:
   ssh-probe-live:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - run: pip install poetry && poetry install
-      - name: Live SSH hardware probe
+      - name: Live SSH hardware fleet probe
         env:
           NIMBUSWARE_EDITION: enterprise
           HERMES_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_HW_FLEET_HOSTS: ${{ secrets.NIMBUSWARE_HW_FLEET_HOSTS }}
           NIMBUSWARE_HW_SSH_HOST: ${{ secrets.NIMBUSWARE_HW_SSH_HOST }}
           NIMBUSWARE_HW_SSH_IDENTITY: ${{ secrets.NIMBUSWARE_HW_SSH_IDENTITY }}
+          NIMBUSWARE_HW_EXPECT_MIN_TIER: ${{ vars.NIMBUSWARE_HW_EXPECT_MIN_TIER }}
         run: |
-          if [ -z "$NIMBUSWARE_HW_SSH_HOST" ]; then
-            echo "Skip: NIMBUSWARE_HW_SSH_HOST secret not set"
-            exit 0
-          fi
-          poetry run python -c "
-          from nimbusware_hw.probe import probe_hardware_remote_ssh
-          import os
-          host = os.environ['NIMBUSWARE_HW_SSH_HOST']
-          out = probe_hardware_remote_ssh(host)
-          assert not out.get('errors') or out.get('tier'), out
-          print('probe ok', out.get('tier'), out.get('remote_host'))
-          "
+          pip install poetry
+          poetry install --no-interaction
+          poetry run python scripts/run_ssh_hardware_probe_ci.py
+      - name: Open issue on scheduled probe failure
+        if: failure() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "[ssh-hardware-probe] scheduled run failed on $(date -u +%Y-%m-%d)" \
+            --body "The weekly SSH hardware probe workflow failed. Inspect the run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --label "ssh-probe-failure"
