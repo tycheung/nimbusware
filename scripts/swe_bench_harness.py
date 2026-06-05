@@ -57,24 +57,66 @@ def _score_slice_gates(results: list[Any]) -> tuple[int, int, int, float]:
     return slices_total, gates_passed, gates_failed, pass_rate
 
 
+def _apply_benchmark_env(manifest: dict[str, Any]) -> None:
+    raw = manifest.get("benchmark_env")
+    if not isinstance(raw, dict):
+        return
+    for key, value in raw.items():
+        if value is None:
+            continue
+        os.environ[str(key)] = str(value)
+
+
+def _fixture_slice_plan_factory(target_paths: list[str]):
+    from hermes_orchestrator.micro_slice import parse_slice_plan
+
+    def _plan(slice_index: int):
+        return parse_slice_plan(
+            {
+                "slice_id": f"slice-{slice_index}",
+                "rationale": "SWE-bench fixture micro-slice",
+                "target_paths": target_paths,
+                "acceptance_criteria": "Scoped fixture tests pass",
+            },
+        )
+
+    return _plan
+
+
 def _run_micro_slice_benchmark(
     *,
     repo_root: Path,
     fixture: Path,
     workflow_profile: str,
+    manifest: dict[str, Any] | None = None,
 ) -> SweBenchSummary:
     checks: list[str] = ["benchmark_start"]
     os.environ.setdefault("HERMES_SKIP_PREFLIGHT", "1")
     os.environ.setdefault("HERMES_MICRO_SLICE_COUNT", "1")
     os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(repo_root))
+    if manifest:
+        _apply_benchmark_env(manifest)
+
+    from unittest.mock import patch
 
     from hermes_orchestrator.pipeline import make_dev_orchestrator
+
+    target_paths = ["calc.py"]
+    if manifest:
+        raw_paths = manifest.get("fixture_target_paths")
+        if isinstance(raw_paths, list) and raw_paths:
+            target_paths = [str(p) for p in raw_paths]
 
     t0 = time.perf_counter()
     orch, _store = make_dev_orchestrator(repo_root)
     run_id = orch.create_run(workflow_profile)
     checks.append("run_created")
-    results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
+    plan_factory = _fixture_slice_plan_factory(target_paths)
+    with patch(
+        "hermes_orchestrator.micro_slice_executor.default_stub_slice_plan",
+        plan_factory,
+    ):
+        results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
     duration_sec = time.perf_counter() - t0
     slices_total, gates_passed, gates_failed, pass_rate = _score_slice_gates(results)
     checks.append(f"slices_total={slices_total}")
@@ -148,6 +190,7 @@ def run_harness(
         repo_root=root,
         fixture=fixture,
         workflow_profile=profile,
+        manifest=manifest,
     )
     summary.manifest_path = str(manifest_path)
     summary.checks = checks + summary.checks

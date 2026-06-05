@@ -81,7 +81,7 @@ Optional **SWE-bench-style** regression harness for the `micro_slice` workflow p
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
 - Published metrics: gitignored [`benchmarks/`](benchmarks/) — set `HERMES_SWE_BENCH_WRITE_JSON=1` to write `benchmarks/latest_swe_bench.json`
-- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + scored `--run` with `HERMES_SWE_BENCH_WRITE_JSON=1` (artifact `latest_swe_bench.json`; copy into `benchmarks/` for Admin Metrics)
+- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics)
 - Env: `HERMES_SWE_BENCH_ENABLED`, `HERMES_SWE_BENCH_MANIFEST`, `HERMES_SWE_BENCH_WRITE_JSON`
 
 Example scored output:

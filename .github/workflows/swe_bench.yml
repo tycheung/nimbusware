@@ -23,7 +23,6 @@ jobs:
 
   swe-bench-scored:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -31,13 +30,21 @@ jobs:
           python-version: "3.11"
       - run: pip install poetry && poetry install
       - name: SWE-bench scored micro_slice run
-        run: poetry run python scripts/swe_bench_harness.py --run --json
+        id: scored
+        run: |
+          poetry run python scripts/swe_bench_harness.py --run --json | tee swe_bench_out.json
+          pass_rate=$(python -c "import json; print(json.load(open('swe_bench_out.json'))['pass_rate'])")
+          echo "pass_rate=$pass_rate" >> "$GITHUB_OUTPUT"
         env:
           HERMES_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           HERMES_SWE_BENCH_ENABLED: "1"
           HERMES_SWE_BENCH_WRITE_JSON: "1"
           HERMES_MICRO_SLICE_COUNT: "1"
+      - name: Publish SWE-bench summary
+        run: |
+          echo "## SWE-bench scored run" >> "$GITHUB_STEP_SUMMARY"
+          echo "pass_rate: **${{ steps.scored.outputs.pass_rate }}** (min 1.0 required)" >> "$GITHUB_STEP_SUMMARY"
       - name: Upload SWE-bench snapshot
         uses: actions/upload-artifact@v4
         with:

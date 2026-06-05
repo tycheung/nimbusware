@@ -58,3 +58,72 @@ def test_swe_bench_run_json_scores() -> None:
     assert summary["slices_total"] >= 1
     assert "pass_rate" in summary
     assert summary["run_id"]
+    assert summary["pass_rate"] == 1.0
+
+
+def test_swe_bench_min_pass_rate_failure(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "calc.py").write_text("def add(a, b):\n    return a + b\n", encoding="utf-8")
+    (repo / "test_calc.py").write_text(
+        "from calc import add\n\ndef test_add():\n    assert add(1, 2) == 3\n",
+        encoding="utf-8",
+    )
+    bad_manifest = tmp_path / "manifest.json"
+    bad_manifest.write_text(
+        json.dumps(
+            {
+                "workflow_profile": "micro_slice",
+                "fixture_subdir": "repo",
+                "min_pass_rate": 2.0,
+                "fixture_target_paths": ["calc.py"],
+                "benchmark_env": {
+                    "HERMES_USE_LLM": "0",
+                    "HERMES_SLICE_IMPLEMENT": "stub",
+                    "HERMES_SLICE_P3_EVIDENCE": "0",
+                },
+            },
+        ),
+        encoding="utf-8",
+    )
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--run", "--json", "--manifest", str(bad_manifest)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+        env={
+            **os.environ,
+            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_REPO_ROOT": str(ROOT),
+            "HERMES_MICRO_SLICE_COUNT": "1",
+        },
+    )
+    assert proc.returncode != 0, proc.stdout
+    summary = json.loads(proc.stdout)
+    assert summary["ok"] is False
+    assert "min_pass_rate_fail" in summary.get("checks", [])
+
+
+def test_swe_bench_writes_json_snapshot() -> None:
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--run", "--json"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+        env={
+            **os.environ,
+            "HERMES_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_REPO_ROOT": str(ROOT),
+            "HERMES_MICRO_SLICE_COUNT": "1",
+            "HERMES_SWE_BENCH_WRITE_JSON": "1",
+            "HERMES_SWE_BENCH_MANIFEST": str(MANIFEST),
+        },
+    )
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+    # Harness writes under repo benchmarks/; verify flag recorded in summary.
+    summary = json.loads(proc.stdout)
+    assert any(str(c).startswith("wrote=") for c in summary.get("checks", []))
