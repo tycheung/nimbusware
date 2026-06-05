@@ -5,7 +5,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-VALID_BACKENDS = frozenset({"none", "stub", "docker"})
+VALID_BACKENDS = frozenset({"none", "stub", "docker", "kubernetes", "e2b"})
 DEFAULT_DOCKER_IMAGE = "python:3.11-slim"
 
 
@@ -74,6 +74,16 @@ def run_subprocess_in_sandbox(
     chosen = backend or resolve_sandbox_backend()
     if chosen not in VALID_BACKENDS:
         chosen = "none"
+
+    if chosen == "kubernetes":
+        from hermes_agent_tools.fleet_sandbox import run_kubernetes_sandbox
+
+        return run_kubernetes_sandbox(workspace, argv, timeout_seconds=timeout_seconds)
+
+    if chosen == "e2b":
+        from hermes_agent_tools.fleet_sandbox import run_e2b_sandbox
+
+        return run_e2b_sandbox(workspace, argv, timeout_seconds=timeout_seconds)
 
     if chosen == "docker":
         if not docker_cli_available():

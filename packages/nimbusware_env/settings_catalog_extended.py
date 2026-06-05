@@ -166,6 +166,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_HW_FLEET_HOSTS",
             "Comma-separated SSH hosts for fleet hardware tier aggregate",
         ),
+        _install("NIMBUSWARE_WEBHOOK_SECRET", "External chat webhook HMAC secret"),
+        _install("HERMES_SANDBOX_K8S_EXEC_POD", "Fleet sandbox pod for kubectl exec"),
+        _install("HERMES_SANDBOX_K8S_NAMESPACE", "Fleet sandbox Kubernetes namespace"),
+        _install("HERMES_SANDBOX_K8S_WORKDIR", "Working directory inside fleet sandbox pod"),
+        _install("HERMES_E2B_API_KEY", "Enterprise E2B fleet sandbox API key"),
     )
 
     system_extra = (
