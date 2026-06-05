@@ -9,6 +9,9 @@
 | [deploy/README.md](deploy/README.md) | Ops | Docker Compose, CI jobs, secrets |
 | [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO |
 | [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Operators | Bundle catalog candidate promotion |
+| [enterprise-research-index.md](enterprise-research-index.md) | Enterprise ops | Tenant research index + egress audit |
+| [enterprise-buyer.md](enterprise-buyer.md) | Buyers / security | Enterprise compliance checklist |
+| [security-quality-gates.md](security-quality-gates.md) | Maintainers | bandit, pip-audit, CI gates |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 
