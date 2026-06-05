@@ -31,6 +31,8 @@ jobs:
         run: poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
       - name: Ruff
         run: poetry run ruff check packages tests
+      - name: Operator env audit
+        run: poetry run python scripts/audit_operator_env.py
       - name: Ruff format
         run: poetry run ruff format --check packages tests
       - name: Mypy
@@ -50,6 +52,34 @@ jobs:
           rm -f .ci_coverage.json
         env:
           HERMES_SKIP_PREFLIGHT: "1"
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Vitest maker_web
+        run: |
+          cd packages/nimbusware_maker_web
+          npm ci
+          npm test
+      - name: Vitest admin_ui
+        run: |
+          cd packages/nimbusware_admin_ui
+          npm ci
+          npm test
+      - name: Playwright
+        run: |
+          cd tests/e2e/web
+          npm ci
+          npx playwright install chromium --with-deps
+          npm test
 
   integration:
     runs-on: ubuntu-latest

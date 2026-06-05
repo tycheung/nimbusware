@@ -1,0 +1,48 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+_REPO = Path(__file__).resolve().parents[2]
+_CI = _REPO / ".github" / "workflows" / "ci.yml"
+_PS1 = _REPO / "scripts" / "ci_check.ps1"
+_SH = _REPO / "scripts" / "ci_check.sh"
+
+_CRITICAL_STEPS = (
+    "rebuild_bundle_faiss_if_stale.py --dry-run",
+    "ruff check packages tests",
+    "audit_operator_env.py",
+    "ruff format --check packages tests",
+    "mypy_ci_targets.py",
+    "bandit",
+    "pip-audit",
+    "pytest tests",
+    "coverage_package_floors.py",
+)
+
+
+def test_ci_yml_unit_job_includes_critical_steps() -> None:
+    text = _CI.read_text(encoding="utf-8")
+    unit_block = text[text.index("  unit:") : text.index("  web:")]
+    for step in _CRITICAL_STEPS:
+        assert step in unit_block, f"missing in ci.yml unit job: {step}"
+
+
+def test_ci_check_ps1_includes_critical_steps() -> None:
+    text = _PS1.read_text(encoding="utf-8")
+    for step in _CRITICAL_STEPS:
+        assert step in text, f"missing in ci_check.ps1: {step}"
+
+
+def test_ci_check_sh_includes_critical_steps() -> None:
+    text = _SH.read_text(encoding="utf-8")
+    for step in _CRITICAL_STEPS:
+        assert step in text, f"missing in ci_check.sh: {step}"
+
+
+def test_ci_yml_has_web_job_with_vitest_and_playwright() -> None:
+    text = _CI.read_text(encoding="utf-8")
+    web_start = text.index("  web:")
+    web_block = text[web_start : text.index("  integration:")]
+    assert "nimbusware_maker_web" in web_block
+    assert "nimbusware_admin_ui" in web_block
+    assert "playwright install chromium" in web_block
