@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
+from hermes_orchestrator._pipeline._helpers import (
     UUID,
     emit_live_integration_adapter_writer_stage,
     emit_stub_integration_adapter_writer_stage,

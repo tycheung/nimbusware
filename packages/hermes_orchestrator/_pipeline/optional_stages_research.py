@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
+from hermes_orchestrator._pipeline._helpers import (
     UUID,
     parse_research_workflow_block,
     workflow_profile_from_run_created_rows,

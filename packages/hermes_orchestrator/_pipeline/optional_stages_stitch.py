@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
+from hermes_orchestrator._pipeline._helpers import (
     UUID,
     emit_refactor_post_stitch_stage_and_critique,
     parse_stitch_workflow_block,

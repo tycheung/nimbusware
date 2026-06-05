@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
+from hermes_orchestrator._pipeline._helpers import (
     _SELF_REFINEMENT_MAX_ITER_REASON,
     _SELF_REFINEMENT_POLICY_STAGE,
     UUID,
