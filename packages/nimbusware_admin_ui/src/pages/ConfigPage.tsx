@@ -14,7 +14,11 @@ type CatalogSource = { authoritative?: string; path?: string };
 type Candidate = { run_id?: string; candidate_id?: string; status?: string; summary?: string };
 
 export function ConfigPage() {
-  const [tab, setTab] = useState<"ollama" | "bundles" | "settings">("ollama");
+  const [tab, setTab] = useState<"ollama" | "bundles" | "personas" | "settings">("ollama");
+  const [overlapRows, setOverlapRows] = useState<
+    { business_area: string; development_role: string; overlap: string; count: string }[]
+  >([]);
+  const [overlapWarning, setOverlapWarning] = useState("");
   const [ollamaModels, setOllamaModels] = useState<string[]>([]);
   const [pullModel, setPullModel] = useState("");
   const [catalog, setCatalog] = useState<CatalogBody | null>(null);
@@ -208,6 +212,9 @@ export function ConfigPage() {
         <button type="button" class={tab === "bundles" ? "active" : ""} onClick={() => setTab("bundles")}>
           Bundles
         </button>
+        <button type="button" class={tab === "personas" ? "active" : ""} onClick={() => setTab("personas")}>
+          Personas
+        </button>
         <button type="button" class={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}>
           System settings
         </button>
@@ -336,6 +343,40 @@ export function ConfigPage() {
                 );
               })}
             </ul>
+          )}
+        </div>
+      ) : null}
+      {tab === "personas" ? (
+        <div>
+          <h3>Scope overlap report</h3>
+          <p class="muted">
+            Business area × development role pairs with overlapping <code>scope_in</code> tags from
+            the persona shelf.
+          </p>
+          {overlapWarning ? <p class="error">{overlapWarning}</p> : null}
+          {overlapRows.length ? (
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Business area</th>
+                  <th>Development role</th>
+                  <th>Overlap tags</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overlapRows.map((row, i) => (
+                  <tr key={i}>
+                    <td>{row.business_area}</td>
+                    <td>{row.development_role}</td>
+                    <td>{row.overlap}</td>
+                    <td>{row.count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p class="muted">No overlapping scope_in pairs in the current shelf.</p>
           )}
         </div>
       ) : null}

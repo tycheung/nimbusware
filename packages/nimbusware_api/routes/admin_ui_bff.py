@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from agent_core.models import serialize_event_persistent, validate_event_dict
 from hermes_store.protocol import serialized_event_from_row
 from nimbusware_api.admin import AdminDep
-from nimbusware_api.deps import IamStoreDep, StoreDep
+from nimbusware_api.deps import IamStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_console import enterprise_console as ent_console
@@ -30,7 +30,9 @@ from nimbusware_console.integration_adapter_writer_explainer import (
     integration_adapter_writer_run_table_rows,
 )
 from nimbusware_console.operator_chat_core import ChatState, process_user_message
+from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
 from hermes_orchestrator.fleet_analytics import compare_tenant_metrics
+from nimbusware_api.routes.personas_helpers import load_shelf
 from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_env.edition import is_enterprise
 from nimbusware_iam.constants import API_KEY_HEADER
@@ -231,6 +233,27 @@ def enterprise_fleet_dashboard(
         "critic_reliability_caption": critic_caption,
         "critic_reliability_rows": critic_rows,
     }
+
+
+@router.get("/personas/overlap-report")
+def admin_persona_overlap_report(_admin: AdminDep, orch: OrchDep) -> dict[str, Any]:
+    shelf = load_shelf(orch)
+    rows = persona_scope_overlap_report(shelf)
+    table_rows = [
+        {
+            "business_area": str(r.get("business_area_id", "")),
+            "development_role": str(r.get("development_role_id", "")),
+            "overlap": ", ".join(str(t) for t in (r.get("overlap_tags") or [])),
+            "count": str(r.get("overlap_count", 0)),
+        }
+        for r in rows
+    ]
+    warning = ""
+    if rows:
+        warning = (
+            f"{len(rows)} shelf pair(s) have overlapping scope_in — assign personas carefully."
+        )
+    return {"pair_count": len(rows), "warning": warning, "rows": table_rows}
 
 
 @router.get("/enterprise/fleet-compare")

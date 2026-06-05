@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from hermes_extensions.persona_scope_overlap import scope_in_overlaps_for_assignment
+from hermes_extensions.persona_scope_overlap import (
+    persona_scope_overlap_report,
+    scope_in_overlaps_for_assignment,
+)
 from hermes_extensions.personas import PersonaShelf
 
 
@@ -29,3 +32,20 @@ def test_scope_in_overlap_detected() -> None:
     )
     assert len(warnings) == 1
     assert "auth" in warnings[0]
+
+
+def test_persona_scope_overlap_report_pairs() -> None:
+    shelf = PersonaShelf.from_content(
+        {
+            "business_area": [{"id": "ba1", "scope_in": ["auth", "pay"]}],
+            "development_role": [
+                {"id": "dr1", "scope_in": ["auth"]},
+                {"id": "dr2", "scope_in": ["ui"]},
+            ],
+        },
+    )
+    rows = persona_scope_overlap_report(shelf)
+    assert len(rows) == 1
+    assert rows[0]["business_area_id"] == "ba1"
+    assert rows[0]["development_role_id"] == "dr1"
+    assert "auth" in rows[0]["overlap_tags"]

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Header, HTTPException, Query
 
+from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
 from hermes_extensions.personas import normalize_entry
 from hermes_extensions.phase2 import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from hermes_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
@@ -54,6 +55,22 @@ def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
     """Return read-only persona catalog from ``configs/personas/shelves.yaml``."""
     shelf = load_shelf(orch)
     return public_catalog(shelf)
+
+
+@router.get(
+    "/overlap-report",
+    responses={200: PERSONAS_RESPONSE_200, 401: PROBLEM_RESPONSE_401, 500: PROBLEM_RESPONSE_500},
+    summary="Persona scope_in overlap report",
+)
+def get_persona_overlap_report(orch: OrchDep, _admin: AdminDep) -> dict:
+    shelf = load_shelf(orch)
+    rows = persona_scope_overlap_report(shelf)
+    warning = None
+    if rows:
+        warning = (
+            f"{len(rows)} BA×DR pair(s) share scope_in tags — review shelf assignments before runs."
+        )
+    return {"pair_count": len(rows), "rows": rows, "warning": warning}
 
 
 @router.get(

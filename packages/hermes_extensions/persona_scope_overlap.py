@@ -46,3 +46,43 @@ def scope_in_overlaps_for_assignment(
     joined = ", ".join(overlap[:5])
     suffix = f" (+{len(overlap) - 5} more)" if len(overlap) > 5 else ""
     return [f"scope_in overlap between {ba_id} and {dr_id}: {joined}{suffix}"]
+
+
+def persona_scope_overlap_report(shelf: Any) -> list[dict[str, Any]]:
+    """All business_area × development_role pairs with non-empty ``scope_in`` intersection."""
+    if shelf is None:
+        return []
+    rows: list[dict[str, Any]] = []
+    for ba in shelf.list_personas("business_area"):
+        if not isinstance(ba, dict):
+            continue
+        ba_id = str(ba.get("id", "")).strip()
+        if not ba_id:
+            continue
+        ba_scope = _scope_in_set(ba)
+        for dr in shelf.list_personas("development_role"):
+            if not isinstance(dr, dict):
+                continue
+            dr_id = str(dr.get("id", "")).strip()
+            if not dr_id:
+                continue
+            dr_scope = _scope_in_set(dr)
+            overlap = sorted(ba_scope & dr_scope)
+            if not overlap:
+                continue
+            rows.append(
+                {
+                    "business_area_id": ba_id,
+                    "development_role_id": dr_id,
+                    "overlap_tags": overlap,
+                    "overlap_count": len(overlap),
+                },
+            )
+    rows.sort(
+        key=lambda r: (
+            -int(r.get("overlap_count", 0)),
+            str(r.get("business_area_id", "")),
+            str(r.get("development_role_id", "")),
+        ),
+    )
+    return rows
