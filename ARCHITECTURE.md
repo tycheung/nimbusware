@@ -47,7 +47,7 @@ One-page map of packages, data flow, and auth. Normative Hermes agent contract: 
 | `hermes_extensions` | Personas, bundles, escalation helpers |
 | `hermes_executor` | Role-gated outbound HTTP |
 | `hermes_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
-| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`, `stub`, or opt-in `docker` (Individual v1; VM/k8s fleet deferred) |
+| `hermes_agent_tools` | Allowlisted tools; `filesystem_jail` + sandbox backends — `none`/`stub`/`docker` (Individual); `kubernetes`/`e2b` fleet sandboxes; per-slice risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
