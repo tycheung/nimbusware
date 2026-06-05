@@ -128,11 +128,20 @@ def execute_implementation_critique_llm(
         "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
         "validation_steps, acceptance_criteria. Prefer PASS when the log looks healthy."
     )
+    from nimbusware_config.skills_index import load_skill
+
+    skill_body = ""
+    try:
+        skill_body = load_skill("refactor-rubric")
+    except OSError:
+        skill_body = ""
     bounded = truncate_for_llm_history(log_snippet or "", max_chars=4000)
     user = (
         f"Verifier exit_code={verifier_exit_code}. "
         f"Last lines of verifier log (truncated):\n{bounded}"
     )
+    if skill_body.strip():
+        user = f"{user}\n\nLoaded skill refactor-rubric:\n{skill_body.strip()}"
     try:
         data = _ollama_chat_json(
             base_url=base_url,
@@ -161,6 +170,7 @@ def execute_implementation_critique_llm(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
+            metadata={"skill": "skill:refactor-rubric"},
             payload=StageStartedPayload(stage_name=stage_name, attempt=1),
         ),
     )

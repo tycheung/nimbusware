@@ -168,6 +168,14 @@ def execute_plan_stage_llm(
         emit_stub_plan_stage(store, registry, critique_router, run_id=run_id)
         return
     tax_key_union = "|".join(f'"{k}"' for k in plan_critics)
+    from nimbusware_config.skills_index import load_skill, skill_briefs_prompt_block
+
+    skill_block = skill_briefs_prompt_block()
+    plan_skill = ""
+    try:
+        plan_skill = load_skill("plan-quality")
+    except OSError:
+        plan_skill = ""
     system = (
         "You are a Nimbusware orchestration helper. Reply with JSON only. "
         f'Schema: {{"critics":[{{"tax_key":{tax_key_union},'
@@ -178,6 +186,10 @@ def execute_plan_stage_llm(
         "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
         "validation_steps, acceptance_criteria. Prefer PASS for a generic plan."
     )
+    if skill_block:
+        system = f"{system}\n\n{skill_block}"
+    if plan_skill.strip():
+        system = f"{system}\n\nLoaded skill plan-quality:\n{plan_skill.strip()}"
     user = _plan_stage_user_prompt(store, run_id)
     try:
         data = _ollama_chat_json(

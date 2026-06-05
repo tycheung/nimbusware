@@ -1,0 +1,21 @@
+skills:
+  - id: refactor-rubric
+    name: Refactor rubric
+    description: Checklist for safe refactors between micro-slices.
+    path: refactor-rubric.md
+  - id: security-rubric
+    name: Security rubric
+    description: Security critic guidance for implementation review.
+    path: security-rubric.md
+  - id: plan-quality
+    name: Plan quality
+    description: Planner rubric for slice scope and acceptance criteria.
+    path: plan-quality.md
+  - id: test-writer-guide
+    name: Test writer guide
+    description: Guidance for scoped pytest targets per slice.
+    path: test-writer-guide.md
+  - id: domain-context
+    name: Domain context
+    description: Optional domain vocabulary for backlog expansion.
+    path: domain-context.md
