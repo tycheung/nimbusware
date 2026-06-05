@@ -116,3 +116,6 @@ admin:
   - id: bundle_outcome_analytics
     web: true
     notes: Metrics page BundleOutcomePanel via bundle-outcomes API
+  - id: hardware_pressure_history
+    web: true
+    notes: Hardware page with rescan and pressure-history timeline

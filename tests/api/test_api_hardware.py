@@ -77,3 +77,19 @@ def test_platform_hardware_rescan_emit_requires_run_id(client: TestClient) -> No
 def test_platform_hardware_fleet_individual_404(client: TestClient) -> None:
     r = client.get("/v1/platform/hardware/fleet")
     assert r.status_code == 404
+
+
+def test_platform_pressure_history(client: TestClient) -> None:
+    store = client.app.state.store
+    run_id = _seed_run(store)
+    client.post(
+        "/v1/platform/hardware/rescan",
+        json={"emit_event": True, "run_id": str(run_id)},
+    )
+    r = client.get("/v1/platform/analytics/pressure-history?limit=5")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["count"] >= 1
+    entry = body["entries"][0]
+    assert "pressure_level" in entry
+    assert "occurred_at" in entry

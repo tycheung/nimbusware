@@ -13,6 +13,7 @@ from nimbusware_console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
 )
+from nimbusware_hw.pressure_history import pressure_history_from_event_rows
 from nimbusware_env.dotenv import find_repo_root
 from nimbusware_projections.builders.competitive_metrics import build_competitive_summary
 
@@ -43,6 +44,16 @@ def get_platform_competitive_summary(
         limit_runs=limit_runs,
         repo_root=find_repo_root(),
     )
+
+
+@router.get("/platform/analytics/pressure-history")
+def get_platform_pressure_history(
+    store: StoreDep,
+    limit: int = Query(default=20, ge=1, le=200),
+) -> dict[str, Any]:
+    rows = store.list_all_event_rows()
+    history = pressure_history_from_event_rows(rows, limit=limit)
+    return {"limit": limit, "count": len(history), "entries": history}
 
 
 @router.get("/platform/analytics/bundle-outcomes")

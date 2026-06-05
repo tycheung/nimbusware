@@ -9,6 +9,7 @@ import { CustomAgentsPage } from "./pages/CustomAgentsPage";
 import { PreflightPage } from "./pages/PreflightPage";
 import { MetricsPage } from "./pages/MetricsPage";
 import { FleetPage } from "./pages/FleetPage";
+import { HardwarePage } from "./pages/HardwarePage";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { loadBootstrap, type Bootstrap } from "./api/client";
 
@@ -54,6 +55,7 @@ export function App() {
           <CustomAgentsPage path="/agents" />
           <PreflightPage path="/preflight" />
           <MetricsPage path="/metrics" />
+          <HardwarePage path="/hardware" />
           {fleetUi ? <FleetPage path="/fleet" /> : null}
           <RunListPage default />
         </Router>
