@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from hermes_orchestrator._pipeline._helpers import (  # type: ignore[attr-defined]
+from hermes_orchestrator._pipeline._helpers import (
     UUID,
     Any,
     EventType,
