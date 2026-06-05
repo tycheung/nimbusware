@@ -37,6 +37,7 @@ export function MetricsPage() {
       <h2>Competitive metrics</h2>
       <p class="muted">
         Snapshot over recent runs (not a historical time series). Regenerated on each load.
+        Blocking CI security tools: bandit and pip-audit (see repo docs/security-quality-gates.md).
       </p>
       {error ? <p class="error">{error}</p> : null}
       {body ? (

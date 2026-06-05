@@ -76,3 +76,5 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/`
+- Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
+- Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)
