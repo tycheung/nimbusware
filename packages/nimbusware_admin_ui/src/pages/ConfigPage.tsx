@@ -29,6 +29,10 @@ export function ConfigPage() {
     { business_area: string; development_role: string; overlap: string; count: string }[]
   >([]);
   const [overlapWarning, setOverlapWarning] = useState("");
+  const [probShelf, setProbShelf] = useState("business_area");
+  const [probPersonaId, setProbPersonaId] = useState("");
+  const [probCaption, setProbCaption] = useState("");
+  const [probRows, setProbRows] = useState<{ metric: string; value: string }[]>([]);
   const [ollamaModels, setOllamaModels] = useState<string[]>([]);
   const [pullModel, setPullModel] = useState("");
   const [catalog, setCatalog] = useState<CatalogBody | null>(null);
@@ -80,6 +84,17 @@ export function ConfigPage() {
       apiJson<{ values?: Record<string, string> }>("/settings/system")
         .then((b) => setSettings(b.values || {}))
         .catch(() => setSettings({}));
+    }
+    if (tab === "personas") {
+      apiJson<{ rows?: typeof overlapRows; warning?: string }>("/admin/ui/personas/overlap-report")
+        .then((b) => {
+          setOverlapRows(b.rows || []);
+          setOverlapWarning(b.warning || "");
+        })
+        .catch(() => {
+          setOverlapRows([]);
+          setOverlapWarning("");
+        });
     }
     if (tab === "critics") {
       apiJson<{ pack_ids?: string[] }>("/config/critic-packs")
@@ -230,6 +245,77 @@ export function ConfigPage() {
       });
       setMsg(`Saved critic pack ${selectedPackId}.`);
     } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function loadProbationReliability() {
+    const shelf = probShelf.trim();
+    const personaId = probPersonaId.trim();
+    if (!shelf || !personaId) {
+      setMsg("Enter shelf and persona id.");
+      return;
+    }
+    try {
+      const body = await apiJson<{
+        decision?: string;
+        metrics?: Record<string, unknown>;
+        caption?: string;
+      }>(`/personas/${encodeURIComponent(shelf)}/${encodeURIComponent(personaId)}/probation-reliability`);
+      setProbCaption(body.caption || body.decision || "");
+      const metrics = body.metrics || {};
+      setProbRows(
+        Object.entries(metrics).map(([metric, value]) => ({
+          metric,
+          value: String(value),
+        })),
+      );
+      setMsg("");
+    } catch (e) {
+      setProbCaption("");
+      setProbRows([]);
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function loadProbationReliability() {
+    const shelf = probShelf.trim();
+    const personaId = probPersonaId.trim();
+    if (!shelf || !personaId) {
+      setMsg("Enter shelf and persona id.");
+      return;
+    }
+    try {
+      const body = await apiJson<{
+        decision?: string;
+        persona_id?: string;
+        runs_evaluated?: number;
+        avg_score?: number | null;
+        below_threshold_count?: number;
+        invalid_status_count?: number;
+        min_eval_runs?: number;
+        min_score?: number;
+        max_below_ratio?: number;
+      }>(
+        `/personas/${encodeURIComponent(shelf)}/${encodeURIComponent(personaId)}/probation-reliability`,
+      );
+      setProbCaption(`Decision: ${body.decision || "unknown"}`);
+      setProbRows(
+        [
+          ["persona_id", body.persona_id],
+          ["runs_evaluated", body.runs_evaluated],
+          ["avg_score", body.avg_score],
+          ["below_threshold_count", body.below_threshold_count],
+          ["invalid_status_count", body.invalid_status_count],
+          ["min_eval_runs", body.min_eval_runs],
+          ["min_score", body.min_score],
+          ["max_below_ratio", body.max_below_ratio],
+        ].map(([metric, value]) => ({ metric: String(metric), value: String(value ?? "—") })),
+      );
+      setMsg("");
+    } catch (e) {
+      setProbCaption("");
+      setProbRows([]);
       setMsg(String((e as Error).message || e));
     }
   }
@@ -560,6 +646,44 @@ export function ConfigPage() {
           ) : (
             <p class="muted">No overlapping scope_in pairs in the current shelf.</p>
           )}
+          <h3>Probation reliability</h3>
+          <p class="muted">
+            Agent-evaluator scores for shelve/promote decisions. Tune thresholds via System settings (
+            HERMES_PROBATION_*).
+          </p>
+          <label>
+            Shelf{" "}
+            <input value={probShelf} onInput={(e) => setProbShelf((e.target as HTMLInputElement).value)} />
+          </label>
+          <label>
+            Persona id{" "}
+            <input
+              value={probPersonaId}
+              onInput={(e) => setProbPersonaId((e.target as HTMLInputElement).value)}
+            />
+          </label>
+          <button type="button" onClick={() => void loadProbationReliability()}>
+            Load metrics
+          </button>
+          {probCaption ? <p class="hint">{probCaption}</p> : null}
+          {probRows.length ? (
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {probRows.map((row, i) => (
+                  <tr key={i}>
+                    <td>{row.metric}</td>
+                    <td>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
         </div>
       ) : null}
       {tab === "settings" ? (

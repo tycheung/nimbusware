@@ -1,6 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
 import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
+import { ProbationNoticePanel } from "../components/ProbationNoticePanel";
 import { ResearchPanel } from "../components/ResearchPanel";
 import { IntegrationAdapterPanel } from "../components/IntegrationAdapterPanel";
 import { StitchSummaryPanel } from "../components/StitchSummaryPanel";
@@ -175,6 +176,8 @@ export function RunDetailPage({ id }: { id?: string }) {
       <StitchSummaryPanel runId={id} />
       <h3>Integration adapter</h3>
       <IntegrationAdapterPanel runId={id} />
+      <h3>Probation notices</h3>
+      <ProbationNoticePanel rows={findings} />
       <h3>Findings</h3>
       <FindingsTable rows={findings} />
       <h3>Critic matrix</h3>
