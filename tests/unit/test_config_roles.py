@@ -1,4 +1,4 @@
-"""Roles registry materialization parity (P0-c)."""
+"""Roles registry materialization parity."""
 
 from __future__ import annotations
 

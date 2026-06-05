@@ -1,4 +1,4 @@
-"""Workflow profile materialization (P0-d)."""
+"""Workflow profile materialization."""
 
 from __future__ import annotations
 

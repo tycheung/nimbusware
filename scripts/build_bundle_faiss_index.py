@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build optional FAISS index for ``configs/bundles/catalog.yaml`` (plan §14 #12).
+"""Build optional FAISS index for ``configs/bundles/catalog.yaml``.
 
 Requires: ``poetry install --with faiss`` (``faiss-cpu`` + ``numpy``).
 

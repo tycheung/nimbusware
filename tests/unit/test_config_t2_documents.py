@@ -1,4 +1,4 @@
-"""T2 policy document materialization (P0-g1)."""
+"""T2 policy document materialization."""
 
 from __future__ import annotations
 

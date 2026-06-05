@@ -1,4 +1,4 @@
-"""Fail when key packages fall below documented coverage floors (fo537, fo703)."""
+"""Fail when key packages fall below documented coverage floors."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Runtime loaders use materialized T2 config (P0-g2)."""
+"""Runtime loaders use materialized T2 config."""
 
 from __future__ import annotations
 

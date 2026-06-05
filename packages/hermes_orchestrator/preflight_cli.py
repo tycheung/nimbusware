@@ -1,25 +1,4 @@
-"""Ad-hoc preflight probe CLI: ``poetry run hermes-preflight``.
-
-Runs the same Ollama health probe that fires at ``run.start`` (see
-:mod:`hermes_orchestrator.preflight`), captures a per-sample latency
-distribution sourced from ``HERMES_PREFLIGHT_LATENCY_SAMPLES`` (or
-``--samples``), and emits a single-line JSON summary including a latency
-histogram. Output goes to stdout by default; pass ``--output FILE`` to write
-a newline-terminated JSON record suitable for log shipping.
-
-Exit codes:
-
-* ``0`` — preflight passed and a model was selected
-* ``1`` — :class:`~hermes_orchestrator.preflight.PreflightError` (runtime
-  unreachable, no configured model available, …)
-* ``2`` — invalid arguments or config (e.g. unreadable YAML)
-
-This CLI mirrors the orchestrator's runtime selection (``configs/model-routing.yaml``
-``runtime.*`` / ``models.*`` / ``preflight.*`` keys) so operators can validate
-their environment WITHOUT spinning up a full run. Histogram bucket edges are
-fixed (50 / 100 / 250 / 500 / 1000 / 2500 / 5000 / 10000 ms) for downstream
-visualisation stability.
-"""
+"""CLI entrypoint for ``poetry run hermes-preflight`` (Ollama probe without a full run)."""
 
 from __future__ import annotations
 

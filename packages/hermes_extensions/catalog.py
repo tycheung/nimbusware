@@ -1,4 +1,4 @@
-"""Bundle catalog with tag search + optional on-disk FAISS index. Use :func:`search_bundles` for a repo-root-relative catalog search without constructing paths at the call site."""
+"""Bundle catalog search and optional on-disk FAISS index."""
 
 from __future__ import annotations
 
@@ -79,7 +79,7 @@ def assert_workflow_bundle_map_ids_resolve_content(raw: dict[str, Any]) -> None:
 
 
 def assert_workflow_bundle_map_ids_resolve(catalog_path: Path) -> None:
-    """Raise if ``workflow_bundle_map`` references bundle ids missing from ``bundles`` (§14 #12)."""
+    """Raise if ``workflow_bundle_map`` references unknown bundle ids."""
     if not catalog_path.is_file():
         raise FileNotFoundError(f"missing bundle catalog: {catalog_path}")
     raw = load_yaml(catalog_path)
@@ -87,7 +87,7 @@ def assert_workflow_bundle_map_ids_resolve(catalog_path: Path) -> None:
 
 
 def validate_bundle_catalog_content(raw: dict[str, Any]) -> None:
-    """Structural validation before persisting bundle catalog edits (§14 #12)."""
+    """Structural validation before persisting bundle catalog edits."""
     if not isinstance(raw, dict):
         raise ValueError("bundle catalog must be a mapping")
     bundles = raw.get("bundles")

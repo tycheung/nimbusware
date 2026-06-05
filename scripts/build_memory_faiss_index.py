@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build optional FAISS index for repo-scoped Hermes memory chunks (Phase 4 / fo162).
+"""Build optional FAISS index for repo-scoped Hermes memory chunks.
 
 Requires: ``poetry install --with faiss`` when building the vector index.
 

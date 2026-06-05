@@ -48,7 +48,7 @@ def env_truthy(name: str) -> bool:
 
 
 def env_truthy_raw(name: str) -> bool:
-    """Truthy check without stripping — matches §14 fail-closed env contracts."""
+    """Truthy check without stripping (fail-closed env contract)."""
     return os.environ.get(name, "").lower() in TRUTHY_VALUES
 
 
@@ -69,7 +69,7 @@ def hermes_slice_auto_advance_enabled() -> bool:
 
 
 def hermes_use_llm_enabled() -> bool:
-    """§14 fail-closed truthy tuple on raw env (no strip)."""
+    """Fail-closed truthy tuple on raw env (no strip)."""
     return env_truthy_raw("HERMES_USE_LLM")
 
 

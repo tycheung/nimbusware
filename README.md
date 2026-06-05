@@ -48,7 +48,7 @@ Optional: **Ollama** for LLM stages (`HERMES_USE_LLM=1`), **Redis** for multi-wo
 
 Environment prefixes: **`NIMBUSWARE_*`** (platform) and **`HERMES_*`** (agent runtime). Common toggles are centralized in [`packages/nimbusware_env/env_flags.py`](packages/nimbusware_env/env_flags.py). See [`.env.example`](.env.example).
 
-Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (canonical package map), [docs/README.md](docs/README.md) (doc index), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [tests/README.md](tests/README.md). Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python display helpers use `packages/*/services/` (no direct HTTP in `*_display.py`).
+Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (canonical package map), [docs/README.md](docs/README.md) (doc index), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [tests/README.md](tests/README.md). Operators: [bundle catalog promotion](docs/operator-bundle-catalog-promotion.md), [enterprise buyer checklist](docs/enterprise-buyer.md), [security CI gates](docs/security-quality-gates.md). Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python display helpers use `packages/*/services/` (no direct HTTP in `*_display.py`).
 
 ## Hermes agent runtime (online system, local integration)
 
@@ -250,7 +250,8 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 **Progress**
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
-- Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`)
+- Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`); `resource_pressure` banner when governor throttles RAM
+- Optional theater LLM one-liners: `HERMES_THEATER_LLM_SUMMARY=1` or `theater.llm_summary` on `run.created` (off by default)
 - Tabbed web UI: Home, Build, Review, Progress (SSE theater + maker-progress), Models, Settings; PWA manifest; `?run_id=` deep links
 
 **Review**

@@ -1,4 +1,4 @@
-"""Workflow YAML toggle for attaching security scan snippets on verifier failure. ``security_scan_metadata_on_verify`` may be a boolean/scalar shorthand or a mapping ``{ enabled: <bool|int|str> }`` consistent with other workflow subsection patterns."""
+"""Workflow YAML toggle for security scan metadata on verifier failure."""
 
 from __future__ import annotations
 

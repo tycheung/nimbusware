@@ -13,8 +13,7 @@ from hermes_orchestrator.workflow_profiles import workflow_profile_path
 
 def assert_bundle_catalog_maps_resolve(repo_root: Path) -> None:
     """Raise if catalog ``workflow_bundle_map`` targets unknown ``bundles[].id`` values."""
-    # Local import: ``hermes_extensions.catalog`` loads ``hermes_orchestrator.merge`` while
-    # this package's ``__init__`` may still be importing ``ingress`` (avoid circular init).
+    # Deferred import avoids circular init with hermes_extensions.catalog.
     from hermes_extensions.catalog import assert_workflow_bundle_map_ids_resolve
 
     assert_workflow_bundle_map_ids_resolve(repo_root / "configs" / "bundles" / "catalog.yaml")
@@ -25,7 +24,7 @@ def assert_persona_shelves_valid(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    """Raise if persona shelves are missing or structurally invalid (§14 #14)."""
+    """Raise if persona shelves are missing or structurally invalid."""
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
         config_materializer.get_persona_shelf()
         return
@@ -42,7 +41,7 @@ def assert_agent_evaluator_persona_in_shelves(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    """When workflow ``agent_evaluator.enabled``, require catalog-backed ``persona_id`` (§14 #15).
+    """When workflow ``agent_evaluator.enabled``, require catalog-backed ``persona_id``.
 
     The reserved slug ``default`` is allowed without appearing on shelves (generic eval slot /
     workflows that omit a concrete catalog persona id).

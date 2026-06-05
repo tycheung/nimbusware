@@ -1,4 +1,4 @@
-"""Console explainers read workflow/T2 config from materializer in DB mode (P0-h)."""
+"""Console explainers read workflow config from materializer in DB mode."""
 
 from __future__ import annotations
 
