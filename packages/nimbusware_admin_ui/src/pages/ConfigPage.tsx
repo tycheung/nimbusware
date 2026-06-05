@@ -14,12 +14,17 @@ type CatalogSource = { authoritative?: string; path?: string };
 type Candidate = { run_id?: string; candidate_id?: string; status?: string; summary?: string };
 
 export function ConfigPage() {
-  const [tab, setTab] = useState<"ollama" | "bundles" | "blast" | "personas" | "settings">("ollama");
+  const [tab, setTab] = useState<
+    "ollama" | "bundles" | "blast" | "critics" | "personas" | "settings"
+  >("ollama");
   const [blastProfile, setBlastProfile] = useState("micro_slice");
   const [blastCaption, setBlastCaption] = useState("");
   const [blastRows, setBlastRows] = useState<
     { run_id: string; frozen: string; proposed: string }[]
   >([]);
+  const [criticPackIds, setCriticPackIds] = useState<string[]>([]);
+  const [selectedPackId, setSelectedPackId] = useState("");
+  const [packEditor, setPackEditor] = useState("");
   const [overlapRows, setOverlapRows] = useState<
     { business_area: string; development_role: string; overlap: string; count: string }[]
   >([]);
@@ -76,7 +81,27 @@ export function ConfigPage() {
         .then((b) => setSettings(b.values || {}))
         .catch(() => setSettings({}));
     }
-  }, [tab, loadCatalog]);
+    if (tab === "critics") {
+      apiJson<{ pack_ids?: string[] }>("/config/critic-packs")
+        .then((b) => {
+          const ids = b.pack_ids || [];
+          setCriticPackIds(ids);
+          if (ids.length && !selectedPackId) {
+            setSelectedPackId(ids[0]);
+          }
+        })
+        .catch((e) => setMsg(String((e as Error).message || e)));
+    }
+  }, [tab, loadCatalog, selectedPackId]);
+
+  useEffect(() => {
+    if (tab !== "critics" || !selectedPackId) return;
+    apiJson<{ content?: Record<string, unknown> }>(
+      `/config/critic-packs/${encodeURIComponent(selectedPackId)}`,
+    )
+      .then((b) => setPackEditor(JSON.stringify(b.content || {}, null, 2)))
+      .catch((e) => setMsg(String((e as Error).message || e)));
+  }, [tab, selectedPackId]);
 
   const docVersion = catalog?.document_version ?? 1;
 
@@ -190,6 +215,57 @@ export function ConfigPage() {
       });
       setMsg(`Pulled ${model}`);
     } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function saveCriticPack() {
+    if (!selectedPackId) return;
+    try {
+      const content = JSON.parse(packEditor) as Record<string, unknown>;
+      await apiJson(`/config/critic-packs/${encodeURIComponent(selectedPackId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(content),
+      });
+      setMsg(`Saved critic pack ${selectedPackId}.`);
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function previewBlastRadius() {
+    const profile = blastProfile.trim();
+    if (!profile) {
+      setMsg("Select a workflow profile.");
+      return;
+    }
+    try {
+      const body = await apiJson<{
+        affected_run_count?: number;
+        affected_runs?: {
+          run_id?: string;
+          frozen_effective?: Record<string, unknown>;
+          proposed_effective?: Record<string, unknown>;
+        }[];
+      }>(`/config/blast-radius?workflow_profile=${encodeURIComponent(profile)}&run_limit=50`);
+      const count = body.affected_run_count ?? 0;
+      setBlastCaption(
+        count === 0
+          ? `No active runs would see different gates if ${profile} were edited now.`
+          : `${count} run(s) would see different effective gates if ${profile} were edited now.`,
+      );
+      setBlastRows(
+        (body.affected_runs || []).map((row) => ({
+          run_id: row.run_id || "",
+          frozen: JSON.stringify(row.frozen_effective || {}),
+          proposed: JSON.stringify(row.proposed_effective || {}),
+        })),
+      );
+      setMsg("");
+    } catch (e) {
+      setBlastCaption("");
+      setBlastRows([]);
       setMsg(String((e as Error).message || e));
     }
   }
@@ -412,6 +488,44 @@ export function ConfigPage() {
               </tbody>
             </table>
           ) : null}
+        </div>
+      ) : null}
+      {tab === "critics" ? (
+        <div>
+          <h3>Critic packs</h3>
+          <p class="muted">
+            Postgres-backed critic profiles referenced by workflow{" "}
+            <code>universal_critique.critic_pack_id</code>. Writes require Postgres config authority.
+          </p>
+          <label>
+            Pack{" "}
+            <select
+              value={selectedPackId}
+              onChange={(e) => setSelectedPackId((e.target as HTMLSelectElement).value)}
+            >
+              {criticPackIds.length === 0 ? (
+                <option value="">(none)</option>
+              ) : (
+                criticPackIds.map((id) => (
+                  <option key={id} value={id}>
+                    {id}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
+          <label>
+            Content (JSON)
+            <textarea
+              rows={12}
+              style="width:100%;font-family:monospace"
+              value={packEditor}
+              onInput={(e) => setPackEditor((e.target as HTMLTextAreaElement).value)}
+            />
+          </label>
+          <button type="button" onClick={() => void saveCriticPack()} disabled={!selectedPackId}>
+            Save pack
+          </button>
         </div>
       ) : null}
       {tab === "personas" ? (

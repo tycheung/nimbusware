@@ -131,3 +131,6 @@ admin:
   - id: config_blast_radius
     web: true
     notes: Config Blast radius tab previews workflow edit impact via blast-radius API
+  - id: critic_pack_crud
+    web: true
+    notes: Config Critic packs tab list and editor wired to critic-packs API
