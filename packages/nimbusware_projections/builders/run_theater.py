@@ -233,14 +233,25 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 },
             )
         elif et == EventType.HARDWARE_PROFILE_DETECTED.value:
+            from nimbusware_projections.builders.pressure_headline import pressure_headline
+
             tier = str(pl.get("hardware_tier") or pl.get("tier") or "unknown")
+            level = str(pl.get("pressure_level") or "ok").strip().lower()
+            severity = "info"
+            if level == "warn":
+                severity = "warn"
+            elif level in {"throttle", "block"}:
+                severity = "warn"
+            headline = f"Hardware profile detected ({tier})"
+            if level and level != "ok":
+                headline = pressure_headline(level, pl)
             messages.append(
                 {
                     **base,
                     "actor_display": "System",
                     "message_kind": "system",
-                    "severity": "info",
-                    "headline": f"Hardware profile detected ({tier})",
+                    "severity": severity,
+                    "headline": headline,
                     "body_md": None,
                 },
             )

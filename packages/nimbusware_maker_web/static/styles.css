@@ -154,6 +154,22 @@ button.primary {
   padding: 0.5rem 0;
 }
 
+.pressure-banner {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius, 8px);
+  background: #fff3cd;
+  border: 1px solid #e6c200;
+  color: #5c4a00;
+  font-size: 0.95rem;
+}
+
+.pressure-banner[data-level="block"] {
+  background: #f8d7da;
+  border-color: #f1aeb5;
+  color: #58151c;
+}
+
 @media (max-width: 720px) {
   .app-layout {
     flex-direction: column;

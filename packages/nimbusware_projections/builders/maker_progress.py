@@ -8,6 +8,9 @@ from nimbusware_maker.intent import (
     plan_summary_from_requirements,
     requirements_from_run_created_metadata,
 )
+from nimbusware_projections.builders.pressure_headline import (
+    latest_resource_pressure_from_events,
+)
 
 _SLICE_STAGE_NAMES = frozenset(
     {
@@ -230,7 +233,13 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         active = slices_out[min(passed_count, len(slices_out) - 1)]
         current_headline = str(active.get("headline") or f"Working on slice {current_index}")
 
-    return {
+    pressure = latest_resource_pressure_from_events(events)
+    if pressure and pressure.get("level") in {"warn", "throttle", "block"}:
+        ph = str(pressure.get("headline") or "")
+        if ph and ph not in current_headline:
+            current_headline = f"{ph} — {current_headline}"
+
+    out: dict[str, Any] = {
         "status": overall,
         "run_status": run_status,
         "plan_summary": plan_summary,
@@ -243,6 +252,9 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         "slices": slices_out,
         "simple_mode": True,
     }
+    if pressure:
+        out["resource_pressure"] = pressure
+    return out
 
 
 def strip_operator_fields(payload: dict[str, Any]) -> dict[str, Any]:

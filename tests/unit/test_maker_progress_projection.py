@@ -67,6 +67,24 @@ def test_maker_progress_slice_pass_sentence() -> None:
     assert body["slices"][0]["test_summary"]["bullets"]
 
 
+def test_maker_progress_surfaces_resource_pressure() -> None:
+    events = [
+        {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "x"}}},
+        {
+            "event_type": "hardware.profile.detected",
+            "payload": {
+                "hardware_tier": "medium",
+                "tier": "medium",
+                "pressure_level": "throttle",
+                "pressure_reason": "ram_near_cap",
+            },
+        },
+    ]
+    body = maker_progress_from_events(events)
+    assert body["resource_pressure"]["level"] == "throttle"
+    assert "throttl" in body["current_headline"].lower()
+
+
 def test_strip_operator_fields() -> None:
     payload = {"status": "ok", "critic_matrix_live": {}, "sentences": ["hi"]}
     stripped = strip_operator_fields(payload)

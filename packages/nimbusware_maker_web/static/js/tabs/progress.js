@@ -13,6 +13,7 @@ export async function mountProgress(root) {
   if (mount) {
     mount.innerHTML = `
       <ul id="theater-list"></ul>
+      <p id="pressure-banner" class="pressure-banner" hidden></p>
       <p id="slice-summary"></p>
       <ol id="slice-list"></ol>
       <h4>Memory influence</h4>
@@ -34,9 +35,24 @@ export async function mountProgress(root) {
     list.appendChild(li);
   }
 
+  function renderPressure(body) {
+    const banner = document.getElementById("pressure-banner");
+    if (!banner) return;
+    const p = body.resource_pressure;
+    if (!p || p.level === "ok") {
+      banner.hidden = true;
+      banner.textContent = "";
+      return;
+    }
+    banner.hidden = false;
+    banner.textContent = p.headline || `Resource pressure: ${p.level}`;
+    banner.dataset.level = p.level || "";
+  }
+
   function renderProgress(body) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
+    renderPressure(body);
     if (summary) {
       summary.textContent = body.current_headline || body.run_status || "";
     }
