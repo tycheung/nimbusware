@@ -170,6 +170,80 @@ button.primary {
   color: #58151c;
 }
 
+.mobile-run-bar {
+  display: none;
+}
+
+.mobile-bottom-nav {
+  display: none;
+}
+
+body.mobile-mode .mobile-run-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+body.mobile-mode .mobile-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--color-surface, #fff);
+  border-top: 1px solid var(--color-border);
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+  gap: 0.5rem;
+  justify-content: space-around;
+}
+
+body.mobile-mode .mobile-tab {
+  flex: 1;
+  text-align: center;
+  padding: 0.65rem 0.5rem;
+  text-decoration: none;
+  color: var(--color-text);
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+
+body.mobile-mode .mobile-tab.active {
+  background: rgba(31, 119, 180, 0.12);
+  color: var(--color-primary-dark, #155a8a);
+}
+
+body.mobile-mode .app-layout {
+  flex-direction: column;
+  padding-bottom: 4.5rem;
+}
+
+body.mobile-mode .main {
+  padding: 1rem;
+  max-width: none;
+}
+
+body.mobile-mode #rev-actions {
+  position: sticky;
+  bottom: 4.5rem;
+  z-index: 10;
+  background: var(--color-bg, #fafafa);
+  padding: 0.5rem 0;
+  margin: 0 -0.25rem;
+}
+
+body.mobile-mode .mobile-advanced {
+  display: none !important;
+}
+
+body.mobile-mode .diff-pre,
+body.mobile-mode #rev-stitch {
+  display: none !important;
+}
+
 @media (max-width: 720px) {
   .app-layout {
     flex-direction: column;

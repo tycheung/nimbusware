@@ -9,15 +9,15 @@ export async function mountReview(root) {
     <div class="actions">
       <button type="button" id="rev-load-pending">Refresh approval</button>
       <button type="button" id="rev-load-research">Research briefs</button>
-      <button type="button" id="rev-load-diff">Slice diff</button>
-      <button type="button" id="rev-revert">Revert workspace</button>
+      <button type="button" id="rev-load-diff" class="mobile-advanced">Slice diff</button>
+      <button type="button" id="rev-revert" class="mobile-advanced">Revert workspace</button>
     </div>
     <p id="rev-summary"></p>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
-    <section id="rev-stitch" class="stitch-panel hidden">
+    <section id="rev-stitch" class="stitch-panel hidden mobile-advanced">
       <h3>Stitch / transplant</h3>
-      <button type="button" id="rev-load-stitch">Load stitch summary</button>
+      <button type="button" id="rev-load-stitch" class="mobile-advanced">Load stitch summary</button>
       <pre id="rev-stitch-body" class="json-pre"></pre>
     </section>
     <pre id="rev-diff" class="diff-pre"></pre>
@@ -46,7 +46,7 @@ export async function mountReview(root) {
 
   async function loadPending() {
     const id = runId();
-    if (!id) return toast("Enter a run ID on Progress tab", "error");
+    if (!id) return toast("Enter a run ID", "error");
     const body = await apiJson(`/runs/${id}/maker/pending`);
     root.querySelector("#rev-summary").textContent = JSON.stringify(body, null, 2);
     const actions = root.querySelector("#rev-actions");
@@ -113,7 +113,7 @@ export async function mountReview(root) {
   });
   root.querySelector("#rev-load-stitch")?.addEventListener("click", async () => {
     const id = runId();
-    if (!id) return toast("Enter a run ID on Progress tab", "error");
+    if (!id) return toast("Enter a run ID", "error");
     const body = await apiJson(`/runs/${id}/stitch-summary`);
     const panel = root.querySelector("#rev-stitch");
     panel?.classList.remove("hidden");

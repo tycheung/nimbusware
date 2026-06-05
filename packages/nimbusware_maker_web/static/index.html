@@ -8,15 +8,16 @@
     <meta name="apple-mobile-web-app-title" content="Maker" />
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
     <title>Hermes Maker</title>
     <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body x-data="makerShell" x-init="init()" @maker-toast.window="showToast($event.detail)">
     <div class="app-layout">
-      <aside class="sidebar">
+      <aside class="sidebar" x-show="!mobileMode">
         <h1 class="brand">Hermes Maker</h1>
-        <nav class="nav">
+        <nav class="nav sidebar-nav">
           <template x-for="tab in tabs" :key="tab.id">
             <a
               :href="'#' + tab.hash"
@@ -31,6 +32,13 @@
         <a class="admin-link" href="/v1/admin/app/" target="_blank" rel="noopener">Admin console</a>
       </aside>
       <main class="main">
+        <header
+          class="mobile-run-bar"
+          x-show="mobileMode && (route === '/progress' || route === '/review')"
+        >
+          <label for="mobile-run-id">Run ID</label>
+          <input id="mobile-run-id" type="text" placeholder="uuid" autocomplete="off" />
+        </header>
         <div
           class="quick-banner"
           x-show="quickModeActive && !quickBannerDismissed"
@@ -53,10 +61,13 @@
           <h2>Review</h2>
           <div id="review-mount"></div>
         </div>
+        <input id="run-theater-run-id" type="hidden" aria-hidden="true" />
         <div id="view-progress" class="view" x-show="route === '/progress'">
           <h2>Progress</h2>
-          <label for="run-theater-run-id">Run ID</label>
-          <input id="run-theater-run-id" type="text" placeholder="uuid" autocomplete="off" />
+          <div class="desktop-run-id" x-show="!mobileMode">
+            <label for="desktop-run-id">Run ID</label>
+            <input id="desktop-run-id" type="text" placeholder="uuid" autocomplete="off" />
+          </div>
           <div id="progress-mount"></div>
         </div>
         <div id="view-models" class="view" x-show="route === '/models'">
@@ -69,6 +80,17 @@
         </div>
         <p id="status" class="status" aria-live="polite" x-text="statusText"></p>
       </main>
+      <nav class="mobile-bottom-nav" x-show="mobileMode" aria-label="Mobile navigation">
+        <template x-for="tab in tabs" :key="tab.id">
+          <a
+            :href="'#' + tab.hash"
+            class="mobile-tab"
+            :class="{ active: route === tab.hash }"
+            @click.prevent="navigate(tab.hash)"
+            x-text="tab.label"
+          ></a>
+        </template>
+      </nav>
     </div>
     <script defer src="vendor/alpine.min.js"></script>
     <script type="module" src="js/bootstrap-load.js"></script>

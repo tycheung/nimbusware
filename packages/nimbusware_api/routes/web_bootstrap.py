@@ -28,6 +28,7 @@ def maker_bootstrap_payload(request: Request) -> dict:
             "admin_web": True,
             "sse_theater": True,
             "sse_progress": True,
+            "mobile_pwa_ready": True,
         },
     }
 

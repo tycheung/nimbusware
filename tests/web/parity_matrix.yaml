@@ -42,6 +42,9 @@ maker:
     web: true
   - id: deep_link_run_id
     web: true
+  - id: mobile_pwa_progress_review
+    web: true
+    notes: Mobile shell with Progress and Review tabs, manifest PNG icons, bottom nav
   - id: memory_influence
     web: true
   - id: readiness_strip

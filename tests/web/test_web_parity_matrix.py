@@ -61,6 +61,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "wizard_creates_run",
         "project_delete",
         "admin_unlock_sidebar",
+        "mobile_pwa_progress_review",
     }
     web_true_ids = {r["id"] for r in data.get("maker", []) if r.get("web") is True}
     assert web_true_ids == expected
