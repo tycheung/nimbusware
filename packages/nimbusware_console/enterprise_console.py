@@ -193,3 +193,61 @@ def fleet_hardware_tier_table_rows(body: Mapping[str, Any] | None) -> list[dict[
         )
     rows.sort(key=lambda r: (str(r.get("tier")), str(r.get("host"))))
     return rows
+
+
+def fleet_compare_caption(body: Mapping[str, Any] | None) -> str:
+    if not isinstance(body, Mapping):
+        return (
+            "Cross-tenant gate comparison. Ollama SLI in each column is a fleet-wide snapshot "
+            "(not per-tenant)."
+        )
+    comp = body.get("comparison")
+    if not isinstance(comp, Mapping):
+        return (
+            "Cross-tenant gate comparison. Ollama SLI in each column is a fleet-wide snapshot "
+            "(not per-tenant)."
+        )
+    return (
+        "Cross-tenant gate comparison. Ollama SLI columns reflect fleet-wide snapshot "
+        f"(pass delta {comp.get('gate_pass_delta', 0)}, fail delta {comp.get('gate_fail_delta', 0)})."
+    )
+
+
+def fleet_compare_table_rows(body: Mapping[str, Any] | None) -> list[dict[str, str]]:
+    if not isinstance(body, Mapping):
+        return []
+    rows: list[dict[str, str]] = []
+    for label, key in (("Tenant A", "tenant_a"), ("Tenant B", "tenant_b")):
+        block = body.get(key)
+        if not isinstance(block, Mapping):
+            continue
+        gates = block.get("gate_metrics")
+        if not isinstance(gates, Mapping):
+            gates = {}
+        sli = block.get("ollama_sli")
+        p95 = ""
+        if isinstance(sli, Mapping) and sli.get("sustained_p95_latency_ms") is not None:
+            p95 = str(sli.get("sustained_p95_latency_ms"))
+        rows.append(
+            {
+                "tenant": label,
+                "tenant_id": str(block.get("tenant_id", "")),
+                "runs_scanned": str(block.get("runs_scanned", 0)),
+                "gates_passed": str(gates.get("slice_gates_passed", 0)),
+                "gates_failed": str(gates.get("slice_gates_failed", 0)),
+                "ollama_p95_ms": p95 or "fleet snapshot",
+            },
+        )
+    comp = body.get("comparison")
+    if isinstance(comp, Mapping):
+        rows.append(
+            {
+                "tenant": "Delta (B − A)",
+                "tenant_id": "",
+                "runs_scanned": "—",
+                "gates_passed": str(comp.get("gate_pass_delta", 0)),
+                "gates_failed": str(comp.get("gate_fail_delta", 0)),
+                "ollama_p95_ms": "—",
+            },
+        )
+    return rows

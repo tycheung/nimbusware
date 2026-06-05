@@ -30,6 +30,7 @@ from nimbusware_console.integration_adapter_writer_explainer import (
     integration_adapter_writer_run_table_rows,
 )
 from nimbusware_console.operator_chat_core import ChatState, process_user_message
+from hermes_orchestrator.fleet_analytics import compare_tenant_metrics
 from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_env.edition import is_enterprise
 from nimbusware_iam.constants import API_KEY_HEADER
@@ -229,4 +230,44 @@ def enterprise_fleet_dashboard(
         "critic_reliability": critic,
         "critic_reliability_caption": critic_caption,
         "critic_reliability_rows": critic_rows,
+    }
+
+
+@router.get("/enterprise/fleet-compare")
+def enterprise_fleet_compare(
+    _admin: AdminDep,
+    store: StoreDep,
+    iam: IamStoreDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_a: Annotated[str, Query(min_length=1)],
+    tenant_b: Annotated[str, Query(min_length=1)],
+    run_limit: Annotated[int, Query(ge=1, le=500)] = 100,
+) -> dict[str, Any]:
+    tid_a = _resolve_tenant_uuid(iam, tenant_a)
+    tid_b = _resolve_tenant_uuid(iam, tenant_b)
+    if not tid_a or not tid_b:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("tenant_not_found", "tenant_a and tenant_b must resolve to UUIDs"),
+        )
+    try:
+        uuid_a = UUID(tid_a)
+        uuid_b = UUID(tid_b)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_tenant", str(exc)),
+        ) from exc
+    compare = compare_tenant_metrics(
+        store,
+        tenant_a=uuid_a,
+        tenant_b=uuid_b,
+        run_limit=run_limit,
+    )
+    return {
+        "compare": compare,
+        "caption": ent_console.fleet_compare_caption(compare),
+        "rows": ent_console.fleet_compare_table_rows(compare),
+        "tenant_a": tid_a,
+        "tenant_b": tid_b,
     }

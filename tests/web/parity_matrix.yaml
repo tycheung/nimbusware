@@ -122,3 +122,6 @@ admin:
   - id: hardware_pressure_history
     web: true
     notes: Hardware page with rescan and pressure-history timeline
+  - id: fleet_compare
+    web: true
+    notes: Fleet tab cross-tenant gate comparison table (enterprise)

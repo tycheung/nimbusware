@@ -40,6 +40,12 @@ export function FleetPage() {
   const [dashboard, setDashboard] = useState<FleetDashboard | null>(null);
   const [tenants, setTenants] = useState<{ id: string; slug: string; label: string }[]>([]);
   const [tenantId, setTenantId] = useState(selectedEnterpriseTenantSlug);
+  const [tenantA, setTenantA] = useState("");
+  const [tenantB, setTenantB] = useState("");
+  const [compareRows, setCompareRows] = useState<
+    { tenant: string; runs_scanned: string; gates_passed: string; gates_failed: string; ollama_p95_ms: string }[]
+  >([]);
+  const [compareCaption, setCompareCaption] = useState("");
   const [error, setError] = useState("");
 
   const loadDashboard = useCallback(() => {
@@ -80,6 +86,25 @@ export function FleetPage() {
     const slug = tenants.find((t) => t.id === id)?.slug || id;
     setEnterpriseTenantSlug(slug);
   };
+
+  const loadCompare = useCallback(() => {
+    if (!enterpriseApiKey() || !tenantA || !tenantB) {
+      return;
+    }
+    const key = resolveEnterpriseApiKeyForTenant(
+      tenants.find((t) => t.id === tenantA)?.slug || tenantA,
+    );
+    const q = `?tenant_a=${encodeURIComponent(tenantA)}&tenant_b=${encodeURIComponent(tenantB)}`;
+    apiJson<{ rows?: typeof compareRows; caption?: string }>(
+      `/admin/ui/enterprise/fleet-compare${q}`,
+      { headers: { "X-Nimbusware-Api-Key": key } },
+    )
+      .then((body) => {
+        setCompareRows(body.rows || []);
+        setCompareCaption(body.caption || "");
+      })
+      .catch((e) => setError(String((e as Error).message || e)));
+  }, [tenantA, tenantB, tenants]);
 
   const downloadExport = () => {
     if (!dashboard?.export_json) return;
@@ -195,6 +220,75 @@ export function FleetPage() {
           <button type="button" onClick={downloadExport} disabled={!dashboard.export_json}>
             Export JSON
           </button>
+          <h3>Cross-tenant comparison</h3>
+          <p class="muted">Compare slice gate pass/fail rates between two tenants.</p>
+          {tenants.length >= 2 ? (
+            <>
+              <label>
+                Tenant A{" "}
+                <select
+                  value={tenantA}
+                  onChange={(e) => setTenantA((e.target as HTMLSelectElement).value)}
+                >
+                  <option value="">Select…</option>
+                  {tenants.map((t) => (
+                    <option key={`a-${t.id}`} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </label>{" "}
+              <label>
+                Tenant B{" "}
+                <select
+                  value={tenantB}
+                  onChange={(e) => setTenantB((e.target as HTMLSelectElement).value)}
+                >
+                  <option value="">Select…</option>
+                  {tenants.map((t) => (
+                    <option key={`b-${t.id}`} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </label>{" "}
+              <button
+                type="button"
+                class="secondary"
+                onClick={loadCompare}
+                disabled={!tenantA || !tenantB || tenantA === tenantB}
+              >
+                Compare
+              </button>
+              {compareCaption ? <p>{compareCaption}</p> : null}
+              {compareRows.length ? (
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Tenant</th>
+                      <th>Runs scanned</th>
+                      <th>Gates passed</th>
+                      <th>Gates failed</th>
+                      <th>Ollama p95 ms</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {compareRows.map((row, i) => (
+                      <tr key={i}>
+                        <td>{row.tenant}</td>
+                        <td>{row.runs_scanned}</td>
+                        <td>{row.gates_passed}</td>
+                        <td>{row.gates_failed}</td>
+                        <td>{row.ollama_p95_ms}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : null}
+            </>
+          ) : (
+            <p class="muted">Need at least two tenants to compare.</p>
+          )}
         </>
       ) : null}
     </section>
