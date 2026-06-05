@@ -8,6 +8,7 @@ from typing import Any
 
 from hermes_orchestrator.merge import atomic_write_yaml
 from nimbusware_config.keys import (
+    KEY_BUNDLE_CATALOG,
     KEY_CRITIQUE_PAIRINGS,
     KEY_CUSTOM_AGENTS_REGISTRY,
     KEY_ESCALATION,
@@ -47,6 +48,7 @@ _STATIC_EXPORTS: list[tuple[str, str, PathFn]] = [
         KEY_SELF_REFINEMENT,
         lambda r: r / "configs" / "self_refinement" / "policy.yaml",
     ),
+    (NS_POLICY, KEY_BUNDLE_CATALOG, lambda r: r / "configs" / "bundles" / "catalog.yaml"),
     (
         NS_CUSTOM_AGENTS,
         KEY_CUSTOM_AGENTS_REGISTRY,

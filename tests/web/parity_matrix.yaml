@@ -104,3 +104,6 @@ admin:
   - id: stitch_summary
     web: true
     notes: Run detail StitchSummaryPanel with transplant outcome
+  - id: bundle_catalog_crud
+    web: true
+    notes: Config Bundles tab CRUD, workflow map, candidate promote

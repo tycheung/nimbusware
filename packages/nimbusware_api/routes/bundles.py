@@ -15,6 +15,7 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.bundles import (
+    BundleCatalogCreateRequest,
     BundleCatalogEntry,
     BundleCatalogPatchRequest,
     BundleCatalogPutRequest,
@@ -30,7 +31,11 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_500,
     PROBLEM_RESPONSE_503,
 )
-from nimbusware_config.persist import load_bundle_catalog_dict, persist_bundle_catalog_dict
+from nimbusware_config.persist import (
+    bundle_catalog_document_version,
+    load_bundle_catalog_dict,
+    persist_bundle_catalog_dict,
+)
 
 router = APIRouter(prefix="/bundles", tags=["bundles"])
 
@@ -68,6 +73,43 @@ def _load_catalog_raw(orch: Any) -> dict[str, Any]:
     return raw
 
 
+def _catalog_authority(orch: Any) -> str:
+    mat = _config_materializer(orch)
+    if mat is not None and getattr(mat, "use_db", False):
+        return "postgres"
+    return "yaml"
+
+
+def _persist_catalog(
+    orch: Any,
+    content: dict[str, Any],
+    *,
+    expected_version: int,
+) -> int:
+    mat = _config_materializer(orch)
+    try:
+        new_ver = persist_bundle_catalog_dict(
+            orch.repo_root,
+            content,
+            materializer=mat,
+            expected_version=expected_version,
+        )
+    except ValueError as exc:
+        if "version conflict" in str(exc).lower() or "config version conflict" in str(exc).lower():
+            raise HTTPException(
+                status_code=409,
+                detail=problem("bundle_catalog_version_conflict", str(exc)),
+            ) from exc
+        raise HTTPException(
+            status_code=422,
+            detail=problem("bundle_catalog_invalid", str(exc)),
+        ) from exc
+    content["version"] = new_ver
+    if mat is not None and hasattr(mat, "refresh"):
+        mat.refresh()
+    return new_ver
+
+
 def _catalog_response(orch: Any, raw: dict[str, Any]) -> BundleCatalogResponse:
     bundles_raw = raw.get("bundles")
     entries: list[BundleCatalogEntry] = []
@@ -91,8 +133,15 @@ def _catalog_response(orch: Any, raw: dict[str, Any]) -> BundleCatalogResponse:
     ver = raw.get("version")
     version = int(ver) if ver is not None else None
     sync = bundle_faiss_index_sync_state(orch.repo_root)
+    doc_ver = int(raw.get("version") or 0) or bundle_catalog_document_version(
+        orch.repo_root,
+        materializer=_config_materializer(orch),
+        raw=raw,
+    )
     return BundleCatalogResponse(
         version=version,
+        document_version=doc_ver,
+        authoritative=_catalog_authority(orch),
         bundles=entries,
         workflow_bundle_map=workflow_map,
         faiss_index_ready=bundle_faiss_index_ready(orch.repo_root),
@@ -217,14 +266,7 @@ def put_bundle_catalog(
             status_code=422,
             detail=problem("bundle_catalog_invalid", str(exc)),
         ) from exc
-    persist_bundle_catalog_dict(
-        orch.repo_root,
-        content,
-        materializer=_config_materializer(orch),
-    )
-    mat = _config_materializer(orch)
-    if mat is not None and hasattr(mat, "refresh"):
-        mat.refresh()
+    _persist_catalog(orch, content, expected_version=body.expected_version)
     return _catalog_response(orch, content)
 
 
@@ -272,14 +314,165 @@ def patch_bundle_catalog_entry(
             status_code=422,
             detail=problem("bundle_catalog_invalid", str(exc)),
         ) from exc
-    persist_bundle_catalog_dict(
-        orch.repo_root,
-        raw,
-        materializer=_config_materializer(orch),
+    _persist_catalog(orch, raw, expected_version=body.expected_version)
+    return _catalog_response(orch, raw)
+
+
+@router.post(
+    "/catalog/bundles",
+    response_model=BundleCatalogResponse,
+    responses={
+        401: PROBLEM_RESPONSE_401,
+        409: PROBLEM_RESPONSE_422,
+        422: PROBLEM_RESPONSE_422,
+        503: PROBLEM_RESPONSE_503,
+    },
+    summary="Append one bundle entry (admin)",
+)
+def post_bundle_catalog_entry(
+    body: BundleCatalogCreateRequest,
+    orch: OrchDep,
+    _admin: AdminDep,
+) -> BundleCatalogResponse:
+    raw = deepcopy(_load_catalog_raw(orch))
+    bundles = raw.get("bundles")
+    if not isinstance(bundles, list):
+        bundles = []
+        raw["bundles"] = bundles
+    bid = body.entry.id.strip()
+    for b in bundles:
+        if isinstance(b, dict) and str(b.get("id", "")).strip() == bid:
+            raise HTTPException(
+                status_code=409,
+                detail=problem("bundle_exists", f"bundle id {bid!r} already in catalog"),
+            )
+    bundles.append(body.entry.model_dump())
+    try:
+        validate_bundle_catalog_content(raw)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("bundle_catalog_invalid", str(exc)),
+        ) from exc
+    _persist_catalog(orch, raw, expected_version=body.expected_version)
+    return _catalog_response(orch, raw)
+
+
+@router.delete(
+    "/catalog/bundles/{bundle_id}",
+    response_model=BundleCatalogResponse,
+    responses={
+        401: PROBLEM_RESPONSE_401,
+        404: PROBLEM_RESPONSE_404,
+        422: PROBLEM_RESPONSE_422,
+        503: PROBLEM_RESPONSE_503,
+    },
+    summary="Remove one bundle entry (admin)",
+)
+def delete_bundle_catalog_entry(
+    bundle_id: str,
+    orch: OrchDep,
+    _admin: AdminDep,
+    expected_version: Annotated[int, Query(ge=1)],
+) -> BundleCatalogResponse:
+    raw = deepcopy(_load_catalog_raw(orch))
+    bundles = raw.get("bundles")
+    if not isinstance(bundles, list):
+        bundles = []
+    bid = bundle_id.strip()
+    new_bundles = [
+        b for b in bundles if not (isinstance(b, dict) and str(b.get("id", "")).strip() == bid)
+    ]
+    if len(new_bundles) == len(bundles):
+        raise HTTPException(
+            status_code=404,
+            detail=problem("bundle_not_found", f"bundle id {bid!r} not in catalog"),
+        )
+    raw["bundles"] = new_bundles
+    wmap = raw.get("workflow_bundle_map")
+    if isinstance(wmap, dict):
+        raw["workflow_bundle_map"] = {
+            str(k): str(v) for k, v in wmap.items() if v is not None and str(v).strip() != bid
+        }
+    try:
+        validate_bundle_catalog_content(raw)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("bundle_catalog_invalid", str(exc)),
+        ) from exc
+    _persist_catalog(orch, raw, expected_version=expected_version)
+    return _catalog_response(orch, raw)
+
+
+@router.post(
+    "/catalog-candidates/{run_id}/{candidate_id}/promote",
+    response_model=BundleCatalogResponse,
+    responses={
+        401: PROBLEM_RESPONSE_401,
+        404: PROBLEM_RESPONSE_404,
+        409: PROBLEM_RESPONSE_422,
+        422: PROBLEM_RESPONSE_422,
+    },
+    summary="Promote a catalog candidate into the bundle catalog (admin)",
+)
+def promote_bundle_catalog_candidate(
+    run_id: str,
+    candidate_id: str,
+    orch: OrchDep,
+    _admin: AdminDep,
+    expected_version: Annotated[int, Query(ge=1)],
+) -> BundleCatalogResponse:
+    from hermes_research.bundle_promotion import (
+        candidate_to_bundle_entry,
+        load_catalog_candidate,
+        mark_catalog_candidate_promoted,
     )
-    mat = _config_materializer(orch)
-    if mat is not None and hasattr(mat, "refresh"):
-        mat.refresh()
+
+    try:
+        candidate = load_catalog_candidate(
+            orch.repo_root,
+            run_id=run_id,
+            candidate_id=candidate_id,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("catalog_candidate_not_found", str(exc)),
+        ) from exc
+    try:
+        entry = candidate_to_bundle_entry(candidate)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("catalog_candidate_invalid", str(exc)),
+        ) from exc
+    raw = deepcopy(_load_catalog_raw(orch))
+    bundles = raw.get("bundles")
+    if not isinstance(bundles, list):
+        bundles = []
+        raw["bundles"] = bundles
+    bid = str(entry["id"]).strip()
+    for b in bundles:
+        if isinstance(b, dict) and str(b.get("id", "")).strip() == bid:
+            raise HTTPException(
+                status_code=409,
+                detail=problem("bundle_exists", f"bundle id {bid!r} already in catalog"),
+            )
+    bundles.append(entry)
+    try:
+        validate_bundle_catalog_content(raw)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("bundle_catalog_invalid", str(exc)),
+        ) from exc
+    _persist_catalog(orch, raw, expected_version=expected_version)
+    mark_catalog_candidate_promoted(
+        orch.repo_root,
+        run_id=run_id,
+        candidate_id=candidate_id,
+    )
     return _catalog_response(orch, raw)
 
 

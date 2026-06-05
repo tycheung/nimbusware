@@ -19,6 +19,8 @@ class BundleCatalogEntry(BaseModel):
 
 class BundleCatalogResponse(BaseModel):
     version: int | None = None
+    document_version: int | None = None
+    authoritative: str | None = None
     bundles: list[BundleCatalogEntry] = Field(default_factory=list)
     workflow_bundle_map: dict[str, str] = Field(default_factory=dict)
     faiss_index_ready: bool = False
@@ -27,13 +29,20 @@ class BundleCatalogResponse(BaseModel):
 
 class BundleCatalogPutRequest(BaseModel):
     version: int | None = None
+    expected_version: int = Field(ge=1)
     bundles: list[BundleCatalogEntry]
     workflow_bundle_map: dict[str, str] = Field(default_factory=dict)
 
 
 class BundleCatalogPatchRequest(BaseModel):
+    expected_version: int = Field(ge=1)
     title: str | None = None
     tags: list[str] | None = None
+
+
+class BundleCatalogCreateRequest(BaseModel):
+    expected_version: int = Field(ge=1)
+    entry: BundleCatalogEntry
 
 
 class BundleSearchResponse(BaseModel):

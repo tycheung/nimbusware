@@ -93,17 +93,46 @@ def load_bundle_catalog_dict(
     return load_yaml(path)
 
 
+def bundle_catalog_document_version(
+    repo_root: Path,
+    *,
+    materializer: Any | None = None,
+    raw: dict[str, Any] | None = None,
+) -> int:
+    if materializer is not None and getattr(materializer, "use_db", False):
+        row = materializer.store.get(NS_POLICY, KEY_BUNDLE_CATALOG)
+        return int(row.version) if row is not None else 1
+    doc = raw if raw is not None else load_bundle_catalog_dict(repo_root, materializer=materializer)
+    ver = doc.get("version") if isinstance(doc, dict) else None
+    return int(ver) if ver is not None else 1
+
+
 def persist_bundle_catalog_dict(
     repo_root: Path,
     content: dict[str, Any],
     *,
     materializer: Any | None = None,
-) -> None:
+    expected_version: int | None = None,
+) -> int:
     if materializer is not None and getattr(materializer, "use_db", False):
-        materializer.upsert_content(NS_POLICY, KEY_BUNDLE_CATALOG, content)
-        return
+        return int(
+            materializer.upsert_content(
+                NS_POLICY,
+                KEY_BUNDLE_CATALOG,
+                content,
+                expected_version=expected_version,
+            ),
+        )
+    current = bundle_catalog_document_version(repo_root, materializer=materializer)
+    if expected_version is not None and expected_version != current:
+        msg = f"bundle catalog version conflict: expected {expected_version}, current {current}"
+        raise ValueError(msg)
+    next_ver = current + 1
+    content = dict(content)
+    content["version"] = next_ver
     path = repo_root / "configs" / "bundles" / "catalog.yaml"
     atomic_write_yaml(path, content)
+    return next_ver
 
 
 def load_custom_agent_registry(

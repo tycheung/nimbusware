@@ -11,11 +11,21 @@ from hermes_orchestrator.workflow_agent_evaluator import parse_agent_evaluator_w
 from hermes_orchestrator.workflow_profiles import workflow_profile_path
 
 
-def assert_bundle_catalog_maps_resolve(repo_root: Path) -> None:
+def assert_bundle_catalog_maps_resolve(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> None:
     """Raise if catalog ``workflow_bundle_map`` targets unknown ``bundles[].id`` values."""
-    # Deferred import avoids circular init with hermes_extensions.catalog.
-    from hermes_extensions.catalog import assert_workflow_bundle_map_ids_resolve
+    from hermes_extensions.catalog import (
+        assert_workflow_bundle_map_ids_resolve,
+        assert_workflow_bundle_map_ids_resolve_content,
+    )
 
+    if config_materializer is not None and getattr(config_materializer, "use_db", False):
+        raw = config_materializer.get_bundle_catalog()
+        assert_workflow_bundle_map_ids_resolve_content(raw)
+        return
     assert_workflow_bundle_map_ids_resolve(repo_root / "configs" / "bundles" / "catalog.yaml")
 
 

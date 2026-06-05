@@ -1,13 +1,57 @@
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+
+type BundleEntry = { id: string; title?: string | null; tags?: string[] };
+type CatalogBody = {
+  document_version?: number;
+  authoritative?: string;
+  bundles?: BundleEntry[];
+  workflow_bundle_map?: Record<string, string>;
+  faiss_index_ready?: boolean;
+  faiss_index_stale?: boolean | null;
+};
+type CatalogSource = { authoritative?: string; path?: string };
+type Candidate = { run_id?: string; candidate_id?: string; status?: string; summary?: string };
 
 export function ConfigPage() {
   const [tab, setTab] = useState<"ollama" | "bundles" | "settings">("ollama");
   const [ollamaModels, setOllamaModels] = useState<string[]>([]);
   const [pullModel, setPullModel] = useState("");
-  const [bundles, setBundles] = useState<Record<string, unknown>[]>([]);
+  const [catalog, setCatalog] = useState<CatalogBody | null>(null);
+  const [source, setSource] = useState<CatalogSource | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [mapProfile, setMapProfile] = useState("");
+  const [mapBundleId, setMapBundleId] = useState("");
+  const [newId, setNewId] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [newTags, setNewTags] = useState("");
+  const [editTitles, setEditTitles] = useState<Record<string, string>>({});
+  const [editTags, setEditTags] = useState<Record<string, string>>({});
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
+
+  const loadCatalog = useCallback(() => {
+    apiJson<CatalogBody>("/bundles/catalog")
+      .then((body) => {
+        setCatalog(body);
+        const titles: Record<string, string> = {};
+        const tags: Record<string, string> = {};
+        for (const b of body.bundles || []) {
+          if (!b.id) continue;
+          titles[b.id] = b.title || "";
+          tags[b.id] = (b.tags || []).join(", ");
+        }
+        setEditTitles(titles);
+        setEditTags(tags);
+      })
+      .catch((e) => setMsg(String((e as Error).message || e)));
+    apiJson<CatalogSource>("/bundles/catalog/source")
+      .then(setSource)
+      .catch(() => setSource(null));
+    apiJson<{ candidates?: Candidate[] }>("/bundles/catalog-candidates")
+      .then((body) => setCandidates(body.candidates || []))
+      .catch(() => setCandidates([]));
+  }, []);
 
   useEffect(() => {
     if (tab === "ollama") {
@@ -16,16 +60,115 @@ export function ConfigPage() {
         .catch(() => setOllamaModels([]));
     }
     if (tab === "bundles") {
-      apiJson<{ bundles?: Record<string, unknown>[] }>("/bundles/catalog")
-        .then((b) => setBundles(b.bundles || []))
-        .catch(() => setBundles([]));
+      loadCatalog();
     }
     if (tab === "settings") {
       apiJson<{ values?: Record<string, string> }>("/settings/system")
         .then((b) => setSettings(b.values || {}))
         .catch(() => setSettings({}));
     }
-  }, [tab]);
+  }, [tab, loadCatalog]);
+
+  const docVersion = catalog?.document_version ?? 1;
+
+  async function patchBundle(bundleId: string) {
+    try {
+      await apiJson("/bundles/catalog/bundles/" + encodeURIComponent(bundleId), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          expected_version: docVersion,
+          title: editTitles[bundleId] || null,
+          tags: (editTags[bundleId] || "")
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }),
+      });
+      setMsg(`Saved ${bundleId}`);
+      loadCatalog();
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function createBundle() {
+    const id = newId.trim();
+    if (!id) return;
+    try {
+      await apiJson("/bundles/catalog/bundles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          expected_version: docVersion,
+          entry: {
+            id,
+            title: newTitle.trim() || id,
+            tags: newTags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
+          },
+        }),
+      });
+      setNewId("");
+      setNewTitle("");
+      setNewTags("");
+      setMsg(`Created ${id}`);
+      loadCatalog();
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function deleteBundle(bundleId: string) {
+    try {
+      await apiJson(
+        `/bundles/catalog/bundles/${encodeURIComponent(bundleId)}?expected_version=${docVersion}`,
+        { method: "DELETE" },
+      );
+      setMsg(`Deleted ${bundleId}`);
+      loadCatalog();
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function saveWorkflowMap() {
+    const profile = mapProfile.trim();
+    const bundleId = mapBundleId.trim();
+    if (!profile || !bundleId) return;
+    const nextMap = { ...(catalog?.workflow_bundle_map || {}), [profile]: bundleId };
+    try {
+      await apiJson("/bundles/catalog", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          expected_version: docVersion,
+          version: catalog?.version ?? 1,
+          bundles: catalog?.bundles || [],
+          workflow_bundle_map: nextMap,
+        }),
+      });
+      setMsg(`Mapped ${profile} → ${bundleId}`);
+      loadCatalog();
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function promoteCandidate(runId: string, candidateId: string) {
+    try {
+      await apiJson(
+        `/bundles/catalog-candidates/${encodeURIComponent(runId)}/${encodeURIComponent(candidateId)}/promote?expected_version=${docVersion}`,
+        { method: "POST" },
+      );
+      setMsg(`Promoted ${candidateId}`);
+      loadCatalog();
+    } catch (e) {
+      setMsg(String((e as Error).message || e));
+    }
+  }
 
   async function pullOllama() {
     const model = pullModel.trim();
@@ -87,11 +230,114 @@ export function ConfigPage() {
         </div>
       ) : null}
       {tab === "bundles" ? (
-        <ul>
-          {bundles.map((b, i) => (
-            <li key={i}>{String(b.id || b.bundle_id || JSON.stringify(b).slice(0, 80))}</li>
-          ))}
-        </ul>
+        <div>
+          {source ? (
+            <p class="muted">
+              Authority: {source.authoritative || "unknown"}
+              {source.path ? ` (${source.path})` : ""}
+              {catalog ? ` · document version ${docVersion}` : ""}
+              {catalog?.faiss_index_stale ? " · FAISS index stale" : ""}
+            </p>
+          ) : null}
+          <button type="button" class="secondary" onClick={loadCatalog}>
+            Refresh
+          </button>
+          <h3>Bundles</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Tags</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(catalog?.bundles || []).map((b) => (
+                <tr key={b.id}>
+                  <td>{b.id}</td>
+                  <td>
+                    <input
+                      value={editTitles[b.id] ?? ""}
+                      onInput={(e) =>
+                        setEditTitles({ ...editTitles, [b.id]: (e.target as HTMLInputElement).value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      value={editTags[b.id] ?? ""}
+                      onInput={(e) =>
+                        setEditTags({ ...editTags, [b.id]: (e.target as HTMLInputElement).value })
+                      }
+                    />
+                  </td>
+                  <td>
+                    <button type="button" onClick={() => patchBundle(b.id)}>
+                      Save
+                    </button>
+                    <button type="button" class="secondary" onClick={() => deleteBundle(b.id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <h4>Add bundle</h4>
+          <label>
+            ID <input value={newId} onInput={(e) => setNewId((e.target as HTMLInputElement).value)} />
+          </label>
+          <label>
+            Title <input value={newTitle} onInput={(e) => setNewTitle((e.target as HTMLInputElement).value)} />
+          </label>
+          <label>
+            Tags (comma) <input value={newTags} onInput={(e) => setNewTags((e.target as HTMLInputElement).value)} />
+          </label>
+          <button type="button" onClick={createBundle}>
+            Create
+          </button>
+          <h4>Workflow map</h4>
+          <ul>
+            {Object.entries(catalog?.workflow_bundle_map || {}).map(([profile, bundleId]) => (
+              <li key={profile}>
+                {profile} → {bundleId}
+              </li>
+            ))}
+          </ul>
+          <label>
+            Profile <input value={mapProfile} onInput={(e) => setMapProfile((e.target as HTMLInputElement).value)} />
+          </label>
+          <label>
+            Bundle id{" "}
+            <input value={mapBundleId} onInput={(e) => setMapBundleId((e.target as HTMLInputElement).value)} />
+          </label>
+          <button type="button" onClick={saveWorkflowMap}>
+            Add / update map
+          </button>
+          <h4>Promotion candidates</h4>
+          {candidates.length === 0 ? (
+            <p class="muted">No pending candidates.</p>
+          ) : (
+            <ul>
+              {candidates.map((c, i) => {
+                const rid = c.run_id || "";
+                const cid = c.candidate_id || "";
+                return (
+                  <li key={`${rid}-${cid}-${i}`}>
+                    {rid}/{cid} — {c.status || "pending"}
+                    {c.summary ? ` — ${c.summary}` : ""}
+                    {rid && cid && c.status !== "promoted" ? (
+                      <button type="button" onClick={() => promoteCandidate(rid, cid)}>
+                        Promote
+                      </button>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       ) : null}
       {tab === "settings" ? (
         <form

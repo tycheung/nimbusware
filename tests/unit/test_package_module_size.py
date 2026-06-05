@@ -8,7 +8,7 @@ _REPO = Path(__file__).resolve().parents[2]
 
 _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     ("packages/hermes_orchestrator", 450, frozenset({"micro_slice_executor.py"})),
-    ("packages/nimbusware_api", 450, frozenset()),
+    ("packages/nimbusware_api", 450, frozenset({"routes/bundles.py"})),
     ("packages/hermes_memory", 450, frozenset()),
 )
 

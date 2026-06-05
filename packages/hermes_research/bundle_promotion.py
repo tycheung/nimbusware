@@ -51,3 +51,68 @@ def list_catalog_candidates(repo_root: Path, *, limit: int = 100) -> list[dict[s
             if len(rows) >= limit:
                 return rows
     return rows
+
+
+def load_catalog_candidate(
+    repo_root: Path,
+    *,
+    run_id: str,
+    candidate_id: str,
+) -> dict[str, Any]:
+    path = (
+        repo_root
+        / ".hermes"
+        / "research"
+        / "catalog_candidates"
+        / run_id.strip()
+        / f"{candidate_id.strip()}.json"
+    )
+    if not path.is_file():
+        msg = f"catalog candidate not found: {run_id}/{candidate_id}"
+        raise FileNotFoundError(msg)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        msg = "catalog candidate must be a JSON object"
+        raise ValueError(msg)
+    return payload
+
+
+def candidate_to_bundle_entry(candidate: dict[str, Any]) -> dict[str, Any]:
+    bundle_id = str(
+        candidate.get("bundle_id")
+        or candidate.get("candidate_id")
+        or candidate.get("pattern_id")
+        or "",
+    ).strip()
+    if not bundle_id:
+        msg = "catalog candidate missing bundle_id or candidate_id"
+        raise ValueError(msg)
+    title = candidate.get("title") or candidate.get("summary") or bundle_id
+    tags_raw = candidate.get("tags") or candidate.get("bundle_tags") or []
+    tags = [str(t) for t in tags_raw if t is not None] if isinstance(tags_raw, list) else []
+    return {"id": bundle_id, "title": str(title), "tags": tags}
+
+
+def mark_catalog_candidate_promoted(
+    repo_root: Path,
+    *,
+    run_id: str,
+    candidate_id: str,
+) -> None:
+    path = (
+        repo_root
+        / ".hermes"
+        / "research"
+        / "catalog_candidates"
+        / run_id.strip()
+        / f"{candidate_id.strip()}.json"
+    )
+    if not path.is_file():
+        return
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return
+    if isinstance(payload, dict):
+        payload["status"] = "promoted"
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
