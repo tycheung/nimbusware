@@ -1,0 +1,24 @@
+# Bundle catalog promotion (Code Researcher → Integrator)
+
+When research stages index a pattern, Nimbusware writes a **catalog candidate** under the repo workspace for operator review before merging into `configs/bundles/catalog.yaml`.
+
+## Flow
+
+1. **Code Researcher** completes `research.pattern.indexed` and calls `write_catalog_candidate()` (see `packages/hermes_research/stages.py`).
+2. Candidate files land at `.hermes/research/catalog_candidates/{run_id}/{pattern_id}.json` with `status: pending_integrator_review`.
+3. **Admin Console** — use bundle catalog search and integrator preview/apply to validate compatibility; promote rows into the YAML catalog via `PUT /v1/bundles/catalog` or the catalog editor panel.
+4. **Integrator / Stitcher** stages consume the promoted catalog metadata on subsequent runs.
+
+## API
+
+| Method | Path | Access |
+|--------|------|--------|
+| `GET` | `/v1/bundles/catalog-candidates?limit=100` | Admin (`X-Nimbusware-Admin-Token`) |
+
+Response shape: `{ "candidates": [ { "run_id", "candidate_id", "status", "repo_url", ... } ] }`.
+
+## Operator checklist
+
+- Confirm license and `domain_tag` on each candidate JSON before catalog merge.
+- Rebuild the bundle FAISS index after catalog changes (`scripts/build_bundle_faiss_index.py` or Admin bundle panel).
+- Enterprise tenants: fleet memory sync is independent; catalog authority remains repo-scoped YAML + Postgres materializer.

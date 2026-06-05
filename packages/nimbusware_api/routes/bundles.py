@@ -281,3 +281,18 @@ def patch_bundle_catalog_entry(
     if mat is not None and hasattr(mat, "refresh"):
         mat.refresh()
     return _catalog_response(orch, raw)
+
+
+@router.get(
+    "/catalog-candidates",
+    summary="List Code Researcher catalog promotion candidates (admin)",
+    responses={401: PROBLEM_RESPONSE_401},
+)
+def list_bundle_catalog_candidates(
+    orch: OrchDep,
+    _admin: AdminDep,
+    limit: Annotated[int, Query(ge=1, le=500)] = 100,
+) -> dict[str, Any]:
+    from hermes_research.bundle_promotion import list_catalog_candidates
+
+    return {"candidates": list_catalog_candidates(orch.repo_root, limit=limit)}

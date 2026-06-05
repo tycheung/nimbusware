@@ -8,6 +8,7 @@
 | [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge |
 | [deploy/README.md](deploy/README.md) | Ops | Docker Compose, CI jobs, secrets |
 | [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO |
+| [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Operators | Bundle catalog candidate promotion |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 

@@ -30,3 +30,24 @@ def write_catalog_candidate(
         "catalog_candidate_path": str(rel / f"{candidate_id}.json").replace("\\", "/"),
         "candidate_id": candidate_id,
     }
+
+
+def list_catalog_candidates(repo_root: Path, *, limit: int = 100) -> list[dict[str, Any]]:
+    base = repo_root / ".hermes" / "research" / "catalog_candidates"
+    if not base.is_dir():
+        return []
+    rows: list[dict[str, Any]] = []
+    for run_dir in sorted(base.iterdir(), reverse=True):
+        if not run_dir.is_dir():
+            continue
+        for path in sorted(run_dir.glob("*.json"), reverse=True):
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if isinstance(payload, dict):
+                payload.setdefault("run_id", run_dir.name)
+                rows.append(payload)
+            if len(rows) >= limit:
+                return rows
+    return rows

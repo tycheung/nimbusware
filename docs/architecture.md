@@ -22,5 +22,6 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [ide-bridge.md](ide-bridge.md) | MCP IDE bridge (`nimbusware-mcp`) |
 | [deploy/README.md](deploy/README.md) | Docker, CI jobs, production checklist |
 | [deploy/oidc.md](deploy/oidc.md) | Enterprise Admin OIDC SSO |
+| [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Code Researcher → catalog candidate flow |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | CI parity and conventions |
 | [../tests/README.md](../tests/README.md) | Test layout and markers |
