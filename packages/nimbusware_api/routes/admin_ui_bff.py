@@ -9,10 +9,13 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from agent_core.models import serialize_event_persistent, validate_event_dict
+from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
+from hermes_orchestrator.fleet_analytics import compare_tenant_metrics
 from hermes_store.protocol import serialized_event_from_row
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.routes.personas_helpers import load_shelf
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_console import enterprise_console as ent_console
 from nimbusware_console.critic_matrix_display import critic_matrix_rows_from_events
@@ -30,9 +33,6 @@ from nimbusware_console.integration_adapter_writer_explainer import (
     integration_adapter_writer_run_table_rows,
 )
 from nimbusware_console.operator_chat_core import ChatState, process_user_message
-from hermes_extensions.persona_scope_overlap import persona_scope_overlap_report
-from hermes_orchestrator.fleet_analytics import compare_tenant_metrics
-from nimbusware_api.routes.personas_helpers import load_shelf
 from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_env.edition import is_enterprise
 from nimbusware_iam.constants import API_KEY_HEADER

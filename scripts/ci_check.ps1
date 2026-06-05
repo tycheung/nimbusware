@@ -68,3 +68,5 @@ if ($node) {
         Pop-Location
     }
 }
+
+exit 0

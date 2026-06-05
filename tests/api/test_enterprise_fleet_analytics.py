@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import pytest
+from fastapi.testclient import TestClient
+
 from agent_core.models import (
     EventType,
     RunCreatedEvent,
@@ -11,7 +13,6 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
-from fastapi.testclient import TestClient
 from hermes_store.memory import InMemoryEventStore
 from nimbusware_api.app import app
 from nimbusware_env.edition import ENTERPRISE_EDITION, ENV_EDITION

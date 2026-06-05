@@ -1,10 +1,9 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "@playwright/test";
 
 const port = 8765;
 const baseURL = `http://127.0.0.1:${port}`;
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const repoRoot = path.resolve(process.cwd(), "../../..");
 
 export default defineConfig({
   testDir: ".",

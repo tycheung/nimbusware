@@ -13,8 +13,8 @@ from nimbusware_console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
 )
-from nimbusware_hw.pressure_history import pressure_history_from_event_rows
 from nimbusware_env.dotenv import find_repo_root
+from nimbusware_hw.pressure_history import pressure_history_from_event_rows
 from nimbusware_projections.builders.competitive_metrics import build_competitive_summary
 
 router = APIRouter(tags=["platform"])

@@ -4,8 +4,9 @@ from collections.abc import Iterator
 from uuid import uuid4
 
 import pytest
-from agent_core.models import Verdict
 from fastapi.testclient import TestClient
+
+from agent_core.models import Verdict
 from hermes_extensions.bundle_memory import (
     InMemoryBundleOutcomeStore,
     build_bundle_outcome_from_gate,
