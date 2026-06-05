@@ -45,6 +45,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "slice_diff_preview",
         "workspace_revert",
         "models_ranked_table",
+        "apply_preset_wizard",
         "ollama_pull",
         "settings_operator",
         "hardware_panel",

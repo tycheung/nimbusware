@@ -43,6 +43,15 @@ def test_maker_web_mobile_css_and_tabs() -> None:
     assert "detectMobileMode" in shell_js
 
 
+def test_maker_models_preset_wizard_paths() -> None:
+    models_js = (_STATIC / "js" / "tabs" / "models.js").read_text(encoding="utf-8")
+    assert "/platform/models/ranked" in models_js
+    assert "/platform/models/apply-preset" in models_js
+    assert "model_id" in models_js
+    assert "models-wizard" in models_js
+    assert 'preset: "recommended"' not in models_js
+
+
 def test_maker_web_review_progress_approval_paths() -> None:
     review_js = (_STATIC / "js" / "tabs" / "review.js").read_text(encoding="utf-8")
     assert "/maker/pending" in review_js

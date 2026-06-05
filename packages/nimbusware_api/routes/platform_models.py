@@ -96,6 +96,11 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
         "preset": body.preset,
         "ollama_tag": tag,
         "materialize_hint": "Run nimbusware-config materialize or restart API to reload routing",
+        "preset_applied": {
+            "model_id": body.model_id,
+            "preset": body.preset,
+            "target": body.target,
+        },
     }
 
 

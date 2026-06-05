@@ -29,4 +29,26 @@ def test_apply_preset_round_trip(client: TestClient, tmp_path) -> None:
         json={"model_id": model_id, "preset": "balanced", "target": "model-routing"},
     )
     assert r.status_code == 200
-    assert r.json().get("status") == "applied"
+    body = r.json()
+    assert body.get("status") == "applied"
+    assert body.get("preset_applied") == {
+        "model_id": model_id,
+        "preset": "balanced",
+        "target": "model-routing",
+    }
+
+
+def test_apply_preset_invalid_preset(client: TestClient) -> None:
+    r = client.post(
+        "/v1/platform/models/apply-preset",
+        json={"model_id": "llama3.2", "preset": "recommended"},
+    )
+    assert r.status_code == 422
+
+
+def test_apply_preset_missing_model_id(client: TestClient) -> None:
+    r = client.post(
+        "/v1/platform/models/apply-preset",
+        json={"preset": "balanced"},
+    )
+    assert r.status_code == 422

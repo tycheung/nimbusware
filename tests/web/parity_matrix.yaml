@@ -34,6 +34,9 @@ maker:
     web: true
   - id: models_ranked_table
     web: true
+  - id: apply_preset_wizard
+    web: true
+    notes: Models tab three-step preset wizard wired to apply-preset API
   - id: ollama_pull
     web: true
   - id: settings_operator
