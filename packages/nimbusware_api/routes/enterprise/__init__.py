@@ -17,6 +17,7 @@ from nimbusware_api.routes.enterprise.fleet_ollama_sli import router as fleet_ol
 from nimbusware_api.routes.enterprise.fleet_worker import router as fleet_worker_router
 from nimbusware_api.routes.enterprise.iam import router as iam_router
 from nimbusware_api.routes.enterprise.object_store import router as object_store_router
+from nimbusware_api.routes.enterprise.research_ops import router as enterprise_research_ops_router
 
 __all__ = [
     "EnterpriseDep",
@@ -46,4 +47,5 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_analytics_router)
     router.include_router(fleet_critic_reliability_router)
     router.include_router(enterprise_audit_export_router)
+    router.include_router(enterprise_research_ops_router)
     return router

@@ -59,3 +59,25 @@ def export_egress_audit_rows(repo_root: Path) -> list[dict[str, Any]]:
         except json.JSONDecodeError:
             continue
     return rows
+
+
+def list_enterprise_research_index(repo_root: Path, *, limit: int = 500) -> list[dict[str, Any]]:
+    if not enterprise_research_enabled():
+        return []
+    ns = tenant_namespace()
+    rel = Path(".hermes") / "enterprise" / ns / "research_index.jsonl"
+    path = repo_root / rel
+    if not path.is_file():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+        if len(rows) >= limit:
+            break
+    return rows
