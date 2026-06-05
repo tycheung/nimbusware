@@ -9,6 +9,7 @@ from typing import Any
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
+from agent_core.context_budget import truncate_for_llm_history
 from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 
@@ -140,7 +141,7 @@ def execute_slice_plan_llm(
     )
     user = f"Propose micro-slice #{slice_index} for this Nimbusware run. Use slice_id like slice-{{n}}."
     if memory_excerpt.strip():
-        user = f"{user}\n\nPrior failure memory (advisory):\n{memory_excerpt[:2000]}"
+        user = f"{user}\n\nPrior failure memory (advisory):\n{truncate_for_llm_history(memory_excerpt)}"
     if budget_feedback:
         user = f"{user}\nPrior budget feedback: {budget_feedback}"
     try:
@@ -188,7 +189,7 @@ def execute_slice_implement_llm(
                 text = fp.read_text(encoding="utf-8")
             except OSError:
                 continue
-            excerpts.append(f"--- {rel} ---\n{text[:4000]}\n")
+            excerpts.append(f"--- {rel} ---\n{truncate_for_llm_history(text, max_chars=4000)}\n")
     schema = '{"edits":[{"path":"string","content":"string"}],"summary":"string"}'
     system = (
         f"{agent_prompt}\n\n"
@@ -201,7 +202,7 @@ def execute_slice_implement_llm(
         f"Implement slice {plan.slice_id} for paths {list(plan.target_paths)}. "
         f"Acceptance: {plan.acceptance_criteria or 'tests pass'}. "
         f"Rationale: {plan.rationale}\n\n"
-        f"Current files:\n{''.join(excerpts)[:12000]}"
+        f"Current files:\n{truncate_for_llm_history(''.join(excerpts), max_chars=12000)}"
     )
     try:
         data = ollama_chat_json(
@@ -244,7 +245,7 @@ def execute_slice_critique_llm(
     user = (
         f"Slice {plan.slice_id} targets {list(plan.target_paths)}. "
         f"Acceptance: {plan.acceptance_criteria or 'n/a'}. "
-        f"Verify log excerpt:\n{(verify_log or 'ok')[:2000]}"
+        f"Verify log excerpt:\n{truncate_for_llm_history(verify_log or 'ok')}"
     )
     try:
         data = ollama_chat_json(

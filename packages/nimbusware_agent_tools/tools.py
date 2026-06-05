@@ -4,6 +4,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from agent_core.context_budget import truncate_for_active_read, truncate_shell_output
 from nimbusware_agent_tools.allowlist import (
     normalise_rel,
     path_in_plan,
@@ -11,6 +12,7 @@ from nimbusware_agent_tools.allowlist import (
     shell_from_string,
     validate_shell_invocation,
 )
+from nimbusware_env.env_flags import nimbusware_read_max_chars
 
 
 @dataclass(frozen=True)
@@ -20,14 +22,13 @@ class ToolResult:
     output: str
 
 
-def tool_read_file(workspace: Path, path: str, *, max_chars: int = 16000) -> ToolResult:
+def tool_read_file(workspace: Path, path: str, *, max_chars: int | None = None) -> ToolResult:
+    cap = max_chars if max_chars is not None else nimbusware_read_max_chars()
     try:
         fp = resolve_workspace_file(workspace, path)
         if not fp.is_file():
             return ToolResult("read", False, f"not a file: {path}")
-        text = fp.read_text(encoding="utf-8")
-        if len(text) > max_chars:
-            text = text[:max_chars] + "\n…(truncated)"
+        text = truncate_for_active_read(fp.read_text(encoding="utf-8"), max_chars=cap)
         return ToolResult("read", True, text)
     except (OSError, ValueError) as exc:
         return ToolResult("read", False, str(exc))
@@ -120,6 +121,7 @@ def tool_run_shell(
         out = proc.combined_output
         ok = proc.returncode == 0
         tag = f"[{proc.backend}] " if proc.backend != "none" else ""
-        return ToolResult("shell", ok, (tag + out)[:4000] or f"exit {proc.returncode}")
+        bounded = truncate_shell_output(tag + out) or f"exit {proc.returncode}"
+        return ToolResult("shell", ok, bounded)
     except (OSError, TimeoutError, ValueError) as exc:
         return ToolResult("shell", False, str(exc))

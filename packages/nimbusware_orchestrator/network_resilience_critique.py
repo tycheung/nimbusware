@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 import httpx
 from pydantic import BaseModel, ValidationError
 
+from agent_core.context_budget import truncate_for_llm_history
 from agent_core.models import (
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
@@ -25,7 +26,9 @@ from nimbusware_orchestrator.llm_plan import append_gate_decision_event
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from nimbusware_orchestrator.workflow_network_resilience_critique import NetworkResilienceCritiqueBlock
+from nimbusware_orchestrator.workflow_network_resilience_critique import (
+    NetworkResilienceCritiqueBlock,
+)
 from nimbusware_store.protocol import EventStore
 
 NETWORK_RESILIENCE_CRITIQUE_STAGE = "implementation.network_resilience_critique"
@@ -192,7 +195,10 @@ def execute_network_resilience_critique_llm(
                         "FAIL when HTTP resilience or SQL query budget checks failed."
                     ),
                 },
-                {"role": "user", "content": json.dumps(scan_summary)[:4000]},
+                {
+                    "role": "user",
+                    "content": truncate_for_llm_history(json.dumps(scan_summary), max_chars=4000),
+                },
             ],
             timeout_seconds=timeout_seconds,
         )

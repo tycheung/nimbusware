@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 import httpx
 from pydantic import ValidationError
 
+from agent_core.context_budget import truncate_for_llm_history
 from agent_core.models import (
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
@@ -116,7 +117,7 @@ def execute_self_refinement_critique_llm(
         '"summary":"string"}. Recommend proceed only when gaps are minor or the '
         "policy description indicates readiness; otherwise hold."
     )
-    bounded_desc = (description or "")[:2000]
+    bounded_desc = truncate_for_llm_history(description or "")
     user = (
         f"evaluation_status={evaluation_status!r}. gaps={list(gaps)!r}. "
         f"policy_description={bounded_desc!r}"

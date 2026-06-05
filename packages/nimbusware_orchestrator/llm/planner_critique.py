@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 import httpx
 from pydantic import ValidationError
 
+from agent_core.context_budget import truncate_for_llm_history
 from agent_core.models import (
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
@@ -123,7 +124,7 @@ def execute_planner_critique_llm(
         "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
         "validation_steps, acceptance_criteria. Prefer PASS when the log looks healthy."
     )
-    bounded = (log_snippet or "")[:4000]
+    bounded = truncate_for_llm_history(log_snippet or "", max_chars=4000)
     user = (
         f"Post-verify planner review. Verifier exit_code={verifier_exit_code}. "
         f"Last lines of verifier log (truncated):\n{bounded}"

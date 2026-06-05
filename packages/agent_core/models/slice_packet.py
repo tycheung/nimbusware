@@ -53,6 +53,6 @@ class SliceContextPacket(BaseModel):
 
 
 def _truncate(text: str, limit: int) -> str:
-    if limit <= 0 or len(text) <= limit:
-        return text
-    return text[: max(0, limit - 3)] + "..."
+    from agent_core.context_budget import truncate_for_llm_history
+
+    return truncate_for_llm_history(text, max_chars=limit)

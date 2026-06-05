@@ -264,6 +264,18 @@ def nimbusware_slice_symbol_sketch_max_chars(default: int = 3000) -> int:
     return resolve_int("NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS", default=default)
 
 
+def nimbusware_llm_history_max_chars(default: int = 2000) -> int:
+    return resolve_int("NIMBUSWARE_LLM_HISTORY_MAX_CHARS", default=default)
+
+
+def nimbusware_read_max_chars(default: int = 16000) -> int:
+    return resolve_int("NIMBUSWARE_READ_MAX_CHARS", default=default)
+
+
+def nimbusware_shell_output_max_chars(default: int = 4000) -> int:
+    return resolve_int("NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS", default=default)
+
+
 def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
     raw = resolve_raw("NIMBUSWARE_MAX_PARALLEL_WRITERS")
     if raw is None or not str(raw).strip():
