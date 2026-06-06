@@ -1,0 +1,47 @@
+# Micro-slice with optional slice.e2e stage enabled (opt-in workflow profile).
+slice:
+  enabled: true
+  max_files: 3
+  max_loc: 120
+  allowed_globs:
+    - "**/*.py"
+    - "**/*.html"
+  e2e:
+    enabled: true
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: slice.e2e
+    depends_on: [slice.test]
+  - stage_name: slice.gate
+    depends_on: [slice.e2e]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false
+
+theater:
+  enabled: true
+  max_message_chars: 1200
+  show_evidence_links: true
+  llm_summary: false
+
+memory:
+  retrieval_enabled: false
+  index_contribution: false
