@@ -29,6 +29,7 @@ class MakerProgressResponse(BaseModel):
     slices: list[dict] = Field(default_factory=list)
     requirements: dict | None = None
     resource_pressure: dict | None = None
+    context_budget: dict | None = None
     simple_mode: bool = True
 
 

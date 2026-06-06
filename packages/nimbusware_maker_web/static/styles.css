@@ -170,6 +170,29 @@ button.primary {
   color: #58151c;
 }
 
+.context-budget-chip {
+  display: inline-block;
+  margin: 0.35rem 0 0.5rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid var(--color-border, #ccc);
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.context-budget-chip[data-level="amber"] {
+  background: #fff3cd;
+  color: #5c4a00;
+  border-color: #e6c200;
+}
+
+.context-budget-chip[data-level="red"] {
+  background: #f8d7da;
+  color: #58151c;
+  border-color: #f1aeb5;
+}
+
 .mobile-run-bar {
   display: none;
 }

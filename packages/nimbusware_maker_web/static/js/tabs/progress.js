@@ -14,6 +14,7 @@ export async function mountProgress(root) {
     mount.innerHTML = `
       <ul id="theater-list"></ul>
       <p id="pressure-banner" class="pressure-banner" hidden></p>
+      <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="slice-summary"></p>
       <ol id="slice-list"></ol>
       <h4>Memory influence</h4>
@@ -35,6 +36,23 @@ export async function mountProgress(root) {
     list.appendChild(li);
   }
 
+  function renderContextBudget(body) {
+    const chip = document.getElementById("context-budget-chip");
+    if (!chip) return;
+    const budget = body.context_budget;
+    if (!budget || !budget.window_tokens) {
+      chip.hidden = true;
+      chip.textContent = "";
+      chip.dataset.level = "";
+      return;
+    }
+    const pct = Math.round((budget.utilization_ratio || 0) * 100);
+    chip.hidden = false;
+    chip.dataset.level = budget.advisory_level || "green";
+    chip.textContent = `Context ${pct}% (${budget.estimated_tokens}/${budget.window_tokens} tok)`;
+    chip.title = "Advisory estimate of planner-facing context vs model window";
+  }
+
   function renderPressure(body) {
     const banner = document.getElementById("pressure-banner");
     if (!banner) return;
@@ -53,6 +71,7 @@ export async function mountProgress(root) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
     renderPressure(body);
+    renderContextBudget(body);
     if (summary) {
       summary.textContent = body.current_headline || body.run_status || "";
     }

@@ -275,6 +275,9 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     handoff = _latest_handoff_summary(events)
     if handoff:
         out["latest_handoff"] = handoff
+    from nimbusware_projections.builders.context_budget import estimate_context_budget
+
+    out["context_budget"] = estimate_context_budget(events)
     return out
 
 
