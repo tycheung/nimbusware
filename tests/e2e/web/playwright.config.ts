@@ -11,6 +11,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   use: {
     baseURL,
+    viewport: { width: 1280, height: 800 },
     trace: "on-first-retry",
   },
   webServer: {

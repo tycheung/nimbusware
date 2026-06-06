@@ -5,7 +5,7 @@ export async function mountBuild(root) {
     <form id="intent-form">
       <label>Project <select name="project_id" id="build-project-select"></select></label>
       <label>Business prompt <textarea name="prompt" rows="5" required></textarea></label>
-      <button type="submit" class="primary">Start run</button>
+      <button type="submit" class="primary" data-testid="maker-build-start-run">Start run</button>
     </form>`;
 
   const listing = await apiJson("/projects");

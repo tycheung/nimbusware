@@ -7,7 +7,7 @@ function runId() {
 export async function mountReview(root) {
   root.innerHTML = `
     <div class="actions">
-      <button type="button" id="rev-load-pending">Refresh approval</button>
+      <button type="button" id="rev-load-pending" data-testid="maker-review-refresh">Refresh approval</button>
       <button type="button" id="rev-load-research">Research briefs</button>
       <button type="button" id="rev-load-diff" class="mobile-advanced">Slice diff</button>
       <button type="button" id="rev-revert" class="mobile-advanced">Revert workspace</button>
@@ -54,6 +54,7 @@ export async function mountReview(root) {
     if (!body.plan_approved) {
       const b = document.createElement("button");
       b.textContent = "Approve plan";
+      b.dataset.testid = "maker-review-approve-plan";
       b.onclick = () => apiJson(`/runs/${id}/maker/plan/approve`, { method: "POST" }).then(loadPending);
       actions.appendChild(b);
     }
@@ -65,6 +66,7 @@ export async function mountReview(root) {
       ]) {
         const b = document.createElement("button");
         b.textContent = label;
+        b.dataset.testid = path === "apply" ? "maker-review-apply-slice" : `maker-review-${path}-slice`;
         b.onclick = () =>
           apiJson(`/runs/${id}/maker/slices/${path}`, {
             method: "POST",
