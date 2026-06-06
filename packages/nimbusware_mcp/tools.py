@@ -49,6 +49,36 @@ TOOL_SPECS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "nimbusware_campaign_status",
+        "description": "Fetch campaign progress for a run/campaign id.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"campaign_id": {"type": "string"}},
+            "required": ["campaign_id"],
+        },
+    },
+    {
+        "name": "nimbusware_pause_campaign",
+        "description": "Pause an active campaign.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {"type": "string"},
+                "reason_code": {"type": "string"},
+            },
+            "required": ["campaign_id"],
+        },
+    },
+    {
+        "name": "nimbusware_backlog_summary",
+        "description": "Fetch delivery backlog tree summary for a campaign.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"campaign_id": {"type": "string"}},
+            "required": ["campaign_id"],
+        },
+    },
+    {
         "name": "nimbusware_compact_run",
         "description": "Trigger campaign context compaction for a run.",
         "inputSchema": {
@@ -66,6 +96,24 @@ def _text_result(payload: Any) -> dict[str, Any]:
 
 
 def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    if name in (
+        "nimbusware_campaign_status",
+        "nimbusware_pause_campaign",
+        "nimbusware_backlog_summary",
+    ):
+        campaign_id = str(arguments.get("campaign_id") or "").strip()
+        if not campaign_id:
+            raise ValueError("campaign_id is required")
+        if name == "nimbusware_campaign_status":
+            progress = get_json(f"/runs/{campaign_id}/maker-progress")
+            return _text_result(progress.get("campaign_progress") or progress)
+        if name == "nimbusware_pause_campaign":
+            reason = str(arguments.get("reason_code") or "mcp")
+            return _text_result(
+                post_json(f"/campaigns/{campaign_id}/pause", {"reason_code": reason}),
+            )
+        return _text_result(get_json(f"/campaigns/{campaign_id}/backlog"))
+
     run_id = str(arguments.get("run_id") or "").strip()
     if not run_id:
         raise ValueError("run_id is required")
