@@ -15,6 +15,7 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_run_theater",
         "nimbusware_slice_diff",
         "nimbusware_approve_plan",
+        "nimbusware_compact_run",
     }
 
 
@@ -33,6 +34,14 @@ def test_nimbusware_approve_plan(mock_post: Any) -> None:
     out = call_tool("nimbusware_approve_plan", {"run_id": "abc"})
     mock_post.assert_called_once_with("/runs/abc/maker/plan/approve", {})
     assert "approved" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_compact_run(mock_post: Any) -> None:
+    mock_post.return_value = {"compacted": True, "tokens_before": 100, "tokens_after": 40}
+    out = call_tool("nimbusware_compact_run", {"run_id": "abc"})
+    mock_post.assert_called_once_with("/runs/abc/compact", {})
+    assert "compacted" in out["content"][0]["text"]
 
 
 def test_unknown_tool_raises() -> None:

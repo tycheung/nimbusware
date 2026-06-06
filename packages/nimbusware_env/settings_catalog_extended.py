@@ -632,6 +632,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_AGENT_COMPACT",
+            _USER,
+            _BOOL,
+            "1",
+            "Manual run compaction",
+            "Allow POST /v1/runs/{id}/compact and MCP nimbusware_compact_run.",
+            "User — context efficiency",
+        ),
+        SettingDef(
             "NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS",
             _USER,
             _INT,

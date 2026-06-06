@@ -282,6 +282,12 @@ def nimbusware_agent_jit_loop_enabled() -> bool:
     return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
 
 
+def nimbusware_agent_compact_enabled() -> bool:
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("NIMBUSWARE_AGENT_COMPACT", default=True)
+
+
 def nimbusware_projection_prune_agent_tools_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 
