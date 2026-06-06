@@ -88,6 +88,20 @@ def _target_state_for_kind(kind: str, run_id: str) -> dict[str, Any]:
     return {"connected": True, "kind": kind, "run_id": run_id}
 
 
+def probe_http_endpoint(url: str, *, timeout: float = 2.0) -> dict[str, Any]:
+    import httpx
+
+    try:
+        resp = httpx.get(url, timeout=timeout, follow_redirects=True)
+    except httpx.HTTPError as exc:
+        return {"reachable": False, "error": str(exc)[:200]}
+    return {
+        "reachable": True,
+        "status_code": resp.status_code,
+        "ok": resp.is_success,
+    }
+
+
 def validate_integration_manifest(manifest: dict[str, Any]) -> list[str]:
     """Return validation errors; empty when manifest is acceptable."""
     errors: list[str] = []
@@ -193,13 +207,18 @@ def execute_target_adapter_integration(
             "rollback_reason": "connect_failed_after_sync",
             "target_state_path": "target_state.json",
         }
-    return {
+    result_payload: dict[str, Any] = {
         "target_integration_status": "integrated",
         "target_state_path": "target_state.json",
         "target_sync_result": result,
         "target_connected": True,
         "sync_artifact_paths": _sync_artifact_paths(abs_dir, kind),
     }
+    if kind == "api_bridge":
+        endpoint = str(state.get("endpoint") or "").strip()
+        if endpoint:
+            result_payload["http_probe"] = probe_http_endpoint(endpoint)
+    return result_payload
 
 
 def _sync_artifact_paths(abs_dir: Path, kind: str) -> list[str]:

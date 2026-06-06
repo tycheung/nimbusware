@@ -5,8 +5,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from nimbusware_orchestrator.integration_adapter_scaffold import (
     execute_target_adapter_integration,
+    probe_http_endpoint,
     validate_integration_manifest,
 )
 
@@ -173,3 +176,71 @@ class CompatibilityShimAdapter:
     assert out["target_integration_status"] == "integrated"
     assert (ws / "bundle_shim_map.json").is_file()
     assert out["target_sync_result"]["mapped"] is True
+
+
+def test_probe_http_endpoint_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _Resp:
+        status_code = 200
+
+        @property
+        def is_success(self) -> bool:
+            return True
+
+    def _fake_get(url: str, **kwargs: object) -> _Resp:
+        assert url == "http://127.0.0.1:8080/health"
+        return _Resp()
+
+    monkeypatch.setattr("httpx.get", _fake_get)
+    out = probe_http_endpoint("http://127.0.0.1:8080/health")
+    assert out["reachable"] is True
+    assert out["ok"] is True
+
+
+def test_execute_target_adapter_records_http_probe(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class _Resp:
+        status_code = 503
+
+        @property
+        def is_success(self) -> bool:
+            return False
+
+    monkeypatch.setattr("httpx.get", lambda *args, **kwargs: _Resp())
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "manifest.json").write_text(
+        json.dumps({"run_id": "r1", "target_adapter_kind": "api_bridge", "stub_only": False}),
+        encoding="utf-8",
+    )
+    (ws / "adapter_api_bridge.py").write_text(
+        """
+class ApiBridgeAdapter:
+    kind = "api_bridge"
+    def __init__(self, workspace_dir, *, run_id: str):
+        self._workspace_dir = workspace_dir
+        self._run_id = run_id
+    def connect(self):
+        state_path = self._workspace_dir / "target_state.json"
+        if not state_path.is_file():
+            return False
+        import json
+        raw = json.loads(state_path.read_text(encoding="utf-8"))
+        return raw.get("connected") is True
+    def sync_target(self):
+        state_path = self._workspace_dir / "target_state.json"
+        payload = {
+            "connected": True,
+            "action": "probe",
+            "endpoint": "http://127.0.0.1:8080/health",
+        }
+        state_path.write_text(__import__("json").dumps(payload, indent=2), encoding="utf-8")
+        return payload
+""",
+        encoding="utf-8",
+    )
+    out = execute_target_adapter_integration(ws, kind="api_bridge", run_id="r1")
+    assert out["target_integration_status"] == "integrated"
+    assert out["http_probe"]["reachable"] is True
+    assert out["http_probe"]["status_code"] == 503
