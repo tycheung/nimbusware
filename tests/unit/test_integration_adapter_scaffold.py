@@ -97,3 +97,79 @@ class ApiBridgeAdapter:
     out = execute_target_adapter_integration(ws, kind="api_bridge", run_id="r1")
     assert out["target_integration_status"] == "rolled_back"
     assert out.get("rollback_reason") == "connect_failed_after_sync"
+
+
+def test_execute_target_adapter_integration_api_bridge_integrated(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "manifest.json").write_text(
+        json.dumps({"run_id": "r1", "target_adapter_kind": "api_bridge", "stub_only": False}),
+        encoding="utf-8",
+    )
+    (ws / "adapter_api_bridge.py").write_text(
+        """
+class ApiBridgeAdapter:
+    kind = "api_bridge"
+    def __init__(self, workspace_dir, *, run_id: str):
+        self._workspace_dir = workspace_dir
+        self._run_id = run_id
+    def connect(self):
+        state_path = self._workspace_dir / "target_state.json"
+        if not state_path.is_file():
+            return False
+        import json
+        raw = json.loads(state_path.read_text(encoding="utf-8"))
+        return raw.get("connected") is True
+    def sync_target(self):
+        state_path = self._workspace_dir / "target_state.json"
+        payload = {"connected": True, "action": "probe", "endpoint": "http://127.0.0.1:8080/health"}
+        state_path.write_text(__import__("json").dumps(payload, indent=2), encoding="utf-8")
+        return payload
+""",
+        encoding="utf-8",
+    )
+    out = execute_target_adapter_integration(ws, kind="api_bridge", run_id="r1")
+    assert out["target_integration_status"] == "integrated"
+    assert out["target_connected"] is True
+    assert out["target_sync_result"]["action"] == "probe"
+    state = json.loads((ws / "target_state.json").read_text(encoding="utf-8"))
+    assert state["connected"] is True
+
+
+def test_execute_target_adapter_integration_compatibility_shim_integrated(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "manifest.json").write_text(
+        json.dumps(
+            {"run_id": "r2", "target_adapter_kind": "compatibility_shim", "stub_only": False},
+        ),
+        encoding="utf-8",
+    )
+    (ws / "adapter_compatibility_shim.py").write_text(
+        """
+class CompatibilityShimAdapter:
+    kind = "compatibility_shim"
+    def __init__(self, workspace_dir, *, run_id: str):
+        self._workspace_dir = workspace_dir
+        self._run_id = run_id
+    def connect(self):
+        state_path = self._workspace_dir / "target_state.json"
+        if not state_path.is_file():
+            return False
+        import json
+        raw = json.loads(state_path.read_text(encoding="utf-8"))
+        return raw.get("connected") is True
+    def sync_target(self):
+        mapping_path = self._workspace_dir / "bundle_shim_map.json"
+        payload = {"mapped": True, "shim_mode": "bundle_compatibility"}
+        mapping_path.write_text(__import__("json").dumps(payload, indent=2), encoding="utf-8")
+        state_path = self._workspace_dir / "target_state.json"
+        state_path.write_text(__import__("json").dumps({"connected": True}), encoding="utf-8")
+        return payload
+""",
+        encoding="utf-8",
+    )
+    out = execute_target_adapter_integration(ws, kind="compatibility_shim", run_id="r2")
+    assert out["target_integration_status"] == "integrated"
+    assert (ws / "bundle_shim_map.json").is_file()
+    assert out["target_sync_result"]["mapped"] is True

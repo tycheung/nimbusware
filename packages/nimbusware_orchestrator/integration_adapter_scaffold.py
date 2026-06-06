@@ -198,7 +198,17 @@ def execute_target_adapter_integration(
         "target_state_path": "target_state.json",
         "target_sync_result": result,
         "target_connected": True,
+        "sync_artifact_paths": _sync_artifact_paths(abs_dir, kind),
     }
+
+
+def _sync_artifact_paths(abs_dir: Path, kind: str) -> list[str]:
+    names: list[str] = []
+    if kind == "compatibility_shim" and (abs_dir / "bundle_shim_map.json").is_file():
+        names.append("bundle_shim_map.json")
+    if (abs_dir / "target_state.json").is_file():
+        names.append("target_state.json")
+    return names
 
 
 def write_integration_adapter_scaffold(
