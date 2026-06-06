@@ -37,9 +37,14 @@ def campaign_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any
             current_slice = payload.get("slice_id")
             break
     tree = backlog_tree_from_events(events)
-    summary = tree.get("summary") if isinstance(tree, dict) else {}
-    policy = ce.get("policy") if isinstance(ce.get("policy"), dict) else {}
-    completed = int(summary.get("slices_completed", 0) if isinstance(summary, dict) else 0)
+    summary: dict[str, Any] = {}
+    if isinstance(tree, dict):
+        raw_summary = tree.get("summary")
+        if isinstance(raw_summary, dict):
+            summary = raw_summary
+    policy_raw = ce.get("policy")
+    policy: dict[str, Any] = policy_raw if isinstance(policy_raw, dict) else {}
+    completed = int(summary.get("slices_completed", 0))
     refactor_every = int(policy.get("refactor_every_n_slices", 5) or 5)
     arch_every = int(policy.get("architecture_every_n_slices", 10) or 10)
     next_refactor = refactor_every - (completed % refactor_every) if refactor_every else None
@@ -50,7 +55,7 @@ def campaign_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any
         "autonomous": bool(ce.get("autonomous")),
         "current_slice_id": current_slice,
         "slices_completed": completed,
-        "slices_total": int(summary.get("total_slices", 0) if isinstance(summary, dict) else 0),
+        "slices_total": int(summary.get("total_slices", 0)),
         "next_maintenance": {
             "refactor_in_slices": next_refactor,
             "architecture_in_slices": next_arch,
