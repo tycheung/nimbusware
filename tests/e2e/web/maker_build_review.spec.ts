@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { activateMakerRoute } from "./maker_route_helper";
 
 test("build tab module exposes start-run test id", async ({ request }) => {
   const res = await request.get("/v1/maker/app/js/tabs/build.js");
@@ -17,7 +18,7 @@ test("review tab module exposes refresh test id", async ({ request }) => {
   expect(body).toContain('data-testid="maker-review-launch-scorecard"');
 });
 
-test("build tab renders start-run control in DOM", async ({ page }) => {
+test("build tab shows start-run control when route is active", async ({ page }) => {
   await page.route("**/v1/projects**", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -25,20 +26,17 @@ test("build tab renders start-run control in DOM", async ({ page }) => {
     }),
   );
   await page.goto("/v1/maker/app/");
-  await page.evaluate(async () => {
-    const { loadRoute } = await import("/v1/maker/app/js/tab-loader.js");
-    await loadRoute("/build");
-  });
-  await expect(page.locator('#build-mount [data-testid="maker-build-start-run"]')).toBeAttached();
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/build");
+  await expect(page.locator("#view-build")).toBeVisible();
+  await expect(page.getByTestId("maker-build-start-run")).toBeVisible();
 });
 
-test("review tab renders approval controls in DOM", async ({ page }) => {
+test("review tab shows approval controls when route is active", async ({ page }) => {
   await page.goto("/v1/maker/app/");
-  await page.evaluate(async () => {
-    const root = document.getElementById("review-mount");
-    const { mountReview } = await import("/v1/maker/app/js/tabs/review.js");
-    await mountReview(root);
-  });
-  await expect(page.locator('#review-mount [data-testid="maker-review-refresh"]')).toBeAttached();
-  await expect(page.locator('#review-mount [data-testid="maker-review-launch-scorecard"]')).toBeAttached();
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/review");
+  await expect(page.locator("#view-review")).toBeVisible();
+  await expect(page.getByTestId("maker-review-refresh")).toBeVisible();
+  await expect(page.getByTestId("maker-review-launch-scorecard")).toBeVisible();
 });
