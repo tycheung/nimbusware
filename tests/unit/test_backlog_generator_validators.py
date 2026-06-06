@@ -1,11 +1,17 @@
 from __future__ import annotations
 
-from agent_core.models.backlog import BacklogEpic, BacklogFeature, BacklogSlice, DeliveryBacklog
+from agent_core.models.backlog import (
+    BacklogEpic,
+    BacklogFeature,
+    BacklogSlice,
+    DeliveryBacklog,
+    sync_backlog_metadata,
+)
 from nimbusware_orchestrator.backlog_generator import validate_backlog, validate_backlog_limits
 
 
 def test_validate_backlog_limits() -> None:
-    backlog = DeliveryBacklog(
+    backlog = sync_backlog_metadata(DeliveryBacklog(
         campaign_id="c1",
         epics=(
             BacklogEpic(
@@ -20,6 +26,6 @@ def test_validate_backlog_limits() -> None:
                 ),
             ),
         ),
-    )
+    ))
     assert validate_backlog_limits(backlog, max_slices=2)
     assert not validate_backlog(backlog, max_slices=5)
