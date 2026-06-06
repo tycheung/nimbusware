@@ -74,6 +74,17 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
+            "NIMBUSWARE_CLONE_URL",
+            install,
+            s,
+            "https://github.com/tycheung/nimbusware.git",
+            "Clone URL",
+            "Git remote used by the desktop launcher install flow.",
+            "Install — infrastructure",
+            admin_editable=False,
+            user_editable=False,
+        ),
+        SettingDef(
             "NIMBUSWARE_ADMIN_TOKEN",
             install,
             s,

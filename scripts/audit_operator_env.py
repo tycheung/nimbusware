@@ -78,6 +78,7 @@ ENV_WRITE_ALLOW = frozenset(
         "nimbusware_env/dotenv.py",
         "nimbusware_env/admin_token.py",
         "nimbusware_env/run_app.py",
+        "nimbusware_env/launcher_app.py",
         "nimbusware_orchestrator/preflight_cli.py",
         "scripts/install_nimbusware.py",
         "scripts/ollama_setup.py",
