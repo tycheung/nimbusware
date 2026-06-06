@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 from uuid import UUID
+
+from nimbusware_env.env_flags import env_bool, env_str
+from nimbusware_orchestrator.ollama_manage import ollama_base_url
 
 
 @dataclass(frozen=True)
@@ -33,20 +35,11 @@ class LaunchEvalScorecard:
 
 
 def llm_panel_enabled() -> bool:
-    raw = os.environ.get("NIMBUSWARE_LAUNCH_EVAL_LLM", "").strip().lower()
-    return raw in ("1", "true", "yes")
+    return env_bool("NIMBUSWARE_LAUNCH_EVAL_LLM")
 
 
 def _launch_eval_llm_model() -> str:
-    explicit = os.environ.get("NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL", "").strip()
-    if explicit:
-        return explicit
-    fallback = os.environ.get("NIMBUSWARE_OLLAMA_DEFAULT_MODEL", "").strip()
-    return fallback or "llama3.2"
-
-
-def _ollama_base_url() -> str:
-    return os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").strip()
+    return env_str("NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL") or "llama3.2"
 
 
 def _workspace_llm_context(workspace: Path) -> str:
@@ -71,7 +64,7 @@ def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
 
     try:
         data = ollama_chat_json(
-            base_url=_ollama_base_url(),
+            base_url=ollama_base_url(),
             model=_launch_eval_llm_model(),
             messages=[
                 {

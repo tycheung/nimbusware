@@ -470,10 +470,12 @@ Deterministic rubric v0 scores attached workspaces on maturity, maintainability,
 
 ```bash
 poetry run python scripts/launch_eval.py path/to/workspace --json
-poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in advisory findings
+poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in Ollama findings
 ```
 
-Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for advisory LLM panel findings on the scorecard; default rubric stays deterministic.
+Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline (Review tab scorecard button reads it back).
+
+Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings; optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
 Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Maker Review tab loads `launch_eval.completed` scorecards from the timeline (parity row `launch_eval_scorecard`).
 

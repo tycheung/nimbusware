@@ -187,8 +187,8 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
         )
     from nimbusware_maker.workspace import resolve_run_workspace
     from nimbusware_orchestrator.launch_evaluator import (
-        evaluate_workspace_rubric,
         emit_launch_eval_completed,
+        evaluate_workspace_rubric,
     )
 
     ws = resolve_run_workspace(rows)
