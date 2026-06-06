@@ -70,7 +70,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `nimbusware_store`.
 2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress from the event log.
 3. **Read** — Campaign/backlog row parsers live in `agent_core.read.campaign` (shared by orchestrator and projections). HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
-4. **Maker loop** — Pending slices, research approve/reject, and stitch summary are read models over the same event log (`nimbusware_maker` + maker web tabs).
+4. **Maker loop** — Pending slices, research approve/reject, stitch summary, and launch readiness scorecards are read models over the same event log (`nimbusware_maker` + maker web tabs).
 
 ## Auth (request path)
 

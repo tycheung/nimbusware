@@ -42,6 +42,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 - **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API timeline + L1 journeys when marked `e2e`). Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** `-m slow`.
+- **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — fixture workspace rubric via `scripts/launch_eval.py`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
 
 ## UI coverage policy (Lane V2)
