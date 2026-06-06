@@ -8,6 +8,7 @@ from nimbusware_orchestrator.slice_repo_map import (
     build_import_graph_excerpt,
     build_repo_map_excerpt,
     build_repo_tree_excerpt,
+    expand_target_paths,
 )
 
 
@@ -30,6 +31,17 @@ def test_import_graph_for_target(tmp_path: Path) -> None:
     graph = build_import_graph_excerpt(tmp_path, ["pkg/a.py"], max_edges=10)
     assert "pkg.a" in graph
     assert "->" in graph
+
+
+def test_expand_target_paths_includes_import_neighbor(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("from pkg import b\n", encoding="utf-8")
+    (pkg / "b.py").write_text("def foo() -> int:\n    return 1\n", encoding="utf-8")
+    expanded = expand_target_paths(tmp_path, ["pkg/a.py"], max_neighbors=2)
+    assert "pkg/a.py" in expanded
+    assert "pkg/b.py" in expanded
 
 
 def test_repo_map_respects_char_cap(tmp_path: Path) -> None:

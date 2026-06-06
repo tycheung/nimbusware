@@ -288,20 +288,41 @@ def build_symbol_sketch_with_lsp_fallback(
     *,
     max_chars: int = 3000,
     lsp_enabled: bool = True,
+    expand_neighbors: bool = True,
 ) -> tuple[str, str]:
     """Try LSP sketch when enabled; fall back to AST builder with reason metadata."""
+    from nimbusware_orchestrator.slice_repo_map import (
+        build_import_graph_excerpt,
+        expand_target_paths,
+    )
     from nimbusware_orchestrator.slice_symbol_sketch import build_symbol_sketch
+
+    paths: tuple[str, ...] | list[str] = target_paths
+    if expand_neighbors:
+        paths = expand_target_paths(repo_root, target_paths)
 
     if lsp_enabled:
         lsp_text, reason = build_lsp_symbol_sketch(
             repo_root,
-            target_paths,
+            paths,
             max_chars=max_chars,
         )
         if lsp_text:
-            return lsp_text, ""
+            graph = build_import_graph_excerpt(repo_root, target_paths, max_edges=12)
+            if graph:
+                combined = f"{lsp_text}\n\n{graph}"
+                if max_chars > 0 and len(combined) > max_chars:
+                    combined = combined[: max(0, max_chars - 3)] + "..."
+                return combined, ""
         if reason:
             _LOG.debug("slice LSP fallback: %s", reason)
-    ast_text = build_symbol_sketch(repo_root, target_paths, max_chars=max_chars)
+    ast_text = build_symbol_sketch(repo_root, paths, max_chars=max_chars)
+    if ast_text:
+        graph = build_import_graph_excerpt(repo_root, target_paths, max_edges=12)
+        if graph:
+            combined = f"{ast_text}\n\n{graph}"
+            if max_chars > 0 and len(combined) > max_chars:
+                combined = combined[: max(0, max_chars - 3)] + "..."
+            ast_text = combined
     fallback_reason = "ast_fallback" if lsp_enabled else ""
     return ast_text, fallback_reason

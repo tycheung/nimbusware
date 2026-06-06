@@ -109,9 +109,95 @@ def _imports_in_file(path: Path) -> list[str]:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 mods.append(alias.name.split(".")[0])
-        elif isinstance(node, ast.ImportFrom) and node.module:
-            mods.append(node.module.split(".")[0])
+        elif isinstance(node, ast.ImportFrom):
+            base = node.module or ""
+            if not node.names:
+                if base:
+                    mods.append(base.split(".")[0])
+                continue
+            for alias in node.names:
+                if alias.name == "*":
+                    if base:
+                        mods.append(base)
+                    continue
+                if base:
+                    mods.append(f"{base}.{alias.name}")
+                else:
+                    mods.append(alias.name.split(".")[0])
     return mods
+
+
+def expand_target_paths(
+    repo_root: Path,
+    target_paths: tuple[str, ...] | list[str],
+    *,
+    max_neighbors: int = 3,
+) -> tuple[str, ...]:
+    """Return target paths plus capped one-hop import neighbors under repo_root."""
+    if max_neighbors <= 0:
+        return tuple(str(p).replace("\\", "/") for p in target_paths)
+    root = repo_root.resolve()
+    ordered: list[str] = []
+    seen: set[str] = set()
+
+    def add(rel: str) -> None:
+        norm = rel.replace("\\", "/")
+        if norm not in seen:
+            seen.add(norm)
+            ordered.append(norm)
+
+    for rel in target_paths:
+        add(str(rel))
+
+    target_modules: dict[str, Path] = {}
+    for rel in ordered:
+        path = (root / rel).resolve()
+        if not path.is_file() or path.suffix != ".py":
+            continue
+        mod = _module_name_for_path(root, path)
+        if mod:
+            target_modules[mod] = path
+
+    extras: list[str] = []
+    for path in target_modules.values():
+        for imp in _imports_in_file(path):
+            dest = _resolve_import_to_path(root, imp)
+            if dest is None:
+                continue
+            try:
+                rel_dest = str(dest.relative_to(root)).replace("\\", "/")
+            except ValueError:
+                continue
+            if rel_dest not in seen:
+                extras.append(rel_dest)
+        if len(extras) >= max_neighbors:
+            break
+
+    if len(extras) < max_neighbors:
+        for other in root.rglob("*.py"):
+            if len(extras) >= max_neighbors:
+                break
+            if any(part in _SKIP_DIR_NAMES for part in other.parts):
+                continue
+            other_mod = _module_name_for_path(root, other)
+            if not other_mod or other_mod in target_modules:
+                continue
+            for imp in _imports_in_file(other):
+                for tmod in target_modules:
+                    if imp == tmod.split(".")[0] or imp.startswith(tmod):
+                        try:
+                            rel_other = str(other.relative_to(root)).replace("\\", "/")
+                        except ValueError:
+                            continue
+                        if rel_other not in seen and rel_other not in extras:
+                            extras.append(rel_other)
+                        break
+            if len(extras) >= max_neighbors:
+                break
+
+    for rel in extras[:max_neighbors]:
+        add(rel)
+    return tuple(ordered)
 
 
 def build_import_graph_excerpt(

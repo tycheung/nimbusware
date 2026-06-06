@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 from nimbusware_orchestrator.slice_lsp_client import (
     _encode_message,
     build_lsp_symbol_sketch,
+    build_symbol_sketch_with_lsp_fallback,
     format_document_symbols,
     read_lsp_message,
     resolve_lsp_command_argv,
@@ -83,3 +84,21 @@ def test_resolve_lsp_command_prefers_venv_scripts(monkeypatch, tmp_path: Path) -
     monkeypatch.setattr(sys, "executable", str(python))
     argv = resolve_lsp_command_argv()
     assert argv == [str(langserver)]
+
+
+def test_symbol_sketch_fallback_appends_import_graph(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("from pkg import b\n", encoding="utf-8")
+    (pkg / "b.py").write_text("def foo() -> int:\n    return 1\n", encoding="utf-8")
+    text, reason = build_symbol_sketch_with_lsp_fallback(
+        tmp_path,
+        ["pkg/a.py"],
+        lsp_enabled=False,
+        max_chars=4000,
+    )
+    assert reason == ""
+    assert "pkg/a.py" in text or "a.py" in text
+    assert "imports:" in text
+    assert "pkg.a" in text
