@@ -209,6 +209,28 @@ class MicroSliceMixin:
         rows = self._store.list_run_events(str(run_id))
         return micro_slice_effective_from_rows(rows) is not None
 
+    def execute_single_micro_slice(
+        self: MicroSliceHost,
+        run_id: UUID,
+        *,
+        slice_index: int,
+        workspace: Path | None = None,
+        plan: Any | None = None,
+        backlog_slice_id: str | None = None,
+    ) -> Any:
+        from typing import cast
+
+        from nimbusware_orchestrator.micro_slice_executor import execute_single_micro_slice
+
+        return execute_single_micro_slice(
+            cast(Any, self),
+            run_id,
+            slice_index=slice_index,
+            workspace=workspace,
+            plan=plan,
+            backlog_slice_id=backlog_slice_id,
+        )
+
     def execute_micro_slice_pass(
         self: MicroSliceHost,
         run_id: UUID,

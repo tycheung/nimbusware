@@ -252,6 +252,274 @@ def _run_slice_verify_and_test(
     return verify_ok, "\n".join(sections), tests_passed, test_out
 
 
+def execute_single_micro_slice(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    *,
+    slice_index: int,
+    workspace: Path | None = None,
+    plan: SlicePlan | None = None,
+    backlog_slice_id: str | None = None,
+) -> SliceGateChainResult:
+    """Run slice.plan → implement → verify → critique → test → gate for one slice."""
+    rows = orch._store.list_run_events(str(run_id))
+    from nimbusware_maker.workspace import resolve_run_workspace
+
+    ws = resolve_run_workspace(rows, override=workspace)
+    block = _resolve_slice_block(orch, run_id)
+    base = orch._base_cfg()
+    runtime = base.get("runtime") or {}
+    timeout = float(runtime.get("request_timeout_seconds", 120))
+    max_replan = slice_replan_max_for_run(rows)
+
+    budget_feedback: str | None = None
+    active_plan = plan or _plan_one_slice(
+        orch,
+        run_id,
+        slice_index=slice_index,
+        budget_feedback=budget_feedback,
+    )
+    replan_attempt = 0
+    diff_unified = ""
+    stats_source = "plan_estimate"
+    duration_ms = 0
+
+    while True:
+        orch.record_micro_slice_plan(run_id, active_plan)
+
+        started = time.perf_counter()
+        model = orch._selected_model_for_run(run_id)
+        impl_result = execute_slice_implement(
+            ws,
+            active_plan,
+            timeout_seconds=timeout,
+            llm_base_url=str(runtime.get("base_url", "http://localhost:11434")) if model else None,
+            llm_model_id=model,
+            llm_system_prompt=_custom_agent_system_prompt(
+                orch,
+                orch._store.list_run_events(str(run_id)),
+            ),
+        )
+        symbol_sketch = ""
+        from nimbusware_env.env_flags import (
+            nimbusware_slice_lsp_enabled,
+            nimbusware_slice_symbol_sketch_max_chars,
+        )
+
+        lsp_reason = ""
+        if active_plan.target_paths:
+            from nimbusware_orchestrator.slice_lsp_client import (
+                build_symbol_sketch_with_lsp_fallback,
+            )
+
+            symbol_sketch, lsp_reason = build_symbol_sketch_with_lsp_fallback(
+                ws,
+                active_plan.target_paths,
+                max_chars=nimbusware_slice_symbol_sketch_max_chars(),
+                lsp_enabled=nimbusware_slice_lsp_enabled(),
+            )
+        impl_meta: dict[str, Any] = {
+            "slice_id": active_plan.slice_id,
+            "slice_implement_mode": impl_result.mode,
+            "slice_implement_exit": impl_result.exit_code,
+            "paths_touched": list(impl_result.paths_touched),
+            "symbol_sketch": symbol_sketch,
+        }
+        if backlog_slice_id:
+            impl_meta["backlog_slice_id"] = backlog_slice_id
+        if impl_result.mode == "agent" and impl_result.log.strip():
+            impl_meta["agent_tool_log"] = impl_result.log[:8000]
+        if lsp_reason:
+            impl_meta["symbol_sketch_lsp_reason"] = lsp_reason
+        _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
+        duration_ms = int((time.perf_counter() - started) * 1000)
+
+        stats = collect_slice_diff_stats(ws, active_plan)
+        stats_source = stats.source
+        diff_unified = stats.unified_diff
+        budget = check_slice_diff_budget(stats, block)
+
+        if budget.ok or replan_attempt >= max_replan:
+            break
+
+        subdivided = subdivide_slice_plan(
+            active_plan,
+            budget=budget,
+            config=block,
+            stats=stats,
+            replan_attempt=replan_attempt + 1,
+        )
+        if subdivided is None and nimbusware_use_llm_enabled():
+            model = orch._selected_model_for_run(run_id)
+            if model:
+                subdivided = execute_slice_replan_llm(
+                    rows=orch._store.list_run_events(str(run_id)),
+                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    model_id=model,
+                    prior_plan=active_plan,
+                    budget_message=budget.message,
+                    replan_attempt=replan_attempt + 1,
+                    timeout_seconds=timeout,
+                    system_prompt=_custom_agent_system_prompt(
+                        orch,
+                        orch._store.list_run_events(str(run_id)),
+                    ),
+                )
+
+        if subdivided is None:
+            break
+
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.replan",
+            metadata={
+                "slice_id": active_plan.slice_id,
+                "next_slice_id": subdivided.slice_id,
+                "replan_attempt": replan_attempt + 1,
+                "budget_message": budget.message,
+                "diff_stats": {
+                    "file_count": len(stats.changed_files),
+                    "loc_added": stats.loc_added,
+                    "loc_removed": stats.loc_removed,
+                    "source": stats.source,
+                },
+            },
+        )
+        active_plan = subdivided
+        budget_feedback = budget.message
+        replan_attempt += 1
+
+    verify_ok, verify_log, tests_passed, test_out = _run_slice_verify_and_test(
+        ws,
+        active_plan,
+        timeout_seconds=timeout,
+    )
+    _emit_slice_stage(
+        orch,
+        run_id,
+        "slice.verify",
+        metadata={"slice_id": active_plan.slice_id, "verify_ok": verify_ok},
+        duration_ms=duration_ms,
+    )
+
+    critique_verdicts = ["PASS"]
+    critique_meta: dict[str, Any] = {"slice_id": active_plan.slice_id}
+    if backlog_slice_id:
+        critique_meta["backlog_slice_id"] = backlog_slice_id
+    if nimbusware_slice_p3_evidence_enabled():
+        from nimbusware_orchestrator.performance_scan import run_ruff_perf
+        from nimbusware_orchestrator.security_scan import run_security_scan
+
+        sec = run_security_scan(ws)
+        sec_code = sec[0]
+        sec_log = sec[1]
+        perf_code, perf_log = run_ruff_perf(ws, timeout_seconds=timeout)
+        critique_meta["phase3_evidence"] = {
+            "security_scan_exit": sec_code,
+            "security_snippet": (sec_log or "")[:1200],
+            "performance_scan_exit": perf_code,
+            "performance_snippet": (perf_log or "")[:1200],
+        }
+        if sec_code != 0 or perf_code != 0:
+            critique_verdicts = ["FAIL"]
+    rows = orch._store.list_run_events(str(run_id))
+    if nimbusware_use_llm_enabled() and not fast_slice_effective_from_rows(rows):
+        model = orch._selected_model_for_run(run_id)
+        if model:
+            critique_verdicts = execute_slice_critique_llm(
+                plan=active_plan,
+                base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                model_id=model,
+                verify_log=verify_log,
+                timeout_seconds=timeout,
+            )
+    critique_meta["critique_verdicts"] = critique_verdicts
+    _emit_slice_stage(
+        orch,
+        run_id,
+        "slice.critique",
+        metadata=critique_meta,
+        duration_ms=0,
+    )
+
+    _emit_slice_stage(
+        orch,
+        run_id,
+        "slice.test",
+        metadata={"slice_id": active_plan.slice_id, "tests_passed": tests_passed},
+        duration_ms=0,
+    )
+
+    e2e_passed: bool | None = None
+    e2e_detail = ""
+    if block.e2e_enabled:
+        from nimbusware_orchestrator.slice_e2e import run_slice_e2e_verify
+
+        e2e = run_slice_e2e_verify(
+            ws,
+            command=block.e2e_command,
+            timeout_seconds=timeout,
+        )
+        e2e_passed = e2e.passed
+        e2e_detail = e2e.detail
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.e2e",
+            metadata={
+                "slice_id": active_plan.slice_id,
+                "e2e_verdict": e2e.verdict,
+                "e2e_exit_code": e2e.exit_code,
+                "e2e_detail": e2e_detail[:2000],
+            },
+            duration_ms=0,
+        )
+        if e2e.verdict == "FAIL":
+            verify_ok = False
+            verify_log = f"{verify_log}\n[e2e] {e2e_detail}"
+
+    final_stats = collect_slice_diff_stats(ws, active_plan)
+    final_budget = check_slice_diff_budget(final_stats, block)
+    if not final_budget.ok:
+        verify_ok = False
+        verify_log = (
+            f"{verify_log}\n[diff budget] {final_budget.message} "
+            f"(source={stats_source}, replans={replan_attempt})"
+        )
+    diff_for_gate = diff_unified or final_stats.unified_diff
+
+    gate = orch.record_micro_slice_gate(
+        run_id,
+        active_plan,
+        verify_ok=verify_ok,
+        critique_verdicts=critique_verdicts,
+        tests_passed=tests_passed,
+        e2e_passed=e2e_passed,
+        e2e_detail=e2e_detail,
+        diff_unified=diff_for_gate[:8000],
+        test_output=test_out[:4000],
+    )
+    if gate.passed:
+        from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
+
+        run_meta = orch._run_created_metadata(run_id)
+        commit_result = maybe_commit_slice(
+            ws,
+            active_plan,
+            run_id=str(run_id),
+            run_metadata=run_meta,
+        )
+        if commit_result.get("status") not in ("skipped",):
+            _emit_slice_stage(
+                orch,
+                run_id,
+                "slice.git_commit",
+                metadata={"slice_id": active_plan.slice_id, **commit_result},
+            )
+    return gate
+
+
 def execute_micro_slice_pass(
     orch: RunOrchestrator,
     run_id: UUID,
@@ -263,254 +531,17 @@ def execute_micro_slice_pass(
     from nimbusware_maker.workspace import resolve_run_workspace
 
     ws = resolve_run_workspace(rows, override=workspace)
-    block = _resolve_slice_block(orch, run_id)
-    base = orch._base_cfg()
-    runtime = base.get("runtime") or {}
-    timeout = float(runtime.get("request_timeout_seconds", 120))
     slice_count = micro_slice_count_for_run(rows)
     results: list[SliceGateChainResult] = []
 
-    max_replan = slice_replan_max_for_run(rows)
-
     for index in range(1, slice_count + 1):
-        budget_feedback: str | None = None
-        plan = _plan_one_slice(orch, run_id, slice_index=index, budget_feedback=budget_feedback)
-        replan_attempt = 0
-        diff_unified = ""
-        stats_source = "plan_estimate"
-
-        while True:
-            orch.record_micro_slice_plan(run_id, plan)
-
-            started = time.perf_counter()
-            model = orch._selected_model_for_run(run_id)
-            impl_result = execute_slice_implement(
-                ws,
-                plan,
-                timeout_seconds=timeout,
-                llm_base_url=str(runtime.get("base_url", "http://localhost:11434"))
-                if model
-                else None,
-                llm_model_id=model,
-                llm_system_prompt=_custom_agent_system_prompt(
-                    orch,
-                    orch._store.list_run_events(str(run_id)),
-                ),
-            )
-            symbol_sketch = ""
-            from nimbusware_env.env_flags import (
-                nimbusware_slice_lsp_enabled,
-                nimbusware_slice_symbol_sketch_max_chars,
-            )
-
-            lsp_reason = ""
-            if plan.target_paths:
-                from nimbusware_orchestrator.slice_lsp_client import (
-                    build_symbol_sketch_with_lsp_fallback,
-                )
-
-                symbol_sketch, lsp_reason = build_symbol_sketch_with_lsp_fallback(
-                    ws,
-                    plan.target_paths,
-                    max_chars=nimbusware_slice_symbol_sketch_max_chars(),
-                    lsp_enabled=nimbusware_slice_lsp_enabled(),
-                )
-            impl_meta = {
-                "slice_id": plan.slice_id,
-                "slice_implement_mode": impl_result.mode,
-                "slice_implement_exit": impl_result.exit_code,
-                "paths_touched": list(impl_result.paths_touched),
-                "symbol_sketch": symbol_sketch,
-            }
-            if impl_result.mode == "agent" and impl_result.log.strip():
-                impl_meta["agent_tool_log"] = impl_result.log[:8000]
-            if lsp_reason:
-                impl_meta["symbol_sketch_lsp_reason"] = lsp_reason
-            _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
-            duration_ms = int((time.perf_counter() - started) * 1000)
-
-            stats = collect_slice_diff_stats(ws, plan)
-            stats_source = stats.source
-            diff_unified = stats.unified_diff
-            budget = check_slice_diff_budget(stats, block)
-
-            if budget.ok or replan_attempt >= max_replan:
-                break
-
-            subdivided = subdivide_slice_plan(
-                plan,
-                budget=budget,
-                config=block,
-                stats=stats,
-                replan_attempt=replan_attempt + 1,
-            )
-            if subdivided is None and nimbusware_use_llm_enabled():
-                model = orch._selected_model_for_run(run_id)
-                if model:
-                    subdivided = execute_slice_replan_llm(
-                        rows=orch._store.list_run_events(str(run_id)),
-                        base_url=str(runtime.get("base_url", "http://localhost:11434")),
-                        model_id=model,
-                        prior_plan=plan,
-                        budget_message=budget.message,
-                        replan_attempt=replan_attempt + 1,
-                        timeout_seconds=timeout,
-                        system_prompt=_custom_agent_system_prompt(
-                            orch,
-                            orch._store.list_run_events(str(run_id)),
-                        ),
-                    )
-
-            if subdivided is None:
-                break
-
-            _emit_slice_stage(
-                orch,
-                run_id,
-                "slice.replan",
-                metadata={
-                    "slice_id": plan.slice_id,
-                    "next_slice_id": subdivided.slice_id,
-                    "replan_attempt": replan_attempt + 1,
-                    "budget_message": budget.message,
-                    "diff_stats": {
-                        "file_count": len(stats.changed_files),
-                        "loc_added": stats.loc_added,
-                        "loc_removed": stats.loc_removed,
-                        "source": stats.source,
-                    },
-                },
-            )
-            plan = subdivided
-            budget_feedback = budget.message
-            replan_attempt += 1
-
-        verify_ok, verify_log, tests_passed, test_out = _run_slice_verify_and_test(
-            ws,
-            plan,
-            timeout_seconds=timeout,
-        )
-        _emit_slice_stage(
+        gate = execute_single_micro_slice(
             orch,
             run_id,
-            "slice.verify",
-            metadata={"slice_id": plan.slice_id, "verify_ok": verify_ok},
-            duration_ms=duration_ms,
-        )
-
-        critique_verdicts = ["PASS"]
-        critique_meta: dict[str, Any] = {"slice_id": plan.slice_id}
-        if nimbusware_slice_p3_evidence_enabled():
-            from nimbusware_orchestrator.performance_scan import run_ruff_perf
-            from nimbusware_orchestrator.security_scan import run_security_scan
-
-            sec = run_security_scan(ws)
-            sec_code = sec[0]
-            sec_log = sec[1]
-            perf_code, perf_log = run_ruff_perf(ws, timeout_seconds=timeout)
-            critique_meta["phase3_evidence"] = {
-                "security_scan_exit": sec_code,
-                "security_snippet": (sec_log or "")[:1200],
-                "performance_scan_exit": perf_code,
-                "performance_snippet": (perf_log or "")[:1200],
-            }
-            if sec_code != 0 or perf_code != 0:
-                critique_verdicts = ["FAIL"]
-        rows = orch._store.list_run_events(str(run_id))
-        if nimbusware_use_llm_enabled() and not fast_slice_effective_from_rows(rows):
-            model = orch._selected_model_for_run(run_id)
-            if model:
-                critique_verdicts = execute_slice_critique_llm(
-                    plan=plan,
-                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
-                    model_id=model,
-                    verify_log=verify_log,
-                    timeout_seconds=timeout,
-                )
-        critique_meta["critique_verdicts"] = critique_verdicts
-        _emit_slice_stage(
-            orch,
-            run_id,
-            "slice.critique",
-            metadata=critique_meta,
-            duration_ms=0,
-        )
-
-        _emit_slice_stage(
-            orch,
-            run_id,
-            "slice.test",
-            metadata={"slice_id": plan.slice_id, "tests_passed": tests_passed},
-            duration_ms=0,
-        )
-
-        e2e_passed: bool | None = None
-        e2e_detail = ""
-        if block.e2e_enabled:
-            from nimbusware_orchestrator.slice_e2e import run_slice_e2e_verify
-
-            e2e = run_slice_e2e_verify(
-                ws,
-                command=block.e2e_command,
-                timeout_seconds=timeout,
-            )
-            e2e_passed = e2e.passed
-            e2e_detail = e2e.detail
-            _emit_slice_stage(
-                orch,
-                run_id,
-                "slice.e2e",
-                metadata={
-                    "slice_id": plan.slice_id,
-                    "e2e_verdict": e2e.verdict,
-                    "e2e_exit_code": e2e.exit_code,
-                    "e2e_detail": e2e_detail[:2000],
-                },
-                duration_ms=0,
-            )
-            if e2e.verdict == "FAIL":
-                verify_ok = False
-                verify_log = f"{verify_log}\n[e2e] {e2e_detail}"
-
-        final_stats = collect_slice_diff_stats(ws, plan)
-        final_budget = check_slice_diff_budget(final_stats, block)
-        if not final_budget.ok:
-            verify_ok = False
-            verify_log = (
-                f"{verify_log}\n[diff budget] {final_budget.message} "
-                f"(source={stats_source}, replans={replan_attempt})"
-            )
-        diff_for_gate = diff_unified or final_stats.unified_diff
-
-        gate = orch.record_micro_slice_gate(
-            run_id,
-            plan,
-            verify_ok=verify_ok,
-            critique_verdicts=critique_verdicts,
-            tests_passed=tests_passed,
-            e2e_passed=e2e_passed,
-            e2e_detail=e2e_detail,
-            diff_unified=diff_for_gate[:8000],
-            test_output=test_out[:4000],
+            slice_index=index,
+            workspace=workspace,
         )
         results.append(gate)
-        if gate.passed:
-            from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
-
-            run_meta = orch._run_created_metadata(run_id)
-            commit_result = maybe_commit_slice(
-                ws,
-                plan,
-                run_id=str(run_id),
-                run_metadata=run_meta,
-            )
-            if commit_result.get("status") not in ("skipped",):
-                _emit_slice_stage(
-                    orch,
-                    run_id,
-                    "slice.git_commit",
-                    metadata={"slice_id": plan.slice_id, **commit_result},
-                )
         if not gate.passed:
             break
     orch.maybe_rebuild_memory_index(run_id)
