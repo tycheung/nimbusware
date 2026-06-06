@@ -114,17 +114,6 @@ def _parse_llm_dimensions(raw: object) -> tuple[tuple[str, float], ...]:
     return tuple(out)
 
 
-def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
-    panel = fetch_llm_rubric_panel(workspace)
-    if not panel:
-        return None
-    raw = panel.get("findings")
-    if not isinstance(raw, list):
-        return None
-    out = tuple(str(item).strip()[:400] for item in raw if str(item).strip())[:5]
-    return out or None
-
-
 def _llm_panel_extras(workspace: Path) -> tuple[tuple[str, ...], tuple[tuple[str, float], ...]]:
     if not llm_panel_enabled():
         return (), ()
@@ -148,11 +137,6 @@ def _llm_panel_extras(workspace: Path) -> tuple[tuple[str, ...], tuple[tuple[str
         ),
         (),
     )
-
-
-def _llm_advisory_findings(workspace: Path) -> tuple[str, ...]:
-    findings, _ = _llm_panel_extras(workspace)
-    return findings
 
 
 def _cap(value: float) -> float:

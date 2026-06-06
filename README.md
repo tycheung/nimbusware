@@ -449,7 +449,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (12 journey tests). Playwright checks visible Build/Review controls via route activation (`tests/e2e/web/maker_route_helper.ts`).
+Layered operator testing lives under `tests/e2e/` (13 journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **14** specs cover apply-slice, launch scorecard, and campaign progress pause controls.
 
 | Layer | Location | CI |
 |-------|----------|-----|
@@ -475,7 +475,7 @@ poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-
 
 Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline (Review tab scorecard button reads it back).
 
-Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings; optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
+Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
 Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Maker Review tab loads `launch_eval.completed` scorecards from the timeline (parity row `launch_eval_scorecard`).
 

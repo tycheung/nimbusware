@@ -9,7 +9,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Home | `static/js/tabs/home.js` | `/platform/readiness`, `/projects` |
 | Build | `static/js/tabs/build.js` | `POST /runs` |
 | Review | `static/js/tabs/review.js` | maker pending, research, `GET /runs/{id}/stitch-summary`, slice diff, workspace revert (gate detail includes e2e skip reason when applicable) |
-| Progress | `static/js/tabs/progress.js` | theater + maker-progress SSE, memory-influence (slice gate shows `slice.e2e` **SKIP** when browser verify is disabled or Playwright is unavailable) |
+| Progress | `static/js/tabs/progress.js` | theater + maker-progress SSE (includes `campaign_progress`), campaign pause/resume/cancel, memory-influence |
 | Models | `static/js/tabs/models.js` | `/platform/hardware`, `/platform/models/catalog-info`, Ollama pull |
 | Settings | `static/js/tabs/settings.js` | `/settings/me`, hardware profile |
 | Onboarding (wizard) | `static/js/tabs/wizard.js` | `/platform/onboarding` (first-run; run creation is on **Build**) |
