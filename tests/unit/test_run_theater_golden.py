@@ -21,9 +21,7 @@ theater_messages_hash = _canonical.theater_messages_hash
 
 # Regenerate: poetry run python -c "from tests.unit.test_run_theater_golden import _load_rows, theater_messages_hash; print(theater_messages_hash(_load_rows()))"
 GOLDEN_THEATER_HASH = "a9981291034dd6136e815405f73a23bf539d3dbfdf0136b09bdabd53ccd500ff"
-GOLDEN_AGENT_TOOL_THEATER_HASH = (
-    "03ad2c83f8460838703cbb8dc61739e592ad41b66c4abeb2f13f8a17be9c08ef"
-)
+GOLDEN_AGENT_TOOL_THEATER_HASH = "03ad2c83f8460838703cbb8dc61739e592ad41b66c4abeb2f13f8a17be9c08ef"
 
 
 def _load_rows() -> list[dict]:
