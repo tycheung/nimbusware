@@ -162,6 +162,7 @@ def campaign_driver_tick(
         rows,
         generator_mode=generator_mode,
         max_slices=max_slices,
+        repo_root=orch.repo_root,
     )
     rows = orch._store.list_run_events(str(run_id))
     backlog = apply_slice_outcomes(backlog, rows)

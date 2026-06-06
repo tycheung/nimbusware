@@ -178,6 +178,69 @@ def emit_backlog_generated(
     )
 
 
+def validate_backlog_limits(backlog: DeliveryBacklog, *, max_slices: int) -> list[str]:
+    errors: list[str] = []
+    total = backlog.metadata.total_slices_planned
+    if total > max_slices:
+        errors.append(f"backlog has {total} slices; max is {max_slices}")
+    return errors
+
+
+def validate_backlog(backlog: DeliveryBacklog, *, max_slices: int) -> list[str]:
+    from agent_core.models.backlog import validate_backlog_dag
+
+    errors = list(validate_backlog_dag(backlog))
+    errors.extend(validate_backlog_limits(backlog, max_slices=max_slices))
+    return errors
+
+
+def _generate_backlog_for_run(
+    run_id: UUID,
+    rows: list[dict[str, Any]],
+    *,
+    generator_mode: str,
+    max_slices: int,
+    repo_root: Any | None = None,
+) -> DeliveryBacklog:
+    requirements = _requirements_from_rows(rows)
+    if generator_mode == "llm":
+        from nimbusware_env.env_flags import nimbusware_use_llm_enabled
+
+        if nimbusware_use_llm_enabled():
+            from nimbusware_env.settings_resolve import resolve_str
+
+            model = resolve_str("NIMBUSWARE_BACKLOG_GENERATOR_MODEL", default="")
+            base_url = resolve_str("NIMBUSWARE_OLLAMA_BASE_URL", default="http://localhost:11434")
+            if model.strip():
+                from nimbusware_orchestrator.llm.backlog_generator import generate_llm_backlog
+
+                repo_context = ""
+                if repo_root is not None:
+                    try:
+                        from nimbusware_orchestrator.slice_repo_map import build_repo_map_excerpt
+
+                        repo_context = build_repo_map_excerpt(repo_root, max_chars=4000)
+                    except (ImportError, OSError, TypeError, ValueError):
+                        repo_context = ""
+                llm_backlog = generate_llm_backlog(
+                    campaign_id=str(run_id),
+                    requirements=requirements,
+                    base_url=base_url,
+                    model_id=model.strip(),
+                    max_slices=max_slices,
+                    repo_context=repo_context,
+                )
+                if llm_backlog is not None:
+                    errors = validate_backlog(llm_backlog, max_slices=max_slices)
+                    if not errors:
+                        return sync_backlog_metadata(llm_backlog)
+    return generate_stub_backlog(
+        str(run_id),
+        requirements=requirements,
+        max_slices=max_slices,
+    )
+
+
 def ensure_backlog(
     store: Any,
     run_id: UUID,
@@ -185,14 +248,17 @@ def ensure_backlog(
     *,
     generator_mode: str = "stub",
     max_slices: int = 10,
+    repo_root: Any | None = None,
 ) -> DeliveryBacklog:
     existing = backlog_from_events(rows)
     if existing is not None:
         return apply_slice_outcomes(existing, rows)
-    backlog = generate_stub_backlog(
-        str(run_id),
-        requirements=_requirements_from_rows(rows),
+    backlog = _generate_backlog_for_run(
+        run_id,
+        rows,
+        generator_mode=generator_mode,
         max_slices=max_slices,
+        repo_root=repo_root,
     )
     emit_backlog_generated(store, run_id, backlog, generator_mode=generator_mode)
     return backlog
