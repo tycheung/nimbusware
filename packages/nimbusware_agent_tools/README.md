@@ -1,6 +1,6 @@
 # nimbusware_agent_tools
 
-Allowlisted tools for slice implement agent mode. The JIT loop (`agent_loop.py`) calls `read`, `edit`, `write`, `grep`, and `shell` across multiple LLM turns without upfront context preload.
+Allowlisted tools for slice implement agent mode. The JIT loop (`agent_loop.py`) calls enabled tools across multiple LLM turns without upfront context preload. Tool results split into `llm_output` (model-facing) and `audit_output` (logs/projections). Stable rules load from `configs/prompts/agent_implement_stable.txt`.
 
 ## Consumers
 
@@ -35,6 +35,7 @@ Per-slice limits (frozen on `run.created` as `agent_tools_effective.risk_caps`):
 | `NIMBUSWARE_AGENT_MAX_SHELL_INVOCATIONS` | 5 | Max shell tool calls |
 | `NIMBUSWARE_AGENT_MAX_WRITE_BYTES` | 262144 | Total write + net edit bytes |
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn tool loop |
+| `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Comma allowlist (`find`, `ls` optional) |
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Read tool cap |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Shell output cap |
 

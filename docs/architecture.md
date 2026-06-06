@@ -16,6 +16,8 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [006-prompt-tiers.md](adr/006-prompt-tiers.md) | Stable/context/volatile LLM prompt tiers |
 | [007-context-compaction.md](adr/007-context-compaction.md) | Campaign handoff compaction |
 
+Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
+
 ## Related docs
 
 | Doc | Purpose |

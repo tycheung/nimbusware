@@ -47,6 +47,9 @@ Add new tunables to the catalog first, then read via `env_flags` / `settings_res
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Agent read tool |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Agent shell output |
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn agent implement |
+| `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Tool allowlist (`find`, `ls` optional) |
+| `NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS` | 1 | Theater/timeline agent tool pruning |
+| `NIMBUSWARE_AGENT_COMPACT` | 1 | Manual compaction API/MCP gate |
 | `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff cap |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff merge |
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Campaign compaction |

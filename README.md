@@ -85,13 +85,16 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. See
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Agent `read` tool output |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Agent `shell` output |
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn agent loop vs single-shot plan |
+| `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Agent tool allowlist (optional `find`, `ls`) |
+| `NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS` | 1 | Prune stale agent tool lines in theater/timeline |
+| `NIMBUSWARE_AGENT_COMPACT` | 1 | `POST /v1/runs/{id}/compact` and MCP `nimbusware_compact_run` |
 | `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff block |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in long campaigns |
 | `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS` | (from HW) | Verbatim recent handoff window |
 | `NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS` | 8000 | Output reservation subtracted from keep window |
 
-Shared helpers: `packages/agent_core/context_budget.py`. Skills progressive disclosure: `configs/skills/` + `nimbusware_config.skills_index`.
+Shared helpers: `packages/agent_core/context_budget.py`. Context budget API: `GET /v1/runs/{id}/context_budget` (advisory chip on Maker Progress). Stable agent rules: `configs/prompts/agent_implement_stable.txt`. Skills progressive disclosure: `configs/skills/` + `nimbusware_config.skills_index`.
 
 ## Benchmarks
 
