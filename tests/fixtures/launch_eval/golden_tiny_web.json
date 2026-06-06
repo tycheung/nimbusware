@@ -1,0 +1,8 @@
+{
+  "workspace_fixture": "tiny_web_app",
+  "min_aggregate": 2.0,
+  "min_testability": 2.0,
+  "min_security": 5.0,
+  "min_scalability": 1.0,
+  "require_passed": false
+}
