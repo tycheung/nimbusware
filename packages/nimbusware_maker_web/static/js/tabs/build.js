@@ -22,17 +22,27 @@ export async function mountBuild(root) {
   root.querySelector("#intent-form")?.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const fd = new FormData(ev.target);
-    const body = await apiJson("/runs", {
+    const quickMode = window.__NIMBUSWARE__?.quick_mode;
+    const endpoint = quickMode ? "/runs" : "/campaigns";
+    const payload = quickMode
+      ? {
+          project_id: fd.get("project_id"),
+          requirements: { business_prompt: fd.get("prompt") },
+          workflow_profile: "quick_local",
+        }
+      : {
+          project_id: fd.get("project_id"),
+          requirements: { business_prompt: fd.get("prompt") },
+          autonomous: true,
+          workflow_profile: "campaign_micro_slice",
+        };
+    const body = await apiJson(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        project_id: fd.get("project_id"),
-        business_prompt: fd.get("prompt"),
-        workflow_profile: window.__NIMBUSWARE__?.quick_mode ? "quick_local" : undefined,
-      }),
+      body: JSON.stringify(payload),
     });
-    const runId = body.run_id || body.id;
-    toast("Run started", "success");
+    const runId = body.run_id || body.campaign_id || body.id;
+    toast(quickMode ? "Run started" : "Campaign started", "success");
     window.location.hash = `/review?run_id=${runId}`;
     const input = document.getElementById("run-theater-run-id");
     if (input) input.value = runId;

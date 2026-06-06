@@ -11,6 +11,7 @@ from nimbusware_api.routes import (
     analytics,
     audit,
     bundles,
+    campaigns,
     config_ops,
     critic_packs,
     custom_agents,
@@ -34,6 +35,7 @@ def build_v1_router() -> APIRouter:
     """Compose all v1 route modules without changing individual path prefixes."""
     router = APIRouter()
     router.include_router(runs.router)
+    router.include_router(campaigns.router)
     router.include_router(actions.router)
     router.include_router(policy.router)
     router.include_router(config_ops.router)
