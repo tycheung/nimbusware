@@ -84,7 +84,9 @@ def _execute_step(
     timeout_seconds: float,
 ) -> ToolResult:
     if not is_agent_tool_enabled(step.tool):
-        return ToolResult(step.tool, False, f"tool not in allowlist: {step.tool}")
+        from nimbusware_agent_tools.tools import _result
+
+        return _result(step.tool, False, f"tool not in allowlist: {step.tool}")
     if step.tool == "read":
         return tool_read_file(workspace, str(step.arguments.get("path") or ""))
     if step.tool == "find":
@@ -120,7 +122,9 @@ def _execute_step(
         args = step.arguments.get("args")
         arg_list = [str(a) for a in args] if isinstance(args, list) else None
         return tool_run_shell(workspace, cmd, arg_list, timeout_seconds=timeout_seconds)
-    return ToolResult(step.tool, False, f"unknown tool: {step.tool}")
+    from nimbusware_agent_tools.tools import _result
+
+    return _result(step.tool, False, f"unknown tool: {step.tool}")
 
 
 def _steps_from_llm(
@@ -281,7 +285,7 @@ def execute_slice_implement_agent(
                 allowed_paths=allowed,
                 replace_all=bool(step.arguments.get("replace_all")),
             )
-            logs.append(f"{result.tool}: {result.output[:500]}")
+            logs.append(f"{result.tool}: {result.audit_output[:500]}")
             if result.ok:
                 touched.append(rel.replace("\\", "/").lstrip("/"))
             else:
@@ -311,7 +315,7 @@ def execute_slice_implement_agent(
                 exit_code = max(exit_code, 1)
                 break
         result = _execute_step(ws, step, allowed=allowed, timeout_seconds=timeout_seconds)
-        logs.append(f"{result.tool}: {result.output[:500]}")
+        logs.append(f"{result.tool}: {result.audit_output[:500]}")
         if not result.ok:
             exit_code = max(exit_code, 1)
 

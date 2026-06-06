@@ -203,7 +203,9 @@ def run(
                     )
                     touched.extend(applied)
                     if errors:
-                        tool_result = type(tool_result)(
+                        from nimbusware_agent_tools.tools import _result
+
+                        tool_result = _result(
                             tool_result.tool,
                             False,
                             "; ".join(errors),
@@ -230,7 +232,7 @@ def run(
                     timeout_seconds=timeout_seconds,
                 )
 
-            result.logs.append(f"{tool_result.tool}: {tool_result.output[:500]}")
+            result.logs.append(f"{tool_result.tool}: {tool_result.audit_output[:500]}")
             if not tool_result.ok:
                 result.exit_code = max(result.exit_code, 1)
 
@@ -245,7 +247,7 @@ def run(
             _append_tool_result(
                 messages,
                 tool=tool_result.tool,
-                output=tool_result.output,
+                output=tool_result.llm_output,
                 ok=tool_result.ok,
             )
 
