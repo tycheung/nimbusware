@@ -49,7 +49,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_projections` | Events → timeline, maker-progress, theater, context budget, agent-tool prune (+ export, research briefs) |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
 | `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
-| `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |
+| `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |

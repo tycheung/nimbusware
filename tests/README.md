@@ -13,7 +13,8 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess) |
 | `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth journeys |
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences for journey assertions |
-| `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`) |
+| `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
+| `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
 | `tests/e2e/web/` | Playwright smoke (PR `ci.yml` **web** job; path-filtered `web-tests.yml` on UI-only diffs) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |

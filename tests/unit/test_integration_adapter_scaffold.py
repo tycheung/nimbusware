@@ -1,4 +1,4 @@
-"""Integration adapter scaffold manifest validation and rollback."""
+"""Integration adapter scaffold tests."""
 
 from __future__ import annotations
 

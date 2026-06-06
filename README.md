@@ -462,7 +462,7 @@ poetry run pytest tests/e2e/journeys -m e2e_journey -q
 poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
 ```
 
-Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/`, `tiny_web_app/`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
+Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/`, `tiny_web_app/`, `tiny_broken_app/` (intentionally failing tests). Campaign golden timeline: `tests/fixtures/campaign/golden_multi_tick_timeline.json`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
 
 ## Launch eval (workspace quality)
 
