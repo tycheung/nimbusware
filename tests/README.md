@@ -17,7 +17,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors for deterministic replay tests |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
-| `tests/e2e/web/` | Playwright smoke (PR `ci.yml` **web** job; path-filtered `web-tests.yml` on UI-only diffs) |
+| `tests/e2e/web/` | Playwright smoke + visible route tests (`maker_route_helper.ts`) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |

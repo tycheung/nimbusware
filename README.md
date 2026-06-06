@@ -449,7 +449,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/`:
+Layered operator testing lives under `tests/e2e/` (12 journey tests). Playwright checks visible Build/Review controls via route activation (`tests/e2e/web/maker_route_helper.ts`).
 
 | Layer | Location | CI |
 |-------|----------|-----|

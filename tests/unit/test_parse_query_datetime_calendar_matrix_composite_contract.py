@@ -8,28 +8,6 @@ import pytest
 
 from nimbusware_api.routes.runs import _parse_query_datetime
 
-# Helper note
-# All tests here exercise the contract at lines 249-260 of
-# packages/nimbusware_api/routes/runs.py:
-#
-# def _parse_query_datetime(field: str, value: str | None) -> datetime | None:
-# if value is None or not str(value).strip:
-# return None
-# try:
-# s = str(value).strip.replace("Z", "+00:00")
-# dt = datetime.fromisoformat(s)
-# except ValueError as exc:
-# msg = f"{field} must be a valid ISO-8601 datetime"
-# raise ValueError(msg) from exc
-# if dt.tzinfo is None:
-# return dt.replace(tzinfo=timezone.utc)
-# return dt.astimezone(timezone.utc)
-#
-# fo111 Part D already pins: None/empty/space short-circuit, ``"Z"`` ->
-# ``"+00:00"`` substitution, ``field`` interpolation for the two route
-# callers, naive ``replace(tzinfo=UTC)`` and aware ``astimezone(UTC)``
-# branches. fo120 adds 20 NET-NEW axes below.
-
 _EXPECTED_ERROR_SUFFIX = " must be a valid ISO-8601 datetime"
 
 
