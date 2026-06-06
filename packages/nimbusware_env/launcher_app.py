@@ -9,12 +9,18 @@ import threading
 import time
 import tkinter as tk
 from collections.abc import Callable
+from pathlib import Path
 from tkinter import messagebox, scrolledtext, ttk
 
 from nimbusware_env.desktop_common import (
     check_for_updates,
+    clone_nimbusware_repo,
+    default_clone_target,
+    default_clone_url,
     default_install_script_args,
     git_pull,
+    is_git_checkout,
+    is_nimbusware_checkout,
     read_poetry_version,
     repo_root,
     resolve_python_command,
@@ -23,6 +29,7 @@ from nimbusware_env.desktop_common import (
     subprocess_spawn_kwargs,
     ui_mono_font,
     ui_title_font,
+    updates_supported,
 )
 
 
@@ -31,7 +38,6 @@ class NimbuswareLauncherApp:
         self.root = root
         self.repo = repo_root()
         self._busy = False
-        self._updates_available = False
 
         root.title("Nimbusware")
         root.geometry("640x520")
@@ -47,15 +53,12 @@ class NimbuswareLauncherApp:
 
         buttons = ttk.Frame(root, padding=(12, 0))
         buttons.pack(fill=tk.X)
-        self.check_btn = ttk.Button(buttons, text="Check for updates", command=self.check_updates)
-        self.check_btn.pack(side=tk.LEFT, padx=(0, 8))
-        self.update_btn = ttk.Button(
+        self.check_btn = ttk.Button(
             buttons,
-            text="Update (git pull)",
-            command=self.apply_update,
-            state=tk.DISABLED,
+            text="Check for updates",
+            command=self.check_updates,
         )
-        self.update_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.check_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.install_btn = ttk.Button(buttons, text="Install / setup", command=self.run_install)
         self.install_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.run_btn = ttk.Button(buttons, text="Run Nimbusware", command=self.run_nimbusware)
@@ -78,13 +81,33 @@ class NimbuswareLauncherApp:
         )
         self.log.pack(fill=tk.BOTH, expand=True)
 
-        self._refresh_version()
-        self._append_log(f"Repository: {self.repo}")
-        self.root.after(400, self.check_updates)
+        self._append_log(f"Workspace: {self.repo}")
+        self._sync_repo_ui()
+        if updates_supported(self.repo):
+            self.root.after(400, self.check_updates)
 
     def _refresh_version(self) -> None:
         version = read_poetry_version(self.repo)
         self.version_label.configure(text=f"Installed version: {version}")
+
+    def _sync_repo_ui(self) -> None:
+        self._refresh_version()
+        if is_nimbusware_checkout(self.repo):
+            self.status_label.configure(text="Ready.")
+        else:
+            self.status_label.configure(text="No Nimbusware install found — use Install / setup.")
+        if updates_supported(self.repo):
+            self.check_btn.configure(state=tk.NORMAL)
+        else:
+            self.check_btn.configure(state=tk.DISABLED)
+            if not is_git_checkout(self.repo):
+                self._append_log("Updates disabled: no git checkout (clone first via Install / setup).")
+
+    def _set_repo(self, repo: Path) -> None:
+        self.repo = repo.resolve()
+        os.environ["NIMBUSWARE_REPO_ROOT"] = str(self.repo)
+        self._append_log(f"Repository: {self.repo}")
+        self._sync_repo_ui()
 
     def _append_log(self, line: str) -> None:
         def _write() -> None:
@@ -98,16 +121,13 @@ class NimbuswareLauncherApp:
     def _set_busy(self, busy: bool) -> None:
         self._busy = busy
         state = tk.DISABLED if busy else tk.NORMAL
-        self.check_btn.configure(state=state)
+        if busy or updates_supported(self.repo):
+            self.check_btn.configure(state=state)
+        else:
+            self.check_btn.configure(state=tk.DISABLED)
         self.install_btn.configure(state=state)
         self.run_btn.configure(state=state)
         self.admin_btn.configure(state=state)
-        if busy:
-            self.update_btn.configure(state=tk.DISABLED)
-        else:
-            self.update_btn.configure(
-                state=tk.NORMAL if self._updates_available else tk.DISABLED,
-            )
 
     def _run_background(self, label: str, worker: Callable[[], None]) -> None:
         if self._busy:
@@ -124,64 +144,101 @@ class NimbuswareLauncherApp:
         threading.Thread(target=_target, daemon=True).start()
 
     def check_updates(self) -> None:
+        if not updates_supported(self.repo):
+            return
+        if self._busy:
+            return
+        self._set_busy(True)
+        self.status_label.configure(text="Checking for updates...")
+
         def _worker() -> None:
             self._append_log("Checking for updates...")
             status, available, detail = check_for_updates(self.repo, fetch=True)
-            self._updates_available = available
+            self._append_log(detail)
 
             def _finish() -> None:
                 self.status_label.configure(text=f"Updates: {status}")
-                self.update_btn.configure(state=tk.NORMAL if available else tk.DISABLED)
-                self._append_log(detail)
+                if available and messagebox.askyesno(
+                    "Update available",
+                    f"{detail}\n\nPull the latest code now?\n\n"
+                    "Uncommitted local changes may block the pull.",
+                ):
+                    self._start_pull_updates()
+                    return
+                if not available and status == "up to date":
+                    messagebox.showinfo("No updates", detail)
+                self._set_busy(False)
 
             self.root.after(0, _finish)
 
-        self._run_background("Checking for updates...", _worker)
+        threading.Thread(target=_worker, daemon=True).start()
 
-    def apply_update(self) -> None:
-        if not self._updates_available:
-            return
-        if not messagebox.askyesno(
-            "Update Nimbusware",
-            "Pull the latest code from git?\n\nUncommitted local changes may block the pull.",
-        ):
-            return
+    def _start_pull_updates(self) -> None:
+        self._set_busy(True)
+        self.status_label.configure(text="Updating...")
 
         def _worker() -> None:
             ok, message = git_pull(self.repo, log=self._append_log)
             if ok:
-                self._updates_available = False
                 self.root.after(0, self._refresh_version)
-                status, available, detail = check_for_updates(self.repo, fetch=False)
-                self._updates_available = available
+                status, _, detail = check_for_updates(self.repo, fetch=False)
 
                 def _done() -> None:
                     self.status_label.configure(text=f"Updates: {status}")
-                    self.update_btn.configure(state=tk.NORMAL if available else tk.DISABLED)
-                    messagebox.showinfo("Update complete", message or "Updated.")
+                    messagebox.showinfo("Update complete", message or detail)
+                    self._set_busy(False)
 
                 self.root.after(0, _done)
             else:
-                self.root.after(
-                    0,
-                    lambda: messagebox.showerror("Update failed", message),
-                )
 
-        self._run_background("Updating...", _worker)
+                def _failed() -> None:
+                    messagebox.showerror("Update failed", message)
+                    self._set_busy(False)
+
+                self.root.after(0, _failed)
+
+        threading.Thread(target=_worker, daemon=True).start()
 
     def run_install(self) -> None:
-        if not messagebox.askyesno(
-            "Install Nimbusware",
-            "Run the Nimbusware setup script?\n\n"
-            "This installs Poetry dependencies and bootstraps PostgreSQL (Docker when available).",
-        ):
+        needs_clone = not is_nimbusware_checkout(self.repo)
+        clone_target = default_clone_target(self.repo)
+        clone_url = default_clone_url()
+
+        if needs_clone:
+            prompt = (
+                "No Nimbusware install was found.\n\n"
+                f"This will clone from:\n{clone_url}\n\n"
+                f"Into:\n{clone_target}\n\n"
+                "Then run setup (Poetry dependencies and PostgreSQL bootstrap)."
+            )
+        else:
+            prompt = (
+                "Run the Nimbusware setup script?\n\n"
+                "This installs Poetry dependencies and bootstraps PostgreSQL (Docker when available)."
+            )
+        if not messagebox.askyesno("Install Nimbusware", prompt):
             return
 
         def _worker() -> None:
+            repo = self.repo
+            if needs_clone:
+                self._append_log(f"Cloning Nimbusware into {clone_target}...")
+                try:
+                    repo = clone_nimbusware_repo(clone_url, clone_target, log=self._append_log)
+                except (FileNotFoundError, RuntimeError, OSError) as exc:
+                    message = str(exc)
+                    self._append_log(f"ERROR: {message}")
+                    self.root.after(
+                        0,
+                        lambda msg=message: messagebox.showerror("Clone failed", msg),
+                    )
+                    return
+                self.root.after(0, lambda: self._set_repo(repo))
+
             self._append_log("Running Nimbusware setup...")
             try:
                 code = run_script(
-                    self.repo,
+                    repo,
                     "scripts/install_nimbusware.py",
                     *default_install_script_args(),
                     log=self._append_log,

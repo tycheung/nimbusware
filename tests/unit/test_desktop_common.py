@@ -7,13 +7,19 @@ from pathlib import Path
 import pytest
 
 from nimbusware_env.desktop_common import (
+    default_clone_target,
     default_install_script_args,
+    git_subprocess_kwargs,
+    is_git_checkout,
+    is_nimbusware_checkout,
     pick_webview_gui,
     poetry_venv_python,
     read_poetry_version,
     repo_root,
+    resolve_git_executable,
     resolve_python_command,
     run_log_path,
+    updates_supported,
     venv_python_candidates,
 )
 from nimbusware_env.run_app import _reject_legacy_ui_backend
@@ -100,6 +106,50 @@ def test_launcher_module_imports() -> None:
     from nimbusware_env import launcher_app
 
     assert callable(launcher_app.main)
+
+
+def test_is_nimbusware_checkout_for_repo() -> None:
+    root = repo_root(start=Path(__file__).resolve().parent)
+    assert is_nimbusware_checkout(root)
+
+
+def test_is_git_checkout_for_repo() -> None:
+    root = repo_root(start=Path(__file__).resolve().parent)
+    assert is_git_checkout(root) == (root / ".git").is_dir()
+
+
+def test_default_clone_target_uses_sibling_folder() -> None:
+    root = repo_root(start=Path(__file__).resolve().parent)
+    assert default_clone_target(root) == root
+    assert default_clone_target(Path("C:/Desktop")) == Path("C:/Desktop/Nimbusware")
+
+
+def test_resolve_git_executable_when_git_available() -> None:
+    if shutil.which("git") is None and sys.platform != "win32":
+        pytest.skip("git not on PATH")
+    git = resolve_git_executable()
+    if git is None:
+        pytest.skip("git not available")
+    assert Path(git).name.lower().startswith("git")
+
+
+def test_git_subprocess_kwargs_hide_window_on_windows() -> None:
+    import subprocess
+
+    kwargs = git_subprocess_kwargs()
+    if sys.platform == "win32":
+        assert kwargs.get("creationflags") == subprocess.CREATE_NO_WINDOW
+    else:
+        assert kwargs == {}
+
+
+def test_updates_supported_requires_git_checkout(tmp_path: Path) -> None:
+    assert not updates_supported(tmp_path)
+    (tmp_path / ".git").mkdir()
+    if resolve_git_executable() is None:
+        assert not updates_supported(tmp_path)
+    else:
+        assert updates_supported(tmp_path)
 
 
 def test_linux_desktop_deps_skipped_off_linux() -> None:

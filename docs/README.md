@@ -20,4 +20,11 @@
 
 Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`. Package notes: [../packages/nimbusware_mcp/README.md](../packages/nimbusware_mcp/README.md).
 
-Gitignored local ledgers (not in git): `plan_gap.md`, `nimbusware-orchestrator-local-plan.md`, `pi-features-transplant.md`, `nimbusware-autonomous-completion-plan.md`, `MIGRATION AWAY FROM STREAMLIT.md`.
+Gitignored local planning (not in git) — **two files only:**
+
+| File | Role |
+|------|------|
+| `nimbusware-orchestrator-local-plan.md` | Normative product contract (§1–§20) |
+| `plan_gap.md` | Epics ledger, maturity %, polish queue |
+
+Former split docs (autonomous completion, Pi transplant, Streamlit migration) are consolidated into these two (Jun 2026).

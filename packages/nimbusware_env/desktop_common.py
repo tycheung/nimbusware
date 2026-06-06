@@ -13,15 +13,112 @@ from pathlib import Path
 
 from nimbusware_env.dotenv import find_repo_root
 
+NIMBUSWARE_SCHEMA_REL = Path("packages/nimbusware_store/schema/postgres.sql")
+DEFAULT_CLONE_URL = "https://github.com/tycheung/nimbusware.git"
+
 
 def repo_root(*, start: Path | None = None) -> Path:
-    """Nimbusware repo root; when frozen, search from the executable directory first."""
+    """Nimbusware repo root; when frozen, resolve from the executable directory."""
     if getattr(sys, "frozen", False):
         exe_dir = Path(sys.executable).resolve().parent
-        for candidate in (exe_dir, *exe_dir.parents):
+        for candidate in (exe_dir, exe_dir / "Nimbusware"):
             if (candidate / "pyproject.toml").is_file():
                 return candidate
+        return exe_dir
     return find_repo_root(start=start or Path.cwd())
+
+
+def is_nimbusware_checkout(root: Path) -> bool:
+    """True when ``root`` looks like an installed Nimbusware tree."""
+    return (root / "pyproject.toml").is_file() and (root / NIMBUSWARE_SCHEMA_REL).is_file()
+
+
+def is_git_checkout(root: Path) -> bool:
+    return (root / ".git").is_dir()
+
+
+def default_clone_url() -> str:
+    return os.environ.get("NIMBUSWARE_CLONE_URL", DEFAULT_CLONE_URL)
+
+
+def default_clone_target(base: Path) -> Path:
+    """Directory used when the launcher clones Nimbusware next to itself."""
+    if is_nimbusware_checkout(base):
+        return base
+    return base / "Nimbusware"
+
+
+def resolve_git_executable() -> str | None:
+    """Return a Git executable path that works from GUI apps on Windows."""
+    for env_key in ("NIMBUSWARE_GIT_EXECUTABLE", "GIT_EXECUTABLE"):
+        configured = os.environ.get(env_key, "").strip()
+        if configured and Path(configured).is_file():
+            return configured
+    if sys.platform == "win32":
+        for program_files in (
+            os.environ.get("ProgramFiles", r"C:\Program Files"),
+            os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
+        ):
+            candidate = Path(program_files) / "Git" / "mingw64" / "bin" / "git.exe"
+            if candidate.is_file():
+                return str(candidate)
+    return shutil.which("git")
+
+
+def git_subprocess_kwargs() -> dict[str, object]:
+    """Extra ``Popen`` / ``run`` kwargs for headless git invocations."""
+    kwargs: dict[str, object] = {}
+    if sys.platform == "win32":
+        kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW  # type: ignore[attr-defined]
+    return kwargs
+
+
+def run_git(
+    root: Path,
+    *git_args: str,
+    log: Callable[[str], None] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    git = resolve_git_executable()
+    if not git:
+        raise FileNotFoundError("git is not installed or not on PATH.")
+    cmd = [git, *git_args]
+    if log:
+        log(f"$ {' '.join(cmd)}")
+    return subprocess.run(
+        cmd,
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        check=False,
+        **git_subprocess_kwargs(),
+    )
+
+
+def clone_nimbusware_repo(
+    url: str,
+    target: Path,
+    *,
+    log: Callable[[str], None] | None = None,
+) -> Path:
+    """Clone Nimbusware into ``target`` (or reuse an existing checkout)."""
+    if target.exists() and any(target.iterdir()):
+        if not is_nimbusware_checkout(target):
+            raise FileNotFoundError(f"Target exists but is not a Nimbusware checkout: {target}")
+        if log:
+            log(f"Using existing checkout at {target}")
+        return target.resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    proc = run_git(target.parent, "clone", url, str(target), log=log)
+    if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "").strip()
+        raise RuntimeError(err or f"git clone failed (exit {proc.returncode})")
+    if not is_nimbusware_checkout(target):
+        raise RuntimeError(f"Cloned repo does not look like Nimbusware: {target}")
+    return target.resolve()
+
+
+def updates_supported(root: Path) -> bool:
+    return is_git_checkout(root) and resolve_git_executable() is not None
 
 
 def venv_python_candidates(root: Path) -> tuple[Path, ...]:
@@ -203,21 +300,9 @@ def run_script(
 
 
 def git_remote_branch(root: Path) -> str | None:
-    proc = subprocess.run(
-        ["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"],
-        cwd=str(root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    proc = run_git(root, "symbolic-ref", "--short", "refs/remotes/origin/HEAD")
     if proc.returncode != 0 or not proc.stdout.strip():
-        proc = subprocess.run(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-            cwd=str(root),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        proc = run_git(root, "rev-parse", "--abbrev-ref", "HEAD")
         branch = proc.stdout.strip() if proc.returncode == 0 else "main"
         return f"origin/{branch}" if branch else None
     ref = proc.stdout.strip()
@@ -228,19 +313,13 @@ def git_remote_branch(root: Path) -> str | None:
 
 def check_for_updates(root: Path, *, fetch: bool = True) -> tuple[str, bool, str]:
     """Return ``(status_label, updates_available, detail_message)``."""
-    if not (root / ".git").is_dir():
+    if not is_git_checkout(root):
         return ("not a git repo", False, "Updates require a git checkout with a remote.")
-    if shutil.which("git") is None:
+    if resolve_git_executable() is None:
         return ("git missing", False, "Install git to check for updates.")
 
     if fetch:
-        fetch_proc = subprocess.run(
-            ["git", "fetch", "--quiet", "origin"],
-            cwd=str(root),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        fetch_proc = run_git(root, "fetch", "--quiet", "origin")
         if fetch_proc.returncode != 0:
             err = (fetch_proc.stderr or fetch_proc.stdout or "").strip()
             return ("fetch failed", False, err or "git fetch origin failed")
@@ -249,32 +328,14 @@ def check_for_updates(root: Path, *, fetch: bool = True) -> tuple[str, bool, str
     if not upstream:
         return ("no upstream", False, "Could not determine upstream branch.")
 
-    behind_proc = subprocess.run(
-        ["git", "rev-list", "--count", f"HEAD..{upstream}"],
-        cwd=str(root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    ahead_proc = subprocess.run(
-        ["git", "rev-list", "--count", f"{upstream}..HEAD"],
-        cwd=str(root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    behind_proc = run_git(root, "rev-list", "--count", f"HEAD..{upstream}")
+    ahead_proc = run_git(root, "rev-list", "--count", f"{upstream}..HEAD")
     if behind_proc.returncode != 0:
         return ("upstream missing", False, f"Upstream {upstream} not found. Push or set remote.")
 
     behind = int((behind_proc.stdout or "0").strip() or "0")
     ahead = int((ahead_proc.stdout or "0").strip() or "0")
-    local = subprocess.run(
-        ["git", "rev-parse", "--short", "HEAD"],
-        cwd=str(root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    local = run_git(root, "rev-parse", "--short", "HEAD")
     local_sha = local.stdout.strip() if local.returncode == 0 else "?"
 
     if behind > 0:
@@ -290,15 +351,7 @@ def check_for_updates(root: Path, *, fetch: bool = True) -> tuple[str, bool, str
 
 
 def git_pull(root: Path, *, log: Callable[[str], None] | None = None) -> tuple[bool, str]:
-    if log:
-        log("$ git pull --ff-only")
-    proc = subprocess.run(
-        ["git", "pull", "--ff-only"],
-        cwd=str(root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    proc = run_git(root, "pull", "--ff-only", log=log)
     out = (proc.stdout or "") + (proc.stderr or "")
     if log and out.strip():
         for line in out.strip().splitlines():

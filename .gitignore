@@ -95,14 +95,11 @@ secrets.json
 *.rej
 *~
 
-# Nimbusware planning docs (normative contract may stay out of repo)
+# Nimbusware planning docs (local only — two-file model: normative plan + epics ledger)
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
-nimbusware-autonomous-completion-plan.md
 e2e-testing-extension-plan.md
-MIGRATION AWAY FROM STREAMLIT.md
-pi-features-transplant.md
 benchmarks/
 
 # Nimbusware agent local run artifacts (integration adapter workspaces, etc.)
