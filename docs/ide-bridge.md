@@ -1,6 +1,6 @@
 # IDE bridge (MCP)
 
-The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, and approve plans against a running Nimbusware API.
+The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, and trigger campaign compaction against a running Nimbusware API.
 
 ## Requirements
 
@@ -32,3 +32,6 @@ Add to your MCP settings:
 | `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
 | `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |
 | `nimbusware_approve_plan` | `POST /v1/runs/{run_id}/maker/plan/approve` |
+| `nimbusware_compact_run` | `POST /v1/runs/{run_id}/compact` (requires `NIMBUSWARE_AGENT_COMPACT=1`) |
+
+Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

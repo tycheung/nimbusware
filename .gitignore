@@ -102,6 +102,7 @@ plan_gap.md
 nimbusware-autonomous-completion-plan.md
 e2e-testing-extension-plan.md
 MIGRATION AWAY FROM STREAMLIT.md
+pi-features-transplant.md
 benchmarks/
 
 # Nimbusware agent local run artifacts (integration adapter workspaces, etc.)
