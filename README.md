@@ -472,7 +472,7 @@ Deterministic rubric v0 scores attached workspaces on maturity, maintainability,
 poetry run python scripts/launch_eval.py path/to/workspace --json
 ```
 
-Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/). Weekly CI: [`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml). Maker Review tab loads `launch_eval.completed` scorecards from the timeline.
+Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Maker Review tab loads `launch_eval.completed` scorecards from the timeline (parity row `launch_eval_scorecard`).
 
 ## Testing
 
