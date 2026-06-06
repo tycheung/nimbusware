@@ -156,6 +156,8 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
             "slice_implement_mode": impl_result.mode,
             "paths_touched": list(impl_result.paths_touched),
         }
+        if impl_result.log.strip():
+            impl_meta["agent_tool_log"] = impl_result.log[:8000]
     elif mode == "llm":
         edits = pending.get("proposed_edits")
         if isinstance(edits, list) and edits:

@@ -322,6 +322,8 @@ def execute_micro_slice_pass(
                 "paths_touched": list(impl_result.paths_touched),
                 "symbol_sketch": symbol_sketch,
             }
+            if impl_result.mode == "agent" and impl_result.log.strip():
+                impl_meta["agent_tool_log"] = impl_result.log[:8000]
             if lsp_reason:
                 impl_meta["symbol_sketch_lsp_reason"] = lsp_reason
             _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)

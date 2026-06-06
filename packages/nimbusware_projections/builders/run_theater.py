@@ -13,6 +13,7 @@ MessageKind = Literal[
     "escalation",
     "system",
     "slice",
+    "agent_tool",
     "research",
     "stitch",
 ]
@@ -123,6 +124,31 @@ def _approved_research_body_md(rows: list[dict[str, Any]], before_seq: int) -> s
     if not parts:
         return None
     return "Approved research: " + "; ".join(parts)
+
+
+def _append_agent_tool_theater_line(
+    messages: list[dict[str, Any]],
+    *,
+    base: dict[str, Any],
+    row_meta: dict[str, Any],
+) -> None:
+    raw = row_meta.get("agent_tool_log")
+    if not isinstance(raw, str) or not raw.strip():
+        return
+    slice_id = str(row_meta.get("slice_id") or "")
+    headline = "Agent tools"
+    if slice_id:
+        headline = f"Agent tools ({slice_id})"
+    messages.append(
+        {
+            **base,
+            "actor_display": "Agent",
+            "message_kind": "agent_tool",
+            "severity": "info",
+            "headline": headline,
+            "body_md": raw.strip()[:8000],
+        },
+    )
 
 
 def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> str:
@@ -310,6 +336,8 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "body_md": str(row_meta.get("rationale") or "")[:400] or None,
                     },
                 )
+                if sn == "slice.implement":
+                    _append_agent_tool_theater_line(messages, base=base, row_meta=row_meta)
         elif et == EventType.STAGE_FAILED.value:
             sn = _stage_name(pl)
             row_meta = _metadata(row)
@@ -498,6 +526,13 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
         body = msg.get("body_md")
         if isinstance(body, str) and len(body) > max_body:
             msg["body_md"] = body[:max_body]
+    from nimbusware_projections.builders.agent_tool_prune import (
+        prune_theater_agent_tool_messages,
+        projection_prune_agent_tools_enabled,
+    )
+
+    if projection_prune_agent_tools_enabled():
+        messages = prune_theater_agent_tool_messages(messages)
     return apply_theater_paraphrase(
         messages,
         enabled=theater_llm_summary_enabled(rows),

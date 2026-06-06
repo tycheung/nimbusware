@@ -175,7 +175,17 @@ def critic_matrix_live_timeline_summary(events: list[dict[str, Any]]) -> dict[st
     return {"rows": rows, "summary": summary}
 
 
+def agent_tool_timeline_summary(events: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
+    from nimbusware_projections.builders.agent_tool_prune import (
+        agent_tool_timeline_summary as _summary,
+        projection_prune_agent_tools_enabled,
+    )
+
+    return _summary(events, prune=projection_prune_agent_tools_enabled())
+
+
 __all__ = [
+    "agent_tool_timeline_summary",
     "critic_matrix_live_timeline_summary",
     "parallel_writer_groups_timeline_summary",
     "stage_graph_timeline_summary",

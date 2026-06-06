@@ -282,6 +282,12 @@ def nimbusware_agent_jit_loop_enabled() -> bool:
     return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
 
 
+def nimbusware_projection_prune_agent_tools_enabled() -> bool:
+    from nimbusware_env.settings_resolve import resolve_bool
+
+    return resolve_bool("NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS", default=True)
+
+
 def nimbusware_agent_tools_list(
     default: str = "read,write,edit,grep,shell",
 ) -> tuple[str, ...]:

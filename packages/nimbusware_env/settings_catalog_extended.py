@@ -596,6 +596,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS",
+            _USER,
+            _BOOL,
+            "1",
+            "Prune agent tool outputs in projections",
+            "Replace stale agent tool log lines in theater/timeline with pruned placeholders.",
+            "User — context efficiency",
+        ),
+        SettingDef(
             "NIMBUSWARE_HANDOFF_MAX_CHARS",
             _USER,
             _INT,

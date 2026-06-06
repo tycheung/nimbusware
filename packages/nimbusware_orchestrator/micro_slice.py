@@ -106,12 +106,18 @@ def micro_slice_timeline_summary(
             if sid:
                 completed.append(sid)
     current = plans[-1] if plans and len(completed) < len(plans) else ""
-    return {
+    from nimbusware_projections.builders.stage_timeline import agent_tool_timeline_summary
+
+    agent_tools = agent_tool_timeline_summary(events)
+    out: dict[str, Any] = {
         "slice_count_planned": len(plans),
         "slices_completed": len(completed),
         "slices_blocked": len(blocked),
         "current_slice_id": current or None,
     }
+    if agent_tools:
+        out["agent_tool_logs"] = agent_tools
+    return out
 
 
 def micro_slice_count_for_run(rows: list[dict[str, Any]] | None = None) -> int:
