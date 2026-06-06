@@ -44,6 +44,16 @@ def create_campaign(
             detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
         )
     assert_project_accessible(project)
+    from nimbusware_orchestrator.campaign_safety import active_campaigns_for_project
+
+    if active_campaigns_for_project(orch._store, str(project_uuid)) >= 1:
+        raise HTTPException(
+            status_code=429,
+            detail=problem(
+                "campaign_rate_limited",
+                "one active campaign per project (safety policy)",
+            ),
+        )
     try:
         run_id = orch.create_run(
             body.workflow_profile,
