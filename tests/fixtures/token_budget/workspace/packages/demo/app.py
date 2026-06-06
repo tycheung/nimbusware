@@ -1,9 +1,6 @@
 """Demo application module for token budget golden fixtures."""
 
-HELPER_LINES = [
-    f"def helper_{i}() -> int:\n    return {i}\n"
-    for i in range(120)
-]
+HELPER_LINES = [f"def helper_{i}() -> int:\n    return {i}\n" for i in range(120)]
 
 
 def main() -> str:

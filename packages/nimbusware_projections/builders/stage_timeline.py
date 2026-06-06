@@ -178,6 +178,8 @@ def critic_matrix_live_timeline_summary(events: list[dict[str, Any]]) -> dict[st
 def agent_tool_timeline_summary(events: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
     from nimbusware_projections.builders.agent_tool_prune import (
         agent_tool_timeline_summary as _summary,
+    )
+    from nimbusware_projections.builders.agent_tool_prune import (
         projection_prune_agent_tools_enabled,
     )
 

@@ -123,7 +123,9 @@ def agent_tool_timeline_summary(
     if not logs:
         return None
     if not prune:
-        return [{"store_seq": e["store_seq"], "slice_id": e["slice_id"], "log": e["log"]} for e in logs]
+        return [
+            {"store_seq": e["store_seq"], "slice_id": e["slice_id"], "log": e["log"]} for e in logs
+        ]
     latest_seq = max(e["store_seq"] for e in logs)
     out: list[dict[str, Any]] = []
     for entry in logs:

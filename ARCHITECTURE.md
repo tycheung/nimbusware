@@ -46,9 +46,9 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
 | `nimbusware_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
-| `nimbusware_agent_tools` | JIT `agent_loop`, `edit`/`read`/`write` tools; jail + sandbox backends; per-slice risk caps |
+| `nimbusware_agent_tools` | JIT `agent_loop`, dual `ToolResult` output, tool allowlist, stable prompt file; jail + sandbox + risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
-| `nimbusware_projections` | Events → timeline, maker-progress, theater (+ export, slice gate lines), research briefs |
+| `nimbusware_projections` | Events → timeline, maker-progress, theater, context budget, agent-tool prune (+ export, research briefs) |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
 | `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; see `docs/ide-bridge.md`) |

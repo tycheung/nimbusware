@@ -4,10 +4,10 @@ import pytest
 
 from agent_core.models import EventType
 from nimbusware_projections.builders.agent_tool_prune import (
+    projection_prune_agent_tools_enabled,
     prune_agent_tool_log_text,
     prune_all_agent_tool_lines,
     prune_theater_agent_tool_messages,
-    projection_prune_agent_tools_enabled,
 )
 
 

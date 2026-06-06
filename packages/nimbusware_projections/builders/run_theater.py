@@ -527,8 +527,8 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
         if isinstance(body, str) and len(body) > max_body:
             msg["body_md"] = body[:max_body]
     from nimbusware_projections.builders.agent_tool_prune import (
-        prune_theater_agent_tool_messages,
         projection_prune_agent_tools_enabled,
+        prune_theater_agent_tool_messages,
     )
 
     if projection_prune_agent_tools_enabled():
