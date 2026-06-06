@@ -470,9 +470,16 @@ def apply_event_store_schema(
 def _seed_config(poetry: str, repo: Path, url: str) -> None:
     env = os.environ.copy()
     env["NIMBUSWARE_DATABASE_URL"] = url
-    env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
+    env["NIMBUSWARE_REPO_ROOT"] = str(repo)
     _run(
-        [poetry, "run", "nimbusware-config", "seed-from-repo", "--repo-root", str(repo)],
+        [
+            poetry,
+            "run",
+            "nimbusware-config",
+            "seed-from-repo",
+            "--repo-root",
+            str(repo),
+        ],
         cwd=repo,
         env=env,
     )
@@ -1010,7 +1017,7 @@ def main(argv: list[str] | None = None) -> int:
             _log("Seeding config from repo YAML into Postgres...")
             _seed_config(poetry, repo, url)
 
-    os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
+    os.environ["NIMBUSWARE_REPO_ROOT"] = str(repo)
     if postgres_ready:
         os.environ["NIMBUSWARE_DATABASE_URL"] = url
 
@@ -1021,7 +1028,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.verify_ollama and ollama_ok:
             _log("\nVerifying Ollama preflight...")
             env = os.environ.copy()
-            env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
+            env["NIMBUSWARE_REPO_ROOT"] = str(repo)
             _run([poetry, "run", "nimbusware-preflight"], cwd=repo, env=env)
     else:
         ollama_ok = _check_ollama(args.ollama_host)

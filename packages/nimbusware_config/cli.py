@@ -70,6 +70,14 @@ def _cmd_import(args: argparse.Namespace) -> int:
     return 0
 
 
+def _add_repo_root_arg(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--repo-root",
+        default=None,
+        help="Repository root (default: $NIMBUSWARE_REPO_ROOT or '.').",
+    )
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=_TOOL_NAME,
@@ -78,23 +86,21 @@ def _build_parser() -> argparse.ArgumentParser:
             "(nimbusware_config_document) and repo configs/ YAML for git review."
         ),
     )
-    parser.add_argument(
-        "--repo-root",
-        default=None,
-        help="Repository root (default: $NIMBUSWARE_REPO_ROOT or '.').",
-    )
+    _add_repo_root_arg(parser)
     sub = parser.add_subparsers(dest="command", required=True)
 
     seed_p = sub.add_parser(
         "seed-from-repo",
         help="Load configs/**/*.yaml into Postgres (authoritative import).",
     )
+    _add_repo_root_arg(seed_p)
     seed_p.set_defaults(handler=_cmd_seed_from_repo)
 
     export_p = sub.add_parser(
         "export",
         help="Write Postgres config rows to canonical configs/ paths.",
     )
+    _add_repo_root_arg(export_p)
     export_p.add_argument(
         "--namespace",
         action="append",
@@ -107,6 +113,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "import",
         help="Alias for seed-from-repo; use --dry-run to list existing rows only.",
     )
+    _add_repo_root_arg(import_p)
     import_p.add_argument(
         "--dry-run",
         action="store_true",

@@ -6,8 +6,6 @@
 |------|---------|
 | **Nimbusware** | This repository and product: local-first adversarial agent platform (API, Maker, Admin Console, orchestrator, event store, config, IAM). Use `NIMBUSWARE_*` env vars and `nimbusware_*` packages. |
 
-Legacy checkout paths (e.g. `D:\Hermes`) and artifact dirs (`.nimbusware/`) are historical.
-
 One-page map of packages, data flow, and auth. Normative Nimbusware agent contract: gitignored `nimbusware-orchestrator-local-plan.md` (repo root). Maturity backlog: gitignored `plan_gap.md`. ADR index: [docs/architecture.md](docs/architecture.md).
 
 ## Layer diagram

@@ -7,7 +7,8 @@
 #
 # Place the exe in the Nimbusware repo root (next to pyproject.toml).
 
-$ErrorActionPreference = "Stop"
+# Native tools (poetry, PyInstaller) write diagnostics to stderr; do not treat that as failure.
+$ErrorActionPreference = "Continue"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 function Remove-StrayRootBuildJunk {
@@ -25,11 +26,17 @@ function Remove-StrayRootBuildJunk {
 
 Write-Host "Installing Python dependencies..."
 poetry install
-if ($LASTEXITCODE -ne 0) { throw "poetry install failed (exit $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "poetry install failed (exit $LASTEXITCODE)"
+    exit $LASTEXITCODE
+}
 
 Write-Host "Ensuring PyInstaller is available..."
 poetry run python -m pip install --upgrade "pyinstaller>=6"
-if ($LASTEXITCODE -ne 0) { throw "pip install pyinstaller failed (exit $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "pip install pyinstaller failed (exit $LASTEXITCODE)"
+    exit $LASTEXITCODE
+}
 
 New-Item -ItemType Directory -Force -Path dist, build/pyinstaller | Out-Null
 
@@ -40,13 +47,17 @@ poetry run python -m PyInstaller `
   --distpath dist `
   --workpath build/pyinstaller `
   scripts/NimbuswareLauncher.spec
-if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed (exit $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "PyInstaller failed (exit $LASTEXITCODE)"
+    exit $LASTEXITCODE
+}
 
 Remove-StrayRootBuildJunk
 
 $exe = Join-Path (Get-Location) "dist\NimbuswareLauncher.exe"
 if (-not (Test-Path $exe)) {
-    throw "Build finished but output is missing: $exe"
+    Write-Error "Build finished but output is missing: $exe"
+    exit 1
 }
 
 Write-Host ""
