@@ -84,6 +84,16 @@ def run_maintenance_refactor(
                 revised = backlog.model_copy(update={"epics": tuple(epics)})
                 emit_backlog_revised(store, run_id, revised, revision_reason="refactor_fix_slices")
                 fix_slices = 1
+    rows = store.list_run_events(str(run_id))
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+
+    maybe_run_launch_eval_for_campaign(
+        store,
+        run_id,
+        rows,
+        workspace=resolve_run_workspace(rows),
+    )
     store.append(
         MaintenanceRefactorPassedEvent(
             event_type=EventType.MAINTENANCE_REFACTOR_PASSED,

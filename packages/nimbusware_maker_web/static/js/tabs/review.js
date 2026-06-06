@@ -21,6 +21,11 @@ export async function mountReview(root) {
       <pre id="rev-stitch-body" class="json-pre"></pre>
     </section>
     <pre id="rev-diff" class="diff-pre"></pre>
+    <section id="rev-launch-eval" class="launch-panel hidden">
+      <h3>Launch readiness</h3>
+      <button type="button" id="rev-load-launch-eval" data-testid="maker-review-launch-scorecard">Load scorecard</button>
+      <pre id="rev-launch-eval-body" class="json-pre"></pre>
+    </section>
     <p id="rev-git-status" class="muted"></p>`;
 
   async function loadGitStatus() {
@@ -139,5 +144,28 @@ export async function mountReview(root) {
     const id = runId();
     await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
     toast("Workspace reverted", "success");
+  });
+  root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {
+    const id = runId();
+    if (!id) return toast("Enter a run ID", "error");
+    const timeline = await apiJson(`/runs/${id}/timeline`);
+    const events = timeline.events || [];
+    let scorecard = null;
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      const ev = events[i];
+      if (ev.event_type !== "stage.passed") continue;
+      const payload = ev.payload || {};
+      if (payload.stage_name !== "launch_eval.completed") continue;
+      scorecard = ev.metadata || payload;
+      break;
+    }
+    const panel = root.querySelector("#rev-launch-eval");
+    panel?.classList.remove("hidden");
+    const body = root.querySelector("#rev-launch-eval-body");
+    if (!scorecard) {
+      body.textContent = "No launch_eval.completed event on this run yet.";
+      return;
+    }
+    body.textContent = JSON.stringify(scorecard, null, 2);
   });
 }
