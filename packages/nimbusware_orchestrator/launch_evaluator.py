@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -20,9 +21,30 @@ class LaunchEvalScorecard:
     testability: float
     findings: tuple[str, ...]
     passed: bool
+    llm_findings: tuple[str, ...] = field(default_factory=tuple)
 
     def to_dict(self) -> dict[str, object]:
-        return {**asdict(self), "findings": list(self.findings)}
+        payload = {k: v for k, v in asdict(self).items() if k not in ("findings", "llm_findings")}
+        payload["findings"] = list(self.findings)
+        if self.llm_findings:
+            payload["llm_findings"] = list(self.llm_findings)
+        return payload
+
+
+def llm_panel_enabled() -> bool:
+    raw = os.environ.get("NIMBUSWARE_LAUNCH_EVAL_LLM", "").strip().lower()
+    return raw in ("1", "true", "yes")
+
+
+def _llm_advisory_findings(workspace: Path) -> tuple[str, ...]:
+    if not llm_panel_enabled():
+        return ()
+    py_count = len(list(workspace.rglob("*.py")))
+    test_count = len(list(workspace.rglob("tests/test_*.py")))
+    return (
+        f"advisory: {py_count} python modules and {test_count} test modules — "
+        "confirm product intent manually (opt-in LLM panel)",
+    )
 
 
 def _cap(value: float) -> float:
@@ -99,6 +121,7 @@ def evaluate_workspace_rubric(
     passed = aggregate >= min_aggregate and not any(
         f.startswith("pytest collect failed") for f in findings
     )
+    llm_findings = _llm_advisory_findings(ws)
     return LaunchEvalScorecard(
         aggregate=aggregate,
         maturity=maturity,
@@ -108,6 +131,7 @@ def evaluate_workspace_rubric(
         testability=testability,
         findings=tuple(findings),
         passed=passed,
+        llm_findings=llm_findings,
     )
 
 

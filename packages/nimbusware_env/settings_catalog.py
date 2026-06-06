@@ -534,6 +534,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — theater",
         ),
         SettingDef(
+            "NIMBUSWARE_LAUNCH_EVAL_LLM",
+            system,
+            b,
+            "",
+            "Launch eval LLM panel",
+            "Include opt-in advisory LLM findings in launch eval scorecards (off by default).",
+            "System — launch eval",
+        ),
+        SettingDef(
             "NIMBUSWARE_EMIT_INTEGRATOR_GATE",
             system,
             b,
