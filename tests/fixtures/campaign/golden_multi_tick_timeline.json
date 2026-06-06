@@ -1,0 +1,12 @@
+{
+  "profile": "campaign_micro_slice",
+  "required_subsequence": [
+    "run.created",
+    "campaign.created",
+    "delivery_backlog.generated",
+    "stage.passed",
+    "campaign.completed"
+  ],
+  "min_stage_passed": 2,
+  "allow_extra": true
+}

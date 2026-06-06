@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -11,6 +12,7 @@ import pytest
 from agent_core.models import EventType
 from agent_core.models.events_payloads import StagePassedPayload
 from agent_core.models.events_records import StagePassedEvent
+from e2e.harness.timeline import assert_timeline_golden
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.backlog_generator import generate_stub_backlog
 from nimbusware_orchestrator.campaign import CampaignDriverState
@@ -18,6 +20,15 @@ from nimbusware_orchestrator.campaign_driver import campaign_driver_tick
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 from nimbusware_orchestrator.workflow_campaign import CompletionWorkflowBlock
+
+CAMPAIGN_GOLDEN = (
+    Path(__file__).resolve().parents[1]
+    / "fixtures"
+    / "campaign"
+    / "golden_multi_tick_timeline.json"
+)
+
+pytestmark = pytest.mark.integration
 
 
 @pytest.fixture(autouse=True)
@@ -107,3 +118,7 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
     assert EventType.CAMPAIGN_CREATED.value in types
     assert EventType.DELIVERY_BACKLOG_GENERATED.value in types
     assert EventType.CAMPAIGN_COMPLETED.value in types
+
+    golden = json.loads(CAMPAIGN_GOLDEN.read_text(encoding="utf-8"))
+    assert_timeline_golden(rows, golden)
+    assert result.state == CampaignDriverState.COMPLETED
