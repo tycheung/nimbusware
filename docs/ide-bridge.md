@@ -29,6 +29,9 @@ Add to your MCP settings:
 | Tool | Description |
 |------|-------------|
 | `nimbusware_maker_pending` | `GET /v1/runs/{run_id}/maker/pending` |
+| `nimbusware_prepare_slice` | `POST /v1/runs/{run_id}/maker/slices/prepare` |
+| `nimbusware_apply_slice` | `POST /v1/runs/{run_id}/maker/slices/apply` |
+| `nimbusware_skip_slice` | `POST /v1/runs/{run_id}/maker/slices/skip` |
 | `nimbusware_run_status` | `GET /v1/runs/{run_id}` |
 | `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
 | `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |

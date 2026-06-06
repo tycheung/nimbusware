@@ -11,10 +11,13 @@ from nimbusware_mcp.tools import TOOL_SPECS, call_tool
 def test_tool_specs_include_required_tools() -> None:
     names = {t["name"] for t in TOOL_SPECS}
     assert names == {
+        "nimbusware_apply_slice",
         "nimbusware_maker_pending",
+        "nimbusware_prepare_slice",
         "nimbusware_resume_campaign",
         "nimbusware_run_status",
         "nimbusware_run_theater",
+        "nimbusware_skip_slice",
         "nimbusware_slice_diff",
         "nimbusware_approve_plan",
         "nimbusware_compact_run",
@@ -55,6 +58,22 @@ def test_nimbusware_approve_plan(mock_post: Any) -> None:
     out = call_tool("nimbusware_approve_plan", {"run_id": "abc"})
     mock_post.assert_called_once_with("/runs/abc/maker/plan/approve", {})
     assert "approved" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_apply_slice(mock_post: Any) -> None:
+    mock_post.return_value = {"status": "applied"}
+    out = call_tool("nimbusware_apply_slice", {"run_id": "abc", "slice_id": "s1"})
+    mock_post.assert_called_once_with("/runs/abc/maker/slices/apply", {"slice_id": "s1"})
+    assert "applied" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_prepare_slice(mock_post: Any) -> None:
+    mock_post.return_value = {"status": "awaiting_approval"}
+    out = call_tool("nimbusware_prepare_slice", {"run_id": "abc"})
+    mock_post.assert_called_once_with("/runs/abc/maker/slices/prepare", {})
+    assert "awaiting_approval" in out["content"][0]["text"]
 
 
 @patch("nimbusware_mcp.tools.post_json")

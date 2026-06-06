@@ -7,6 +7,39 @@ from nimbusware_client.http import get_json, post_json
 
 TOOL_SPECS: list[dict[str, Any]] = [
     {
+        "name": "nimbusware_prepare_slice",
+        "description": "Prepare the next pending slice for maker approval.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_apply_slice",
+        "description": "Apply a pending slice after operator approval.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "slice_id": {"type": "string"},
+            },
+            "required": ["run_id", "slice_id"],
+        },
+    },
+    {
+        "name": "nimbusware_skip_slice",
+        "description": "Skip a pending slice without applying.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "slice_id": {"type": "string"},
+            },
+            "required": ["run_id", "slice_id"],
+        },
+    },
+    {
         "name": "nimbusware_maker_pending",
         "description": "Fetch pending slice and plan approval state for a run.",
         "inputSchema": {
@@ -140,6 +173,22 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("run_id is required")
     if name == "nimbusware_maker_pending":
         return _text_result(get_json(f"/runs/{run_id}/maker/pending"))
+    if name == "nimbusware_prepare_slice":
+        return _text_result(post_json(f"/runs/{run_id}/maker/slices/prepare", {}))
+    if name == "nimbusware_apply_slice":
+        slice_id = str(arguments.get("slice_id") or "").strip()
+        if not slice_id:
+            raise ValueError("slice_id is required")
+        return _text_result(
+            post_json(f"/runs/{run_id}/maker/slices/apply", {"slice_id": slice_id}),
+        )
+    if name == "nimbusware_skip_slice":
+        slice_id = str(arguments.get("slice_id") or "").strip()
+        if not slice_id:
+            raise ValueError("slice_id is required")
+        return _text_result(
+            post_json(f"/runs/{run_id}/maker/slices/skip", {"slice_id": slice_id}),
+        )
     if name == "nimbusware_run_status":
         return _text_result(get_json(f"/runs/{run_id}"))
     if name == "nimbusware_run_theater":

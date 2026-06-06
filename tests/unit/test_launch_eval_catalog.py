@@ -6,9 +6,7 @@ import yaml
 
 
 def test_launch_eval_catalog_lists_prompts_and_workspaces() -> None:
-    catalog_path = (
-        Path(__file__).resolve().parents[2] / "configs" / "launch_eval" / "catalog.yaml"
-    )
+    catalog_path = Path(__file__).resolve().parents[2] / "configs" / "launch_eval" / "catalog.yaml"
     doc = yaml.safe_load(catalog_path.read_text(encoding="utf-8"))
     prompt_ids = {p["id"] for p in doc.get("prompts", [])}
     assert prompt_ids >= {"basic_crm", "todo_api"}
