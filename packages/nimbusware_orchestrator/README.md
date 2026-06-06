@@ -9,6 +9,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 | Mixin | Module | Responsibility |
 |-------|--------|----------------|
 | `CreateRunMixin` | `create_run.py` | `run.created`, idempotency, project metadata |
+| `CampaignDispatchMixin` | `campaign_dispatch.py` | `start_campaign`, `campaign_tick` queue dispatch |
 | `MicroSliceMixin` | `micro_slice.py` | Slice plan/implement/verify chain |
 | (packet helper) | `slice_repo_map.py` | Repo tree + import graph for `SliceContextPacket.repo_map_excerpt` |
 | (packet helper) | `slice_symbol_sketch.py` | AST symbol sketch; `slice_lsp_client.py` Pyright `documentSymbol` (default `poetry install`) |

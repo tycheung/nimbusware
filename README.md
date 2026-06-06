@@ -63,6 +63,7 @@ The orchestrator and related packages provide:
 - **Self-refinement** — gated/ungated loops with Phase D markers and optional LLM critique
 - **Fast slice** (`fast_slice: true` or `NIMBUSWARE_FAST_SLICE`) — skip optional universal critic matrix and slice LLM critique when max finding severity is below HIGH
 - **Micro-slice workflow** (`workflow_profile=micro_slice`) — bounded files/LOC per slice (Maker preset `NIMBUSWARE_SLICE_BUDGET_PRESET`: tiny / standard / careful), per-slice verify → critique → test → optional `slice.e2e` browser verify → gate, diff-aware replan, context packets, optional memory excerpt injection; maker runs auto-advance the slice chain by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`; set `0` to pause for plan/slice approval)
+- **Autonomous campaign** (`workflow_profile=campaign_micro_slice`) — prompt → delivery backlog → one slice per worker tick until completion. Start via `POST /v1/campaigns` or Maker **Build** (non-quick mode). Requires run worker with `NIMBUSWARE_RUN_DISPATCH=memory` (or redis). Env: `NIMBUSWARE_BACKLOG_MAX_SLICES`, `NIMBUSWARE_BACKLOG_GENERATOR_MODEL`, compaction/context-budget from Pi transplant.
 - **Slice browser verify (`slice.e2e`)** — off by default (`slice.e2e.enabled: false` in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml)). Enable in workflow YAML or a copied profile; install Playwright (`poetry run playwright install`) or set `NIMBUSWARE_SLICE_E2E_COMMAND` to a custom shell command. If the runner or `tests/e2e` is missing, the stage **SKIP**s and the slice gate still passes. Default PR **unit** CI does not run slice browsers; PR **web** job runs Playwright smoke in [`tests/e2e/web`](tests/e2e/web) (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 - **Mid-run pressure warnings** — rate-limited `resource.pressure.warn` events when the hardware governor throttles RAM mid-run; Admin **Hardware** timeline and competitive-summary projections surface the tail
 - **Slice implement agent** — `NIMBUSWARE_SLICE_IMPLEMENT=agent` uses a multi-turn JIT tool loop (`agent_loop.py`) with `read`, `edit`, `write`, `grep`, and `shell`; no upfront file preload when `NIMBUSWARE_AGENT_JIT_LOOP=1` (default)
@@ -88,6 +89,9 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. See
 | `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Agent tool allowlist (optional `find`, `ls`) |
 | `NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS` | 1 | Prune stale agent tool lines in theater/timeline |
 | `NIMBUSWARE_AGENT_COMPACT` | 1 | `POST /v1/runs/{id}/compact` and MCP `nimbusware_compact_run` |
+| `NIMBUSWARE_BACKLOG_MAX_SLICES` | 500 | Max slices in campaign delivery backlog |
+| `NIMBUSWARE_BACKLOG_GENERATOR_MODEL` | (empty) | Ollama model for LLM backlog; empty uses stub |
+| `NIMBUSWARE_RUN_DISPATCH` | (off) | `memory` or `redis` to enable campaign tick worker |
 | `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff block |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in long campaigns |

@@ -41,7 +41,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 |---------|------|
 | `agent_core` | Event models, `context_budget`, slice handoff models |
 | `nimbusware_store` | Event store (Postgres / memory) |
-| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
+| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), **campaign driver** (backlog → one slice/tick → completion), maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
