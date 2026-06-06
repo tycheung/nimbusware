@@ -1,4 +1,4 @@
-"""Shared helpers for operator journey tests (L1 TestClient)."""
+"""Shared L1 journey test helpers."""
 
 from .env import apply_e2e_unit_profile
 from .journey import JourneyClient

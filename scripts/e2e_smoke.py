@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Nimbusware end-to-end operator smoke checks.
-
-Exit 0 when all required checks pass. Attempts Docker Postgres when DB is down.
-"""
+"""Nimbusware end-to-end operator smoke checks."""
 
 from __future__ import annotations
 

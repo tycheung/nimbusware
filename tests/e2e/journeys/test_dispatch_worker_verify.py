@@ -1,4 +1,4 @@
-"""Dispatch worker journey smoke (memory dispatch mode)."""
+"""Dispatch worker smoke with memory dispatch mode."""
 
 from __future__ import annotations
 
