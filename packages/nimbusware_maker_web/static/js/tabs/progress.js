@@ -73,7 +73,12 @@ export async function mountProgress(root) {
     renderPressure(body);
     renderContextBudget(body);
     if (summary) {
-      summary.textContent = body.current_headline || body.run_status || "";
+      const cp = body.campaign_progress;
+      if (cp && cp.state) {
+        summary.textContent = `${body.current_headline || ""} [campaign: ${cp.state}, ${cp.slices_completed || 0}/${cp.slices_total || "?"} slices]`.trim();
+      } else {
+        summary.textContent = body.current_headline || body.run_status || "";
+      }
     }
     if (list) {
       list.replaceChildren();

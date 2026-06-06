@@ -307,6 +307,12 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     from nimbusware_projections.builders.context_budget import estimate_context_budget
 
     out["context_budget"] = estimate_context_budget(events)
+    if campaign_mode:
+        from nimbusware_projections.builders.campaign_progress import campaign_progress_from_events
+
+        cp = campaign_progress_from_events(events)
+        if cp:
+            out["campaign_progress"] = cp
     return out
 
 
