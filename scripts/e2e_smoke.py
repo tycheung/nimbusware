@@ -138,6 +138,33 @@ def check_poetry_env() -> CheckResult:
     )
 
 
+def check_journey_tests() -> CheckResult:
+    env = os.environ.copy()
+    env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
+    env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
+    env.setdefault("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
+    env.setdefault("NIMBUSWARE_SLICE_AUTO_ADVANCE", "0")
+    code = _run(
+        [
+            _poetry(),
+            "run",
+            "pytest",
+            "tests/e2e/journeys",
+            "-q",
+            "-m",
+            "e2e_journey",
+            "--maxfail=3",
+        ],
+        env=env,
+    )
+    return CheckResult(
+        "journey_tests",
+        code == 0,
+        "pytest tests/e2e/journeys -m e2e_journey",
+        required=True,
+    )
+
+
 def check_unit_tests(*, full_suite: bool) -> CheckResult:
     env = os.environ.copy()
     env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
@@ -293,6 +320,7 @@ def run_checks(
             ),
         )
     results.append(check_api_smoke())
+    results.append(check_journey_tests())
     results.append(check_web_ui_smoke())
     results.append(check_faiss_stale_rebuild())
     return results

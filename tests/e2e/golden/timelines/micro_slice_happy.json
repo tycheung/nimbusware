@@ -1,0 +1,6 @@
+{
+  "profile": "micro_slice",
+  "required_subsequence": ["run.created", "stage.started", "stage.passed"],
+  "min_stage_passed": 4,
+  "allow_extra": true
+}

@@ -93,10 +93,14 @@ nimbusware-launcher = "nimbusware_env.launcher_app:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["packages"]
+pythonpath = ["packages", "tests"]
+norecursedirs = [".git", ".venv", "node_modules", "fixtures"]
 markers = [
   "integration: requires PostgreSQL (set NIMBUSWARE_DATABASE_URL)",
   "e2e: PR e2e subset (import smoke + optional Postgres API checks)",
+  "e2e_journey: multi-step operator journey (TestClient)",
+  "e2e_stack: requires live API subprocess and/or Postgres stack test",
+  "e2e_fixture_repo: uses tests/fixtures/repos copy",
   "web: web UI parity matrix and static/API smoke (tests/web)",
   "benchmark: pytest-benchmark fleet harness (fo206)",
   "slow: long-running tests excluded from default CI unit job",

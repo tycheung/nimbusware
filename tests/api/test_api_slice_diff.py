@@ -38,7 +38,7 @@ def test_slice_diff_not_found_without_plan(slice_client: TestClient) -> None:
 
 def test_slice_diff_after_micro_slice_lifecycle(slice_client: TestClient) -> None:
     rid = slice_client.post("/v1/runs", json={"workflow_profile": "micro_slice"}).json()["run_id"]
-    life = slice_client.post(f"/v1/runs/{rid}/lifecycle/slice")
+    life = slice_client.post(f"/v1/runs/{rid}/lifecycle/slice?mode=auto")
     assert life.status_code == 200
     r = slice_client.get(f"/v1/runs/{rid}/slices/1/diff")
     assert r.status_code == 200

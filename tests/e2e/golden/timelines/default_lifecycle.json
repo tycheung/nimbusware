@@ -1,0 +1,6 @@
+{
+  "profile": "default",
+  "required_subsequence": ["run.created"],
+  "min_stage_passed": 0,
+  "allow_extra": true
+}

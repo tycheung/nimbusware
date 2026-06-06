@@ -31,7 +31,7 @@ def test_lifecycle_slice_endpoint(client: TestClient) -> None:
     created = client.post("/v1/runs", json={"workflow_profile": "micro_slice"})
     assert created.status_code == 200
     run_id = created.json()["run_id"]
-    resp = client.post(f"/v1/runs/{run_id}/lifecycle/slice")
+    resp = client.post(f"/v1/runs/{run_id}/lifecycle/slice?mode=auto")
     assert resp.status_code == 200
     body = resp.json()
     assert body["status"] == "micro_slice_recorded"

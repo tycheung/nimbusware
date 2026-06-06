@@ -101,7 +101,9 @@ class NimbuswareLauncherApp:
         else:
             self.check_btn.configure(state=tk.DISABLED)
             if not is_git_checkout(self.repo):
-                self._append_log("Updates disabled: no git checkout (clone first via Install / setup).")
+                self._append_log(
+                    "Updates disabled: no git checkout (clone first via Install / setup)."
+                )
 
     def _set_repo(self, repo: Path) -> None:
         self.repo = repo.resolve()
