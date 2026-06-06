@@ -148,6 +148,13 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
+        from nimbusware_orchestrator.workflow_campaign import (
+            campaign_effective_metadata,
+            parse_backlog_workflow_block,
+            parse_campaign_workflow_block,
+            parse_completion_workflow_block,
+            parse_maintenance_workflow_block,
+        )
         from nimbusware_orchestrator.workflow_memory import (
             memory_effective_metadata,
             parse_memory_workflow_block,
@@ -155,6 +162,26 @@ class CreateRunMixin:
         )
         from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 
+        campaign_block = parse_campaign_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        backlog_block = parse_backlog_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        maintenance_block = parse_maintenance_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
+        completion_block = parse_completion_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
         ms_block = parse_micro_slice_workflow_block(
             self._repo_root,
             workflow_profile,
@@ -363,13 +390,26 @@ class CreateRunMixin:
                 ),
                 "fast_slice_effective": fast_slice_effective_metadata(fs_block),
                 "micro_slice_effective": {
-                    "enabled": ms_block.enabled,
+                    "enabled": ms_block.enabled or campaign_block.enabled,
                     "max_files": ms_max_files,
                     "max_loc": ms_max_loc,
                     "e2e_enabled": ms_block.e2e_enabled,
                     "budget_preset": slice_budget.name,
                     "replan_max": slice_budget.replan_max,
+                    "one_at_a_time": campaign_block.enabled,
                 },
+                **(
+                    {
+                        "campaign_effective": campaign_effective_metadata(
+                            campaign_block,
+                            backlog_block,
+                            maintenance_block,
+                            completion_block,
+                        ),
+                    }
+                    if campaign_block.enabled
+                    else {}
+                ),
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],

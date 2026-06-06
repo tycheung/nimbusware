@@ -1,0 +1,74 @@
+# Autonomous campaign workflow: one slice per driver tick until completion.
+workflow_profile: campaign_micro_slice
+
+campaign:
+  enabled: true
+  autonomous_default: true
+  driver:
+    tick_idle_seconds: 2
+    max_consecutive_failures: 5
+
+backlog:
+  generator: stub
+  max_slices: 500
+  require_backlog_approval: false
+
+slice:
+  enabled: true
+  max_files: 3
+  max_loc: 120
+  allowed_globs:
+    - "**/*.py"
+  e2e:
+    enabled: false
+
+maintenance:
+  refactor_every_n_slices: 5
+  architecture_every_n_slices: 10
+  refactor_inserts_fix_slices: true
+  architecture_can_revise_backlog: true
+
+completion:
+  require_project_tests_pass: true
+  require_all_must_have_features: true
+  deep_eval_every_n_slices: 20
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: slice.e2e
+    depends_on: [slice.test]
+  - stage_name: slice.gate
+    depends_on: [slice.e2e]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false
+
+theater:
+  enabled: true
+  max_message_chars: 1200
+  show_evidence_links: true
+  llm_summary: false
+
+memory:
+  retrieval_enabled: true
+  index_contribution: true
+  retrieval_k: 5
+  excerpt_max_chars: 2000
+  embedding_mode: deterministic
