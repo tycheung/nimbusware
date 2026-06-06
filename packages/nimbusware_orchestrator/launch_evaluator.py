@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -36,14 +37,74 @@ def llm_panel_enabled() -> bool:
     return raw in ("1", "true", "yes")
 
 
+def _launch_eval_llm_model() -> str:
+    explicit = os.environ.get("NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL", "").strip()
+    if explicit:
+        return explicit
+    fallback = os.environ.get("NIMBUSWARE_OLLAMA_DEFAULT_MODEL", "").strip()
+    return fallback or "llama3.2"
+
+
+def _ollama_base_url() -> str:
+    return os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").strip()
+
+
+def _workspace_llm_context(workspace: Path) -> str:
+    ws = workspace.resolve()
+    parts: list[str] = []
+    readme = ws / "README.md"
+    if readme.is_file():
+        parts.append(readme.read_text(encoding="utf-8")[:1200])
+    py_files = sorted(str(p.relative_to(ws)) for p in ws.rglob("*.py"))[:40]
+    if py_files:
+        parts.append("Python files: " + ", ".join(py_files))
+    tests = sorted(str(p.relative_to(ws)) for p in ws.rglob("tests/test_*.py"))[:20]
+    if tests:
+        parts.append("Tests: " + ", ".join(tests))
+    return "\n\n".join(parts) if parts else ws.name
+
+
+def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
+    import httpx
+
+    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+
+    try:
+        data = ollama_chat_json(
+            base_url=_ollama_base_url(),
+            model=_launch_eval_llm_model(),
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Assess workspace launch readiness. Return JSON "
+                        '{"findings": ["note1", ...]} with up to 5 concise strings.'
+                    ),
+                },
+                {"role": "user", "content": _workspace_llm_context(workspace)},
+            ],
+            timeout_seconds=30.0,
+        )
+    except (OSError, ValueError, TypeError, json.JSONDecodeError, httpx.HTTPError):
+        return None
+    raw = data.get("findings")
+    if not isinstance(raw, list):
+        return None
+    out = tuple(str(item).strip()[:400] for item in raw if str(item).strip())[:5]
+    return out or None
+
+
 def _llm_advisory_findings(workspace: Path) -> tuple[str, ...]:
     if not llm_panel_enabled():
         return ()
+    llm = fetch_llm_rubric_findings(workspace)
+    if llm:
+        return llm
     py_count = len(list(workspace.rglob("*.py")))
     test_count = len(list(workspace.rglob("tests/test_*.py")))
     return (
         f"advisory: {py_count} python modules and {test_count} test modules — "
-        "confirm product intent manually (opt-in LLM panel)",
+        "confirm product intent manually (LLM unavailable)",
     )
 
 

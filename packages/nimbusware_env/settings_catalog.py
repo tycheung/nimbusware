@@ -543,6 +543,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — launch eval",
         ),
         SettingDef(
+            "NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL",
+            system,
+            s,
+            "",
+            "Launch eval LLM model",
+            "Ollama model for launch eval LLM panel (empty = default Ollama model).",
+            "System — launch eval",
+        ),
+        SettingDef(
             "NIMBUSWARE_EMIT_INTEGRATOR_GATE",
             system,
             b,
