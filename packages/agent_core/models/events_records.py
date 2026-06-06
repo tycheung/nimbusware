@@ -10,14 +10,26 @@ from agent_core.models.events_foundation import EventMetadata, EventType, RoleId
 from agent_core.models.events_payloads import (
     DEFAULT_FINDING_FIX_STRICTNESS,
     FINDING_FIX_STRICTNESS_CONTEXT_KEY,
+    CampaignCompletedPayload,
+    CampaignCreatedPayload,
+    CampaignFailedPayload,
+    CampaignPausedPayload,
+    CompletionEvaluatedPayload,
     CriticVerdictEmittedPayload,
+    DeliveryBacklogGeneratedPayload,
+    DeliveryBacklogRevisedPayload,
     DomainCriticProposedPayload,
+    EpicStatusChangedPayload,
     FindingClosedPayload,
     FindingCreatedPayload,
     FindingRoutedPayload,
     GateDecisionEmittedPayload,
     GateOverriddenPayload,
     HardwareProfileDetectedPayload,
+    MaintenanceArchitecturePassedPayload,
+    MaintenanceArchitectureStartedPayload,
+    MaintenanceRefactorPassedPayload,
+    MaintenanceRefactorStartedPayload,
     MemoryIndexedPayload,
     MemoryRetrievalEmittedPayload,
     ModelPreflightFailedPayload,
@@ -36,6 +48,8 @@ from agent_core.models.events_payloads import (
     RunFailedPayload,
     RunStartedPayload,
     SelfRefinementLoopSignalledPayload,
+    SliceDeferredPayload,
+    SliceQueuedPayload,
     StageBlockedPayload,
     StageFailedPayload,
     StagePassedPayload,
@@ -261,6 +275,76 @@ class ResourcePressureWarnEvent(BaseNimbuswareEvent):
     payload: ResourcePressureWarnPayload
 
 
+class CampaignCreatedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.CAMPAIGN_CREATED]
+    payload: CampaignCreatedPayload
+
+
+class CampaignCompletedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.CAMPAIGN_COMPLETED]
+    payload: CampaignCompletedPayload
+
+
+class CampaignFailedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.CAMPAIGN_FAILED]
+    payload: CampaignFailedPayload
+
+
+class CampaignPausedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.CAMPAIGN_PAUSED]
+    payload: CampaignPausedPayload
+
+
+class DeliveryBacklogGeneratedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.DELIVERY_BACKLOG_GENERATED]
+    payload: DeliveryBacklogGeneratedPayload
+
+
+class DeliveryBacklogRevisedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.DELIVERY_BACKLOG_REVISED]
+    payload: DeliveryBacklogRevisedPayload
+
+
+class EpicStatusChangedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.EPIC_STATUS_CHANGED]
+    payload: EpicStatusChangedPayload
+
+
+class SliceQueuedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.SLICE_QUEUED]
+    payload: SliceQueuedPayload
+
+
+class SliceDeferredEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.SLICE_DEFERRED]
+    payload: SliceDeferredPayload
+
+
+class MaintenanceRefactorStartedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.MAINTENANCE_REFACTOR_STARTED]
+    payload: MaintenanceRefactorStartedPayload
+
+
+class MaintenanceRefactorPassedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.MAINTENANCE_REFACTOR_PASSED]
+    payload: MaintenanceRefactorPassedPayload
+
+
+class MaintenanceArchitectureStartedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.MAINTENANCE_ARCHITECTURE_STARTED]
+    payload: MaintenanceArchitectureStartedPayload
+
+
+class MaintenanceArchitecturePassedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.MAINTENANCE_ARCHITECTURE_PASSED]
+    payload: MaintenanceArchitecturePassedPayload
+
+
+class CompletionEvaluatedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.COMPLETION_EVALUATED]
+    payload: CompletionEvaluatedPayload
+
+
 NimbuswareEventUnion: TypeAlias = (
     RunCreatedEvent
     | RunStartedEvent
@@ -298,6 +382,20 @@ NimbuswareEventUnion: TypeAlias = (
     | StitchFailedEvent
     | HardwareProfileDetectedEvent
     | ResourcePressureWarnEvent
+    | CampaignCreatedEvent
+    | CampaignCompletedEvent
+    | CampaignFailedEvent
+    | CampaignPausedEvent
+    | DeliveryBacklogGeneratedEvent
+    | DeliveryBacklogRevisedEvent
+    | EpicStatusChangedEvent
+    | SliceQueuedEvent
+    | SliceDeferredEvent
+    | MaintenanceRefactorStartedEvent
+    | MaintenanceRefactorPassedEvent
+    | MaintenanceArchitectureStartedEvent
+    | MaintenanceArchitecturePassedEvent
+    | CompletionEvaluatedEvent
 )
 
 NimbuswareEvent: TypeAlias = Annotated[NimbuswareEventUnion, Field(discriminator="event_type")]

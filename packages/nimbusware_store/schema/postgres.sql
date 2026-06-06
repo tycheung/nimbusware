@@ -100,7 +100,21 @@ CREATE TABLE IF NOT EXISTS event_store (
     'stitch.applied',
     'stitch.failed',
     'hardware.profile.detected',
-    'resource.pressure.warn'
+    'resource.pressure.warn',
+    'campaign.created',
+    'campaign.completed',
+    'campaign.failed',
+    'campaign.paused',
+    'delivery_backlog.generated',
+    'delivery_backlog.revised',
+    'epic.status.changed',
+    'slice.queued',
+    'slice.deferred',
+    'maintenance.refactor.started',
+    'maintenance.refactor.passed',
+    'maintenance.architecture.started',
+    'maintenance.architecture.passed',
+    'completion.evaluated'
   ))
 );
 

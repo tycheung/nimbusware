@@ -94,6 +94,20 @@ class EventType(str, Enum):
     STITCH_FAILED = "stitch.failed"
     HARDWARE_PROFILE_DETECTED = "hardware.profile.detected"
     RESOURCE_PRESSURE_WARN = "resource.pressure.warn"
+    CAMPAIGN_CREATED = "campaign.created"
+    CAMPAIGN_COMPLETED = "campaign.completed"
+    CAMPAIGN_FAILED = "campaign.failed"
+    CAMPAIGN_PAUSED = "campaign.paused"
+    DELIVERY_BACKLOG_GENERATED = "delivery_backlog.generated"
+    DELIVERY_BACKLOG_REVISED = "delivery_backlog.revised"
+    EPIC_STATUS_CHANGED = "epic.status.changed"
+    SLICE_QUEUED = "slice.queued"
+    SLICE_DEFERRED = "slice.deferred"
+    MAINTENANCE_REFACTOR_STARTED = "maintenance.refactor.started"
+    MAINTENANCE_REFACTOR_PASSED = "maintenance.refactor.passed"
+    MAINTENANCE_ARCHITECTURE_STARTED = "maintenance.architecture.started"
+    MAINTENANCE_ARCHITECTURE_PASSED = "maintenance.architecture.passed"
+    COMPLETION_EVALUATED = "completion.evaluated"
 
 
 RoleId: TypeAlias = UUID
