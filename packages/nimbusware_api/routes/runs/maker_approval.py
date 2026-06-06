@@ -172,3 +172,31 @@ def post_workspace_revert(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[
             status_code=422,
             detail=problem("invalid_request", str(exc)),
         ) from exc
+
+
+@router.post(
+    "/runs/{run_id}/maker/launch-eval",
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.launch_evaluator import (
+        evaluate_workspace_rubric,
+        emit_launch_eval_completed,
+    )
+
+    ws = resolve_run_workspace(rows)
+    if not ws.is_dir():
+        raise HTTPException(
+            status_code=422,
+            detail=problem("workspace_not_found", "run has no attached workspace"),
+        )
+    scorecard = evaluate_workspace_rubric(ws)
+    emit_launch_eval_completed(store, run_id, scorecard)
+    return scorecard.to_dict()

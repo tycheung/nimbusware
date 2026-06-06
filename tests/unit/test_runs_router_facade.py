@@ -42,6 +42,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/runs/{run_id}/maker/slices/prepare"),
         ("POST", "/runs/{run_id}/maker/slices/apply"),
         ("POST", "/runs/{run_id}/maker/slices/skip"),
+        ("POST", "/runs/{run_id}/maker/launch-eval"),
         ("POST", "/runs/{run_id}/workspace/revert"),
         ("POST", "/runs/{run_id}/lifecycle/start"),
         ("POST", "/runs/{run_id}/lifecycle/plan"),

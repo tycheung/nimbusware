@@ -100,3 +100,43 @@ def test_maker_apply_revert_round_trip(
     reverted = client.post(f"/v1/runs/{run_id}/workspace/revert")
     assert reverted.status_code == 200
     assert reverted.json()["status"] == "reverted"
+
+
+def test_maker_launch_eval_emits_timeline_event(client: TestClient, tmp_path: Path) -> None:
+    ws = tmp_path / "launch-ws"
+    ws.mkdir()
+    (ws / "README.md").write_text("# Launch\n", encoding="utf-8")
+    (ws / "tests").mkdir()
+    (ws / "tests" / "test_app.py").write_text("def test_x(): assert True\n", encoding="utf-8")
+    project = client.post(
+        "/v1/projects",
+        json={"name": "LaunchEval", "workspace_path": str(ws), "template": "attach"},
+        headers=ADMIN_HEADERS,
+    ).json()
+    run = client.post(
+        "/v1/runs",
+        json={
+            "workflow_profile": "micro_slice",
+            "project_id": project["project_id"],
+            "requirements": {"business_prompt": "Launch eval"},
+        },
+    )
+    assert run.status_code == 200
+    run_id = run.json()["run_id"]
+
+    scored = client.post(f"/v1/runs/{run_id}/maker/launch-eval")
+    assert scored.status_code == 200
+    body = scored.json()
+    assert body["aggregate"] >= 0
+
+    timeline = client.get(f"/v1/runs/{run_id}/timeline")
+    assert timeline.status_code == 200
+    events = timeline.json().get("events") or []
+    launch_rows = [
+        ev
+        for ev in events
+        if ev.get("event_type") == "stage.passed"
+        and (ev.get("payload") or {}).get("stage_name") == "launch_eval.completed"
+    ]
+    assert launch_rows
+    assert launch_rows[-1].get("metadata", {}).get("aggregate") == body["aggregate"]
