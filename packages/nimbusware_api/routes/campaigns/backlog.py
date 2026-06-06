@@ -23,7 +23,9 @@ def get_campaign_backlog(campaign_id: UUID, store: StoreDep) -> dict:
     if not rows:
         raise HTTPException(
             status_code=404,
-            detail=problem("run_not_found", "campaign not found", details={"campaign_id": str(campaign_id)}),
+            detail=problem(
+                "run_not_found", "campaign not found", details={"campaign_id": str(campaign_id)}
+            ),
         )
     tree = backlog_tree_from_events(rows)
     if tree is None:

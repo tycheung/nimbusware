@@ -63,7 +63,9 @@ def run_maintenance_architecture(
                 )
                 feat = feat.model_copy(update={"slices": tuple(list(feat.slices) + [arch_slice])})
                 epics[0] = epics[0].model_copy(update={"features": (feat,)})
-                revised_backlog = sync_backlog_metadata(backlog.model_copy(update={"epics": tuple(epics)}))
+                revised_backlog = sync_backlog_metadata(
+                    backlog.model_copy(update={"epics": tuple(epics)})
+                )
                 emit_backlog_revised(
                     store,
                     run_id,

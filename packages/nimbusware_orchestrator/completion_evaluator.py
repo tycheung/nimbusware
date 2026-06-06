@@ -170,7 +170,9 @@ def emit_campaign_terminal(
         )
 
 
-def evaluate_and_finalize_campaign(store: Any, run_id: UUID, rows: list[dict[str, Any]]) -> CompletionEvalResult:
+def evaluate_and_finalize_campaign(
+    store: Any, run_id: UUID, rows: list[dict[str, Any]]
+) -> CompletionEvalResult:
     if any(r.get("event_type") == EventType.COMPLETION_EVALUATED.value for r in rows):
         for row in reversed(rows):
             if row.get("event_type") != EventType.COMPLETION_EVALUATED.value:

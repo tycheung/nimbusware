@@ -192,9 +192,13 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         run_status = "complete"
     if any(r.get("event_type") == EventType.RUN_FAILED.value for r in events):
         run_status = "failed"
-    if campaign_mode and any(r.get("event_type") == EventType.CAMPAIGN_COMPLETED.value for r in events):
+    if campaign_mode and any(
+        r.get("event_type") == EventType.CAMPAIGN_COMPLETED.value for r in events
+    ):
         run_status = "complete"
-    if campaign_mode and any(r.get("event_type") == EventType.CAMPAIGN_FAILED.value for r in events):
+    if campaign_mode and any(
+        r.get("event_type") == EventType.CAMPAIGN_FAILED.value for r in events
+    ):
         run_status = "failed"
 
     plans = _slice_plans(events)
@@ -262,9 +266,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     elif passed_count >= len(plans):
         if campaign_mode and run_status == "complete":
             overall = "complete"
-            current_headline = (
-                f"Build complete — {passed_count} slices, campaign finished"
-            )
+            current_headline = f"Build complete — {passed_count} slices, campaign finished"
         else:
             overall = "complete" if run_status == "complete" else "ready_for_next"
             current_headline = (

@@ -72,7 +72,7 @@ def _build_prompt(
     parts = [
         f"Business requirements:\n{prompt_text or '(none)'}",
         f"Max slices: {max_slices}",
-        "Return JSON: {\"backlog\": { ... DeliveryBacklog shape ... }}",
+        'Return JSON: {"backlog": { ... DeliveryBacklog shape ... }}',
     ]
     if repo_context.strip():
         parts.append(f"Repo map:\n{repo_context[:4000]}")

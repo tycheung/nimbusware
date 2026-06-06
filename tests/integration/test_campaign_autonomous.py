@@ -26,4 +26,6 @@ def test_campaign_driver_stub_backlog_generates_events() -> None:
     rows = store.list_run_events(str(run_id))
     types = {r.get("event_type") for r in rows}
     assert EventType.CAMPAIGN_CREATED.value in types
-    assert EventType.DELIVERY_BACKLOG_GENERATED.value in types or EventType.SLICE_QUEUED.value in types
+    assert (
+        EventType.DELIVERY_BACKLOG_GENERATED.value in types or EventType.SLICE_QUEUED.value in types
+    )

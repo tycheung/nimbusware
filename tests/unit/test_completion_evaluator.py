@@ -38,9 +38,7 @@ def test_evaluate_completion_pass_when_all_slices_passed() -> None:
                     BacklogFeature(
                         feature_id="f1",
                         title="F",
-                        slices=(
-                            BacklogSlice(slice_id="s1", status=SliceStatus.PASSED),
-                        ),
+                        slices=(BacklogSlice(slice_id="s1", status=SliceStatus.PASSED),),
                     ),
                 ),
             ),

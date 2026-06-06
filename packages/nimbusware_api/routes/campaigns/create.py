@@ -63,7 +63,9 @@ def create_campaign(
             project_template=project.template,
             requirements=build_requirements_artifact(
                 business_prompt=body.requirements.business_prompt,
-                clarifications=[c.model_dump(mode="json") for c in body.requirements.clarifications],
+                clarifications=[
+                    c.model_dump(mode="json") for c in body.requirements.clarifications
+                ],
             ),
             autonomous=body.autonomous,
         )
