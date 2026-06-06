@@ -43,11 +43,10 @@ def run_maintenance_architecture(
     )
     revised = False
     if can_revise_backlog:
-        from agent_core.models.backlog import BacklogSlice
+        from agent_core.models.backlog import BacklogSlice, sync_backlog_metadata
         from nimbusware_orchestrator.backlog_generator import (
             backlog_from_events,
             emit_backlog_revised,
-            sync_backlog_metadata,
         )
 
         rows = store.list_run_events(str(run_id))

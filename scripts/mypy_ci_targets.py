@@ -81,11 +81,24 @@ _TRANCHE_E = (
     "packages/nimbusware_orchestrator/_pipeline/pipeline_scraper.py",
     "packages/nimbusware_orchestrator/_pipeline/dev_factory.py",
     "packages/nimbusware_orchestrator/_pipeline/__init__.py",
+    "packages/nimbusware_orchestrator/_pipeline/campaign_dispatch.py",
+    "packages/nimbusware_orchestrator/campaign_driver.py",
+    "packages/nimbusware_orchestrator/campaign.py",
+    "packages/nimbusware_orchestrator/backlog_generator.py",
+    "packages/nimbusware_orchestrator/completion_evaluator.py",
+    "packages/nimbusware_orchestrator/workflow_campaign.py",
+    "packages/nimbusware_orchestrator/campaign_safety.py",
+    "packages/nimbusware_orchestrator/campaign_slice_selector.py",
+    "packages/nimbusware_orchestrator/maintenance_refactor.py",
+    "packages/nimbusware_orchestrator/maintenance_architecture.py",
+    "packages/nimbusware_orchestrator/context_compaction.py",
 )
+
+_TRANCHE_MCP = ("packages/nimbusware_mcp",)
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).
 MYPY_CI_TARGETS: tuple[str, ...] = (
-    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT + _TRANCHE_E
+    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT + _TRANCHE_E + _TRANCHE_MCP
 )
 
 if __name__ == "__main__":

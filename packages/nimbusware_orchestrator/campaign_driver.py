@@ -199,7 +199,8 @@ def campaign_driver_tick(
         )
 
         ce_meta = campaign_effective_from_rows(rows) or {}
-        maint = ce_meta.get("maintenance") if isinstance(ce_meta.get("maintenance"), dict) else {}
+        raw_maint = ce_meta.get("maintenance")
+        maint: dict[str, Any] = raw_maint if isinstance(raw_maint, dict) else {}
         if should_run_refactor_pass(completed, policy.refactor_every_n_slices):
             run_maintenance_refactor(
                 orch,

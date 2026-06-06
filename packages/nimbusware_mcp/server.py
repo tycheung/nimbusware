@@ -25,7 +25,10 @@ def _read_message() -> dict[str, Any] | None:
     if length <= 0:
         return None
     body = sys.stdin.buffer.read(length)
-    return json.loads(body.decode("utf-8"))
+    parsed: object = json.loads(body.decode("utf-8"))
+    if not isinstance(parsed, dict):
+        return None
+    return parsed
 
 
 def _write_message(payload: dict[str, Any]) -> None:
@@ -58,9 +61,11 @@ def _handle_request(msg: dict[str, Any]) -> dict[str, Any] | None:
             "result": {"tools": TOOL_SPECS},
         }
     if method == "tools/call":
-        params = msg.get("params") if isinstance(msg.get("params"), dict) else {}
+        raw_params = msg.get("params")
+        params: dict[str, Any] = raw_params if isinstance(raw_params, dict) else {}
         name = str(params.get("name") or "")
-        arguments = params.get("arguments") if isinstance(params.get("arguments"), dict) else {}
+        raw_args = params.get("arguments")
+        arguments: dict[str, Any] = raw_args if isinstance(raw_args, dict) else {}
         try:
             result = call_tool(name, arguments)
         except Exception as exc:  # noqa: BLE001

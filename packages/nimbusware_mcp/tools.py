@@ -125,7 +125,10 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             get_json(f"/runs/{run_id}/theater", params={"cursor": 0, "limit": limit}),
         )
     if name == "nimbusware_slice_diff":
-        idx = int(arguments.get("slice_index"))
+        raw_idx = arguments.get("slice_index")
+        if raw_idx is None:
+            raise ValueError("slice_index is required")
+        idx = int(raw_idx)
         return _text_result(get_json(f"/runs/{run_id}/slices/{idx}/diff"))
     if name == "nimbusware_approve_plan":
         return _text_result(post_json(f"/runs/{run_id}/maker/plan/approve", {}))

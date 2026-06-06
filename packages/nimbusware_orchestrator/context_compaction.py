@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 from agent_core.context_budget import estimate_tokens
 from agent_core.models.slice_handoff import SliceHandoffSummary
@@ -36,8 +37,8 @@ def _default_reserve_tokens() -> int:
     return nimbusware_campaign_reserve_tokens()
 
 
-def _handoff_events(events: list[dict]) -> list[dict]:
-    rows: list[dict] = []
+def _handoff_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
     for row in events:
         payload = row.get("payload") or {}
         if isinstance(payload, dict) and payload.get("stage_name") == "slice.handoff":
@@ -46,7 +47,7 @@ def _handoff_events(events: list[dict]) -> list[dict]:
 
 
 def compact_campaign_context(
-    events: list[dict],
+    events: list[dict[str, Any]],
     *,
     keep_recent_tokens: int | None = None,
     reserve_tokens: int | None = None,
@@ -62,11 +63,12 @@ def compact_campaign_context(
     reserve = reserve_tokens if reserve_tokens is not None else _default_reserve_tokens()
     keep = max(1, keep - max(0, reserve))
 
-    recent: list[dict] = []
-    older: list[dict] = []
+    recent: list[dict[str, Any]] = []
+    older: list[dict[str, Any]] = []
     token_budget = 0
     for row in reversed(handoffs):
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        raw_meta = row.get("metadata")
+        meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
         summary_text = str(meta.get("handoff_summary") or "")
         tokens = estimate_tokens(summary_text)
         if token_budget + tokens <= keep:
@@ -108,7 +110,7 @@ def compact_campaign_context(
     )
 
 
-def _latest_compaction_prior(events: list[dict]) -> SliceHandoffSummary | None:
+def _latest_compaction_prior(events: list[dict[str, Any]]) -> SliceHandoffSummary | None:
     prior: SliceHandoffSummary | None = None
     for row in events:
         payload = row.get("payload") or {}
@@ -144,7 +146,7 @@ def _union_handoff_summaries(
 
 
 def _merge_handoffs(
-    rows: list[dict],
+    rows: list[dict[str, Any]],
     *,
     prior: SliceHandoffSummary | None = None,
 ) -> SliceHandoffSummary:
@@ -168,7 +170,7 @@ def maybe_emit_compaction_event(
     store: object,
     *,
     run_id: object,
-    events: list[dict],
+    events: list[dict[str, Any]],
     keep_recent_tokens: int | None = None,
     reserve_tokens: int | None = None,
 ) -> CompactionResult | None:

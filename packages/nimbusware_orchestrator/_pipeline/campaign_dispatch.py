@@ -21,8 +21,22 @@ class _CampaignDispatchHost(Protocol):
 
     def _run_created_metadata(self, run_id: UUID) -> dict[str, Any]: ...
 
+    def dispatch_or_run_campaign_tick(
+        self,
+        run_id: UUID,
+        *,
+        workspace: Path | None = None,
+    ) -> str: ...
+
+    def process_campaign_dispatch_task(self, task: RunDispatchTask) -> None: ...
+
 
 class CampaignDispatchMixin:
+    def active_campaigns_for_project(self: _CampaignDispatchHost, project_id: str) -> int:
+        from nimbusware_orchestrator.campaign_safety import active_campaigns_for_project
+
+        return active_campaigns_for_project(self._store, project_id)
+
     def start_campaign(
         self: _CampaignDispatchHost,
         run_id: UUID,

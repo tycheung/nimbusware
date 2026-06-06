@@ -44,9 +44,7 @@ def create_campaign(
             detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
         )
     assert_project_accessible(project)
-    from nimbusware_orchestrator.campaign_safety import active_campaigns_for_project
-
-    if active_campaigns_for_project(orch._store, str(project_uuid)) >= 1:
+    if orch.active_campaigns_for_project(str(project_uuid)) >= 1:
         raise HTTPException(
             status_code=429,
             detail=problem(
