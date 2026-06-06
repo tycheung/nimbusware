@@ -28,7 +28,6 @@ def test_parity_matrix_web_true_items_exist() -> None:
 
 
 def test_parity_matrix_maker_web_true_ids_documented() -> None:
-    """Guard: new web:true rows should stay in sync with maker_web static tabs."""
     data = _load()
     expected = {
         "shell_loads",

@@ -12,18 +12,6 @@ def _uuid() -> UUID:
 
 
 def test_resolve_strip_lower_input_symmetry_5_axis() -> None:
-    """Pin input normalization at registry.py:68 (k = key.strip().lower()).
-
-    All axes build the registry via from_mapping with pre-normalized keys
-    so the only variable is the input on the resolve() call side.
-
-    A1 -- exact lowercase match returns correct UUID.
-    A2 -- mixed-case input 'BackendWriter' resolves via .lower() arm.
-    A3 -- whitespace-wrapped '  backendwriter  ' resolves via .strip() arm.
-    A4 -- combined messy '\\t  BACKENDWRITER \\n' resolves via both chained.
-    A5 -- multi-key registry returns the correct UUID per distinct key
-    (proves dict lookup, not a singleton return).
-    """
     uuid_a = _uuid()
     uuid_b = _uuid()
     reg = RoleRegistry.from_mapping({"backendwriter": uuid_a, "planner": uuid_b})
@@ -50,19 +38,6 @@ def test_resolve_strip_lower_input_symmetry_5_axis() -> None:
 
 
 def test_resolve_keyerror_direct_message_contract_5_axis() -> None:
-    """Pin KeyError raise + exact message at registry.py:69-71.
-
-    Uses exc.value.args[0] for exact-message pinning (bypasses the
-    str(KeyError(msg)) quote-wrapping quirk where str() returns "'msg'").
-
-    B1 -- unknown key raises KeyError; args[0] is exact f-string output.
-    B2 -- empty registry: any input raises KeyError.
-    B3 -- empty-string '' input -> strip-to-empty -> KeyError with "''" repr.
-    B4 -- whitespace-only '   ' input -> KeyError msg includes repr of
-    ORIGINAL input (not the normalized form) per f"{taxonomy_key!r}".
-    B5 -- dual access pattern: str(exc.value) substring match (fo81 style)
-    AND args[0] exact match both succeed on the same exception.
-    """
     reg = RoleRegistry.from_mapping({"planner": _uuid()})
 
     with pytest.raises(KeyError) as exc_b1:
@@ -104,20 +79,6 @@ def test_resolve_keyerror_direct_message_contract_5_axis() -> None:
 
 
 def test_resolve_constructor_vs_factory_normalization_asymmetry_3_axis() -> None:
-    """Pin the public-API footgun: __init__ does NOT normalize; factories do.
-
-    The constructor is public (no underscore prefix) so direct calls are
-    syntactically legal. This test pins the resulting behavioral asymmetry
-    so any future "fix" to the constructor would visibly break the contract.
-
-    C1 -- direct RoleRegistry({'BACKEND': uuid}) -> resolve('BACKEND') fails
-    because resolve() lowercases input to 'backend' but dict still has 'BACKEND'.
-    C2 -- same construction: resolve('backend') ALSO fails because the dict
-    still has 'BACKEND' not 'backend' (no factory normalization happened).
-    C3 -- from_mapping({'BACKEND': uuid}) normalizes during construction;
-    resolve('BACKEND') AND resolve('backend') both succeed and return the
-    same UUID, proving the factory is the safe construction path.
-    """
     uuid_x = _uuid()
 
     direct_reg = RoleRegistry({"BACKEND": uuid_x})
@@ -141,13 +102,6 @@ def test_resolve_constructor_vs_factory_normalization_asymmetry_3_axis() -> None
 
 
 def test_known_taxonomy_keys_frozenset_contract_3_axis() -> None:
-    """Pin immutability + content contract at registry.py:74-75.
-
-    D1 -- return type is frozenset (not just any set-like).
-    D2 -- contents are the normalized keys after from_mapping.
-    D3 -- returned frozenset is immutable at runtime (.add raises
-    AttributeError because frozenset has no .add method).
-    """
     uuid_a = _uuid()
     uuid_b = _uuid()
     reg = RoleRegistry.from_mapping({"  Planner  ": uuid_a, "BACKEND": uuid_b})

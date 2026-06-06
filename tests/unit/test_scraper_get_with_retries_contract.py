@@ -26,14 +26,6 @@ def _make_cfg(max_attempts: int = 1, backoff_seconds: float = 0.0) -> ScraperFet
 
 
 def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
-    """Pin 1-indexed attempt counter + retry-then-succeed + fetch_kw surface.
-
-    A1 -- first attempt succeeds -> (resp, 1).
-    A2 -- second attempt succeeds after 1 OSError -> (resp, 2); 1 sleep.
-    A3 -- third attempt succeeds after OSError + ValueError -> (resp, 3); 2 sleeps.
-    A4 -- fetch_kw kwarg surface: timeout_seconds=30.0 + client + max_response_bytes
-          + actor_role_id propagated verbatim to egress_checked_get_for_run.
-    """
     resp_mock = MagicMock(spec=httpx.Response)
 
     orch_a1, _ = make_dev_orchestrator()
@@ -139,18 +131,6 @@ def test_scraper_get_with_retries_happy_and_retry_then_succeed_4_axis() -> None:
 
 
 def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
-    """Pin PermissionError + EgressResponseTooLarge immediate-reraise.
-
-    Each axis sets backoff_seconds=1.0 so the assertion that time.sleep is
-    NOT called proves the reraise bypasses the loop AND the sleep guard
-    (the two ``raise`` handlers are evaluated BEFORE the retry-eligible
-    tuple, so neither type ever enters ``last_err = exc``).
-
-    B1 -- PermissionError, max_attempts=1.
-    B2 -- PermissionError, max_attempts=5 (bypasses 4 remaining attempts).
-    B3 -- EgressResponseTooLarge, max_attempts=1.
-    B4 -- EgressResponseTooLarge, max_attempts=5 (bypasses 4 remaining attempts).
-    """
     orch_b1, _ = make_dev_orchestrator()
     with (
         patch(
@@ -239,18 +219,6 @@ def test_scraper_get_with_retries_immediate_reraise_taxonomy_4_axis() -> None:
 
 
 def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
-    """Pin the 4 retry-eligible exception types + exhaustion -> RuntimeError.
-
-    Each axis sets max_attempts=2, backoff_seconds=0.0 so the final
-    ``raise RuntimeError(str(last_err)[:2000])`` is the only outcome.
-
-    C1 -- OSError all attempts -> RuntimeError("net 2") (last_err wins).
-    C2 -- RuntimeError all attempts -> outer RuntimeError wraps inner msg.
-    C3 -- ValueError all attempts -> RuntimeError("v 2") (not reraised).
-    C4 -- httpx.HTTPError subclasses ConnectError + ReadTimeout -> RuntimeError.
-    C5 -- exception identity cross-cut: outer RuntimeError is a FRESH instance,
-          not the inner RuntimeError("rt 2") re-raised.
-    """
     cfg = _make_cfg(max_attempts=2, backoff_seconds=0.0)
 
     orch_c1, _ = make_dev_orchestrator()
@@ -344,17 +312,6 @@ def test_scraper_get_with_retries_retry_eligible_exhaustion_5_axis() -> None:
 
 
 def test_scraper_get_with_retries_backoff_and_truncation_and_fetch_kw_5_axis() -> None:
-    """Pin backoff cadence + 2000-char message truncation + fetch_kw matrix.
-
-    D1 -- backoff_seconds=0.0 -> time.sleep NOT called (guard).
-    D2 -- backoff_seconds=0.5 with 3 attempts -> sleep called exactly 2x with 0.5.
-    D3 -- last-attempt-no-sleep cross-cut: 3 egress calls but only 2 sleeps
-          proving ``break`` runs before the sleep guard.
-    D4 -- 5000-char OSError message with max_attempts=1 -> RuntimeError msg
-          is exactly 2000 chars and equals "x" * 2000.
-    D5 -- dual-axis fetch_kw conditional: max_response_bytes=None excludes
-          the kwarg vs max_response_bytes=8192 includes it.
-    """
     orch_d1, _ = make_dev_orchestrator()
     with (
         patch(

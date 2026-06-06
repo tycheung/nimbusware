@@ -77,18 +77,6 @@ def _append_model_selected_primary(
 
 
 def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
-    """Pin the 6-path control flow at pipeline.py:1018-1060 for tw.
-
-    A1 -- master tw_enabled=False -> no LLM, no stub.
-    A2 -- enabled + llm=False + stub=False -> no LLM, no stub.
-    A3 -- enabled + llm=False + stub=True -> stub-only.
-    A4 -- enabled + llm=True + no model selected + stub=True ->
-    LLM NOT invoked (model is None); stub fallback runs.
-    A5 -- enabled + llm=True + model + LLM returns True + stub=True
-    -> LLM only (stub NOT called per ``if not emitted_tw_llm``).
-    A6 -- enabled + llm=True + model + LLM returns False + stub=True
-    -> LLM + stub fallback (AND-gated fallback).
-    """
     with (
         patch("nimbusware_orchestrator.pipeline.execute_test_writer_critique_llm") as m_llm,
         patch(
@@ -197,12 +185,6 @@ def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
 
 
 def test_emit_planner_critique_optional_path_matrix_6_axis() -> None:
-    """Pin the 6-path control flow at pipeline.py:1062-1103 for planner.
-
-    Mirrors Part A with ``pll_*`` flags + ``execute_planner_critique_llm`` +
-    ``emit_stub_planner_critique_panel`` patches. Six axes (B1-B6) parallel
-    to A1-A6 prove symmetric implementation across the two methods.
-    """
     with (
         patch("nimbusware_orchestrator.pipeline.execute_planner_critique_llm") as m_llm,
         patch(
@@ -310,18 +292,6 @@ def test_emit_planner_critique_optional_path_matrix_6_axis() -> None:
 
 
 def test_emit_test_writer_critique_optional_argument_propagation_5_axis() -> None:
-    """Pin the LLM call's kwargs contract at pipeline.py:1043-1053 for tw.
-
-    All axes use the happy path (enabled + llm + model + stub=False).
-    Each axis inspects ``m_llm.call_args.kwargs``.
-
-    C1 -- base_url default ``"http://localhost:11434"`` when _base_cfg = {}.
-    C2 -- base_url override from _base_cfg runtime.base_url.
-    C3 -- timeout_seconds default 120.0 + float type when _base_cfg = {}.
-    C4 -- timeout_seconds int->float cast when _base_cfg has int value.
-    C5 -- run_id + model_id + verifier_exit_code + log_snippet
-    verbatim 4-kwarg pass-through.
-    """
     eff = _make_eff(tw_enabled=True, tw_llm=True, tw_stub=False)
 
     with (
@@ -425,14 +395,6 @@ def test_emit_test_writer_critique_optional_argument_propagation_5_axis() -> Non
 
 
 def test_emit_planner_critique_optional_argument_propagation_5_axis() -> None:
-    """Pin the LLM call's kwargs contract at pipeline.py:1086-1096 for planner.
-
-    Mirrors Part C for planner. Five axes (D1-D5) parallel to C1-C5 prove
-    the call-argument contract is identical across both methods (both
-    default base_url to ``"http://localhost:11434"``, both default
-    timeout_seconds to ``120.0``, both cast via ``float()``, both pass
-    model_id from the same ``_selected_model_for_run`` source).
-    """
     eff = _make_eff(pll_enabled=True, pll_llm=True, pll_stub=False)
 
     with (

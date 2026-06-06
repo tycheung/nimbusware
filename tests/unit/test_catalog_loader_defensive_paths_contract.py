@@ -26,15 +26,6 @@ def _write_catalog(repo: Path, body: str) -> None:
 def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
     tmp_path: Path,
 ) -> None:
-    """Pin the 4-arm fallback ladder at integrator_gate.py:61-75.
-
-    The ladder has these arms in order:
-    1. Catalog file absent -> ``"auth-rbac-starter"`` hardcoded (line 64-65).
-    2. ``isinstance(wmap, dict) and workflow_profile`` -> consult wmap.
-    3. ``key in wmap and wmap[key] is not None`` -> return wmap value.
-    4. First bundle whose entry is dict with ``id`` -> return that id.
-    5. Final ``"auth-rbac-starter"`` fallback (line 75).
-    """
     a1_repo = tmp_path / "a1_catalog_absent"
     a1_repo.mkdir()
     assert select_bundle_id_for_workflow(a1_repo, "default") == "auth-rbac-starter", (
@@ -117,12 +108,6 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
 
 def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
-    """Pin `_bundle_entry_for_id` defensive arms at integrator_gate.py:89-100.
-
-    The private helper is exercised through ``load_bundle_tags_for_bundle_id``
-    as the externally-visible probe: when entry is None the result is ``[]``;
-    when entry is found with tags the result is the parsed tags list.
-    """
     b1_repo = tmp_path / "b1_catalog_absent"
     b1_repo.mkdir()
     assert load_bundle_tags_for_bundle_id(b1_repo, "any-bundle") == [], (
@@ -196,13 +181,6 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
 def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
     tmp_path: Path,
 ) -> None:
-    """Pin `load_bundle_tags_for_bundle_id` defensive arms at
-    integrator_gate.py:103-111.
-
-    C5 pins the **KEY DIVERGENCE** from
-    ``parse_integrator_gate_project_tags`` (same module, same coercion +
-    filter shape, but different empty-list semantics).
-    """
     c1_repo = tmp_path / "c1_tags_key_missing"
     c1_repo.mkdir()
     _write_catalog(
@@ -319,16 +297,6 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
     tmp_path: Path,
 ) -> None:
-    """Pin `load_bundle_title_for_bundle_id` defensive arms at
-    integrator_gate.py:114-120.
-
-    D3 (key missing) and D4 (key present with explicit YAML ``null``) both
-    hit ``t is None`` after ``b.get('title')``, but they probe the contract
-    from different YAML angles -- D4 confirms that an explicit YAML
-    ``null`` does NOT accidentally pass through as the literal string
-    ``"None"`` via ``str(t).strip()`` because the ``is not None`` guard
-    short-circuits first.
-    """
     d1_repo = tmp_path / "d1_catalog_absent"
     d1_repo.mkdir()
     assert load_bundle_title_for_bundle_id(d1_repo, "any") == "", (

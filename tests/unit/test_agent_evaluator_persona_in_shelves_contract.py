@@ -98,26 +98,6 @@ def _write_shelves(tmp_repo: Path, body: str) -> Path:
 def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
     tmp_path: Path,
 ) -> None:
-    """6-axis direct contract: 4 accept + 1 detailed reject + 1 default-short-circuit.
-
-    Extends the 3 ad-hoc tests at
-    [test_extensions_yaml.py:145-182](tests\\test_extensions_yaml.py)
-    by:
-
-    * Adding 2 new accept axes for shelf-backed persona_ids
-      (``commerce`` business_area + ``backend_engineer``
-      development_role from the real
-      [configs/personas/shelves.yaml](configs\\personas\\shelves.yaml)).
-    * Re-asserting the existing 2 accept axes (disabled + reserved
-      default) with stronger fixtures.
-    * Asserting the **detailed** reject message includes
-      ``got 'X'`` AND ``known=['backend_engineer', 'commerce']``
-      (previously only ``match="agent_evaluator"`` was asserted).
-    * Adding the **default-short-circuit** axis: persona_id=default
-      + MISSING shelves.yaml returns None, proving the default
-      check at [ingress.py:40-41](packages\\nimbusware_orchestrator\\ingress.py)
-      fires BEFORE PersonaShelf load at line 43.
-    """
     _copy_real_personas(tmp_path)
 
     _write_workflow(tmp_path, "disabled_with_garbage", enabled=False, persona_id="nope")
@@ -182,26 +162,6 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
 def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_matrix(
     tmp_path: Path,
 ) -> None:
-    """Shelves-load propagation + graceful-degradation matrix.
-
-    Two sub-loops:
-
-    * **Sub-loop 1** -- shelves-load failures propagate uncaught.
-      ``PersonaShelf.__init__`` at
-      [personas.py:14-15](packages\\nimbusware_extensions\\personas.py)
-      calls ``load_yaml(shelves_path)`` which raises FNF for
-      missing files and ValueError for non-mapping roots; neither
-      is caught by the wrapper.
-
-    * **Sub-loop 2** -- graceful degradation when YAML root is a
-      mapping but ``business_area`` / ``development_role`` entries
-      are missing or wrong-type. ``all_persona_ids()`` at
-      [personas.py:46-60](packages\\nimbusware_extensions\\personas.py)
-      gracefully returns ``frozenset()`` / partial; the wrapper
-      then raises the friendly ValueError with the resulting
-      ``known`` list. 3 sub-cases pin the contract by asserting
-      the ``known=[...]`` fragment appears verbatim in the message.
-    """
     fnf_repo = tmp_path / "fnf"
     fnf_repo.mkdir()
     _write_workflow(fnf_repo, "fnf_wf", enabled=True, persona_id="some_id")
@@ -235,31 +195,6 @@ def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_
 def test_assert_agent_evaluator_persona_in_shelves_workflow_cascade_no_op_uniformity(
     tmp_path: Path,
 ) -> None:
-    """Workflow-profile-cascade no-op uniformity.
-
-    ``parse_agent_evaluator_workflow_block`` at
-    [workflow_agent_evaluator.py:28-35](packages\\nimbusware_orchestrator\\workflow_agent_evaluator.py)
-    cascades to defaults (``enabled=False``) when
-    ``workflow_profile_path`` raises FNF/OSError/ValueError or
-    when ``load_yaml`` raises ValueError/OSError/UnicodeDecodeError.
-    The wrapper then no-ops at
-    [ingress.py:38-39](packages\\nimbusware_orchestrator\\ingress.py).
-
-    This is the **structural complement** to Part B: where Part B
-    pins that shelves-load failures DO propagate, Part C pins that
-    workflow-load failures DO NOT propagate as gate-4 errors --
-    the cascade-to-default fires BEFORE the PersonaShelf load.
-
-    Two-stage assertion:
-
-    1. **Bare-repo** (no shelves.yaml at all): if the cascade did
-       NOT fire before the shelves load, FileNotFoundError would
-       surface here. The fact that no exception is raised proves
-       the cascade short-circuits at line 38-39.
-    2. **With-shelves-repo**: same 3 cascade triggers on a repo
-       that HAS valid shelves but no workflow files. Cross-layer
-       parity: cascade still wins (shelves never read).
-    """
     bare_repo = tmp_path / "bare"
     bare_repo.mkdir()
 

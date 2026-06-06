@@ -63,14 +63,6 @@ def _append_stage_failed(mem: InMemoryEventStore, rid: UUID, name: str) -> None:
 
 
 def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
-    """Pin `load_anti_deadlock_settings(self._repo_root)` delegation + suppress-before-loader.
-
-    Coverage delta vs fo88 B1: fo88 proves "no emit when suppress" but does NOT
-    prove (a) the loader is short-circuited BEFORE call, (b) the loader receives
-    `self._repo_root` positionally, (c) the loader is called exactly once per
-    emit invocation, (d) `enabled=False` / `stall_minutes=0` from the loader
-    flow through `should_emit` to no-emit.
-    """
     orch_a1, _ = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("escalation_suppress_on")
     with patch(
@@ -141,14 +133,6 @@ def test_anti_deadlock_escalation_settings_and_suppress_5_axis() -> None:
 
 
 def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
-    """Pin `should_emit_anti_deadlock_escalation` call shape at pipeline.py:1261-1267.
-
-    Coverage delta vs existing tests: no test today verifies the orchestrator
-    threads (rows, now=, enabled=, stall_minutes=, min_progress_events=) into
-    the pure helper. A refactor swapping kwarg names / positions / drop the
-    tz-aware `now` would silently break observable behavior under
-    [tests/test_anti_deadlock.py] (which constructs its own kwargs).
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     _append_stage_failed(mem_b1, rid_b1, "fo104_b1_stage")
@@ -268,14 +252,6 @@ def test_anti_deadlock_escalation_should_emit_delegation_5_axis() -> None:
 
 
 def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
-    """Pin per-reason-code dedup at pipeline.py:1255-1260 + dedup-before-should_emit.
-
-    Coverage delta vs fo102 C (`_maybe_auto_escalate`): fo102 C pins ANY-
-    RUN_ESCALATED dedup (asymmetric -- any prior reason_code short-circuits).
-    fo104 C pins PER-reason-code dedup (orthogonal -- only matching reason_code
-    short-circuits). A "unify all escalation dedup" refactor would flip these
-    two contracts; fo102 + fo104 together prevent silent unification.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     _append_escalation(mem_c1, rid_c1, _ANTI_DEADLOCK)
@@ -393,14 +369,6 @@ def test_anti_deadlock_escalation_dedup_by_reason_code_5_axis() -> None:
 
 
 def test_anti_deadlock_escalation_emit_shape_and_notes_5_axis() -> None:
-    """Pin happy-path emit shape + literal notes format at pipeline.py:1269-1281.
-
-    Coverage delta vs existing tests: no test today verifies (a) the exact
-    f-string notes format, (b) `actor_id="system:orchestrator"` literal,
-    (c) `reason_code="anti_deadlock_insufficient_progress"` literal, (d) loader
-    tuple positions flow into the notes string in the correct order, (e) the
-    payload has no extraneous fields (no `policy_snapshot_id` leak).
-    """
     orch_d1, mem_d1 = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     with (

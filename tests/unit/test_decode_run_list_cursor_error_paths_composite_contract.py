@@ -46,24 +46,6 @@ def client() -> TestClient:
 
 
 def test_catch_tuple_exception_class_inheritance_preflight() -> None:
-    """Pin the inheritance shape underpinning the entire composite.
-
-    The route catch tuple at
-    [runs.py:466-473](packages/nimbusware_api/routes/runs.py) lists 6
-    explicit classes:
-
-    .. code-block:: python
-
-        except (ValueError, KeyError, TypeError,
-                json.JSONDecodeError, binascii.Error, UnicodeDecodeError) as exc:
-
-    Three of these are ``ValueError`` subclasses (json / binascii /
-    unicode) so they could be matched by ``except ValueError`` alone.
-    Two of them (``KeyError``, ``TypeError``) are **not** ``ValueError``
-    subclasses, so a "simplify to ``except ValueError``" refactor
-    would silently drop those arms -- a contract regression that this
-    pre-flight pins as ground truth before Parts B / D exercise it.
-    """
     assert issubclass(json.JSONDecodeError, ValueError), (
         "preflight: json.JSONDecodeError must be a ValueError subclass "
         "(per stdlib RFC). If Python ever changes this, the route's "
@@ -95,17 +77,6 @@ def test_catch_tuple_exception_class_inheritance_preflight() -> None:
 
 
 def test_part_a_decode_layer_errors_5_axis() -> None:
-    """Pin base64 / UTF-8 / JSON-parse layer error classes (5 axes).
-
-    Five axes pin the three exception classes raised by the FIRST
-    three statements of ``_decode_run_list_cursor`` (b64 decode,
-    ``.decode()``, ``json.loads``). The JSON-parse arm needs three
-    sub-axes (A3 / A4 / A5) because the parser raises
-    ``json.JSONDecodeError`` for three distinct upstream failures:
-    empty input, valid-UTF-8 garbage, and structurally-malformed JSON
-    -- each of which a refactor might handle differently (e.g. a
-    "treat empty as missing-cursor" shortcut would mask A3 only).
-    """
     with pytest.raises(binascii.Error) as exc_a1:
         _decode_run_list_cursor("a")
     assert "data characters" in str(exc_a1.value) or "Invalid base64" in str(exc_a1.value), (
@@ -168,19 +139,6 @@ def test_part_a_decode_layer_errors_5_axis() -> None:
 
 
 def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> None:
-    """Pin ``d["s"]`` / ``d["r"]`` bracket-access contract (5 axes).
-
-    Once ``json.loads`` returns successfully, ``d`` may be ANY JSON
-    type, not just a dict. The helper performs ``d["s"]`` immediately
-    -- which raises ``TypeError`` on non-dict ``d`` and ``KeyError``
-    on a dict missing the key. Five axes pin both classes across the
-    four non-dict JSON types plus three missing-key shapes.
-
-    KEY DIVERGENCE: ``TypeError`` and ``KeyError`` are NOT ``ValueError``
-    subclasses. A refactor that simplified the route catch tuple to
-    ``except ValueError`` would silently 500 on every one of these
-    inputs. Part D D4 pins the route 422 mapping for both arms.
-    """
     cursor_b1_int = _encode_for_cursor(b"5")
     with pytest.raises(TypeError) as exc_b1:
         _decode_run_list_cursor(cursor_b1_int)
@@ -246,13 +204,6 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
 
 
 def test_part_c_field_coercion_errors_5_axis() -> None:
-    """Pin ``int(d["s"])`` / ``UUID(str(d["r"]))`` field-coercion errors (5 axes).
-
-    With ``d`` a valid dict carrying both ``"s"`` and ``"r"`` keys,
-    the FINAL line of the helper performs two explicit coercions. Each
-    can fail in distinct ways -- five axes pin both classes per
-    field and the ``str(...)`` wrapping behaviour around ``UUID``.
-    """
     cursor_c1 = _encode_for_cursor(b'{"s": "abc", "r": "%s"}' % _SAMPLE_UUID_STR.encode())
     with pytest.raises(ValueError) as exc_c1:
         _decode_run_list_cursor(cursor_c1)
@@ -328,27 +279,6 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
 
 
 def test_part_d_route_layer_invalid_cursor_422_5_axis(client: TestClient) -> None:
-    """Pin ``GET /v1/runs`` route-layer ``invalid_cursor`` 422 mapping (5 axes).
-
-    Each axis exercises a DIFFERENT exception class from the
-    [runs.py:466-481](packages/nimbusware_api/routes/runs.py) catch tuple
-    by crafting a cursor that triggers it inside
-    ``_decode_run_list_cursor``. The empty-cursor short-circuit axis
-    (D5) pins the route's ``use_cursor`` guard at line 449 that
-    short-circuits BEFORE the helper is ever called.
-
-    KEY DIVERGENCES pinned here:
-
-    * D1 pins the FULL problem-JSON shape per
-      [packages/nimbusware_api/errors.py:8-18](packages/nimbusware_api/errors.py):
-      ``code`` / ``message`` / ``details.reason`` -- a refactor that
-      changed the ``code`` literal would break clients matching on it.
-    * D4 covers the TWO non-ValueError-subclass arms (``KeyError`` +
-      ``TypeError``) in ONE axis: a "simplify to ``except ValueError``"
-      refactor would 500 on these specifically.
-    * D5 pins that empty-cursor inputs are NOT 422 (they're 200) --
-      distinct from malformed-cursor inputs.
-    """
     r_d1 = client.get("/v1/runs", params={"cursor": "a", "limit": 5})
     assert r_d1.status_code == 422, (
         f"D1: single-char cursor must yield 422 (binascii.Error path); "

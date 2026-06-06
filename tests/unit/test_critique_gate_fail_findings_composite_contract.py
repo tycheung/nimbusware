@@ -75,12 +75,6 @@ def _stage_names(findings: list[dict[str, Any]]) -> list[str | None]:
 
 
 def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
-    """Pin eff=None fallback to _effective_universal_critique_for_run at pipeline.py:912.
-
-    Coverage delta vs fo89: every fo89 test passes explicit eff; the helper's
-    public default eff=None arm is unpinned. fo103 closes the env-ladder
-    propagation through the fallback resolver AND its call-once invariant.
-    """
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     _append_fail_gate(mem_a1, rid_a1, IMPLEMENTATION_CRITIQUE_STAGE)
@@ -167,11 +161,6 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
 
 
 def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() -> None:
-    """Pin literal stages loop order + multi-call idempotence at pipeline.py:913-958.
-
-    Coverage delta vs fo89: A1 checks set== on stage_names; the strict LIST
-    order is unpinned. Idempotence is also unpinned (fo89 single-call only).
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     _append_fail_gate(mem_b1, rid_b1, PLANNER_CRITIQUE_STAGE)
@@ -262,12 +251,6 @@ def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() ->
 
 
 def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> None:
-    """Pin _strictness_context seam + ctx propagation at pipeline.py:919, 933-944.
-
-    Coverage delta vs fo89: fo89 spot-checks emitted payload shape but does
-    NOT pin (a) ctx-fetched-once invariant, (b) `context=` kwarg routing,
-    (c) ctx instance shared across iterations.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     for stage in (
@@ -383,20 +366,6 @@ def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> 
 
 
 def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
-    """Pin in-loop rows refresh at pipeline.py:958.
-
-    This is the marquee gap fo102 flagged. Coverage delta vs fo89: A4 implicitly
-    relies on the refresh for per-stage isolation but never directly observes
-    the seam (list_run_events call count + ordering vs append).
-
-    Note on D1/D2/D3/D5: ``_effective_universal_critique_for_run`` and
-    ``_strictness_context`` each call ``list_run_events`` internally
-    (workflow snapshot resolution + policy snapshot lookup). To pin the
-    helper's OWN refresh seam in isolation, we (a) resolve ``eff``
-    explicitly under env_all_on and pass it in, (b) patch
-    ``_strictness_context`` to a constant ``{}`` return value -- so the
-    only list_run_events calls left come from the helper itself.
-    """
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         eff_all_on = effective_universal_critique(ROOT, "default")
 

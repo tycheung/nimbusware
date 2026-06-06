@@ -121,17 +121,6 @@ def _stage_names_of(findings: list[dict[str, Any]]) -> list[str | None]:
 
 
 def test_maybe_emit_critique_gate_fail_findings_multi_stage_matrix_4_axis() -> None:
-    """Pin the loop body for multi-stage permutations on impl/tw/planner.
-
-    A1 -- all 3 enabled + all 3 FAIL -> 3 findings.
-    A2 -- impl FAIL + tw PASS + planner FAIL -> 2 findings
-    (tw skipped via the ``not _critique_gate_verdict_is_fail`` arm).
-    A3 -- only impl has a gate row -> 1 finding
-    (tw + planner skipped via the ``not gate_pl`` arm).
-    A4 -- prior impl finding present + all 3 FAIL -> 2 NEW
-    findings (impl is silently skipped via
-    ``_critique_gate_fail_finding_already_emitted``).
-    """
     expected_all = {
         IMPLEMENTATION_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,
@@ -210,17 +199,6 @@ def test_maybe_emit_critique_gate_fail_findings_multi_stage_matrix_4_axis() -> N
 
 
 def test_maybe_emit_critique_gate_fail_findings_skip_branches_4_axis() -> None:
-    """Pin each of the 4 ``continue`` arms in isolation.
-
-    B1 -- ``not enabled``: default workflow, no env override -> 0
-    findings even with all 3 FAIL gates present.
-    B2 -- ``_critique_gate_fail_finding_already_emitted``: env on
-    for impl only + prior impl finding -> 0 NEW findings.
-    B3 -- ``not gate_pl``: env on for impl, no gate row -> 0
-    findings.
-    B4 -- ``not _critique_gate_verdict_is_fail``: env on for impl,
-    impl gate with verdict NEEDS_INFO -> 0 findings.
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     _append_critique_gate(mem_b1, rid_b1, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.FAIL)
@@ -272,18 +250,6 @@ def test_maybe_emit_critique_gate_fail_findings_skip_branches_4_axis() -> None:
 
 
 def test_maybe_emit_critique_gate_fail_findings_payload_shape_4_axis() -> None:
-    """Pin the per-stage payload + metadata shape at pipeline.py:932-957.
-
-    C1 -- ``source_artifact == f"critique_gate:{stage_name}"`` per stage.
-    C2 -- ``owner_role`` resolves via ``RoleRegistry.resolve()`` for
-    each stage (impl -> backend_writer / tw -> test_writer / planner
-    -> planner).
-    C3 -- ``repro_steps`` 5-line strict-order composition with
-    ``failure_reason_code`` + ``failing_critics`` +
-    ``failing_finding_ids`` propagation.
-    C4 -- invariants across all 3 stages (category / severity /
-    required_fixes / metadata flag).
-    """
     role_for_stage = {
         IMPLEMENTATION_CRITIQUE_STAGE: "backend_writer",
         TEST_WRITER_CRITIQUE_STAGE: "test_writer",
@@ -354,18 +320,6 @@ def test_maybe_emit_critique_gate_fail_findings_payload_shape_4_axis() -> None:
 
 
 def test_critique_gate_fail_pure_helpers_direct_contract_4_axis() -> None:
-    """Pin the 4 supporting pure helpers (zero direct coverage today).
-
-    D1 -- ``_critique_gate_verdict_is_fail`` 6 sub-axes (enum /
-    upper / lower / mixed+whitespace / PASS / None).
-    D2 -- ``_last_critique_gate_payload_for_stage`` 4 sub-axes
-    (empty / no-gate / wrong-stage / **LAST-wins** when multiple).
-    D3 -- ``_critique_gate_fail_finding_already_emitted`` 4
-    sub-axes (empty / no-metadata-flag / stage_name mismatch / hit).
-    D4 -- ``_repro_steps_from_critique_gate`` 4 sub-axes (minimal
-    / full 5-line strict-order / ``.strip()`` on failure_reason_code
-    / non-list ``failing_critics`` ignored).
-    """
     is_fail = RunOrchestrator._critique_gate_verdict_is_fail  # noqa: SLF001
     assert is_fail({"verdict": Verdict.FAIL}) is True
     assert is_fail({"verdict": "FAIL"}) is True

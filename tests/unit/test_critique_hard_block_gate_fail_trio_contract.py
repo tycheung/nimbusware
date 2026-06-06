@@ -97,18 +97,6 @@ def _rows_for(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
 
 
 def test_critique_impl_hard_block_gate_fail_direct_contract_5_axis() -> None:
-    """Pin _critique_impl_hard_block_gate_fail at pipeline.py:960-969.
-
-    impl has NO master ``_enabled`` switch (asymmetric with tw/pll);
-    the guard is ``hard_block AND (llm OR stub)``.
-
-    A1 -- hard_block off (with llm + stub on) -> False.
-    A2 -- hard_block on but (llm AND stub) both off -> False.
-    A3 -- guards pass + no impl gate row -> False (incl. stage-filter
-    sub-assertion: TW+planner FAIL gates present but no impl gate).
-    A4 -- guards pass + last impl gate PASS -> False.
-    A5 -- HAPPY: guards pass + last impl gate FAIL -> True.
-    """
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     _append_critique_gate(mem_a1, rid_a1, IMPLEMENTATION_CRITIQUE_STAGE, Verdict.FAIL)
@@ -187,18 +175,6 @@ def test_critique_impl_hard_block_gate_fail_direct_contract_5_axis() -> None:
 
 
 def test_critique_tw_hard_block_gate_fail_direct_contract_6_axis() -> None:
-    """Pin _critique_tw_hard_block_gate_fail at pipeline.py:971-984.
-
-    tw guard is ``hard_block AND tw_enabled AND (llm OR stub)`` -- the
-    master ``tw_enabled`` arm is the asymmetric axis missing from impl.
-
-    B1 -- hard_block off -> False.
-    B2 -- **tw_enabled=False** (master-switch arm unique to tw/pll) -> False.
-    B3 -- (llm AND stub) both False -> False.
-    B4 -- guards pass + no TW gate row -> False.
-    B5 -- guards pass + last TW gate PASS -> False.
-    B6 -- HAPPY: guards pass + last TW gate FAIL -> True.
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     _append_critique_gate(mem_b1, rid_b1, TEST_WRITER_CRITIQUE_STAGE, Verdict.FAIL)
@@ -298,19 +274,6 @@ def test_critique_tw_hard_block_gate_fail_direct_contract_6_axis() -> None:
 
 
 def test_critique_pll_hard_block_gate_fail_direct_contract_6_axis() -> None:
-    """Pin _critique_pll_hard_block_gate_fail at pipeline.py:986-999.
-
-    pll guard mirrors tw: ``hard_block AND pll_enabled AND (llm OR stub)``.
-    The 6 axes prove parallel symmetry with tw (modulo stage-name filter)
-    and pin the planner ``_enabled`` master-switch arm.
-
-    C1 -- hard_block off -> False.
-    C2 -- **pll_enabled=False** (master-switch arm) -> False.
-    C3 -- (llm AND stub) both False -> False.
-    C4 -- guards pass + no planner gate row -> False.
-    C5 -- guards pass + last planner gate PASS -> False.
-    C6 -- HAPPY: guards pass + last planner gate FAIL -> True.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     _append_critique_gate(mem_c1, rid_c1, PLANNER_CRITIQUE_STAGE, Verdict.FAIL)
@@ -413,21 +376,6 @@ def test_critique_pll_hard_block_gate_fail_direct_contract_6_axis() -> None:
 
 
 def test_should_skip_critique_downstream_tail_aggregator_5_axis() -> None:
-    """Pin _should_skip_critique_downstream_tail at pipeline.py:1001-1016.
-
-    Aggregator is ``impl OR tw OR pll`` in fixed order.
-
-    D1 -- all-off baseline -> False (none of the trio's guards pass).
-    D2 -- only impl triggers (impl FAIL gate + impl-hard-block-on eff;
-    tw/pll fully off) -> True.
-    D3 -- only tw triggers -> True (proves tw alone can trigger skip
-    with no `_enabled` interference from impl).
-    D4 -- only pll triggers -> True (third arm of the OR chain).
-    D5 -- **short-circuit ordering**: patch.object the trio so impl
-    returns True; assert result is True, m_impl.call_count == 1,
-    m_tw.call_count == 0, m_pll.call_count == 0. Pins the ``or``
-    short-circuit evaluation order (impl evaluated first).
-    """
     orch_d1, _mem_d1 = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     eff_d1 = _make_eff()

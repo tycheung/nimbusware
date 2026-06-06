@@ -90,26 +90,6 @@ def _inject_raw_run_created_row(
 
 
 def test_strictness_context_fs_input_matrix_5_axis() -> None:
-    """Pin ``_strictness_context`` ``fs``-input matrix via ``patch.object`` (5 axes).
-
-    Implementation at
-    [pipeline.py:554-559](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        snap = self.policy_snapshot_for_run(run_id)
-        fs = snap.get("finding_fix_strictness")
-        if isinstance(fs, dict):
-            return {"finding_fix_strictness": FindingFixStrictnessSettings.model_validate(fs)}
-        return {}
-
-    Five axes cover the FULL input space: dict-valid happy path (A1),
-    dict-empty defaults (A2), dict-invalid 3-flavour ``ValidationError``
-    matrix (A3), ``None``-convergence (A4), non-dict 6-type matrix (A5).
-    Isolation via ``patch.object(orch, "policy_snapshot_for_run",
-    return_value=...)`` lets each axis inject any ``snap`` shape
-    without going through ``create_run`` / Pydantic.
-    """
     orch, _mem = make_dev_orchestrator()
     rid = uuid4()
 
@@ -234,15 +214,6 @@ def test_strictness_context_fs_input_matrix_5_axis() -> None:
 
 
 def test_strictness_context_real_path_integration_5_axis() -> None:
-    """Pin ``_strictness_context`` real-path round-trip via ``create_run`` (5 axes).
-
-    Validates the END-TO-END flow that Part A exercises in isolation:
-    ``create_run`` builds a ``policy_snapshot``, persists a
-    ``run.created`` event, ``policy_snapshot_for_run`` reads it back
-    via ``model_dump(mode="json")``, and ``_strictness_context`` wraps
-    the strictness dict. Each axis pins a distinct integration
-    invariant.
-    """
     orch_b1, _ = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     ctx_b1 = orch_b1._strictness_context(rid_b1)  # noqa: SLF001
@@ -353,25 +324,6 @@ def test_strictness_context_real_path_integration_5_axis() -> None:
 
 
 def test_effective_universal_critique_for_run_seam_5_axis() -> None:
-    """Pin ``_effective_universal_critique_for_run`` direct seam (5 axes).
-
-    Implementation at
-    [pipeline.py:700-702](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
-        return effective_universal_critique(self._repo_root, wf)
-
-    Five axes pin the seam: no-events -> ``None`` (C1),
-    ``create_run('default')`` -> ``"default"`` (C2), real return type
-    is ``EffectiveUniversalCritique`` (C3), non-string
-    ``workflow_profile`` is ``str()``-coerced (C4), FIRST-wins on
-    multiple ``run.created`` (C5). Uses
-    ``patch.object(pipeline_module, "effective_universal_critique",
-    side_effect=...)`` to capture the args the seam receives without
-    coupling to the real YAML / env resolution.
-    """
     captured_args: dict[str, Any] = {}
 
     def fake_euc(repo_root: Any, wf: Any) -> EffectiveUniversalCritique:
@@ -470,17 +422,6 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
 
 
 def test_cross_helper_key_divergences_5_axis() -> None:
-    """Pin cross-helper KEY DIVERGENCES between ``_strictness_context`` and
-    ``_effective_universal_critique_for_run`` (5 axes).
-
-    Both helpers read from the SAME row source via different code
-    paths (one through ``policy_snapshot_for_run`` -> ``list_run_events``,
-    the other directly through ``list_run_events``) and consume
-    DIFFERENT facets of ``run.created``. Five axes pin: shared
-    source (D1), different facets (D2), read-only (D3),
-    ``self._repo_root`` propagation (D4), asymmetric error surface
-    (D5).
-    """
     orch_d1, _ = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     with patch.object(

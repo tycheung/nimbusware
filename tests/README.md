@@ -8,7 +8,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 | `tests/api/` | FastAPI route and OpenAPI tests |
 | `tests/console/` | Admin console display / explainer behavior |
 | `tests/orchestrator/` | `RunOrchestrator` integration paths |
-| `tests/integration/` | Postgres-marked (`-m integration`) |
+| `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); weekly operator smoke stays in `e2e_smoke.yml` |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
 | `tests/e2e/web/` | Playwright smoke (PR `ci.yml` **web** job; path-filtered `web-tests.yml` on UI-only diffs) |

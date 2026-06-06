@@ -64,28 +64,6 @@ def _self_check_urlsafe_vs_standard_alphabet_differ() -> None:
 
 
 def test_encode_run_list_cursor_wire_format_5_axis() -> None:
-    """Pin ``_encode_run_list_cursor`` wire format (5 axes).
-
-    Implementation at [runs.py:199-201](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        raw = json.dumps({"s": seq, "r": str(run_id)},
-                         separators=(",", ":")).encode()
-        return base64.urlsafe_b64encode(raw).decode().rstrip("=")
-
-    Together the 5 axes pin a complete RFC 4648 section 5 (URL-safe
-    base64) + RFC 8259 (compact JSON) wire-format contract. A
-    refactor that broke ANY of these (return type, JSON shape,
-    whitespace, alphabet, padding) would shift the opaque
-    ``next_cursor`` shape and silently break clients echoing it
-    back. The cursor codec is the only ``200 OK`` -side opaque token
-    in [GET /v1/runs](packages/nimbusware_api/routes/runs.py:267-619) so
-    the wire format is effectively the API contract.
-
-    A1 / A2 / A3 / A4 / A5 pin distinct facets that no single axis
-    alone could guarantee.
-    """
     out_basic = _encode_run_list_cursor(1, _SAMPLE_RID)
     assert isinstance(out_basic, str), (
         f"A1: helper must return `str` (clients concatenate into URLs), got "
@@ -151,28 +129,6 @@ def test_encode_run_list_cursor_wire_format_5_axis() -> None:
 
 
 def test_decode_run_list_cursor_roundtrip_and_coercion_5_axis() -> None:
-    """Pin ``_decode_run_list_cursor`` + roundtrip + coercion (5 axes).
-
-    Implementation at [runs.py:204-208](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        pad = "=" * ((4 - len(value) % 4) % 4)
-        raw = base64.urlsafe_b64decode(value + pad)
-        d = json.loads(raw.decode())
-        return int(d["s"]), UUID(str(d["r"]))
-
-    Five axes pin: roundtrip invariance, padding restoration across
-    every valid base64 length-mod-4 residue (0 / 2 / 3 -- residue 1
-    is impossible from b64 encoding so excluded), explicit ``int``
-    coercion, explicit ``UUID`` coercion, and 2-tuple return shape.
-    A refactor that dropped the ``int(...)`` would silently change
-    the public type of ``cursor_seq`` (currently ``int``, fed into
-    ``store.list_recent_run_rows_cursor(cursor_after_seq=...)`` at
-    [runs.py:494](packages/nimbusware_api/routes/runs.py)); a refactor
-    that dropped ``UUID(str(...))`` would change ``cursor_rid``'s
-    public type and break the SQL parameter binding downstream.
-    """
     sample_tuples = [
         (1, _SAMPLE_RID),
         (42, _SAMPLE_RID_ALT),
@@ -248,27 +204,6 @@ def test_decode_run_list_cursor_roundtrip_and_coercion_5_axis() -> None:
 
 
 def test_sanitize_workflow_profile_prefix_regex_5_axis() -> None:
-    """Pin ``_sanitize_workflow_profile_prefix`` regex contract (5 axes).
-
-    Implementation at [runs.py:190-196](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        if value is None or not str(value).strip():
-            return None
-        s = str(value).strip()
-        if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,63}", s):
-            return None
-        return s
-
-    Five axes pin the early-out short-circuit, the strip-and-collapse
-    rule, the accept matrix, the reject-without-raise contract, and
-    the length boundary (1..64 chars). A refactor that tightened the
-    regex (e.g. first char ``[a-z]`` only) would silently drop
-    UPPERCASE prefixes today's tests don't exercise; a refactor that
-    raised ``ValueError`` would propagate a 500 instead of the route
-    layer's current 200 + "filter ignored" behaviour.
-    """
     assert _sanitize_workflow_profile_prefix(None) is None, (
         "C1: ``None`` input short-circuits to ``None`` BEFORE the ``.strip()`` "
         "call -- a refactor that dropped the ``value is None`` guard would "
@@ -371,33 +306,6 @@ def test_sanitize_workflow_profile_prefix_regex_5_axis() -> None:
 
 
 def test_parse_query_datetime_iso8601_tz_5_axis() -> None:
-    """Pin ``_parse_query_datetime`` ISO-8601 + tz handling (5 axes).
-
-    Implementation at [runs.py:249-260](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        if value is None or not str(value).strip():
-            return None
-        try:
-            s = str(value).strip().replace("Z", "+00:00")
-            dt = datetime.fromisoformat(s)
-        except ValueError as exc:
-            msg = f"{field} must be a valid ISO-8601 datetime"
-            raise ValueError(msg) from exc
-        if dt.tzinfo is None:
-            return dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc)
-
-    Five axes pin the empty-input short-circuit, the ``Z`` -> UTC
-    substitution (Python 3.10 ``fromisoformat`` does not accept
-    ``Z`` natively even in 3.11+), the field-aware ``ValueError``
-    message interpolation, the naive-assumed-UTC arm, and the
-    tz-aware-astimezone(UTC) arm. The two tz arms catch a refactor
-    that conflated them by using ``replace(tzinfo=UTC)``
-    unconditionally -- which would silently corrupt non-UTC
-    timestamps (axis D5).
-    """
     for empty in (None, "", "   ", "\t", "\n"):
         got = _parse_query_datetime("created_after", empty)
         assert got is None, (

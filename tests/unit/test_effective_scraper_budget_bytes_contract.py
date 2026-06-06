@@ -22,17 +22,6 @@ def _make_cfg(max_bytes: int | None = None) -> ScraperFetchConfig:
 
 
 def test_effective_scraper_budget_bytes_snapshot_type_guards_4_axis() -> None:
-    """Pin the 4 snapshot-side type-guard arms at pipeline.py:342-348.
-
-    In every axis cfg.max_bytes=None so the overall return must be None
-    when policy_b stays None (proves all 4 reject arms short-circuit
-    policy_b cleanly).
-
-    A1 -- snap not a dict (helper returns int 42 -> isinstance False).
-    A2 -- snap dict missing network_egress key (ne = None).
-    A3 -- snap['network_egress'] not a dict (string).
-    A4 -- network_egress dict missing budget_bytes_per_run (pb = None).
-    """
     cfg = _make_cfg(max_bytes=None)
 
     orch_a1, _ = make_dev_orchestrator()
@@ -72,18 +61,6 @@ def test_effective_scraper_budget_bytes_snapshot_type_guards_4_axis() -> None:
 
 
 def test_effective_scraper_budget_bytes_value_guard_matrix_5_axis() -> None:
-    """Pin the pb value-guard at pipeline.py:347 (isinstance(pb, int) and pb >= 0).
-
-    All axes provide a valid snap dict with valid network_egress dict; only
-    budget_bytes_per_run varies. cfg.max_bytes=None so return reflects exactly
-    the policy_b decision (None when rejected, value when accepted).
-
-    B1 -- pb None: isinstance(None, int) False -> rejected.
-    B2 -- pb string '100': type-strict reject (no coercion).
-    B3 -- pb float 100.5: float reject.
-    B4 -- pb negative -1: int but pb >= 0 False -> rejected.
-    B5 -- pb 0 (boundary inclusive) AND positive 1024 both accepted.
-    """
     cfg = _make_cfg(max_bytes=None)
 
     def _snap_with_pb(pb: object) -> dict[str, object]:
@@ -125,15 +102,6 @@ def test_effective_scraper_budget_bytes_value_guard_matrix_5_axis() -> None:
 
 
 def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
-    """Pin cap composition + min() ordering at pipeline.py:349-354.
-
-    All axes use a structurally valid snap; only the cap sources vary.
-
-    C1 -- policy only (cfg.max_bytes=None): return policy_b.
-    C2 -- cfg only (snap returns no usable policy_b): return cfg.max_bytes.
-    C3 -- both with policy stricter: min picks policy.
-    C4 -- both with cfg stricter: min order-invariant; picks cfg.
-    """
     snap_500 = {"network_egress": {"budget_bytes_per_run": 500}}
     snap_2048 = {"network_egress": {"budget_bytes_per_run": 2048}}
 
@@ -185,12 +153,6 @@ def test_effective_scraper_budget_bytes_min_composition_4_axis() -> None:
 
 
 def test_effective_scraper_budget_bytes_empty_caps_and_zero_budget_3_axis() -> None:
-    """Pin the ``return min(caps) if caps else None`` edge at pipeline.py:354.
-
-    D1 -- both absent -> caps == [] -> short-circuit to None.
-    D2 -- both equal -> min returns that shared value (no surprise ordering).
-    D3 -- zero policy_b is a valid deny-all budget (pb=0 admitted; min(0, X) == 0).
-    """
     orch_d1, _ = make_dev_orchestrator()
     with patch.object(orch_d1, "policy_snapshot_for_run", return_value={}):
         result_d1 = orch_d1._effective_scraper_budget_bytes(  # noqa: SLF001

@@ -24,21 +24,6 @@ def _all_run_created_rows(mem: InMemoryEventStore) -> list[dict[str, Any]]:
 
 
 def test_create_run_construction_metadata_4_axis_contract() -> None:
-    """Pin the RunCreatedEvent.metadata block at pipeline.py:181-190.
-
-    Axis A1 -- ``roles_registry.yaml_version`` equals
-    ``orch._registry.yaml_version`` (int from ``RoleRegistry.from_yaml``).
-    Axis A2 -- ``roles_registry.content_digest_sha256_16`` is a
-    16-hex-char string matching ``orch._registry`` and is identical
-    across two orchestrators on the same repo (deterministic
-    SHA-256-truncated digest).
-    Axis A3 -- ``policy_snapshot.domain_allowlist_normalized`` is
-    the literal ``True`` regardless of workflow / overrides
-    (pins line 187 hard-coded constant).
-    Axis A4 -- ``policy_snapshot.network_egress_domain_count``
-    equals ``len(stored domain_allowlist)`` -- 0 for bare
-    ``default`` workflow, 2 with a 2-domain override.
-    """
     orch_a, mem_a = make_dev_orchestrator()
     orch_a.create_run("default")
     row_a = _only_run_created_row(mem_a)
@@ -91,21 +76,6 @@ def test_create_run_construction_metadata_4_axis_contract() -> None:
 
 
 def test_create_run_construction_payload_4_axis_contract() -> None:
-    """Pin the RunCreatedPayload shape at pipeline.py:191-196.
-
-    Axis B1 -- ``payload.workflow_profile`` echoes the input arg
-    for both ``default`` and ``agent_evaluator_on``.
-    Axis B2 -- ``payload.policy_version`` is the literal ``"1"``
-    (pins line 193 hard-coded constant).
-    Axis B3 -- ``payload.config_snapshot_id`` is a parseable UUID
-    string and two consecutive calls on the same orchestrator
-    produce **different** values (proves ``str(uuid4())`` runs
-    per-call at line 194).
-    Axis B4 -- ``payload.policy_snapshot.network_egress.domain_allowlist``
-    reflects the merged + normalized snapshot when overrides
-    supply domains (pins the line-170 ``policy_snapshot_from_files``
-    -> line-195 ``policy_snapshot=`` propagation).
-    """
     orch_default, mem_default = make_dev_orchestrator()
     orch_default.create_run("default")
     payload_default = _only_run_created_row(mem_default)["payload"]
@@ -161,26 +131,6 @@ def test_create_run_construction_payload_4_axis_contract() -> None:
 def test_create_run_run_policy_overrides_propagation_and_idempotency_lockout_3_axis_contract() -> (
     None
 ):
-    """Pin the ``run_policy_overrides`` kwarg behaviour + cross-fo85 lockout.
-
-    Axis C1 -- ``None`` vs ``{}`` are equivalent: both skip the
-    third merge layer (``if not layer: continue`` in
-    ``_merge_*_allowlist``) and produce identical empty
-    ``domain_allowlist`` for the bare ``default`` workflow.
-    Axis C2 -- non-empty override propagates: stored
-    ``policy_snapshot.network_egress.domain_allowlist`` matches
-    the override (after normalization) AND
-    ``metadata.policy_snapshot.network_egress_domain_count``
-    reflects the same count (pins the override -> snapshot ->
-    metadata count chain).
-    Axis C3 -- **STRONG cross-fo85 pin**: when call 2
-    short-circuits via idempotency (same ``correlation_id`` as
-    call 1), call-2 overrides are silently dropped. The single
-    stored row's ``domain_allowlist`` matches call-1 alpha only;
-    call-2 beta never reaches ``policy_snapshot_from_files``
-    because line 162-166 short-circuits before line 170. This
-    closes the documented fo85 deferral.
-    """
     orch_none, mem_none = make_dev_orchestrator()
     orch_none.create_run("default", run_policy_overrides=None)
     row_none = _only_run_created_row(mem_none)

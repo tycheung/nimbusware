@@ -90,19 +90,6 @@ def _write_catalog(tmp_path: Path, body: str) -> Path:
 def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin the wrapper's 3-axis contract (accept / FNF / VE propagation).
-
-    Wrapper at
-    [ingress.py:13-19](packages\\nimbusware_orchestrator\\ingress.py)
-    delegates to ``assert_workflow_bundle_map_ids_resolve`` after
-    joining ``configs/bundles/catalog.yaml`` to ``repo_root``. The
-    accept arm exercises the real repo; FNF arm uses ``tmp_path``
-    without the file; VE arm loops 3 invalid bodies (one per inner-
-    helper reject sub-path).
-
-    Pins the wrapper as a true passthrough: no swallow, no catch-
-    and-default, no path-rewrite.
-    """
 
     # Accept arm -- real repo's configs/bundles/catalog.yaml.
     accept_result = assert_bundle_catalog_maps_resolve(_REPO_ROOT)
@@ -138,25 +125,6 @@ def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
 def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return_matrix(
     tmp_path: Path,
 ) -> None:
-    """Pin the inner helper's reject + early-return matrix.
-
-    Inner helper at
-    [catalog.py:20-49](packages\\nimbusware_extensions\\catalog.py)
-    has 5 reject sub-cases + 3 early-return cases; only "unknown
-    bundle id" was tested in ``test_extensions_yaml.py``. fo82
-    Part B closes the remainder.
-
-    Reject sub-loop: 4 axes (load_yaml non-mapping, empty/null,
-    empty-string, unknown id) + 1 error-truncation contract
-    ("(+N more)" suffix when errors > 10). Each reject case asserts
-    exception class + prefix + (where applicable) sentinel fragment.
-
-    Early-return sub-loop: 3 cases (no wmap key, wmap not a dict,
-    wmap empty) that all return None without raising. Pins that the
-    helper's flow at [catalog.py:34-36] handles these gracefully
-    (operators can omit ``workflow_bundle_map`` and the catalog
-    validates).
-    """
 
     for case_id, body, exc_class, prefix, fragment in _REJECT_CASES:
         case_tmp = tmp_path / f"reject_{case_id}"
@@ -198,24 +166,6 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
 def test_bundle_catalog_wrapper_vs_helper_consistency_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin wrapper-vs-helper exception + message parity.
-
-    The wrapper at
-    [ingress.py:13-19](packages\\nimbusware_orchestrator\\ingress.py)
-    is a pure path-prefixing passthrough -- it joins
-    ``configs/bundles/catalog.yaml`` to ``repo_root`` and delegates
-    to ``assert_workflow_bundle_map_ids_resolve``. This test pins
-    that:
-
-    1. For a valid catalog at the expected sub-path, BOTH layers
-       return None.
-    2. For invalid bodies, BOTH layers raise the SAME exception
-       class with the SAME message string (no swallow, no rewrite,
-       no transformation).
-
-    A future refactor that adds caching / logging / metrics to the
-    wrapper MUST preserve this parity or this test fails loudly.
-    """
 
     # Path plumbing equivalence -- valid body at expected sub-path.
     valid_body = "bundles: [{id: known-a}]\nworkflow_bundle_map: {default: known-a}\n"

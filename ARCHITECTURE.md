@@ -70,8 +70,8 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 ## Data flow
 
 1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `nimbusware_store`.
-2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress without API imports from orchestrator.
-3. **Read** — HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
+2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress from the event log.
+3. **Read** — Campaign/backlog row parsers live in `agent_core.read.campaign` (shared by orchestrator and projections). HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
 4. **Maker loop** — Pending slices, research approve/reject, and stitch summary are read models over the same event log (`nimbusware_maker` + maker web tabs).
 
 ## Auth (request path)
@@ -86,6 +86,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 - `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
 - `nimbusware_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
+- `nimbusware_projections` must not import `nimbusware_orchestrator` at module level except legacy allowlist (`stage_timeline.py`, `universal_critique.py`).
 - Legacy `packages/nimbusware_{api,console,config,env}/` shims removed (Lane R-B).
 
 ## Architecture decision records

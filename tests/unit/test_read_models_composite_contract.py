@@ -152,18 +152,6 @@ def _append_finding_created(store: InMemoryEventStore, run_id: UUID) -> None:
 def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
     tmp_path: Any,  # noqa: ARG001  (unused; pytest-supplied fixture for parity)
 ) -> None:
-    """Pin empty-rows defaults + RUN_LIST_FILTER_STATUSES + run_has_started baseline (5 axes).
-
-    A1: empty rows -> exact 8-field default dict.
-    A2: ``"unknown"`` NOT in ``RUN_LIST_FILTER_STATUSES``; the 3
-        non-empty statuses ARE.
-    A3: ``RUN_LIST_FILTER_STATUSES`` IS a ``frozenset`` and equals
-        ``frozenset({"created", "running", "terminal"})``.
-    A4: ``run_has_started([])`` -> False.
-    A5: ``run_has_started([RUN_FAILED row])`` -> False (no RUN_STARTED
-        present; pins the function is RUN_STARTED-specific, not a
-        generic "is run active?" probe).
-    """
     expected_empty = {
         "status": "unknown",
         "workflow_profile": None,
@@ -228,31 +216,6 @@ def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
 
 
 def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contract() -> None:
-    """Pin 4-state status ladder + terminal_event_type field (5 axes).
-
-    The ladder at lines 47-53 has three explicit transitions stacked
-    against a default ``"running"`` initializer:
-
-    1. Default: ``status = "running"`` (line 47).
-    2. ``if terminal:`` -> ``"terminal"`` (lines 48-49).
-    3. ``elif any(... RUN_STARTED ...):`` -> ``"running"`` (lines 50-51).
-    4. ``elif latest_et == RUN_CREATED:`` -> ``"created"`` (lines 52-53).
-
-    The 5 axes pin EACH transition:
-
-    * B1: RUN_CREATED only -> ``"created"`` (branch 4).
-    * B2: RUN_CREATED + STAGE_STARTED -> ``"running"`` via DEFAULT
-      (branch 1, falls through because no terminal / no started / not
-      latest=RUN_CREATED).
-    * B3: RUN_CREATED + RUN_STARTED -> ``"running"`` via STARTED
-      (branch 3).
-    * B4: RUN_CREATED + RUN_STARTED + RUN_FAILED -> ``"terminal"``
-      (branch 2 BEATS branch 3 -- the priority is terminal > started).
-    * B5: RUN_CREATED + RUN_COMPLETED -> ``"terminal"`` AND
-      terminal_event_type == ``"run.completed"`` (pins both RUN_COMPLETED
-      as a terminal trigger AND the terminal_event_type field tracks
-      the exact event_type, not just the boolean state).
-    """
     b1_store, b1_rid = _make_store_and_run()
     _append_run_created(b1_store, b1_rid, workflow_profile="b1_profile")
     b1_summary = build_run_summary(b1_store.list_run_events(str(b1_rid)))
@@ -334,33 +297,6 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
 
 
 def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contract() -> None:
-    """Pin workflow_profile (LAST-wins) vs run_created_metadata (FIRST-wins) (5 axes).
-
-    The implementation has TWO loops over the same rows that both
-    look for RUN_CREATED events but extract DIFFERENT fields with
-    DIFFERENT termination semantics:
-
-    Loop 1 (lines 32-40): workflow_profile -- NO break, so the LAST
-    RUN_CREATED wins.
-
-    Loop 2 (lines 56-64): run_created_metadata -- HAS break, so the
-    FIRST RUN_CREATED wins.
-
-    A "harmonize the two loops" refactor would have to pick ONE
-    behavior and break the other field's contract. The 5 axes pin
-    both behaviors with co-located evidence:
-
-    * C1: single RUN_CREATED with workflow_profile -> happy path.
-    * C2: single RUN_CREATED with non-empty metadata -> happy +
-      ``dict()`` copy semantics.
-    * C3: NO RUN_CREATED in rows -> both fields stay at initial
-      defaults.
-    * C4: TWO RUN_CREATED events with different workflow_profile ->
-      LAST wins for workflow_profile.
-    * C5: SAME 2-RUN_CREATED rows as C4 (in this same test) but with
-      different metadata -> FIRST wins for run_created_metadata.
-      KEY DIVERGENCE pin: same rows, opposite resolution.
-    """
     c1_store, c1_rid = _make_store_and_run()
     _append_run_created(c1_store, c1_rid, workflow_profile="alpha")
     c1_summary = build_run_summary(c1_store.list_run_events(str(c1_rid)))
@@ -434,26 +370,6 @@ def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contr
 
 
 def test_read_models_counters_flags_event_count_and_run_has_started_defensive_contract() -> None:
-    """Pin counters / flags / event_count / latest_event_type + run_has_started arms (5 axes).
-
-    The 5 axes cover the remaining build_run_summary fields and the
-    final two arms of run_has_started:
-
-    * D1: ``findings_count`` is a SUM-counter (not boolean) across 0
-      / 1 / 3 FINDING_CREATED events.
-    * D2: ``has_escalation`` is an ANY-flag (not count) across 0 / 1
-      / 2 RUN_ESCALATED events.
-    * D3: ``event_count == len(rows)`` AND ``latest_event_type ==
-      rows[-1]["event_type"]`` across 3 distinct row-tail shapes.
-    * D4: ``run_has_started`` returns True regardless of RUN_STARTED
-      position (proves the function visits ALL rows looking for a
-      match, not just rows[0] or rows[-1]).
-    * D5: ``run_has_started`` does NOT catch ``ValidationError`` on a
-      malformed RUN_STARTED row -- the validate_event_dict call is
-      bare (no try/except). KEY DIVERGENCE pin via pytest.raises.
-      Also pins the early-continue guard on event_type via a malformed
-      non-RUN_STARTED row that would crash if validation came first.
-    """
     d1_counts: list[tuple[int, int]] = [(0, 0), (1, 1), (3, 3)]
     for n_findings, expected in d1_counts:
         d1_store, d1_rid = _make_store_and_run()

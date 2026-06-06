@@ -18,13 +18,6 @@ def _write_policy(tmp_path: Path, body: str) -> Path:
 
 
 def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
-    """Pin the 4 structural arms at verifier_escalation.py:13-18.
-
-    A1 -- file missing -> File guard short-circuits to False.
-    A2 -- root not a dict -> load_yaml raises ValueError; PROPAGATES (asymmetry).
-    A3 -- verification key absent -> ver=None, isinstance(None, dict) False -> False.
-    A4 -- verification scalar string -> isinstance non-dict False -> False.
-    """
     bare_root = tmp_path / "a1_bare"
     bare_root.mkdir()
     assert load_escalate_on_first_verifier_failure(bare_root) is False, (
@@ -53,12 +46,6 @@ def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
 
 
 def test_load_escalate_bool_path_and_missing_key_3_axis(tmp_path: Path) -> None:
-    """Pin bool literal pass-through + missing-key fallback at verifier_escalation.py:19-21.
-
-    B1 -- bool True -> returns True (literal pass-through).
-    B2 -- bool False -> returns False (literal pass-through, isolated from shipped default).
-    B3 -- target key absent under verification dict -> v=None falls to fallback False.
-    """
     b1_root = _write_policy(
         tmp_path / "b1_bool_true",
         "verification:\n  escalate_on_first_verifier_failure: true\n",
@@ -87,18 +74,6 @@ def test_load_escalate_bool_path_and_missing_key_3_axis(tmp_path: Path) -> None:
 
 
 def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
-    """Pin string truthy set + .strip().lower() normalization at verifier_escalation.py:22-23.
-
-    All YAML scalars MUST be explicitly quoted; PyYAML coerces unquoted
-    ``true``/``yes``/``on`` to Python bool per YAML 1.1, which would hit the
-    bool path instead of the string path.
-
-    C1 -- literal truthy set: "1" / "true" / "yes" / "on" -> True.
-    C2 -- case-insensitive: "TRUE" / "YES" / "On" / "True" -> True.
-    C3 -- whitespace-wrapped: "  true  " / "\\tyes\\n" / "  on  " -> True.
-    C4 -- combined: "  YES  " / "\\tTRUE\\n" -> True.
-    C5 -- empty string "" -> False (lower bound; not in truthy set).
-    """
     c1_dir = tmp_path / "c1"
     c1_dir.mkdir()
     for scalar in ("1", "true", "yes", "on"):
@@ -155,14 +130,6 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
 
 
 def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> None:
-    """Pin string falsy + non-bool/non-string type rejection at verifier_escalation.py:23-24.
-
-    D1 -- literal falsy strings: "0" / "false" / "no" / "off" -> all False.
-    D2 -- arbitrary non-truthy strings: "maybe" / "perhaps" / "truefoo" -> all False.
-    D3 -- int 1 and 0 -> no numeric coercion (asymmetric vs env-layer).
-    D4 -- float 1.0 -> reject.
-    D5 -- list [] and null -> reject.
-    """
     d1_dir = tmp_path / "d1"
     d1_dir.mkdir()
     for scalar in ("0", "false", "no", "off"):

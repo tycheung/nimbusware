@@ -70,6 +70,48 @@ def _should_drop(doc: str) -> bool:
     return len(stripped) > 120
 
 
+def _is_contract_test(path: Path) -> bool:
+    name = path.name
+    return "contract" in name or "matrix" in name
+
+
+def _strip_contract_test_docstrings(path: Path) -> bool:
+    if not _is_contract_test(path):
+        return False
+    text = path.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    lines = text.splitlines(keepends=True)
+    removals: list[tuple[int, int]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if not node.name.startswith("test_"):
+            continue
+        if not node.body:
+            continue
+        first = node.body[0]
+        if not isinstance(first, ast.Expr) or not isinstance(first.value, ast.Constant):
+            continue
+        if not isinstance(first.value.value, str):
+            continue
+        doc = first.value.value.strip()
+        if not doc or "\n" in doc:
+            if len(doc.splitlines()) <= 3:
+                continue
+        start = first.lineno - 1
+        end = first.end_lineno
+        removals.append((start, end))
+    if not removals:
+        return False
+    for start, end in sorted(removals, reverse=True):
+        lines = lines[:start] + lines[end:]
+    path.write_text("".join(lines), encoding="utf-8")
+    return True
+
+
 def _process(path: Path) -> bool:
     if _rel(path) in _SKIP_REL:
         return False
@@ -108,7 +150,12 @@ def main() -> int:
         for path in sorted(root.rglob("*.py")):
             if "__pycache__" in path.parts:
                 continue
+            file_changed = False
             if _process(path):
+                file_changed = True
+            if _strip_contract_test_docstrings(path):
+                file_changed = True
+            if file_changed:
                 changed += 1
                 print(_rel(path))
     print(f"trimmed {changed} files")

@@ -71,17 +71,6 @@ def _make_fake_mi_class(
 def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin thresholds.yaml-absent arm + OR-gate guard + env-vs-import ordering.
-
-    A1 -- thresholds.yaml absent + workflow-on -> no emit (uncovered today).
-    A2 -- env force-on + thresholds.yaml absent -> still no emit (env on
-    cannot rescue missing thresholds; absent-arm sits AFTER env force-on).
-    A3 -- env kill-switch -> ModuleIntegrator NOT constructed (lazy-import
-    seam pin; would silently regress under a "hoist import to module-level"
-    refactor that moved instantiation before the kill switch).
-    A4 -- all gates off + env unset -> no emit (canonical control).
-    A5 -- workflow YAML on + loader False -> emit via ``wf_on`` alone.
-    """
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("integrator_gate_on")
@@ -172,15 +161,6 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
 def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin the project_tags 3-arm ladder + ``is not None`` semantics.
-
-    The ladder at pipeline.py:1505-1510 has three arms:
-    * ``project_override is not None`` -> use override (B1, B4).
-    * ``elif bundle_tags:`` -> ``list(bundle_tags)`` (B2).
-    * ``else:`` -> ``[bundle_id]`` singleton fallback (B3; uncovered today).
-
-    B5 pins the structural boundary between B3 (None) and B4 ([]).
-    """
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     orch_b1, mem_b1 = make_dev_orchestrator()
@@ -296,12 +276,6 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
 def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin the profile-dict conditional ``bundle_tags`` key + ``matched_tags``
-    case-fold + whitespace filter.
-
-    C1/C2 spy ``ModuleIntegrator.score_fit`` to inspect the profile arg shape.
-    C3/C4/C5 inspect the emitted ``metadata.integrator_matched_tags``.
-    """
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     class_spy_c1, mi_c1 = _make_fake_mi_class()
@@ -429,14 +403,6 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
 def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin PASS-vs-FAIL payload divergence + emit shape.
-
-    D4 is the **highest-value pin** in fo107: the explicit
-    ``unanimous_pass_required=False`` parameter in both branches overrides
-    the Pydantic default of ``True``. A 'remove the explicit param to use
-    default' refactor would silently flip the field from False to True,
-    invisible to callers but materially different in downstream gate logic.
-    """
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
 
     orch_pass, mem_pass = make_dev_orchestrator()

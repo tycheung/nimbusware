@@ -28,13 +28,6 @@ def _resp_with_cl(value: str | None) -> httpx.Response:
 
 
 def test_parse_content_length_header_5_axis() -> None:
-    """Pin _parse_content_length_header at pipeline.py:233-241.
-
-    The helper resolves to one of: ``None`` (missing header), ``int(raw)``
-    (valid numeric), or ``None`` again (ValueError on non-numeric). No
-    semantic clamping at this layer -- bounds enforcement lives downstream
-    in ``_scraper_get_with_retries`` / ``_effective_scraper_budget_bytes``.
-    """
     parse = RunOrchestrator._parse_content_length_header  # noqa: SLF001
 
     assert parse(_resp_with_cl(None)) is None, (
@@ -64,12 +57,6 @@ def test_parse_content_length_header_5_axis() -> None:
 
 
 def test_scraper_stage_audit_metadata_5_axis() -> None:
-    """Pin _scraper_stage_audit_metadata at pipeline.py:243-260.
-
-    The helper builds a ``{"scraper_fetch": <inner>}`` envelope with four
-    required inner keys and one optional ``content_length`` key gated by
-    ``is not None`` (NOT truthy -- distinguishes 0 from None).
-    """
     audit = RunOrchestrator._scraper_stage_audit_metadata  # noqa: SLF001
 
     out_b1 = audit("h", 200, 100, 1)
@@ -118,14 +105,6 @@ def test_scraper_stage_audit_metadata_5_axis() -> None:
 
 
 def test_scraper_body_digest_and_snippet_5_axis() -> None:
-    """Pin _scraper_body_digest_and_snippet at pipeline.py:262-268.
-
-    The helper always returns the sha256 of FULL content; the
-    ``body_snippet_preview`` key is gated by ``if snippet_max_bytes > 0:``
-    (strict positive, not ``if snippet_max_bytes:`` truthy or ``>= 0``).
-    Preview decode uses ``errors='replace'`` so invalid UTF-8 produces
-    U+FFFD without raising.
-    """
     digest = RunOrchestrator._scraper_body_digest_and_snippet  # noqa: SLF001
 
     content_c1 = b"Hello, world!"
@@ -172,15 +151,6 @@ def test_persist_scraper_response_artifact_5_axis(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin _persist_scraper_response_artifact at pipeline.py:270-296.
-
-    The helper writes ``<base>/<run_id>/url{NN:02d}_<sha256(content)[:32]>.bin``
-    truncated to ``persist_cap`` bytes; returns ``{artifact_relpath (forward
-    slash normalized), artifact_sha256 (sha256 of TRUNCATED blob),
-    artifact_bytes_written}``. ``NIMBUSWARE_SCRAPER_ARTIFACT_DIR`` overrides
-    the default cache dir; ``resolve_scraper_artifact_base_dir`` is the
-    seam (imported into pipeline at pipeline.py:104).
-    """
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(tmp_path))
     orch, _ = make_dev_orchestrator()
     base_dir = Path(str(tmp_path)).expanduser().resolve()

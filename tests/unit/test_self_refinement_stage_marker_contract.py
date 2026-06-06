@@ -36,14 +36,6 @@ def _sr_marker_metadata(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
-    """Pin policy-source resolution at pipeline.py:1451-1455 + workflow-block delegation.
-
-    Coverage delta vs existing tests: today the orchestrator-side method has
-    only HAPPY-path coverage (workflow_profile='self_refinement_on') which
-    implicitly relies on the repo's policy.yaml existing. The False arm at
-    line 1454-1455 (inline default `SelfRefinementPolicy(version=1, enabled=
-    False, description="")`) has zero direct coverage.
-    """
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     sentinel_pol_a1 = SelfRefinementPolicy(version=7, enabled=True, description="A1")
@@ -152,13 +144,6 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
 
 
 def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
-    """Pin `not pol.enabled and not wf_sr.enabled` early return at pipeline.py:1457-1458.
-
-    Coverage delta vs existing tests: today only single-source coverage exists
-    (workflow ON -> emit, default -> no emit). The OR semantics across pol and
-    wf_sr is unpinned; a refactor flipping to AND or double-emit would not be
-    caught by today's tests.
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     with (
@@ -246,15 +231,6 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
 
 
 def test_self_refinement_marker_override_semantics_5_axis() -> None:
-    """Pin version + description override at pipeline.py:1460-1465.
-
-    Coverage delta vs existing tests: today's `test_emit_self_refinement_marker
-    _when_workflow_enables` verifies `metadata.version == 1` but does NOT
-    distinguish whether the value came from pol or wf_sr (the repo's policy
-    has version=1 AND `self_refinement_on` has version=1, so both sources
-    produce the same observable value). fo105 C pins the override DIRECTION
-    explicitly so a future swap (pol beats wf_sr) would fail loudly.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     with (
@@ -366,15 +342,6 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
 
 
 def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
-    """Pin emit shape + literal stage_name + attempt + metadata + [:2000] + NO-dedup.
-
-    Coverage delta vs existing tests: today's `test_emit_self_refinement_marker
-    _when_workflow_enables` spot-checks `version` and `description isinstance
-    str` but does NOT pin (a) the literal `stage_name` value, (b) `attempt==1`,
-    (c) the metadata envelope key `self_refinement`, (d) the `[:2000]`
-    bounding, or (e) the NO-dedup STRUCTURAL DIVERGENCE from fo102 / fo104
-    escalation emitters.
-    """
     orch_d1, mem_d1 = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     with (

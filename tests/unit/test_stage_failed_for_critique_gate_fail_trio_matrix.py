@@ -128,17 +128,6 @@ def _stage_failed_rows_for(
 
 
 def test_stage_failed_for_critique_gate_fail_multi_stage_matrix_4_axis() -> None:
-    """Pin multi-stage permutations across the trio.
-
-    A1 -- all-3 stages FAIL + all-3 flags on -> 3 STAGE_FAILED rows
-    (one per stage with correct reason_code).
-    A2 -- mixed verdict (impl PASS, tw FAIL, pll FAIL) + all-3 flags on
-    -> 2 STAGE_FAILED rows (no impl_critique_gate_fail).
-    A3 -- stage-filter isolation: tw + pll FAIL gates present + impl flag
-    enabled but no impl gate -> 0 emits (cross-stage gates do not match).
-    A4 -- already-emitted isolation: pre-seeded impl STAGE_FAILED + fresh
-    FAIL gate + impl flag on -> still 1 row (pre-seeded), no duplicate.
-    """
     eff_all_on = _make_eff(
         impl_stage_failed_on_gate_fail=True,
         tw_stage_failed_on_gate_fail=True,
@@ -220,15 +209,6 @@ def test_stage_failed_for_critique_gate_fail_multi_stage_matrix_4_axis() -> None
 
 
 def test_stage_failed_for_critique_gate_fail_skip_branches_per_variant_4_axis_x_3() -> None:
-    """Pin each of the 4 ``return`` arms in isolation per variant.
-
-    Three sub-blocks (impl / tw / pll); each iterates the same 4 skip axes:
-
-    B1 -- flag-off (master switch ``_stage_failed_on_gate_fail=False``)
-    B2 -- already-emitted (reason_code matches pre-seeded STAGE_FAILED)
-    B3 -- no gate row for THIS stage (FAIL gates for OTHER stages present)
-    B4 -- last gate PASS (verdict suppression)
-    """
     variants: list[tuple[str, str, str, str],] = [
         (
             "impl",
@@ -301,12 +281,6 @@ def test_stage_failed_for_critique_gate_fail_skip_branches_per_variant_4_axis_x_
 
 
 def test_stage_failed_for_critique_gate_fail_payload_shape_per_variant_3_axis() -> None:
-    """Pin per-variant emitted STAGE_FAILED payload triplet.
-
-    Each variant runs the HAPPY path with the relevant flag on and a FAIL
-    gate, then inspects the single emitted row's ``stage_name`` +
-    ``reason_code`` + ``message`` (3 fields x 3 variants = 9 assertions).
-    """
     cases: list[tuple[str, str, str, str, str]] = [
         (
             "_maybe_emit_stage_failed_for_implementation_critique_gate_fail",
@@ -350,18 +324,6 @@ def test_stage_failed_for_critique_gate_fail_payload_shape_per_variant_3_axis() 
 
 
 def test_stage_failed_for_critique_gate_fail_helper_contracts_5_axis() -> None:
-    """Pin cross-cutting helper contracts using impl as the symmetric proxy.
-
-    D1 -- ``eff=None`` lazy: ``_effective_universal_critique_for_run`` invoked
-    once + emit happens (uses the mocked eff with impl flag on).
-    D2 -- ``eff=<explicit>`` eager: ``_effective_universal_critique_for_run``
-    NOT invoked (call_count == 0) + emit still happens.
-    D3 -- LAST-wins (PASS -> FAIL): two gates for impl, last is FAIL -> emit.
-    D4 -- LAST-wins (FAIL -> PASS): two gates for impl, last is PASS -> suppress.
-    D5 -- verdict-string coercion (4 sub-axes): Verdict.FAIL enum / ``"FAIL"`` /
-    ``"fail"`` lowercase / ``"Fail"`` mixed-case / ``" FAIL "`` whitespace
-    each emits (pins ``str(verdict_raw).strip().upper() == "FAIL"``).
-    """
     impl_method = "_maybe_emit_stage_failed_for_implementation_critique_gate_fail"
 
     orch_d1, mem_d1 = make_dev_orchestrator()

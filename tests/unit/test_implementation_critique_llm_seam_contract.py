@@ -48,22 +48,6 @@ _WS = Path(".")
 
 
 def test_implementation_critique_llm_seam_path_matrix_5_axis() -> None:
-    """Pin the 5 control-flow paths at pipeline.py:1187-1211 for impl seam.
-
-    NOTE: there is no ``tw_enabled=False``-equivalent master-switch axis
-    since impl variant lacks that flag -- this asymmetry is itself a
-    contract pinned by A1 (all-off -> LLM 0, stub 0, no third path).
-
-    A1 -- impl_llm=False + impl_stub=False -> LLM 0, stub 0 (no master
-    switch).
-    A2 -- impl_llm=False + impl_stub=True -> stub-only path.
-    A3 -- impl_llm=True + no model + impl_stub=True -> LLM NOT invoked,
-    stub fallback runs (pins the ``if model:`` guard).
-    A4 -- impl_llm=True + model + LLM returns True + impl_stub=True ->
-    LLM only (stub NOT invoked per ``if not emitted_impl_llm``).
-    A5 -- impl_llm=True + model + LLM returns False + impl_stub=True ->
-    LLM + stub fallback (AND-gated fallback).
-    """
     with (
         patch(
             "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
@@ -151,18 +135,6 @@ def test_implementation_critique_llm_seam_path_matrix_5_axis() -> None:
 
 
 def test_implementation_critique_llm_seam_argument_propagation_5_axis() -> None:
-    """Pin the LLM call's kwargs contract at pipeline.py:1194-1204 for impl.
-
-    Mirrors fo91 Part C for impl variant. All axes use happy path
-    (impl_llm=True + model + impl_stub=False); inspects m_llm.call_args.kwargs.
-
-    B1 -- base_url default 'http://localhost:11434' when _base_cfg returns {}.
-    B2 -- base_url override read from _base_cfg() runtime.base_url.
-    B3 -- timeout_seconds default 120.0 + float-typed when _base_cfg returns {}.
-    B4 -- timeout_seconds int->float cast via float() coercion of int input.
-    B5 -- run_id + model_id 2-kwarg verbatim pass-through (verifier_exit_code
-    and log_snippet are pinned by Parts D/C respectively).
-    """
     eff = _make_eff(impl_llm=True, impl_stub=False)
 
     with (
@@ -258,16 +230,6 @@ def test_implementation_critique_llm_seam_argument_propagation_5_axis() -> None:
 
 
 def test_implementation_critique_llm_seam_log_snippet_60_line_truncation_4_axis() -> None:
-    """Pin the impl-only 60-line log_snippet truncation contract at pipeline.py:1183.
-
-    ``log_snippet = "\\n".join(log.splitlines()[:60])`` is unique to the
-    impl seam; tw/pll receive the already-truncated snippet via parameter.
-
-    C1 -- empty log '' -> log_snippet == '' (join of [] is '').
-    C2 -- single-line log preserved as-is (no truncation, no trailing newline).
-    C3 -- exactly 60-line log fully preserved (all 60 lines).
-    C4 -- 100-line log truncated to first 60 lines, last line is 'line59'.
-    """
     eff = _make_eff(impl_llm=True, impl_stub=False)
 
     def _run_with_log(log: str) -> str:
@@ -311,17 +273,6 @@ def test_implementation_critique_llm_seam_log_snippet_60_line_truncation_4_axis(
 
 
 def test_implementation_critique_llm_seam_verifier_exit_code_propagation_3_axis() -> None:
-    """Pin verifier_exit_code propagation from run_writer_verifier_bundle.
-
-    Unique to impl: ``verifier_exit_code=code`` reads from the bundle's
-    return tuple directly. tw/pll receive ``verifier_exit_code`` as a
-    method parameter from their caller (which is this same code variable).
-
-    D1 -- code=0 (success): kwargs verifier_exit_code == 0.
-    D2 -- code=1 (failure): kwargs verifier_exit_code == 1.
-    D3 -- code=42 (arbitrary): kwargs verifier_exit_code == 42 + LLM called
-    exactly once (proves the seam reaches the call site regardless of code).
-    """
     eff = _make_eff(impl_llm=True, impl_stub=False)
 
     def _run_with_code(code: int) -> tuple[int, int]:

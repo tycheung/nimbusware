@@ -36,26 +36,6 @@ def _write_policy(repo: Path, body: str) -> Path:
 def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin ``load_auto_escalate_after_cumulative_findings`` defensive arms (5 axes).
-
-    The function has a 4-arm structure:
-
-    1. ``if not path.is_file(): return None`` -- file-absent.
-    2. ``ver = raw.get("verification"); if not isinstance(ver, dict): return None``
-       -- verification non-dict.
-    3. ``n = ver.get(KEY)`` returns ``None`` when key missing -> falls
-       through.
-    4. ``if isinstance(n, int) and n >= 1: return n`` -- accept arm;
-       anything else returns ``None``.
-
-    The 5 axes here pin every fail-closed branch AND the happy
-    boundary for the FIRST loader. Parts B / C / D mirror this shape
-    for the other three loaders.
-
-    Each axis uses a fresh ``tmp_path`` subdirectory so writes don't
-    cross-contaminate; the file-absent axis depends on a directory
-    that has no policy.yaml at all.
-    """
     a1_repo = tmp_path / "a1_file_absent"
     a1_repo.mkdir()
     assert load_auto_escalate_after_cumulative_findings(a1_repo) is None, (
@@ -174,21 +154,6 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
 def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergence_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin notice loader defensive arms + KEY DIVERGENCE vs auto (5 axes).
-
-    Mirrors Part A's shape on the SECOND loader -- the loader without
-    a prior direct unit test (only ``patch``ed in fo86's emitter
-    quartet integration tests). The 5 axes:
-
-    * B1 -- file-absent (mirror of A1).
-    * B2 -- verification non-dict (representative; defensive-arm
-      shape is identical to A2 so we sample rather than exhaust).
-    * B3 -- key missing + non-int value (combined).
-    * B4 -- boundary (0 reject, 1 accept floor, 42 accept verbatim).
-    * B5 -- KEY DIVERGENCE: writing ONLY the auto key proves the
-      notice loader returns None (does not read auto's key); writing
-      ONLY the notice key proves the auto loader returns None.
-    """
     b1_repo = tmp_path / "b1_file_absent"
     b1_repo.mkdir()
     assert load_notice_escalate_at_cumulative_findings(b1_repo) is None, (
@@ -291,18 +256,6 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_divergence_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin stage loader defensive arms + KEY DIVERGENCE vs gate (5 axes).
-
-    Mirrors Part B's shape on the THIRD loader (the stage-failure
-    half of the failures pair). The 5 axes:
-
-    * C1 -- file-absent.
-    * C2 -- verification non-dict (representative).
-    * C3 -- key missing + non-int value (combined).
-    * C4 -- boundary (0 reject, 1 accept, 7 accept verbatim).
-    * C5 -- KEY DIVERGENCE: stage and gate loaders read DISTINCT keys
-      (proof via each-key-alone writes).
-    """
     c1_repo = tmp_path / "c1_file_absent"
     c1_repo.mkdir()
     assert load_escalate_after_cumulative_stage_failures(c1_repo) is None, (
@@ -399,23 +352,6 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 def test_escalation_threshold_quartet_cross_loader_matrix_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin gate loader own defensive + bool-is-int quirk + 4-way cross-loader matrix (5 axes).
-
-    The 5 axes lock the gate loader's defensive shape (D1) AND three
-    cross-loader properties (D2 bool quirk on ALL four / D3 isolation
-    matrix / D4 fault isolation / D5 call-order idempotence) that
-    only the FULL quartet can prove.
-
-    The bool-is-int quirk (D2) is the most operator-surprising axis:
-    a YAML editor writing ``true`` for an integer threshold key
-    silently passes the loader's ``isinstance(n, int)`` guard
-    (because ``bool`` is a subclass of ``int`` in Python) and
-    ``True >= 1`` is also True, so the loader returns ``True`` (which
-    equals 1). A refactor adding
-    ``not isinstance(n, bool)`` to the guard would flip every D2
-    sub-case and is exactly what an operator might add when "tightening"
-    the threshold contract.
-    """
     d1_absent = tmp_path / "d1_absent"
     d1_absent.mkdir()
     assert load_escalate_after_cumulative_gate_failures(d1_absent) is None, (

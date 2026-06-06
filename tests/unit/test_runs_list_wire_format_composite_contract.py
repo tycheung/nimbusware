@@ -41,17 +41,6 @@ def _parse_link_entries(link_header: str) -> list[tuple[str, str]]:
 
 
 def test_link_header_trio_structural_shape_5_axis() -> None:
-    """Pin link-header trio structural shape (5 axes).
-
-    Implementations at [openapi.py:71-128](packages/nimbusware_api/schemas/openapi.py).
-
-    A1 / A2 / A3 / A4 / A5 pin: ``str`` return type for all three,
-    detail's 2-entry ``rel="timeline"`` + ``rel="findings"`` shape,
-    timeline's ``rel="run"`` + ``rel="findings"`` shape, findings'
-    ``rel="run"`` + ``rel="timeline"`` shape (mirror of A3), and
-    the RFC 5988 per-entry syntax regex pinned across all three
-    functions via the shared ``_parse_link_entries`` helper.
-    """
     for run_id in (_CANONICAL_RUN_ID, _ALT_RUN_ID):
         detail_out = format_run_detail_link_header(run_id)
         timeline_out = format_run_timeline_link_header(run_id)
@@ -158,13 +147,6 @@ def test_link_header_trio_structural_shape_5_axis() -> None:
 
 
 def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
-    """Pin link-header trio navigation triangle + determinism (5 axes).
-
-    B1 / B2 / B3 / B4 / B5 pin: verbatim run_id substitution
-    (no URL-encoding), the 3-resource navigation triangle (union of
-    URIs is exactly 3), self-omission per page, determinism /
-    purity, and OpenAPI ``example`` cross-consistency.
-    """
     edge_run_ids = [
         "ffffffff-ffff-4fff-8fff-ffffffffffff",
         "00000000-0000-4000-8000-000000000000",
@@ -267,28 +249,6 @@ def test_link_header_trio_navigation_triangle_and_determinism_5_axis() -> None:
 
 
 def test_runs_list_query_string_base_and_offset_5_axis() -> None:
-    """Pin ``_runs_list_query_string`` base + offset insertion (5 axes).
-
-    Implementation at [runs.py:211-246](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        pairs = [("limit", str(limit)), ("order", order),
-                 ("include_summary", str(include_summary))]
-        if offset is not None:
-            pairs.insert(1, ("offset", str(offset)))
-        if cursor is not None:
-            pairs.append(("cursor", cursor))
-        ...
-        return urlencode(pairs)
-
-    C1 / C2 / C3 / C4 / C5 pin: base 3-key prefix order
-    (limit/order/include_summary), ``offset`` insertion at index 1
-    (between limit and order), the ``offset=0`` vs ``None``
-    divergence catching truthiness-refactors, the ``str()`` coercion
-    of ``limit`` / ``include_summary`` ints, and ``cursor`` append
-    AFTER the base prefix.
-    """
     base = _runs_list_query_string(
         limit=50,
         offset=None,
@@ -413,15 +373,6 @@ def test_runs_list_query_string_base_and_offset_5_axis() -> None:
 
 
 def test_runs_list_query_string_optional_appends_and_rename_5_axis() -> None:
-    """Pin ``_runs_list_query_string`` optional appends + key transformations (5 axes).
-
-    D1 / D2 / D3 / D4 / D5 pin: 6-field append order (workflow_profile
-    .. list_status), the ``list_status -> status`` URL-param rename
-    divergence, the ``has_escalation=0`` vs ``None`` divergence, the
-    ``urlencode`` special-char coverage (space -> ``+``, ``+`` ->
-    ``%2B``, ``:`` -> ``%3A``), and the all-None-excludes invariant
-    (no empty-value entries leak into the URL).
-    """
     full = _runs_list_query_string(
         limit=50,
         offset=None,

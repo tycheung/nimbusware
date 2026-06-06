@@ -12,13 +12,6 @@ def _base(**extra: Any) -> dict[str, Any]:
 
 
 def test_repro_steps_failure_reason_code_coalesce_ladder_5_axis() -> None:
-    """Pin (gate_pl.get('failure_reason_code') or '').strip() coalesce at pipeline.py:890-892.
-
-    Coverage delta vs fo89 D4c: fo89 only pinned .strip() on a non-empty
-    "  spaced  " input. The full coalesce ladder (None -> ""; missing key;
-    empty string; whitespace-only -> "" via strip-before-truthy; non-empty
-    after strip is what gets appended) is unpinned.
-    """
     orch, _ = make_dev_orchestrator()
     repro = orch._repro_steps_from_critique_gate  # noqa: SLF001
 
@@ -53,12 +46,6 @@ def test_repro_steps_failure_reason_code_coalesce_ladder_5_axis() -> None:
 
 
 def test_repro_steps_empty_none_non_list_rejection_matrix_5_axis() -> None:
-    """Pin isinstance+truthy AND-guards at pipeline.py:893-898.
-
-    Coverage delta vs fo89 D4d: fo89 covers "non-list failing_critics +
-    empty failing_finding_ids" in ONE combined axis. fo100 closes the
-    reverse asymmetry, the None values, and the dual-empty cross-cut.
-    """
     orch, _ = make_dev_orchestrator()
     repro = orch._repro_steps_from_critique_gate  # noqa: SLF001
 
@@ -90,13 +77,6 @@ def test_repro_steps_empty_none_non_list_rejection_matrix_5_axis() -> None:
 
 
 def test_repro_steps_count_line_pluralization_4_axis() -> None:
-    """Pin f-string format with `len()` at pipeline.py:895, 898.
-
-    Coverage delta vs fo89 D4b: fo89 only exercises 2 critics + 1 finding.
-    fo100 pins the 1-element boundary AND a larger N-element across both
-    lists to prove the format uses `len()` directly with literal "(s)"
-    suffix (no `if len == 1` pluralization branch).
-    """
     orch, _ = make_dev_orchestrator()
     repro = orch._repro_steps_from_critique_gate  # noqa: SLF001
 
@@ -138,11 +118,6 @@ def test_repro_steps_count_line_pluralization_4_axis() -> None:
 
 
 def test_repro_steps_subset_of_optionals_ordering_and_truncation_cap_5_axis() -> None:
-    """Pin subset-of-optionals ordering + defensive [:40] cap at pipeline.py:886-899.
-
-    Coverage delta vs fo89 D4b: fo89 only covers "all 3 optionals present";
-    the 5 subset combinations and the truncation cap are unpinned.
-    """
     orch, _ = make_dev_orchestrator()
     repro = orch._repro_steps_from_critique_gate  # noqa: SLF001
 

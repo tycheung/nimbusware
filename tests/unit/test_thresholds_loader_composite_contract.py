@@ -47,25 +47,6 @@ def _write_workflow_min_score(repo: Path, name: str, value: str) -> None:
 def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin ``load_integrator_gate_emit_enabled`` defensive arms (5 axes).
-
-    The function has a 2-arm structure:
-
-    1. ``if not path.is_file(): return False`` -- file-absent
-       short-circuit at line 55-56.
-    2. ``return bool(raw.get("enabled", False))`` -- single-line
-       coerce-with-default at line 58. The ``False`` second argument is
-       the missing-key default; the outer ``bool()`` coerces whatever
-       value (or ``False`` default) reaches it.
-
-    The 5 axes here pin every branch of the SHAPE (file presence + key
-    presence + bool extremes + explicit null). Part B sweeps the
-    truthy-ladder content of the bool() call separately.
-
-    Each axis uses a fresh ``tmp_path`` subdirectory so writes don't
-    cross-contaminate; the file-absent axis depends on a directory
-    that has no thresholds.yaml at all.
-    """
     a1_repo = tmp_path / "a1_file_absent"
     a1_repo.mkdir()
     assert load_integrator_gate_emit_enabled(a1_repo) is False, (
@@ -118,25 +99,6 @@ def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
 def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin Python ``bool()`` semantics + KEY DIVERGENCE vs ``_coerce_yaml_bool`` (5 axes).
-
-    The implementation uses Python's built-in ``bool()`` coercion (NOT
-    ``_coerce_yaml_bool`` from
-    [workflow_universal_critique.py:30-38](packages/nimbusware_orchestrator/workflow_universal_critique.py)
-    which accepts only ``("1", "true", "yes", "on")``). The
-    consequences of choosing Python ``bool()`` are subtle and
-    operator-visible: a string ``"false"`` is truthy, but a non-zero
-    int is also truthy, and an empty list is falsy.
-
-    Each axis sweeps a class of non-bool YAML values to lock the
-    full ladder. The KEY DIVERGENCE axis (B3) is the most
-    operator-surprising and most likely to break under a "unify with
-    strict coercer" refactor.
-
-    Per-axis subdirectories isolate writes -- a single tmp_path is
-    reused across axes via ``B<i>_<j>`` repo names so the ladder is
-    visible as a single matrix.
-    """
     int_cases: list[tuple[str, str, bool]] = [
         ("int_zero", "enabled: 0", False),
         ("int_one", "enabled: 1", True),
@@ -233,32 +195,6 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
 def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin ``load_integrator_min_score_from_thresholds`` defensive arms (5 axes).
-
-    The function has 3 fail-closed arms + 1 happy arm:
-
-    1. ``if not path.is_file(): return 0.0`` -- file-absent (line 126-127).
-    2. ``raw.get(key, 0.0)`` default reaches ``float(0.0)`` -- key missing.
-    3. ``except (TypeError, ValueError): return 0.0`` -- coerce catch.
-    4. ``float(raw.get(...))`` happy passthrough.
-
-    The 5 axes pin every fail-closed entry AND the happy path:
-
-    * C1 -- file absent.
-    * C2 -- key missing (default reaches float()).
-    * C3 -- ``min_score_to_pass: null`` is a DISTINCT branch from C2:
-      ``raw.get`` returns ``None`` (not the default) and
-      ``float(None)`` raises ``TypeError`` -> catch -> 0.0.
-    * C4 -- ``TypeError`` matrix (list / dict).
-    * C5 -- ``ValueError`` matrix (bad string) + happy passthrough +
-      int-to-float coercion.
-
-    The C3 vs C2 separation matters: a refactor that changed
-    ``raw.get(key, 0.0)`` to ``raw.get(key) or 0.0`` would NOT change
-    behavior (both None and 0.0 are falsy), but a refactor that
-    narrowed the except to only ``ValueError`` would flip C3 from 0.0
-    to a raised ``TypeError``.
-    """
     c1_repo = tmp_path / "c1_file_absent"
     c1_repo.mkdir()
     assert load_integrator_min_score_from_thresholds(c1_repo) == 0.0, (
@@ -344,26 +280,6 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
 def test_thresholds_loader_cross_function_composite_and_divergence_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin cross-function composite + 3 KEY DIVERGENCES (5 axes).
-
-    The two thresholds.yaml loaders are siblings -- same file path,
-    same propagation policy, but distinct coercion / clamping /
-    return-type contracts. This test pins the cross-function contract
-    AND the 3 KEY DIVERGENCES against their workflow-layer neighbor
-    and against the fo77 cascade family.
-
-    Axes:
-
-    * D1 -- shared file path: one write, both loaders return their
-      happy values.
-    * D2 -- independent ``is_file()`` probes: absent file -> both
-      fall back; present file with only ONE key -> the other still
-      cascades to its default.
-    * D3 -- KEY DIVERGENCE no-clamp vs clamp for out-of-range numerics.
-    * D4 -- KEY DIVERGENCE binary float vs tri-state float|None.
-    * D5 -- KEY DIVERGENCE propagate vs cascade for ``load_yaml``
-      ValueError (non-mapping root).
-    """
     d1_repo = tmp_path / "d1_shared_path"
     d1_repo.mkdir()
     _write_thresholds(

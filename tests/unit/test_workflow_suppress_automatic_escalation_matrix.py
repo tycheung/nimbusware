@@ -81,22 +81,6 @@ def _append_finding_row(mem: InMemoryEventStore, run_id: UUID) -> None:
 
 
 def test_workflow_suppresses_automatic_escalation_direct_contract_5_axis() -> None:
-    """Pin the guard at pipeline.py:1244-1248 directly.
-
-    Axis A1 -- bare ``default`` -> ``False``.
-    Axis A2 -- ``escalation_suppress_on`` -> ``True`` (central
-    True-arm; profile workflow YAML sets
-    ``escalation.suppress_automatic_escalation: true``).
-    Axis A3 -- empty store random run_id -> ``False`` (helper
-    returns ``None`` -> ``parse_escalation_workflow_block`` default
-    block; mirrors "missing block does not suppress" docstring).
-    Axis A4 -- same run_id with only non-RUN_CREATED rows ->
-    ``False`` (pins the ``event_type == "run.created"`` filter
-    in ``workflow_profile_from_run_created_rows``).
-    Axis A5 -- per-run isolation: two runs with different profiles
-    on the same orchestrator return different values (pins per-run
-    lookup, not cached orchestrator state).
-    """
     orch_a1, _ = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     assert orch_a1._workflow_suppresses_automatic_escalation(rid_a1) is False  # noqa: SLF001
@@ -138,20 +122,6 @@ def test_workflow_suppresses_automatic_escalation_direct_contract_5_axis() -> No
 
 
 def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None:
-    """Pin the suppress fork for the 5 unpinned escalation ``_maybe_*`` paths.
-
-    Each axis sets up the "would-trigger" conditions on the
-    ``escalation_suppress_on`` workflow and asserts the suppress
-    guard short-circuits before any RUN_ESCALATED row is appended.
-
-    B1 -- ``_maybe_emit_anti_deadlock_escalation``
-    B2 -- ``_maybe_escalate_after_cumulative_gate_failures``
-    B3 -- ``_maybe_auto_escalate`` (suppress + first direct
-    control axis -- this method had zero direct test coverage
-    before fo88).
-    B4 -- ``_maybe_notice_escalate_findings``
-    B5 -- ``_maybe_escalate_verifier_failure_checkpoint``
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("escalation_suppress_on")
     with (
@@ -234,18 +204,6 @@ def test_workflow_suppress_matrix_across_unpinned_maybe_callers_5_axis() -> None
 
 
 def test_workflow_profile_from_run_created_rows_4_axis_contract() -> None:
-    """Pin the helper at integrator_gate.py:78-86 directly (pure function).
-
-    Axis C1 -- empty rows list -> ``None`` (loop never enters).
-    Axis C2 -- rows with no ``run.created`` event_type -> ``None``
-    (pins the ``event_type != "run.created"`` continue branch).
-    Axis C3 -- single ``run.created`` -> returns
-    ``payload.workflow_profile`` as a string.
-    Axis C4 -- two ``run.created`` rows -> **FIRST** in iteration
-    order wins (pins the early-return contract that callers like
-    ``_workflow_suppresses_automatic_escalation`` depend on via
-    ``list_run_events`` sorted by ``store_seq``).
-    """
     assert workflow_profile_from_run_created_rows([]) is None
 
     rows_c2: list[dict[str, Any]] = [

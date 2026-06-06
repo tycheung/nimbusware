@@ -48,27 +48,6 @@ def _set_mtime_to(path: Path, when: datetime) -> None:
 
 
 def test_prune_scraper_artifacts_value_error_boundary_contract(tmp_path: Path) -> None:
-    """Pin ``prune_scraper_artifacts`` ValueError boundary arm (5 axes).
-
-    The function begins with a strict input guard at
-    [scraper_artifacts.py:33-35](packages/nimbusware_orchestrator/scraper_artifacts.py):
-
-    .. code-block:: python
-
-        if max_age_days < 1:
-            msg = "max_age_days must be >= 1"
-            raise ValueError(msg)
-
-    Pins both the rejected boundary (0 / negative) AND the smallest
-    accepted value (1), AND the diagnostic message verbatim. A refactor
-    that loosened the guard (e.g. ``< 0`` instead of ``< 1``) would
-    silently accept ``max_age_days=0`` and behave as "delete everything"
-    -- catastrophic for operators -- which axes A1 and A4 catch in
-    combination.
-
-    A1 / A2 / A3 / A4 / A5 axes pin distinct boundaries; combined they
-    form a tight equivalence class around the ``>= 1`` invariant.
-    """
     base = tmp_path / "base"
 
     with pytest.raises(ValueError) as exc_zero:
@@ -112,30 +91,6 @@ def test_prune_scraper_artifacts_value_error_boundary_contract(tmp_path: Path) -
 
 
 def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> None:
-    """Pin nested ``rglob`` + mixed stale/fresh + cutoff inclusive + ``now=None`` (5 axes).
-
-    The traversal at
-    [scraper_artifacts.py:40](packages/nimbusware_orchestrator/scraper_artifacts.py)
-    uses ``base_dir.rglob("*")`` (recursive) so files at any depth must
-    be reachable. The cutoff comparison at line 45 uses
-    ``mtime >= cutoff`` -> preserve, ``<`` -> remove (strict inclusive
-    boundary). The ``now`` parameter at line 38 defaults to
-    ``datetime.now(timezone.utc)`` via ``now or ...``.
-
-    Pins 5 sub-contracts:
-
-    * **B1** -- 2-deep nested subdirs across different run_ids: every
-      stale file in any subdir is removed (rglob recursive).
-    * **B2** -- mixed stale + fresh in the same dir: only the stale
-      file is removed; the fresh file remains.
-    * **B3** -- a 3-deep nested stale file is also removed (proof
-      against a single-level ``iterdir`` refactor).
-    * **B4** -- cutoff inclusive boundary: a file with
-      ``mtime == cutoff`` is preserved (``>=`` not ``>``); a file
-      with ``mtime`` 1 microsecond before cutoff is removed.
-    * **B5** -- ``now=None`` default: omit the kwarg, use stale and
-      fresh fixtures, verify stale removed and fresh preserved.
-    """
     base_b1 = tmp_path / "b1_nested"
     base_b1.mkdir()
     run_a = base_b1 / "run_a"
@@ -246,44 +201,6 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
 def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     tmp_path: Path,
 ) -> None:
-    """Pin empty-dir cleanup + dry_run divergence + OSError + ordering (5 axes).
-
-    The second-pass cleanup at
-    [scraper_artifacts.py:50-57](packages/nimbusware_orchestrator/scraper_artifacts.py):
-
-    .. code-block:: python
-
-        if dry_run:
-            return removed
-        for path in sorted(base_dir.rglob("*"), key=lambda p: len(p.parts), reverse=True):
-            if path.is_dir():
-                try:
-                    path.rmdir()
-                except OSError:
-                    pass
-
-    runs **only** in non-dry-run mode. The ``reverse=True`` sort means
-    deepest paths come first so a fully-empty subtree collapses cleanly
-    from leaves to root.
-
-    Pins 5 sub-contracts:
-
-    * **C1** -- non-dry-run removes the only stale file AND the
-      now-empty run_dir.
-    * **C2** -- dry_run=True returns the count but PRESERVES files AND
-      empty-dir cleanup is skipped (run_dir survives).
-    * **C3** -- OSError suppression: a run_dir containing a fresh
-      file has the stale file removed, but rmdir on the non-empty
-      run_dir raises ``OSError`` which is caught -> run_dir kept.
-    * **C4** -- reverse-len ordering: 3-deep nested chain
-      (``<base>/a/b/c/stale.bin``) -> after cleanup, every empty
-      intermediate dir ``a``, ``b``, ``c`` is gone (forward-sort
-      would try to rmdir ``a`` first which fails because ``b`` is
-      still non-empty).
-    * **C5** -- dry_run composite: two dry-run calls preserve state,
-      a third non-dry-run call removes (idempotence of preview +
-      irreversibility of action).
-    """
     now = datetime.now(timezone.utc)
 
     base_c1 = tmp_path / "c1_cleanup"
@@ -402,39 +319,6 @@ def test_persist_scraper_response_artifact_value_error_fallback_contract(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin ``_persist_scraper_response_artifact`` ValueError fallback (5 axes).
-
-    Source at
-    [pipeline.py:288-291](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        try:
-            rel = out_path.relative_to(base_dir)
-        except ValueError:
-            rel = Path(fname)
-
-    The happy fo101 matrix in
-    [tests/test_scraper_pure_helpers_edges_contract.py:204-295](tests/test_scraper_pure_helpers_edges_contract.py)
-    only exercises the try branch. fo110 Part D pins the fallback by
-    patching ``Path.relative_to`` to raise ``ValueError`` -- the file
-    is still written to its real on-disk location (write happens
-    BEFORE the try/except) but the returned ``artifact_relpath`` drops
-    the ``<run_id>/`` prefix and becomes a bare filename.
-
-    Pins 5 sub-contracts:
-
-    * **D1** -- bare-filename relpath: NO ``<run_id>/`` prefix.
-    * **D2** -- file still written at real on-disk location
-      (``<base>/<run_id>/<fname>``).
-    * **D3** -- ``artifact_sha256`` unchanged (sha256 of blob is
-      independent of the relative_to result).
-    * **D4** -- ``artifact_bytes_written`` unchanged.
-    * **D5** -- ``str(rel).replace("\\\\", "/")`` normalization chain
-      still runs (vacuous on bare filename but verified to never
-      raise); plus a control comparison vs the happy path that pins
-      the divergence is SOLELY in the relpath shape.
-    """
     monkeypatch.setenv("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", str(tmp_path))
     orch, _ = make_dev_orchestrator()
     base_dir = Path(str(tmp_path)).expanduser().resolve()

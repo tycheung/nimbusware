@@ -26,18 +26,6 @@ def _correlation_ids_in_store(mem: InMemoryEventStore) -> list[UUID | None]:
 
 
 def test_create_run_idempotency_fresh_run_and_precedence_4_axis_contract() -> None:
-    """Pin 4 fresh-run paths through the idempotency block.
-
-    Axis A1 -- both kwargs None: line 163 short-circuit. Each call
-    creates a new run with ``event.correlation_id == None``.
-    Axis A2 -- ``correlation_id`` only: line 162 read + line 180
-    write. ``event.correlation_id == correlation_id``.
-    Axis A3 -- ``idempotency_key`` only: the **implicit-promotion
-    contract**. ``idempotency_key`` becomes ``event.correlation_id``
-    via ``corr = correlation_id or idempotency_key``.
-    Axis A4 -- both provided + different UUIDs: **precedence-winner**.
-    ``correlation_id`` wins; ``idempotency_key`` value NOT stored.
-    """
     orch, mem = make_dev_orchestrator()
     r1 = orch.create_run("default")
     r2 = orch.create_run("default")
@@ -69,19 +57,6 @@ def test_create_run_idempotency_fresh_run_and_precedence_4_axis_contract() -> No
 
 
 def test_create_run_idempotency_return_roundtrip_4_axis_matrix() -> None:
-    """Pin 4 idempotent-return roundtrips.
-
-    Axis B1 -- same ``correlation_id`` repeated: same run_id, 1
-    event after both calls.
-    Axis B2 -- same ``idempotency_key`` repeated: same run_id,
-    1 event.
-    Axis B3 -- **cross-kwarg roundtrip** (consistency pin): call 1
-    with ``idempotency_key=K``, call 2 with ``correlation_id=K``
-    -> SAME run_id. Proves Axis A3's implicit-promotion contract
-    is consistent with the lookup at line 164.
-    Axis B4 -- same-corr + different ``workflow_profile``:
-    idempotency does NOT re-validate the workflow on match.
-    """
     orch, mem = make_dev_orchestrator()
     corr = uuid4()
     r1 = orch.create_run("default", correlation_id=corr)
@@ -119,22 +94,6 @@ def test_create_run_idempotency_return_roundtrip_4_axis_matrix() -> None:
 
 
 def test_create_run_idempotency_distinctness_and_precedence_lockout_3_axis_contract() -> None:
-    """Pin 3 distinctness axes including the strong precedence-lockout pin.
-
-    Axis C1 -- different ``correlation_id`` values: different
-    run_ids, 2 events.
-    Axis C2 -- mixed-None second call: ``correlation_id=A`` then
-    no kwargs -> NEW run (the ``corr is not None`` guard at line
-    163 strictly gates the lookup; no implicit re-match against
-    most-recent).
-    Axis C3 -- **precedence-lockout** (THE STRONG PIN): call 1
-    with ``correlation_id=A, idempotency_key=B``, call 2 with
-    ``idempotency_key=B`` alone -> call 2 creates a NEW run
-    because B was IGNORED in call 1 (precedence) and never
-    promoted to ``event.correlation_id``. A future refactor that
-    "tries idempotency_key as fallback when correlation_id misses"
-    would break this.
-    """
     orch, mem = make_dev_orchestrator()
     r1 = orch.create_run("default", correlation_id=uuid4())
     r2 = orch.create_run("default", correlation_id=uuid4())

@@ -64,14 +64,6 @@ def _append_stage_failed(mem: InMemoryEventStore, rid: UUID, name: str) -> None:
 
 
 def test_verifier_failure_checkpoint_suppress_and_loader_5_axis() -> None:
-    """Pin suppress fork ordering + loader delegation at pipeline.py:1406-1409.
-
-    Coverage delta vs fo88 B5: proves no-emit on suppress, this pins (a)
-    loader-NOT-called when suppress fires (ordering invariant), (b)
-    loader receives `self._repo_root` positionally, (c) loader called
-    exactly once, (d) loader-False short-circuits to no emit, (e)
-    `_workflow_suppresses_automatic_escalation` is the delegation site.
-    """
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("escalation_suppress_on")
     with patch(
@@ -154,14 +146,6 @@ def test_verifier_failure_checkpoint_suppress_and_loader_5_axis() -> None:
 
 
 def test_verifier_failure_checkpoint_happy_path_and_literal_notes_5_axis() -> None:
-    """Pin happy-path emit shape + LITERAL notes at pipeline.py:1417-1429.
-
-    Coverage delta vs existing tests: today the happy path is exercised but
-    the LITERAL notes string and the invariant-across-invocations contract
-    are unpinned. fo104 D3 pins an F-STRING notes shape; fo106 B4 pins the
-    LITERAL counterpart so a "harmonize all escalation notes" refactor
-    fails on both ends.
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     with patch(
@@ -221,13 +205,6 @@ def test_verifier_failure_checkpoint_happy_path_and_literal_notes_5_axis() -> No
 
 
 def test_verifier_failure_checkpoint_dedup_by_reason_code_5_axis() -> None:
-    """Pin per-reason-code dedup at pipeline.py:1411-1416.
-
-    Coverage delta vs existing tests: today only "prior same-reason blocks"
-    is pinned implicitly (the 2nd call in `test_verifier_failure_checkpoint
-    _once`). fo106 C explicitly pins per-reason-code semantics (vs ANY),
-    the event_type filter, and the dedup-precedes-append ordering.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     _append_escalation(mem_c1, rid_c1, _VERIFIER_CHECKPOINT)
@@ -312,12 +289,6 @@ def test_verifier_failure_checkpoint_dedup_by_reason_code_5_axis() -> None:
 
 
 def test_verifier_failure_checkpoint_cross_emitter_independence_with_anti_deadlock_5_axis() -> None:
-    """Pin cross-emitter independence with fo104 anti-deadlock + shared suppress fork.
-
-    NEW cross-cut Part: no test today proves that the verifier-checkpoint and
-    anti-deadlock emitters do not cross-dedup. A future "unify all escalation
-    dedup arms" refactor would silently regress.
-    """
     orch_d1, mem_d1 = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     with (

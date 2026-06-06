@@ -18,26 +18,6 @@ from nimbusware_store.memory import InMemoryEventStore
 
 
 def test_default_paths_shape_and_suffix_wire_format_5_axis(tmp_path: Path) -> None:
-    """Pin ``default_paths`` shape + path-suffix wire format (5 axes).
-
-    Implementation at
-    [pipeline.py:1556-1561](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        return (
-            root / "configs" / "model-routing.yaml",
-            root / "configs" / "workflows" / "default.yaml",
-        )
-
-    Five axes pin a complete shape contract: arity (A1), the two
-    distinct file suffixes (A2 / A3), the ``Path`` (not ``str``)
-    element type (A4), and that an explicit ``repo_root`` override
-    is honored uniformly across BOTH returned paths (A5) -- not just
-    the first. A refactor that returned a 1-tuple, swapped the two
-    paths, returned strings, or honored the override on only one
-    element would each break a distinct axis.
-    """
     paths = default_paths()
     assert isinstance(paths, tuple), (
         f"A1: ``default_paths`` must return a ``tuple`` (callers do "
@@ -118,23 +98,6 @@ def test_default_paths_shape_and_suffix_wire_format_5_axis(tmp_path: Path) -> No
 
 
 def test_default_paths_root_resolution_5_axis(tmp_path: Path) -> None:
-    """Pin ``default_paths`` repo-root resolution (5 axes).
-
-    Implementation at
-    [pipeline.py:1557](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        root = repo_root or Path(__file__).resolve().parents[2]
-
-    Five axes pin the resolution contract: ``None`` vs no-arg
-    equivalence (B1), absolute-path guarantee from ``.resolve()`` (B2),
-    correctness of the ``parents[2]`` index against the real repo
-    layout (B3), purity on a nonexistent root (B4), and the structural
-    invariant ``path.parent.parent == root`` that callers like
-    ``make_dev_orchestrator`` rely on to derive the root from the
-    returned paths (B5).
-    """
     assert default_paths(None) == default_paths(), (
         f"B1: ``default_paths(None)`` must equal ``default_paths()`` "
         f"(no-arg). The parameter default is ``None`` and the ``or``-fallback "
@@ -215,24 +178,6 @@ def test_default_paths_root_resolution_5_axis(tmp_path: Path) -> None:
 
 
 def test_make_dev_orchestrator_shape_and_wiring_5_axis() -> None:
-    """Pin ``make_dev_orchestrator`` return shape + wiring (5 axes).
-
-    Implementation at
-    [pipeline.py:1564-1572](packages/nimbusware_orchestrator/pipeline.py):
-
-    .. code-block:: python
-
-        mem = InMemoryEventStore()
-        orch = RunOrchestrator(mem, reg, repo_root=root, base_config_path=base)
-        return orch, mem
-
-    Five axes pin the public surface: 2-tuple arity (C1),
-    ``RunOrchestrator`` first (C2), ``InMemoryEventStore`` second (C3),
-    ``orch.repo_root`` wired through the constructor's ``repo_root=``
-    kwarg (C4), and the freshness contract -- distinct
-    ``InMemoryEventStore`` instances across calls, each starting
-    empty (C5).
-    """
     result = make_dev_orchestrator()
     assert isinstance(result, tuple) and len(result) == 2, (
         f"C1: ``make_dev_orchestrator`` must return a 2-tuple -- callers "
@@ -298,16 +243,6 @@ def test_make_dev_orchestrator_shape_and_wiring_5_axis() -> None:
 
 
 def test_factory_cross_helper_key_divergences_5_axis(tmp_path: Path) -> None:
-    """Pin cross-helper KEY DIVERGENCES between ``default_paths`` and
-    ``make_dev_orchestrator`` (5 axes).
-
-    The two helpers are SIBLINGS, not delegates -- ``make_dev_orchestrator``
-    re-derives the root, consumes only the FIRST path of ``default_paths``'s
-    2-tuple, and uses a THIRD hardcoded path (``roles.yaml``) NOT in
-    ``default_paths``. Each axis pins a divergence that a "natural"
-    refactor (e.g. swap unpacking direction, broaden ``default_paths``,
-    consolidate root resolution) would silently break.
-    """
     orch, _mem = make_dev_orchestrator()
     paths = default_paths()
     assert orch._base_path == paths[0], (

@@ -40,14 +40,6 @@ class TestPartAPreprocessingSemantics:
     """Strip / case / type / shape contract before ``fromisoformat``."""
 
     def test_a1_whitespace_character_matrix_short_circuits_to_none(self) -> None:
-        """A1: ``str.strip()`` strips all standard whitespace.
-
-        fo111 D1 only exercises plain spaces. ``str.strip()`` with no
-        argument strips tab, newline, CRLF, and mixed whitespace per the
-        Python contract. Each of these inputs collapses to an empty
-        string in the ``not str(value).strip()`` guard and returns
-        ``None`` without entering the ``try`` block.
-        """
         whitespace_inputs = ["\t", "\n", "\r\n", "   \t  \n  ", "\v", "\f"]
         for raw in whitespace_inputs:
             assert _parse_query_datetime("created_after", raw) is None, (
@@ -55,14 +47,6 @@ class TestPartAPreprocessingSemantics:
             )
 
     def test_a2_lowercase_z_is_not_substituted_key_divergence(self) -> None:
-        """A2: ``.replace("Z", "+00:00")`` is case-sensitive (KEY DIVERGENCE).
-
-        Python's ``str.replace`` is case-sensitive. Lowercase ``"z"`` is
-        NOT substituted, so it flows into ``fromisoformat`` unchanged
-        and raises ``ValueError``. A refactor to ``re.sub(r"[Zz]", ...)``
-        or two chained ``.replace`` calls would silently accept
-        lowercase. We pin BOTH arms:
-        """
         # Upper-case Z succeeds (already in fo111 D2; repeated here for
         # direct paired contrast with the lowercase arm below).
         upper = _parse_query_datetime("created_after", "2020-01-01T00:00:00Z")
@@ -75,15 +59,6 @@ class TestPartAPreprocessingSemantics:
         assert "ISO-8601" in str(exc_info.value)
 
     def test_a3_defensive_str_value_wrapping_for_non_string_input(self) -> None:
-        """A3: ``str(value)`` wraps defensively even though annotated ``str | None``.
-
-        The body explicitly wraps ``str(value)`` in both the strip
-        guard and the parse path. A mypy-noisy but runtime-permissive
-        integer caller flows through as ``"12345"`` and then fails
-        ``fromisoformat`` (not ``AttributeError: 'int' object has no
-        attribute 'strip'``). A refactor that removed ``str(...)`` and
-        assumed strict typing would crash on this input.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", 12345)  # type: ignore[arg-type]
         # ValueError (from fromisoformat via the re-raise) -- NOT
@@ -97,14 +72,6 @@ class TestPartAPreprocessingSemantics:
         assert "12345" in str(cause)
 
     def test_a4_bare_date_input_accepted_via_naive_arm(self) -> None:
-        """A4: bare date ``"2020-01-01"`` (no time) is accepted.
-
-        ``datetime.fromisoformat("2020-01-01")`` returns a naive
-        ``datetime`` at midnight, which then flows through the
-        ``dt.tzinfo is None`` branch and gets ``tzinfo=UTC`` via
-        ``replace(...)``. Pins the contract that the route accepts
-        date-only query values for ``?created_after=2020-01-01`` etc.
-        """
         result = _parse_query_datetime("created_after", "2020-01-01")
         assert result == datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
         assert result is not None and result.tzinfo is timezone.utc
@@ -117,14 +84,6 @@ class TestPartAPreprocessingSemantics:
         )
 
     def test_a5_internal_whitespace_strip_happens_before_replace(self) -> None:
-        """A5: ``strip()`` runs BEFORE ``.replace("Z", ...)`` and ``fromisoformat``.
-
-        Leading / trailing whitespace around an otherwise-valid value is
-        stripped first, then ``"Z"`` is substituted, then parsed. Pins
-        the order:
-            ``str(value)`` -> ``.strip()`` -> ``.replace("Z","+00:00")``
-            -> ``fromisoformat``.
-        """
         result = _parse_query_datetime("created_after", "  2020-01-01T00:00:00Z  ")
         assert result == datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
 
@@ -140,20 +99,12 @@ class TestPartBInvalidCalendarMatrix:
     """Calendar-impossible inputs raise without rollover / clamping."""
 
     def test_b1_month_greater_than_12_raises_no_rollover(self) -> None:
-        """B1: month 13 raises (no rollover to January of next year).
-
-        ``datetime.fromisoformat`` does NOT wrap month 13 -> month 1 of
-        next year. A refactor to ``dateutil.parser.parse`` would silently
-        roll over. Also cross-checks fo111 D3's ``field`` interpolation
-        contract: the error message contains ``"created_after"``.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-13-01")
         assert "created_after" in str(exc_info.value)
         assert "ISO-8601" in str(exc_info.value)
 
     def test_b2_day_greater_than_31_raises_no_rollover(self) -> None:
-        """B2: day 32 raises (no rollover to Feb 1 of same year)."""
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-01-32")
         assert "created_after" in str(exc_info.value)
@@ -182,14 +133,6 @@ class TestPartBInvalidCalendarMatrix:
         assert "created_after" in str(exc_info_b.value)
 
     def test_b5_leap_year_arithmetic_real_rules_key_divergence(self) -> None:
-        """B5: real leap-year arithmetic on Feb 29 (KEY DIVERGENCE).
-
-        ``2020-02-29`` (divisible by 4) is valid. ``2021-02-29`` is NOT.
-        Also pins the century-leap-year rule: ``2000-02-29`` (divisible
-        by 400) is valid, but ``1900-02-29`` (divisible by 100 but not
-        400) is NOT. A refactor to "accept Feb 29 always" would fail
-        this contract on three of the four arms.
-        """
         # Leap year (divisible by 4, not 100).
         result_2020 = _parse_query_datetime("created_after", "2020-02-29")
         assert result_2020 == datetime(2020, 2, 29, 0, 0, 0, tzinfo=timezone.utc)
@@ -216,47 +159,27 @@ class TestPartCInvalidTimeMatrix:
     """Time-component and offset overflows raise; fractional seconds parse."""
 
     def test_c1_hour_greater_than_23_raises(self) -> None:
-        """C1: hour 25 raises (no rollover to next day)."""
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-01-01T25:00:00")
         assert "created_after" in str(exc_info.value)
         assert "ISO-8601" in str(exc_info.value)
 
     def test_c2_minute_greater_than_59_raises(self) -> None:
-        """C2: minute 60 raises (no rollover to next hour)."""
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-01-01T00:60:00")
         assert "created_after" in str(exc_info.value)
 
     def test_c3_second_60_raises_no_leap_second_acceptance(self) -> None:
-        """C3: second 60 raises -- Python rejects leap-second representation.
-
-        ``datetime.fromisoformat`` does NOT accept second 60 for ISO-8601
-        leap-second notation. A refactor that pre-clamped seconds to 59
-        before parsing would silently accept this and lose the boundary
-        rejection. Pins the strict-rejection contract.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-01-01T00:00:60")
         assert "created_after" in str(exc_info.value)
 
     def test_c4_offset_hour_out_of_range_raises(self) -> None:
-        """C4: offset >= 24 hours raises.
-
-        Pins that timezone offset overflow is validated (NOT silently
-        accepted as a rollover into an adjacent day's offset).
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "2020-01-01T00:00:00+25:00")
         assert "created_after" in str(exc_info.value)
 
     def test_c5_fractional_seconds_and_max_microsecond_boundary(self) -> None:
-        """C5: fractional seconds parse into ``microsecond`` (happy boundary).
-
-        Pins the upper boundary of fractional-second precision -- 6
-        digits map to ``microsecond`` (0..999999). Both a mid-range and
-        the max-microsecond input succeed.
-        """
         result = _parse_query_datetime("created_after", "2020-01-01T00:00:00.123456")
         assert result is not None
         assert result == datetime(2020, 1, 1, 0, 0, 0, 123456, tzinfo=timezone.utc)
@@ -276,22 +199,11 @@ class TestPartDErrorChainAndFieldInterpolation:
     """``raise ... from exc`` chain + raw f-string ``{field}`` interpolation."""
 
     def test_d1_created_after_field_literal_in_message(self) -> None:
-        """D1: ``field="created_after"`` produces exact prefix.
-
-        Pins the canonical phrasing for the FIRST of the two route
-        callers. Asserts ``.startswith(...)`` to allow tolerable suffix
-        evolution but locks down the prefix.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "not-a-date")
         assert str(exc_info.value) == "created_after" + _EXPECTED_ERROR_SUFFIX
 
     def test_d2_created_before_field_literal_in_message(self) -> None:
-        """D2: ``field="created_before"`` produces a DISTINCT message.
-
-        Pins that the two route callers get separately-interpolated
-        messages (no shared static string).
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_before", "not-a-date")
         assert str(exc_info.value) == "created_before" + _EXPECTED_ERROR_SUFFIX
@@ -304,15 +216,6 @@ class TestPartDErrorChainAndFieldInterpolation:
         assert str(exc_info.value) != str(exc_info_after.value)
 
     def test_d3_empty_field_produces_leading_space_message_key_divergence(self) -> None:
-        """D3: ``field=""`` interpolates literally with leading space (KEY DIVERGENCE).
-
-        ``f"{''} must be..."`` yields ``" must be a valid ISO-8601
-        datetime"`` -- a string that begins with a SPACE. Pins raw
-        f-string interpolation with no validation. A refactor that
-        guarded ``if not field: raise ValueError("field is required")``
-        would break this contract for any future caller passing an
-        empty string.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("", "not-a-date")
         # Message begins with a space because f"{''} must be..." -> " must be...".
@@ -320,29 +223,12 @@ class TestPartDErrorChainAndFieldInterpolation:
         assert str(exc_info.value).startswith(" must be")
 
     def test_d4_arbitrary_field_no_allowlist_validation(self) -> None:
-        """D4: arbitrary ``field`` name interpolates without allow-listing.
-
-        ``"custom_xyz_!!!"`` -- a non-route-caller name -- is
-        interpolated literally with no validation. Pins that the helper
-        has NO knowledge of the two real callers (``created_after`` /
-        ``created_before``) and accepts ANY string. Special characters
-        flow through.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("custom_xyz_!!!", "not-a-date")
         assert "custom_xyz_!!!" in str(exc_info.value)
         assert str(exc_info.value) == "custom_xyz_!!!" + _EXPECTED_ERROR_SUFFIX
 
     def test_d5_raise_from_exc_chain_preserved_key_divergence(self) -> None:
-        """D5: ``raise ValueError(msg) from exc`` preserves ``__cause__``.
-
-        Pins explicit chain preservation -- the original
-        ``fromisoformat`` ``ValueError`` survives as ``__cause__``. A
-        refactor to plain ``raise ValueError(msg)`` (no ``from``) would
-        set ``__cause__`` to ``None`` and lose debugging context. The
-        chain matters for production logs / problem-detail responses
-        that may surface the underlying parser error.
-        """
         with pytest.raises(ValueError) as exc_info:
             _parse_query_datetime("created_after", "not-a-date")
 

@@ -37,21 +37,6 @@ def _make_row(
 
 
 def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract() -> None:
-    """Pin ``_first_run_created_at`` empty + no-match + isinstance + skip-then-find (5 axes).
-
-    The 4-arm structure at lines 24-33:
-
-    1. ``for r in sorted(rows, key=lambda x: int(x["store_seq"])):``
-       -- iteration over a sorted COPY of rows.
-    2. ``if r["event_type"] != "run.created": continue`` -- event-type
-       filter.
-    3. ``at = r.get("occurred_at"); if isinstance(at, datetime):``
-       -- defensive isinstance guard (skip non-datetime).
-    4. Inner tz branch returns; outer ``return None`` if no row
-       satisfies all 3 guards.
-
-    Part A pins arms 1-3 (Part B pins arm 4's branches).
-    """
     assert _first_run_created_at([]) is None, (
         "A1: empty rows -> the for-loop body never executes -> falls "
         "through to the final `return None` (line 33). A refactor "
@@ -144,26 +129,6 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
 
 
 def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> None:
-    """Pin tz-aware vs tz-naive divergence + sort-key contract (5 axes).
-
-    Arm 4 of the function (lines 29-32):
-
-    .. code-block:: python
-
-        if at.tzinfo is None:
-            return at.replace(tzinfo=timezone.utc)
-        return at.astimezone(timezone.utc)
-
-    Wall-clock semantics differ between the two branches: ``replace``
-    is wall-clock-PRESERVING (assumes the naive value WAS UTC);
-    ``astimezone`` is wall-clock-SHIFTING (converts to UTC from the
-    declared zone). Part B B3 places both branches side-by-side with
-    the SAME wall-clock numbers to make the divergence visible.
-
-    The sort-key arm (line 25) uses ``int(x["store_seq"])`` and is
-    tested by B4 (int rows, unsorted) + B5 (str rows, ``"10"`` vs
-    ``"2"`` lex-vs-numeric reversal).
-    """
     aware_plus5 = datetime(2026, 1, 1, 12, 0, tzinfo=_FIVE_HOURS)
     expected_b1 = datetime(2026, 1, 1, 7, 0, tzinfo=timezone.utc)
     b1_rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=aware_plus5)]
@@ -261,24 +226,6 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
 
 
 def test_count_progress_events_and_progress_ignore_membership_contract() -> None:
-    """Pin ``count_progress_events`` boundary + fail-open semantics (5 axes).
-
-    Implementation at line 38:
-
-    .. code-block:: python
-
-        return sum(1 for r in rows if r["event_type"] not in _PROGRESS_IGNORE)
-
-    A pure ``sum`` over a generator with a ``not in`` membership
-    filter. Three axis classes pinned:
-
-    * C1-C2 -- the IGNORE side of the membership filter (returns 0
-      for ignored types).
-    * C3-C4 -- the PROGRESS side (returns N for N non-ignored).
-    * C5 -- the FAIL-OPEN boundary: novel/synthetic event types count
-      AS progress (not as ignored). KEY DIVERGENCE vs an allowlist
-      refactor.
-    """
     assert count_progress_events([]) == 0, (
         "C1: empty rows -> sum over empty generator -> 0. Pins the "
         "natural sum-zero fallback (no special-case empty handling "
@@ -355,25 +302,6 @@ def test_count_progress_events_and_progress_ignore_membership_contract() -> None
 
 
 def test_progress_ignore_frozenset_and_cross_helper_dual_purpose_contract() -> None:
-    """Pin ``_PROGRESS_IGNORE`` frozenset type + cross-helper coupling (5 axes).
-
-    The module-level constant ``_PROGRESS_IGNORE`` and the two
-    helpers ``_first_run_created_at`` / ``count_progress_events`` are
-    coupled by ``"run.created"``, which appears in BOTH the ignore
-    set AND the timestamp extractor's event-type filter. This is
-    intentional: ``run.created`` marks the boundary BEFORE which a
-    run has not yet left the bootstrap phase. Part D pins:
-
-    * D1-D2 -- the frozenset type guarantee and exact 6-member set.
-    * D3 -- the dual-purpose ``run.created`` interaction (single row,
-      two helpers, opposite returns).
-    * D4 -- the symmetric no-run.created axiom (both helpers return
-      their "no-bootstrap" sentinels).
-    * D5 -- the realistic all-bootstrap scenario that
-      ``should_emit_anti_deadlock_escalation`` depends on (timestamp
-      extracted AND progress count = 0, so the final ``<
-      min_progress_events`` arm fires).
-    """
     assert isinstance(_PROGRESS_IGNORE, frozenset), (
         f"D1: _PROGRESS_IGNORE must be a frozenset for module-level "
         f"immutability. Got type={type(_PROGRESS_IGNORE).__name__!r}. "

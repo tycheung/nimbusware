@@ -91,18 +91,6 @@ def _install_raiser_for_gate(
 def test_create_run_gate_chain_forward_call_order_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin the forward call sequence of the 5 pre-flight gates.
-
-    All 5 gates are patched to recorders that append their name to a
-    shared list; ``create_run("default")`` is then called against a
-    real-repo orchestrator (which proceeds past the gates and emits
-    a ``RUN_CREATED`` event -- irrelevant to this test). After the
-    call, the recorder list MUST equal the canonical sequence at
-    [pipeline.py:154-158](packages\\nimbusware_orchestrator\\pipeline.py)
-    AND each gate MUST have fired exactly once (a future refactor
-    that adds caching / retry around a gate without thinking about
-    invariants would fail loudly here).
-    """
     calls: list[str] = []
     _install_recorder_for_all_gates(monkeypatch, calls)
     orch, _mem = make_dev_orchestrator()
@@ -122,27 +110,6 @@ def test_create_run_gate_chain_forward_call_order_contract(
 def test_create_run_per_gate_isolation_and_early_fail_order_matrix(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin per-gate isolation + early-fail-order across all 5 gates.
-
-    For each gate N, patch ONLY gate N to raise its sentinel
-    exception; leave the others as real implementations. Call
-    ``create_run("default")`` on a fresh ``make_dev_orchestrator()``
-    and assert two properties:
-
-    1. **Propagation**: the sentinel exception class and message
-       bubble up unchanged -- no swallow, no transformation, no
-       wrap. This pins ``create_run`` as a true raise-through frame
-       for every gate.
-    2. **Early-fail-order**: ``InMemoryEventStore._rows`` is empty
-       after the failure -- no events were appended before the
-       gate fired, so a failed ``create_run`` leaves zero partial
-       state (extends fo80's gate-1 assertion to all 5 gates).
-
-    This is the **architectural guarantee** that a future refactor
-    moving any gate AFTER ``self._store.append`` at
-    [pipeline.py:198](packages\\nimbusware_orchestrator\\pipeline.py)
-    would break -- and this test catches it.
-    """
     for gate_name, exc_class, message in _GATE_EXCEPTIONS:
         with monkeypatch.context() as m:
             _install_raiser_for_gate(m, gate_name, exc_class, message)
@@ -163,26 +130,6 @@ def test_create_run_per_gate_isolation_and_early_fail_order_matrix(
 def test_create_run_gate_chain_pairwise_short_circuit_priority_matrix(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pin pairwise short-circuit priority across the 4 adjacent gate pairs.
-
-    For each adjacent pair (N, N+1) in
-    [(1,2), (2,3), (3,4), (4,5)]:
-
-    1. Patch gate N to raise its sentinel (the "first to fail").
-    2. Patch gate N+1 to **record-then-raise** a different sentinel
-       (``RuntimeError("fo83-gateN+1-sentinel")``) -- this is the
-       "should never fire" probe.
-    3. Call ``create_run("default")``.
-    4. Assert gate N's exception class and message are what
-       surfaced (NOT the ``RuntimeError`` probe).
-    5. Assert gate N+1's recorder list is empty -- gate N+1 was
-       never reached, proving the chain short-circuited on gate N.
-
-    This is the **strict** ordering proof: if ``create_run``
-    mistakenly invoked gate N+1 before gate N (or in parallel /
-    out-of-order), gate N+1's ``RuntimeError`` would surface OR its
-    recorder would fire. Both branches are caught.
-    """
     pairs = [
         (_GATE_EXCEPTIONS[i], _GATE_EXCEPTIONS[i + 1]) for i in range(len(_GATE_EXCEPTIONS) - 1)
     ]

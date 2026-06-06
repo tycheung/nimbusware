@@ -104,34 +104,6 @@ def _finding_created_event(
 
 
 def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
-    """Pin ``integrator_gate_timeline_summary`` direct contract (5 axes).
-
-    Implementation at [runs.py:48-74](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        out = None
-        want = EventType.GATE_DECISION_EMITTED.value
-        for ev in events:
-            if ev.get("event_type") != want:
-                continue
-            meta = ev.get("metadata")
-            if not isinstance(meta, dict) or meta.get("integrator_gate") is not True:
-                continue
-            ...
-            out = {"event_id": ..., "occurred_at": ..., "stage_name": ...,
-                   "verdict": ..., "failure_reason_code": ..., "bundle_id": ...,
-                   "bundle_title": ..., "integrator_score": ...,
-                   "min_score_to_pass": ..., "integrator_project_tags": ...,
-                   "integrator_bundle_tags": ..., "integrator_matched_tags": ...}
-        return out
-
-    A1 / A2 / A3 / A4 / A5 pin distinct facets: empty input ->
-    ``None``, event_type filter precedence, the compound
-    ``isinstance(meta, dict) AND meta.get("integrator_gate") is True``
-    guard matrix, the exact 12-field emission shape, and the
-    latest-wins overwrite invariant.
-    """
     assert integrator_gate_timeline_summary([]) is None, (
         "A1: empty event list must return ``None`` (the function pre-allocates "
         "``out = None`` then never overwrites). A refactor that pre-allocated "
@@ -279,26 +251,6 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
 
 
 def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
-    """Pin ``agent_evaluator_timeline_summary`` + persona suffix split (5 axes).
-
-    Implementation at [runs.py:80-101](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        _AGENT_EVAL_STAGE_PREFIX = "agent_eval:"
-        ...
-        sn = pl.get("stage_name")
-        if not isinstance(sn, str) or not sn.startswith(_AGENT_EVAL_STAGE_PREFIX):
-            continue
-        suffix = sn[len(_AGENT_EVAL_STAGE_PREFIX) :]
-        persona_id: str | None = suffix if suffix else None
-
-    B1 / B2 / B3 / B4 / B5 pin: event_type filter precedence, the
-    ``isinstance(sn, str) AND sn.startswith("agent_eval:")`` gate
-    matrix, the suffix-extraction (single / multi-segment), the
-    empty-suffix collapse to ``None`` (NOT ``""``), and the
-    latest-wins + non-dict-payload coercion ordering.
-    """
     wrong_type_events = [
         _gate_decision_event(
             event_id=_RID1,
@@ -403,23 +355,6 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
 
 
 def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
-    """Pin ``self_refinement_timeline_summary`` + ``run_escalated_timeline_summary`` (5 axes).
-
-    Implementations at [runs.py](packages/nimbusware_api/routes/runs.py)
-    (``self_refinement_timeline_summary`` / ``run_escalated_timeline_summary``).
-
-    C1 / C2 / C3 pin the self_refinement helper (happy 8-field
-    emission, EXACT-match vs prefix divergence, missing-nested-meta
-    emits-anyway divergence). C4 / C5 pin run_escalated (happy
-    6-field payload-only emission, non-dict-payload coercion that
-    still emits with None fields).
-
-    KEY DIVERGENCE pinned by C2 + C3 together: self_refinement
-    uses EXACT stage equality (diverges from agent_evaluator's
-    ``startswith``) AND emits-with-None-fields on degraded metadata
-    (diverges from integrator_gate which SKIPS). A refactor that
-    unified either side would silently shift the emission policy.
-    """
     sr_metadata = {"self_refinement": {"version": "v2", "description": "second pass"}}
     sr_payload = {"stage_name": "self_refinement:policy", "attempt": 2}
     events_happy = [
@@ -601,29 +536,6 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
 
 
 def test_security_scan_summary_and_guard_5_axis() -> None:
-    """Pin scan-guard + ``security_scan_on_verify_timeline_summary`` (5 axes).
-
-    Implementations at [runs.py:158-187](packages/nimbusware_api/routes/runs.py):
-
-    .. code-block:: python
-
-        def _finding_has_security_scan_metadata(meta: Any) -> bool:
-            if not isinstance(meta, dict):
-                return False
-            return "security_scan_exit" in meta or "security_scan_snippet" in meta
-
-    D1 / D2 pin the guard helper directly (non-dict matrix + OR
-    semantics with key-membership-NOT-truthiness). D3 / D4 / D5
-    pin the summary helper (two-stage filter chain, happy 8-field
-    emission, latest-wins with interleaved skip).
-
-    KEY DIVERGENCE pinned by D2: the guard uses ``or`` + ``in``
-    (key membership), NOT ``and`` or truthiness. A refactor to
-    ``and`` would skip events with only one scan field; a refactor
-    to ``meta.get(key)`` (truthiness) would skip events with
-    ``security_scan_exit: 0`` -- the COMMON case for a passing
-    scan.
-    """
     non_dict_inputs: list[tuple[str, Any]] = [
         ("none", None),
         ("string", "not-a-dict"),

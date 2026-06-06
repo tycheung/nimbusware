@@ -81,13 +81,6 @@ def _append_run_started(mem: InMemoryEventStore, rid: UUID) -> None:
 
 
 def test_selected_model_for_run_per_event_type_happy_path_4_axis() -> None:
-    """Pin per-event-type happy-path field reads.
-
-    A1 -- empty store -> ``None``.
-    A2 -- single PRIMARY -> reads ``payload.model_id``.
-    A3 -- single FALLBACK -> reads ``payload.selected_model_id`` (NOT model_id).
-    A4 -- PRIMARY + interleaved RUN_STARTED -> non-model row ignored.
-    """
     orch_a1, _ = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     assert orch_a1._selected_model_for_run(rid_a1) is None, (  # noqa: SLF001
@@ -118,13 +111,6 @@ def test_selected_model_for_run_per_event_type_happy_path_4_axis() -> None:
 
 
 def test_selected_model_for_run_reverse_walk_last_wins_precedence_4_axis() -> None:
-    """Pin the reverse-iteration LAST-wins contract.
-
-    B1 -- two PRIMARY rows: latter wins.
-    B2 -- two FALLBACK rows: latter wins.
-    B3 -- PRIMARY then FALLBACK: FALLBACK wins (most recent).
-    B4 -- FALLBACK then PRIMARY: PRIMARY wins (most recent).
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     _append_primary(mem_b1, rid_b1, model_id="primary-A")
@@ -160,17 +146,6 @@ def test_selected_model_for_run_reverse_walk_last_wins_precedence_4_axis() -> No
 
 
 def test_selected_model_for_run_isinstance_type_guard_skip_and_continue_4_axis() -> None:
-    """Pin the ``isinstance(mid, str)`` skip-and-continue contract.
-
-    Each axis post-mutates ``mem._rows[-1]["payload"][<field>]`` to bypass
-    Pydantic's ``str`` enforcement, mirroring fo92 Part D5's technique.
-
-    C1 -- PRIMARY mutated ``model_id=None`` -> ``None``.
-    C2 -- FALLBACK mutated ``selected_model_id=42`` -> ``None``.
-    C3 -- valid FALLBACK earlier + non-string PRIMARY later: falls
-    through to FALLBACK (proves loop continues, NOT early-return None).
-    C4 -- valid PRIMARY earlier + non-string FALLBACK later: mirror.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     _append_primary(mem_c1, rid_c1, model_id="primary-13b")
@@ -209,14 +184,6 @@ def test_selected_model_for_run_isinstance_type_guard_skip_and_continue_4_axis()
 
 
 def test_selected_model_for_run_cross_cutting_negative_axes_4_axis() -> None:
-    """Pin cross-cutting negative + isolation axes.
-
-    D1 -- multi-run isolation: two runs in same store; PRIMARY for run_a
-    only -> run_a returns model_id; run_b returns ``None``.
-    D2 -- PRIMARY with missing ``model_id`` field -> ``None``.
-    D3 -- FALLBACK with missing ``selected_model_id`` field -> ``None``.
-    D4 -- unknown event_type -> ``None`` (both ``et == ...`` guards reject).
-    """
     orch_d1, mem_d1 = make_dev_orchestrator()
     rid_d1_a = orch_d1.create_run("default")
     rid_d1_b = orch_d1.create_run("default")

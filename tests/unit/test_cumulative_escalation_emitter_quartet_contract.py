@@ -136,13 +136,6 @@ def _escalation_rows(mem: InMemoryEventStore, run_id: UUID) -> list[dict[str, An
 
 
 def test_cumulative_stage_failures_emitter_5_axis() -> None:
-    """Pin _maybe_escalate_after_cumulative_stage_failures at pipeline.py:1283-1311.
-
-    Coverage delta vs existing test_cumulative_stage_failure_escalation.py:
-    the existing 3 axes (dedup-happy / suppress / parametrized below-threshold)
-    do NOT pin threshold-None, the exact notes string, or the count-filter
-    asymmetry. fo102's A1/A4/A5 close those.
-    """
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
     _append_stage_failed(mem_a1, rid_a1, "s1")
@@ -229,12 +222,6 @@ def test_cumulative_stage_failures_emitter_5_axis() -> None:
 
 
 def test_cumulative_gate_failures_emitter_5_axis() -> None:
-    """Pin _maybe_escalate_after_cumulative_gate_failures at pipeline.py:1313-1347.
-
-    Coverage delta vs existing test_gate_failure_escalation.py (1-axis happy
-    + dedup): fo102 adds threshold-None, below-threshold, notes-format, and
-    the PASS-gate-filter axis (critical inner verdict==FAIL.value guard).
-    """
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     for i in range(3):
@@ -315,13 +302,6 @@ def test_cumulative_gate_failures_emitter_5_axis() -> None:
 
 
 def test_auto_escalate_findings_emitter_5_axis() -> None:
-    """Pin _maybe_auto_escalate at pipeline.py:1349-1373.
-
-    Coverage delta vs existing: fo88's B3 added 1 control axis (this method's
-    first direct test). fo102 closes the asymmetric ANY-RUN_ESCALATED dedup
-    (different from Parts A/B/D's per-reason-code dedup), threshold-None,
-    below-threshold, notes-format, and the count-filter axes.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = orch_c1.create_run("default")
     for _ in range(3):
@@ -413,14 +393,6 @@ def test_auto_escalate_findings_emitter_5_axis() -> None:
 
 
 def test_notice_escalate_findings_emitter_5_axis() -> None:
-    """Pin _maybe_notice_escalate_findings at pipeline.py:1375-1403.
-
-    Coverage delta vs existing: only fo88's B4 suppress axis exists; ALL
-    happy-path / threshold / dedup / notes / cross-cut axes are unpinned today.
-    D4 also pins the asymmetric `notice_threshold=` prefix vs the canonical
-    `threshold=` used by Parts A/B/C; D5 pins the one-directional dedup
-    interaction with Part C.
-    """
     orch_d1, mem_d1 = make_dev_orchestrator()
     rid_d1 = orch_d1.create_run("default")
     for _ in range(3):

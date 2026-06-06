@@ -63,17 +63,6 @@ def _make_synthetic_run_created(
 
 
 def test_policy_snapshot_for_run_empty_and_no_match_3_axis_contract() -> None:
-    """Pin the no-match fallback at pipeline.py:552 (returns ``{}``).
-
-    Axis A1 -- empty store: no events ever appended. Random
-    run_id -> ``{}``.
-    Axis A2 -- different run_id: orchestrator has 1 valid run;
-    a fresh unrelated run_id -> ``{}``. Sanity: the real run
-    still returns non-empty (proves per-run lookup, not global).
-    Axis A3 -- same run_id with only non-``RUN_CREATED`` row:
-    append a ``RunStartedEvent`` directly; ``policy_snapshot_for_run``
-    -> ``{}`` (pins the ``event_type == RUN_CREATED`` filter at line 543).
-    """
     orch_a1, _ = make_dev_orchestrator()
     assert orch_a1.policy_snapshot_for_run(uuid4()) == {}
 
@@ -104,22 +93,6 @@ def test_policy_snapshot_for_run_empty_and_no_match_3_axis_contract() -> None:
 
 
 def test_policy_snapshot_for_run_happy_path_and_roundtrip_4_axis_contract() -> None:
-    """Pin the happy-path read + the fo86 round-trip cross-link.
-
-    Axis B1 -- bare-default shape: returned dict has
-    ``finding_fix_strictness`` (dict) and ``network_egress``
-    (dict) keys; nested egress fields are bare defaults.
-    Axis B2 -- override propagates: returned dict reflects
-    ``run_policy_overrides`` domain_allowlist exactly.
-    Axis B3 -- **ROUND-TRIP EQUIVALENCE** (the fo86 cross-link):
-    the stored payload's ``policy_snapshot`` (a
-    ``model_dump(mode="json", by_alias=True)`` dict from
-    ``serialize_event_persistent``) equals the method's return
-    (``model_dump(mode="json")`` of the validated read-back).
-    The two halves of the write/read contract must agree.
-    Axis B4 -- cross-workflow ``agent_evaluator_on`` returns
-    the expected shape (read is workflow-agnostic).
-    """
     orch_b1, _ = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
     snap_b1 = orch_b1.policy_snapshot_for_run(rid_b1)
@@ -166,22 +139,6 @@ def test_policy_snapshot_for_run_happy_path_and_roundtrip_4_axis_contract() -> N
 
 
 def test_policy_snapshot_for_run_degenerate_edges_and_downstream_4_axis_contract() -> None:
-    """Pin 4 degenerate-edge / downstream-integration axes.
-
-    Axis C1 -- ``policy_snapshot=None`` in stored payload: a
-    hand-crafted ``RUN_CREATED`` with ``policy_snapshot=None``
-    yields ``{}`` (pins the None-branch at line 549-550).
-    Axis C2 -- two ``RUN_CREATED`` rows for the same run_id ->
-    the **first** in append order wins (pins iteration-order
-    contract via ``list_run_events`` sorted by ``store_seq``).
-    Axis C3 -- **mutation safety**: mutating the returned dict
-    does NOT affect future calls (pins the fresh-dict contract
-    of ``model_dump(mode="json")`` + ``list_run_events`` deepcopy).
-    Axis C4 -- ``_strictness_context`` downstream integration:
-    ``_strictness_context`` calls ``policy_snapshot_for_run``
-    at line 555; pins the consumer integration backing
-    ``_emit_critique_gate_fail_findings``.
-    """
     orch_c1, mem_c1 = make_dev_orchestrator()
     rid_c1 = uuid4()
     mem_c1.append(_make_synthetic_run_created(rid_c1, policy_snapshot_none=True))

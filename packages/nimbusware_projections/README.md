@@ -12,7 +12,9 @@ Pure functions that turn append-only events into timeline summaries, operator me
 
 ## Import rules
 
-Orchestrator must not import `nimbusware_api`; projections are the shared read-model layer (`tests/unit/test_import_graph.py`).
+Projections must not import `nimbusware_orchestrator` at module level (campaign/backlog parsers live in `agent_core.read.campaign`). Orchestrator must not import `nimbusware_api`. Enforced in `tests/unit/test_import_graph.py`.
+
+Campaign projections: `builders/campaign_progress.py`, `builders/backlog_tree.py`.
 
 Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
 

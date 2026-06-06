@@ -32,7 +32,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 
 ## Campaign driver
 
-Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `campaign_driver.py` generates a delivery backlog, executes **one** micro-slice per `campaign_tick` worker task, runs periodic refactor/architecture maintenance, and finalizes via `completion_evaluator.py`. Start with `RunOrchestrator.start_campaign(run_id)`; worker steps: `campaign_tick` (see `run_worker.py`).
+Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `campaign_driver.py` generates a delivery backlog, executes **one** micro-slice per `campaign_tick` worker task, runs periodic refactor/architecture maintenance, and finalizes via tiered `completion_evaluator.py` (slice terminal + workflow `completion:` policy). Event-row parsers: `agent_core.read.campaign`. Public safety API: `RunOrchestrator.active_campaigns_for_project()`. Start with `RunOrchestrator.start_campaign(run_id)`; worker steps: `campaign_tick` (see `run_worker.py`).
 
 ## Testing
 
