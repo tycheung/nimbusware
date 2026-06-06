@@ -25,12 +25,19 @@ class LaunchEvalScorecard:
     findings: tuple[str, ...]
     passed: bool
     llm_findings: tuple[str, ...] = field(default_factory=tuple)
+    llm_dimensions: tuple[tuple[str, float], ...] = field(default_factory=tuple)
 
     def to_dict(self) -> dict[str, object]:
-        payload = {k: v for k, v in asdict(self).items() if k not in ("findings", "llm_findings")}
+        payload = {
+            k: v
+            for k, v in asdict(self).items()
+            if k not in ("findings", "llm_findings", "llm_dimensions")
+        }
         payload["findings"] = list(self.findings)
         if self.llm_findings:
             payload["llm_findings"] = list(self.llm_findings)
+        if self.llm_dimensions:
+            payload["llm_dimensions"] = {k: v for k, v in self.llm_dimensions}
         return payload
 
 
@@ -57,7 +64,12 @@ def _workspace_llm_context(workspace: Path) -> str:
     return "\n\n".join(parts) if parts else ws.name
 
 
-def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
+_RUBRIC_DIMENSIONS = frozenset(
+    {"maturity", "maintainability", "scalability", "security", "testability"},
+)
+
+
+def fetch_llm_rubric_panel(workspace: Path) -> dict[str, Any] | None:
     import httpx
 
     from nimbusware_orchestrator.ollama_chat import ollama_chat_json
@@ -70,8 +82,10 @@ def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
                 {
                     "role": "system",
                     "content": (
-                        "Assess workspace launch readiness. Return JSON "
-                        '{"findings": ["note1", ...]} with up to 5 concise strings.'
+                        "Assess workspace launch readiness. Return JSON with "
+                        '"findings": ["note", ...] (max 5 strings) and '
+                        '"dimensions": {"maturity":0-10,"maintainability":0-10,'
+                        '"scalability":0-10,"security":0-10,"testability":0-10}.'
                     ),
                 },
                 {"role": "user", "content": _workspace_llm_context(workspace)},
@@ -80,25 +94,65 @@ def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError, httpx.HTTPError):
         return None
-    raw = data.get("findings")
+    if not isinstance(data, dict):
+        return None
+    return data
+
+
+def _parse_llm_dimensions(raw: object) -> tuple[tuple[str, float], ...]:
+    if not isinstance(raw, dict):
+        return ()
+    out: list[tuple[str, float]] = []
+    for key, value in raw.items():
+        if key not in _RUBRIC_DIMENSIONS:
+            continue
+        try:
+            score = float(value)
+        except (TypeError, ValueError):
+            continue
+        out.append((key, _cap(score)))
+    return tuple(out)
+
+
+def fetch_llm_rubric_findings(workspace: Path) -> tuple[str, ...] | None:
+    panel = fetch_llm_rubric_panel(workspace)
+    if not panel:
+        return None
+    raw = panel.get("findings")
     if not isinstance(raw, list):
         return None
     out = tuple(str(item).strip()[:400] for item in raw if str(item).strip())[:5]
     return out or None
 
 
-def _llm_advisory_findings(workspace: Path) -> tuple[str, ...]:
+def _llm_panel_extras(workspace: Path) -> tuple[tuple[str, ...], tuple[tuple[str, float], ...]]:
     if not llm_panel_enabled():
-        return ()
-    llm = fetch_llm_rubric_findings(workspace)
-    if llm:
-        return llm
+        return (), ()
+    panel = fetch_llm_rubric_panel(workspace)
+    if panel:
+        findings_raw = panel.get("findings")
+        findings: tuple[str, ...] = ()
+        if isinstance(findings_raw, list):
+            findings = tuple(str(item).strip()[:400] for item in findings_raw if str(item).strip())[
+                :5
+            ]
+        dimensions = _parse_llm_dimensions(panel.get("dimensions"))
+        if findings or dimensions:
+            return findings, dimensions
     py_count = len(list(workspace.rglob("*.py")))
     test_count = len(list(workspace.rglob("tests/test_*.py")))
     return (
-        f"advisory: {py_count} python modules and {test_count} test modules — "
-        "confirm product intent manually (LLM unavailable)",
+        (
+            f"advisory: {py_count} python modules and {test_count} test modules — "
+            "confirm product intent manually (LLM unavailable)",
+        ),
+        (),
     )
+
+
+def _llm_advisory_findings(workspace: Path) -> tuple[str, ...]:
+    findings, _ = _llm_panel_extras(workspace)
+    return findings
 
 
 def _cap(value: float) -> float:
@@ -175,7 +229,7 @@ def evaluate_workspace_rubric(
     passed = aggregate >= min_aggregate and not any(
         f.startswith("pytest collect failed") for f in findings
     )
-    llm_findings = _llm_advisory_findings(ws)
+    llm_findings, llm_dimensions = _llm_panel_extras(ws)
     return LaunchEvalScorecard(
         aggregate=aggregate,
         maturity=maturity,
@@ -186,6 +240,7 @@ def evaluate_workspace_rubric(
         findings=tuple(findings),
         passed=passed,
         llm_findings=llm_findings,
+        llm_dimensions=llm_dimensions,
     )
 
 

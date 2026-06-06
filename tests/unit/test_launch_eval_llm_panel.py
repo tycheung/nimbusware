@@ -31,13 +31,17 @@ def test_launch_eval_llm_panel_uses_ollama_when_available(
 ) -> None:
     monkeypatch.setenv("NIMBUSWARE_LAUNCH_EVAL_LLM", "1")
 
-    def _fake_fetch(_workspace) -> tuple[str, ...]:
-        return ("llm: strong test layout",)
+    def _fake_panel(_workspace) -> dict[str, object]:
+        return {
+            "findings": ["llm: strong test layout"],
+            "dimensions": {"maturity": 8.0, "testability": 7.5, "bogus": 99.0},
+        }
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.launch_evaluator.fetch_llm_rubric_findings",
-        _fake_fetch,
+        "nimbusware_orchestrator.launch_evaluator.fetch_llm_rubric_panel",
+        _fake_panel,
     )
     (tmp_path / "README.md").write_text("# demo\n", encoding="utf-8")
     scorecard = evaluate_workspace_rubric(tmp_path, min_aggregate=0.0)
     assert scorecard.llm_findings == ("llm: strong test layout",)
+    assert dict(scorecard.llm_dimensions) == {"maturity": 8.0, "testability": 7.5}
