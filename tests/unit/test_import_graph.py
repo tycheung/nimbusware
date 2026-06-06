@@ -177,6 +177,27 @@ _WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST = frozenset(
 )
 
 
+_PROJECTIONS_ORCHESTRATOR_ALLOWLIST = frozenset(
+    {
+        "builders/stage_timeline.py",
+        "builders/universal_critique.py",
+    },
+)
+
+
+def test_projections_has_no_module_level_orchestrator_imports() -> None:
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_projections"
+    offenders: list[str] = []
+    for path in sorted(root.rglob("*.py")):
+        rel = path.relative_to(root).as_posix()
+        if rel in _PROJECTIONS_ORCHESTRATOR_ALLOWLIST:
+            continue
+        hits = _module_level_imports_matching(path, "nimbusware_orchestrator")
+        if hits:
+            offenders.append(f"{rel}: {hits}")
+    assert not offenders, "\n".join(offenders)
+
+
 def test_workflow_explainers_use_config_workflow_read_facade() -> None:
     root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
     offenders: list[str] = []

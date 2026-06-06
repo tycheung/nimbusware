@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from agent_core.models import EventType
-from nimbusware_orchestrator.campaign import campaign_effective_from_rows
+from agent_core.read.campaign import campaign_effective_from_rows
 from nimbusware_projections.builders.backlog_tree import backlog_tree_from_events
 
 

@@ -6,7 +6,7 @@ from typing import Any
 
 from agent_core.models import EventType
 from agent_core.models.backlog import SliceStatus
-from nimbusware_orchestrator.backlog_generator import apply_slice_outcomes, backlog_from_events
+from agent_core.read.campaign import apply_slice_outcomes, backlog_from_events
 
 
 def backlog_tree_from_events(events: list[dict[str, Any]]) -> dict[str, Any] | None:

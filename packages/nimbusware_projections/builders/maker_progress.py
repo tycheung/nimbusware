@@ -180,7 +180,7 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         break
 
     if campaign_mode:
-        from nimbusware_orchestrator.backlog_generator import backlog_from_events
+        from agent_core.read.campaign import backlog_from_events
 
         backlog = backlog_from_events(events)
         if backlog is not None:

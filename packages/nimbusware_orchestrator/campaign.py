@@ -11,7 +11,17 @@ from agent_core.models import EventType
 from agent_core.models.backlog import CampaignPolicy
 from agent_core.models.events_payloads import CampaignCreatedPayload, CampaignPolicyPayload
 from agent_core.models.events_records import CampaignCreatedEvent
+from agent_core.read.campaign import campaign_effective_from_rows, campaign_enabled_for_run
 from nimbusware_orchestrator.workflow_campaign import campaign_policy_from_blocks
+
+__all__ = [
+    "CampaignDriverState",
+    "campaign_effective_from_rows",
+    "campaign_enabled_for_run",
+    "campaign_policy_from_rows",
+    "emit_campaign_created",
+    "campaign_policy_from_workflow",
+]
 
 
 class CampaignDriverState(str, Enum):
@@ -22,23 +32,6 @@ class CampaignDriverState(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     PAUSED = "paused"
-
-
-def campaign_effective_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
-    for row in rows:
-        if row.get("event_type") != EventType.RUN_CREATED.value:
-            continue
-        meta = row.get("metadata")
-        if isinstance(meta, dict):
-            ce = meta.get("campaign_effective")
-            if isinstance(ce, dict) and ce.get("enabled"):
-                return ce
-        break
-    return None
-
-
-def campaign_enabled_for_run(rows: list[dict[str, Any]]) -> bool:
-    return campaign_effective_from_rows(rows) is not None
 
 
 def campaign_policy_from_rows(rows: list[dict[str, Any]]) -> CampaignPolicy | None:
