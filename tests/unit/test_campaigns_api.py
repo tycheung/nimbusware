@@ -20,12 +20,19 @@ def client() -> TestClient:
         yield c
 
 
-def test_post_campaigns_creates_run(client: TestClient) -> None:
-    projects = client.get("/v1/projects").json()
-    project_list = projects.get("projects") or []
-    if not project_list:
-        pytest.skip("no projects configured")
-    project_id = project_list[0]["project_id"]
+def test_post_campaigns_creates_run(client: TestClient, tmp_path: Path) -> None:
+    ws = tmp_path / "campaign-project"
+    ws.mkdir()
+    project = client.post(
+        "/v1/projects",
+        json={
+            "name": "Campaign test project",
+            "workspace_path": str(ws),
+            "template": "attach",
+        },
+    )
+    assert project.status_code == 200, project.text
+    project_id = project.json()["project_id"]
     resp = client.post(
         "/v1/campaigns",
         json={

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Literal
+from typing import Any, Literal, cast
 from uuid import UUID, uuid4
 
 from agent_core.models import (
@@ -25,8 +25,10 @@ from agent_core.models.events_records import (
     CampaignFailedEvent,
     CompletionEvaluatedEvent,
 )
+from agent_core.read.campaign import campaign_effective_from_rows
 from nimbusware_orchestrator.backlog_generator import apply_slice_outcomes, backlog_from_events
 from nimbusware_orchestrator.campaign_slice_selector import all_slices_terminal
+from nimbusware_orchestrator.workflow_campaign import CompletionWorkflowBlock
 
 CompletionVerdict = Literal["PASS", "FAIL", "INCOMPLETE"]
 
@@ -41,8 +43,69 @@ class CompletionEvalResult:
     epics_completed: int = 0
 
 
+def _completion_policy_from_rows(rows: list[dict[str, Any]]) -> CompletionWorkflowBlock:
+    ce = campaign_effective_from_rows(rows)
+    if isinstance(ce, dict):
+        raw_policy = ce.get("policy")
+        if isinstance(raw_policy, dict):
+            deep_every = int(raw_policy.get("deep_eval_every_n_slices", 20) or 20)
+        else:
+            deep_every = 20
+        raw_completion = ce.get("completion")
+        if isinstance(raw_completion, dict):
+            return CompletionWorkflowBlock(
+                require_project_tests_pass=bool(
+                    raw_completion.get("require_project_tests_pass", True),
+                ),
+                require_all_must_have_features=bool(
+                    raw_completion.get("require_all_must_have_features", True),
+                ),
+                deep_eval_every_n_slices=max(1, deep_every),
+            )
+    return CompletionWorkflowBlock()
+
+
+def _project_tests_passed(rows: list[dict[str, Any]]) -> bool:
+    verify_stages = {"slice.verify", "slice.test", "slice.gate", "lifecycle.verify"}
+    for row in reversed(rows):
+        if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+            continue
+        payload = row.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        stage = str(payload.get("stage_name") or "")
+        verdict = str(payload.get("verdict") or "").upper()
+        if stage in verify_stages and verdict == "PASS":
+            return True
+    return False
+
+
+def _features_satisfied(backlog: Any) -> bool:
+    from agent_core.models.backlog import DeliveryBacklog, SliceStatus
+
+    if not isinstance(backlog, DeliveryBacklog):
+        return True
+    for epic in backlog.epics:
+        for feature in epic.features:
+            if not feature.slices:
+                return False
+            if not any(sl.status == SliceStatus.PASSED for sl in feature.slices):
+                return False
+    return True
+
+
+def _deep_eval_due(slices_completed: int, every_n: int) -> bool:
+    if slices_completed <= 0:
+        return False
+    every = max(1, every_n)
+    if slices_completed < every:
+        return True
+    return slices_completed % every == 0
+
+
 def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
-    """Tier-1 stub: all backlog slices passed with no pending work."""
+    """Tiered completion: slice terminal state plus workflow completion policy."""
+    policy = _completion_policy_from_rows(rows)
     backlog = backlog_from_events(rows)
     if backlog is None:
         return CompletionEvalResult(
@@ -53,7 +116,14 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
         )
     backlog = apply_slice_outcomes(backlog, rows)
     total = backlog.metadata.total_slices_planned
-    completed = backlog.metadata.slices_completed
+    passed_slices = sum(
+        1
+        for epic in backlog.epics
+        for feature in epic.features
+        for sl in feature.slices
+        if sl.status == SliceStatus.PASSED
+    )
+    completed = max(backlog.metadata.slices_completed, passed_slices)
     remaining: list[str] = []
     blocking: list[str] = []
     for epic in backlog.epics:
@@ -73,11 +143,26 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
         blocking.append("failed_slices")
 
     if all_slices_terminal(backlog) and not blocking and not remaining:
+        if policy.require_project_tests_pass and not _project_tests_passed(rows):
+            blocking.append("project_tests_not_passed")
+        if policy.require_all_must_have_features and not _features_satisfied(backlog):
+            blocking.append("must_have_features_incomplete")
+        if not _deep_eval_due(completed, policy.deep_eval_every_n_slices):
+            blocking.append("deep_eval_cadence_pending")
+        if blocking:
+            return CompletionEvalResult(
+                verdict="INCOMPLETE",
+                remaining_epics=(),
+                blocking_findings=tuple(blocking),
+                rationale=f"all {total} slices terminal; completion policy not satisfied",
+                slices_completed=completed,
+                epics_completed=len(backlog.epics),
+            )
         return CompletionEvalResult(
             verdict="PASS",
             remaining_epics=(),
             blocking_findings=(),
-            rationale=f"all {total} backlog slices passed",
+            rationale=f"all {total} backlog slices passed; completion policy satisfied",
             slices_completed=completed,
             epics_completed=len(backlog.epics),
         )
@@ -179,8 +264,14 @@ def evaluate_and_finalize_campaign(
                 continue
             payload = row.get("payload")
             if isinstance(payload, dict):
+                raw_verdict = str(payload.get("verdict") or "INCOMPLETE")
+                verdict = (
+                    cast(CompletionVerdict, raw_verdict)
+                    if raw_verdict in ("PASS", "FAIL", "INCOMPLETE")
+                    else "INCOMPLETE"
+                )
                 return CompletionEvalResult(
-                    verdict=payload.get("verdict", "INCOMPLETE"),  # type: ignore[arg-type]
+                    verdict=verdict,
                     remaining_epics=tuple(payload.get("remaining_epics") or []),
                     blocking_findings=tuple(payload.get("blocking_findings") or []),
                     rationale=str(payload.get("rationale") or ""),
