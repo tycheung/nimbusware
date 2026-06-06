@@ -56,10 +56,14 @@ def run_worker_loop(
             time.sleep(idle_sleep_seconds)
             continue
         idle_loops = 0
-        if str(task.step).strip().lower() != "verify":
+        step = str(task.step).strip().lower()
+        if step == "verify":
+            orchestrator.process_verify_dispatch_task(task)
+        elif step == "campaign_tick":
+            orchestrator.process_campaign_dispatch_task(task)
+        else:
             queue.ack(task.task_id)
             continue
-        orchestrator.process_verify_dispatch_task(task)
         queue.ack(task.task_id)
         processed += 1
         if heartbeat_path is not None:

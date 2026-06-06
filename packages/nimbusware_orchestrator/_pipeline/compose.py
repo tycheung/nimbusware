@@ -6,6 +6,7 @@ from inspect import getattr_static
 from typing import cast
 
 from nimbusware_orchestrator._pipeline.base import RunOrchestratorBase
+from nimbusware_orchestrator._pipeline.campaign_dispatch import CampaignDispatchMixin
 from nimbusware_orchestrator._pipeline.create_run import CreateRunMixin
 from nimbusware_orchestrator._pipeline.critique_gates import CritiqueGatesMixin
 from nimbusware_orchestrator._pipeline.escalation import EscalationMixin
@@ -21,6 +22,7 @@ from nimbusware_orchestrator._pipeline.writers import WritersMixin
 
 _MIXINS = (
     CreateRunMixin,
+    CampaignDispatchMixin,
     MicroSliceMixin,
     PipelineScraperMixin,
     LifecycleMixin,
@@ -82,6 +84,7 @@ def _rebind_descriptor(name: str, attr: object, cls: type[object]) -> None:
 
 class RunOrchestrator(
     CreateRunMixin,
+    CampaignDispatchMixin,
     MicroSliceMixin,
     PipelineScraperMixin,
     LifecycleMixin,
