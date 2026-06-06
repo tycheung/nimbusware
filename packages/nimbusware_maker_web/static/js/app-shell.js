@@ -8,6 +8,7 @@ function loadRouteOnInit() {
 const ALL_TABS = [
   { id: "home", hash: "/home", label: "Home" },
   { id: "build", hash: "/build", label: "Build" },
+  { id: "plan", hash: "/plan", label: "Plan" },
   { id: "review", hash: "/review", label: "Review" },
   { id: "progress", hash: "/progress", label: "Progress" },
   { id: "models", hash: "/models", label: "Models" },

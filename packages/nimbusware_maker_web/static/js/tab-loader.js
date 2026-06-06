@@ -1,5 +1,6 @@
 import { mountHome } from "./tabs/home.js";
 import { mountBuild } from "./tabs/build.js";
+import { mountPlan } from "./tabs/plan.js";
 import { mountReview } from "./tabs/review.js";
 import { mountProgress, unmountProgress } from "./tabs/progress.js";
 import { mountModels } from "./tabs/models.js";
@@ -10,6 +11,7 @@ import { apiJson } from "./api-client.js";
 const MOUNTERS = {
   "/home": { el: "home-mount", fn: mountHome },
   "/build": { el: "build-mount", fn: mountBuild },
+  "/plan": { el: "plan-mount", fn: mountPlan },
   "/review": { el: "review-mount", fn: mountReview },
   "/progress": { el: "progress-mount", fn: mountProgress },
   "/models": { el: "models-mount", fn: mountModels },
