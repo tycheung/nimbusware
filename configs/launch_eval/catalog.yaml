@@ -1,0 +1,10 @@
+# Canonical launch-eval prompt catalog (deterministic rubric; no LLM required).
+prompts:
+  - id: basic_crm
+    path: prompts/basic_crm.yaml
+  - id: todo_api
+    path: prompts/todo_api.yaml
+
+default_workspaces:
+  - tests/fixtures/repos/tiny_python_app
+  - tests/fixtures/repos/tiny_web_app

@@ -76,6 +76,9 @@ maker:
     web: true
   - id: progress_simple_mode
     web: true
+  - id: launch_eval_scorecard
+    web: true
+    notes: Review tab loads launch_eval.completed scorecard from timeline
   - id: settings_catalog_keys
     web: true
 admin:

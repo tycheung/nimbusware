@@ -17,8 +17,10 @@ jobs:
         run: pip install poetry
       - name: Install dependencies
         run: poetry install
-      - name: Score attachable fixture workspace
-        run: poetry run python scripts/launch_eval.py tests/fixtures/repos/tiny_python_app --json | tee launch_eval_report.json
+      - name: Score attachable fixture workspaces
+        run: |
+          poetry run python scripts/launch_eval.py tests/fixtures/repos/tiny_python_app --json | tee launch_eval_tiny_python.json
+          poetry run python scripts/launch_eval.py tests/fixtures/repos/tiny_web_app --json | tee launch_eval_tiny_web.json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
@@ -26,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: launch-eval-scorecard
-          path: launch_eval_report.json
+          path: launch_eval_*.json

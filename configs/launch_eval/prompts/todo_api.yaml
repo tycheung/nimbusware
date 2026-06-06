@@ -1,0 +1,6 @@
+id: todo_api
+label: Todo REST API
+business_prompt: >
+  Build a minimal todo list REST API with create, list, and delete endpoints.
+workflow_profile: campaign_micro_slice
+min_aggregate_score: 5.0
