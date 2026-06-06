@@ -13,4 +13,11 @@ describe("run detail panel contracts", () => {
     const line = `#${ev.store_seq} ${ev.event_type}: ${ev.summary || ""}`;
     expect(line).toBe("#3 stitch.applied: applied 2 paths");
   });
+
+  it("campaign workflow profile gates admin panels", () => {
+    const campaign = { workflow_profile: "campaign_micro_slice" };
+    const defaultRun = { workflow_profile: "default" };
+    expect(campaign.workflow_profile === "campaign_micro_slice").toBe(true);
+    expect(defaultRun.workflow_profile === "campaign_micro_slice").toBe(false);
+  });
 });

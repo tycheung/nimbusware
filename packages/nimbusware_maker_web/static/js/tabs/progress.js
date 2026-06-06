@@ -16,6 +16,7 @@ export async function mountProgress(root) {
       <p id="pressure-banner" class="pressure-banner" hidden></p>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="slice-summary"></p>
+      <p id="campaign-controls" class="actions" hidden></p>
       <ol id="slice-list"></ol>
       <h4>Memory influence</h4>
       <table id="memory-influence-table"><thead><tr><th>Stage</th><th>Hits</th><th>Digest</th></tr></thead><tbody></tbody></table>`;
@@ -67,6 +68,55 @@ export async function mountProgress(root) {
     banner.dataset.level = p.level || "";
   }
 
+  async function campaignAction(path, label) {
+    const rid = runId();
+    if (!rid) return;
+    try {
+      await apiJson(`/campaigns/${encodeURIComponent(rid)}/${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason_code: "maker_progress" }),
+      });
+      toast(`${label} ok`, "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  }
+
+  function renderCampaignControls(cp) {
+    const bar = document.getElementById("campaign-controls");
+    if (!bar) return;
+    if (!cp || !cp.state) {
+      bar.hidden = true;
+      bar.replaceChildren();
+      return;
+    }
+    bar.hidden = false;
+    bar.replaceChildren();
+    const state = String(cp.state || "");
+    if (state !== "paused" && state !== "completed" && state !== "failed") {
+      const pause = document.createElement("button");
+      pause.type = "button";
+      pause.textContent = "Pause campaign";
+      pause.addEventListener("click", () => campaignAction("pause", "Pause"));
+      bar.appendChild(pause);
+    }
+    if (state === "paused") {
+      const resume = document.createElement("button");
+      resume.type = "button";
+      resume.textContent = "Resume campaign";
+      resume.addEventListener("click", () => campaignAction("resume", "Resume"));
+      bar.appendChild(resume);
+    }
+    if (state !== "completed" && state !== "failed") {
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.textContent = "Cancel campaign";
+      cancel.addEventListener("click", () => campaignAction("cancel", "Cancel"));
+      bar.appendChild(cancel);
+    }
+  }
+
   function renderProgress(body) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
@@ -74,6 +124,7 @@ export async function mountProgress(root) {
     renderContextBudget(body);
     if (summary) {
       const cp = body.campaign_progress;
+      renderCampaignControls(cp);
       if (cp && cp.state) {
         summary.textContent = `${body.current_headline || ""} [campaign: ${cp.state}, ${cp.slices_completed || 0}/${cp.slices_total || "?"} slices]`.trim();
       } else {

@@ -1,6 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+import { BacklogTreePanel } from "../components/BacklogTreePanel";
+import { CampaignProgressPanel } from "../components/CampaignProgressPanel";
 import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
+import { MaintenanceEventsPanel } from "../components/MaintenanceEventsPanel";
 import { ProbationNoticePanel } from "../components/ProbationNoticePanel";
 import { ResearchPanel } from "../components/ResearchPanel";
 import { IntegrationAdapterPanel } from "../components/IntegrationAdapterPanel";
@@ -188,6 +191,16 @@ export function RunDetailPage({ id }: { id?: string }) {
       ) : (
         <p>No timeline.</p>
       )}
+      {run.workflow_profile === "campaign_micro_slice" ? (
+        <>
+          <h3>Campaign progress</h3>
+          <CampaignProgressPanel campaignId={id} />
+          <h3>Delivery backlog</h3>
+          <BacklogTreePanel campaignId={id} />
+          <h3>Maintenance</h3>
+          <MaintenanceEventsPanel campaignId={id} />
+        </>
+      ) : null}
       <h3>Research briefs</h3>
       <ResearchPanel runId={id} />
       <h3>Stitch / transplant</h3>
