@@ -16,6 +16,9 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_slice_diff",
         "nimbusware_approve_plan",
         "nimbusware_compact_run",
+        "nimbusware_campaign_status",
+        "nimbusware_pause_campaign",
+        "nimbusware_backlog_summary",
     }
 
 

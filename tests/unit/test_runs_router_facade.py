@@ -107,6 +107,8 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "detail_router",
         "lifecycle_router",
         "maker_progress_router",
+        "context_budget_router",
+        "compact_router",
         "maker_approval_router",
         "research_router",
         "stream_router",

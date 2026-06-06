@@ -39,14 +39,14 @@ def test_critique_stage_to_producer_mapping_contract() -> None:
     assert CRITIQUE_STAGE_TO_PRODUCER["module_integrator.critique"] == "module_integrator"
 
 
-def test_critique_coverage_snapshot_registry_has_ten_producers() -> None:
+def test_critique_coverage_snapshot_registry_has_eleven_producers() -> None:
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
     router = UniversalCritiqueRouter.from_yaml(
         root / "configs" / "personas" / "critique_pairings.yaml",
     )
     snap = critique_coverage_snapshot(reg, router)
-    assert len(snap["registry_producers"]) == 10
+    assert len(snap["registry_producers"]) == 11
     assert "refactorer" in snap["registry_producers"]
     assert "agent_evaluator" not in snap["registry_producers"]
     assert snap["unpaired_producers"] == []
@@ -93,7 +93,7 @@ def test_create_run_freezes_critique_coverage_on_run_created(client: TestClient)
     created = next(x for x in rows if x.get("event_type") == "run.created")
     cc = (created.get("metadata") or {}).get("critique_coverage")
     assert isinstance(cc, dict)
-    assert len(cc.get("registry_producers") or []) == 10
+    assert len(cc.get("registry_producers") or []) == 11
     assert "registry_producers" in cc
     assert "paired_producers" in cc
     assert "pairing_errors" in cc

@@ -30,9 +30,13 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 - Extensions must **not** import orchestrator at module level (see `tests/unit/test_import_graph.py`)
 - **Ollama inventory:** `ollama_manage.py` (list/pull/delete against runtime), `ollama_user_policy.py` (`ollama_user_policy` in `model-routing.yaml`)
 
+## Campaign driver
+
+Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `campaign_driver.py` generates a delivery backlog, executes **one** micro-slice per `campaign_tick` worker task, runs periodic refactor/architecture maintenance, and finalizes via `completion_evaluator.py`. Start with `RunOrchestrator.start_campaign(run_id)`; worker steps: `campaign_tick` (see `run_worker.py`).
+
 ## Testing
 
-Orchestrator tests live under `tests/orchestrator/` and `tests/unit/test_*slice*`, `test_*critique*`.
+Orchestrator tests live under `tests/orchestrator/` and `tests/unit/test_*slice*`, `test_*critique*`, `test_campaign*`.
 
 ## Adding a pipeline stage
 
