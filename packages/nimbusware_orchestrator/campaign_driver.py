@@ -167,11 +167,21 @@ def campaign_driver_tick(
     backlog = apply_slice_outcomes(backlog, rows)
 
     if all_slices_terminal(backlog):
+        from nimbusware_orchestrator.completion_evaluator import evaluate_and_finalize_campaign
+
+        eval_result = evaluate_and_finalize_campaign(orch._store, run_id, rows)
+        if eval_result.verdict == "PASS":
+            return CampaignTickResult(
+                state=CampaignDriverState.COMPLETED,
+                should_continue=False,
+                slices_completed=eval_result.slices_completed,
+                message=eval_result.rationale,
+            )
         return CampaignTickResult(
             state=CampaignDriverState.ASSESSING,
             should_continue=False,
             slices_completed=backlog.metadata.slices_completed,
-            message="backlog exhausted; awaiting completion evaluation",
+            message=eval_result.rationale,
         )
 
     selected = select_next_slice(backlog)
@@ -230,11 +240,19 @@ def campaign_driver_tick(
         )
 
     if all_slices_terminal(apply_slice_outcomes(backlog, rows)):
+        from nimbusware_orchestrator.completion_evaluator import evaluate_and_finalize_campaign
+
+        eval_result = evaluate_and_finalize_campaign(orch._store, run_id, rows)
+        state = (
+            CampaignDriverState.COMPLETED
+            if eval_result.verdict == "PASS"
+            else CampaignDriverState.ASSESSING
+        )
         return CampaignTickResult(
-            state=CampaignDriverState.ASSESSING,
+            state=state,
             should_continue=False,
             slices_completed=completed,
-            message="final slice passed; backlog complete",
+            message=eval_result.rationale,
             last_slice_passed=True,
         )
 

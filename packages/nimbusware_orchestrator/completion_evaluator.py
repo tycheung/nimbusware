@@ -1,0 +1,190 @@
+"""Campaign completion evaluation (tiered checks)."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any, Literal
+from uuid import UUID, uuid4
+
+from agent_core.models import (
+    EventType,
+    RunCompletedEvent,
+    RunCompletedPayload,
+    RunFailedEvent,
+    RunFailedPayload,
+)
+from agent_core.models.backlog import SliceStatus
+from agent_core.models.events_payloads import (
+    CampaignCompletedPayload,
+    CampaignFailedPayload,
+    CompletionEvaluatedPayload,
+)
+from agent_core.models.events_records import (
+    CampaignCompletedEvent,
+    CampaignFailedEvent,
+    CompletionEvaluatedEvent,
+)
+from nimbusware_orchestrator.backlog_generator import apply_slice_outcomes, backlog_from_events
+from nimbusware_orchestrator.campaign_slice_selector import all_slices_terminal
+
+CompletionVerdict = Literal["PASS", "FAIL", "INCOMPLETE"]
+
+
+@dataclass(frozen=True)
+class CompletionEvalResult:
+    verdict: CompletionVerdict
+    remaining_epics: tuple[str, ...]
+    blocking_findings: tuple[str, ...]
+    rationale: str
+    slices_completed: int = 0
+    epics_completed: int = 0
+
+
+def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
+    """Tier-1 stub: all backlog slices passed with no pending work."""
+    backlog = backlog_from_events(rows)
+    if backlog is None:
+        return CompletionEvalResult(
+            verdict="INCOMPLETE",
+            remaining_epics=(),
+            blocking_findings=("no_backlog",),
+            rationale="delivery backlog not generated",
+        )
+    backlog = apply_slice_outcomes(backlog, rows)
+    total = backlog.metadata.total_slices_planned
+    completed = backlog.metadata.slices_completed
+    remaining: list[str] = []
+    blocking: list[str] = []
+    for epic in backlog.epics:
+        pending = any(
+            sl.status in (SliceStatus.PENDING, SliceStatus.IN_FLIGHT, SliceStatus.FAILED)
+            for feature in epic.features
+            for sl in feature.slices
+        )
+        if pending:
+            remaining.append(epic.epic_id)
+    if any(
+        sl.status == SliceStatus.FAILED
+        for epic in backlog.epics
+        for feature in epic.features
+        for sl in feature.slices
+    ):
+        blocking.append("failed_slices")
+
+    if all_slices_terminal(backlog) and not blocking and not remaining:
+        return CompletionEvalResult(
+            verdict="PASS",
+            remaining_epics=(),
+            blocking_findings=(),
+            rationale=f"all {total} backlog slices passed",
+            slices_completed=completed,
+            epics_completed=len(backlog.epics),
+        )
+    return CompletionEvalResult(
+        verdict="INCOMPLETE",
+        remaining_epics=tuple(remaining),
+        blocking_findings=tuple(blocking),
+        rationale=f"{completed}/{total} slices complete",
+        slices_completed=completed,
+    )
+
+
+def emit_completion_evaluated(
+    store: Any,
+    run_id: UUID,
+    result: CompletionEvalResult,
+) -> None:
+    store.append(
+        CompletionEvaluatedEvent(
+            event_type=EventType.COMPLETION_EVALUATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=CompletionEvaluatedPayload(
+                verdict=result.verdict,
+                remaining_epics=list(result.remaining_epics),
+                blocking_findings=list(result.blocking_findings),
+                rationale=result.rationale,
+            ),
+        ),
+    )
+
+
+def emit_campaign_terminal(
+    store: Any,
+    run_id: UUID,
+    result: CompletionEvalResult,
+) -> None:
+    campaign_id = str(run_id)
+    if result.verdict == "PASS":
+        store.append(
+            CampaignCompletedEvent(
+                event_type=EventType.CAMPAIGN_COMPLETED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                payload=CampaignCompletedPayload(
+                    campaign_id=campaign_id,
+                    slices_completed=result.slices_completed,
+                    epics_completed=result.epics_completed,
+                    summary=result.rationale,
+                ),
+            ),
+        )
+        store.append(
+            RunCompletedEvent(
+                event_type=EventType.RUN_COMPLETED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                payload=RunCompletedPayload(summary=result.rationale),
+            ),
+        )
+        return
+    if result.verdict == "FAIL":
+        store.append(
+            CampaignFailedEvent(
+                event_type=EventType.CAMPAIGN_FAILED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                payload=CampaignFailedPayload(
+                    campaign_id=campaign_id,
+                    reason_code="completion_failed",
+                    summary=result.rationale,
+                ),
+            ),
+        )
+        store.append(
+            RunFailedEvent(
+                event_type=EventType.RUN_FAILED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                payload=RunFailedPayload(
+                    reason_code="campaign_failed",
+                    message=result.rationale,
+                ),
+            ),
+        )
+
+
+def evaluate_and_finalize_campaign(store: Any, run_id: UUID, rows: list[dict[str, Any]]) -> CompletionEvalResult:
+    if any(r.get("event_type") == EventType.COMPLETION_EVALUATED.value for r in rows):
+        for row in reversed(rows):
+            if row.get("event_type") != EventType.COMPLETION_EVALUATED.value:
+                continue
+            payload = row.get("payload")
+            if isinstance(payload, dict):
+                return CompletionEvalResult(
+                    verdict=payload.get("verdict", "INCOMPLETE"),  # type: ignore[arg-type]
+                    remaining_epics=tuple(payload.get("remaining_epics") or []),
+                    blocking_findings=tuple(payload.get("blocking_findings") or []),
+                    rationale=str(payload.get("rationale") or ""),
+                )
+    result = evaluate_completion(rows)
+    emit_completion_evaluated(store, run_id, result)
+    if result.verdict in ("PASS", "FAIL"):
+        emit_campaign_terminal(store, run_id, result)
+    return result

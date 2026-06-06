@@ -157,12 +157,21 @@ def _headline_for_slice(
 def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     requirements: dict[str, Any] | None = None
     slice_total_hint = 2
+    campaign_mode = False
     run_status = "created"
     for row in events:
         if row.get("event_type") != EventType.RUN_CREATED.value:
             continue
         meta = _metadata(row)
         requirements = requirements_from_run_created_metadata(meta)
+        ce = meta.get("campaign_effective")
+        if isinstance(ce, dict) and ce.get("enabled"):
+            campaign_mode = True
+            policy = ce.get("policy")
+            if isinstance(policy, dict):
+                raw_max = policy.get("max_slices")
+                if isinstance(raw_max, int) and raw_max > 0:
+                    slice_total_hint = raw_max
         ms = meta.get("micro_slice_effective")
         if isinstance(ms, dict) and ms.get("enabled"):
             raw_count = ms.get("max_slices")
@@ -170,11 +179,22 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
                 slice_total_hint = raw_count
         break
 
+    if campaign_mode:
+        from nimbusware_orchestrator.backlog_generator import backlog_from_events
+
+        backlog = backlog_from_events(events)
+        if backlog is not None:
+            slice_total_hint = max(slice_total_hint, backlog.metadata.total_slices_planned)
+
     if any(r.get("event_type") == EventType.RUN_STARTED.value for r in events):
         run_status = "running"
     if any(r.get("event_type") == EventType.RUN_COMPLETED.value for r in events):
         run_status = "complete"
     if any(r.get("event_type") == EventType.RUN_FAILED.value for r in events):
+        run_status = "failed"
+    if campaign_mode and any(r.get("event_type") == EventType.CAMPAIGN_COMPLETED.value for r in events):
+        run_status = "complete"
+    if campaign_mode and any(r.get("event_type") == EventType.CAMPAIGN_FAILED.value for r in events):
         run_status = "failed"
 
     plans = _slice_plans(events)
@@ -240,12 +260,21 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         overall = "blocked"
         current_headline = slices_out[-1]["headline"] if slices_out else "A slice was blocked"
     elif passed_count >= len(plans):
-        overall = "complete" if run_status == "complete" else "ready_for_next"
-        current_headline = (
-            f"All {len(plans)} planned slices passed — ready for review"
-            if passed_count
-            else "Waiting for slice work to begin"
-        )
+        if campaign_mode and run_status == "complete":
+            overall = "complete"
+            current_headline = (
+                f"Build complete — {passed_count} slices, campaign finished"
+            )
+        else:
+            overall = "complete" if run_status == "complete" else "ready_for_next"
+            current_headline = (
+                f"All {len(plans)} planned slices passed — ready for review"
+                if passed_count
+                else "Waiting for slice work to begin"
+            )
+    elif campaign_mode:
+        overall = "building"
+        current_headline = f"Campaign building — slice {passed_count + 1} of {total}"
     else:
         overall = "in_progress"
         active = slices_out[min(passed_count, len(slices_out) - 1)]
