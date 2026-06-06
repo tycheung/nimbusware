@@ -447,6 +447,33 @@ python scripts/install_nimbusware.py --skip-linux-desktop-deps
 
 Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
+## Operator journey tests (E2E extension)
+
+Layered operator testing lives under `tests/e2e/`:
+
+| Layer | Location | CI |
+|-------|----------|-----|
+| L1 Journey API | `tests/e2e/journeys/` + `tests/e2e/harness/` | PR **e2e** job (`-m e2e`) |
+| L2 Stack | `tests/e2e/harness/stack.py` | `-m "e2e_stack and integration"` |
+| L3 Web UI | `tests/e2e/web/` (Playwright) | PR **web** job |
+
+```bash
+poetry run pytest tests/e2e/journeys -m e2e_journey -q
+poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
+```
+
+Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/`, `tiny_web_app/`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
+
+## Launch eval (workspace quality)
+
+Deterministic rubric v0 scores attached workspaces on maturity, maintainability, scalability, security, and testability. Campaign completion emits `launch_eval.completed` on the event timeline when the campaign passes.
+
+```bash
+poetry run python scripts/launch_eval.py path/to/workspace --json
+```
+
+Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/). Implementation: `packages/nimbusware_orchestrator/launch_evaluator.py`.
+
 ## Testing
 
 Layout and CI subsets: [`tests/README.md`](tests/README.md).
@@ -456,6 +483,7 @@ Layout and CI subsets: [`tests/README.md`](tests/README.md).
 ./scripts/ci_check.ps1   # Windows
 ./scripts/ci_check.sh    # Linux/macOS (--skip-web to skip vitest/Playwright)
 
+poetry run pytest tests/e2e/journeys -m e2e_journey -q
 poetry run pytest tests/ -q
 poetry run pytest tests/ -q -m "not integration and not slow and not benchmark"
 poetry run pytest tests/benchmark/ -m benchmark --benchmark-only

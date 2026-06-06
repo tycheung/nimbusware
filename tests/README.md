@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root `pyproject.toml`).
+Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
 
 | Directory | Purpose |
 |-----------|---------|
@@ -9,7 +9,11 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 | `tests/console/` | Admin console display / explainer behavior |
 | `tests/orchestrator/` | `RunOrchestrator` integration paths |
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
-| `tests/e2e/` | PR e2e subset (`-m e2e`); weekly operator smoke stays in `e2e_smoke.yml` |
+| `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
+| `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess) |
+| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth journeys |
+| `tests/e2e/golden/timelines/` | Minimum timeline subsequences for journey assertions |
+| `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`) |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
 | `tests/e2e/web/` | Playwright smoke (PR `ci.yml` **web** job; path-filtered `web-tests.yml` on UI-only diffs) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
@@ -35,7 +39,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages"]` (see root
 - **Per-package floors** (`scripts/coverage_package_floors.py`, ≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.
 - **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api/test_api_runs.py`) and Maker flows (`tests/api/test_maker_approval_api.py`, `tests/api/test_projects_api.py`) run on every PR.
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
-- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API `run.created` timeline). Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
+- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API timeline + L1 journeys when marked `e2e`). Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** `-m slow`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
