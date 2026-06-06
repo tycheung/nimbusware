@@ -1,0 +1,8 @@
+{
+  "agent_stable_max_chars": 4000,
+  "agent_volatile_max_chars": 2500,
+  "agent_legacy_preload_max_chars": 14000,
+  "handoff_max_chars": 4000,
+  "compaction_summary_max_chars": 6000,
+  "jit_vs_legacy_max_ratio": 0.5
+}

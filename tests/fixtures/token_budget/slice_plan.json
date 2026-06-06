@@ -1,0 +1,6 @@
+{
+  "slice_id": "slice-token-golden",
+  "target_paths": ["packages/demo/app.py", "packages/demo/util.py"],
+  "rationale": "Add helper used by app module",
+  "acceptance_criteria": "pytest packages/demo passes"
+}
