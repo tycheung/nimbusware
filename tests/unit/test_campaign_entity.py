@@ -36,6 +36,20 @@ def test_create_run_sets_campaign_effective_metadata() -> None:
     assert ce.get("policy", {}).get("backlog_generator") == "stub"
 
 
+def test_autonomous_campaign_skips_maker_approval() -> None:
+    repo = find_repo_root(start=Path(__file__).resolve().parents[1])
+    orch, store = make_dev_orchestrator(repo)
+    run_id = orch.create_run(
+        "campaign_micro_slice",
+        requirements={"business_prompt": "Build a thing"},
+        autonomous=True,
+    )
+    rows = store.list_run_events(str(run_id))
+    meta = rows[0].get("metadata") or {}
+    assert meta.get("maker_approval") is None
+    assert meta.get("campaign_effective", {}).get("autonomous") is True
+
+
 def test_emit_campaign_created_event() -> None:
     repo = find_repo_root(start=Path(__file__).resolve().parents[1])
     orch, store = make_dev_orchestrator(repo)

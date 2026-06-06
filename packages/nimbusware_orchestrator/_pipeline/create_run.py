@@ -67,6 +67,7 @@ class CreateRunMixin:
         project_workspace_path: str | None = None,
         project_template: str | None = None,
         requirements: dict[str, Any] | None = None,
+        autonomous: bool | None = None,
     ) -> UUID:
         mat = self._config_materializer
         assert_known_workflow(
@@ -358,6 +359,17 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
+        campaign_meta = (
+            campaign_effective_metadata(
+                campaign_block,
+                backlog_block,
+                maintenance_block,
+                completion_block,
+                autonomous=autonomous,
+            )
+            if campaign_block.enabled
+            else None
+        )
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -398,18 +410,7 @@ class CreateRunMixin:
                     "replan_max": slice_budget.replan_max,
                     "one_at_a_time": campaign_block.enabled,
                 },
-                **(
-                    {
-                        "campaign_effective": campaign_effective_metadata(
-                            campaign_block,
-                            backlog_block,
-                            maintenance_block,
-                            completion_block,
-                        ),
-                    }
-                    if campaign_block.enabled
-                    else {}
-                ),
+                **({"campaign_effective": campaign_meta} if campaign_meta else {}),
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],
@@ -427,7 +428,12 @@ class CreateRunMixin:
                 **({"project": project_meta} if project_meta else {}),
                 **({"requirements": requirements_meta} if requirements_meta else {}),
                 **({"operator_settings": operator_settings_meta} if operator_settings_meta else {}),
-                **({"maker_approval": {"enabled": True}} if requirements_meta is not None else {}),
+                **(
+                    {"maker_approval": {"enabled": True}}
+                    if requirements_meta is not None
+                    and not (isinstance(campaign_meta, dict) and campaign_meta.get("autonomous"))
+                    else {}
+                ),
                 **(
                     {
                         "persona_assignment": {
