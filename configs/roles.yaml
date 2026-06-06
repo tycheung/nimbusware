@@ -49,6 +49,12 @@ roles:
   - taxonomy_key: refactor_critic
     role_id: "10101010-1010-4101-8101-101010101001"
     display_name: Refactor Critic
+  - taxonomy_key: architect
+    role_id: "15151515-1515-4515-8515-151515151501"
+    display_name: Architect
+  - taxonomy_key: architecture_critic
+    role_id: "16161616-1616-4616-8616-161616161601"
+    display_name: Architecture Critic
   - taxonomy_key: code_quality_critic
     role_id: "20202020-2020-4202-8202-202020202002"
     display_name: Code Quality Critic
