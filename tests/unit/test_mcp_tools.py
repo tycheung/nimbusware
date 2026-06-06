@@ -15,6 +15,7 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_maker_pending",
         "nimbusware_prepare_slice",
         "nimbusware_resume_campaign",
+        "nimbusware_revert_workspace",
         "nimbusware_run_status",
         "nimbusware_run_theater",
         "nimbusware_skip_slice",
@@ -74,6 +75,22 @@ def test_nimbusware_prepare_slice(mock_post: Any) -> None:
     out = call_tool("nimbusware_prepare_slice", {"run_id": "abc"})
     mock_post.assert_called_once_with("/runs/abc/maker/slices/prepare", {})
     assert "awaiting_approval" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_skip_slice(mock_post: Any) -> None:
+    mock_post.return_value = {"status": "skipped"}
+    out = call_tool("nimbusware_skip_slice", {"run_id": "abc", "slice_id": "s1"})
+    mock_post.assert_called_once_with("/runs/abc/maker/slices/skip", {"slice_id": "s1"})
+    assert "skipped" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_revert_workspace(mock_post: Any) -> None:
+    mock_post.return_value = {"status": "reverted"}
+    out = call_tool("nimbusware_revert_workspace", {"run_id": "abc"})
+    mock_post.assert_called_once_with("/runs/abc/workspace/revert", {})
+    assert "reverted" in out["content"][0]["text"]
 
 
 @patch("nimbusware_mcp.tools.post_json")

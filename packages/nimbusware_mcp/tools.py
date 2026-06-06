@@ -130,6 +130,15 @@ TOOL_SPECS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "nimbusware_revert_workspace",
+        "description": "Revert workspace changes for the latest applied slice on a run.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
+    {
         "name": "nimbusware_compact_run",
         "description": "Trigger campaign context compaction for a run.",
         "inputSchema": {
@@ -204,6 +213,8 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(get_json(f"/runs/{run_id}/slices/{idx}/diff"))
     if name == "nimbusware_approve_plan":
         return _text_result(post_json(f"/runs/{run_id}/maker/plan/approve", {}))
+    if name == "nimbusware_revert_workspace":
+        return _text_result(post_json(f"/runs/{run_id}/workspace/revert", {}))
     if name == "nimbusware_compact_run":
         return _text_result(post_json(f"/runs/{run_id}/compact", {}))
     raise ValueError(f"unknown tool: {name}")

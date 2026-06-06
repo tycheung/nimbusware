@@ -32,6 +32,8 @@ Add to your MCP settings:
 | `nimbusware_prepare_slice` | `POST /v1/runs/{run_id}/maker/slices/prepare` |
 | `nimbusware_apply_slice` | `POST /v1/runs/{run_id}/maker/slices/apply` |
 | `nimbusware_skip_slice` | `POST /v1/runs/{run_id}/maker/slices/skip` |
+| `nimbusware_skip_slice` | `POST /v1/runs/{run_id}/maker/slices/skip` |
+| `nimbusware_revert_workspace` | `POST /v1/runs/{run_id}/workspace/revert` |
 | `nimbusware_run_status` | `GET /v1/runs/{run_id}` |
 | `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
 | `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |
