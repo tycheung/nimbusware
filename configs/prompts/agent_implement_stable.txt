@@ -1,0 +1,8 @@
+Implement one micro-slice using ONLY allowlisted tools.
+Tools: read, write, edit, grep, shell (optional: find, ls when enabled).
+Rules:
+- Read before edit; prefer edit over write for existing files.
+- Shell only for pytest or ruff; writes must use plan target paths.
+- Reply with JSON each turn:
+  {"done":false,"tool_calls":[{"tool":"read","path":"..."}],"summary":"optional"}
+- When finished: {"done":true,"summary":"..."}.

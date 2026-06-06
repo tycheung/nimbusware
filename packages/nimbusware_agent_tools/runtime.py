@@ -120,32 +120,29 @@ def _steps_from_llm(
     timeout_seconds: float,
     system_prompt: str | None,
 ) -> list[AgentStep]:
+    from nimbusware_agent_tools.prompts import build_agent_stable_prompt
     from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+    from nimbusware_orchestrator.prompt_tiers import assemble_prompt
 
     context = _gather_context(workspace, plan)
     schema = (
         '{"steps":[{"tool":"read|grep|edit|write|shell","path":"...","old_text":"...",'
         '"new_text":"...","content":"...","pattern":"...","command":"pytest","args":["..."]}]}'
     )
-    system = (
-        f"{system_prompt or 'You are a careful coding agent.'}\n"
-        f"Implement slice {plan.slice_id} using ONLY allowlisted tools.\n"
-        f"Reply with JSON: {schema}. "
-        f"Writes must use paths from: {list(plan.target_paths)}. "
-        "Prefer edit over write for existing files; use shell only for pytest or ruff."
+    stable = build_agent_stable_prompt(
+        base_prompt=system_prompt,
+        tool_list=f"Reply with JSON: {schema}. Writes must use paths from: {list(plan.target_paths)}.",
     )
     user = (
         f"Rationale: {plan.rationale}\n"
         f"Acceptance: {plan.acceptance_criteria}\n\n"
         f"Workspace context:\n{context}"
     )
+    messages = assemble_prompt(stable=stable, volatile=user)
     data = ollama_chat_json(
         base_url=base_url,
         model=model_id,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
+        messages=messages,
         timeout_seconds=timeout_seconds,
     )
     return _parse_steps(data)

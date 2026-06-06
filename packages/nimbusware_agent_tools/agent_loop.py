@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.context_budget import truncate_for_llm_history
+from nimbusware_agent_tools.prompts import build_agent_stable_prompt
 from nimbusware_agent_tools.risk_caps import AgentRiskCaps
 from nimbusware_agent_tools.runtime import AgentStep, _allowed_paths, _execute_step
 from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
+from nimbusware_orchestrator.prompt_tiers import assemble_prompt
 
 ChatFn = Callable[..., dict[str, Any]]
 
@@ -25,19 +26,8 @@ class AgentLoopResult:
     tool_steps: int = 0
 
 
-def _stable_system_prompt(*, base_prompt: str | None) -> str:
-    return stable_slice_agent_block(
-        tool_rules=(
-            f"{base_prompt or 'You are a careful coding agent.'}\n"
-            "Implement one micro-slice using ONLY these tools: read, write, edit, grep, shell.\n"
-            "Rules: read before edit; prefer edit over write for existing files; "
-            "shell only for pytest or ruff; writes must use plan target paths.\n"
-            "Reply with JSON each turn:\n"
-            '{"done":false,"tool_calls":[{"tool":"read","path":"..."}],'
-            '"summary":"optional"}\n'
-            'When finished: {"done":true,"summary":"..."}.'
-        ),
-    )
+def _stable_system_prompt(*, base_prompt: str | None, tool_list: str | None = None) -> str:
+    return build_agent_stable_prompt(base_prompt=base_prompt, tool_list=tool_list)
 
 
 def _volatile_user_prompt(
