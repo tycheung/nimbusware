@@ -1,0 +1,6 @@
+id: basic_crm
+label: Basic CRM with auth modules
+business_prompt: >
+  Build a minimal CRM with user authentication, contact list, and REST API.
+workflow_profile: campaign_micro_slice
+min_aggregate_score: 6.0

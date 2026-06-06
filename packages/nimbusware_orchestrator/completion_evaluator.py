@@ -1,4 +1,4 @@
-"""Campaign completion evaluation (tiered checks)."""
+"""Campaign completion evaluation."""
 
 from __future__ import annotations
 
@@ -278,6 +278,16 @@ def evaluate_and_finalize_campaign(
                 )
     result = evaluate_completion(rows)
     emit_completion_evaluated(store, run_id, result)
+    if result.verdict == "PASS":
+        from nimbusware_maker.workspace import resolve_run_workspace
+        from nimbusware_orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
+
+        maybe_run_launch_eval_for_campaign(
+            store,
+            run_id,
+            store.list_run_events(str(run_id)),
+            workspace=resolve_run_workspace(rows),
+        )
     if result.verdict in ("PASS", "FAIL"):
         emit_campaign_terminal(store, run_id, result)
     return result
