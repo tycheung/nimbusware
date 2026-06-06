@@ -6,10 +6,7 @@ from dataclasses import dataclass
 
 from agent_core.context_budget import estimate_tokens
 from agent_core.models.slice_handoff import SliceHandoffSummary
-from nimbusware_orchestrator.slice_handoff import (
-    build_slice_handoff_summary,
-    handoff_markdown_capped,
-)
+from nimbusware_orchestrator.slice_handoff import handoff_markdown_capped
 
 
 @dataclass(frozen=True)
@@ -81,7 +78,7 @@ def compact_campaign_context(
     if not older:
         return None
 
-    merged = _merge_handoffs(older)
+    merged = _merge_handoffs(older, prior=_latest_compaction_prior(events))
     recent_text = "\n\n".join(
         str((r.get("metadata") or {}).get("handoff_summary") or "")
         for r in recent
@@ -111,8 +108,47 @@ def compact_campaign_context(
     )
 
 
-def _merge_handoffs(rows: list[dict]) -> SliceHandoffSummary:
-    merged: SliceHandoffSummary | None = None
+def _latest_compaction_prior(events: list[dict]) -> SliceHandoffSummary | None:
+    prior: SliceHandoffSummary | None = None
+    for row in events:
+        payload = row.get("payload") or {}
+        if not isinstance(payload, dict):
+            continue
+        if payload.get("stage_name") != "campaign.context.compacted":
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            continue
+        handoff_raw = meta.get("slice_handoff")
+        if isinstance(handoff_raw, dict):
+            prior = SliceHandoffSummary.model_validate(handoff_raw)
+            continue
+        summary = meta.get("summary")
+        if isinstance(summary, str) and summary.strip():
+            prior = SliceHandoffSummary.parse_sections(summary)
+    return prior
+
+
+def _union_handoff_summaries(
+    left: SliceHandoffSummary,
+    right: SliceHandoffSummary,
+) -> SliceHandoffSummary:
+    return SliceHandoffSummary(
+        goal=left.goal or right.goal,
+        progress=tuple(dict.fromkeys((*left.progress, *right.progress))),
+        key_decisions=tuple(dict.fromkeys((*left.key_decisions, *right.key_decisions))),
+        next_steps=right.next_steps or left.next_steps,
+        read_files=tuple(dict.fromkeys((*left.read_files, *right.read_files))),
+        modified_files=tuple(dict.fromkeys((*left.modified_files, *right.modified_files))),
+    )
+
+
+def _merge_handoffs(
+    rows: list[dict],
+    *,
+    prior: SliceHandoffSummary | None = None,
+) -> SliceHandoffSummary:
+    merged = prior
     for row in rows:
         meta = row.get("metadata")
         if not isinstance(meta, dict):
@@ -124,25 +160,8 @@ def _merge_handoffs(rows: list[dict]) -> SliceHandoffSummary:
         if merged is None:
             merged = handoff
             continue
-        merged = build_slice_handoff_summary(
-            _dummy_plan(handoff.progress[-1] if handoff.progress else "slice"),
-            prior=merged,
-            paths_touched=handoff.modified_files,
-            diff_stat="compacted",
-        )
+        merged = _union_handoff_summaries(merged, handoff)
     return merged or SliceHandoffSummary(goal="(compacted campaign context)")
-
-
-def _dummy_plan(label: str) -> object:
-    from nimbusware_orchestrator.micro_slice import parse_slice_plan
-
-    return parse_slice_plan(
-        {
-            "slice_id": label.split(":")[0] if ":" in label else "slice-compact",
-            "target_paths": [],
-            "rationale": "compaction merge",
-        },
-    )
 
 
 def maybe_emit_compaction_event(

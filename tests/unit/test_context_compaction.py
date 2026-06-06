@@ -15,8 +15,9 @@ def _handoff_event(
     *,
     seq: int,
     summary: str,
+    handoff: SliceHandoffSummary | None = None,
 ) -> dict:
-    handoff = SliceHandoffSummary(
+    handoff = handoff or SliceHandoffSummary(
         goal="campaign",
         progress=(f"{sid}: passed",),
         modified_files=(f"packages/{sid}.py",),
@@ -62,6 +63,47 @@ def test_compaction_emits_summary_with_merged_progress() -> None:
     assert result is not None
     assert result.handoff.progress
     assert result.tokens_after < result.tokens_before
+
+
+def test_recompact_merges_modified_files_monotonically() -> None:
+    prior = SliceHandoffSummary(
+        goal="campaign",
+        progress=("slice-1: passed",),
+        modified_files=("packages/a.py",),
+    )
+    compact_event = {
+        "seq": 10,
+        "payload": {"stage_name": "campaign.context.compacted"},
+        "metadata": {
+            "summary": prior.render_markdown(),
+            "slice_handoff": prior.model_dump(),
+        },
+    }
+    second_batch = [
+        _handoff_event("slice-5", seq=11, summary="x" * 500),
+        _handoff_event("slice-6", seq=12, summary="e" * 500),
+        _handoff_event(
+            "slice-7",
+            seq=13,
+            summary="f" * 500,
+            handoff=SliceHandoffSummary(
+                goal="campaign",
+                progress=("slice-7: passed",),
+                modified_files=("packages/b.py",),
+            ),
+        ),
+        _handoff_event("slice-8", seq=14, summary="g" * 500),
+    ]
+    result = compact_campaign_context(
+        [compact_event, *second_batch],
+        keep_recent_tokens=150,
+        reserve_tokens=50,
+    )
+    assert result is not None
+    modified = result.handoff.modified_files
+    assert "packages/a.py" in modified
+    assert "packages/b.py" in modified
+    assert "slice-1: passed" in "\n".join(result.handoff.progress)
 
 
 def test_maybe_emit_compaction_event_appends_marker() -> None:

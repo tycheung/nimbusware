@@ -23,4 +23,7 @@ without summarizing older handoffs. Raw events remain authoritative in the event
 
 - Planner can read latest compaction summary from run events (future campaign driver).
 - Hardware governor can influence default keep-recent window via cached profile context.
-- Re-compaction merge semantics may deepen in a follow-up (merge-on-recompact).
+- Re-compaction reads the latest `campaign.context.compacted` marker and merges new
+  older handoffs onto that prior summary via `SliceHandoffSummary.parse_sections`.
+- `<read-files>` and `<modified-files>` lists grow monotonically (union/dedupe) across
+  successive compactions so file provenance is not dropped.
