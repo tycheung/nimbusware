@@ -1,0 +1,99 @@
+"""Periodic refactor maintenance passes during campaigns."""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Any
+from uuid import UUID, uuid4
+
+from agent_core.models import EventType
+from agent_core.models.events_payloads import (
+    MaintenanceRefactorPassedPayload,
+    MaintenanceRefactorStartedPayload,
+)
+from agent_core.models.events_records import (
+    MaintenanceRefactorPassedEvent,
+    MaintenanceRefactorStartedEvent,
+)
+
+
+def should_run_refactor_pass(slices_completed: int, every_n: int) -> bool:
+    return every_n > 0 and slices_completed > 0 and slices_completed % every_n == 0
+
+
+def run_maintenance_refactor(
+    orch: Any,
+    run_id: UUID,
+    *,
+    slices_completed: int,
+    insert_fix_slices: bool = True,
+) -> bool:
+    """Emit maintenance refactor markers; return True when gate passed."""
+    store = orch._store
+    store.append(
+        MaintenanceRefactorStartedEvent(
+            event_type=EventType.MAINTENANCE_REFACTOR_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=MaintenanceRefactorStartedPayload(
+                campaign_id=str(run_id),
+                after_slice_count=slices_completed,
+            ),
+        ),
+    )
+    gate_fail = False
+    if hasattr(orch, "_emit_refactor_stage_optional"):
+        rows = store.list_run_events(str(run_id))
+        wf = None
+        for row in rows:
+            if row.get("event_type") == EventType.RUN_CREATED.value:
+                payload = row.get("payload")
+                if isinstance(payload, dict):
+                    wf = payload.get("workflow_profile")
+                break
+        gate_fail = bool(orch._emit_refactor_stage_optional(run_id, workflow_profile=wf))
+    fix_slices = 0
+    if gate_fail and insert_fix_slices:
+        from agent_core.models.backlog import BacklogSlice
+        from nimbusware_orchestrator.backlog_generator import (
+            backlog_from_events,
+            emit_backlog_revised,
+        )
+
+        rows = store.list_run_events(str(run_id))
+        backlog = backlog_from_events(rows)
+        if backlog is not None:
+            fix = BacklogSlice(
+                slice_id=f"fix-refactor-{slices_completed}",
+                rationale="Refactor maintenance fix slice",
+                target_paths=("packages/",),
+            )
+            epics = list(backlog.epics)
+            if epics and epics[0].features:
+                feat = epics[0].features[0]
+                new_slices = tuple(list(feat.slices) + [fix])
+                epics[0] = epics[0].model_copy(
+                    update={
+                        "features": (
+                            feat.model_copy(update={"slices": new_slices}),
+                            *epics[0].features[1:],
+                        ),
+                    },
+                )
+                revised = backlog.model_copy(update={"epics": tuple(epics)})
+                emit_backlog_revised(store, run_id, revised, revision_reason="refactor_fix_slices")
+                fix_slices = 1
+    store.append(
+        MaintenanceRefactorPassedEvent(
+            event_type=EventType.MAINTENANCE_REFACTOR_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=MaintenanceRefactorPassedPayload(
+                campaign_id=str(run_id),
+                fix_slices_queued=fix_slices,
+            ),
+        ),
+    )
+    return not gate_fail

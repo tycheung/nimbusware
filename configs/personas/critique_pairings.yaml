@@ -10,6 +10,9 @@ pairings:
   refactorer:
     - refactor_critic
     - code_quality_critic
+  architect:
+    - architecture_critic
+    - code_quality_critic
   planner:
     - product_reference_critic
     - domain_critic

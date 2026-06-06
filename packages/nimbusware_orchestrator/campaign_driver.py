@@ -145,6 +145,26 @@ def campaign_driver_tick(
     max_slices = int((ce.get("policy") or {}).get("max_slices", 500) if ce else 500)
     generator_mode = str((ce.get("policy") or {}).get("backlog_generator", "stub"))
 
+    from nimbusware_orchestrator.campaign_safety import (
+        campaign_exceeded_duration,
+        should_defer_tick_for_pressure,
+    )
+
+    if policy and campaign_exceeded_duration(rows, max_hours=policy.max_campaign_duration_hours):
+        return CampaignTickResult(
+            state=CampaignDriverState.FAILED,
+            should_continue=False,
+            slices_completed=_count_passed_slices(rows),
+            message="campaign exceeded max duration",
+        )
+    if should_defer_tick_for_pressure(rows):
+        return CampaignTickResult(
+            state=CampaignDriverState.PAUSED,
+            should_continue=True,
+            slices_completed=_count_passed_slices(rows),
+            message="deferred tick due to resource pressure",
+        )
+
     maybe_emit_compaction_event(orch._store, run_id=run_id, events=rows)
     rows = orch._store.list_run_events(str(run_id))
     budget = estimate_context_budget(rows)
@@ -166,6 +186,38 @@ def campaign_driver_tick(
     )
     rows = orch._store.list_run_events(str(run_id))
     backlog = apply_slice_outcomes(backlog, rows)
+    completed = backlog.metadata.slices_completed
+    policy = campaign_policy_from_rows(rows)
+    if policy:
+        from nimbusware_orchestrator.maintenance_architecture import (
+            run_maintenance_architecture,
+            should_run_architecture_pass,
+        )
+        from nimbusware_orchestrator.maintenance_refactor import (
+            run_maintenance_refactor,
+            should_run_refactor_pass,
+        )
+
+        ce_meta = campaign_effective_from_rows(rows) or {}
+        maint = ce_meta.get("maintenance") if isinstance(ce_meta.get("maintenance"), dict) else {}
+        if should_run_refactor_pass(completed, policy.refactor_every_n_slices):
+            run_maintenance_refactor(
+                orch,
+                run_id,
+                slices_completed=completed,
+                insert_fix_slices=bool(maint.get("refactor_inserts_fix_slices", True)),
+            )
+            rows = orch._store.list_run_events(str(run_id))
+            backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        if should_run_architecture_pass(completed, policy.architecture_every_n_slices):
+            run_maintenance_architecture(
+                orch,
+                run_id,
+                slices_completed=completed,
+                can_revise_backlog=bool(maint.get("architecture_can_revise_backlog", True)),
+            )
+            rows = orch._store.list_run_events(str(run_id))
+            backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
 
     if all_slices_terminal(backlog):
         from nimbusware_orchestrator.completion_evaluator import evaluate_and_finalize_campaign
