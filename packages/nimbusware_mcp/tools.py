@@ -7,6 +7,24 @@ from nimbusware_client.http import get_json, post_json
 
 TOOL_SPECS: list[dict[str, Any]] = [
     {
+        "name": "nimbusware_maker_pending",
+        "description": "Fetch pending slice and plan approval state for a run.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_resume_campaign",
+        "description": "Resume a paused campaign.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"campaign_id": {"type": "string"}},
+            "required": ["campaign_id"],
+        },
+    },
+    {
         "name": "nimbusware_run_status",
         "description": "Fetch run summary from GET /v1/runs/{run_id}.",
         "inputSchema": {
@@ -100,6 +118,7 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         "nimbusware_campaign_status",
         "nimbusware_pause_campaign",
         "nimbusware_backlog_summary",
+        "nimbusware_resume_campaign",
     ):
         campaign_id = str(arguments.get("campaign_id") or "").strip()
         if not campaign_id:
@@ -112,11 +131,15 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             return _text_result(
                 post_json(f"/campaigns/{campaign_id}/pause", {"reason_code": reason}),
             )
+        if name == "nimbusware_resume_campaign":
+            return _text_result(post_json(f"/campaigns/{campaign_id}/resume", {}))
         return _text_result(get_json(f"/campaigns/{campaign_id}/backlog"))
 
     run_id = str(arguments.get("run_id") or "").strip()
     if not run_id:
         raise ValueError("run_id is required")
+    if name == "nimbusware_maker_pending":
+        return _text_result(get_json(f"/runs/{run_id}/maker/pending"))
     if name == "nimbusware_run_status":
         return _text_result(get_json(f"/runs/{run_id}"))
     if name == "nimbusware_run_theater":

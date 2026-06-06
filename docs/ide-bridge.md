@@ -28,10 +28,15 @@ Add to your MCP settings:
 
 | Tool | Description |
 |------|-------------|
+| `nimbusware_maker_pending` | `GET /v1/runs/{run_id}/maker/pending` |
 | `nimbusware_run_status` | `GET /v1/runs/{run_id}` |
 | `nimbusware_run_theater` | `GET /v1/runs/{run_id}/theater` |
 | `nimbusware_slice_diff` | `GET /v1/runs/{run_id}/slices/{slice_index}/diff` |
 | `nimbusware_approve_plan` | `POST /v1/runs/{run_id}/maker/plan/approve` |
 | `nimbusware_compact_run` | `POST /v1/runs/{run_id}/compact` (requires `NIMBUSWARE_AGENT_COMPACT=1`) |
+| `nimbusware_campaign_status` | Campaign progress via `GET /v1/runs/{campaign_id}/maker-progress` |
+| `nimbusware_pause_campaign` | `POST /v1/campaigns/{campaign_id}/pause` |
+| `nimbusware_resume_campaign` | `POST /v1/campaigns/{campaign_id}/resume` |
+| `nimbusware_backlog_summary` | `GET /v1/campaigns/{campaign_id}/backlog` |
 
 Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

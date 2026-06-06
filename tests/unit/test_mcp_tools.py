@@ -11,6 +11,8 @@ from nimbusware_mcp.tools import TOOL_SPECS, call_tool
 def test_tool_specs_include_required_tools() -> None:
     names = {t["name"] for t in TOOL_SPECS}
     assert names == {
+        "nimbusware_maker_pending",
+        "nimbusware_resume_campaign",
         "nimbusware_run_status",
         "nimbusware_run_theater",
         "nimbusware_slice_diff",
@@ -20,6 +22,22 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_pause_campaign",
         "nimbusware_backlog_summary",
     }
+
+
+@patch("nimbusware_mcp.tools.get_json")
+def test_nimbusware_maker_pending(mock_get: Any) -> None:
+    mock_get.return_value = {"plan_approved": False, "pending": None}
+    out = call_tool("nimbusware_maker_pending", {"run_id": "abc"})
+    mock_get.assert_called_once_with("/runs/abc/maker/pending")
+    assert "plan_approved" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_resume_campaign(mock_post: Any) -> None:
+    mock_post.return_value = {"status": "resumed"}
+    out = call_tool("nimbusware_resume_campaign", {"campaign_id": "camp-1"})
+    mock_post.assert_called_once_with("/campaigns/camp-1/resume", {})
+    assert "resumed" in out["content"][0]["text"]
 
 
 @patch("nimbusware_mcp.tools.get_json")
