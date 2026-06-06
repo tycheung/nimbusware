@@ -462,7 +462,7 @@ poetry run pytest tests/e2e/journeys -m e2e_journey -q
 poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
 ```
 
-Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/`, `tiny_web_app/`, `tiny_broken_app/` (intentionally failing tests). Campaign golden timeline: `tests/fixtures/campaign/golden_multi_tick_timeline.json`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
+Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/` (includes micro-slice stub modules under `packages/nimbusware_orchestrator/`), `tiny_web_app/`, `tiny_broken_app/` (intentionally failing tests). Campaign golden timeline: `tests/fixtures/campaign/golden_multi_tick_timeline.json`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
 
 ## Launch eval (workspace quality)
 
@@ -470,7 +470,10 @@ Deterministic rubric v0 scores attached workspaces on maturity, maintainability,
 
 ```bash
 poetry run python scripts/launch_eval.py path/to/workspace --json
+poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in advisory findings
 ```
+
+Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for advisory LLM panel findings on the scorecard; default rubric stays deterministic.
 
 Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Maker Review tab loads `launch_eval.completed` scorecards from the timeline (parity row `launch_eval_scorecard`).
 

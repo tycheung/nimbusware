@@ -11,13 +11,13 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess) |
-| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth journeys |
+| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay journeys |
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences for journey assertions |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors for deterministic replay tests |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
-| `tests/e2e/web/` | Playwright smoke + visible route tests (`maker_route_helper.ts`) |
+| `tests/e2e/web/` | Playwright smoke, visible route tests, apply-slice click-through (`maker_apply_flow.spec.ts`; sets `NIMBUSWARE_API_BASE` to match test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
