@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 from uuid import UUID
@@ -11,6 +12,9 @@ from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     DEFAULT_ADAPTER_KIND,
     IntegrationAdapterWriterWorkflowBlock,
 )
+
+_KNOWN_ADAPTER_KINDS = frozenset({"api_bridge", "compatibility_shim"})
+_KIND_PATTERN = re.compile(r"^[a-z][a-z0-9_-]{0,63}$")
 
 _ADAPTER_MODULE_TEMPLATE = '''"""Nimbusware-generated integration adapter ({kind}).
 
@@ -92,8 +96,33 @@ def validate_integration_manifest(manifest: dict[str, Any]) -> list[str]:
     kind = str(manifest.get("target_adapter_kind", "")).strip()
     if not kind:
         errors.append("target_adapter_kind required")
+    elif not _KIND_PATTERN.match(kind):
+        errors.append("target_adapter_kind must be lowercase alphanumeric with _ or -")
+    elif kind not in _KNOWN_ADAPTER_KINDS:
+        errors.append(f"unknown target_adapter_kind: {kind!r}")
     if manifest.get("stub_only") is True:
         errors.append("stub_only manifest cannot run live integration")
+    schema_ver = manifest.get("schema_version")
+    if schema_ver is not None:
+        if isinstance(schema_ver, bool) or not isinstance(schema_ver, int) or schema_ver < 1:
+            errors.append("schema_version must be an integer >= 1 when present")
+    return errors
+
+
+def validate_manifest_for_run(
+    manifest: dict[str, Any],
+    *,
+    run_id: str,
+    kind: str,
+) -> list[str]:
+    """Cross-check manifest fields against the active run and adapter kind."""
+    errors = list(validate_integration_manifest(manifest))
+    manifest_run = str(manifest.get("run_id", "")).strip()
+    if manifest_run and manifest_run != run_id:
+        errors.append("manifest run_id does not match active run")
+    manifest_kind = str(manifest.get("target_adapter_kind", "")).strip()
+    if manifest_kind and manifest_kind != kind:
+        errors.append("manifest target_adapter_kind does not match workflow kind")
     return errors
 
 
@@ -113,7 +142,7 @@ def execute_target_adapter_integration(
                 "target_integration_status": "manifest_invalid",
                 "target_state_path": "target_state.json",
             }
-        errs = validate_integration_manifest(manifest)
+        errs = validate_manifest_for_run(manifest, run_id=run_id, kind=kind)
         if errs:
             return {
                 "target_integration_status": "manifest_rejected",

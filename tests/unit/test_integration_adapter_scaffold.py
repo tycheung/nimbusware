@@ -79,14 +79,10 @@ class ApiBridgeAdapter:
 def test_execute_target_adapter_integration_rolled_back_on_connect_fail(tmp_path: Path) -> None:
     ws = tmp_path / "ws"
     ws.mkdir()
-    (ws / "manifest.json").write_text(
-        json.dumps({"run_id": "r1", "target_adapter_kind": "custom", "stub_only": False}),
-        encoding="utf-8",
-    )
-    (ws / "adapter_custom.py").write_text(
+    (ws / "adapter_api_bridge.py").write_text(
         """
-class CustomAdapter:
-    kind = "custom"
+class ApiBridgeAdapter:
+    kind = "api_bridge"
     def __init__(self, workspace_dir, *, run_id: str):
         self._workspace_dir = workspace_dir
     def connect(self):
@@ -98,6 +94,6 @@ class CustomAdapter:
 """,
         encoding="utf-8",
     )
-    out = execute_target_adapter_integration(ws, kind="custom", run_id="r1")
+    out = execute_target_adapter_integration(ws, kind="api_bridge", run_id="r1")
     assert out["target_integration_status"] == "rolled_back"
     assert out.get("rollback_reason") == "connect_failed_after_sync"
