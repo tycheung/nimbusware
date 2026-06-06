@@ -2,7 +2,14 @@ import { apiJson, toast } from "../api-client.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
 
 function runId() {
-  return document.getElementById("run-theater-run-id")?.value?.trim() || "";
+  const search = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
+  const fromField =
+    document.getElementById("run-theater-run-id")?.value?.trim() ||
+    document.getElementById("desktop-run-id")?.value?.trim() ||
+    document.getElementById("mobile-run-id")?.value?.trim() ||
+    "";
+  return search.get("run_id") || hashParams.get("run_id") || fromField;
 }
 
 let theaterHandle = null;
@@ -98,6 +105,7 @@ export async function mountProgress(root) {
       const pause = document.createElement("button");
       pause.type = "button";
       pause.textContent = "Pause campaign";
+      pause.dataset.testid = "maker-campaign-pause";
       pause.addEventListener("click", () => campaignAction("pause", "Pause"));
       bar.appendChild(pause);
     }

@@ -30,6 +30,8 @@ class MakerProgressResponse(BaseModel):
     requirements: dict | None = None
     resource_pressure: dict | None = None
     context_budget: dict | None = None
+    campaign_progress: dict | None = None
+    latest_handoff: dict | None = None
     simple_mode: bool = True
 
 
