@@ -17,11 +17,20 @@ class SliceHandoffSummary(BaseModel):
 
     def render_markdown(self) -> str:
         lines = ["## Goal", self.goal or "(none)", "", "## Progress"]
-        lines.extend(f"- {p}" for p in self.progress) or lines.append("- (none)")
+        if self.progress:
+            lines.extend(f"- {p}" for p in self.progress)
+        else:
+            lines.append("- (none)")
         lines.extend(["", "## Key decisions"])
-        lines.extend(f"- {d}" for d in self.key_decisions) or lines.append("- (none)")
+        if self.key_decisions:
+            lines.extend(f"- {d}" for d in self.key_decisions)
+        else:
+            lines.append("- (none)")
         lines.extend(["", "## Next steps"])
-        lines.extend(f"- {n}" for n in self.next_steps) or lines.append("- (none)")
+        if self.next_steps:
+            lines.extend(f"- {n}" for n in self.next_steps)
+        else:
+            lines.append("- (none)")
         lines.append("")
         lines.append("<read-files>")
         lines.extend(self.read_files)

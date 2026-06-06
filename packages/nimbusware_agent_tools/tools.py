@@ -136,6 +136,75 @@ def tool_write_file(
         return ToolResult("write", False, str(exc))
 
 
+def tool_find(
+    workspace: Path,
+    pattern: str,
+    *,
+    paths: tuple[str, ...] | list[str] | None = None,
+    max_matches: int = 40,
+) -> ToolResult:
+    if not pattern.strip():
+        return ToolResult("find", False, "pattern required")
+    ws = workspace.resolve()
+    scope = [normalise_rel(p) for p in (paths or []) if str(p).strip()]
+    roots: list[Path] = []
+    if scope:
+        for rel in scope:
+            try:
+                fp = resolve_workspace_file(ws, rel)
+            except ValueError as exc:
+                return ToolResult("find", False, str(exc))
+            roots.append(fp)
+    else:
+        roots = [ws]
+    rx = re.compile(re.escape(pattern), re.IGNORECASE)
+    matches: list[str] = []
+    for root in roots:
+        walk_root = root if root.is_dir() else root.parent
+        try:
+            for fp in walk_root.rglob("*"):
+                if not fp.is_file():
+                    continue
+                try:
+                    fp.relative_to(ws)
+                except ValueError:
+                    continue
+                rel = str(fp.relative_to(ws)).replace("\\", "/")
+                if rx.search(rel) or rx.search(fp.name):
+                    matches.append(rel)
+                    if len(matches) >= max_matches:
+                        break
+        except OSError:
+            continue
+        if len(matches) >= max_matches:
+            break
+    if not matches:
+        return ToolResult("find", True, "no matches")
+    return ToolResult("find", True, "\n".join(matches))
+
+
+def tool_ls(
+    workspace: Path,
+    path: str = ".",
+    *,
+    max_entries: int = 80,
+) -> ToolResult:
+    try:
+        fp = resolve_workspace_file(workspace, path)
+        if not fp.is_dir():
+            return ToolResult("ls", False, f"not a directory: {path}")
+        entries: list[str] = []
+        for child in sorted(fp.iterdir(), key=lambda p: p.name.lower()):
+            rel = str(child.relative_to(workspace.resolve())).replace("\\", "/")
+            suffix = "/" if child.is_dir() else ""
+            entries.append(f"{rel}{suffix}")
+            if len(entries) >= max_entries:
+                break
+        return ToolResult("ls", True, "\n".join(entries) or "(empty)")
+    except (OSError, ValueError) as exc:
+        return ToolResult("ls", False, str(exc))
+
+
 def tool_run_shell(
     workspace: Path,
     command: str,

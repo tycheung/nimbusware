@@ -587,6 +587,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_AGENT_TOOLS",
+            _USER,
+            _STR,
+            "read,write,edit,grep,shell",
+            "Agent tool allowlist",
+            "Comma-separated tools exposed to slice implement agent (optional: find, ls).",
+            "User — context efficiency",
+        ),
+        SettingDef(
             "NIMBUSWARE_HANDOFF_MAX_CHARS",
             _USER,
             _INT,

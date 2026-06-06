@@ -8,7 +8,9 @@ from nimbusware_agent_tools.allowlist import path_in_plan, validate_shell_invoca
 from nimbusware_agent_tools.runtime import execute_slice_implement_agent
 from nimbusware_agent_tools.tools import (
     tool_edit_file,
+    tool_find,
     tool_grep,
+    tool_ls,
     tool_read_file,
     tool_write_file,
 )
@@ -92,6 +94,19 @@ def test_tool_edit_path_jail(tmp_path: Path) -> None:
     result = tool_edit_file(ws, "secret.py", "x", "y", allowed_paths={"app.py"})
     assert not result.ok
     assert "rejected path" in result.output
+
+
+def test_tool_find_and_ls(tmp_path: Path) -> None:
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "lib").mkdir()
+    (ws / "lib" / "util.py").write_text("def u(): pass\n", encoding="utf-8")
+    found = tool_find(ws, "util", paths=["lib"])
+    assert found.ok
+    assert "util.py" in found.output
+    listed = tool_ls(ws, "lib")
+    assert listed.ok
+    assert "util.py" in listed.output
 
 
 def test_execute_slice_implement_agent_stub(

@@ -12,6 +12,7 @@ from agent_core.context_budget import truncate_for_llm_history
 from nimbusware_agent_tools.prompts import build_agent_stable_prompt
 from nimbusware_agent_tools.risk_caps import AgentRiskCaps
 from nimbusware_agent_tools.runtime import AgentStep, _allowed_paths, _execute_step
+from nimbusware_agent_tools.tool_registry import agent_tool_list_prompt, is_agent_tool_enabled
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.prompt_tiers import assemble_prompt
 
@@ -27,7 +28,8 @@ class AgentLoopResult:
 
 
 def _stable_system_prompt(*, base_prompt: str | None, tool_list: str | None = None) -> str:
-    return build_agent_stable_prompt(base_prompt=base_prompt, tool_list=tool_list)
+    listed = tool_list or agent_tool_list_prompt()
+    return build_agent_stable_prompt(base_prompt=base_prompt, tool_list=listed)
 
 
 def _volatile_user_prompt(
@@ -147,6 +149,10 @@ def run(
             break
 
         for step in steps:
+            if not is_agent_tool_enabled(step.tool):
+                result.logs.append(f"{step.tool}: tool not in allowlist")
+                result.exit_code = max(result.exit_code, 1)
+                continue
             result.tool_steps += 1
             if result.tool_steps > caps.max_tool_steps:
                 result.logs.append(f"risk cap: max_tool_steps={caps.max_tool_steps}")

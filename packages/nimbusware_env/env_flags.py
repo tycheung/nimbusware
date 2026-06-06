@@ -282,6 +282,14 @@ def nimbusware_agent_jit_loop_enabled() -> bool:
     return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
 
 
+def nimbusware_agent_tools_list(
+    default: str = "read,write,edit,grep,shell",
+) -> tuple[str, ...]:
+    raw = resolve_str("NIMBUSWARE_AGENT_TOOLS", default=default)
+    parts = [p.strip().lower() for p in raw.split(",") if p.strip()]
+    return tuple(parts) if parts else tuple(default.split(","))
+
+
 def nimbusware_handoff_max_chars(default: int = 4000) -> int:
     return resolve_int("NIMBUSWARE_HANDOFF_MAX_CHARS", default=default)
 

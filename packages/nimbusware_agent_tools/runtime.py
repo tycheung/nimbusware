@@ -10,10 +10,13 @@ from nimbusware_agent_tools.risk_caps import (
     AgentRiskCaps,
     resolve_agent_risk_caps,
 )
+from nimbusware_agent_tools.tool_registry import is_agent_tool_enabled
 from nimbusware_agent_tools.tools import (
     ToolResult,
     tool_edit_file,
+    tool_find,
     tool_grep,
+    tool_ls,
     tool_read_file,
     tool_run_shell,
     tool_write_file,
@@ -80,8 +83,17 @@ def _execute_step(
     allowed: set[str],
     timeout_seconds: float,
 ) -> ToolResult:
+    if not is_agent_tool_enabled(step.tool):
+        return ToolResult(step.tool, False, f"tool not in allowlist: {step.tool}")
     if step.tool == "read":
         return tool_read_file(workspace, str(step.arguments.get("path") or ""))
+    if step.tool == "find":
+        pattern = str(step.arguments.get("pattern") or "")
+        paths = step.arguments.get("paths")
+        path_tuple = tuple(paths) if isinstance(paths, list) else None
+        return tool_find(workspace, pattern, paths=path_tuple)
+    if step.tool == "ls":
+        return tool_ls(workspace, str(step.arguments.get("path") or "."))
     if step.tool == "grep":
         pattern = str(step.arguments.get("pattern") or "")
         paths = step.arguments.get("paths")
