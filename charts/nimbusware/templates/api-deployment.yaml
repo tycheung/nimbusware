@@ -13,11 +13,21 @@ spec:
     metadata:
       labels:
         app: nimbusware-api
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/api-secret.yaml") . | sha256sum }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: api
           image: {{ .Values.image.api }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.api.servicePort }}
           envFrom:

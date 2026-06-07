@@ -38,4 +38,18 @@ secrets:
 ingress:
   enabled: false
   host: nimbusware.local
+  className: ""
+  annotations: {}
   tls: false
+  tlsSecretName: nimbusware-api-tls
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
+  capabilities:
+    drop:
+      - ALL

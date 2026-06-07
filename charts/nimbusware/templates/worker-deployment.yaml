@@ -12,11 +12,21 @@ spec:
     metadata:
       labels:
         app: nimbusware-worker
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/api-secret.yaml") . | sha256sum }}
     spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: worker
           image: {{ .Values.image.worker }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command: ["python", "scripts/run_dispatch_worker.py"]
           envFrom:
             - secretRef:
@@ -26,4 +36,10 @@ spec:
               value: {{ .Values.edition | quote }}
             - name: NIMBUSWARE_REPO_ROOT
               value: /app
+            {{- if .Values.redis.enabled }}
+            - name: NIMBUSWARE_RUN_DISPATCH
+              value: redis
+            - name: NIMBUSWARE_REDIS_URL
+              value: redis://redis:6379/0
+            {{- end }}
 {{- end }}

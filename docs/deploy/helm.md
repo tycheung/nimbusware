@@ -39,10 +39,23 @@ helm rollback nimbusware 1
 helm upgrade nimbusware charts/nimbusware \
   --set ingress.enabled=true \
   --set ingress.host=api.example.com \
-  --set ingress.tls=true
+  --set ingress.className=nginx \
+  --set ingress.tls=true \
+  --set ingress.tlsSecretName=nimbusware-api-tls
 ```
 
-Create TLS secret `nimbusware-api-tls` in the release namespace before enabling TLS.
+Create TLS secret `nimbusware-api-tls` in the release namespace before enabling TLS, or use cert-manager:
+
+```bash
+helm upgrade nimbusware charts/nimbusware \
+  --set ingress.enabled=true \
+  --set ingress.host=api.example.com \
+  --set ingress.className=nginx \
+  --set ingress.tls=true \
+  --set ingress.annotations."cert-manager\.io/cluster-issuer"=letsencrypt-prod
+```
+
+Pod templates include `checksum/secrets` annotations so `helm upgrade` rolls API and worker pods when secret values change.
 
 ## Secrets rotation
 
