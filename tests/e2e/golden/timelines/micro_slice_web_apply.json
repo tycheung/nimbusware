@@ -1,0 +1,7 @@
+{
+  "profile": "micro_slice_web",
+  "required_subsequence": ["run.created", "stage.started", "stage.passed"],
+  "required_stage_names": ["slice.e2e"],
+  "min_stage_passed": 5,
+  "allow_extra": true
+}

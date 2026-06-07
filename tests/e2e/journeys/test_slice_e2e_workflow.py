@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from e2e.harness.journey import JourneyClient
+from e2e.harness.timeline import load_golden_timeline
 from e2e.harness.workspace import copy_fixture_repo
 
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_repo]
@@ -56,3 +57,8 @@ def test_micro_slice_web_apply_emits_slice_e2e_stage(
         if ev.get("event_type") in ("stage.started", "stage.passed")
     ]
     assert "slice.e2e" in stage_names
+
+    golden = load_golden_timeline("micro_slice_web_apply.json")
+    from e2e.harness.timeline import assert_timeline_golden
+
+    assert_timeline_golden(journey_client.timeline(), golden)

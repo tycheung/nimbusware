@@ -35,6 +35,16 @@ def assert_timeline_golden(events: list[dict[str, Any]], golden: dict[str, Any])
         raise AssertionError(
             f"timeline missing required subsequence {required!r}; last_10_event_types={tail!r}"
         )
+    required_stages = [str(x) for x in golden.get("required_stage_names") or []]
+    if required_stages:
+        seen_stages = [
+            str((ev.get("payload") or {}).get("stage_name") or "")
+            for ev in events
+            if ev.get("event_type") in ("stage.started", "stage.passed")
+        ]
+        for stage in required_stages:
+            if stage not in seen_stages:
+                raise AssertionError(f"timeline missing required stage {stage!r}")
     min_stage_passed = int(golden.get("min_stage_passed") or 0)
     if min_stage_passed:
         passed = sum(1 for t in actual_types if t == "stage.passed")
