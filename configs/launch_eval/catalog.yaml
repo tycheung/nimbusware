@@ -6,7 +6,10 @@ prompts:
     path: prompts/todo_api.yaml
   - id: static_site
     path: prompts/static_site.yaml
+  - id: contacts_api
+    path: prompts/contacts_api.yaml
 
 default_workspaces:
   - tests/fixtures/repos/tiny_python_app
   - tests/fixtures/repos/tiny_web_app
+  - tests/fixtures/repos/tiny_api_app

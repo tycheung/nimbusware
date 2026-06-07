@@ -1,0 +1,6 @@
+id: contacts_api
+label: Contacts REST API
+business_prompt: >
+  Build a minimal REST contacts API with health check and list/create endpoints.
+workflow_profile: campaign_micro_slice
+min_aggregate_score: 2.5

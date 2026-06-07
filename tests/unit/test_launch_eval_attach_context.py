@@ -14,6 +14,13 @@ def test_match_prompt_id_todo_api() -> None:
     assert match_prompt_id("Build a minimal todo list REST API") == "todo_api"
 
 
+def test_match_prompt_id_contacts_api() -> None:
+    assert (
+        match_prompt_id("REST contacts API campaign with health check and contact list endpoints")
+        == "contacts_api"
+    )
+
+
 def test_attach_context_from_run_created() -> None:
     rows = [
         {
