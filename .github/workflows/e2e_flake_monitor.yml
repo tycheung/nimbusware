@@ -1,0 +1,67 @@
+# Weekly E2E flake monitor — same reruns as PR e2e job; opens an issue when the run fails.
+name: E2E flake monitor
+
+on:
+  schedule:
+    - cron: "30 6 * * 3"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: e2e-flake-monitor
+  cancel-in-progress: false
+
+jobs:
+  e2e-flake:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nimbusware
+          POSTGRES_PASSWORD: nimbusware
+          POSTGRES_DB: nimbusware
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nimbusware -d nimbusware"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: Apply Postgres schema
+        run: |
+          export NIMBUSWARE_DATABASE_URL="postgresql://nimbusware:nimbusware@localhost:5432/nimbusware"
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+          bash scripts/apply_event_store.sh
+      - name: E2E with flake rerun budget
+        run: |
+          poetry run pytest tests/e2e -q -m e2e --reruns 1 --reruns-delay 2 -r aR 2>&1 | tee e2e-flake.log
+        env:
+          NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_E2E_FLAKE_RETRIES: "1"
+      - name: Upload flake log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-flake-log
+          path: e2e-flake.log
+      - name: Open issue on flake monitor failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "[e2e-flake-monitor] scheduled run failed on $(date -u +%Y-%m-%d)" \
+            --body "The weekly E2E flake monitor failed (Postgres e2e with \`--reruns 1\`). Inspect the run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --label "e2e-flake-failure"
