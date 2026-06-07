@@ -31,6 +31,7 @@ export async function mountReview(root) {
     <section id="rev-launch-eval" class="launch-panel hidden">
       <h3>Launch readiness</h3>
       <button type="button" id="rev-load-launch-eval" data-testid="maker-review-launch-scorecard">Load scorecard</button>
+      <button type="button" id="rev-run-launch-eval" data-testid="maker-review-run-launch-eval">Run launch check</button>
       <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
     <p id="rev-git-status" class="muted"></p>`;
@@ -198,7 +199,11 @@ export async function mountReview(root) {
     }
     const findings = scorecard.findings || scorecard.llm_findings;
     if (Array.isArray(findings) && findings.length) {
+      const heading = document.createElement("h4");
+      heading.textContent = "Findings";
+      container.appendChild(heading);
       const ul = document.createElement("ul");
+      ul.dataset.testid = "maker-review-scorecard-findings";
       for (const item of findings.slice(0, 8)) {
         const li = document.createElement("li");
         li.textContent = String(item);
@@ -208,28 +213,50 @@ export async function mountReview(root) {
     }
   }
 
-  root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {
-    const id = runId();
-    if (!id) return toast("Enter a run ID", "error");
+  async function scorecardFromTimeline(id) {
     const timeline = await apiJson(`/runs/${id}/timeline`);
     const events = timeline.events || [];
-    let scorecard = null;
     for (let i = events.length - 1; i >= 0; i -= 1) {
       const ev = events[i];
       if (ev.event_type !== "stage.passed") continue;
       const payload = ev.payload || {};
       if (payload.stage_name !== "launch_eval.completed") continue;
-      scorecard = ev.metadata || payload;
-      break;
+      return ev.metadata || payload;
     }
+    return null;
+  }
+
+  async function showLaunchScorecard(id) {
     const panel = root.querySelector("#rev-launch-eval");
     panel?.classList.remove("hidden");
     const body = root.querySelector("#rev-launch-eval-body");
+    const scorecard = await scorecardFromTimeline(id);
     if (!scorecard) {
       body.replaceChildren();
       body.textContent = "No launch_eval.completed event on this run yet.";
       return;
     }
     renderLaunchScorecard(body, scorecard);
+  }
+
+  root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {
+    const id = runId();
+    if (!id) return toast("Enter a run ID", "error");
+    try {
+      await showLaunchScorecard(id);
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  root.querySelector("#rev-run-launch-eval")?.addEventListener("click", async () => {
+    const id = runId();
+    if (!id) return toast("Enter a run ID", "error");
+    try {
+      await apiJson(`/runs/${id}/maker/launch-eval`, { method: "POST" });
+      await showLaunchScorecard(id);
+      toast("Launch check complete", "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 }
