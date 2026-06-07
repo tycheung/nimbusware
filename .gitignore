@@ -66,6 +66,13 @@ packages/nimbusware_console/pages/
 *.log
 logs/
 .cache/
+
+# Python test coverage (pytest-cov / coverage.py — local only)
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
 # Operator chat transcripts (fo150; local only)
 .cache/nimbusware_chat/
 # Explicit .cache artifacts (redundant with .cache/ but documents intent)
