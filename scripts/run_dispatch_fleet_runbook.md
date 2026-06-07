@@ -66,3 +66,13 @@ Back-pressure levels:
 - Prefer multiple short-lived workers over one long-lived process in CI.
 - Monitor `backpressure=critical` before enqueue storms.
 - Drain queue with N workers; tasks are at-least-once (in-flight hash until `ack`).
+
+## Production soak checklist
+
+Before declaring Redis fleet dispatch production-ready:
+
+1. Run at least two worker processes against the same `NIMBUSWARE_REDIS_URL` for 30+ minutes under queued campaign load.
+2. Confirm `GET /v1/enterprise/fleet-worker/health` reports `backpressure=ok` and optional `worker_heartbeat.status=active`.
+3. Verify worker heartbeat file or pod logs show monotonic `processed` counts (`scripts/run_dispatch_worker.py --heartbeat-path /tmp/worker.json`).
+4. Restart one worker mid-queue; confirm remaining workers drain pending tasks without duplicate side effects (tasks are acked after processing).
+5. Roll API pods after secret rotation; confirm Helm `checksum/secrets` triggers worker rollout.
