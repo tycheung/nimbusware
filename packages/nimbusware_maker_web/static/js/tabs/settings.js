@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { renderLaunchScorecard } from "../launch-scorecard.js";
 
 const GOVERNOR_KEYS = new Set([
   "NIMBUSWARE_MAX_SYSTEM_RAM_PCT",
@@ -67,6 +68,17 @@ export async function mountSettings(root) {
       </form>
     </section>
     <form id="settings-form"></form>
+    <section id="settings-launch-check" class="launch-panel">
+      <h3>Launch readiness</h3>
+      <label>
+        Run ID
+        <input type="text" id="settings-launch-run-id" data-testid="maker-settings-launch-run-id" placeholder="Paste run UUID" />
+      </label>
+      <div class="actions">
+        <button type="button" id="settings-run-launch-eval" data-testid="maker-settings-run-launch-eval">Run launch check</button>
+      </div>
+      <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
+    </section>
     <p class="muted" id="reresearch-help">
       <strong>Re-research on plan fail</strong> (<code>NIMBUSWARE_RERESARCH_MISSING_CONTEXT</code>):
       when enabled, the pipeline may re-run research after planner missing-context failures.
@@ -158,5 +170,28 @@ export async function mountSettings(root) {
       body: JSON.stringify({ values: patch }),
     });
     toast("Settings saved", "success");
+  });
+
+  const launchRunInput = root.querySelector("#settings-launch-run-id");
+  const search = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
+  const presetRunId =
+    search.get("run_id") ||
+    hashParams.get("run_id") ||
+    document.getElementById("run-theater-run-id")?.value?.trim() ||
+    "";
+  if (launchRunInput && presetRunId) launchRunInput.value = presetRunId;
+
+  root.querySelector("#settings-run-launch-eval")?.addEventListener("click", async () => {
+    const id = launchRunInput?.value?.trim();
+    if (!id) return toast("Enter a run ID", "error");
+    const body = root.querySelector("#settings-launch-scorecard");
+    try {
+      const scorecard = await apiJson(`/runs/${id}/maker/launch-eval`, { method: "POST" });
+      renderLaunchScorecard(body, scorecard, { testIdPrefix: "maker-settings" });
+      toast("Launch check complete", "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
   });
 }
