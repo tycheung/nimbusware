@@ -1,0 +1,10 @@
+{
+  "campaign_goldens": [
+    "golden_campaign_crm_replay.json",
+    "golden_campaign_todo_replay.json"
+  ],
+  "workspace_goldens": [
+    "golden_tiny_python.json",
+    "golden_tiny_web.json"
+  ]
+}
