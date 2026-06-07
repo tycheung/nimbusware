@@ -31,7 +31,7 @@ export async function mountReview(root) {
     <section id="rev-launch-eval" class="launch-panel hidden">
       <h3>Launch readiness</h3>
       <button type="button" id="rev-load-launch-eval" data-testid="maker-review-launch-scorecard">Load scorecard</button>
-      <pre id="rev-launch-eval-body" class="json-pre"></pre>
+      <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
     <p id="rev-git-status" class="muted"></p>`;
 
@@ -152,6 +152,62 @@ export async function mountReview(root) {
     await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
     toast("Workspace reverted", "success");
   });
+
+  function renderLaunchScorecard(container, scorecard) {
+    container.replaceChildren();
+    const dims = [
+      ["aggregate", scorecard.aggregate],
+      ["maturity", scorecard.maturity],
+      ["maintainability", scorecard.maintainability],
+      ["scalability", scorecard.scalability],
+      ["security", scorecard.security],
+      ["testability", scorecard.testability],
+    ];
+    const table = document.createElement("table");
+    table.className = "scorecard-table";
+    const tbody = document.createElement("tbody");
+    for (const [label, value] of dims) {
+      if (value == null) continue;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<th scope="row">${label}</th><td>${value}</td>`;
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    container.appendChild(table);
+    if (scorecard.passed != null) {
+      const status = document.createElement("p");
+      status.textContent = scorecard.passed ? "passed" : "needs work";
+      status.dataset.testid = "maker-review-scorecard-status";
+      container.appendChild(status);
+    }
+    const llmDims = scorecard.llm_dimensions;
+    if (llmDims && typeof llmDims === "object" && Object.keys(llmDims).length) {
+      const heading = document.createElement("h4");
+      heading.textContent = "LLM dimensions";
+      container.appendChild(heading);
+      const llmTable = document.createElement("table");
+      llmTable.dataset.testid = "maker-review-llm-dimensions";
+      const llmBody = document.createElement("tbody");
+      for (const [key, val] of Object.entries(llmDims)) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<th scope="row">${key}</th><td>${val}</td>`;
+        llmBody.appendChild(tr);
+      }
+      llmTable.appendChild(llmBody);
+      container.appendChild(llmTable);
+    }
+    const findings = scorecard.findings || scorecard.llm_findings;
+    if (Array.isArray(findings) && findings.length) {
+      const ul = document.createElement("ul");
+      for (const item of findings.slice(0, 8)) {
+        const li = document.createElement("li");
+        li.textContent = String(item);
+        ul.appendChild(li);
+      }
+      container.appendChild(ul);
+    }
+  }
+
   root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {
     const id = runId();
     if (!id) return toast("Enter a run ID", "error");
@@ -170,9 +226,10 @@ export async function mountReview(root) {
     panel?.classList.remove("hidden");
     const body = root.querySelector("#rev-launch-eval-body");
     if (!scorecard) {
+      body.replaceChildren();
       body.textContent = "No launch_eval.completed event on this run yet.";
       return;
     }
-    body.textContent = JSON.stringify(scorecard, null, 2);
+    renderLaunchScorecard(body, scorecard);
   });
 }
