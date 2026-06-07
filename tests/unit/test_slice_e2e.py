@@ -47,3 +47,9 @@ def test_micro_slice_workflow_parses_e2e_disabled() -> None:
     repo = find_repo_root()
     block = parse_micro_slice_workflow_block(repo, "micro_slice")
     assert block.e2e_enabled is False
+
+
+def test_micro_slice_web_workflow_parses_e2e_enabled() -> None:
+    repo = find_repo_root()
+    block = parse_micro_slice_workflow_block(repo, "micro_slice_web")
+    assert block.e2e_enabled is True

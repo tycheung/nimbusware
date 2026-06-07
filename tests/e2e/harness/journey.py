@@ -57,6 +57,26 @@ class JourneyClient:
         self.run_id = str(data["run_id"])
         return data
 
+    def start_run(
+        self,
+        workflow_profile: str,
+        *,
+        business_prompt: str = "Journey run",
+    ) -> dict[str, Any]:
+        assert self.project_id, "attach_project first"
+        resp = self.client.post(
+            "/v1/runs",
+            json={
+                "workflow_profile": workflow_profile,
+                "project_id": self.project_id,
+                "requirements": {"business_prompt": business_prompt},
+            },
+        )
+        assert resp.status_code == 200, resp.text
+        data = resp.json()
+        self.run_id = str(data["run_id"])
+        return data
+
     def start_default_run(self) -> dict[str, Any]:
         resp = self.client.post("/v1/runs", json={"workflow_profile": "default"})
         assert resp.status_code == 200, resp.text

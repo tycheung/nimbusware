@@ -96,12 +96,41 @@ def complete_slice_after_implement(
         verify_ok = False
     diff_for_gate = final_stats.unified_diff
 
+    e2e_passed: bool | None = None
+    e2e_detail = ""
+    if block.e2e_enabled:
+        from nimbusware_orchestrator.slice_e2e import run_slice_e2e_verify
+
+        e2e = run_slice_e2e_verify(
+            ws,
+            command=block.e2e_command,
+            timeout_seconds=timeout,
+        )
+        e2e_passed = e2e.passed
+        e2e_detail = e2e.detail
+        _emit_slice_stage(
+            orch,
+            run_id,
+            "slice.e2e",
+            metadata={
+                "slice_id": plan.slice_id,
+                "e2e_verdict": e2e.verdict,
+                "e2e_exit_code": e2e.exit_code,
+                "e2e_detail": e2e_detail[:2000],
+            },
+            duration_ms=0,
+        )
+        if e2e.verdict == "FAIL":
+            verify_ok = False
+
     gate = orch.record_micro_slice_gate(
         run_id,
         plan,
         verify_ok=verify_ok,
         critique_verdicts=critique_verdicts,
         tests_passed=tests_passed,
+        e2e_passed=e2e_passed,
+        e2e_detail=e2e_detail,
         diff_unified=diff_for_gate[:8000],
         test_output=test_out[:4000],
     )
