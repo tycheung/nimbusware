@@ -1,5 +1,3 @@
-"""Full replay stack soak — API subprocess + embed worker + campaign + launch eval."""
-
 from __future__ import annotations
 
 import time

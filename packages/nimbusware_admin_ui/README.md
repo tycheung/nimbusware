@@ -10,7 +10,9 @@ npm ci
 npm run build
 ```
 
-Local `scripts/ci_check.ps1` runs vitest when `dist/index.html` exists.
+Local `scripts/ci_check.ps1` runs `npm run build` then vitest before Playwright.
+
+Deep links such as `/v1/admin/app/runs/{id}` are served via SPA fallback (`AdminSPAStaticFiles` in `nimbusware_api.routes.admin_web`); the Preact router strips the `/v1/admin/app` prefix client-side.
 
 ## Tests
 

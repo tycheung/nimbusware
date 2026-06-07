@@ -11,14 +11,14 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, embed/in-process dispatch worker) |
-| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker, slice.e2e apply journeys |
+| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker, slice.e2e apply, stack soak journeys |
 | `tests/integration/` | Postgres, Redis dispatch worker stack (`test_redis_dispatch_worker_stack.py`, `-m integration`) |
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences and required stage names (`micro_slice_web_apply.json`, etc.) |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors + campaign replay manifest (`golden_replay_manifest.json`, CRM + todo_api snapshots) |
-| `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
-| `tests/e2e/web/` | Playwright smoke, apply-slice, launch scorecard (dimension rows), Settings launch check, campaign progress + full replay (`maker_settings_launch_check.spec.ts`, `maker_full_replay.spec.ts`; sets `NIMBUSWARE_API_BASE` to test server port) |
+| `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) + launch wiring manifest (`parity_launch_wiring.yaml`) |
+| `tests/e2e/web/` | Playwright smoke, apply-slice, launch scorecard (dimension rows), Settings launch check, Admin launch scorecard, campaign progress + full replay (14 specs; sets `NIMBUSWARE_API_BASE` to test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
@@ -44,7 +44,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
 - **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres; `--reruns 1` flake budget via `pytest-rerunfailures` and `NIMBUSWARE_E2E_FLAKE_RETRIES`. Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
-- **Weekly slow:** `-m slow`.
+- **Weekly slow:** `-m slow` (includes `tests/e2e/journeys/test_full_replay_stack_soak.py`; see [`scripts/e2e_stack_soak_runbook.md`](../scripts/e2e_stack_soak_runbook.md)).
 - **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `scripts/launch_eval.py --matrix` on catalog default workspaces; unit coverage in `tests/unit/test_launch_eval_attach_context.py`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
 

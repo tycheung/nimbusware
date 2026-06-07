@@ -1,4 +1,4 @@
-# Full UI replay stack soak (fo635)
+# Full UI replay stack soak
 
 Long-run validation for campaign + launch eval over a live API subprocess with embedded dispatch worker.
 

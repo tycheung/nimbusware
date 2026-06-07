@@ -1,4 +1,4 @@
-"""Workflow YAML + governor knobs for parallel optional critic matrix."""
+"""Parallel optional critic matrix — workflow YAML + governor tier gate."""
 
 from __future__ import annotations
 
