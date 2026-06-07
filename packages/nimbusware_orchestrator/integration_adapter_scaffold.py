@@ -99,6 +99,8 @@ def probe_http_endpoint(url: str, *, timeout: float = 2.0) -> dict[str, Any]:
         "reachable": True,
         "status_code": resp.status_code,
         "ok": resp.is_success,
+        "content_type": resp.headers.get("content-type", ""),
+        "body_preview": resp.text[:200],
     }
 
 
@@ -217,7 +219,15 @@ def execute_target_adapter_integration(
     if kind == "api_bridge":
         endpoint = str(state.get("endpoint") or "").strip()
         if endpoint:
-            result_payload["http_probe"] = probe_http_endpoint(endpoint)
+            probe = probe_http_endpoint(endpoint)
+            result_payload["http_probe"] = probe
+            if probe.get("reachable"):
+                state["last_http_probe"] = {
+                    "status_code": probe.get("status_code"),
+                    "ok": probe.get("ok"),
+                    "content_type": probe.get("content_type"),
+                }
+                state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     return result_payload
 
 

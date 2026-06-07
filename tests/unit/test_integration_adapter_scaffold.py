@@ -186,6 +186,14 @@ def test_probe_http_endpoint_success(monkeypatch: pytest.MonkeyPatch) -> None:
         def is_success(self) -> bool:
             return True
 
+        @property
+        def text(self) -> str:
+            return "ok"
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "text/plain"}
+
     def _fake_get(url: str, **kwargs: object) -> _Resp:
         assert url == "http://127.0.0.1:8080/health"
         return _Resp()
@@ -194,6 +202,7 @@ def test_probe_http_endpoint_success(monkeypatch: pytest.MonkeyPatch) -> None:
     out = probe_http_endpoint("http://127.0.0.1:8080/health")
     assert out["reachable"] is True
     assert out["ok"] is True
+    assert out["body_preview"] == "ok"
 
 
 def test_execute_target_adapter_records_http_probe(
@@ -206,6 +215,14 @@ def test_execute_target_adapter_records_http_probe(
         @property
         def is_success(self) -> bool:
             return False
+
+        @property
+        def text(self) -> str:
+            return '{"status":"degraded"}'
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "application/json"}
 
     monkeypatch.setattr("httpx.get", lambda *args, **kwargs: _Resp())
     ws = tmp_path / "ws"
@@ -244,3 +261,6 @@ class ApiBridgeAdapter:
     assert out["target_integration_status"] == "integrated"
     assert out["http_probe"]["reachable"] is True
     assert out["http_probe"]["status_code"] == 503
+    assert out["http_probe"]["body_preview"] == '{"status":"degraded"}'
+    state = json.loads((ws / "target_state.json").read_text(encoding="utf-8"))
+    assert state["last_http_probe"]["status_code"] == 503
