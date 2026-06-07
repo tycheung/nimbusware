@@ -13,6 +13,7 @@ from agent_core.models.events_records import SliceQueuedEvent
 from nimbusware_orchestrator.backlog_generator import (
     apply_slice_outcomes,
     backlog_from_events,
+    effective_backlog_generator_mode,
     ensure_backlog,
 )
 from nimbusware_orchestrator.campaign import (
@@ -143,7 +144,9 @@ def campaign_driver_tick(
     policy = campaign_policy_from_rows(rows)
     ce = campaign_effective_from_rows(rows) or {}
     max_slices = int((ce.get("policy") or {}).get("max_slices", 500) if ce else 500)
-    generator_mode = str((ce.get("policy") or {}).get("backlog_generator", "stub"))
+    generator_mode, _ = effective_backlog_generator_mode(
+        str((ce.get("policy") or {}).get("backlog_generator", "stub")),
+    )
 
     from nimbusware_orchestrator.campaign_safety import (
         campaign_exceeded_duration,

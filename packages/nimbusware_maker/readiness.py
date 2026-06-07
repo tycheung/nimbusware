@@ -251,6 +251,24 @@ def _overall_status(checks: dict[str, dict[str, Any]]) -> str:
     return "ready"
 
 
+def _check_campaign_backlog(repo_root: Path) -> dict[str, Any]:
+    from nimbusware_orchestrator.backlog_generator import effective_backlog_generator_mode
+
+    mode, reason = effective_backlog_generator_mode("stub")
+    if mode == "llm":
+        return {
+            "status": "ok",
+            "message": "Campaign backlog will use LLM generator",
+            "generator_mode": "llm",
+        }
+    body: dict[str, Any] = {
+        "status": "degraded" if reason else "ok",
+        "message": reason or "Campaign backlog uses stub generator",
+        "generator_mode": "stub",
+    }
+    return body
+
+
 def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
     checks = {
         "database": _check_database(store),
@@ -258,6 +276,7 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
         "memory": _check_memory(),
         "ollama": _check_ollama(repo_root),
         "disk": _check_disk(repo_root),
+        "campaign_backlog": _check_campaign_backlog(repo_root),
     }
     manifest = edition_manifest()
     overall = _overall_status(checks)

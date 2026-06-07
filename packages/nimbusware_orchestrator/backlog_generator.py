@@ -40,7 +40,31 @@ __all__ = [
     "emit_backlog_generated",
     "emit_backlog_revised",
     "validate_backlog",
+    "effective_backlog_generator_mode",
 ]
+
+
+def effective_backlog_generator_mode(policy_mode: str) -> tuple[str, str | None]:
+    """Return effective generator mode and optional stub fallback reason for UX."""
+    mode = str(policy_mode or "stub").strip().lower()
+    if mode not in ("stub", "llm"):
+        mode = "stub"
+    from nimbusware_env.env_flags import nimbusware_use_llm_enabled
+    from nimbusware_env.settings_resolve import resolve_str
+
+    llm_on = nimbusware_use_llm_enabled()
+    model = resolve_str("NIMBUSWARE_BACKLOG_GENERATOR_MODEL", default="").strip()
+    if mode == "llm":
+        if not llm_on:
+            return "stub", "NIMBUSWARE_USE_LLM is off"
+        if not model:
+            return "stub", "NIMBUSWARE_BACKLOG_GENERATOR_MODEL is unset"
+        return "llm", None
+    if llm_on and model:
+        return "llm", None
+    if not llm_on:
+        return "stub", "Set NIMBUSWARE_USE_LLM=1 for LLM campaign backlog"
+    return "stub", "Set NIMBUSWARE_BACKLOG_GENERATOR_MODEL for LLM campaign backlog"
 
 
 def _requirements_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
@@ -219,7 +243,8 @@ def ensure_backlog(
         max_slices=max_slices,
         repo_root=repo_root,
     )
-    emit_backlog_generated(store, run_id, backlog, generator_mode=generator_mode)
+    actual_mode = str(backlog.metadata.generator_mode or generator_mode)
+    emit_backlog_generated(store, run_id, backlog, generator_mode=actual_mode)
     return backlog
 
 
