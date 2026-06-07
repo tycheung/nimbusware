@@ -46,7 +46,7 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
-**Browser verify (`slice.e2e`)** is opt-in for operators only: enable `slice.e2e.enabled` in the micro_slice workflow and install Playwright locally. PR CI runs [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) without installing browsers.
+**Browser verify (`slice.e2e`)** is opt-in for operators: enable `slice.e2e.enabled` in the micro_slice workflow and install Playwright locally, or set `NIMBUSWARE_SLICE_E2E_COMMAND`. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a stub command; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
 
 ## Code conventions
 

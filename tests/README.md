@@ -16,9 +16,9 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences and required stage names (`micro_slice_web_apply.json`, etc.) |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
-| `tests/fixtures/launch_eval/` | Golden scorecard floors for deterministic replay tests |
+| `tests/fixtures/launch_eval/` | Golden scorecard floors + recorded campaign CRM replay (`golden_campaign_crm_replay.json`) |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
-| `tests/e2e/web/` | Playwright smoke, apply-slice flow, launch scorecard UI replay, campaign progress + multi-slice replay (`maker_apply_flow.spec.ts`, `maker_launch_scorecard.spec.ts`, `maker_campaign_progress.spec.ts`, `maker_campaign_multitick.spec.ts`; sets `NIMBUSWARE_API_BASE` to test server port) |
+| `tests/e2e/web/` | Playwright smoke, apply-slice flow, launch scorecard UI replay, campaign progress + multi-slice + full replay (`maker_apply_flow.spec.ts`, `maker_launch_scorecard.spec.ts`, `maker_campaign_progress.spec.ts`, `maker_campaign_multitick.spec.ts`, `maker_full_replay.spec.ts`; sets `NIMBUSWARE_API_BASE` to test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
@@ -35,7 +35,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 
 ## CI subsets
 
-- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `audit_operator_env.py`, `ruff format --check`, mypy (`scripts/mypy_ci_targets.py`: tranches B–E, UI packages under narrowed ignores, API pilot), bandit (`pyproject.toml` config), `pip-audit`, package coverage floors, pytest @ 75%; optional vitest + Playwright when Node is installed (`ci_check.sh --skip-web` to omit).
+- **Local / PR parity:** `scripts/ci_check.ps1` or `ci_check.sh` — `ruff check`, `audit_operator_env.py`, `ruff format --check`, mypy (`scripts/mypy_ci_targets.py`: tranches B–E, UI packages under narrowed ignores, API pilot), bandit (`pyproject.toml` config), `pip-audit`, package coverage floors, pytest @ 75%, slice.e2e apply journey gate (`NIMBUSWARE_SLICE_E2E_COMMAND`); optional vitest + Playwright when Node is installed (`ci_check.sh --skip-web` to omit).
 - **Default PR / GitHub unit job:** same pytest subset with `--cov-fail-under=75` (see `.github/workflows/ci.yml` **unit** job).
 - **PR web job:** vitest (`nimbusware_maker_web`, `nimbusware_admin_ui`) + Playwright `tests/e2e/web` (parallel to unit; guarded by `tests/unit/test_ci_check_parity.py`).
 - Coverage omits desktop launcher modules, `*_cli.py` entrypoints, console display/explainer modules, and `nimbusware_store/postgres.py` (Postgres adapter — covered by `tests/integration/`); library code including `*/services/**` stays in the denominator.
