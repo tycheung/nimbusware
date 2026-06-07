@@ -23,11 +23,18 @@ def test_launch_eval_rubric_after_micro_slice_apply(
     (ws / "packages/nimbusware_orchestrator/slice_gate.py").write_text("# stub\n", encoding="utf-8")
 
     journey_client.attach_project(ws)
-    journey_client.start_micro_slice_run()
+    journey_client.start_micro_slice_run(
+        business_prompt="Build a minimal CRM with user authentication and contact list",
+    )
     journey_client.approve_plan()
     prep = journey_client.prepare_slice()
     applied = journey_client.apply_slice(prep["pending"]["slice_id"])
     assert applied["status"] == "applied"
+
+    scored = journey_client.client.post(f"/v1/runs/{journey_client.run_id}/maker/launch-eval")
+    assert scored.status_code == 200, scored.text
+    body = scored.json()
+    assert body.get("attach_context", {}).get("prompt_id") == "basic_crm"
 
     scorecard = evaluate_workspace_rubric(ws, min_aggregate=0.0)
     assert scorecard.aggregate > 0

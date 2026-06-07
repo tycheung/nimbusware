@@ -186,6 +186,7 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
     from nimbusware_orchestrator.launch_evaluator import (
         emit_launch_eval_completed,
         evaluate_workspace_rubric,
@@ -197,6 +198,10 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             status_code=422,
             detail=problem("workspace_not_found", "run has no attached workspace"),
         )
+    attach = attach_context_from_run(rows)
     scorecard = evaluate_workspace_rubric(ws)
-    emit_launch_eval_completed(store, run_id, scorecard)
-    return scorecard.to_dict()
+    emit_launch_eval_completed(store, run_id, scorecard, attach_context=attach or None)
+    payload = scorecard.to_dict()
+    if attach:
+        payload["attach_context"] = attach
+    return payload

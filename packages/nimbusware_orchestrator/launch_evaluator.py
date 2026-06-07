@@ -228,7 +228,13 @@ def evaluate_workspace_rubric(
     )
 
 
-def emit_launch_eval_completed(store: Any, run_id: UUID, scorecard: LaunchEvalScorecard) -> None:
+def emit_launch_eval_completed(
+    store: Any,
+    run_id: UUID,
+    scorecard: LaunchEvalScorecard,
+    *,
+    attach_context: dict[str, str] | None = None,
+) -> None:
     from datetime import datetime, timezone
     from uuid import uuid4
 
@@ -241,6 +247,8 @@ def emit_launch_eval_completed(store: Any, run_id: UUID, scorecard: LaunchEvalSc
     )
 
     meta = {**scorecard.to_dict(), "maker_approval": True}
+    if attach_context:
+        meta["attach_context"] = attach_context
     now = datetime.now(timezone.utc)
     store.append(
         StageStartedEvent(
@@ -283,6 +291,13 @@ def maybe_run_launch_eval_for_campaign(
     ws = workspace or resolve_run_workspace(rows)
     if not ws.is_dir():
         return None
+    from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
+
     scorecard = evaluate_workspace_rubric(ws)
-    emit_launch_eval_completed(store, run_id, scorecard)
+    emit_launch_eval_completed(
+        store,
+        run_id,
+        scorecard,
+        attach_context=attach_context_from_run(rows),
+    )
     return scorecard
