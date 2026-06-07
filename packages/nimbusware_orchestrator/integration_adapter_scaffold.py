@@ -88,20 +88,38 @@ def _target_state_for_kind(kind: str, run_id: str) -> dict[str, Any]:
     return {"connected": True, "kind": kind, "run_id": run_id}
 
 
-def probe_http_endpoint(url: str, *, timeout: float = 2.0) -> dict[str, Any]:
+def probe_http_endpoint(
+    url: str,
+    *,
+    timeout: float = 2.0,
+    max_attempts: int = 3,
+    retry_delay: float = 0.25,
+) -> dict[str, Any]:
+    import time
+
     import httpx
 
-    try:
-        resp = httpx.get(url, timeout=timeout, follow_redirects=True)
-    except httpx.HTTPError as exc:
-        return {"reachable": False, "error": str(exc)[:200]}
-    return {
-        "reachable": True,
-        "status_code": resp.status_code,
-        "ok": resp.is_success,
-        "content_type": resp.headers.get("content-type", ""),
-        "body_preview": resp.text[:200],
-    }
+    last_error = ""
+    attempts = max(1, int(max_attempts))
+    for attempt in range(attempts):
+        try:
+            resp = httpx.get(url, timeout=timeout, follow_redirects=True)
+        except httpx.HTTPError as exc:
+            last_error = str(exc)[:200]
+            if attempt + 1 < attempts:
+                time.sleep(retry_delay)
+                continue
+            return {"reachable": False, "error": last_error, "attempts": attempts}
+        payload: dict[str, Any] = {
+            "reachable": True,
+            "status_code": resp.status_code,
+            "ok": resp.is_success,
+            "content_type": resp.headers.get("content-type", ""),
+            "body_preview": resp.text[:200],
+            "attempts": attempt + 1,
+        }
+        return payload
+    return {"reachable": False, "error": last_error or "probe_failed", "attempts": attempts}
 
 
 def validate_integration_manifest(manifest: dict[str, Any]) -> list[str]:

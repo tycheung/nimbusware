@@ -203,6 +203,40 @@ def test_probe_http_endpoint_success(monkeypatch: pytest.MonkeyPatch) -> None:
     assert out["reachable"] is True
     assert out["ok"] is True
     assert out["body_preview"] == "ok"
+    assert out["attempts"] == 1
+
+
+def test_probe_http_endpoint_retries(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = {"n": 0}
+
+    class _Resp:
+        status_code = 200
+
+        @property
+        def is_success(self) -> bool:
+            return True
+
+        @property
+        def text(self) -> str:
+            return "ok"
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "text/plain"}
+
+    def _flaky_get(url: str, **kwargs: object) -> _Resp:
+        calls["n"] += 1
+        if calls["n"] < 2:
+            raise httpx.ConnectError("refused")
+        return _Resp()
+
+    import httpx
+
+    monkeypatch.setattr("httpx.get", _flaky_get)
+    monkeypatch.setattr("time.sleep", lambda _s: None)
+    out = probe_http_endpoint("http://127.0.0.1:8080/health", max_attempts=3)
+    assert out["reachable"] is True
+    assert out["attempts"] == 2
 
 
 def test_execute_target_adapter_records_http_probe(
@@ -262,5 +296,6 @@ class ApiBridgeAdapter:
     assert out["http_probe"]["reachable"] is True
     assert out["http_probe"]["status_code"] == 503
     assert out["http_probe"]["body_preview"] == '{"status":"degraded"}'
+    assert out["http_probe"]["attempts"] == 1
     state = json.loads((ws / "target_state.json").read_text(encoding="utf-8"))
     assert state["last_http_probe"]["status_code"] == 503
