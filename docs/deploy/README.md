@@ -82,3 +82,7 @@ Use the uploaded `sbom.cdx.json` artifact as the release bill of materials.
 ## External SLI
 
 Fleet Ollama SLI: `scripts/fleet_ollama_sli_runbook.md` and `poetry run nimbusware-fleet-ollama-sli`.
+
+## Agent sandbox
+
+Individual (`none`/`stub`/`docker`) and Enterprise (`kubernetes`/`e2b`) backends: [agent-sandbox.md](agent-sandbox.md).
