@@ -13,7 +13,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, embed/in-process dispatch worker) |
 | `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker, slice.e2e apply journeys |
 | `tests/integration/` | Postgres, Redis dispatch worker stack (`test_redis_dispatch_worker_stack.py`, `-m integration`) |
-| `tests/e2e/golden/timelines/` | Minimum timeline subsequences for journey assertions |
+| `tests/e2e/golden/timelines/` | Minimum timeline subsequences and required stage names (`micro_slice_web_apply.json`, etc.) |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors for deterministic replay tests |
@@ -45,7 +45,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 - **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API timeline + L1 journeys when marked `e2e`). Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** `-m slow`.
-- **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `tiny_python_app` + `tiny_web_app` rubric via `scripts/launch_eval.py`.
+- **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `scripts/launch_eval.py --matrix` on catalog default workspaces; unit coverage in `tests/unit/test_launch_eval_attach_context.py`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.
 
 ## UI coverage policy (Lane V2)

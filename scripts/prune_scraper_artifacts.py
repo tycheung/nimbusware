@@ -210,13 +210,11 @@ def main() -> int:
     }
     status_path = _resolve_summary_path(args.summary_path)
     if args.json_summary:
-        # Keep state-file + stdout parity when both flags are used together while
-        # preserving rich stdout fields for standalone --json-summary usage.
+        # stdout uses extended fields unless a status file also consumes the base summary.
         stdout_summary = summary_base if status_path is not None else summary_extended
         print(json.dumps(stdout_summary, separators=(",", ":")))
     if status_path is not None:
-        # State file carries the same fields as --json-summary plus a UTC timestamp so
-        # the console can age the snapshot. Independent of --json-summary stdout.
+        # status file adds wrote_at for console age checks.
         _write_status_atomically(
             status_path,
             {**summary_base, "wrote_at": datetime.now(timezone.utc).isoformat()},

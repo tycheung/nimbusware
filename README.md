@@ -413,7 +413,7 @@ docker compose --profile fleet up -d redis
 
 Set `NIMBUSWARE_RUN_DISPATCH=redis` and `NIMBUSWARE_REDIS_URL=redis://127.0.0.1:6379/0` for multi-worker verify dispatch.
 
-Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) — API, Redis, schema Job, dispatch worker, optional Admin Console ([`docs/deploy/k8s/`](docs/deploy/k8s/)). Enterprise OIDC console gate: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
+Production packaging and K8s reference: [`docs/deploy/README.md`](docs/deploy/README.md) — API, Redis, schema Job, dispatch worker, optional Admin Console ([`docs/deploy/k8s/`](docs/deploy/k8s/)). Agent sandbox backends: [`docs/deploy/agent-sandbox.md`](docs/deploy/agent-sandbox.md). Enterprise OIDC console gate: [`docs/deploy/oidc.md`](docs/deploy/oidc.md). External fleet SLI: [`scripts/fleet_ollama_sli_runbook.md`](scripts/fleet_ollama_sli_runbook.md). SBOM: `.github/workflows/sbom.yml` on version tags (blocking on generation errors).
 
 ## Enterprise setup sketch
 
@@ -465,19 +465,21 @@ poetry run pytest tests/e2e/journeys -m e2e_journey -q
 poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
 ```
 
-Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/` (includes micro-slice stub modules under `packages/nimbusware_orchestrator/`), `tiny_web_app/`, `tiny_broken_app/` (intentionally failing tests). Campaign golden timeline: `tests/fixtures/campaign/golden_multi_tick_timeline.json`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
+Attachable fixture workspaces: `tests/fixtures/repos/tiny_python_app/` (includes micro-slice stub modules under `packages/nimbusware_orchestrator/`), `tiny_web_app/`, `tiny_broken_app/` (intentionally failing tests). Golden timelines: `tests/e2e/golden/timelines/` (including `micro_slice_web_apply.json` after Maker apply). Campaign golden timeline: `tests/fixtures/campaign/golden_multi_tick_timeline.json`. Opt-in workflow with browser verify stage: [`configs/workflows/micro_slice_web.yaml`](configs/workflows/micro_slice_web.yaml).
 
 ## Launch eval (workspace quality)
 
-Deterministic rubric v0 scores attached workspaces on maturity, maintainability, scalability, security, and testability. Campaign completion emits `launch_eval.completed` on the event timeline when the campaign passes.
+Deterministic rubric v0 scores attached workspaces on maturity, maintainability, scalability, security, and testability. Campaign completion emits `launch_eval.completed` on the event timeline when the campaign passes, including `attach_context` (matched catalog `prompt_id`, workflow profile, business prompt) when the run originated from a catalog prompt.
 
 ```bash
 poetry run python scripts/launch_eval.py path/to/workspace --json
 poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in Ollama findings
 poetry run python scripts/launch_eval.py --matrix   # score all catalog default_workspaces
+poetry run python scripts/launch_eval.py --run-id <uuid> --json   # Postgres attach + attach_context
+poetry run python scripts/launch_eval.py --run-id <uuid> --run-events events.json --json
 ```
 
-Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
+Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace, emits `launch_eval.completed` on the timeline, and returns `attach_context` when the run matches a catalog prompt. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
 
 Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
@@ -517,7 +519,7 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_USE_LLM` | user | Enable LLM-backed stages (Maker Settings) |
 | `NIMBUSWARE_SLICE_AUTO_ADVANCE` | user | Auto-advance micro-slices (Maker Settings) |
 | `NIMBUSWARE_FILESYSTEM_JAIL` | user | Deny `.env`/`.git`/secrets paths for agent tools (default on) |
-| `NIMBUSWARE_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` (host+jail), `stub`, or `docker` (Individual v1; requires local Docker CLI) |
+| `NIMBUSWARE_SANDBOX_BACKEND` | user | Agent shell sandbox: `none` (host+jail), `stub`, `docker` (Individual); `kubernetes` / `e2b` (Enterprise fleet). See [agent-sandbox.md](docs/deploy/agent-sandbox.md) |
 | `NIMBUSWARE_SANDBOX_DOCKER_IMAGE` | user | Image for docker sandbox (default `python:3.11-slim`) |
 | `NIMBUSWARE_FAST_SLICE` | user | Env override for workflow `fast_slice` opt-in |
 | `NIMBUSWARE_PROBATION_AUTO_SHELVE` | user | Disable auto-shelve on probation reliability failure (unset = on) |

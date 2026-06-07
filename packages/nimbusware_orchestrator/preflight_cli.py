@@ -228,9 +228,7 @@ def main(argv: list[str] | None = None) -> int:
     samples_requested = (
         args.samples
         if args.samples is not None
-        # Reflect the env-var value verbatim (no clamping here) so the user
-        # can see the gap between what they asked for vs what the orchestrator
-        # used (reported separately via samples_used).
+        # Show requested sample count verbatim (orchestrator may clamp via samples_used).
         else (
             int(os.environ.get("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", "1") or "1")
             if (os.environ.get("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES") or "")
