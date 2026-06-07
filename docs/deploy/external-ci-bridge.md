@@ -1,6 +1,6 @@
-# External CI bridge (GitHub Checks)
+# External CI bridge (GitHub Checks / GitLab)
 
-Maps Nimbusware **integrator gate** outcomes to GitHub Check Runs so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py).
+Maps Nimbusware **integrator gate** outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py).
 
 ## When it fires
 
@@ -8,52 +8,69 @@ The bridge runs **best-effort** after the integrator stage emits `gate.decision.
 
 Other gates remain visible via the Nimbusware timeline and audit export.
 
-## Required configuration
+## Provider selection
+
+GitHub is tried first when `GITHUB_TOKEN` and `NIMBUSWARE_CI_GITHUB_REPO` are set. Otherwise GitLab is used when `NIMBUSWARE_GITLAB_TOKEN` (or `GITLAB_TOKEN`) and `NIMBUSWARE_CI_GITLAB_PROJECT` are set. When neither provider is configured, the bridge returns `{"status": "skipped", "reason": "external_ci_not_configured"}`.
+
+## GitHub configuration
 
 | Variable | Required | Notes |
 |----------|----------|--------|
-| `GITHUB_TOKEN` | Yes | Personal access token or GitHub App installation token with **`checks:write`** on the target repo |
+| `GITHUB_TOKEN` | Yes | Token with **`checks:write`** on the target repo |
 | `NIMBUSWARE_CI_GITHUB_REPO` | Yes | Repository slug `owner/name` (e.g. `acme/widget`) |
 
-When either is unset, the bridge returns `{"status": "skipped", "reason": "github_not_configured"}` and the run continues normally.
+Check run shape:
 
-## Optional configuration
+- **Name:** `nimbusware/{stage_name}`
+- **Conclusion:** `success` when verdict is `PASS`, otherwise `failure`
+
+## GitLab configuration
+
+| Variable | Required | Notes |
+|----------|----------|--------|
+| `NIMBUSWARE_GITLAB_TOKEN` or `GITLAB_TOKEN` | Yes | Personal/project access token with **`api`** scope |
+| `NIMBUSWARE_CI_GITLAB_PROJECT` | Yes | Numeric project id or `namespace/project` path |
+| `NIMBUSWARE_CI_HEAD_SHA` | Yes | Commit SHA for the pipeline status |
+| `NIMBUSWARE_GITLAB_API_BASE` | No | Default `https://gitlab.com/api/v4` (self-managed: `https://gitlab.example.com/api/v4`) |
+
+Commit status shape:
+
+- **Name:** `nimbusware/{stage_name}`
+- **State:** `success` when verdict is `PASS`, otherwise `failed`
+- **target_url:** timeline link when `NIMBUSWARE_TIMELINE_BASE_URL` is set
+
+## Optional (both providers)
 
 | Variable | Purpose |
 |----------|---------|
-| `NIMBUSWARE_CI_HEAD_SHA` | Commit SHA for the check run (default: forty-zero placeholder if unset) |
-| `NIMBUSWARE_TIMELINE_BASE_URL` | Public API base URL prepended to `/v1/runs/{id}/timeline` in check output |
+| `NIMBUSWARE_CI_HEAD_SHA` | Commit SHA (GitHub default: forty-zero placeholder if unset) |
+| `NIMBUSWARE_TIMELINE_BASE_URL` | Public API base prepended to `/v1/runs/{id}/timeline` in output |
 
-## Check run shape
-
-- **Name:** `nimbusware/{stage_name}` (stage name from gate payload)
-- **Conclusion:** `success` when verdict is `PASS`, otherwise `failure`
-- **Output title:** `Nimbusware gate {stage_name}`
-- **Output summary:** `Verdict: {verdict}`
-
-## Operator setup
-
-1. Create a GitHub token with `checks:write` on the repository that should receive status.
-2. Export env on the API/worker host (or inject via Kubernetes secret / compose):
+## Operator setup (GitHub)
 
 ```bash
 export GITHUB_TOKEN=ghp_...
 export NIMBUSWARE_CI_GITHUB_REPO=your-org/your-repo
-export NIMBUSWARE_CI_HEAD_SHA="${GITHUB_SHA}"   # optional; set in CI-driven runs
-export NIMBUSWARE_TIMELINE_BASE_URL=https://nimbusware.example.com/v1  # optional
+export NIMBUSWARE_CI_HEAD_SHA="${GITHUB_SHA}"
+export NIMBUSWARE_TIMELINE_BASE_URL=https://nimbusware.example.com/v1
 ```
 
-3. Run a workflow with integrator gate enabled; inspect gate metadata `external_ci` on the timeline event when posting succeeds.
+## Operator setup (GitLab)
+
+```bash
+export NIMBUSWARE_GITLAB_TOKEN=glpat-...
+export NIMBUSWARE_CI_GITLAB_PROJECT=your-group/your-project
+export NIMBUSWARE_CI_HEAD_SHA="${CI_COMMIT_SHA}"
+export NIMBUSWARE_TIMELINE_BASE_URL=https://nimbusware.example.com/v1
+```
+
+Run a workflow with integrator gate enabled; inspect gate metadata `external_ci` on the timeline event when posting succeeds.
 
 ## Security
 
 - Never commit tokens to the repo or Helm values in plain text.
-- Use least-privilege tokens scoped to the single repository.
+- Use least-privilege tokens scoped to the single project.
 - The bridge catches network/API errors and returns `status: error` without failing the Nimbusware run.
-
-## GitLab
-
-GitLab pipeline status and MR comments are **not implemented**. Use Nimbusware timeline links or fo400 GitHub Checks only.
 
 ## Local verification
 
