@@ -141,3 +141,33 @@ def test_promote_catalog_candidate(tmp_path: Path, monkeypatch) -> None:
 
     marked = json.loads((cand_dir / "oss-auth-kit.json").read_text(encoding="utf-8"))
     assert marked["status"] == "promoted"
+
+
+def test_promote_pending_stitch_catalog_candidates(tmp_path: Path, monkeypatch) -> None:
+    shutil.copytree(ROOT / "configs", tmp_path / "configs", dirs_exist_ok=True)
+    _seed_catalog(tmp_path)
+    monkeypatch.setenv("NIMBUSWARE_REPO_ROOT", str(tmp_path))
+
+    cand_dir = tmp_path / ".nimbusware" / "research" / "catalog_candidates" / "run-stitch"
+    cand_dir.mkdir(parents=True)
+    payload = {
+        "run_id": "run-stitch",
+        "candidate_id": "stitch-auth-kit",
+        "status": "pending_integrator_review",
+        "source": "stitch_applied",
+        "title": "Stitch Auth Kit",
+        "tags": ["auth", "stitch"],
+    }
+    (cand_dir / "stitch-auth-kit.json").write_text(json.dumps(payload), encoding="utf-8")
+
+    with TestClient(app) as client:
+        promoted = client.post(
+            "/v1/bundles/catalog-candidates/promote-stitch-pending",
+            headers=ADMIN_HEADERS,
+            params={"expected_version": 1},
+        )
+        assert promoted.status_code == 200
+        assert any(b["id"] == "stitch-auth-kit" for b in promoted.json()["bundles"])
+
+    marked = json.loads((cand_dir / "stitch-auth-kit.json").read_text(encoding="utf-8"))
+    assert marked["status"] == "promoted"

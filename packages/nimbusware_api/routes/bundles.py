@@ -476,6 +476,77 @@ def promote_bundle_catalog_candidate(
     return _catalog_response(orch, raw)
 
 
+@router.post(
+    "/catalog-candidates/promote-stitch-pending",
+    response_model=BundleCatalogResponse,
+    responses={
+        401: PROBLEM_RESPONSE_401,
+        409: PROBLEM_RESPONSE_422,
+        422: PROBLEM_RESPONSE_422,
+    },
+    summary="Promote all pending stitch catalog candidates into the bundle catalog (admin)",
+)
+def promote_pending_stitch_catalog_candidates(
+    orch: OrchDep,
+    _admin: AdminDep,
+    expected_version: Annotated[int, Query(ge=1)],
+) -> BundleCatalogResponse:
+    from nimbusware_research.bundle_promotion import (
+        candidate_to_bundle_entry,
+        list_pending_stitch_catalog_candidates,
+        load_catalog_candidate,
+        mark_catalog_candidate_promoted,
+    )
+
+    pending = list_pending_stitch_catalog_candidates(orch.repo_root, limit=500)
+    if not pending:
+        return _catalog_response(orch, _load_catalog_raw(orch))
+    raw = deepcopy(_load_catalog_raw(orch))
+    bundles = raw.get("bundles")
+    if not isinstance(bundles, list):
+        bundles = []
+        raw["bundles"] = bundles
+    existing_ids = {str(b.get("id", "")).strip() for b in bundles if isinstance(b, dict)}
+    promoted: list[str] = []
+    for row in pending:
+        run_id = str(row.get("run_id") or "").strip()
+        candidate_id = str(row.get("candidate_id") or "").strip()
+        if not run_id or not candidate_id:
+            continue
+        candidate = load_catalog_candidate(
+            orch.repo_root,
+            run_id=run_id,
+            candidate_id=candidate_id,
+        )
+        entry = candidate_to_bundle_entry(candidate)
+        bid = str(entry["id"]).strip()
+        if bid in existing_ids:
+            continue
+        bundles.append(entry)
+        existing_ids.add(bid)
+        promoted.append(candidate_id)
+    if not promoted:
+        return _catalog_response(orch, raw)
+    try:
+        validate_bundle_catalog_content(raw)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("bundle_catalog_invalid", str(exc)),
+        ) from exc
+    _persist_catalog(orch, raw, expected_version=expected_version)
+    for row in pending:
+        run_id = str(row.get("run_id") or "").strip()
+        candidate_id = str(row.get("candidate_id") or "").strip()
+        if candidate_id in promoted and run_id:
+            mark_catalog_candidate_promoted(
+                orch.repo_root,
+                run_id=run_id,
+                candidate_id=candidate_id,
+            )
+    return _catalog_response(orch, raw)
+
+
 @router.get(
     "/catalog-candidates",
     summary="List Code Researcher catalog promotion candidates (admin)",

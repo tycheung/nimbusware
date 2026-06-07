@@ -53,6 +53,20 @@ def list_catalog_candidates(repo_root: Path, *, limit: int = 100) -> list[dict[s
     return rows
 
 
+def list_pending_stitch_catalog_candidates(
+    repo_root: Path,
+    *,
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    rows = list_catalog_candidates(repo_root, limit=limit)
+    return [
+        row
+        for row in rows
+        if row.get("source") == "stitch_applied"
+        and row.get("status") == "pending_integrator_review"
+    ]
+
+
 def load_catalog_candidate(
     repo_root: Path,
     *,
