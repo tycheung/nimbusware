@@ -92,22 +92,33 @@ def probe_http_endpoint(
     url: str,
     *,
     timeout: float = 2.0,
-    max_attempts: int = 3,
-    retry_delay: float = 0.25,
+    max_attempts: int | None = None,
+    retry_delay: float | None = None,
 ) -> dict[str, Any]:
     import time
 
     import httpx
 
+    from nimbusware_env.env_flags import (
+        nimbusware_integrator_probe_max_attempts,
+        nimbusware_integrator_probe_retry_delay,
+    )
+
     last_error = ""
-    attempts = max(1, int(max_attempts))
+    attempts = max(1, int(max_attempts or nimbusware_integrator_probe_max_attempts()))
+    base_delay = max(
+        0.0,
+        float(
+            retry_delay if retry_delay is not None else nimbusware_integrator_probe_retry_delay()
+        ),
+    )
     for attempt in range(attempts):
         try:
             resp = httpx.get(url, timeout=timeout, follow_redirects=True)
         except httpx.HTTPError as exc:
             last_error = str(exc)[:200]
             if attempt + 1 < attempts:
-                time.sleep(retry_delay)
+                time.sleep(base_delay * (2**attempt))
                 continue
             return {"reachable": False, "error": last_error, "attempts": attempts}
         payload: dict[str, Any] = {

@@ -239,6 +239,110 @@ def test_probe_http_endpoint_retries(monkeypatch: pytest.MonkeyPatch) -> None:
     assert out["attempts"] == 2
 
 
+def test_probe_http_endpoint_exponential_backoff(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = {"n": 0}
+    sleeps: list[float] = []
+
+    class _Resp:
+        status_code = 200
+
+        @property
+        def is_success(self) -> bool:
+            return True
+
+        @property
+        def text(self) -> str:
+            return "ok"
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "text/plain"}
+
+    def _flaky_get(url: str, **kwargs: object) -> _Resp:
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise httpx.ConnectError("refused")
+        return _Resp()
+
+    import httpx
+
+    monkeypatch.setattr("httpx.get", _flaky_get)
+    monkeypatch.setattr("time.sleep", lambda sec: sleeps.append(sec))
+    out = probe_http_endpoint(
+        "http://127.0.0.1:8080/health",
+        max_attempts=3,
+        retry_delay=0.25,
+    )
+    assert out["reachable"] is True
+    assert out["attempts"] == 3
+    assert sleeps == [0.25, 0.5]
+
+
+def test_probe_http_endpoint_env_max_attempts(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = {"n": 0}
+
+    class _Resp:
+        status_code = 200
+
+        @property
+        def is_success(self) -> bool:
+            return True
+
+        @property
+        def text(self) -> str:
+            return "ok"
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "text/plain"}
+
+    def _always_fail(url: str, **kwargs: object) -> _Resp:
+        calls["n"] += 1
+        raise httpx.ConnectError("refused")
+
+    import httpx
+
+    monkeypatch.setenv("NIMBUSWARE_INTEGRATOR_PROBE_MAX_ATTEMPTS", "2")
+    monkeypatch.setattr("httpx.get", _always_fail)
+    monkeypatch.setattr("time.sleep", lambda _s: None)
+    out = probe_http_endpoint("http://127.0.0.1:8080/health")
+    assert out["reachable"] is False
+    assert calls["n"] == 2
+    assert out["attempts"] == 2
+
+
+def test_probe_http_endpoint_no_retry_on_http_status(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = {"n": 0}
+
+    class _Resp:
+        status_code = 503
+
+        @property
+        def is_success(self) -> bool:
+            return False
+
+        @property
+        def text(self) -> str:
+            return "down"
+
+        @property
+        def headers(self) -> dict[str, str]:
+            return {"content-type": "text/plain"}
+
+    def _once(url: str, **kwargs: object) -> _Resp:
+        calls["n"] += 1
+        return _Resp()
+
+    monkeypatch.setattr("httpx.get", _once)
+    out = probe_http_endpoint("http://127.0.0.1:8080/health", max_attempts=3)
+    assert out["reachable"] is True
+    assert out["status_code"] == 503
+    assert calls["n"] == 1
+    assert out["attempts"] == 1
+
+
 def test_execute_target_adapter_records_http_probe(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

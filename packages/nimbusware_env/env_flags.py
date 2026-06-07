@@ -376,6 +376,20 @@ def nimbusware_embed_dispatch_worker_enabled() -> bool:
     return env_bool("NIMBUSWARE_EMBED_DISPATCH_WORKER", default=False)
 
 
+def nimbusware_integrator_probe_max_attempts(default: int = 3) -> int:
+    return max(1, resolve_int("NIMBUSWARE_INTEGRATOR_PROBE_MAX_ATTEMPTS", default=default))
+
+
+def nimbusware_integrator_probe_retry_delay(default: float = 0.25) -> float:
+    raw = resolve_raw("NIMBUSWARE_INTEGRATOR_PROBE_RETRY_DELAY")
+    if raw is None or not str(raw).strip():
+        return default
+    try:
+        return max(0.0, float(str(raw).strip()))
+    except ValueError:
+        return default
+
+
 def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
