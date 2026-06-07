@@ -50,5 +50,8 @@ test("review tab loads launch scorecard after API run", async ({ page, request }
   await expect(page.getByTestId("maker-review-scorecard-body")).toContainText("aggregate");
   await expect(page.getByTestId("maker-review-scorecard-body")).toContainText(String(scorecard.aggregate));
   await expect(page.getByTestId("maker-review-scorecard-body")).toContainText("maturity");
+  await expect(page.getByTestId("maker-review-scorecard-maturity")).toBeVisible();
+  await expect(page.getByTestId("maker-review-scorecard-security")).toBeVisible();
+  await expect(page.getByTestId("maker-review-scorecard-testability")).toBeVisible();
   await expect(page.getByTestId("maker-review-run-launch-eval")).toBeVisible();
 });

@@ -1,4 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
+import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
 
 function runId() {
   const search = new URLSearchParams(window.location.search);
@@ -154,89 +155,21 @@ export async function mountReview(root) {
     toast("Workspace reverted", "success");
   });
 
-  function renderLaunchScorecard(container, scorecard) {
-    container.replaceChildren();
-    const dims = [
-      ["aggregate", scorecard.aggregate],
-      ["maturity", scorecard.maturity],
-      ["maintainability", scorecard.maintainability],
-      ["scalability", scorecard.scalability],
-      ["security", scorecard.security],
-      ["testability", scorecard.testability],
-    ];
-    const table = document.createElement("table");
-    table.className = "scorecard-table";
-    const tbody = document.createElement("tbody");
-    for (const [label, value] of dims) {
-      if (value == null) continue;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<th scope="row">${label}</th><td>${value}</td>`;
-      tbody.appendChild(tr);
-    }
-    table.appendChild(tbody);
-    container.appendChild(table);
-    if (scorecard.passed != null) {
-      const status = document.createElement("p");
-      status.textContent = scorecard.passed ? "passed" : "needs work";
-      status.dataset.testid = "maker-review-scorecard-status";
-      container.appendChild(status);
-    }
-    const llmDims = scorecard.llm_dimensions;
-    if (llmDims && typeof llmDims === "object" && Object.keys(llmDims).length) {
-      const heading = document.createElement("h4");
-      heading.textContent = "LLM dimensions";
-      container.appendChild(heading);
-      const llmTable = document.createElement("table");
-      llmTable.dataset.testid = "maker-review-llm-dimensions";
-      const llmBody = document.createElement("tbody");
-      for (const [key, val] of Object.entries(llmDims)) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<th scope="row">${key}</th><td>${val}</td>`;
-        llmBody.appendChild(tr);
-      }
-      llmTable.appendChild(llmBody);
-      container.appendChild(llmTable);
-    }
-    const findings = scorecard.findings || scorecard.llm_findings;
-    if (Array.isArray(findings) && findings.length) {
-      const heading = document.createElement("h4");
-      heading.textContent = "Findings";
-      container.appendChild(heading);
-      const ul = document.createElement("ul");
-      ul.dataset.testid = "maker-review-scorecard-findings";
-      for (const item of findings.slice(0, 8)) {
-        const li = document.createElement("li");
-        li.textContent = String(item);
-        ul.appendChild(li);
-      }
-      container.appendChild(ul);
-    }
-  }
-
-  async function scorecardFromTimeline(id) {
-    const timeline = await apiJson(`/runs/${id}/timeline`);
-    const events = timeline.events || [];
-    for (let i = events.length - 1; i >= 0; i -= 1) {
-      const ev = events[i];
-      if (ev.event_type !== "stage.passed") continue;
-      const payload = ev.payload || {};
-      if (payload.stage_name !== "launch_eval.completed") continue;
-      return ev.metadata || payload;
-    }
-    return null;
+  function renderLaunchScorecardLocal(container, scorecard) {
+    renderLaunchScorecard(container, scorecard, { testIdPrefix: "maker-review" });
   }
 
   async function showLaunchScorecard(id) {
     const panel = root.querySelector("#rev-launch-eval");
     panel?.classList.remove("hidden");
     const body = root.querySelector("#rev-launch-eval-body");
-    const scorecard = await scorecardFromTimeline(id);
+    const scorecard = await scorecardFromTimeline(apiJson, id);
     if (!scorecard) {
       body.replaceChildren();
       body.textContent = "No launch_eval.completed event on this run yet.";
       return;
     }
-    renderLaunchScorecard(body, scorecard);
+    renderLaunchScorecardLocal(body, scorecard);
   }
 
   root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {

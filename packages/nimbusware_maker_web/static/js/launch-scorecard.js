@@ -1,0 +1,76 @@
+const SCORECARD_DIMENSIONS = [
+  ["aggregate", "aggregate"],
+  ["maturity", "maturity"],
+  ["maintainability", "maintainability"],
+  ["scalability", "scalability"],
+  ["security", "security"],
+  ["testability", "testability"],
+];
+
+export function renderLaunchScorecard(container, scorecard, { testIdPrefix = "maker-review" } = {}) {
+  container.replaceChildren();
+  const table = document.createElement("table");
+  table.className = "scorecard-table";
+  table.dataset.testid = `${testIdPrefix}-scorecard-table`;
+  const tbody = document.createElement("tbody");
+  for (const [label, key] of SCORECARD_DIMENSIONS) {
+    const value = scorecard[key];
+    if (value == null) continue;
+    const tr = document.createElement("tr");
+    tr.dataset.testid = `${testIdPrefix}-scorecard-${label}`;
+    tr.innerHTML = `<th scope="row">${label}</th><td>${value}</td>`;
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+  container.appendChild(table);
+  if (scorecard.passed != null) {
+    const status = document.createElement("p");
+    status.textContent = scorecard.passed ? "passed" : "needs work";
+    status.dataset.testid = `${testIdPrefix}-scorecard-status`;
+    container.appendChild(status);
+  }
+  const llmDims = scorecard.llm_dimensions;
+  if (llmDims && typeof llmDims === "object" && Object.keys(llmDims).length) {
+    const heading = document.createElement("h4");
+    heading.textContent = "LLM dimensions";
+    container.appendChild(heading);
+    const llmTable = document.createElement("table");
+    llmTable.dataset.testid = `${testIdPrefix}-llm-dimensions`;
+    const llmBody = document.createElement("tbody");
+    for (const [key, val] of Object.entries(llmDims)) {
+      const tr = document.createElement("tr");
+      tr.dataset.testid = `${testIdPrefix}-llm-dimension-${key}`;
+      tr.innerHTML = `<th scope="row">${key}</th><td>${val}</td>`;
+      llmBody.appendChild(tr);
+    }
+    llmTable.appendChild(llmBody);
+    container.appendChild(llmTable);
+  }
+  const findings = scorecard.findings || scorecard.llm_findings;
+  if (Array.isArray(findings) && findings.length) {
+    const heading = document.createElement("h4");
+    heading.textContent = "Findings";
+    container.appendChild(heading);
+    const ul = document.createElement("ul");
+    ul.dataset.testid = `${testIdPrefix}-scorecard-findings`;
+    for (const item of findings.slice(0, 8)) {
+      const li = document.createElement("li");
+      li.textContent = String(item);
+      ul.appendChild(li);
+    }
+    container.appendChild(ul);
+  }
+}
+
+export async function scorecardFromTimeline(apiJson, runId) {
+  const timeline = await apiJson(`/runs/${runId}/timeline`);
+  const events = timeline.events || [];
+  for (let i = events.length - 1; i >= 0; i -= 1) {
+    const ev = events[i];
+    if (ev.event_type !== "stage.passed") continue;
+    const payload = ev.payload || {};
+    if (payload.stage_name !== "launch_eval.completed") continue;
+    return ev.metadata || payload;
+  }
+  return null;
+}
