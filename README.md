@@ -452,7 +452,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (**15** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress. Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue without a separate worker binary.
+Layered operator testing lives under `tests/e2e/` (**16** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress. Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue; integration tests with live Redis use `tests/integration/test_redis_dispatch_worker_stack.py` (`-m integration`).
 
 | Layer | Location | CI |
 |-------|----------|-----|
@@ -474,13 +474,16 @@ Deterministic rubric v0 scores attached workspaces on maturity, maintainability,
 ```bash
 poetry run python scripts/launch_eval.py path/to/workspace --json
 poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in Ollama findings
+poetry run python scripts/launch_eval.py --matrix   # score all catalog default_workspaces
 ```
 
 Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
 
 Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
-Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Parity rows: Maker `launch_eval_scorecard`, Admin `launch_eval_scorecard_admin`.
+Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml) (`basic_crm`, `todo_api`, `static_site`). Weekly CI runs `launch_eval.py --matrix` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Parity rows: Maker `launch_eval_scorecard`, Admin `launch_eval_scorecard_admin`.
+
+The `micro_slice_web` workflow profile enables `slice.e2e` during Maker apply when `NIMBUSWARE_SLICE_E2E_COMMAND` is set (or Playwright is on PATH).
 
 ## Testing
 

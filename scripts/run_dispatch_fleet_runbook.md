@@ -15,6 +15,8 @@ $env:NIMBUSWARE_EDITION = "enterprise"
 $env:NIMBUSWARE_RUN_DISPATCH = "redis"
 $env:NIMBUSWARE_REDIS_URL = "redis://127.0.0.1:6379/0"
 # Local stack E2E (single API subprocess + memory queue): NIMBUSWARE_EMBED_DISPATCH_WORKER=1
+# Redis fleet (integration): NIMBUSWARE_RUN_DISPATCH=redis NIMBUSWARE_REDIS_URL=redis://127.0.0.1:6379/0
+#   poetry run pytest tests/integration/test_redis_dispatch_worker_stack.py -m integration
 # Optional back-pressure thresholds (defaults: pending=100, in_flight=20)
 $env:NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH = "100"
 $env:NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT = "20"
