@@ -1,5 +1,3 @@
-"""Extract integrator live-path signals from run event rows."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,5 +1,3 @@
-"""Integration adapter scaffold tests."""
-
 from __future__ import annotations
 
 import json

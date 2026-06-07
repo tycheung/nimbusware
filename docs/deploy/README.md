@@ -39,7 +39,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Unit** — default PR job (`ci.yml`): ruff, mypy, pytest unit subset @ 75% coverage.
 - **Integration** — Postgres `-m integration` on PR.
 - **E2E** — `tests/e2e -m e2e` on PR (import smoke + API `run.created` with Postgres).
-- **Weekly** — `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + required scored `--run` with `min_pass_rate: 1.0`).
+- **Weekly** — `slow_tests.yml` (`-m slow`, stack-soak, redis-fleet-soak with Redis service); `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + required scored `--run` with `min_pass_rate: 1.0`).
 - **Quarterly / manual** — `k8s_reference_smoke.yml` (`helm lint` + `kubectl apply --dry-run=client` on [`docs/deploy/k8s/`](k8s/README.md) manifests).
 - **Weekly / manual** — `ssh_hardware_probe.yml` (Enterprise fleet SSH tier probe; [runbook](ssh-hardware-probe.md)).
 - **PR / manual** — `oidc_smoke.yml` (mock Enterprise OIDC session tests).

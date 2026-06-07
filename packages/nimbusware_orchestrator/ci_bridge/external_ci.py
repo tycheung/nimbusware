@@ -1,5 +1,3 @@
-"""Map ``gate.decision.emitted`` to external CI (GitHub Checks / GitLab); env-gated, no-op in CI."""
-
 from __future__ import annotations
 
 import json
