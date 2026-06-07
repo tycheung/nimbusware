@@ -1,5 +1,3 @@
-"""Campaign dispatch worker journey on tiny_api_app attach fixture."""
-
 from __future__ import annotations
 
 import time

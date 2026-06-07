@@ -4,7 +4,6 @@ from typing import Any
 
 
 def integration_adapter_http_probe_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Return the latest ``http_probe`` payload from integration adapter writer metadata."""
     probe: dict[str, Any] | None = None
     for row in rows:
         meta = row.get("metadata") or {}
@@ -27,7 +26,6 @@ def integration_adapter_http_probe_from_rows(rows: list[dict[str, Any]]) -> dict
 
 
 def integrator_live_context_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Summarize live integrator adapter I/O for gate metadata."""
     ctx: dict[str, Any] = {}
     for row in rows:
         meta = row.get("metadata") or {}

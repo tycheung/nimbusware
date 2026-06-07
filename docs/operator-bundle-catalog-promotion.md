@@ -15,6 +15,7 @@ When research stages index a pattern, Nimbusware writes a **catalog candidate** 
 | Method | Path | Access |
 |--------|------|--------|
 | `GET` | `/v1/bundles/catalog-candidates?limit=100` | Admin (`X-Nimbusware-Admin-Token`) |
+| `POST` | `/v1/bundles/catalog-candidates/promote-stitch-pending?expected_version=N` | Admin — batch-promote pending stitch candidates |
 | `POST` | `/v1/bundles/catalog-candidates/{run_id}/{candidate_id}/promote?expected_version=N` | Admin — merge candidate into `catalog.yaml` |
 
 Response shape: `{ "candidates": [ { "run_id", "candidate_id", "status", "repo_url", ... } ] }`.
