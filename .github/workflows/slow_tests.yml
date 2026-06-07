@@ -18,3 +18,19 @@ jobs:
         run: poetry run pytest tests -q -m slow
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+
+  stack-soak:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: Full replay stack soak
+        run: >-
+          poetry run pytest tests/e2e/journeys/test_full_replay_stack_soak.py
+          -m "e2e_stack and slow" -q
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}

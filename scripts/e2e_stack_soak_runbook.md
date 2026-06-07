@@ -18,4 +18,4 @@ Requires no Postgres (uses in-memory store in subprocess). Expect ~60s runtime.
 
 ## CI
 
-Opt-in only (`@pytest.mark.slow`); default PR unit job excludes slow tests. Weekly or pre-release: run with `-m slow` after exporting `NIMBUSWARE_REPO_ROOT`.
+Opt-in only (`@pytest.mark.slow`); default PR unit job excludes slow tests. Weekly: `.github/workflows/slow_tests.yml` **stack-soak** job runs this journey with `NIMBUSWARE_REPO_ROOT` set.
