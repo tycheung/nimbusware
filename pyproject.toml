@@ -54,6 +54,7 @@ types-PyYAML = ">=6.0"
 bandit = { version = ">=1.7", extras = ["toml"] }
 pip-audit = ">=2.7"
 pyright = { version = ">=1.1.380", extras = ["nodejs"] }
+pytest-rerunfailures = "^16.3"
 
 [tool.poetry.group.faiss]
 optional = true

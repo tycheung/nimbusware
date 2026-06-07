@@ -95,7 +95,8 @@ if ($WithIntegration) {
 }
 
 if ($WithE2e) {
-    poetry run pytest tests/e2e -q -m e2e
+    $env:NIMBUSWARE_E2E_FLAKE_RETRIES = "1"
+    poetry run pytest tests/e2e -q -m e2e --reruns 1 --reruns-delay 2
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 

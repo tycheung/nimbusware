@@ -2157,6 +2157,22 @@ pytest = ">=7"
 testing = ["process-tests", "pytest-xdist", "virtualenv"]
 
 [[package]]
+name = "pytest-rerunfailures"
+version = "16.3"
+description = "pytest plugin to re-run tests to eliminate flaky failures"
+optional = false
+python-versions = ">=3.10"
+groups = ["dev"]
+files = [
+    {file = "pytest_rerunfailures-16.3-py3-none-any.whl", hash = "sha256:6bdfb8ffb46c46072e6c16bdedee38b6c13eac620d9415ed5b63152cbf283170"},
+    {file = "pytest_rerunfailures-16.3.tar.gz", hash = "sha256:37c9b1231c8083e9f4e724f50f7a21241822f9516c15c700ebbf218d6452355c"},
+]
+
+[package.dependencies]
+packaging = ">=17.1"
+pytest = ">=8.1,<8.2.2 || >8.2.2"
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
@@ -2956,4 +2972,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4"
-content-hash = "f8541ca14c769945ab7c0eab06eb220d0c53ff675ff0197649631706ba4790a6"
+content-hash = "63ff65f733ab4e0caac13da558b1ce0115562c85332f826582d31d471aaa3f75"

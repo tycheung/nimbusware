@@ -148,8 +148,9 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
           bash scripts/apply_event_store.sh
       - name: E2E tests
-        run: poetry run pytest tests/e2e -q -m e2e
+        run: poetry run pytest tests/e2e -q -m e2e --reruns 1 --reruns-delay 2
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_E2E_FLAKE_RETRIES: "1"

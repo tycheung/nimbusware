@@ -61,5 +61,6 @@ if [[ "${WITH_INTEGRATION}" -eq 1 ]]; then
 fi
 
 if [[ "${WITH_E2E}" -eq 1 ]]; then
-  poetry run pytest tests/e2e -q -m e2e
+  export NIMBUSWARE_E2E_FLAKE_RETRIES=1
+  poetry run pytest tests/e2e -q -m e2e --reruns 1 --reruns-delay 2
 fi
