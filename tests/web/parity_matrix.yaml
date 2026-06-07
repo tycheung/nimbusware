@@ -125,6 +125,9 @@ admin:
   - id: integration_adapter_run
     web: true
     notes: Run detail IntegrationAdapterPanel via admin BFF
+  - id: launch_eval_scorecard_admin
+    web: true
+    notes: Run detail LaunchScorecardPanel loads launch_eval.completed from timeline
   - id: bundle_outcome_analytics
     web: true
     notes: Metrics page BundleOutcomePanel via bundle-outcomes API

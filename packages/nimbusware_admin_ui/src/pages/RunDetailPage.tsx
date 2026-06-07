@@ -7,6 +7,7 @@ import { MaintenanceEventsPanel } from "../components/MaintenanceEventsPanel";
 import { ProbationNoticePanel } from "../components/ProbationNoticePanel";
 import { ResearchPanel } from "../components/ResearchPanel";
 import { IntegrationAdapterPanel } from "../components/IntegrationAdapterPanel";
+import { LaunchScorecardPanel } from "../components/LaunchScorecardPanel";
 import { StitchSummaryPanel } from "../components/StitchSummaryPanel";
 import { TheaterPanel } from "../components/TheaterPanel";
 import { TimelineAccordion } from "../components/TimelineAccordion";
@@ -34,6 +35,12 @@ export function RunDetailPage({ id }: { id?: string }) {
     { key: string; run_a: string; run_b: string }[]
   >([]);
   const [executeRoleId, setExecuteRoleId] = useState("planner");
+
+  async function refreshTimeline() {
+    if (!id) return;
+    const body = await apiJson<Record<string, unknown>>(`/runs/${id}/timeline`);
+    setTimeline(body);
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -207,6 +214,12 @@ export function RunDetailPage({ id }: { id?: string }) {
       <StitchSummaryPanel runId={id} />
       <h3>Integration adapter</h3>
       <IntegrationAdapterPanel runId={id} />
+      <h3>Launch eval</h3>
+      <LaunchScorecardPanel
+        runId={id}
+        timeline={timeline}
+        onTimelineRefresh={refreshTimeline}
+      />
       <h3>Probation notices</h3>
       <ProbationNoticePanel rows={findings} />
       <h3>Findings</h3>

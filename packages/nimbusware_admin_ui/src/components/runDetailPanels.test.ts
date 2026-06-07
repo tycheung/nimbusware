@@ -20,4 +20,21 @@ describe("run detail panel contracts", () => {
     expect(campaign.workflow_profile === "campaign_micro_slice").toBe(true);
     expect(defaultRun.workflow_profile === "campaign_micro_slice").toBe(false);
   });
+
+  it("launch scorecard reads latest launch_eval.completed metadata", async () => {
+    const { scorecardFromTimeline } = await import("./launchScorecard");
+    const timeline = {
+      events: [
+        {
+          event_type: "stage.passed",
+          payload: { stage_name: "launch_eval.completed" },
+          metadata: { aggregate: 0.82, passed: true, findings: ["ok"] },
+        },
+      ],
+    };
+    const card = scorecardFromTimeline(timeline);
+    expect(card?.aggregate).toBe(0.82);
+    expect(card?.passed).toBe(true);
+    expect(card?.findings).toEqual(["ok"]);
+  });
 });
