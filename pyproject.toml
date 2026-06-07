@@ -101,6 +101,7 @@ markers = [
   "e2e_journey: multi-step operator journey (TestClient)",
   "e2e_stack: requires live API subprocess and/or Postgres stack test",
   "e2e_fixture_repo: uses tests/fixtures/repos copy",
+  "slice_e2e: slice.e2e workflow gate (requires NIMBUSWARE_SLICE_E2E_COMMAND in CI)",
   "web: web UI parity matrix and static/API smoke (tests/web)",
   "benchmark: pytest-benchmark fleet harness (fo206)",
   "slow: long-running tests excluded from default CI unit job",

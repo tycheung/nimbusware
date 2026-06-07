@@ -52,6 +52,11 @@ jobs:
           rm -f .ci_coverage.json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+      - name: slice.e2e CI gate
+        run: poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
+        env:
+          NIMBUSWARE_SLICE_E2E_COMMAND: 'python -c "print(''ok'')"'
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
 
   web:
     runs-on: ubuntu-latest

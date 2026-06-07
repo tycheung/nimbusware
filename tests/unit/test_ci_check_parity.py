@@ -17,6 +17,7 @@ _CRITICAL_STEPS = (
     "pip-audit",
     "pytest tests",
     "coverage_package_floors.py",
+    "test_slice_e2e_workflow.py",
 )
 
 

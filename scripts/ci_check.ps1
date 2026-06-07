@@ -39,6 +39,12 @@ poetry run python scripts/coverage_package_floors.py --report $CovJson
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Remove-Item -Force $CovJson -ErrorAction SilentlyContinue
 
+if (-not $env:NIMBUSWARE_SLICE_E2E_COMMAND) {
+    $env:NIMBUSWARE_SLICE_E2E_COMMAND = 'python -c "print(''ok'')"'
+}
+poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($node) {
     Push-Location (Join-Path $Root "packages\nimbusware_maker_web")

@@ -33,6 +33,9 @@ poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
 poetry run python scripts/coverage_package_floors.py --report "${COV_JSON}"
 rm -f "${COV_JSON}"
 
+export NIMBUSWARE_SLICE_E2E_COMMAND="${NIMBUSWARE_SLICE_E2E_COMMAND:-python -c \"print('ok')\"}"
+poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
+
 if [[ "${SKIP_WEB}" -eq 0 ]] && command -v node >/dev/null 2>&1; then
   if [[ -f packages/nimbusware_maker_web/package.json ]]; then
     (cd packages/nimbusware_maker_web && npm ci --silent && npm test --silent)

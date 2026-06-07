@@ -8,7 +8,12 @@ from e2e.harness.journey import JourneyClient
 from e2e.harness.timeline import load_golden_timeline
 from e2e.harness.workspace import copy_fixture_repo
 
-pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_repo]
+pytestmark = [
+    pytest.mark.e2e,
+    pytest.mark.e2e_journey,
+    pytest.mark.e2e_fixture_repo,
+    pytest.mark.slice_e2e,
+]
 
 
 def test_micro_slice_web_profile_loads() -> None:
