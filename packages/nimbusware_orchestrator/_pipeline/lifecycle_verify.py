@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+
 from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
@@ -14,6 +16,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     emit_stub_implementation_critique_panel,
     execute_implementation_critique_llm,
     get_run_queue,
+    parallel_critics_enabled,
     parallel_group_members,
     parallel_writers_enabled,
     refactor_post_stitch_gate_failed,
@@ -181,27 +184,66 @@ class LifecycleVerifyMixin:
         performance_gate_fail = False
         network_gate_fail = False
         refactor_gate_fail = False
+        gov_meta: dict[str, Any] | None = None
+        for row in self._store.list_run_events(str(run_id)):
+            if row.get("event_type") != "run.created":
+                continue
+            raw = (row.get("metadata") or {}).get("resource_governor")
+            gov_meta = raw if isinstance(raw, dict) else None
+            break
         if not skip_fast_matrix:
-            security_gate_fail = self._emit_security_critique_optional(
-                run_id,
-                workspace=workspace,
-                workflow_profile=wf_prof,
-                sg_snapshot=sg_snapshot,
-            )
-            if not security_gate_fail:
-                performance_gate_fail = self._emit_performance_critique_optional(
+            if parallel_critics_enabled(
+                self._repo_root,
+                wf_prof,
+                resource_governor=gov_meta,
+                config_materializer=self._config_materializer,
+            ):
+                with ThreadPoolExecutor(max_workers=3) as pool:
+                    sec_f = pool.submit(
+                        self._emit_security_critique_optional,
+                        run_id,
+                        workspace=workspace,
+                        workflow_profile=wf_prof,
+                        sg_snapshot=sg_snapshot,
+                    )
+                    perf_f = pool.submit(
+                        self._emit_performance_critique_optional,
+                        run_id,
+                        workspace=workspace,
+                        workflow_profile=wf_prof,
+                        sg_snapshot=sg_snapshot,
+                    )
+                    net_f = pool.submit(
+                        self._emit_network_resilience_critique_optional,
+                        run_id,
+                        workspace=workspace,
+                        workflow_profile=wf_prof,
+                        sg_snapshot=sg_snapshot,
+                    )
+                    security_gate_fail = sec_f.result()
+                    performance_gate_fail = perf_f.result()
+                    network_gate_fail = net_f.result()
+            else:
+                security_gate_fail = self._emit_security_critique_optional(
                     run_id,
                     workspace=workspace,
                     workflow_profile=wf_prof,
                     sg_snapshot=sg_snapshot,
                 )
-            if not security_gate_fail and not performance_gate_fail:
-                network_gate_fail = self._emit_network_resilience_critique_optional(
-                    run_id,
-                    workspace=workspace,
-                    workflow_profile=wf_prof,
-                    sg_snapshot=sg_snapshot,
-                )
+                if not security_gate_fail:
+                    performance_gate_fail = self._emit_performance_critique_optional(
+                        run_id,
+                        workspace=workspace,
+                        workflow_profile=wf_prof,
+                        sg_snapshot=sg_snapshot,
+                    )
+                if not security_gate_fail and not performance_gate_fail:
+                    network_gate_fail = self._emit_network_resilience_critique_optional(
+                        run_id,
+                        workspace=workspace,
+                        workflow_profile=wf_prof,
+                        sg_snapshot=sg_snapshot,
+                    )
             if not security_gate_fail and not performance_gate_fail and not network_gate_fail:
                 refactor_gate_fail = self._emit_refactor_stage_optional(
                     run_id,

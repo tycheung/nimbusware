@@ -200,6 +200,7 @@ from nimbusware_orchestrator.workflow_network_resilience_critique import (
     network_resilience_critique_llm_branch_effective,
     parse_network_resilience_critique_workflow_block,
 )
+from nimbusware_orchestrator.workflow_parallel_critics import parallel_critics_enabled
 from nimbusware_orchestrator.workflow_parallel_writers import (
     parallel_writers_enabled,
     test_writer_llm_body_enabled,
@@ -467,6 +468,7 @@ __all__ = (
     "network_resilience_critique_llm_branch_effective",
     "os",
     "parallel_group_members",
+    "parallel_critics_enabled",
     "parallel_writers_enabled",
     "parse_agent_evaluator_workflow_block",
     "parse_escalation_workflow_block",
