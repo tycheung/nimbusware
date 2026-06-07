@@ -4,6 +4,7 @@ import os
 import socket
 import subprocess
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -71,6 +72,46 @@ def start_api_subprocess(
     stack = StackProcess(proc=proc, port=chosen, base_url=f"http://127.0.0.1:{chosen}")
     stack.wait_ready()
     return stack
+
+
+@dataclass
+class InProcessDispatchWorker:
+    """Background worker thread sharing the API process queue (memory dispatch mode)."""
+
+    thread: threading.Thread
+    stop: threading.Event
+
+    def join(self, timeout: float = 15.0) -> None:
+        self.stop.set()
+        self.thread.join(timeout=timeout)
+
+
+def start_inprocess_dispatch_worker(
+    orchestrator: object,
+    queue: object,
+    *,
+    idle_sleep_seconds: float = 0.05,
+) -> InProcessDispatchWorker:
+    """Poll the run queue in a daemon thread until ``stop`` is set."""
+    import threading
+
+    from nimbusware_orchestrator.run_worker import run_worker_loop
+
+    stop = threading.Event()
+
+    def _poll() -> None:
+        while not stop.is_set():
+            run_worker_loop(
+                queue,  # type: ignore[arg-type]
+                orchestrator,  # type: ignore[arg-type]
+                max_tasks=1,
+                max_idle_loops=None,
+                idle_sleep_seconds=idle_sleep_seconds,
+            )
+
+    thread = threading.Thread(target=_poll, daemon=True, name="nimbusware-dispatch-worker")
+    thread.start()
+    return InProcessDispatchWorker(thread=thread, stop=stop)
 
 
 def stop_api_subprocess(stack: StackProcess) -> None:
