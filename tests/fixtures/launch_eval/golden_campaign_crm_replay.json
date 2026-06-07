@@ -1,0 +1,24 @@
+{
+  "workspace_fixture": "tiny_python_app",
+  "run_events": [
+    {
+      "event_type": "run.created",
+      "metadata": {
+        "workflow_profile": "micro_slice",
+        "requirements": {
+          "business_prompt": "Build a minimal CRM with user authentication and contact list"
+        }
+      }
+    }
+  ],
+  "expected_attach_context": {
+    "workflow_profile": "micro_slice",
+    "prompt_id": "basic_crm"
+  },
+  "min_aggregate": 2.5,
+  "min_testability": 3.0,
+  "min_security": 5.0,
+  "min_maturity": 2.0,
+  "min_maintainability": 4.0,
+  "require_passed": false
+}
