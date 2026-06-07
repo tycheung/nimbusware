@@ -76,3 +76,15 @@ Before declaring Redis fleet dispatch production-ready:
 3. Verify worker heartbeat file or pod logs show monotonic `processed` counts (`scripts/run_dispatch_worker.py --heartbeat-path /tmp/worker.json`).
 4. Restart one worker mid-queue; confirm remaining workers drain pending tasks without duplicate side effects (tasks are acked after processing).
 5. Roll API pods after secret rotation; confirm Helm `checksum/secrets` triggers worker rollout.
+
+## Multi-node production soak
+
+For fleets with three or more worker nodes sharing one Redis URL:
+
+1. Start `N` workers (`N >= 3`) on distinct hosts or pods with identical `NIMBUSWARE_REDIS_URL` and `NIMBUSWARE_RUN_DISPATCH=redis`.
+2. Enqueue campaign verify load for 60+ minutes; confirm each worker heartbeat shows increasing `processed` without stuck in-flight entries.
+3. Kill one worker at random intervals; verify queue depth recovers and no task executes twice (check run event dedupe).
+4. Compare `GET /v1/enterprise/fleet-worker/metrics` queue depth against sum of per-worker heartbeat `processed` deltas.
+5. For Redis Sentinel or clustered deployments, point all workers at the same logical primary URL; avoid split-brain by using one compose profile or Helm release per environment.
+
+Integration reference: `tests/integration/test_redis_dispatch_worker_stack.py` and `tests/unit/test_run_dispatch.py::test_redis_dispatch_worker_loop_drains_multiple_tasks`.
