@@ -93,6 +93,37 @@ def candidate_to_bundle_entry(candidate: dict[str, Any]) -> dict[str, Any]:
     return {"id": bundle_id, "title": str(title), "tags": tags}
 
 
+def write_stitch_catalog_candidate(
+    repo_root: Path,
+    *,
+    run_id: UUID,
+    manifest_id: str,
+    files_added: list[str],
+    bundle_hints: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Write a catalog candidate after successful stitch apply for integrator review."""
+    hints = dict(bundle_hints or {})
+    candidate_id = str(
+        hints.pop("candidate_id", None) or f"stitch-{manifest_id.replace('-', '')[:12]}"
+    ).strip()
+    title = hints.pop("title", None) or f"Stitch transplant {manifest_id[:8]}"
+    tags_raw = hints.pop("tags", None) or ["stitch", "transplant"]
+    tags = [str(t) for t in tags_raw if t is not None] if isinstance(tags_raw, list) else []
+    return write_catalog_candidate(
+        repo_root,
+        run_id=run_id,
+        candidate_id=candidate_id,
+        bundle_hints={
+            "title": title,
+            "tags": tags,
+            "source": "stitch_applied",
+            "manifest_id": manifest_id,
+            "files_added": list(files_added),
+            **hints,
+        },
+    )
+
+
 def mark_catalog_candidate_promoted(
     repo_root: Path,
     *,

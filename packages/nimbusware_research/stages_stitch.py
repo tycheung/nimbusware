@@ -264,4 +264,12 @@ def emit_stitch_stages_stub(
             ),
         ),
     )
+    from nimbusware_research.bundle_promotion import write_stitch_catalog_candidate
+
+    write_stitch_catalog_candidate(
+        repo_root,
+        run_id=run_id,
+        manifest_id=manifest_id,
+        files_added=files_added,
+    )
     return True
