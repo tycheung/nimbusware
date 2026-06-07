@@ -1,4 +1,4 @@
-# Weekly E2E flake monitor — same reruns as PR e2e job; opens an issue when the run fails.
+# Weekly E2E flake monitor — Postgres e2e with PR flake rerun budget; opens issue on failure.
 name: E2E flake monitor
 
 on:

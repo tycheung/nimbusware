@@ -454,12 +454,12 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (**17** journey tests; one slow stack soak is opt-in). Playwright checks visible Build/Review/Progress/Settings controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **14** specs cover apply-slice, launch scorecard (per-dimension rows), Settings launch check, Admin launch scorecard, multi-slice campaign progress, and full campaign+scorecard replay. Launch-eval parity rows map to specs via [`tests/web/parity_launch_wiring.yaml`](tests/web/parity_launch_wiring.yaml). Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue; long-run stack soak: [`scripts/e2e_stack_soak_runbook.md`](scripts/e2e_stack_soak_runbook.md). Integration tests with live Redis use `tests/integration/test_redis_dispatch_worker_stack.py` (`-m integration`). The default unit CI job runs the `slice.e2e` apply journey when `NIMBUSWARE_SLICE_E2E_COMMAND` is set. PR **e2e** job retries flaky journeys once (`--reruns 1`).
+Layered operator testing lives under `tests/e2e/` (**17** journey tests; one slow stack soak is opt-in). Playwright checks visible Build/Review/Progress/Settings controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **14** specs cover apply-slice, launch scorecard (per-dimension rows), Settings launch check, Admin launch scorecard, multi-slice campaign progress, and full campaign+scorecard replay. Launch-eval parity rows map to specs via [`tests/web/parity_launch_wiring.yaml`](tests/web/parity_launch_wiring.yaml). Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue; long-run stack soak: [`scripts/e2e_stack_soak_runbook.md`](scripts/e2e_stack_soak_runbook.md) (weekly **stack-soak** job in [`.github/workflows/slow_tests.yml`](.github/workflows/slow_tests.yml)). Integration tests with live Redis use `tests/integration/test_redis_dispatch_worker_stack.py` (`-m integration`). The default unit CI job runs the `slice.e2e` apply journey when `NIMBUSWARE_SLICE_E2E_COMMAND` is set. PR **e2e** job retries flaky journeys once (`--reruns 1`); weekly [`.github/workflows/e2e_flake_monitor.yml`](.github/workflows/e2e_flake_monitor.yml) re-runs the same Postgres e2e suite and opens an issue on failure.
 
 | Layer | Location | CI |
 |-------|----------|-----|
 | L1 Journey API | `tests/e2e/journeys/` + `tests/e2e/harness/` | PR **e2e** job (`-m e2e`) |
-| L2 Stack | `tests/e2e/harness/stack.py` | `-m "e2e_stack and integration"` |
+| L2 Stack | `tests/e2e/harness/stack.py` | `-m "e2e_stack and integration"`; weekly stack-soak |
 | L3 Web UI | `tests/e2e/web/` (Playwright) | PR **web** job |
 
 ```bash
