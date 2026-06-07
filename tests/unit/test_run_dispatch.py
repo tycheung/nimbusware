@@ -122,6 +122,31 @@ def test_redis_run_queue_enqueue_dequeue_ack() -> None:
     assert q.ack(task.task_id) is False
 
 
+@patch.dict(
+    os.environ,
+    {"NIMBUSWARE_RUN_DISPATCH": "redis", "NIMBUSWARE_REDIS_URL": "redis://example"},
+    clear=False,
+)
+def test_redis_dispatch_worker_loop_drains_verify() -> None:
+    fake = _FakeRedis()
+    queue = RedisRunQueue("redis://example", client=fake)
+    set_run_queue(queue)
+    orch, mem = make_dev_orchestrator()
+    rid = orch.create_run("default")
+    queue.enqueue(RunDispatchTask(run_id=str(rid), step="verify", payload={}))
+    with patch(
+        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
+        return_value=(0, "ok"),
+    ):
+        processed = run_worker_loop(queue, orch, max_tasks=1, idle_sleep_seconds=0.0)
+    assert processed == 1
+    assert any(
+        r.get("event_type") == "stage.started"
+        and (r.get("payload") or {}).get("stage_name") == "implementation"
+        for r in mem.list_run_events(str(rid))
+    )
+
+
 @patch.dict(os.environ, {"NIMBUSWARE_RUN_DISPATCH": "memory"}, clear=False)
 def test_worker_loop_processes_verify_tasks() -> None:
     queue = InMemoryRunQueue()

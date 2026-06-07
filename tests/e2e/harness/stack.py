@@ -100,6 +100,47 @@ def start_inprocess_dispatch_worker(
     return InProcessDispatchWorker(thread=worker.thread, stop=worker.stop)
 
 
+@dataclass
+class WorkerProcess:
+    proc: subprocess.Popen[bytes]
+
+
+def start_worker_subprocess(
+    repo_root: Path,
+    *,
+    env: dict[str, str] | None = None,
+) -> WorkerProcess:
+    merged = os.environ.copy()
+    merged.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
+    merged.setdefault("NIMBUSWARE_REPO_ROOT", str(repo_root))
+    if env:
+        merged.update(env)
+    cmd = [
+        sys.executable,
+        str(repo_root / "scripts" / "run_dispatch_worker.py"),
+        "--idle-sleep-seconds",
+        "0.05",
+    ]
+    proc = subprocess.Popen(
+        cmd,
+        cwd=str(repo_root),
+        env=merged,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return WorkerProcess(proc=proc)
+
+
+def stop_worker_subprocess(worker: WorkerProcess) -> None:
+    if worker.proc.poll() is None:
+        worker.proc.terminate()
+        try:
+            worker.proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            worker.proc.kill()
+            worker.proc.wait(timeout=5)
+
+
 def stop_api_subprocess(stack: StackProcess) -> None:
     if stack.proc.poll() is None:
         stack.proc.terminate()
