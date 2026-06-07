@@ -89,7 +89,7 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Doc index: [docs/README.md](docs/README.md)
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
-- Deploy: `docs/deploy/`
+- Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
 - Optional docstring hygiene: `poetry run python scripts/trim_redundant_docstrings.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

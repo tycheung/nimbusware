@@ -1,4 +1,4 @@
-"""Delivery backlog generation (stub and LLM modes)."""
+"""Delivery backlog generation."""
 
 from __future__ import annotations
 
