@@ -34,9 +34,11 @@ test("admin run detail launch scorecard panel", async ({ page, request }) => {
   const launchEval = await request.post(`/v1/runs/${runId}/maker/launch-eval`, { headers });
   expect(launchEval.ok()).toBeTruthy();
 
-  await page.goto("/v1/admin/app/");
-  await page.evaluate((token) => sessionStorage.setItem("nimbusware_admin_token", token), adminToken);
+  await page.addInitScript((token) => {
+    sessionStorage.setItem("nimbusware_admin_token", token);
+  }, adminToken);
   await page.goto(`/v1/admin/app/runs/${runId}`);
-  await expect(page.getByTestId("admin-launch-scorecard-panel")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "Launch eval" })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("admin-launch-scorecard-panel")).toBeVisible();
   await expect(page.getByTestId("admin-launch-scorecard-panel")).toContainText("aggregate");
 });

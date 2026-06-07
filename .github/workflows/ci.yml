@@ -78,6 +78,7 @@ jobs:
         run: |
           cd packages/nimbusware_admin_ui
           npm ci
+          npm run build
           npm test
       - name: Playwright
         run: |

@@ -13,6 +13,19 @@ import { HardwarePage } from "./pages/HardwarePage";
 import { ProjectsPage } from "./pages/ProjectsPage";
 import { loadBootstrap, type Bootstrap } from "./api/client";
 
+const ADMIN_APP_BASE = "/v1/admin/app";
+
+function adminRouterUrl(): string {
+  const path = window.location.pathname;
+  if (path === ADMIN_APP_BASE || path === `${ADMIN_APP_BASE}/`) {
+    return "/runs";
+  }
+  if (path.startsWith(`${ADMIN_APP_BASE}/`)) {
+    return path.slice(ADMIN_APP_BASE.length) || "/runs";
+  }
+  return path;
+}
+
 export function App() {
   const [boot, setBoot] = useState<Bootstrap | null>(null);
 
@@ -47,7 +60,7 @@ export function App() {
         {fleetUi ? <a href="/v1/admin/app/fleet">Fleet</a> : null}
       </nav>
       <main>
-        <Router>
+        <Router url={adminRouterUrl()}>
           <RunListPage path="/runs" />
           <RunDetailPage path="/runs/:id" />
           <ProjectsPage path="/projects" />

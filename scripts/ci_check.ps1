@@ -57,10 +57,12 @@ if ($node) {
     }
     Pop-Location
     $adminUi = Join-Path $Root "packages\nimbusware_admin_ui"
-    if ((Test-Path (Join-Path $adminUi "package.json")) -and (Test-Path (Join-Path $adminUi "dist\index.html"))) {
+    if (Test-Path (Join-Path $adminUi "package.json")) {
         Push-Location $adminUi
         npm ci --silent 2>$null
         if ($LASTEXITCODE -eq 0) {
+            npm run build --silent
+            if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
             npm test --silent
             if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
         }

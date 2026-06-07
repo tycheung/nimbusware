@@ -40,8 +40,8 @@ if [[ "${SKIP_WEB}" -eq 0 ]] && command -v node >/dev/null 2>&1; then
   if [[ -f packages/nimbusware_maker_web/package.json ]]; then
     (cd packages/nimbusware_maker_web && npm ci --silent && npm test --silent)
   fi
-  if [[ -f packages/nimbusware_admin_ui/package.json && -f packages/nimbusware_admin_ui/dist/index.html ]]; then
-    (cd packages/nimbusware_admin_ui && npm ci --silent && npm test --silent)
+  if [[ -f packages/nimbusware_admin_ui/package.json ]]; then
+    (cd packages/nimbusware_admin_ui && npm ci --silent && npm run build --silent && npm test --silent)
   fi
   if [[ -f tests/e2e/web/package.json ]] && command -v npx >/dev/null 2>&1; then
     (cd tests/e2e/web && npm ci --silent && npx playwright install chromium && npm test --silent)
