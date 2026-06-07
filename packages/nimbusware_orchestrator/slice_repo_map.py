@@ -99,6 +99,59 @@ def _resolve_import_to_path(repo_root: Path, module: str, *, level: int = 0) -> 
     return None
 
 
+def _package_for_path(repo_root: Path, path: Path) -> str | None:
+    mod = _module_name_for_path(repo_root, path)
+    if not mod:
+        return None
+    if path.name == "__init__.py":
+        return mod
+    parts = mod.split(".")
+    return ".".join(parts[:-1]) if len(parts) > 1 else None
+
+
+def _resolve_relative_module(package: str | None, level: int, module: str | None) -> str | None:
+    if level <= 0:
+        return module
+    if not package:
+        return None
+    parts = package.split(".")
+    if level > len(parts):
+        return None
+    anchor = parts[: len(parts) - level + 1]
+    if module:
+        anchor.extend(module.split("."))
+    return ".".join(anchor) if anchor else None
+
+
+def _imports_resolved(repo_root: Path, path: Path) -> list[str]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except (OSError, SyntaxError, UnicodeDecodeError):
+        return []
+    package = _package_for_path(repo_root, path)
+    mods: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                mods.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            resolved = _resolve_relative_module(package, node.level, node.module)
+            if not node.names:
+                if resolved:
+                    mods.append(resolved)
+                continue
+            for alias in node.names:
+                if alias.name == "*":
+                    if resolved:
+                        mods.append(resolved)
+                    continue
+                if resolved:
+                    mods.append(f"{resolved}.{alias.name}")
+                elif node.level == 0 and alias.name:
+                    mods.append(alias.name)
+    return mods
+
+
 def _imports_in_file(path: Path) -> list[str]:
     try:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -160,7 +213,7 @@ def expand_target_paths(
 
     extras: list[str] = []
     for path in target_modules.values():
-        for imp in _imports_in_file(path):
+        for imp in _imports_resolved(root, path):
             dest = _resolve_import_to_path(root, imp)
             if dest is None:
                 continue
@@ -182,7 +235,7 @@ def expand_target_paths(
             other_mod = _module_name_for_path(root, other)
             if not other_mod or other_mod in target_modules:
                 continue
-            for imp in _imports_in_file(other):
+            for imp in _imports_resolved(root, other):
                 for tmod in target_modules:
                     if imp == tmod.split(".")[0] or imp.startswith(tmod):
                         try:
@@ -221,7 +274,7 @@ def build_import_graph_excerpt(
             target_modules[mod] = p
 
     for mod, path in target_modules.items():
-        for imp in _imports_in_file(path):
+        for imp in _imports_resolved(root, path):
             dest = _resolve_import_to_path(root, imp)
             if dest is None:
                 continue

@@ -44,6 +44,18 @@ def test_expand_target_paths_includes_import_neighbor(tmp_path: Path) -> None:
     assert "pkg/b.py" in expanded
 
 
+def test_expand_target_paths_resolves_relative_import(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg" / "sub"
+    pkg.mkdir(parents=True)
+    (pkg.parent / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("from . import b\n", encoding="utf-8")
+    (pkg / "b.py").write_text("x = 1\n", encoding="utf-8")
+    expanded = expand_target_paths(tmp_path, ["pkg/sub/a.py"], max_neighbors=2)
+    assert "pkg/sub/a.py" in expanded
+    assert "pkg/sub/b.py" in expanded
+
+
 def test_repo_map_respects_char_cap(tmp_path: Path) -> None:
     for i in range(20):
         (tmp_path / f"file_{i}.py").write_text(f"x{i} = {i}\n", encoding="utf-8")
