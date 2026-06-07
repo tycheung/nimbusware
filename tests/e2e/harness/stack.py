@@ -76,8 +76,6 @@ def start_api_subprocess(
 
 @dataclass
 class InProcessDispatchWorker:
-    """Background worker thread sharing the API process queue (memory dispatch mode)."""
-
     thread: threading.Thread
     stop: threading.Event
 
@@ -92,7 +90,6 @@ def start_inprocess_dispatch_worker(
     *,
     idle_sleep_seconds: float = 0.05,
 ) -> InProcessDispatchWorker:
-    """Poll the run queue in a daemon thread until ``stop`` is set."""
     from nimbusware_orchestrator.run_worker import start_embedded_dispatch_worker
 
     worker = start_embedded_dispatch_worker(

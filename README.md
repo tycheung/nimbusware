@@ -92,6 +92,9 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. See
 | `NIMBUSWARE_BACKLOG_MAX_SLICES` | 500 | Max slices in campaign delivery backlog |
 | `NIMBUSWARE_BACKLOG_GENERATOR_MODEL` | (empty) | Ollama model for LLM backlog; empty uses stub |
 | `NIMBUSWARE_RUN_DISPATCH` | (off) | `memory` or `redis` to enable campaign tick worker |
+| `NIMBUSWARE_EMBED_DISPATCH_WORKER` | 0 | Start in-process dispatch worker thread during API lifespan (memory queue; stack E2E) |
+| `NIMBUSWARE_INTEGRATOR_PROBE_MAX_ATTEMPTS` | 3 | Max HTTP health probe attempts for api_bridge integrator sync |
+| `NIMBUSWARE_INTEGRATOR_PROBE_RETRY_DELAY` | 0.25 | Base seconds between integrator probe retries (exponential backoff) |
 | `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff block |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in long campaigns |
@@ -449,7 +452,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (**14** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress.
+Layered operator testing lives under `tests/e2e/` (**15** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress. Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue without a separate worker binary.
 
 | Layer | Location | CI |
 |-------|----------|-----|
@@ -473,11 +476,11 @@ poetry run python scripts/launch_eval.py path/to/workspace --json
 poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in Ollama findings
 ```
 
-Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Both render a structured table (aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`).
+Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
 
 Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
-Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Maker Review tab loads `launch_eval.completed` scorecards from the timeline (parity row `launch_eval_scorecard`).
+Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml). Weekly CI scores `tiny_python_app` and `tiny_web_app` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Parity rows: Maker `launch_eval_scorecard`, Admin `launch_eval_scorecard_admin`.
 
 ## Testing
 
@@ -525,7 +528,7 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
 | `NIMBUSWARE_RUN_DISPATCH` / `NIMBUSWARE_REDIS_URL` | install | Fleet worker dispatch |
 
-Full catalog: `poetry run python scripts/audit_operator_env.py` (155+ keys).
+Full catalog: `poetry run python scripts/audit_operator_env.py` (198+ keys).
 
 ## License
 

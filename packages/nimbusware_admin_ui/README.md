@@ -26,6 +26,10 @@ For `workflow_profile=campaign_micro_slice`, `RunDetailPage` loads:
 
 Panels: `CampaignProgressPanel`, `BacklogTreePanel`, `MaintenanceEventsPanel`.
 
+## Launch eval
+
+`RunDetailPage` includes `LaunchScorecardPanel` — loads `launch_eval.completed` from the run timeline, **Run launch check** via `POST /v1/runs/{id}/maker/launch-eval`, and optional LLM dimension rows when present on the scorecard metadata.
+
 ## BFF
 
 Admin tables use `/v1/admin/ui/*` BFF routes; run detail uses `/v1/runs/*` and campaign routes above.

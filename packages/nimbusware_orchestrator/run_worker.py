@@ -10,7 +10,6 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from uuid import UUID
 
 from nimbusware_orchestrator.pipeline import RunOrchestrator
 from nimbusware_orchestrator.run_dispatch import RunQueuePort, get_run_queue
@@ -95,7 +94,6 @@ def start_embedded_dispatch_worker(
     *,
     idle_sleep_seconds: float = 0.05,
 ) -> EmbeddedDispatchWorker:
-    """Poll the run queue in a daemon thread until ``shutdown`` is called."""
     stop = threading.Event()
 
     def _poll() -> None:
@@ -179,7 +177,6 @@ def _write_worker_heartbeat(
 
 
 def main(argv: list[str] | None = None) -> int:
-    _ = UUID  # keep pyright/mypy happy for import set parity with orchestrator typing
     ns = _args(argv)
     queue = get_run_queue()
     orch, notify_stop, notify_thread = build_worker_orchestrator()

@@ -10,8 +10,8 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/orchestrator/` | `RunOrchestrator` integration paths |
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
-| `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, in-process dispatch worker) |
-| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker journeys |
+| `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, embed/in-process dispatch worker) |
+| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker (in-process + subprocess embed) journeys |
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences for journey assertions |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
