@@ -1,0 +1,6 @@
+id: static_site
+label: Static marketing site
+business_prompt: >
+  Build a minimal static marketing site with index page and README.
+workflow_profile: micro_slice_web
+min_aggregate_score: 5.0

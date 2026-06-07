@@ -4,6 +4,8 @@ prompts:
     path: prompts/basic_crm.yaml
   - id: todo_api
     path: prompts/todo_api.yaml
+  - id: static_site
+    path: prompts/static_site.yaml
 
 default_workspaces:
   - tests/fixtures/repos/tiny_python_app
