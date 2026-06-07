@@ -78,7 +78,10 @@ maker:
     web: true
   - id: launch_eval_scorecard
     web: true
-    notes: Review tab loads launch_eval.completed scorecard from timeline
+    notes: Review tab loads launch_eval.completed scorecard from timeline; per-dimension data-testid rows
+  - id: settings_launch_check
+    web: true
+    notes: Settings tab Run launch check via POST /maker/launch-eval
   - id: settings_catalog_keys
     web: true
 admin:

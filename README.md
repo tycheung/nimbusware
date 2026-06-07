@@ -452,7 +452,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (**16** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **16** specs cover apply-slice, launch scorecard, multi-slice campaign progress, and full campaign+scorecard replay (`maker_full_replay.spec.ts`). Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue; integration tests with live Redis use `tests/integration/test_redis_dispatch_worker_stack.py` (`-m integration`). The default unit CI job runs the `slice.e2e` apply journey when `NIMBUSWARE_SLICE_E2E_COMMAND` is set.
+Layered operator testing lives under `tests/e2e/` (**16** journey tests). Playwright checks visible Build/Review/Progress/Settings controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **17** specs cover apply-slice, launch scorecard (per-dimension rows), Settings launch check, multi-slice campaign progress, and full campaign+scorecard replay. Stack subprocess tests set `NIMBUSWARE_EMBED_DISPATCH_WORKER=1` so the API process drains the memory queue; integration tests with live Redis use `tests/integration/test_redis_dispatch_worker_stack.py` (`-m integration`). The default unit CI job runs the `slice.e2e` apply journey when `NIMBUSWARE_SLICE_E2E_COMMAND` is set. PR **e2e** job retries flaky journeys once (`--reruns 1`).
 
 | Layer | Location | CI |
 |-------|----------|-----|
@@ -479,11 +479,11 @@ poetry run python scripts/launch_eval.py --run-id <uuid> --json   # Postgres att
 poetry run python scripts/launch_eval.py --run-id <uuid> --run-events events.json --json
 ```
 
-Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace, emits `launch_eval.completed` on the timeline, and returns `attach_context` when the run matches a catalog prompt. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
+Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace, emits `launch_eval.completed` on the timeline, and returns `attach_context` when the run matches a catalog prompt. The Maker Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Maker **Settings** includes the same **Run launch check** action for any run ID. Admin **Run detail** includes the same **Run launch check** control and structured scorecard panel. Both UIs render aggregate + rubric dimensions (per-row `data-testid`) + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`.
 
 Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
-Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml) (`basic_crm`, `todo_api`, `static_site`). Golden replay fixtures: [`tests/fixtures/launch_eval/`](tests/fixtures/launch_eval/) (workspace scorecards + `golden_campaign_crm_replay.json` recorded campaign attach). Weekly CI runs `launch_eval.py --matrix` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Parity rows: Maker `launch_eval_scorecard`, Admin `launch_eval_scorecard_admin`.
+Prompt catalog: [`configs/launch_eval/prompts/`](configs/launch_eval/prompts/) and [`configs/launch_eval/catalog.yaml`](configs/launch_eval/catalog.yaml) (`basic_crm`, `todo_api`, `static_site`). Golden replay fixtures: [`tests/fixtures/launch_eval/`](tests/fixtures/launch_eval/) (workspace scorecards + campaign manifest with `crm` and `todo_api` snapshots). Weekly CI runs `launch_eval.py --matrix` ([`.github/workflows/launch_eval.yml`](.github/workflows/launch_eval.yml)). Parity rows: Maker `launch_eval_scorecard`, Admin `launch_eval_scorecard_admin`.
 
 The `micro_slice_web` workflow profile enables `slice.e2e` during Maker apply when `NIMBUSWARE_SLICE_E2E_COMMAND` is set (or Playwright is on PATH).
 

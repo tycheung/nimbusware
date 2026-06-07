@@ -16,9 +16,9 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences and required stage names (`micro_slice_web_apply.json`, etc.) |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
-| `tests/fixtures/launch_eval/` | Golden scorecard floors + recorded campaign CRM replay (`golden_campaign_crm_replay.json`) |
+| `tests/fixtures/launch_eval/` | Golden scorecard floors + campaign replay manifest (`golden_replay_manifest.json`, CRM + todo_api snapshots) |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) |
-| `tests/e2e/web/` | Playwright smoke, apply-slice flow, launch scorecard UI replay, campaign progress + multi-slice + full replay (`maker_apply_flow.spec.ts`, `maker_launch_scorecard.spec.ts`, `maker_campaign_progress.spec.ts`, `maker_campaign_multitick.spec.ts`, `maker_full_replay.spec.ts`; sets `NIMBUSWARE_API_BASE` to test server port) |
+| `tests/e2e/web/` | Playwright smoke, apply-slice, launch scorecard (dimension rows), Settings launch check, campaign progress + full replay (`maker_settings_launch_check.spec.ts`, `maker_full_replay.spec.ts`; sets `NIMBUSWARE_API_BASE` to test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
@@ -42,7 +42,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 - **Per-package floors** (`scripts/coverage_package_floors.py`, ≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections`. Global floor remains 75% on all non-omitted `packages/**` code.
 - **Slow tests:** Orchestrator-heavy API cases use `@pytest.mark.slow` per test; core run create/list/idempotency (`tests/api/test_api_runs.py`) and Maker flows (`tests/api/test_maker_approval_api.py`, `tests/api/test_projects_api.py`) run on every PR.
 - **Integration job:** `-m integration` (event append, config documents, IAM, projections).
-- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres (import smoke + API timeline + L1 journeys when marked `e2e`). Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
+- **E2E job (PR):** `pytest tests/e2e -q -m e2e` with Postgres; `--reruns 1` flake budget via `pytest-rerunfailures` and `NIMBUSWARE_E2E_FLAKE_RETRIES`. Local: `pytest tests/e2e/journeys -m e2e_journey -q` (no Postgres required for TestClient journeys). Opt-in stack: `-m "e2e_stack and integration"`. Operator smoke: `scripts/e2e_smoke.py --profile app` includes journey pytest. Local opt-in: `ci_check.ps1 -WithE2e` or `ci_check.sh --with-e2e` after exporting `NIMBUSWARE_DATABASE_URL`.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** `-m slow`.
 - **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `scripts/launch_eval.py --matrix` on catalog default workspaces; unit coverage in `tests/unit/test_launch_eval_attach_context.py`.
