@@ -56,6 +56,20 @@ def test_expand_target_paths_resolves_relative_import(tmp_path: Path) -> None:
     assert "pkg/sub/b.py" in expanded
 
 
+def test_expand_target_paths_multi_hop_import_chain(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("from pkg import b\n", encoding="utf-8")
+    (pkg / "b.py").write_text("from pkg import c\n", encoding="utf-8")
+    (pkg / "c.py").write_text("x = 1\n", encoding="utf-8")
+    one_hop = expand_target_paths(tmp_path, ["pkg/a.py"], max_neighbors=3, max_hops=1)
+    assert "pkg/b.py" in one_hop
+    assert "pkg/c.py" not in one_hop
+    two_hop = expand_target_paths(tmp_path, ["pkg/a.py"], max_neighbors=3, max_hops=2)
+    assert "pkg/c.py" in two_hop
+
+
 def test_repo_map_respects_char_cap(tmp_path: Path) -> None:
     for i in range(20):
         (tmp_path / f"file_{i}.py").write_text(f"x{i} = {i}\n", encoding="utf-8")

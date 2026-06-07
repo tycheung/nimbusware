@@ -299,7 +299,7 @@ def build_symbol_sketch_with_lsp_fallback(
 
     paths: tuple[str, ...] | list[str] = target_paths
     if expand_neighbors:
-        paths = expand_target_paths(repo_root, target_paths)
+        paths = expand_target_paths(repo_root, target_paths, max_hops=2)
 
     if lsp_enabled:
         lsp_text, reason = build_lsp_symbol_sketch(

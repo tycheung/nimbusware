@@ -180,13 +180,70 @@ def _imports_in_file(path: Path) -> list[str]:
     return mods
 
 
+def _rel_py_path(root: Path, path: Path) -> str | None:
+    try:
+        rel = path.resolve().relative_to(root)
+    except ValueError:
+        return None
+    if rel.suffix != ".py":
+        return None
+    return str(rel).replace("\\", "/")
+
+
+def _forward_neighbor_rels(root: Path, path: Path, *, seen: set[str]) -> list[str]:
+    out: list[str] = []
+    for imp in _imports_resolved(root, path):
+        dest = _resolve_import_to_path(root, imp)
+        if dest is None:
+            continue
+        rel_dest = _rel_py_path(root, dest)
+        if rel_dest and rel_dest not in seen:
+            out.append(rel_dest)
+    return out
+
+
+def _reverse_neighbor_rels(
+    root: Path,
+    target_modules: dict[str, Path],
+    *,
+    seen: set[str],
+    extras: set[str],
+    budget: int,
+) -> list[str]:
+    out: list[str] = []
+    for other in root.rglob("*.py"):
+        if len(out) >= budget:
+            break
+        if any(part in _SKIP_DIR_NAMES for part in other.parts):
+            continue
+        other_mod = _module_name_for_path(root, other)
+        if not other_mod or other_mod in target_modules:
+            continue
+        for imp in _imports_resolved(root, other):
+            for tmod in target_modules:
+                if imp == tmod.split(".")[0] or imp.startswith(tmod):
+                    rel_other = _rel_py_path(root, other)
+                    if (
+                        rel_other
+                        and rel_other not in seen
+                        and rel_other not in extras
+                        and rel_other not in out
+                    ):
+                        out.append(rel_other)
+                    break
+        if len(out) >= budget:
+            break
+    return out
+
+
 def expand_target_paths(
     repo_root: Path,
     target_paths: tuple[str, ...] | list[str],
     *,
     max_neighbors: int = 3,
+    max_hops: int = 1,
 ) -> tuple[str, ...]:
-    """Return target paths plus capped one-hop import neighbors under repo_root."""
+    """Return target paths plus capped import neighbors (BFS up to max_hops)."""
     if max_neighbors <= 0:
         return tuple(str(p).replace("\\", "/") for p in target_paths)
     root = repo_root.resolve()
@@ -203,7 +260,7 @@ def expand_target_paths(
         add(str(rel))
 
     target_modules: dict[str, Path] = {}
-    for rel in ordered:
+    for rel in target_paths:
         path = (root / rel).resolve()
         if not path.is_file() or path.suffix != ".py":
             continue
@@ -212,41 +269,42 @@ def expand_target_paths(
             target_modules[mod] = path
 
     extras: list[str] = []
-    for path in target_modules.values():
-        for imp in _imports_resolved(root, path):
-            dest = _resolve_import_to_path(root, imp)
-            if dest is None:
-                continue
-            try:
-                rel_dest = str(dest.relative_to(root)).replace("\\", "/")
-            except ValueError:
-                continue
-            if rel_dest not in seen:
-                extras.append(rel_dest)
-        if len(extras) >= max_neighbors:
-            break
+    extra_seen: set[str] = set()
+    frontier: list[Path] = list(target_modules.values())
+    hops = max(1, max_hops)
 
-    if len(extras) < max_neighbors:
-        for other in root.rglob("*.py"):
+    for hop in range(hops):
+        if len(extras) >= max_neighbors or not frontier:
+            break
+        next_frontier: list[Path] = []
+        for path in frontier:
             if len(extras) >= max_neighbors:
                 break
-            if any(part in _SKIP_DIR_NAMES for part in other.parts):
-                continue
-            other_mod = _module_name_for_path(root, other)
-            if not other_mod or other_mod in target_modules:
-                continue
-            for imp in _imports_resolved(root, other):
-                for tmod in target_modules:
-                    if imp == tmod.split(".")[0] or imp.startswith(tmod):
-                        try:
-                            rel_other = str(other.relative_to(root)).replace("\\", "/")
-                        except ValueError:
-                            continue
-                        if rel_other not in seen and rel_other not in extras:
-                            extras.append(rel_other)
-                        break
-            if len(extras) >= max_neighbors:
-                break
+            for rel_dest in _forward_neighbor_rels(root, path, seen=seen | extra_seen):
+                if len(extras) >= max_neighbors:
+                    break
+                extras.append(rel_dest)
+                extra_seen.add(rel_dest)
+                dest = (root / rel_dest).resolve()
+                if dest.is_file():
+                    next_frontier.append(dest)
+        if hop == 0 and len(extras) < max_neighbors:
+            remaining = max_neighbors - len(extras)
+            for rel_other in _reverse_neighbor_rels(
+                root,
+                target_modules,
+                seen=seen,
+                extras=extra_seen,
+                budget=remaining,
+            ):
+                extras.append(rel_other)
+                extra_seen.add(rel_other)
+                dest = (root / rel_other).resolve()
+                if dest.is_file():
+                    next_frontier.append(dest)
+                if len(extras) >= max_neighbors:
+                    break
+        frontier = next_frontier
 
     for rel in extras[:max_neighbors]:
         add(rel)
