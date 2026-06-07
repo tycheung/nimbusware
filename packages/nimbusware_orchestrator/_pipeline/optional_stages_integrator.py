@@ -183,6 +183,13 @@ class IntegratorOptionalStagesMixin:
         }
         if selected_bundle_rank is not None:
             gate_meta["selected_bundle_rank"] = selected_bundle_rank
+        from nimbusware_orchestrator.integrator_live_context import (
+            integrator_live_context_from_rows,
+        )
+
+        live_ctx = integrator_live_context_from_rows(rows)
+        if live_ctx:
+            gate_meta["integrator_live_context"] = live_ctx
         verdict = Verdict.PASS if ok else Verdict.FAIL
         from nimbusware_extensions.bundle_memory import (
             build_bundle_outcome_from_gate,
