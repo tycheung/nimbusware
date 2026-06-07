@@ -93,25 +93,14 @@ def start_inprocess_dispatch_worker(
     idle_sleep_seconds: float = 0.05,
 ) -> InProcessDispatchWorker:
     """Poll the run queue in a daemon thread until ``stop`` is set."""
-    import threading
+    from nimbusware_orchestrator.run_worker import start_embedded_dispatch_worker
 
-    from nimbusware_orchestrator.run_worker import run_worker_loop
-
-    stop = threading.Event()
-
-    def _poll() -> None:
-        while not stop.is_set():
-            run_worker_loop(
-                queue,  # type: ignore[arg-type]
-                orchestrator,  # type: ignore[arg-type]
-                max_tasks=1,
-                max_idle_loops=None,
-                idle_sleep_seconds=idle_sleep_seconds,
-            )
-
-    thread = threading.Thread(target=_poll, daemon=True, name="nimbusware-dispatch-worker")
-    thread.start()
-    return InProcessDispatchWorker(thread=thread, stop=stop)
+    worker = start_embedded_dispatch_worker(
+        orchestrator,  # type: ignore[arg-type]
+        queue,  # type: ignore[arg-type]
+        idle_sleep_seconds=idle_sleep_seconds,
+    )
+    return InProcessDispatchWorker(thread=worker.thread, stop=worker.stop)
 
 
 def stop_api_subprocess(stack: StackProcess) -> None:

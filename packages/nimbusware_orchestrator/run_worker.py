@@ -7,6 +7,7 @@ import json
 import os
 import threading
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
@@ -76,6 +77,44 @@ def run_worker_loop(
                 queue=queue,
             )
     return processed
+
+
+@dataclass
+class EmbeddedDispatchWorker:
+    stop: threading.Event
+    thread: threading.Thread
+
+    def shutdown(self, *, timeout: float = 15.0) -> None:
+        self.stop.set()
+        self.thread.join(timeout=timeout)
+
+
+def start_embedded_dispatch_worker(
+    orchestrator: RunOrchestrator,
+    queue: RunQueuePort,
+    *,
+    idle_sleep_seconds: float = 0.05,
+) -> EmbeddedDispatchWorker:
+    """Poll the run queue in a daemon thread until ``shutdown`` is called."""
+    stop = threading.Event()
+
+    def _poll() -> None:
+        while not stop.is_set():
+            run_worker_loop(
+                queue,
+                orchestrator,
+                max_tasks=1,
+                max_idle_loops=None,
+                idle_sleep_seconds=idle_sleep_seconds,
+            )
+
+    thread = threading.Thread(
+        target=_poll,
+        daemon=True,
+        name="nimbusware-embed-dispatch-worker",
+    )
+    thread.start()
+    return EmbeddedDispatchWorker(stop=stop, thread=thread)
 
 
 def _args(argv: list[str] | None = None) -> argparse.Namespace:

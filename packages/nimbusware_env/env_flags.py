@@ -372,6 +372,10 @@ def nimbusware_config_notify_enabled() -> bool:
         return False
 
 
+def nimbusware_embed_dispatch_worker_enabled() -> bool:
+    return env_bool("NIMBUSWARE_EMBED_DISPATCH_WORKER", default=False)
+
+
 def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 

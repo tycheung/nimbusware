@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from nimbusware_env import load_dotenv
 from nimbusware_env.edition import edition, is_enterprise
+from nimbusware_env.env_flags import nimbusware_embed_dispatch_worker_enabled
 
 load_dotenv()
 
@@ -64,6 +65,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.run_queue = get_run_queue()
     else:
         app.state.run_queue = None
+    app.state.embed_dispatch_worker = None
+    if app.state.run_queue is not None and nimbusware_embed_dispatch_worker_enabled():
+        from nimbusware_orchestrator.run_worker import start_embedded_dispatch_worker
+
+        app.state.embed_dispatch_worker = start_embedded_dispatch_worker(
+            app.state.orchestrator,
+            app.state.run_queue,
+        )
     app.state.edition = edition()
     if url:
         try:
@@ -78,6 +87,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        embed_worker = getattr(app.state, "embed_dispatch_worker", None)
+        if embed_worker is not None:
+            embed_worker.shutdown()
         if notify_stop is not None:
             notify_stop.set()
         if notify_thread is not None:

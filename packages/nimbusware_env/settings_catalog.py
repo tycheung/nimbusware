@@ -579,6 +579,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — optional stages",
         ),
         SettingDef(
+            "NIMBUSWARE_EMBED_DISPATCH_WORKER",
+            system,
+            b,
+            "0",
+            "Embed dispatch worker",
+            "Start in-process run-dispatch worker thread during API lifespan (memory queue).",
+            "System — pipeline",
+        ),
+        SettingDef(
             "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER",
             system,
             b,
