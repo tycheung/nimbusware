@@ -449,7 +449,7 @@ Place the binary next to `pyproject.toml`. Build artifacts are gitignored.
 
 ## Operator journey tests (E2E extension)
 
-Layered operator testing lives under `tests/e2e/` (13 journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress.
+Layered operator testing lives under `tests/e2e/` (**14** journey tests). Playwright checks visible Build/Review/Progress controls via route activation (`tests/e2e/web/maker_route_helper.ts`); **15** specs cover apply-slice, launch scorecard, and multi-slice campaign progress.
 
 | Layer | Location | CI |
 |-------|----------|-----|
@@ -473,7 +473,7 @@ poetry run python scripts/launch_eval.py path/to/workspace --json
 poetry run python scripts/launch_eval.py path/to/workspace --json --llm   # opt-in Ollama findings
 ```
 
-Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Review tab **Load scorecard** button renders a structured table (aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`).
+Maker API: `POST /v1/runs/{run_id}/maker/launch-eval` scores the attached workspace and emits `launch_eval.completed` on the timeline. The Review tab **Run launch check** button triggers scoring; **Load scorecard** reads the latest timeline event. Both render a structured table (aggregate + rubric dimensions + optional LLM dimension rows when `NIMBUSWARE_LAUNCH_EVAL_LLM=1`).
 
 Set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` (or `--llm`) for Ollama-backed findings and optional per-dimension scores (`llm_dimensions` on the scorecard); optional `NIMBUSWARE_LAUNCH_EVAL_LLM_MODEL`. Default rubric stays deterministic when LLM is off or unreachable.
 
