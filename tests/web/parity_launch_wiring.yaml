@@ -1,0 +1,6 @@
+# Maps launch-eval parity rows to Playwright specs exercised in CI web job.
+maker:
+  launch_eval_scorecard: tests/e2e/web/maker_launch_scorecard.spec.ts
+  settings_launch_check: tests/e2e/web/maker_settings_launch_check.spec.ts
+admin:
+  launch_eval_scorecard_admin: tests/e2e/web/admin_launch_scorecard.spec.ts
