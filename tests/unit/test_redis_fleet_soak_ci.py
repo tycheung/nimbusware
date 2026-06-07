@@ -24,13 +24,14 @@ def test_slow_tests_workflow_includes_redis_fleet_soak() -> None:
     text = _SLOW.read_text(encoding="utf-8")
     assert "redis-fleet-soak:" in text
     assert "run_redis_fleet_soak_ci.py" in text
-    assert "NIMBUSWARE_REDIS_URL" in text
+    assert "NIMBUSWARE_REDIS_FLEET_URLS" in text
 
 
 def test_redis_fleet_soak_runbook_documents_ci() -> None:
     text = _RUNBOOK.read_text(encoding="utf-8")
     assert "slow_tests.yml" in text
     assert "redis-fleet-soak" in text
+    assert "NIMBUSWARE_REDIS_FLEET_URLS" in text
 
 
 def test_redis_fleet_soak_ci_runner_skips_without_redis(monkeypatch) -> None:
@@ -56,8 +57,45 @@ def test_redis_fleet_soak_ci_runner_invokes_pytest(monkeypatch) -> None:
     monkeypatch.setattr(mod.subprocess, "run", _fake_run)
     summary = mod.run_redis_fleet_soak()
     assert summary["passed"] is True
+    assert summary["node_count"] == 1
     assert calls
     assert any("test_redis_dispatch_worker_stack.py" in part for part in calls[0])
+
+
+def test_redis_fleet_urls_reads_fleet_env(monkeypatch) -> None:
+    mod = _load_runner()
+    monkeypatch.setenv(
+        "NIMBUSWARE_REDIS_FLEET_URLS",
+        "redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0",
+    )
+    assert mod.redis_fleet_urls() == [
+        "redis://127.0.0.1:6379/0",
+        "redis://127.0.0.1:6380/0",
+    ]
+
+
+def test_redis_fleet_soak_runs_all_fleet_nodes(monkeypatch) -> None:
+    mod = _load_runner()
+    seen: list[str] = []
+
+    class _Proc:
+        returncode = 0
+
+    def _fake_run(cmd, **kwargs):  # noqa: ANN001
+        env = kwargs.get("env") or {}
+        seen.append(str(env.get("NIMBUSWARE_REDIS_URL")))
+        return _Proc()
+
+    monkeypatch.setenv(
+        "NIMBUSWARE_REDIS_FLEET_URLS",
+        "redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0",
+    )
+    monkeypatch.setattr(mod, "redis_reachable", lambda _url: True)
+    monkeypatch.setattr(mod.subprocess, "run", _fake_run)
+    summary = mod.run_redis_fleet_soak()
+    assert summary["passed"] is True
+    assert summary["node_count"] == 2
+    assert seen == ["redis://127.0.0.1:6379/0", "redis://127.0.0.1:6380/0"]
 
 
 def test_redis_fleet_soak_runner_main_prints_json_on_skip(monkeypatch, capsys) -> None:

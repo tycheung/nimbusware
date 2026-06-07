@@ -19,6 +19,6 @@ poetry run pytest tests/integration/test_redis_dispatch_worker_stack.py -m "inte
 
 ## CI
 
-Weekly **redis-fleet-soak** job in [`.github/workflows/slow_tests.yml`](../.github/workflows/slow_tests.yml) runs `scripts/run_redis_fleet_soak_ci.py` against a Redis service container (`redis://127.0.0.1:6379/0`). Local runs skip gracefully when Redis is unreachable.
+Weekly **redis-fleet-soak** job in [`.github/workflows/slow_tests.yml`](../.github/workflows/slow_tests.yml) runs `scripts/run_redis_fleet_soak_ci.py` against one or more Redis URLs (`NIMBUSWARE_REDIS_FLEET_URLS`, default `NIMBUSWARE_REDIS_URL`). CI uses two Redis service containers on ports 6379 and 6380. Local runs skip gracefully when Redis is unreachable.
 
 Opt-in integration job only (`@pytest.mark.integration`); not part of default PR unit job. Run before fleet rollouts or after Redis/worker config changes.

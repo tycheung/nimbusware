@@ -24,17 +24,29 @@ def redis_reachable(url: str) -> bool:
         return False
 
 
-def run_redis_fleet_soak(*, repo_root: Path | None = None) -> dict[str, Any]:
-    repo = repo_root or Path(__file__).resolve().parents[1]
-    url = os.environ.get("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0").strip()
-    summary: dict[str, Any] = {"redis_url": url, "skipped": False, "passed": False}
+def redis_fleet_urls() -> list[str]:
+    fleet = os.environ.get("NIMBUSWARE_REDIS_FLEET_URLS", "").strip()
+    if fleet:
+        urls = [part.strip() for part in fleet.split(",") if part.strip()]
+        if urls:
+            return urls
+    default = os.environ.get("NIMBUSWARE_REDIS_URL", "redis://127.0.0.1:6379/0").strip()
+    return [default]
+
+
+def run_redis_fleet_soak_for_url(
+    url: str,
+    *,
+    repo_root: Path,
+) -> dict[str, Any]:
+    node: dict[str, Any] = {"redis_url": url, "skipped": False, "passed": False}
     if not redis_reachable(url):
-        summary["skipped"] = True
-        summary["reason"] = "redis_unreachable"
-        return summary
+        node["skipped"] = True
+        node["reason"] = "redis_unreachable"
+        return node
     env = os.environ.copy()
     env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
-    env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo))
+    env.setdefault("NIMBUSWARE_REPO_ROOT", str(repo_root))
     env["NIMBUSWARE_REDIS_URL"] = url
     cmd = [
         sys.executable,
@@ -45,10 +57,33 @@ def run_redis_fleet_soak(*, repo_root: Path | None = None) -> dict[str, Any]:
         "integration and e2e_stack",
         "-q",
     ]
-    proc = subprocess.run(cmd, cwd=repo, env=env, check=False)
-    summary["exit_code"] = proc.returncode
-    summary["passed"] = proc.returncode == 0
-    return summary
+    proc = subprocess.run(cmd, cwd=repo_root, env=env, check=False)
+    node["exit_code"] = proc.returncode
+    node["passed"] = proc.returncode == 0
+    return node
+
+
+def run_redis_fleet_soak(*, repo_root: Path | None = None) -> dict[str, Any]:
+    repo = repo_root or Path(__file__).resolve().parents[1]
+    urls = redis_fleet_urls()
+    nodes = [run_redis_fleet_soak_for_url(url, repo_root=repo) for url in urls]
+    skipped = all(node.get("skipped") for node in nodes)
+    passed = bool(nodes) and all(node.get("passed") for node in nodes if not node.get("skipped"))
+    if skipped:
+        return {
+            "redis_urls": urls,
+            "nodes": nodes,
+            "skipped": True,
+            "reason": "redis_unreachable",
+            "passed": False,
+        }
+    return {
+        "redis_urls": urls,
+        "nodes": nodes,
+        "skipped": False,
+        "passed": passed,
+        "node_count": len(nodes),
+    }
 
 
 def main() -> int:
@@ -57,7 +92,7 @@ def main() -> int:
     if summary.get("skipped"):
         print("Skip: Redis not reachable (set NIMBUSWARE_REDIS_URL for fleet soak)")
         return 0
-    return 0 if summary.get("passed") else int(summary.get("exit_code") or 1)
+    return 0 if summary.get("passed") else 1
 
 
 if __name__ == "__main__":

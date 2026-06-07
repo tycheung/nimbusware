@@ -38,10 +38,19 @@ jobs:
   redis-fleet-soak:
     runs-on: ubuntu-latest
     services:
-      redis:
+      redis-a:
         image: redis:7
         ports:
           - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis-b:
+        image: redis:7
+        ports:
+          - 6380:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -57,5 +66,5 @@ jobs:
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-          NIMBUSWARE_REDIS_URL: redis://127.0.0.1:6379/0
+          NIMBUSWARE_REDIS_FLEET_URLS: redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0
         run: poetry run python scripts/run_redis_fleet_soak_ci.py
