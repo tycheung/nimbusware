@@ -26,6 +26,7 @@ from nimbusware_orchestrator.put_e2e_runner import (
 )
 
 FACTORY_CADENCE_STAGE = "factory.cadence"
+FACTORY_GATE_STAGE = "factory.gate"
 FACTORY_COMPLETE_STAGE = "factory.complete"
 
 
@@ -331,6 +332,15 @@ def maybe_run_factory_cadence_pass(
         meta["put"] = {"base_url": put_e2e.base_url}
     if ism_diff is not None:
         meta["ism_diff"] = ism_diff
+    gate_meta = {
+        "factory": dict(meta["factory"]),
+        "gates": {
+            "passed": gates.passed,
+            "blocking": list(gates.blocking),
+            "details": dict(gates.details),
+        },
+    }
+    _emit_factory_stage(store, run_id, stage_name=FACTORY_GATE_STAGE, metadata=gate_meta)
     _emit_factory_stage(store, run_id, stage_name=FACTORY_CADENCE_STAGE, metadata=meta)
 
     factory_complete = (

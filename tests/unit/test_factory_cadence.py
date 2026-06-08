@@ -5,6 +5,7 @@ from pathlib import Path
 from nimbusware_orchestrator.factory_cadence import (
     FACTORY_CADENCE_STAGE,
     FACTORY_COMPLETE_STAGE,
+    FACTORY_GATE_STAGE,
     factory_blocks_campaign_pass,
     factory_complete_emitted,
     factory_completion_policy_from_rows,
@@ -95,6 +96,7 @@ def test_maybe_run_factory_cadence_emits_stages_on_tiny_api() -> None:
         if isinstance(row.get("payload"), dict)
     ]
     assert FACTORY_CADENCE_STAGE in stage_names
+    assert FACTORY_GATE_STAGE in stage_names
     if result.factory_complete:
         assert factory_complete_emitted(updated)
         assert FACTORY_COMPLETE_STAGE in stage_names
