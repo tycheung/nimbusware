@@ -1,4 +1,3 @@
-"""Factory completion evidence bundle from run events and workspace artifacts."""
 
 from __future__ import annotations
 
@@ -8,8 +7,8 @@ from typing import Any
 
 from agent_core.models import EventType
 from nimbusware_orchestrator.factory_cadence import (
-    FACTORY_COMPLETE_STAGE,
     FACTORY_CADENCE_STAGE,
+    FACTORY_COMPLETE_STAGE,
 )
 from nimbusware_projections.builders.factory_status import factory_status_from_events
 
