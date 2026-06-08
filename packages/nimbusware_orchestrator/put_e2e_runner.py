@@ -1,4 +1,4 @@
-"""PUT E2E flow runner — fo670–fo674 Playwright/HTTP flows against preview base_url."""
+"""PUT E2E flow runner — HTTP steps from factory flow YAML."""
 
 from __future__ import annotations
 
@@ -140,7 +140,6 @@ def _playwright_module_ready() -> tuple[bool, str]:
 
 
 def stub_console_capture(*, enabled: bool) -> list[PutE2EFinding]:
-    """Stub console capture — returns operational findings list."""
     if not enabled:
         return []
     return [
@@ -157,7 +156,6 @@ def stub_network_capture(
     enabled: bool,
     exercised_paths: set[str],
 ) -> list[PutE2EFinding]:
-    """Stub network capture — summarizes exercised HTTP paths."""
     if not enabled:
         return []
     findings: list[PutE2EFinding] = []
@@ -315,10 +313,6 @@ def run_put_e2e_flow(
     timeout_seconds: float = 60.0,
     require_playwright: bool = False,
 ) -> PutE2EResult:
-    """Execute a factory flow template against ``base_url``.
-
-    Uses HTTP step runner; skips when ``require_playwright`` and Playwright is absent.
-    """
     try:
         flow = load_factory_flow(flow_id, repo_root=repo_root)
     except (KeyError, OSError, yaml.YAMLError) as exc:

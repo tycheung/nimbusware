@@ -1,4 +1,4 @@
-"""Factory completion gates (T0–T3) and PUT E2E backlog helper — fo680–fo684."""
+"""Factory tier gates (T0–T3) and PUT E2E fix backlog slices."""
 
 from __future__ import annotations
 
@@ -70,7 +70,6 @@ def evaluate_factory_gates(
     ism_coverage_pct_value: float | None = None,
     repo_root: Path | None = None,
 ) -> FactoryGateResult:
-    """Evaluate tier gates from ``factory_tier_policy.yaml``."""
     cfg = tier_config(tier, repo_root)
     blocking: list[str] = []
     details: dict[str, Any] = {
@@ -139,7 +138,6 @@ def build_put_e2e_fix_slice(
     flow_id: str = "",
     depends_on: tuple[str, ...] = (),
 ) -> BacklogSlice:
-    """Backlog slice for PUT E2E remediation (category ``put_e2e_fix``)."""
     messages: list[str] = []
     for item in findings:
         if isinstance(item, PutE2EFinding):
@@ -166,7 +164,6 @@ def append_put_e2e_fix_slice(
     *,
     flow_id: str = "",
 ) -> DeliveryBacklog:
-    """Append a ``put_e2e_fix`` slice to the first epic/feature when E2E fails."""
     if not backlog.epics:
         return backlog
     epic = backlog.epics[0]
@@ -190,7 +187,6 @@ def handle_put_e2e_failure(
     backlog: DeliveryBacklog | None,
     put_e2e: PutE2EResult,
 ) -> DeliveryBacklog | None:
-    """Return backlog with fix slice when PUT E2E failed."""
     if put_e2e.verdict != "FAIL":
         return backlog
     if backlog is None:

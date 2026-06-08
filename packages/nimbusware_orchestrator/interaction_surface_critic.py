@@ -1,4 +1,4 @@
-"""Interaction surface critic stub — fo690 operational findings from ISM coverage."""
+"""ISM coverage critic — operational findings."""
 
 from __future__ import annotations
 
@@ -14,7 +14,6 @@ def critique_interaction_surfaces(
     tier: str = "T1",
     min_coverage_pct: float = 50.0,
 ) -> list[dict[str, Any]]:
-    """Emit operational findings for uncovered or thin ISM coverage."""
     findings: list[dict[str, Any]] = []
     if not ism.surfaces:
         findings.append(

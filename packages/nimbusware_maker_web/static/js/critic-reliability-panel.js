@@ -1,5 +1,3 @@
-/** Render critic reliability table (Maker port of Admin CriticReliabilityPanel). */
-
 export function renderCriticReliabilityPanel(container, body, { testIdPrefix = "maker-critic" } = {}) {
   container.replaceChildren();
   const caption = document.createElement("p");

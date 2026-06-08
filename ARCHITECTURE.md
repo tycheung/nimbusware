@@ -39,15 +39,15 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 |---------|------|
 | `agent_core` | Event models, `context_budget`, slice handoff models |
 | `nimbusware_store` | Event store (Postgres / memory) |
-| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), **campaign driver** (backlog → one slice/tick → completion), maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
+| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `interaction_surface_map`), context artifacts + compaction revert, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
 | `nimbusware_research` | Research briefs, stitch transplant stages, stitch read models and outcome stats |
 | `nimbusware_agent_tools` | JIT `agent_loop`, dual `ToolResult` output, tool allowlist, stable prompt file; jail + sandbox + risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
-| `nimbusware_projections` | Events → timeline, maker-progress, theater, context budget, agent-tool prune (+ export, research briefs) |
-| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress) at `/v1/maker/app` |
+| `nimbusware_projections` | Events → timeline, maker-progress, theater, context budget, `factory_status`, agent-tool prune (+ export, research briefs) |
+| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings) at `/v1/maker/app` |
 | `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
@@ -123,7 +123,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **Hardware events:** `POST /v1/platform/hardware/rescan` accepts optional `emit_event` + `run_id` to append `hardware.profile.detected`. Mid-run governor sampling may append rate-limited `resource.pressure.warn` events (projections: pressure headline + pressure-history timeline). Memory index rebuild at run start defers when `sample_pressure` is not `ok` (governor RAM cap). Admin **Hardware** tab reads `GET /v1/platform/analytics/pressure-history` (last-N timeline).
 
-**Deploy:** Production Kubernetes installs use the Helm chart at [`charts/nimbusware`](charts/nimbusware) ([`docs/deploy/helm.md`](docs/deploy/helm.md)); raw manifests under [`docs/deploy/k8s/`](docs/deploy/k8s/README.md) remain a reference path verified by quarterly `k8s_reference_smoke.yml`.
+**Deploy:** Production Kubernetes installs use the Helm chart at [`charts/nimbusware`](charts/nimbusware) ([`docs/deploy/helm.md`](docs/deploy/helm.md)); raw manifests under [`docs/deploy/k8s/`](docs/deploy/k8s/README.md) remain a reference path verified by quarterly `k8s_reference_smoke.yml`. Enterprise integrator gate: [`docs/deploy/enterprise-integrator-runbook.md`](docs/deploy/enterprise-integrator-runbook.md). Multi-host Redis fleet secrets: [`docs/deploy/production-fleet-redis-secrets.md`](docs/deploy/production-fleet-redis-secrets.md).
 
 **CI layout (PR):** `.github/workflows/ci.yml` runs **unit** (ruff, `audit_operator_env`, mypy, bandit, pip-audit, pytest @ 75%), **web** (vitest maker + admin, Playwright `tests/e2e/web`), **integration**, and **e2e** jobs in parallel. Local parity: `scripts/ci_check.ps1` / `ci_check.sh` (unit + optional web when Node is present).
 

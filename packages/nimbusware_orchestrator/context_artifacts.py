@@ -159,5 +159,4 @@ def insert_context_artifact_into_run(
 
 
 def clear_context_artifacts_memory() -> None:
-    """Test helper: reset in-memory artifact index."""
     _MEMORY.clear()

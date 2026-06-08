@@ -9,6 +9,8 @@
 | [adr/006-prompt-tiers.md](adr/006-prompt-tiers.md) | Maintainers | Stable / context / volatile LLM prompt tiers |
 | [adr/007-context-compaction.md](adr/007-context-compaction.md) | Maintainers | Campaign handoff compaction and merge-on-recompact |
 | [deploy/README.md](deploy/README.md) | Ops | Docker Compose, CI jobs, secrets |
+| [deploy/enterprise-integrator-runbook.md](deploy/enterprise-integrator-runbook.md) | Enterprise ops | Integrator gate, live adapter probes, external CI bridge |
+| [deploy/production-fleet-redis-secrets.md](deploy/production-fleet-redis-secrets.md) | Enterprise ops | Multi-broker Redis (`NIMBUSWARE_REDIS_FLEET_URLS`) in Helm/K8s |
 | [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO |
 | [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Operators | Bundle catalog candidate promotion |
 | [enterprise-research-index.md](enterprise-research-index.md) | Enterprise ops | Tenant research index + egress audit |
@@ -18,7 +20,7 @@
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 
-Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`. Package notes: [../packages/nimbusware_mcp/README.md](../packages/nimbusware_mcp/README.md).
+Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`, `POST /v1/runs/{id}/compactions/{compaction_id}/revert`. Package notes: [../packages/nimbusware_mcp/README.md](../packages/nimbusware_mcp/README.md).
 
 Gitignored local planning (not in git) — **two files only:**
 

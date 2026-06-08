@@ -36,7 +36,7 @@ test("settings tab runs launch check for attached run", async ({ page, request }
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
   await activateMakerRoute(page, "/settings");
   await expect(page.getByTestId("maker-settings-run-launch-eval")).toBeVisible();
-  await page.getByTestId("maker-settings-launch-run-id").fill(runId);
+  await expect(page.getByTestId("maker-settings-launch-run-hint")).toContainText(runId.slice(0, 8));
   await page.getByTestId("maker-settings-run-launch-eval").click();
   await expect(page.getByTestId("maker-settings-scorecard-aggregate")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("maker-settings-scorecard-maturity")).toBeVisible();

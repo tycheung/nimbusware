@@ -1,4 +1,4 @@
-"""Interaction Surface Map (ISM) scaffold — fo660 static discovery."""
+"""Interaction surface map (ISM) — OpenAPI and HTML link discovery."""
 
 from __future__ import annotations
 
@@ -32,8 +32,6 @@ class ISMSurface:
 
 @dataclass
 class InteractionSurfaceMap:
-    """ISM JSON document (versioned)."""
-
     version: str = "1"
     surfaces: list[ISMSurface] = field(default_factory=list)
     source: str = "static_discovery"
@@ -197,7 +195,6 @@ def discover_surfaces_static(
     *,
     preview_base_url: str | None = None,
 ) -> InteractionSurfaceMap:
-    """Discover interaction surfaces from OpenAPI and HTML route links."""
     ws = workspace.resolve()
     surfaces: list[ISMSurface] = []
     seen_ids: set[str] = set()
@@ -230,7 +227,6 @@ def discover_surfaces_static(
 
 
 def coverage_pct(ism: InteractionSurfaceMap, exercised: set[str]) -> float:
-    """Percent of ISM surfaces matched by id or path in ``exercised``."""
     if not ism.surfaces:
         return 0.0
     matched = 0

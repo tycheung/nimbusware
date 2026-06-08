@@ -216,9 +216,9 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         else "Context compaction reverted"
                     )
                 )
-                body_parts = [f"Reverted by: {reverted_by}"]
+                revert_body = [f"Reverted by: {reverted_by}"]
                 if reason:
-                    body_parts.append(reason[:400])
+                    revert_body.append(reason[:400])
                 messages.append(
                     {
                         **base,
@@ -226,7 +226,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "message_kind": "context",
                         "severity": "info",
                         "headline": headline,
-                        "body_md": "\n\n".join(body_parts) if body_parts else None,
+                        "body_md": "\n\n".join(revert_body) if revert_body else None,
                         "data_testid": "theater-context-compaction-reverted",
                     },
                 )

@@ -67,9 +67,6 @@ function projectIdFromSummary(summary) {
   return "";
 }
 
-/**
- * Resolve an active run for a project: sessionStorage first, then GET /runs?status=running.
- */
 export async function fetchActiveRunForProject(projectId, apiJson) {
   if (!projectId) return null;
 

@@ -1,8 +1,9 @@
-"""Factory status projection for Maker progress API — fo690–fo696."""
+"""Factory status projection from run events."""
 
 from __future__ import annotations
 
 from typing import Any
+
 
 def _metadata(row: dict[str, Any]) -> dict[str, Any]:
     meta = row.get("metadata")
@@ -30,7 +31,6 @@ def _latest_factory_block(events: list[dict[str, Any]]) -> dict[str, Any] | None
 
 
 def factory_status_from_events(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Build ``factory_status`` payload: tier, ism_coverage_pct, put_e2e_passed."""
     factory_block = _latest_factory_block(events)
     put_e2e = _latest_put_e2e(events)
 

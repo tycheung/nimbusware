@@ -47,6 +47,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 ## Secrets
 
+- Multi-host Redis fleet brokers: [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md) (`NIMBUSWARE_REDIS_FLEET_URLS` in Helm values).
 - Never ship the dev default admin token in production (`nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD`).
 - Set `NIMBUSWARE_ADMIN_TOKEN` to a high-entropy secret before binding the API off loopback; `nimbusware-api` calls `require_non_default_admin_token_for_host()` and exits on unsafe defaults.
 - Enterprise edition: bootstrap IAM keys via Postgres (`nimbusware_iam`) or admin API; store keys in a secret manager.

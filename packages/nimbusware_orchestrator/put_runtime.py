@@ -1,4 +1,4 @@
-"""PUT (preview-under-test) runtime scaffold — fo650–fo654."""
+"""Local PUT preview subprocess and stack detection."""
 
 from __future__ import annotations
 
@@ -38,7 +38,6 @@ class PutPreviewStartResult:
 
 
 def detect_put_stack(workspace: Path) -> PutStack:
-    """Classify workspace stack from on-disk markers."""
     ws = workspace.resolve()
     if not ws.is_dir():
         return "unknown"
@@ -151,7 +150,6 @@ def start_put_preview(
     *,
     startup_timeout_seconds: float = 15.0,
 ) -> PutPreviewStartResult:
-    """Start a local preview subprocess and wait for HTTP health."""
     ws = workspace.resolve()
     stack = detect_put_stack(ws)
     command = _preview_command(ws, stack, port)
@@ -204,7 +202,6 @@ def start_put_preview(
 
 
 def stop_put_preview(handle: PutPreviewHandle | None) -> None:
-    """Terminate preview subprocess if still running."""
     if handle is None:
         return
     proc = handle.process
@@ -235,7 +232,6 @@ def collect_put_artifacts(
     stack: PutStack | None = None,
     command: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Capture stderr/stdout and manifest when preview startup fails."""
     ws = workspace.resolve()
     artifacts_dir = ws / ".nimbusware" / "put_artifacts"
     artifacts_dir.mkdir(parents=True, exist_ok=True)
@@ -274,9 +270,6 @@ def collect_put_artifacts(
         if content:
             (artifacts_dir / name).write_text(content, encoding="utf-8")
 
-    if handle is not None and handle.process.stderr:
-        pass
-
     return {
         "artifacts_dir": str(artifacts_dir),
         "manifest_path": str(manifest_path),
@@ -285,14 +278,12 @@ def collect_put_artifacts(
 
 
 def put_stack_note(workspace: Path | None) -> str:
-    """Compact note fragment for campaign tick metadata."""
     if workspace is None or not workspace.is_dir():
         return ""
     return f" put_stack={detect_put_stack(workspace.resolve())}"
 
 
 def put_runtime_summary(workspace: Path) -> dict[str, Any]:
-    """Non-invasive discovery payload for campaign hooks and tests."""
     ws = workspace.resolve()
     stack = detect_put_stack(ws)
     return {
