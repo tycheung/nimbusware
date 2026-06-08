@@ -67,6 +67,15 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate container — see `scripts/run_dispatch_fleet_runbook.md`.
 
+## Production ops runbooks
+
+| Topic | Doc |
+|-------|-----|
+| Helm ingress + TLS | [helm.md](helm.md) |
+| Fleet Redis secrets | [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md) |
+| Remote Playwright pool | [fleet-playwright-pool.md](fleet-playwright-pool.md) |
+| Long-run campaign soak | [campaign-soak-runbook.md](campaign-soak-runbook.md) |
+
 ## Kubernetes
 
 Production Helm chart: [helm.md](helm.md) (`charts/nimbusware`). Raw reference manifests: [k8s/](k8s/README.md).
