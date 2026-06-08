@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import io
 import json
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -84,3 +86,25 @@ def build_factory_evidence_bundle(
             "findings": put_e2e.get("findings") if isinstance(put_e2e, dict) else [],
         },
     }
+
+
+def export_factory_evidence_zip(
+    events: list[dict[str, Any]],
+    *,
+    workspace: Path | None = None,
+) -> bytes:
+    bundle = build_factory_evidence_bundle(events, workspace=workspace)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("factory_evidence.json", json.dumps(bundle, indent=2))
+        put_artifacts = bundle.get("put_artifacts") if isinstance(bundle.get("put_artifacts"), dict) else {}
+        manifest_path = put_artifacts.get("manifest_path")
+        if manifest_path and Path(str(manifest_path)).is_file():
+            archive.write(str(manifest_path), arcname="put_artifacts/manifest.json")
+        put_e2e = bundle.get("put_e2e") if isinstance(bundle.get("put_e2e"), dict) else {}
+        capture = put_e2e.get("capture") if isinstance(put_e2e.get("capture"), dict) else {}
+        evidence = capture.get("evidence") if isinstance(capture.get("evidence"), dict) else {}
+        zip_path = evidence.get("evidence_zip")
+        if zip_path and Path(str(zip_path)).is_file():
+            archive.write(str(zip_path), arcname="put_e2e/evidence.zip")
+    return buffer.getvalue()

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import io
+import zipfile
 from pathlib import Path
-
 from nimbusware_orchestrator.factory_evidence import build_factory_evidence_bundle
 
 REPO = Path(__file__).resolve().parents[2]
@@ -45,3 +46,22 @@ def test_factory_evidence_reads_put_artifacts(tmp_path: Path) -> None:
     (artifacts / "manifest.json").write_text('{"reason":"stop"}', encoding="utf-8")
     bundle = build_factory_evidence_bundle([], workspace=tmp_path)
     assert bundle["put_artifacts"]["manifest"]["reason"] == "stop"
+
+
+def test_export_factory_evidence_zip_contains_bundle(tmp_path: Path) -> None:
+    from nimbusware_orchestrator.factory_evidence import export_factory_evidence_zip
+    import zipfile
+
+    events = [
+        {
+            "event_type": "stage.passed",
+            "payload": {"stage_name": "factory.cadence"},
+            "metadata": {
+                "put_e2e": {"verdict": "PASS", "flow_id": "crm", "capture": {}},
+                "factory": {"tier": "T2", "put_e2e_passed": True},
+            },
+        },
+    ]
+    payload = export_factory_evidence_zip(events, workspace=tmp_path)
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        assert "factory_evidence.json" in archive.namelist()

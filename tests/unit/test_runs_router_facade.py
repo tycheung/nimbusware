@@ -50,6 +50,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/timeline/{section}/explain"),
         ("GET", "/runs/{run_id}/context_budget"),
         ("GET", "/runs/{run_id}/factory-evidence"),
+        ("GET", "/runs/{run_id}/factory-evidence/export"),
         ("POST", "/runs/{run_id}/compact"),
         ("POST", "/runs/{run_id}/compactions/{compaction_id}/revert"),
         ("POST", "/runs/{run_id}/context-artifacts/{artifact_id}/insert"),
