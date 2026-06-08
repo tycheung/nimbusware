@@ -30,6 +30,7 @@ from nimbusware_api.routes import (
     scraper_artifacts,
 )
 from nimbusware_api.routes.enterprise import build_enterprise_router
+from nimbusware_api.routes.maker_push import router as maker_push_router
 from nimbusware_api.routes.web_bootstrap import router as web_bootstrap_router
 
 
@@ -61,4 +62,5 @@ def build_v1_router() -> APIRouter:
     router.include_router(admin_ui_bff.router)
     router.include_router(admin_oauth.router)
     router.include_router(integrations.router)
+    router.include_router(maker_push_router)
     return router

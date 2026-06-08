@@ -6,6 +6,7 @@ from nimbusware_env.edition import edition, is_enterprise
 from nimbusware_env.env_flags import env_str
 from nimbusware_env.oidc_config import load_oidc_config
 from nimbusware_maker.quick_mode import quick_mode_enabled
+from nimbusware_maker.push_subscriptions import push_web_enabled, vapid_public_key
 
 router = APIRouter(tags=["web"])
 
@@ -29,6 +30,11 @@ def maker_bootstrap_payload(request: Request) -> dict:
             "sse_theater": True,
             "sse_progress": True,
             "mobile_pwa_ready": True,
+            "push_web": push_web_enabled(),
+        },
+        "push": {
+            "enabled": push_web_enabled(),
+            "vapid_public_key": vapid_public_key() or None,
         },
     }
 

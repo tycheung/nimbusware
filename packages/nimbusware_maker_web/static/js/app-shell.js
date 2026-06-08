@@ -68,6 +68,40 @@ function wireRunIdSync() {
   pushFromVisible(document.getElementById("desktop-run-id"));
 }
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  const output = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i += 1) output[i] = raw.charCodeAt(i);
+  return output;
+}
+
+async function maybeRegisterPushSubscription() {
+  const push = getBootstrap().push;
+  if (!push?.enabled || !push?.vapid_public_key) return;
+  if (!detectMobileMode() || !("serviceWorker" in navigator) || !("PushManager" in window)) return;
+  const permission =
+    Notification.permission === "default"
+      ? await Notification.requestPermission()
+      : Notification.permission;
+  if (permission !== "granted") return;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(push.vapid_public_key),
+    });
+    await apiJson("/maker/push-subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(subscription.toJSON()),
+    });
+  } catch {
+    /* optional — VAPID or browser may block */
+  }
+}
+
 function maybeEnableMobilePush() {
   if (!detectMobileMode() || !("Notification" in window)) return;
   if (Notification.permission !== "default") return;
@@ -122,6 +156,7 @@ function makerShellFactory() {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
       maybeEnableMobilePush();
+      maybeRegisterPushSubscription();
     },
     navigate(hash) {
       window.location.hash = hash;
