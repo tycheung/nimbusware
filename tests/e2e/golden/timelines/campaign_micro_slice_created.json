@@ -1,0 +1,5 @@
+{
+  "profile": "campaign_micro_slice",
+  "required_subsequence": ["run.created", "campaign.created"],
+  "allow_extra": true
+}
