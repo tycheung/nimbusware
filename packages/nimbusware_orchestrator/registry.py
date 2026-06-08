@@ -1,4 +1,4 @@
-"""Role Registry: taxonomy_key -> RoleId ."""
+"""Role Registry: taxonomy_key -> RoleId."""
 
 from __future__ import annotations
 

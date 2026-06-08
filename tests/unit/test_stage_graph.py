@@ -1,4 +1,4 @@
-"""Stage graph foundation ."""
+"""Stage graph foundation."""
 
 from __future__ import annotations
 

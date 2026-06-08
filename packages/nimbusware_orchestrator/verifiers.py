@@ -1,4 +1,4 @@
-"""Deterministic local verifiers ."""
+"""Deterministic local verifiers."""
 
 from __future__ import annotations
 

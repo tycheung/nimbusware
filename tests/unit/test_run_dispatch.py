@@ -1,4 +1,4 @@
-"""Run dispatch queue boundary ."""
+"""Run dispatch queue boundary."""
 
 from __future__ import annotations
 

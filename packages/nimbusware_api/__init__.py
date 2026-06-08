@@ -1,4 +1,4 @@
-"""FastAPI control plane ."""
+"""FastAPI control plane."""
 
 from nimbusware_api.app import app
 

@@ -1,4 +1,4 @@
-"""HTTP GET with network egress policy checks ."""
+"""HTTP GET with network egress policy checks."""
 
 from __future__ import annotations
 

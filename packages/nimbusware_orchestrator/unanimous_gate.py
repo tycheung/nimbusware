@@ -1,4 +1,4 @@
-"""Deterministic unanimous gate decisions from critic verdict rows ."""
+"""Deterministic unanimous gate decisions from critic verdict rows."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Workflow YAML + env knobs for parallel writer dispatch ."""
+"""Workflow YAML + env knobs for parallel writer dispatch."""
 
 from __future__ import annotations
 

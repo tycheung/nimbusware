@@ -1,4 +1,4 @@
-"""Escalation / anti-deadlock policy snapshot ."""
+"""Escalation / anti-deadlock policy snapshot."""
 
 from __future__ import annotations
 

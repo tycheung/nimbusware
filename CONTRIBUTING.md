@@ -24,7 +24,7 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci_check.sh
 ```
 
-This runs: ruff check, [`scripts/audit_operator_env.py`](scripts/audit_operator_env.py), format check, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), and **15** Playwright specs in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+This runs: ruff check, [`scripts/audit_operator_env.py`](scripts/audit_operator_env.py), format check, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **24** Playwright tests in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
 
 Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 
@@ -46,7 +46,7 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
-**Browser verify (`slice.e2e`)** is opt-in for operators: enable `slice.e2e.enabled` in the micro_slice workflow and install Playwright locally, or set `NIMBUSWARE_SLICE_E2E_COMMAND`. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a stub command; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
+**Browser verify (`slice.e2e`)** is **on by default** in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml). Install Playwright locally or set `NIMBUSWARE_SLICE_E2E_COMMAND`; the stage **SKIP**s when no runner is available. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a stub command; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
 
 PR **e2e** job (Postgres) retries flaky journeys once: `pytest tests/e2e -m e2e --reruns 1` via `pytest-rerunfailures` (`NIMBUSWARE_E2E_FLAKE_RETRIES=1`). Weekly [`.github/workflows/e2e_flake_monitor.yml`](.github/workflows/e2e_flake_monitor.yml) runs the same suite on a schedule and opens an issue when it fails. Local: `ci_check.ps1 -WithE2e` mirrors the same flags.
 

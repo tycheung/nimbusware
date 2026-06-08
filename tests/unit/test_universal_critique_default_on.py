@@ -1,4 +1,4 @@
-"""Default-on universal critique workflow ."""
+"""Default-on universal critique workflow."""
 
 from __future__ import annotations
 

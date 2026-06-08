@@ -1,4 +1,4 @@
-"""Parallel-writer stage graph metadata ."""
+"""Parallel-writer stage graph metadata."""
 
 from __future__ import annotations
 

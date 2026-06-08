@@ -1,4 +1,4 @@
-"""Windows subprocess adapter smoke ."""
+"""Windows subprocess adapter smoke."""
 
 from __future__ import annotations
 

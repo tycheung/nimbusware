@@ -1,4 +1,4 @@
-"""Pydantic models for persona shelf HTTP responses + write-route bodies ."""
+"""Pydantic models for persona shelf HTTP responses + write-route bodies."""
 
 from __future__ import annotations
 

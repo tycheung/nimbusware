@@ -1,4 +1,4 @@
-"""Ollama (or compatible) model preflight ."""
+"""Ollama (or compatible) model preflight."""
 
 from __future__ import annotations
 

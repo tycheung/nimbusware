@@ -1,4 +1,4 @@
-"""True parallel writer dispatch ."""
+"""True parallel writer dispatch."""
 
 from __future__ import annotations
 

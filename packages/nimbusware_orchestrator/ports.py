@@ -1,4 +1,4 @@
-"""Narrow ports for LLM-backed roles ."""
+"""Narrow ports for LLM-backed roles."""
 
 from __future__ import annotations
 

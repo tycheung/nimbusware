@@ -1,4 +1,4 @@
-"""Persona Coverage Critic gate for Agent Evaluator ."""
+"""Persona Coverage Critic gate for Agent Evaluator."""
 
 from __future__ import annotations
 

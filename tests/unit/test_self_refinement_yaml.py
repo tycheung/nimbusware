@@ -1,4 +1,4 @@
-"""Self-refinement policy YAML ."""
+"""Self-refinement policy YAML."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Optional DB-backed role registry ."""
+"""Optional DB-backed role registry."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Normalize ``domain_allowlist`` entries at merge/freeze ."""
+"""Normalize ``domain_allowlist`` entries at merge/freeze."""
 
 from __future__ import annotations
 

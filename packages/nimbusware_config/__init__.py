@@ -1,4 +1,4 @@
-"""PostgreSQL configuration authority + materialization ."""
+"""PostgreSQL configuration authority + materialization."""
 
 from nimbusware_config.flags import config_from_db_enabled, config_notify_enabled
 from nimbusware_config.listener import (

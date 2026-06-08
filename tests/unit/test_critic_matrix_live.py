@@ -1,4 +1,4 @@
-"""Live orchestration critic matrix ."""
+"""Live orchestration critic matrix."""
 
 from __future__ import annotations
 

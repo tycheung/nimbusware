@@ -1,4 +1,4 @@
-"""Deterministic unanimous gate engine ."""
+"""Deterministic unanimous gate engine."""
 
 from __future__ import annotations
 
