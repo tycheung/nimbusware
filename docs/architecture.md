@@ -15,6 +15,18 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [005-request-correlation-id.md](adr/005-request-correlation-id.md) | Correlation IDs |
 | [006-prompt-tiers.md](adr/006-prompt-tiers.md) | Stable/context/volatile LLM prompt tiers |
 | [007-context-compaction.md](adr/007-context-compaction.md) | Campaign handoff compaction |
+| [008-context-artifacts-file-cache.md](adr/008-context-artifacts-file-cache.md) | Context artifact JSON file cache |
+| [009-persistent-dev-environment.md](adr/009-persistent-dev-environment.md) | Persistent dev env sessions |
+| [010-ui-controller.md](adr/010-ui-controller.md) | BrowserController + UI flow DSL |
+| [011-human-fidelity-e2e.md](adr/011-human-fidelity-e2e.md) | Human-fidelity E2E checks |
+| [012-diagnose-fix-learn.md](adr/012-diagnose-fix-learn.md) | Diagnose-fix-learn loop |
+| [013-operator-interjection.md](adr/013-operator-interjection.md) | Interjection queue |
+| [014-autopilot-presets.md](adr/014-autopilot-presets.md) | Autopilot slider presets |
+| [015-custom-autopilot-profiles.md](adr/015-custom-autopilot-profiles.md) | Custom checkpoint profiles |
+| [016-repo-exploration-variants.md](adr/016-repo-exploration-variants.md) | Code graph + variant arena |
+| [017-simplification-refactor.md](adr/017-simplification-refactor.md) | Simplification metrics |
+| [018-improvement-council.md](adr/018-improvement-council.md) | Continuous improvement council |
+| [019-debate-first-resolution.md](adr/019-debate-first-resolution.md) | Debate-first gate resolution |
 
 Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
 
