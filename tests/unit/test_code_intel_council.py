@@ -1,0 +1,56 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from nimbusware_orchestrator.code_graph import build_code_graph
+from nimbusware_orchestrator.cohesion_graph import build_cohesion_graph
+from nimbusware_orchestrator.improvement_council import run_improvement_council
+from nimbusware_orchestrator.orphan_index import build_orphan_report
+from nimbusware_orchestrator.repo_explorer import run_repo_explore
+from nimbusware_orchestrator.repo_inventory import build_repo_inventory
+from nimbusware_orchestrator.similarity_index import build_similarity_index
+from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
+
+
+def test_code_graph_builds_nodes(tmp_path: Path) -> None:
+    ws = tmp_path / "proj"
+    pkg = ws / "src"
+    pkg.mkdir(parents=True)
+    (pkg / "main.py").write_text("def hello():\n    return 1\n", encoding="utf-8")
+    graph = build_code_graph(ws)
+    assert any(n.kind == "function" for n in graph.nodes)
+
+
+def test_repo_inventory_and_council(tmp_path: Path) -> None:
+    ws = tmp_path / "proj"
+    pkg = ws / "src"
+    pkg.mkdir(parents=True)
+    (pkg / "a.py").write_text("x = 1\n", encoding="utf-8")
+    (pkg / "b.py").write_text("y = 2\n", encoding="utf-8")
+    inventory = build_repo_inventory(ws)
+    assert inventory.complexity.loc >= 2
+    council = run_improvement_council(ws)
+    assert council.selected is not None
+
+
+def test_similarity_and_orphans(tmp_path: Path) -> None:
+    ws = tmp_path / "proj"
+    ws.mkdir()
+    (ws / "dup1.py").write_text("a = 1\n", encoding="utf-8")
+    (ws / "dup2.py").write_text("a = 1\n", encoding="utf-8")
+    sim = build_similarity_index(ws)
+    orphans = build_orphan_report(ws)
+    explore = run_repo_explore(ws)
+    cohesion = build_cohesion_graph(ws)
+    assert sim.clusters
+    assert len(orphans.orphans) >= 0
+    assert explore.graph is not None
+    assert cohesion.proposals is not None
+
+
+def test_complexity_index(tmp_path: Path) -> None:
+    ws = tmp_path / "proj"
+    ws.mkdir()
+    (ws / "long.py").write_text("print('x')\n" * 10, encoding="utf-8")
+    idx = ComplexityIndex.from_workspace(ws)
+    assert idx.loc >= 10
