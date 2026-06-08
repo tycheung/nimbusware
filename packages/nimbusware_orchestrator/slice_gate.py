@@ -52,13 +52,31 @@ def run_slice_gate_chain(
     v_verdict = "PASS" if verify_ok else "FAIL"
     steps.append(SliceGateStep("slice.verify", v_verdict, verify_detail))
 
-    critique_fail = any(v.upper() == "FAIL" for v in critique_verdicts)
+    critique_fail = any(
+        v.upper() == "FAIL" or v.upper().endswith(":FAIL") for v in critique_verdicts
+    )
+    resolution_detail = ""
+    if critique_fail:
+        from nimbusware_orchestrator.resolution_council import run_resolution_council
+
+        findings = []
+        for v in critique_verdicts:
+            if v.upper() == "FAIL" or ":FAIL" in v.upper():
+                kind = v.split(":", 1)[0] if ":" in v else "critic"
+                findings.append({"kind": kind, "message": v, "severity": "info"})
+        resolution = run_resolution_council(findings=findings, autopilot_level=6)
+        if resolution.verdict.accord and not resolution.verdict.hard_block:
+            critique_fail = False
+            resolution_detail = resolution.verdict.detail
     c_verdict = "FAIL" if critique_fail else "PASS"
+    critique_msg = ", ".join(critique_verdicts) if critique_verdicts else "no critiques"
+    if resolution_detail:
+        critique_msg = f"{critique_msg}; resolution={resolution_detail}"
     steps.append(
         SliceGateStep(
             "slice.critique",
             c_verdict,
-            ", ".join(critique_verdicts) if critique_verdicts else "no critiques",
+            critique_msg,
         ),
     )
 

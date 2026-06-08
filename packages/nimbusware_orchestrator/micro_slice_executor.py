@@ -36,7 +36,11 @@ from nimbusware_orchestrator.slice_diff import (
     slice_replan_max_attempts,
     subdivide_slice_plan,
 )
-from nimbusware_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
+from nimbusware_orchestrator.slice_gate import (
+    SliceGateChainResult,
+    SliceGateStep,
+    map_paths_to_test_targets,
+)
 from nimbusware_orchestrator.slice_implement import execute_slice_implement
 from nimbusware_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
@@ -501,6 +505,26 @@ def execute_single_micro_slice(
         test_output=test_out[:4000],
     )
     if gate.passed:
+        from nimbusware_orchestrator.dev_env_policy import persistent_dev_env_enabled
+
+        if persistent_dev_env_enabled(rows):
+            from nimbusware_orchestrator.dev_env_regression import run_dev_env_regression
+
+            regression = run_dev_env_regression(orch._store, run_id, ws, emit_events=True)
+            if not regression.passed:
+                gate = SliceGateChainResult(
+                    slice_id=gate.slice_id,
+                    passed=False,
+                    steps=gate.steps
+                    + (
+                        SliceGateStep(
+                            "dev_env.regression",
+                            "FAIL",
+                            regression.detail,
+                        ),
+                    ),
+                    status="blocked",
+                )
         from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
 
         run_meta = orch._run_created_metadata(run_id)
