@@ -110,6 +110,20 @@ class CampaignDispatchMixin:
             UUID(task.run_id),
             workspace=ws,
         )
+        try:
+            from nimbusware_maker.web_push_notify import (
+                notify_campaign_failed,
+                notify_campaign_paused,
+            )
+            from nimbusware_orchestrator.campaign import CampaignDriverState
+
+            run_uuid = UUID(task.run_id)
+            if result.state == CampaignDriverState.PAUSED:
+                notify_campaign_paused(run_uuid, reason=result.message)
+            elif result.state == CampaignDriverState.FAILED:
+                notify_campaign_failed(run_uuid, summary=result.message)
+        except Exception:
+            pass
         if result.should_continue and run_dispatch_enabled():
             payload: dict[str, Any] = {}
             if ws is not None:

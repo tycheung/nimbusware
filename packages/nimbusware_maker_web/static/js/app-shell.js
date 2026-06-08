@@ -92,10 +92,16 @@ async function maybeRegisterPushSubscription() {
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(push.vapid_public_key),
     });
+    const runId =
+      document.getElementById("run-theater-run-id")?.value?.trim() ||
+      new URLSearchParams(window.location.search).get("run_id") ||
+      "";
+    const payload = subscription.toJSON();
+    if (runId) payload.run_id = runId;
     await apiJson("/maker/push-subscriptions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(subscription.toJSON()),
+      body: JSON.stringify(payload),
     });
   } catch {
     /* optional — VAPID or browser may block */

@@ -229,6 +229,12 @@ def emit_campaign_terminal(
                 payload=RunCompletedPayload(summary=result.rationale),
             ),
         )
+        try:
+            from nimbusware_maker.web_push_notify import notify_campaign_completed
+
+            notify_campaign_completed(run_id, summary=result.rationale)
+        except Exception:
+            pass
         return
     if result.verdict == "FAIL":
         store.append(
@@ -256,6 +262,12 @@ def emit_campaign_terminal(
                 ),
             ),
         )
+        try:
+            from nimbusware_maker.web_push_notify import notify_campaign_failed
+
+            notify_campaign_failed(run_id, summary=result.rationale)
+        except Exception:
+            pass
 
 
 def evaluate_and_finalize_campaign(

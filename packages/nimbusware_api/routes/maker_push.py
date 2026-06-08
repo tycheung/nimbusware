@@ -21,6 +21,7 @@ class PushSubscriptionBody(BaseModel):
     endpoint: str
     keys: dict[str, str] = Field(default_factory=dict)
     expirationTime: int | None = None
+    run_id: str | None = None
 
 
 @router.post("/maker/push-subscriptions")
@@ -33,7 +34,9 @@ def post_push_subscription(body: PushSubscriptionBody) -> dict[str, Any]:
                 "Web Push is not configured (set NIMBUSWARE_MAKER_VAPID_PUBLIC_KEY)",
             ),
         )
-    return register_push_subscription(body.model_dump(exclude_none=True))
+    payload = body.model_dump(exclude_none=True)
+    run_id = payload.pop("run_id", None)
+    return register_push_subscription(payload, run_id=run_id)
 
 
 @router.delete("/maker/push-subscriptions")

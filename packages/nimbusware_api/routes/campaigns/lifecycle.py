@@ -39,6 +39,12 @@ def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep)
             ),
         ),
     )
+    try:
+        from nimbusware_maker.web_push_notify import notify_campaign_paused
+
+        notify_campaign_paused(campaign_id, reason=body.reason_code)
+    except Exception:
+        pass
     return {"campaign_id": str(campaign_id), "status": "paused"}
 
 
@@ -92,4 +98,10 @@ def cancel_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep
             payload=RunFailedPayload(reason_code="campaign_cancelled", message=body.reason_code),
         ),
     )
+    try:
+        from nimbusware_maker.web_push_notify import notify_campaign_failed
+
+        notify_campaign_failed(campaign_id, summary="Campaign cancelled")
+    except Exception:
+        pass
     return {"campaign_id": str(campaign_id), "status": "cancelled"}

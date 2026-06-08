@@ -67,6 +67,12 @@ def emit_campaign_created(
             ),
         ),
     )
+    try:
+        from nimbusware_maker.web_push_notify import notify_campaign_created
+
+        notify_campaign_created(run_id)
+    except Exception:
+        pass
 
 
 def campaign_policy_from_workflow(
