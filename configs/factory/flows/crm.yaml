@@ -1,0 +1,19 @@
+id: crm
+label: Basic CRM PUT E2E
+prompt_id: basic_crm
+capture:
+  console: true
+  network: true
+steps:
+  - action: goto
+    path: /
+  - action: expect_status
+    path: /health
+    status: 200
+  - action: expect_status
+    path: /docs
+    status: 200
+  - action: api_check
+    method: GET
+    path: /openapi.json
+    expect_json_keys: ["openapi", "paths"]

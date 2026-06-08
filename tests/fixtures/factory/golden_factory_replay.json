@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "description": "Factory weekly CI golden stub (fo700–fo702)",
+  "workspace_fixture": "tiny_api_app",
+  "factory_tier": "T2",
+  "flow_id": "contacts_api",
+  "expected_factory_status": {
+    "tier": "T2",
+    "ism_coverage_pct_min": 0.0,
+    "put_e2e_passed": true
+  },
+  "put_e2e": {
+    "verdict": "PASS",
+    "flow_id": "contacts_api"
+  },
+  "factory_gates": {
+    "passed": true,
+    "blocking": []
+  }
+}

@@ -1,0 +1,21 @@
+id: todo_api
+label: Todo REST API PUT E2E
+prompt_id: todo_api
+capture:
+  console: true
+  network: true
+steps:
+  - action: goto
+    path: /
+  - action: expect_status
+    path: /health
+    status: 200
+  - action: api_check
+    method: GET
+    path: /todos
+    status: 200
+  - action: api_check
+    method: POST
+    path: /todos
+    json_body: {"title": "factory smoke"}
+    status: 201

@@ -1,0 +1,12 @@
+# PUT E2E flow catalog (fo670–fo674).
+version: 1
+flows:
+  - id: crm
+    path: crm.yaml
+    prompt_id: basic_crm
+  - id: todo_api
+    path: todo_api.yaml
+    prompt_id: todo_api
+  - id: contacts_api
+    path: contacts_api.yaml
+    prompt_id: contacts_api

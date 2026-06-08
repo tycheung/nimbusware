@@ -1,0 +1,21 @@
+id: contacts_api
+label: Contacts REST API PUT E2E
+prompt_id: contacts_api
+capture:
+  console: true
+  network: true
+steps:
+  - action: goto
+    path: /
+  - action: expect_status
+    path: /health
+    status: 200
+  - action: api_check
+    method: GET
+    path: /contacts
+    status: 200
+  - action: api_check
+    method: POST
+    path: /contacts
+    json_body: {"name": "Factory Contact", "email": "factory@example.com"}
+    status: 201

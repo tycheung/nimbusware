@@ -1,0 +1,23 @@
+version: 1
+# Factory tier policy stub (fo650–fo654 / fo660 scaffold).
+factory_tiers:
+  T0:
+    label: scaffold
+    put_preview_enabled: false
+    ism_discovery: stub
+    max_preview_seconds: 0
+  T1:
+    label: local_preview
+    put_preview_enabled: true
+    ism_discovery: static
+    max_preview_seconds: 120
+  T2:
+    label: integrated_preview
+    put_preview_enabled: true
+    ism_discovery: openapi
+    max_preview_seconds: 300
+  T3:
+    label: production_fleet
+    put_preview_enabled: true
+    ism_discovery: full
+    max_preview_seconds: 600
