@@ -112,6 +112,9 @@ function makerShellFactory() {
       });
       loadRouteOnInit();
       window.dispatchEvent(new CustomEvent("maker-route", { detail: { route: this.route } }));
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      }
     },
     navigate(hash) {
       window.location.hash = hash;
