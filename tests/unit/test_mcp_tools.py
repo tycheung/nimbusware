@@ -25,6 +25,9 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_campaign_status",
         "nimbusware_pause_campaign",
         "nimbusware_backlog_summary",
+        "nimbusware_list_context_artifacts",
+        "nimbusware_create_context_artifact",
+        "nimbusware_insert_context_artifact",
     }
 
 

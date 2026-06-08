@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
@@ -168,15 +169,29 @@ def campaign_driver_tick(
             message="deferred tick due to resource pressure",
         )
 
-    maybe_emit_compaction_event(orch._store, run_id=run_id, events=rows)
+    maybe_emit_compaction_event(
+        orch._store,
+        run_id=run_id,
+        events=rows,
+        compaction_trigger="auto_tick",
+    )
     rows = orch._store.list_run_events(str(run_id))
     budget = estimate_context_budget(rows)
     tick_seq = _latest_tick_seq(rows) + 1
+    put_note = ""
+    if workspace is not None:
+        try:
+            from nimbusware_orchestrator.put_runtime import put_stack_note
+
+            ws_path = Path(workspace)
+            put_note = put_stack_note(ws_path)
+        except (TypeError, ValueError, OSError):
+            put_note = ""
     _emit_campaign_tick_marker(
         orch._store,
         run_id,
         tick_seq=tick_seq,
-        note=f"context_advisory={budget.get('advisory_level', 'green')}",
+        note=f"context_advisory={budget.get('advisory_level', 'green')}{put_note}",
     )
 
     backlog = ensure_backlog(

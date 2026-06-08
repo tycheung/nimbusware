@@ -78,16 +78,54 @@ def _latest_handoff_char_count(events: list[dict[str, Any]]) -> int:
     return latest
 
 
-def _latest_compaction_char_count(events: list[dict[str, Any]]) -> int:
-    latest = 0
+def _reverted_compaction_ids(events: list[dict[str, Any]]) -> set[str]:
+    from nimbusware_orchestrator.context_compaction import reverted_compaction_ids
+
+    return reverted_compaction_ids(events)
+
+
+def _latest_compaction_row(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    reverted = _reverted_compaction_ids(events)
+    latest: dict[str, Any] | None = None
+    latest_seq = -1
     for row in events:
         if _payload(row).get("stage_name") != "campaign.context.compacted":
             continue
         meta = _metadata(row)
-        summary = meta.get("summary")
-        if isinstance(summary, str) and summary.strip():
-            latest = len(summary)
+        cid = str(meta.get("compaction_id") or "").strip()
+        if cid and cid in reverted:
+            continue
+        seq = int(row.get("store_seq") or 0)
+        if seq >= latest_seq:
+            latest_seq = seq
+            latest = row
     return latest
+
+
+def _latest_compaction_char_count(events: list[dict[str, Any]]) -> int:
+    row = _latest_compaction_row(events)
+    if row is None:
+        return 0
+    summary = _metadata(row).get("summary")
+    if isinstance(summary, str) and summary.strip():
+        return len(summary)
+    return 0
+
+
+def _last_compaction_detail(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    row = _latest_compaction_row(events)
+    if row is None:
+        return None
+    meta = _metadata(row)
+    return {
+        "occurred_at": row.get("occurred_at"),
+        "store_seq": int(row.get("store_seq") or 0),
+        "tokens_before": meta.get("tokens_before"),
+        "tokens_after": meta.get("tokens_after"),
+        "merged_handoff_count": meta.get("merged_handoff_count"),
+        "trigger": meta.get("compaction_trigger"),
+        "compaction_id": meta.get("compaction_id"),
+    }
 
 
 def advisory_level_for_ratio(ratio: float) -> AdvisoryLevel:
@@ -107,7 +145,7 @@ def estimate_context_budget(events: list[dict[str, Any]]) -> dict[str, Any]:
     estimated_tokens = estimate_tokens("x" * estimated_chars) if estimated_chars else 0
     window_tokens = window_tokens_from_events(events)
     ratio = (estimated_tokens / window_tokens) if window_tokens > 0 else 0.0
-    return {
+    out: dict[str, Any] = {
         "estimated_chars": estimated_chars,
         "estimated_tokens": estimated_tokens,
         "window_tokens": window_tokens,
@@ -120,3 +158,7 @@ def estimate_context_budget(events: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "advisory_only": True,
     }
+    last = _last_compaction_detail(events)
+    if last is not None:
+        out["last_compaction"] = last
+    return out

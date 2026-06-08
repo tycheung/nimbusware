@@ -147,6 +147,41 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "required": ["run_id"],
         },
     },
+    {
+        "name": "nimbusware_list_context_artifacts",
+        "description": "List project-scoped context artifacts.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"project_id": {"type": "string"}},
+            "required": ["project_id"],
+        },
+    },
+    {
+        "name": "nimbusware_create_context_artifact",
+        "description": "Create a project-scoped context artifact.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "project_id": {"type": "string"},
+                "title": {"type": "string"},
+                "content": {"type": "string"},
+                "kind": {"type": "string"},
+            },
+            "required": ["project_id", "title", "content"],
+        },
+    },
+    {
+        "name": "nimbusware_insert_context_artifact",
+        "description": "Insert a context artifact into a run event stream.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "artifact_id": {"type": "string"},
+            },
+            "required": ["run_id", "artifact_id"],
+        },
+    },
 ]
 
 
@@ -156,6 +191,8 @@ def _text_result(payload: Any) -> dict[str, Any]:
 
 
 def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    if name in ("nimbusware_list_context_artifacts", "nimbusware_create_context_artifact"):
+        return _call_project_tool(name, arguments)
     if name in (
         "nimbusware_campaign_status",
         "nimbusware_pause_campaign",
@@ -217,4 +254,32 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(post_json(f"/runs/{run_id}/workspace/revert", {}))
     if name == "nimbusware_compact_run":
         return _text_result(post_json(f"/runs/{run_id}/compact", {}))
+    if name == "nimbusware_insert_context_artifact":
+        aid = str(arguments.get("artifact_id") or "").strip()
+        if not aid:
+            raise ValueError("artifact_id is required")
+        return _text_result(
+            post_json(f"/runs/{run_id}/context-artifacts/{aid}/insert", {}),
+        )
+    raise ValueError(f"unknown tool: {name}")
+
+
+def _call_project_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    project_id = str(arguments.get("project_id") or "").strip()
+    if not project_id:
+        raise ValueError("project_id is required")
+    if name == "nimbusware_list_context_artifacts":
+        return _text_result(get_json(f"/projects/{project_id}/context-artifacts"))
+    if name == "nimbusware_create_context_artifact":
+        title = str(arguments.get("title") or "").strip()
+        content = str(arguments.get("content") or "").strip()
+        if not title or not content:
+            raise ValueError("title and content are required")
+        kind = str(arguments.get("kind") or "note")
+        return _text_result(
+            post_json(
+                f"/projects/{project_id}/context-artifacts",
+                {"title": title, "content": content, "kind": kind},
+            ),
+        )
     raise ValueError(f"unknown tool: {name}")

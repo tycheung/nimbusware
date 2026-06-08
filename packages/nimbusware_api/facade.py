@@ -16,6 +16,7 @@ from nimbusware_api.routes import (
     critic_packs,
     custom_agents,
     integrations,
+    memory_chunks,
     ollama,
     operator_settings,
     personas,
@@ -23,6 +24,7 @@ from nimbusware_api.routes import (
     platform_models,
     policy,
     preflight,
+    project_context_artifacts,
     projects,
     runs,
     scraper_artifacts,
@@ -45,9 +47,11 @@ def build_v1_router() -> APIRouter:
     router.include_router(personas.router)
     router.include_router(custom_agents.router)
     router.include_router(projects.router)
+    router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)
+    router.include_router(memory_chunks.router)
     router.include_router(analytics.router)
     router.include_router(platform_models.router)
     router.include_router(operator_settings.router)

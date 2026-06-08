@@ -5,7 +5,9 @@ from fastapi import APIRouter
 from nimbusware_api.read_models import *  # noqa: F403
 from nimbusware_api.read_models import __all__ as _read_model_exports
 from nimbusware_api.routes.runs.compact import router as compact_router
+from nimbusware_api.routes.runs.compactions import router as compactions_router
 from nimbusware_api.routes.runs.constants import INCLUDE_SUMMARY_MAX_LIMIT
+from nimbusware_api.routes.runs.context_artifacts import router as context_artifacts_router
 from nimbusware_api.routes.runs.context_budget import router as context_budget_router
 from nimbusware_api.routes.runs.create import CreateRunBody
 from nimbusware_api.routes.runs.create import router as create_router
@@ -33,6 +35,8 @@ __all__ = [
     "maker_progress_router",
     "context_budget_router",
     "compact_router",
+    "compactions_router",
+    "context_artifacts_router",
     "maker_approval_router",
     "research_router",
     "stream_router",
@@ -50,6 +54,8 @@ def build_runs_router() -> APIRouter:
     composed.include_router(maker_progress_router)
     composed.include_router(context_budget_router)
     composed.include_router(compact_router)
+    composed.include_router(compactions_router)
+    composed.include_router(context_artifacts_router)
     composed.include_router(maker_approval_router)
     composed.include_router(research_router)
     composed.include_router(stream_router)

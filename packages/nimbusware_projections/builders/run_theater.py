@@ -16,6 +16,7 @@ MessageKind = Literal[
     "agent_tool",
     "research",
     "stitch",
+    "context",
 ]
 Severity = Literal["info", "warn", "block", "pass"]
 
@@ -201,7 +202,93 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 )
         elif et == EventType.STAGE_STARTED.value:
             sn = _stage_name(pl)
-            if sn.startswith("agent_eval:"):
+            row_meta = _metadata(row)
+            if sn == "campaign.context.compaction.reverted":
+                cid = str(row_meta.get("compaction_id") or "")
+                reverted_by = str(row_meta.get("reverted_by") or "operator")
+                reason = str(row_meta.get("reason") or "").strip()
+                headline = (
+                    f"Context compaction reverted ({cid[:8]}…)"
+                    if len(cid) > 8
+                    else (
+                        f"Context compaction reverted ({cid})"
+                        if cid
+                        else "Context compaction reverted"
+                    )
+                )
+                body_parts = [f"Reverted by: {reverted_by}"]
+                if reason:
+                    body_parts.append(reason[:400])
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "System",
+                        "message_kind": "context",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": "\n\n".join(body_parts) if body_parts else None,
+                        "data_testid": "theater-context-compaction-reverted",
+                    },
+                )
+            elif sn == "campaign.context.compacted":
+                tokens_before = row_meta.get("tokens_before")
+                tokens_after = row_meta.get("tokens_after")
+                merged_count = row_meta.get("merged_handoff_count") or 0
+                trigger = str(row_meta.get("compaction_trigger") or "auto")
+                tb_k = f"{float(tokens_before) / 1000:.1f}k" if tokens_before else "?"
+                ta_k = f"{float(tokens_after) / 1000:.1f}k" if tokens_after else "?"
+                headline = (
+                    f"Context compacted — {tb_k} → {ta_k} tokens ({merged_count} handoffs merged)"
+                )
+                body_parts: list[str] = []
+                summary = row_meta.get("summary")
+                if isinstance(summary, str) and summary.strip():
+                    body_parts.append(summary.strip()[:4000])
+                kept = row_meta.get("kept_event_seq_range")
+                if isinstance(kept, list) and len(kept) >= 2:
+                    body_parts.append(f"Kept seq range: {kept[0]}–{kept[1]}")
+                if trigger:
+                    body_parts.append(f"Trigger: {trigger}")
+                handoff = row_meta.get("slice_handoff")
+                if isinstance(handoff, dict):
+                    read_files = handoff.get("read_files") or handoff.get("files_read")
+                    modified = handoff.get("modified_files") or handoff.get("files_modified")
+                    if isinstance(read_files, list) and read_files:
+                        body_parts.append(
+                            "Read: " + _path_list_summary({"read_files": read_files}, "read_files")
+                        )
+                    if isinstance(modified, list) and modified:
+                        body_parts.append(
+                            "Modified: "
+                            + _path_list_summary({"modified_files": modified}, "modified_files"),
+                        )
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "System",
+                        "message_kind": "context",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": "\n\n".join(body_parts) if body_parts else None,
+                        "data_testid": "theater-context-compacted",
+                    },
+                )
+            elif sn == "slice.handoff":
+                slice_id = str(row_meta.get("slice_id") or "")
+                preview = str(row_meta.get("handoff_summary") or "")[:400]
+                headline = f"Handoff from slice {slice_id}" if slice_id else "Slice handoff"
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Planner",
+                        "message_kind": "context",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": preview or None,
+                        "data_testid": "theater-slice-handoff",
+                    },
+                )
+            elif sn.startswith("agent_eval:"):
                 ae = meta.get("agent_evaluator") if (meta := _metadata(row)) else {}
                 evaluation = ae.get("evaluation") if isinstance(ae, dict) else {}
                 overlaps = (

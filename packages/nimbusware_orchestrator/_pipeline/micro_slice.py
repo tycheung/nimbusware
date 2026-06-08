@@ -174,6 +174,7 @@ class MicroSliceMixin:
             self._store,
             run_id=run_id,
             events=self._store.list_run_events(str(run_id)),
+            compaction_trigger="auto_handoff",
         )
         if gate.passed:
             self._store.append(

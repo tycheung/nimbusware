@@ -52,6 +52,9 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/runs/{run_id}/timeline/{section}/explain"),
         ("GET", "/runs/{run_id}/context_budget"),
         ("POST", "/runs/{run_id}/compact"),
+        ("POST", "/runs/{run_id}/compactions/{compaction_id}/revert"),
+        ("POST", "/runs/{run_id}/context-artifacts/{artifact_id}/insert"),
+        ("GET", "/runs/{run_id}/critic-reliability"),
     },
 )
 
@@ -110,6 +113,8 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "maker_progress_router",
         "context_budget_router",
         "compact_router",
+        "compactions_router",
+        "context_artifacts_router",
         "maker_approval_router",
         "research_router",
         "stream_router",
