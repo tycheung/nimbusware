@@ -1,5 +1,3 @@
-"""Runs router facade — route surface and sub-router contracts."""
-
 from __future__ import annotations
 
 import os
