@@ -41,6 +41,16 @@
         "tier": "T1",
         "put_e2e_passed": true
       }
+    },
+    {
+      "id": "tiny_web_static_site_t3",
+      "workspace_fixture": "tiny_web_app",
+      "factory_tier": "T3",
+      "flow_id": "static_site",
+      "expected_factory_status": {
+        "tier": "T3",
+        "put_e2e_passed": true
+      }
     }
   ]
 }

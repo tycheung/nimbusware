@@ -10,3 +10,9 @@ steps:
   - action: expect_status
     path: /
     status: 200
+  - action: expect_status
+    path: /about.html
+    status: 200
+  - action: expect_status
+    path: /contact.html
+    status: 200

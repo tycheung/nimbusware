@@ -16,7 +16,7 @@ def _load_factory_weekly():
 def test_factory_golden_manifest_has_catalog_flows() -> None:
     mod = _load_factory_weekly()
     entries = mod.load_factory_golden_entries(REPO)
-    assert len(entries) >= 4
+    assert len(entries) >= 5
     flow_ids = {str(e.get("flow_id")) for e in entries}
     assert {"crm", "contacts_api", "todo_api", "static_site"}.issubset(flow_ids)
     tiers = {str(e.get("factory_tier")) for e in entries}
