@@ -121,6 +121,49 @@ def get_context_artifact(project_id: UUID | str, artifact_id: str) -> ContextArt
     return None
 
 
+def latest_compaction_summary_from_events(rows: list[dict[str, Any]]) -> str | None:
+    from nimbusware_projections.builders.context_budget import _latest_compaction_row
+
+    row = _latest_compaction_row(rows)
+    if row is None:
+        return None
+    meta = row.get("metadata")
+    if not isinstance(meta, dict):
+        return None
+    summary = meta.get("summary")
+    return str(summary).strip() if isinstance(summary, str) and summary.strip() else None
+
+
+def create_context_artifact_from_compaction(
+    *,
+    project_id: UUID | str,
+    rows: list[dict[str, Any]],
+    title: str | None = None,
+) -> ContextArtifactRecord:
+    summary = latest_compaction_summary_from_events(rows)
+    if not summary:
+        raise ValueError("no compaction summary on run timeline")
+    last = None
+    from nimbusware_projections.builders.context_budget import estimate_context_budget
+
+    budget = estimate_context_budget(rows)
+    last = budget.get("last_compaction")
+    cid = ""
+    if isinstance(last, dict):
+        cid = str(last.get("compaction_id") or "").strip()
+    auto_title = (
+        title.strip()
+        if title and title.strip()
+        else (f"Compaction {cid[:8]}" if cid else "Compacted context")
+    )
+    return create_context_artifact(
+        project_id=project_id,
+        title=auto_title,
+        content=summary,
+        kind="compaction",
+    )
+
+
 def insert_context_artifact_into_run(
     store: object,
     *,

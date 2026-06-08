@@ -125,6 +125,7 @@ def _last_compaction_detail(events: list[dict[str, Any]]) -> dict[str, Any] | No
         "merged_handoff_count": meta.get("merged_handoff_count"),
         "trigger": meta.get("compaction_trigger"),
         "compaction_id": meta.get("compaction_id"),
+        "summary": meta.get("summary") if isinstance(meta.get("summary"), str) else None,
     }
 
 

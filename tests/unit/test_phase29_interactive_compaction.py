@@ -4,7 +4,7 @@ import os
 from collections.abc import Iterator
 from datetime import datetime, timezone
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -280,6 +280,53 @@ def test_context_artifact_create_and_list(project_client: TestClient) -> None:
     assert listed.status_code == 200
     body = listed.json()
     assert body["count"] >= 2
+
+
+def test_context_artifact_from_compaction_api(project_client: TestClient) -> None:
+    pid = project_client._test_project_id  # type: ignore[attr-defined]
+    run_id = uuid4()
+    project = project_client.app.state.project_store.get(UUID(pid))
+    assert project is not None
+    store = project_client.app.state.store
+    cid = str(uuid4())
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "project": project_metadata_block(
+                    project_id=project.project_id,
+                    name=project.name,
+                    workspace_path=Path(project.workspace_path),
+                    template=project.template,
+                ),
+            },
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="snap",
+            ),
+        ),
+    )
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={"compaction_id": cid, "summary": "Merged handoff summary for artifact"},
+            payload=StageStartedPayload(stage_name="campaign.context.compacted", attempt=1),
+        ),
+    )
+    r = project_client.post(f"/v1/runs/{run_id}/context-artifacts/from-compaction")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["project_id"] == pid
+    assert body["kind"] == "compaction"
+    listed = list_context_artifacts(pid)
+    assert any(row.artifact_id == body["artifact_id"] for row in listed)
 
 
 def test_insert_context_artifact_into_run(project_client: TestClient) -> None:
