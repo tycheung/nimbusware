@@ -5,8 +5,8 @@ from fastapi import APIRouter, Request
 from nimbusware_env.edition import edition, is_enterprise
 from nimbusware_env.env_flags import env_str
 from nimbusware_env.oidc_config import load_oidc_config
-from nimbusware_maker.quick_mode import quick_mode_enabled
 from nimbusware_maker.push_subscriptions import push_web_enabled, vapid_public_key
+from nimbusware_maker.quick_mode import quick_mode_enabled
 
 router = APIRouter(tags=["web"])
 

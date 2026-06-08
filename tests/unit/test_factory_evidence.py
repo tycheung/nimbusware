@@ -3,7 +3,11 @@ from __future__ import annotations
 import io
 import zipfile
 from pathlib import Path
-from nimbusware_orchestrator.factory_evidence import build_factory_evidence_bundle
+
+from nimbusware_orchestrator.factory_evidence import (
+    build_factory_evidence_bundle,
+    export_factory_evidence_zip,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -49,9 +53,6 @@ def test_factory_evidence_reads_put_artifacts(tmp_path: Path) -> None:
 
 
 def test_export_factory_evidence_zip_contains_bundle(tmp_path: Path) -> None:
-    from nimbusware_orchestrator.factory_evidence import export_factory_evidence_zip
-    import zipfile
-
     events = [
         {
             "event_type": "stage.passed",
