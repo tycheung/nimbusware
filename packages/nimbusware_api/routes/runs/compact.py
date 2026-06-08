@@ -15,13 +15,17 @@ router = APIRouter()
 
 
 class CompactRunBody(BaseModel):
-    scope: Literal["all", "last_n"] = "all"
+    scope: Literal["all", "last_n", "source_refs"] = "all"
     n: int | None = Field(default=None, ge=1, le=500)
+    source_refs: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _require_n_for_last_n(self) -> CompactRunBody:
         if self.scope == "last_n" and self.n is None:
             msg = "n is required when scope is last_n"
+            raise ValueError(msg)
+        if self.scope == "source_refs" and not self.source_refs:
+            msg = "source_refs is required when scope is source_refs"
             raise ValueError(msg)
         return self
 
@@ -67,6 +71,7 @@ def compact_run(
         )
     scope = body.scope if body is not None else "all"
     scope_n = body.n if body is not None else None
+    refs = body.source_refs if body is not None else None
     result = maybe_emit_compaction_event(
         store,
         run_id=run_id,
@@ -74,6 +79,7 @@ def compact_run(
         compaction_trigger="manual",
         scope=scope,
         scope_n=scope_n,
+        source_refs=refs,
     )
     if result is None:
         return CompactRunResponse(run_id=str(run_id), compacted=False)

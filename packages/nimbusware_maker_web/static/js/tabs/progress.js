@@ -65,9 +65,17 @@ export async function mountProgress(root) {
   const mount = document.getElementById("progress-mount");
   if (mount) {
     mount.innerHTML = `
+      <div id="compact-toolbar" class="actions" data-testid="maker-compact-toolbar" hidden>
+        <button type="button" id="compact-all-btn">Compact all</button>
+        <label>Last N <input type="number" id="compact-last-n" min="1" max="50" value="3" style="width:3rem" /></label>
+        <button type="button" id="compact-last-n-btn">Compact last N</button>
+        <button type="button" id="compact-selected-btn">Compact selected</button>
+        <button type="button" id="compact-revert-btn">Revert last compaction</button>
+      </div>
       <ul id="theater-list"></ul>
       <p id="pressure-banner" class="pressure-banner" hidden></p>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
+      <p id="factory-status-chip" class="factory-status-chip" hidden data-testid="maker-factory-status"></p>
       <p id="handoff-preview" class="handoff-preview" hidden></p>
       <p id="slice-summary"></p>
       <p id="campaign-controls" class="actions" hidden></p>
@@ -104,11 +112,72 @@ export async function mountProgress(root) {
     progressHandle = null;
   }
 
+  async function compactRun(body) {
+    const rid = resolveRunId();
+    if (!rid) return;
+    try {
+      await apiJson(`/runs/${encodeURIComponent(rid)}/compact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      toast("Context compacted", "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  }
+
+  function wireCompactToolbar() {
+    const bar = document.getElementById("compact-toolbar");
+    if (!bar) return;
+    bar.hidden = false;
+    document.getElementById("compact-all-btn")?.addEventListener("click", () => compactRun({ scope: "all" }));
+    document.getElementById("compact-last-n-btn")?.addEventListener("click", () => {
+      const n = Number(document.getElementById("compact-last-n")?.value || 3);
+      compactRun({ scope: "last_n", n });
+    });
+    document.getElementById("compact-selected-btn")?.addEventListener("click", () => {
+      const refs = [...document.querySelectorAll("#theater-list input[data-theater-pick]:checked")]
+        .map((el) => el.getAttribute("data-store-seq"))
+        .filter(Boolean);
+      if (!refs.length) {
+        toast("Select theater messages first", "error");
+        return;
+      }
+      compactRun({ scope: "source_refs", source_refs: refs });
+    });
+    document.getElementById("compact-revert-btn")?.addEventListener("click", async () => {
+      const rid = resolveRunId();
+      if (!rid) return;
+      try {
+        const budget = await apiJson(`/runs/${encodeURIComponent(rid)}/maker-progress`);
+        const cid = budget?.context_budget?.last_compaction?.compaction_id;
+        if (!cid) {
+          toast("No compaction to revert", "error");
+          return;
+        }
+        await apiJson(`/runs/${encodeURIComponent(rid)}/compactions/${encodeURIComponent(cid)}/revert`, {
+          method: "POST",
+        });
+        toast("Compaction reverted", "success");
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+  }
+
   function appendTheater(msg) {
     const list = document.getElementById("theater-list");
     if (!list || !msg) return;
     const li = document.createElement("li");
     li.className = `theater-line severity-${msg.severity || "info"}`;
+    if (msg.store_seq != null) {
+      const pick = document.createElement("input");
+      pick.type = "checkbox";
+      pick.dataset.theaterPick = "1";
+      pick.dataset.storeSeq = String(msg.store_seq);
+      li.appendChild(pick);
+    }
     const seq = msg.store_seq != null ? `#${msg.store_seq} ` : "";
     const headline = document.createElement("div");
     headline.className = "theater-headline";
@@ -134,6 +203,33 @@ export async function mountProgress(root) {
       li.appendChild(pre);
     }
     list.appendChild(li);
+  }
+
+  function renderFactoryStatus(body) {
+    const chip = document.getElementById("factory-status-chip");
+    if (!chip) return;
+    const fs = body.factory_status;
+    if (!fs || !fs.tier) {
+      chip.hidden = true;
+      chip.textContent = "";
+      return;
+    }
+    chip.hidden = false;
+    const ism =
+      fs.ism_coverage_pct != null ? ` · ISM ${Math.round(fs.ism_coverage_pct)}%` : "";
+    const put =
+      fs.put_e2e_passed == null ? "" : fs.put_e2e_passed ? " · PUT E2E pass" : " · PUT E2E fail";
+    chip.replaceChildren();
+    chip.appendChild(document.createTextNode(`Factory ${fs.tier}${ism}${put}`));
+    const rid = resolveRunId();
+    if (rid) {
+      const link = document.createElement("a");
+      link.href = `/v1/runs/${encodeURIComponent(rid)}/factory-evidence/export`;
+      link.textContent = " · Download evidence";
+      link.setAttribute("download", `factory-evidence-${rid}.zip`);
+      link.dataset.testid = "maker-factory-evidence-download";
+      chip.appendChild(link);
+    }
   }
 
   function renderContextBudget(body) {
@@ -283,6 +379,7 @@ export async function mountProgress(root) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
     renderPressure(body);
+    renderFactoryStatus(body);
     renderContextBudget(body);
     if (summary) {
       const cp = body.campaign_progress;
@@ -333,6 +430,8 @@ export async function mountProgress(root) {
   exportLink.setAttribute("download", `nimbusware-theater-${id}.md`);
   mount?.prepend(exportBar);
   exportBar.appendChild(exportLink);
+
+  wireCompactToolbar();
 
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
     onMessage: (ev) => {

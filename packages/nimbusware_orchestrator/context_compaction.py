@@ -9,7 +9,7 @@ from agent_core.context_budget import estimate_tokens
 from agent_core.models.slice_handoff import SliceHandoffSummary
 from nimbusware_orchestrator.slice_handoff import handoff_markdown_capped
 
-CompactionScope = Literal["all", "last_n"]
+CompactionScope = Literal["all", "last_n", "source_refs"]
 
 
 @dataclass(frozen=True)
@@ -96,6 +96,7 @@ def compact_campaign_context(
     reserve_tokens: int | None = None,
     scope: CompactionScope = "all",
     scope_n: int | None = None,
+    source_refs: list[str] | None = None,
 ) -> CompactionResult | None:
     """Summarize older slice handoffs; keep recent verbatim within token budget."""
     if not campaign_compact_enabled():
@@ -104,6 +105,11 @@ def compact_campaign_context(
     if scope == "last_n":
         n = max(1, int(scope_n or 1))
         handoffs = handoffs[-n:]
+    elif scope == "source_refs":
+        ref_set = {str(r).strip() for r in (source_refs or []) if str(r).strip()}
+        if not ref_set:
+            return None
+        handoffs = [row for row in handoffs if str(row.get("store_seq") or "").strip() in ref_set]
     if len(handoffs) < 3:
         return None
 
@@ -280,6 +286,7 @@ def maybe_emit_compaction_event(
     compaction_trigger: str = "auto_handoff",
     scope: CompactionScope = "all",
     scope_n: int | None = None,
+    source_refs: list[str] | None = None,
 ) -> CompactionResult | None:
     """Compact when enabled and append a campaign.context.compacted marker event."""
     from nimbusware_orchestrator.replay_from import compaction_allowed
@@ -292,6 +299,7 @@ def maybe_emit_compaction_event(
         reserve_tokens=reserve_tokens,
         scope=scope,
         scope_n=scope_n,
+        source_refs=source_refs,
     )
     if result is None:
         return None
