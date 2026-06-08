@@ -341,6 +341,15 @@ def run_put_e2e_flow(
     findings: list[PutE2EFinding] = []
     steps = flow.get("steps") if isinstance(flow.get("steps"), list) else []
 
+    def _failed_goto_path() -> str:
+        for finding in reversed(findings):
+            if finding.surface_path:
+                return finding.surface_path
+        for step in reversed(steps):
+            if isinstance(step, dict) and str(step.get("action") or "").strip().lower() == "goto":
+                return str(step.get("path") or "/")
+        return next(iter(exercised), "/")
+
     def _fail_result(
         *,
         detail: str,
@@ -348,8 +357,44 @@ def run_put_e2e_flow(
         capture: dict[str, Any],
     ) -> PutE2EResult:
         if workspace is not None and workspace.is_dir():
-            from nimbusware_orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
+            from nimbusware_orchestrator.put_e2e_browser import capture_failure_browser_trace
+            from nimbusware_orchestrator.put_e2e_evidence import (
+                put_e2e_evidence_dir,
+                write_put_e2e_failure_evidence,
+            )
 
+            evidence_dir = put_e2e_evidence_dir(workspace, flow_id)
+            if console_on or network_on or require_playwright or pw_ready:
+                trace_meta = capture_failure_browser_trace(
+                    base_url,
+                    _failed_goto_path(),
+                    evidence_dir=evidence_dir,
+                    capture_console=console_on,
+                    capture_network=network_on,
+                )
+                if trace_meta:
+                    capture = dict(capture)
+                    capture["trace"] = trace_meta
+                    live_findings = trace_meta.get("findings") or []
+                    if live_findings:
+                        capture["console"] = [
+                            row for row in live_findings if row.get("kind") == "console"
+                        ]
+                        capture["network"] = [
+                            row for row in live_findings if row.get("kind") == "network"
+                        ]
+                    elif not console_on and not network_on:
+                        pass
+                    elif not live_findings:
+                        capture["console"] = [
+                            f.to_dict() for f in stub_console_capture(enabled=console_on)
+                        ]
+                        capture["network"] = [
+                            f.to_dict()
+                            for f in stub_network_capture(
+                                enabled=network_on, exercised_paths=exercised_paths
+                            )
+                        ]
             pending = PutE2EResult(
                 verdict="FAIL",
                 flow_id=flow_id,

@@ -15,6 +15,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
                 "micro_slice_executor.py",
                 "_pipeline/_helpers.py",
                 "_pipeline/create_run.py",
+                "put_e2e_runner.py",
             }
         ),
     ),
