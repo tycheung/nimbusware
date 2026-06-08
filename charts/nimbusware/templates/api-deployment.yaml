@@ -40,6 +40,14 @@ spec:
               value: /app
             - name: NIMBUSWARE_SKIP_PREFLIGHT
               value: "1"
+            {{- if or .Values.redis.enabled .Values.secrets.redisUrl .Values.secrets.redisFleetUrls }}
+            - name: NIMBUSWARE_RUN_DISPATCH
+              value: redis
+            {{- if and .Values.redis.enabled (not .Values.secrets.redisUrl) (not .Values.secrets.redisFleetUrls) }}
+            - name: NIMBUSWARE_REDIS_URL
+              value: redis://redis:6379/0
+            {{- end }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/platform/edition

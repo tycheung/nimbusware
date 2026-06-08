@@ -57,8 +57,20 @@ helm upgrade nimbusware charts/nimbusware \
 
 Pod templates include `checksum/secrets` annotations so `helm upgrade` rolls API and worker pods when secret values change.
 
+## Redis fleet (Enterprise)
+
+For managed or multi-broker Redis, disable in-chart Redis and set fleet URLs via secrets:
+
+```bash
+helm upgrade nimbusware charts/nimbusware \
+  --set redis.enabled=false \
+  --set secrets.redisFleetUrls='rediss://primary:6379/0,rediss://replica:6379/0'
+```
+
+See [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md).
+
 ## Secrets rotation
 
-Update `secrets.databaseUrl` / `secrets.adminToken` in values, run `helm upgrade`, then restart API and worker pods.
+Update `secrets.databaseUrl` / `secrets.adminToken` / `secrets.redisFleetUrls` in values, run `helm upgrade`, then restart API and worker pods.
 
 Raw YAML reference manifests remain in [`k8s/`](k8s/) for `kubectl apply --dry-run=client` smoke checks.

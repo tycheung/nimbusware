@@ -34,6 +34,9 @@ labPostgres:
 secrets:
   databaseUrl: postgresql://nimbusware:nimbusware@postgres:5432/nimbusware
   adminToken: change-me-before-prod
+  # Optional managed Redis (when redis.enabled=false). Use redisFleetUrls for multi-broker fleets.
+  redisUrl: ""
+  redisFleetUrls: ""
 
 ingress:
   enabled: false
