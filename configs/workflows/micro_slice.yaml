@@ -6,7 +6,7 @@ slice:
   allowed_globs:
     - "**/*.py"
   e2e:
-    enabled: false
+    enabled: true
 
 stage_graph:
   - stage_name: plan

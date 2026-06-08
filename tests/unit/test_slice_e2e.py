@@ -43,10 +43,10 @@ def test_run_slice_e2e_custom_command(tmp_path: Path) -> None:
     assert result.verdict == "PASS"
 
 
-def test_micro_slice_workflow_parses_e2e_disabled() -> None:
+def test_micro_slice_workflow_parses_e2e_enabled_by_default() -> None:
     repo = find_repo_root()
     block = parse_micro_slice_workflow_block(repo, "micro_slice")
-    assert block.e2e_enabled is False
+    assert block.e2e_enabled is True
 
 
 def test_micro_slice_web_workflow_parses_e2e_enabled() -> None:
