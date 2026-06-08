@@ -240,6 +240,25 @@ export async function mountSettings(root) {
         li.innerHTML = `<strong>${ch.category || ch.source_event_type || "chunk"}</strong>
           <span class="muted">${ch.severity || ""} · run ${String(ch.run_id || "").slice(0, 8)}</span>
           <p class="memory-chunk-preview">${ch.excerpt || ""}</p>`;
+        const insertBtn = document.createElement("button");
+        insertBtn.type = "button";
+        insertBtn.textContent = "Insert into active run";
+        insertBtn.dataset.testid = "maker-settings-memory-insert";
+        insertBtn.addEventListener("click", async () => {
+          let runId = resolveRunId();
+          if (!runId) runId = await hydrateActiveRun(apiJson);
+          if (!runId) return toast("No active run — open Progress or start a build", "error");
+          try {
+            await apiJson(
+              `/runs/${encodeURIComponent(runId)}/memory-chunks/${encodeURIComponent(ch.chunk_id)}/insert`,
+              { method: "POST" },
+            );
+            toast("Memory chunk inserted into run context", "success");
+          } catch (e) {
+            toast(String(e.message || e), "error");
+          }
+        });
+        li.appendChild(insertBtn);
         list?.appendChild(li);
       }
       if (!(body.chunks || []).length) {

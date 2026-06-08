@@ -70,8 +70,17 @@ export async function mountProgress(root) {
         <label>Last N <input type="number" id="compact-last-n" min="1" max="50" value="3" style="width:3rem" /></label>
         <button type="button" id="compact-last-n-btn">Compact last N</button>
         <button type="button" id="compact-selected-btn">Compact selected</button>
+        <button type="button" id="compact-save-artifact-btn" data-testid="maker-compact-save-artifact">Save compaction as artifact</button>
         <button type="button" id="compact-revert-btn">Revert last compaction</button>
       </div>
+      <section id="integrator-ribbon" class="panel integrator-ribbon" data-testid="maker-integrator-ribbon">
+        <h4>Integrator &amp; stitch</h4>
+        <p id="integrator-ribbon-body" class="muted"></p>
+        <div class="actions">
+          <button type="button" id="integrator-stitch-refresh" data-testid="maker-integrator-stitch-refresh">Refresh stitch candidates</button>
+          <button type="button" id="integrator-stitch-promote-batch" data-testid="maker-integrator-stitch-promote-batch">Promote pending batch</button>
+        </div>
+      </section>
       <ul id="theater-list"></ul>
       <p id="pressure-banner" class="pressure-banner" hidden></p>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
@@ -160,6 +169,24 @@ export async function mountProgress(root) {
           method: "POST",
         });
         toast("Compaction reverted", "success");
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    document.getElementById("compact-save-artifact-btn")?.addEventListener("click", async () => {
+      const rid = resolveRunId();
+      if (!rid) return;
+      try {
+        const out = await apiJson(`/runs/${encodeURIComponent(rid)}/context-artifacts/from-compaction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        toast(`Saved artifact ${out.title || out.artifact_id}`, "success");
+        const timeline = await apiJson(`/runs/${encodeURIComponent(rid)}/timeline?limit=1`);
+        const created = (timeline.events || []).find((e) => e.event_type === "run.created");
+        const projectId = created?.metadata?.project?.id;
+        if (projectId) await renderContextArtifacts(projectId);
       } catch (e) {
         toast(String(e.message || e), "error");
       }
@@ -432,6 +459,8 @@ export async function mountProgress(root) {
   exportBar.appendChild(exportLink);
 
   wireCompactToolbar();
+  wireIntegratorRibbon();
+  void renderIntegratorRibbon(id);
 
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
     onMessage: (ev) => {
@@ -504,6 +533,7 @@ export async function mountProgress(root) {
   async function renderContextArtifacts(projectId) {
     const list = document.getElementById("context-artifacts-list");
     if (!list || !projectId) return;
+    const rid = resolveRunId();
     try {
       const body = await apiJson(`/projects/${encodeURIComponent(projectId)}/context-artifacts`);
       list.replaceChildren();
@@ -517,14 +547,94 @@ export async function mountProgress(root) {
       }
       for (const art of artifacts) {
         const li = document.createElement("li");
+        li.className = "context-artifact-row";
         li.dataset.testid = "maker-context-artifact";
-        li.textContent = `${art.title || art.artifact_id} (${art.kind || "note"})`;
-        li.title = String(art.content || "").slice(0, 400);
+        const label = document.createElement("span");
+        label.textContent = `${art.title || art.artifact_id} (${art.kind || "note"})`;
+        label.title = String(art.content || "").slice(0, 400);
+        li.appendChild(label);
+        if (rid) {
+          const insertBtn = document.createElement("button");
+          insertBtn.type = "button";
+          insertBtn.textContent = "Insert into run";
+          insertBtn.dataset.testid = "maker-context-artifact-insert";
+          insertBtn.addEventListener("click", async () => {
+            try {
+              await apiJson(
+                `/runs/${encodeURIComponent(rid)}/context-artifacts/${encodeURIComponent(art.artifact_id)}/insert`,
+                { method: "POST" },
+              );
+              toast("Artifact inserted into run context", "success");
+            } catch (e) {
+              toast(String(e.message || e), "error");
+            }
+          });
+          li.appendChild(insertBtn);
+        }
         list.appendChild(li);
       }
     } catch {
       list.replaceChildren();
     }
+  }
+
+  async function renderIntegratorRibbon(runId) {
+    const panel = document.getElementById("integrator-ribbon");
+    const bodyEl = document.getElementById("integrator-ribbon-body");
+    if (!panel || !bodyEl || !runId) return;
+    try {
+      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=1`);
+      const ig = timeline.integrator_gate;
+      const delta = timeline.integrator_gate_delta;
+      const parts = [];
+      if (ig && ig.verdict) {
+        parts.push(`Integrator gate: ${ig.verdict}`);
+      }
+      if (delta && delta.summary) {
+        parts.push(String(delta.summary));
+      }
+      if (!parts.length) {
+        bodyEl.textContent = "No integrator gate summary yet.";
+        return;
+      }
+      bodyEl.textContent = parts.join(" · ");
+    } catch {
+      bodyEl.textContent = "Integrator summary unavailable.";
+    }
+  }
+
+  let stitchCatalogVersion = 1;
+  async function refreshStitchFromProgress() {
+    try {
+      const catalogBody = await apiJson("/bundles/catalog").catch(() => ({ document_version: 1 }));
+      stitchCatalogVersion = catalogBody.document_version ?? 1;
+      const candBody = await apiJson("/bundles/catalog-candidates?limit=20");
+      const pending = (candBody.candidates || []).filter((c) => (c.status || "pending") === "pending");
+      const bodyEl = document.getElementById("integrator-ribbon-body");
+      if (bodyEl && pending.length) {
+        bodyEl.textContent = `${bodyEl.textContent ? bodyEl.textContent + " · " : ""}${pending.length} stitch candidate(s) pending`;
+      }
+    } catch {
+      /* optional when admin token missing */
+    }
+  }
+
+  function wireIntegratorRibbon() {
+    document.getElementById("integrator-stitch-refresh")?.addEventListener("click", () => {
+      refreshStitchFromProgress().catch((e) => toast(String(e.message || e), "error"));
+    });
+    document.getElementById("integrator-stitch-promote-batch")?.addEventListener("click", async () => {
+      try {
+        await apiJson(
+          `/bundles/catalog-candidates/promote-stitch-pending?expected_version=${stitchCatalogVersion}`,
+          { method: "POST" },
+        );
+        toast("Stitch batch promote complete", "success");
+        await refreshStitchFromProgress();
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
   }
 
   try {
