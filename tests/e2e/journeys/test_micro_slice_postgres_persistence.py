@@ -57,11 +57,11 @@ def test_timeline_survives_api_restart(postgres_url: str) -> None:
     finally:
         stop_api_subprocess(stack)
 
-    stack2 = start_api_subprocess(repo, env=env)
+    stack2 = start_api_subprocess(repo, env=env, port=stack.port)
     try:
         timeline2 = stack_http_request(
             "GET",
-            f"{stack.base_url}/v1/runs/{run_id}/timeline",
+            f"{stack2.base_url}/v1/runs/{run_id}/timeline",
             timeout=30.0,
         )
         assert timeline2.status_code == 200
