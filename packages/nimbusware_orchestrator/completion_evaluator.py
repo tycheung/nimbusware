@@ -149,6 +149,9 @@ def evaluate_completion(rows: list[dict[str, Any]]) -> CompletionEvalResult:
             blocking.append("must_have_features_incomplete")
         if not _deep_eval_due(completed, policy.deep_eval_every_n_slices):
             blocking.append("deep_eval_cadence_pending")
+        from nimbusware_orchestrator.factory_cadence import factory_blocks_campaign_pass
+
+        blocking.extend(factory_blocks_campaign_pass(rows))
         if blocking:
             return CompletionEvalResult(
                 verdict="INCOMPLETE",
@@ -277,6 +280,31 @@ def evaluate_and_finalize_campaign(
                     rationale=str(payload.get("rationale") or ""),
                 )
     result = evaluate_completion(rows)
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.factory_cadence import (
+        factory_complete_emitted,
+        factory_completion_policy_from_rows,
+        maybe_run_factory_cadence_pass,
+    )
+
+    factory_policy = factory_completion_policy_from_rows(rows)
+    if (
+        factory_policy is not None
+        and result.verdict == "PASS"
+        and not factory_complete_emitted(rows)
+    ):
+        backlog = backlog_from_events(rows)
+        completed = backlog.metadata.slices_completed if backlog else 0
+        maybe_run_factory_cadence_pass(
+            store,
+            run_id,
+            store.list_run_events(str(run_id)),
+            workspace=resolve_run_workspace(rows),
+            slices_completed=completed,
+            force=True,
+        )
+        rows = store.list_run_events(str(run_id))
+        result = evaluate_completion(rows)
     emit_completion_evaluated(store, run_id, result)
     if result.verdict == "PASS":
         from nimbusware_maker.workspace import resolve_run_workspace

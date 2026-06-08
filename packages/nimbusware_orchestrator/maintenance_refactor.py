@@ -86,13 +86,23 @@ def run_maintenance_refactor(
                 fix_slices = 1
     rows = store.list_run_events(str(run_id))
     from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.factory_cadence import maybe_run_factory_cadence_pass
     from nimbusware_orchestrator.launch_evaluator import maybe_run_launch_eval_for_campaign
 
+    ws = resolve_run_workspace(rows)
     maybe_run_launch_eval_for_campaign(
         store,
         run_id,
         rows,
-        workspace=resolve_run_workspace(rows),
+        workspace=ws,
+    )
+    maybe_run_factory_cadence_pass(
+        store,
+        run_id,
+        rows,
+        workspace=ws,
+        slices_completed=slices_completed,
+        repo_root=getattr(orch, "repo_root", None),
     )
     store.append(
         MaintenanceRefactorPassedEvent(

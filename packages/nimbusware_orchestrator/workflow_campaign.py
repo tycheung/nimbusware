@@ -38,6 +38,9 @@ class CompletionWorkflowBlock:
     require_project_tests_pass: bool = True
     require_all_must_have_features: bool = True
     deep_eval_every_n_slices: int = 20
+    factory_tier: str | None = None
+    e2e_on_every_n_slices: int = 5
+    auto_launch_eval: bool = True
 
 
 def parse_campaign_workflow_block(
@@ -112,12 +115,19 @@ def parse_completion_workflow_block(
     raw = wf.get("completion")
     if not isinstance(raw, dict):
         return CompletionWorkflowBlock()
+    factory_tier = raw.get("factory_tier")
+    tier_token = str(factory_tier).strip().upper() if factory_tier is not None else None
+    if tier_token not in {"T0", "T1", "T2", "T3"}:
+        tier_token = None
     return CompletionWorkflowBlock(
         require_project_tests_pass=bool(raw.get("require_project_tests_pass", True)),
         require_all_must_have_features=bool(
             raw.get("require_all_must_have_features", True),
         ),
         deep_eval_every_n_slices=max(1, int(raw.get("deep_eval_every_n_slices", 20) or 20)),
+        factory_tier=tier_token,
+        e2e_on_every_n_slices=max(1, int(raw.get("e2e_on_every_n_slices", 5) or 5)),
+        auto_launch_eval=bool(raw.get("auto_launch_eval", True)),
     )
 
 
@@ -168,5 +178,9 @@ def campaign_effective_metadata(
         "completion": {
             "require_project_tests_pass": completion.require_project_tests_pass,
             "require_all_must_have_features": completion.require_all_must_have_features,
+            "deep_eval_every_n_slices": completion.deep_eval_every_n_slices,
+            "factory_tier": completion.factory_tier,
+            "e2e_on_every_n_slices": completion.e2e_on_every_n_slices,
+            "auto_launch_eval": completion.auto_launch_eval,
         },
     }
