@@ -385,6 +385,9 @@ def run_put_e2e_flow(
         "playwright_ready": pw_ready,
         "playwright_detail": pw_detail,
     }
+    from nimbusware_orchestrator.fleet_playwright import attach_fleet_playwright_capture
+
+    capture = attach_fleet_playwright_capture(capture)
     return PutE2EResult(
         verdict="PASS",
         flow_id=flow_id,
