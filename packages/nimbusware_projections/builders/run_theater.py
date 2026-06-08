@@ -230,6 +230,25 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "data_testid": "theater-context-compaction-reverted",
                     },
                 )
+            elif sn == "run.replay.started":
+                from_seq = row_meta.get("from_store_seq")
+                policy = row_meta.get("replay_policy")
+                compact_on = True
+                if isinstance(policy, dict):
+                    compact_on = bool(policy.get("compact_enabled", True))
+                headline = f"Replay from checkpoint (seq {from_seq})"
+                body_md = f"Compaction enabled: {compact_on}"
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "System",
+                        "message_kind": "context",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": body_md,
+                        "data_testid": "theater-run-replay-started",
+                    },
+                )
             elif sn == "campaign.context.compacted":
                 tokens_before = row_meta.get("tokens_before")
                 tokens_after = row_meta.get("tokens_after")

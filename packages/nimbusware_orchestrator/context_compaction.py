@@ -128,8 +128,16 @@ def compact_campaign_context(
     if not older:
         return None
 
-    reverted = reverted_compaction_ids(events)
-    merged = _merge_handoffs(older, prior=_latest_compaction_prior(events, reverted=reverted))
+    from nimbusware_orchestrator.replay_from import (
+        compaction_skipped_compaction_ids,
+        effective_reverted_compaction_ids,
+    )
+
+    reverted = effective_reverted_compaction_ids(events)
+    skip_compaction = reverted | compaction_skipped_compaction_ids(events)
+    merged = _merge_handoffs(
+        older, prior=_latest_compaction_prior(events, reverted=skip_compaction)
+    )
     recent_text = "\n\n".join(
         str((r.get("metadata") or {}).get("handoff_summary") or "")
         for r in recent
@@ -274,6 +282,10 @@ def maybe_emit_compaction_event(
     scope_n: int | None = None,
 ) -> CompactionResult | None:
     """Compact when enabled and append a campaign.context.compacted marker event."""
+    from nimbusware_orchestrator.replay_from import compaction_allowed
+
+    if not compaction_allowed(events):
+        return None
     result = compact_campaign_context(
         events,
         keep_recent_tokens=keep_recent_tokens,

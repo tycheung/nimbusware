@@ -55,6 +55,7 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/runs/{run_id}/compactions/{compaction_id}/revert"),
         ("POST", "/runs/{run_id}/context-artifacts/{artifact_id}/insert"),
         ("GET", "/runs/{run_id}/critic-reliability"),
+        ("POST", "/runs/{run_id}/replay-from"),
     },
 )
 

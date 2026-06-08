@@ -16,6 +16,7 @@ from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
 from nimbusware_api.routes.runs.maker_approval import router as maker_approval_router
 from nimbusware_api.routes.runs.maker_progress import router as maker_progress_router
+from nimbusware_api.routes.runs.replay_from import router as replay_from_router
 from nimbusware_api.routes.runs.research import router as research_router
 from nimbusware_api.routes.runs.slices import router as slices_router
 from nimbusware_api.routes.runs.stitch_summary import router as stitch_summary_router
@@ -36,6 +37,7 @@ __all__ = [
     "context_budget_router",
     "compact_router",
     "compactions_router",
+    "replay_from_router",
     "context_artifacts_router",
     "maker_approval_router",
     "research_router",
@@ -55,6 +57,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(context_budget_router)
     composed.include_router(compact_router)
     composed.include_router(compactions_router)
+    composed.include_router(replay_from_router)
     composed.include_router(context_artifacts_router)
     composed.include_router(maker_approval_router)
     composed.include_router(research_router)
