@@ -143,6 +143,42 @@ TOOL_SPECS: list[dict[str, Any]] = [
         "description": "Trigger campaign context compaction for a run.",
         "inputSchema": {
             "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "scope": {"type": "string", "enum": ["all", "last_n", "source_refs"]},
+                "n": {"type": "integer", "minimum": 1},
+                "source_refs": {"type": "array", "items": {"type": "string"}},
+            },
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_factory_evidence",
+        "description": "Fetch factory completion evidence bundle for a run.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
+    {
+        "name": "nimbusware_replay_from",
+        "description": "Replay a run from a checkpoint with optional compaction policy.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "checkpoint_seq": {"type": "integer", "minimum": 0},
+                "operator_ack": {"type": "boolean"},
+            },
+            "required": ["run_id", "checkpoint_seq"],
+        },
+    },
+    {
+        "name": "nimbusware_launch_eval",
+        "description": "Run launch eval rubric for a campaign run.",
+        "inputSchema": {
+            "type": "object",
             "properties": {"run_id": {"type": "string"}},
             "required": ["run_id"],
         },
@@ -253,7 +289,33 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     if name == "nimbusware_revert_workspace":
         return _text_result(post_json(f"/runs/{run_id}/workspace/revert", {}))
     if name == "nimbusware_compact_run":
-        return _text_result(post_json(f"/runs/{run_id}/compact", {}))
+        body: dict[str, Any] = {}
+        scope = str(arguments.get("scope") or "").strip()
+        if scope:
+            body["scope"] = scope
+        if arguments.get("n") is not None:
+            body["n"] = int(arguments["n"])
+        refs = arguments.get("source_refs")
+        if isinstance(refs, list) and refs:
+            body["source_refs"] = [str(r) for r in refs]
+        return _text_result(post_json(f"/runs/{run_id}/compact", body))
+    if name == "nimbusware_factory_evidence":
+        return _text_result(get_json(f"/runs/{run_id}/factory-evidence"))
+    if name == "nimbusware_replay_from":
+        seq = arguments.get("checkpoint_seq")
+        if seq is None:
+            raise ValueError("checkpoint_seq is required")
+        return _text_result(
+            post_json(
+                f"/runs/{run_id}/replay-from",
+                {
+                    "checkpoint_seq": int(seq),
+                    "operator_ack": bool(arguments.get("operator_ack", True)),
+                },
+            ),
+        )
+    if name == "nimbusware_launch_eval":
+        return _text_result(post_json(f"/runs/{run_id}/maker/launch-eval", {}))
     if name == "nimbusware_insert_context_artifact":
         aid = str(arguments.get("artifact_id") or "").strip()
         if not aid:

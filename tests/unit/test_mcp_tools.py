@@ -28,6 +28,9 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_list_context_artifacts",
         "nimbusware_create_context_artifact",
         "nimbusware_insert_context_artifact",
+        "nimbusware_factory_evidence",
+        "nimbusware_replay_from",
+        "nimbusware_launch_eval",
     }
 
 
