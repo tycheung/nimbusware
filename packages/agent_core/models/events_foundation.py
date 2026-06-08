@@ -9,8 +9,7 @@ from pydantic import (
     AfterValidator,
 )
 
-# Logical JSON contract for metadata (documentation + typing). Floats must be finite
-# (RFC 8259-safe); runtime checks enforce this alongside the dict structure.
+# Logical JSON contract for metadata; floats must be finite (RFC 8259-safe).
 JsonValue: TypeAlias = str | int | float | bool | None | list["JsonValue"] | dict[str, "JsonValue"]
 
 

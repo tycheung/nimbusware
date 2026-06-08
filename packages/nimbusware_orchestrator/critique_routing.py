@@ -18,7 +18,7 @@ CRITIQUE_STAGE_TO_PRODUCER: dict[str, str] = {
     "self_refinement.critique": "planner",
 }
 
-# Keep lifecycle producer accounting stable for coverage/snapshot contracts.
+# Keep lifecycle producer accounting stable for coverage contracts.
 _EXCLUDED_PRODUCER_KEYS: frozenset[str] = frozenset({"agent_evaluator"})
 
 
