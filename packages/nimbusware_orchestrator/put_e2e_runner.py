@@ -385,9 +385,18 @@ def run_put_e2e_flow(
         "playwright_ready": pw_ready,
         "playwright_detail": pw_detail,
     }
-    from nimbusware_orchestrator.fleet_playwright import attach_fleet_playwright_capture
+    from nimbusware_orchestrator.fleet_playwright import (
+        attach_fleet_playwright_capture,
+        fleet_browser_goto,
+        fleet_playwright_config,
+    )
 
     capture = attach_fleet_playwright_capture(capture)
+    fleet_cfg = fleet_playwright_config()
+    if fleet_cfg.get("enabled") and steps:
+        first = steps[0] if isinstance(steps[0], dict) else {}
+        goto_path = str(first.get("path") or "/") if str(first.get("action") or "") == "goto" else "/"
+        capture["fleet_browser"] = fleet_browser_goto(base_url, goto_path)
     return PutE2EResult(
         verdict="PASS",
         flow_id=flow_id,
