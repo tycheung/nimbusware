@@ -315,6 +315,11 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         cp = campaign_progress_from_events(events)
         if cp:
             out["campaign_progress"] = cp
+    from nimbusware_projections.builders.factory_status import factory_status_from_events
+
+    factory_status = factory_status_from_events(events)
+    if factory_status:
+        out["factory_status"] = factory_status
     return out
 
 

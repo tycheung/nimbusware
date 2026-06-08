@@ -1,15 +1,85 @@
 import { apiJson, toast } from "../api-client.js";
 import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
+import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 
-function runId() {
-  const search = new URLSearchParams(window.location.search);
-  const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
-  const fromField =
-    document.getElementById("run-theater-run-id")?.value?.trim() ||
-    document.getElementById("desktop-run-id")?.value?.trim() ||
-    document.getElementById("mobile-run-id")?.value?.trim() ||
-    "";
-  return search.get("run_id") || hashParams.get("run_id") || fromField;
+function renderPendingCards(body, container) {
+  container.replaceChildren();
+
+  const statusCard = document.createElement("article");
+  statusCard.className = "approval-card approval-card--status";
+  statusCard.dataset.testid = "maker-review-status-card";
+
+  const planLine = document.createElement("p");
+  planLine.dataset.testid = "maker-review-plan-status";
+  planLine.textContent = body.plan_approved ? "Plan: approved" : "Plan: awaiting approval";
+  statusCard.appendChild(planLine);
+
+  const sliceLine = document.createElement("p");
+  sliceLine.dataset.testid = "maker-review-slice-status";
+  sliceLine.textContent = body.awaiting_approval
+    ? "Slice: awaiting your approval"
+    : "Slice: no pending approval";
+  statusCard.appendChild(sliceLine);
+  container.appendChild(statusCard);
+
+  if (body.pending) {
+    const p = body.pending;
+    const card = document.createElement("article");
+    card.className = "approval-card approval-card--pending";
+    card.dataset.testid = "maker-review-pending-card";
+
+    const title = document.createElement("h4");
+    title.textContent = `Slice ${p.slice_id || p.id || "pending"}`;
+    card.appendChild(title);
+
+    if (p.slice_index != null && p.slice_total != null) {
+      const prog = document.createElement("p");
+      prog.className = "muted";
+      prog.textContent = `Progress: ${Number(p.slice_index) + 1}/${p.slice_total}`;
+      card.appendChild(prog);
+    }
+
+    if (p.rationale) {
+      const rat = document.createElement("p");
+      rat.className = "approval-rationale";
+      rat.dataset.testid = "maker-review-pending-rationale";
+      rat.textContent = p.rationale;
+      card.appendChild(rat);
+    }
+
+    if (Array.isArray(p.target_paths) && p.target_paths.length) {
+      const paths = document.createElement("ul");
+      paths.className = "approval-target-paths";
+      paths.dataset.testid = "maker-review-pending-paths";
+      for (const tp of p.target_paths.slice(0, 8)) {
+        const li = document.createElement("li");
+        li.textContent = String(tp);
+        paths.appendChild(li);
+      }
+      card.appendChild(paths);
+    }
+
+    const mode = document.createElement("p");
+    mode.className = "muted";
+    mode.textContent = `Implement mode: ${p.implement_mode || "scoped"}`;
+    card.appendChild(mode);
+
+    container.appendChild(card);
+  }
+
+  if (body.last_snapshot) {
+    const snap = document.createElement("article");
+    snap.className = "approval-card approval-card--snapshot";
+    snap.dataset.testid = "maker-review-last-snapshot";
+    const h = document.createElement("h4");
+    h.textContent = "Last applied snapshot";
+    snap.appendChild(h);
+    const pre = document.createElement("pre");
+    pre.className = "json-pre";
+    pre.textContent = JSON.stringify(body.last_snapshot, null, 2);
+    snap.appendChild(pre);
+    container.appendChild(snap);
+  }
 }
 
 export async function mountReview(root) {
@@ -20,7 +90,7 @@ export async function mountReview(root) {
       <button type="button" id="rev-load-diff" class="mobile-advanced">Slice diff</button>
       <button type="button" id="rev-revert" class="mobile-advanced">Revert workspace</button>
     </div>
-    <p id="rev-summary"></p>
+    <div id="rev-summary" class="approval-cards"></div>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
     <section id="rev-stitch" class="stitch-panel hidden mobile-advanced">
@@ -37,8 +107,14 @@ export async function mountReview(root) {
     </section>
     <p id="rev-git-status" class="muted"></p>`;
 
+  async function currentRunId() {
+    let id = resolveRunId();
+    if (!id) id = await hydrateActiveRun(apiJson);
+    return id;
+  }
+
   async function loadGitStatus() {
-    const id = runId();
+    const id = await currentRunId();
     if (!id) return;
     const el = root.querySelector("#rev-git-status");
     try {
@@ -59,10 +135,10 @@ export async function mountReview(root) {
   }
 
   async function loadPending() {
-    const id = runId();
+    const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
     const body = await apiJson(`/runs/${id}/maker/pending`);
-    root.querySelector("#rev-summary").textContent = JSON.stringify(body, null, 2);
+    renderPendingCards(body, root.querySelector("#rev-summary"));
     const actions = root.querySelector("#rev-actions");
     actions.replaceChildren();
     if (!body.plan_approved) {
@@ -96,8 +172,13 @@ export async function mountReview(root) {
     loadPending().then(loadGitStatus).catch((e) => toast(String(e.message), "error"));
   });
   void loadGitStatus();
+  const initialId = await currentRunId();
+  if (initialId) {
+    loadPending().catch(() => {});
+  }
+
   root.querySelector("#rev-load-research")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     const body = await apiJson(`/runs/${id}/research`);
     const ul = root.querySelector("#rev-research");
     ul.replaceChildren();
@@ -128,7 +209,7 @@ export async function mountReview(root) {
     }
   });
   root.querySelector("#rev-load-stitch")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
     const body = await apiJson(`/runs/${id}/stitch-summary`);
     const panel = root.querySelector("#rev-stitch");
@@ -143,14 +224,14 @@ export async function mountReview(root) {
       (lines.length ? lines.join("\n") : "No stitch events for this run.") + outcome;
   });
   root.querySelector("#rev-load-diff")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     const pending = await apiJson(`/runs/${id}/maker/pending`);
     const idx = pending?.pending?.slice_index ?? 0;
     const diff = await apiJson(`/runs/${id}/slices/${idx}/diff`);
     root.querySelector("#rev-diff").textContent = diff.patch || diff.diff || JSON.stringify(diff, null, 2);
   });
   root.querySelector("#rev-revert")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     await apiJson(`/runs/${id}/workspace/revert`, { method: "POST" });
     toast("Workspace reverted", "success");
   });
@@ -173,7 +254,7 @@ export async function mountReview(root) {
   }
 
   root.querySelector("#rev-load-launch-eval")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
     try {
       await showLaunchScorecard(id);
@@ -182,7 +263,7 @@ export async function mountReview(root) {
     }
   });
   root.querySelector("#rev-run-launch-eval")?.addEventListener("click", async () => {
-    const id = runId();
+    const id = await currentRunId();
     if (!id) return toast("Enter a run ID", "error");
     try {
       await apiJson(`/runs/${id}/maker/launch-eval`, { method: "POST" });

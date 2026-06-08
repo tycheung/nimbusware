@@ -1,12 +1,33 @@
 import { apiJson, toast } from "../api-client.js";
+import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
+
+function campaignModeFromHash() {
+  const params = new URLSearchParams(window.location.hash.split("?")[1] || "");
+  return params.get("campaign") === "1";
+}
 
 export async function mountBuild(root) {
+  const campaignMode = campaignModeFromHash() && !window.__NIMBUSWARE__?.quick_mode;
   root.innerHTML = `
+    <p id="build-mode-banner" class="build-mode-banner" data-testid="maker-build-mode-banner"></p>
     <form id="intent-form">
       <label>Project <select name="project_id" id="build-project-select"></select></label>
       <label>Business prompt <textarea name="prompt" rows="5" required></textarea></label>
-      <button type="submit" class="primary" data-testid="maker-build-start-run">Start run</button>
+      <button type="submit" class="primary" data-testid="maker-build-start-run">${campaignMode ? "Start campaign" : "Start run"}</button>
     </form>`;
+
+  const banner = root.querySelector("#build-mode-banner");
+  if (banner) {
+    if (campaignMode) {
+      banner.textContent = "Campaign mode — autonomous delivery backlog and slice execution.";
+      banner.dataset.mode = "campaign";
+    } else if (window.__NIMBUSWARE__?.quick_mode) {
+      banner.textContent = "Quick local mode — in-memory runs.";
+      banner.dataset.mode = "quick";
+    } else {
+      banner.hidden = true;
+    }
+  }
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#build-project-select");
@@ -42,9 +63,13 @@ export async function mountBuild(root) {
       body: JSON.stringify(payload),
     });
     const runId = body.run_id || body.campaign_id || body.id;
+    const projectId = String(fd.get("project_id") || "");
+    if (projectId) {
+      setActiveProjectId(projectId);
+      setActiveRun(projectId, runId);
+    }
+    syncRunIdToShell(runId);
     toast(quickMode ? "Run started" : "Campaign started", "success");
-    window.location.hash = `/review?run_id=${runId}`;
-    const input = document.getElementById("run-theater-run-id");
-    if (input) input.value = runId;
+    window.location.hash = `/progress?run_id=${encodeURIComponent(runId)}`;
   });
 }

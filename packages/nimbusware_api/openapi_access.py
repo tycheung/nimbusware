@@ -60,6 +60,8 @@ _USER_PATH_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/research/")),
     ("GET", re.compile(r"^/v1/maker/app")),
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/memory-influence$")),
+    ("GET", re.compile(r"^/v1/runs/\{run_id\}/critic-reliability$")),
+    ("GET", re.compile(r"^/v1/memory/chunks$")),
     ("GET", re.compile(r"^/v1/runs/\{run_id\}/maker/")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/maker/")),
     ("POST", re.compile(r"^/v1/runs/\{run_id\}/workspace/revert$")),

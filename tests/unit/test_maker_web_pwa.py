@@ -74,3 +74,15 @@ def test_maker_web_review_progress_approval_paths() -> None:
 
     progress_js = (_STATIC / "js" / "tabs" / "progress.js").read_text(encoding="utf-8")
     assert "maker-progress" in progress_js or "theater" in progress_js
+    assert "maker-completion-cockpit" in progress_js
+    assert "critic-reliability" in progress_js
+
+    plan_js = (_STATIC / "js" / "tabs" / "plan.js").read_text(encoding="utf-8")
+    assert "/campaigns/" in plan_js and "maker-plan-tree" in plan_js
+
+    settings_js = (_STATIC / "js" / "tabs" / "settings.js").read_text(encoding="utf-8")
+    assert "maker-settings-memory-library" in settings_js
+    assert "promote-stitch-pending" in settings_js
+
+    theater_css = (_STATIC / "css" / "theater.css").read_text(encoding="utf-8")
+    assert "body.mobile-mode #theater-list" in theater_css

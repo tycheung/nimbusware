@@ -1,6 +1,6 @@
 import { mountHome } from "./tabs/home.js";
 import { mountBuild } from "./tabs/build.js";
-import { mountPlan } from "./tabs/plan.js";
+import { mountPlan, unmountPlan } from "./tabs/plan.js";
 import { mountReview } from "./tabs/review.js";
 import { mountProgress, unmountProgress } from "./tabs/progress.js";
 import { mountModels } from "./tabs/models.js";
@@ -23,6 +23,9 @@ let lastRoute = "";
 export async function loadRoute(route) {
   if (lastRoute === "/progress" && route !== "/progress") {
     unmountProgress();
+  }
+  if (lastRoute === "/plan" && route !== "/plan") {
+    unmountPlan();
   }
   lastRoute = route;
 

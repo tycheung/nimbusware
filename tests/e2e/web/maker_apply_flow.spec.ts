@@ -55,7 +55,8 @@ test("review tab apply-slice click after API setup", async ({ page, request }) =
   );
   await page.getByTestId("maker-review-refresh").click();
   await pendingResponse;
-  await expect(page.locator("#rev-summary")).toContainText("awaiting_approval");
+  await expect(page.getByTestId("maker-review-slice-status")).toContainText("awaiting your approval");
+  await expect(page.getByTestId("maker-review-pending-card")).toBeVisible();
   await expect(page.getByTestId("maker-review-apply-slice")).toBeVisible();
 
   const applyResponse = page.waitForResponse(
@@ -63,6 +64,6 @@ test("review tab apply-slice click after API setup", async ({ page, request }) =
   );
   await page.getByTestId("maker-review-apply-slice").click();
   await applyResponse;
-  await expect(page.locator("#rev-summary")).toContainText('"awaiting_approval": false');
-  await expect(page.locator("#rev-summary")).toContainText("last_snapshot");
+  await expect(page.getByTestId("maker-review-slice-status")).toContainText("no pending approval");
+  await expect(page.getByTestId("maker-review-last-snapshot")).toBeVisible();
 });

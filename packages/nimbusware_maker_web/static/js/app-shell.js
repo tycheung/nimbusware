@@ -1,4 +1,11 @@
-import { getBootstrap } from "./api-client.js";
+import { apiJson, getBootstrap } from "./api-client.js";
+import {
+  getActiveProjectId,
+  hydrateActiveRun,
+  persistRunIdFromUrl,
+  setActiveRun,
+  syncRunIdToShell,
+} from "./session-hub.js";
 import { loadRoute } from "./tab-loader.js";
 
 function loadRouteOnInit() {
@@ -35,12 +42,9 @@ function parseRoute() {
 }
 
 function setRunIdValue(value) {
-  const canonical = document.getElementById("run-theater-run-id");
-  if (canonical) canonical.value = value;
-  for (const id of ["mobile-run-id", "desktop-run-id"]) {
-    const el = document.getElementById(id);
-    if (el) el.value = value;
-  }
+  syncRunIdToShell(value);
+  const projectId = getActiveProjectId();
+  if (projectId && value) setActiveRun(projectId, value);
 }
 
 function applyQueryToRunId() {
@@ -89,7 +93,9 @@ function makerShellFactory() {
       }
       this.route = parseRoute();
       applyQueryToRunId();
+      persistRunIdFromUrl();
       wireRunIdSync();
+      hydrateActiveRun(apiJson).catch(() => {});
       const b = getBootstrap();
       this.quickModeActive = Boolean(b.quick_mode);
       this.quickBannerDismissed =
@@ -98,6 +104,7 @@ function makerShellFactory() {
       window.addEventListener("hashchange", () => {
         this.route = parseRoute();
         applyQueryToRunId();
+        persistRunIdFromUrl();
         window.dispatchEvent(new CustomEvent("maker-route", { detail: { route: this.route } }));
       });
       window.matchMedia("(max-width: 720px)").addEventListener("change", (ev) => {

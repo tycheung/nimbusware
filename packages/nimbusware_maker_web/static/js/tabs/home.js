@@ -1,7 +1,13 @@
 import { apiJson, toast } from "../api-client.js";
+import { setActiveProjectId } from "../session-hub.js";
 
 export async function mountHome(root) {
   root.innerHTML = `<div id="readiness-mount"></div>
+    <section class="guided-campaign panel" data-testid="maker-home-guided-campaign">
+      <h3>Guided first campaign</h3>
+      <p class="muted">Step through readiness, models, and an autonomous campaign build.</p>
+      <button type="button" id="home-start-guided" class="primary" data-testid="maker-home-start-guided">Start guided campaign</button>
+    </section>
     <h3>Projects</h3>
     <ul id="project-list"></ul>
     <form id="project-form">
@@ -33,7 +39,7 @@ export async function mountHome(root) {
       btn.type = "button";
       btn.textContent = "Select";
       btn.onclick = () => {
-        sessionStorage.setItem("maker_active_project_id", String(p.project_id));
+        setActiveProjectId(String(p.project_id));
         toast(`Project ${p.name} selected`);
       };
       li.appendChild(btn);
@@ -54,6 +60,11 @@ export async function mountHome(root) {
     });
     toast("Project created", "success");
     await refresh();
+  });
+
+  root.querySelector("#home-start-guided")?.addEventListener("click", () => {
+    window.location.hash = "/build?campaign=1";
+    toast("Campaign mode — open Build to enter your prompt", "info");
   });
 
   await refresh();

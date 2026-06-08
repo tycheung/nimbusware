@@ -42,6 +42,11 @@ from nimbusware_api.schemas.openapi import (
     format_run_timeline_link_header,
 )
 from nimbusware_api.schemas.runs import RunDetailResponse, RunTimelineResponse
+from nimbusware_console.critic_reliability_display import (
+    critic_reliability_caption,
+    critic_reliability_summary_from_events,
+    critic_reliability_table_rows,
+)
 from nimbusware_maker.memory_influence_display import format_retrieval_rows
 from nimbusware_memory.timeline import (
     memory_indexed_timeline_summary,
@@ -219,6 +224,26 @@ def findings(run_id: UUID, store: StoreDep, response: Response) -> dict[str, Any
         ev = validate_event_dict(d)
         out.append(serialize_event_persistent(ev))
     return {"run_id": rid, "findings": out}
+
+
+@router.get(
+    "/runs/{run_id}/critic-reliability",
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def critic_reliability(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    summary = critic_reliability_summary_from_events(rows)
+    return {
+        "run_id": str(run_id),
+        "caption": critic_reliability_caption(summary),
+        "rows": critic_reliability_table_rows(summary),
+        "summary": summary,
+    }
 
 
 @router.get(
