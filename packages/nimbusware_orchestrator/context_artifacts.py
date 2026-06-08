@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 
 @dataclass(frozen=True)
@@ -179,7 +179,86 @@ def bridge_artifact_to_memory_index(
         "source": "context_artifact",
     }
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return {"bridge_path": str(path), "artifact_id": artifact.artifact_id}
+    result = {"bridge_path": str(path), "artifact_id": artifact.artifact_id}
+    rebuild = maybe_rebuild_memory_faiss_from_bridges(artifact.project_id, repo_root=root)
+    if rebuild is not None:
+        result["faiss_rebuild"] = rebuild
+    return result
+
+
+def maybe_rebuild_memory_faiss_from_bridges(
+    project_id: str,
+    *,
+    repo_root: Path | None = None,
+) -> dict[str, Any] | None:
+    """Env-gated FAISS rebuild from memory-bridge sidecars (fo589)."""
+    from nimbusware_env.env_flags import env_truthy
+
+    if not env_truthy("NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD"):
+        return None
+
+    from nimbusware_env import find_repo_root
+    from nimbusware_memory.embeddings import embed_text, embedding_model_id_for_mode
+    from nimbusware_memory.faiss_index import build_memory_faiss_index
+    from nimbusware_memory.manifest import (
+        MemoryIndexManifest,
+        default_memory_index_dir,
+        write_manifest,
+    )
+    from nimbusware_memory.models import MemoryChunkRecord
+
+    root = repo_root or find_repo_root()
+    bridge_dir = root / ".cache" / "nimbusware" / "memory-bridge" / project_id
+    if not bridge_dir.is_dir():
+        return {"rebuilt": False, "reason": "no_bridge_dir"}
+
+    records: list[MemoryChunkRecord] = []
+    generation_id = uuid4()
+    scope = f"bridge:{project_id}"
+    model_id = embedding_model_id_for_mode("deterministic")
+    for sidecar in sorted(bridge_dir.glob("*.json")):
+        try:
+            payload = json.loads(sidecar.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        excerpt = str(payload.get("excerpt") or payload.get("title") or "").strip()
+        if not excerpt:
+            continue
+        vec = embed_text(excerpt, mode="deterministic")
+        artifact_id = str(payload.get("artifact_id") or sidecar.stem)
+        records.append(
+            MemoryChunkRecord(
+                chunk_id=uuid5(NAMESPACE_URL, f"{scope}|{artifact_id}|{excerpt[:200]}"),
+                generation_id=generation_id,
+                repo_scope_hash=scope,
+                run_id=uuid4(),
+                source_event_type="context_artifact.bridge",
+                source_store_seq=None,
+                finding_id=None,
+                category="context_artifact",
+                severity="info",
+                excerpt=excerpt[:4000],
+                embedding_model_id=model_id,
+                embedding_dim=len(vec),
+                embedding_vector=vec,
+            ),
+        )
+
+    if not records:
+        return {"rebuilt": False, "reason": "no_bridge_records"}
+
+    index_dir = default_memory_index_dir(root)
+    manifest = MemoryIndexManifest(
+        generation_id=str(generation_id),
+        repo_scope_hash=scope,
+        embedding_mode="deterministic",
+        embedding_model_id=model_id,
+        chunk_count=len(records),
+        built_at=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    )
+    write_manifest(index_dir, manifest)
+    build_memory_faiss_index(chunks=records, index_dir=index_dir)
+    return {"rebuilt": True, "chunk_count": len(records), "index_dir": str(index_dir)}
 
 
 def clear_context_artifacts_memory() -> None:
