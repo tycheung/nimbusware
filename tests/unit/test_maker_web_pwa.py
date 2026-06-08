@@ -44,7 +44,7 @@ def test_maker_web_mobile_css_and_tabs() -> None:
     assert "Notification" in shell_js
     assert (_STATIC / "sw.js").is_file()
     sw = (_STATIC / "sw.js").read_text(encoding="utf-8")
-    assert "addEventListener(\"push\"" in sw
+    assert 'addEventListener("push"' in sw
     assert "notificationclick" in sw
 
 

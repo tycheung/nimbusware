@@ -395,7 +395,9 @@ def run_put_e2e_flow(
     fleet_cfg = fleet_playwright_config()
     if fleet_cfg.get("enabled") and steps:
         first = steps[0] if isinstance(steps[0], dict) else {}
-        goto_path = str(first.get("path") or "/") if str(first.get("action") or "") == "goto" else "/"
+        goto_path = (
+            str(first.get("path") or "/") if str(first.get("action") or "") == "goto" else "/"
+        )
         capture["fleet_browser"] = fleet_browser_goto(base_url, goto_path)
     return PutE2EResult(
         verdict="PASS",
