@@ -120,6 +120,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "compactions_router",
         "replay_from_router",
         "context_artifacts_router",
+        "memory_insert_router",
         "maker_approval_router",
         "research_router",
         "stream_router",
