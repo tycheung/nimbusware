@@ -17,7 +17,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`, `tiny_api_app`) |
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors + campaign replay manifest (`golden_replay_manifest.json`, CRM + todo_api + contacts_api snapshots) |
-| `tests/fixtures/factory/` | Factory tier / PUT E2E golden replay (`golden_factory_replay.json`, `contacts_api` flow) |
+| `tests/fixtures/factory/` | Factory golden replay manifest (`golden_factory_replay_manifest.json` — T2 contacts + T3 todo) + legacy `golden_factory_replay.json` |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) + launch wiring manifest (`parity_launch_wiring.yaml`) |
 | `tests/e2e/web/` | Playwright smoke, apply-slice, session hub, launch scorecard (dimension rows), Settings launch check, Admin launch scorecard, campaign progress + full replay, mobile theater parity (16 specs; sets `NIMBUSWARE_API_BASE` to test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
