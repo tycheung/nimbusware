@@ -12,7 +12,9 @@ from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONS
 from nimbusware_api.user import UserDep
 from nimbusware_orchestrator.context_artifacts import (
     ContextArtifactRecord,
+    bridge_artifact_to_memory_index,
     create_context_artifact,
+    get_context_artifact,
     list_context_artifacts,
 )
 
@@ -100,3 +102,47 @@ def post_project_context_artifact(
             detail=problem("invalid_request", str(exc)),
         ) from exc
     return _to_response(created)
+
+
+class ContextArtifactBridgeResponse(BaseModel):
+    project_id: str
+    artifact_id: str
+    bridge_path: str
+    indexed: bool = False
+
+
+@router.post(
+    "/{project_id}/context-artifacts/{artifact_id}/bridge-memory",
+    response_model=ContextArtifactBridgeResponse,
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def bridge_context_artifact_to_memory(
+    project_id: UUID,
+    artifact_id: str,
+    store: ProjectStoreDep,
+    _user: UserDep,
+) -> ContextArtifactBridgeResponse:
+    record = store.get(project_id)
+    if record is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("project_not_found", f"Unknown project id: {project_id}"),
+        )
+    assert_project_accessible(record)
+    artifact = get_context_artifact(project_id, artifact_id)
+    if artifact is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "artifact_not_found",
+                "context artifact not found",
+                details={"artifact_id": artifact_id},
+            ),
+        )
+    bridge = bridge_artifact_to_memory_index(artifact)
+    return ContextArtifactBridgeResponse(
+        project_id=str(project_id),
+        artifact_id=artifact.artifact_id,
+        bridge_path=bridge["bridge_path"],
+        indexed=True,
+    )

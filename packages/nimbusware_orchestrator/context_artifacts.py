@@ -158,5 +158,29 @@ def insert_context_artifact_into_run(
     }
 
 
+def bridge_artifact_to_memory_index(
+    artifact: ContextArtifactRecord,
+    *,
+    repo_root: Path | None = None,
+) -> dict[str, str]:
+    """Write artifact excerpt as a memory-bridge sidecar for optional FAISS rebuild."""
+    from nimbusware_env import find_repo_root
+
+    root = repo_root or find_repo_root()
+    bridge_dir = root / ".cache" / "nimbusware" / "memory-bridge" / artifact.project_id
+    bridge_dir.mkdir(parents=True, exist_ok=True)
+    path = bridge_dir / f"{artifact.artifact_id}.json"
+    payload = {
+        "artifact_id": artifact.artifact_id,
+        "project_id": artifact.project_id,
+        "title": artifact.title,
+        "excerpt": artifact.content[:4000],
+        "kind": artifact.kind,
+        "source": "context_artifact",
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return {"bridge_path": str(path), "artifact_id": artifact.artifact_id}
+
+
 def clear_context_artifacts_memory() -> None:
     _MEMORY.clear()
