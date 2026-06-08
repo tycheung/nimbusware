@@ -10,6 +10,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 GOLDEN_PATH = REPO_ROOT / "tests" / "fixtures" / "factory" / "golden_factory_replay.json"
+MANIFEST_PATH = REPO_ROOT / "tests" / "fixtures" / "factory" / "golden_factory_replay_manifest.json"
 REPOS_ROOT = REPO_ROOT / "tests" / "fixtures" / "repos"
 
 
@@ -20,7 +21,25 @@ def _playwright_ready() -> tuple[bool, str]:
     return _playwright_module_ready()
 
 
-def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
+def load_factory_golden_entries(repo_root: Path | None = None) -> list[dict[str, Any]]:
+    repo = repo_root or REPO_ROOT
+    manifest = repo / "tests" / "fixtures" / "factory" / "golden_factory_replay_manifest.json"
+    if manifest.is_file():
+        doc = json.loads(manifest.read_text(encoding="utf-8"))
+        entries = doc.get("entries")
+        if isinstance(entries, list) and entries:
+            return [e for e in entries if isinstance(e, dict)]
+    golden = repo / "tests" / "fixtures" / "factory" / "golden_factory_replay.json"
+    if golden.is_file():
+        return [json.loads(golden.read_text(encoding="utf-8"))]
+    return []
+
+
+def run_factory_golden_entry(
+    spec: dict[str, Any],
+    *,
+    repo_root: Path | None = None,
+) -> dict[str, Any]:
     repo = repo_root or REPO_ROOT
     sys.path.insert(0, str(repo / "packages"))
 
@@ -33,31 +52,22 @@ def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
     from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
     from nimbusware_projections.builders.factory_status import factory_status_from_events
 
-    summary: dict[str, Any] = {"golden": GOLDEN_PATH.name, "skipped": False, "passed": False}
-    if not GOLDEN_PATH.is_file():
-        summary["error"] = "golden_fixture_missing"
-        return summary
-
-    spec = json.loads(GOLDEN_PATH.read_text(encoding="utf-8"))
     ws_name = str(spec.get("workspace_fixture") or "tiny_api_app")
-    ws = REPOS_ROOT / ws_name
+    repos_root = (repo_root or REPO_ROOT) / "tests" / "fixtures" / "repos"
+    ws = repos_root / ws_name
+    entry_id = str(spec.get("id") or spec.get("flow_id") or "default")
+    summary: dict[str, Any] = {
+        "id": entry_id,
+        "workspace": ws_name,
+        "passed": False,
+    }
     if not ws.is_dir():
         summary["error"] = f"workspace_missing:{ws_name}"
         return summary
 
-    pw_ready, pw_detail = _playwright_ready()
-    summary["playwright_ready"] = pw_ready
-    summary["playwright_detail"] = pw_detail
-    if not pw_ready:
-        summary["skipped"] = True
-        summary["reason"] = "playwright_not_installed"
-        summary["passed"] = True
-        summary["golden_valid"] = True
-        return summary
-
     tier = resolve_factory_tier(metadata_tier=str(spec.get("factory_tier") or "T2"))
     flow_id = str(spec.get("flow_id") or "contacts_api")
-    port = 19876
+    port = 19876 + (hash(entry_id) % 400)
 
     preview = start_put_preview(ws, port, startup_timeout_seconds=12.0)
     put_preview_ok = preview.ok
@@ -92,13 +102,19 @@ def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
             },
         ]
         factory_status = factory_status_from_events(events)
-        expected = spec.get("expected_factory_status") if isinstance(spec.get("expected_factory_status"), dict) else {}
+        expected = (
+            spec.get("expected_factory_status")
+            if isinstance(spec.get("expected_factory_status"), dict)
+            else {}
+        )
         status_ok = True
         if factory_status:
             if expected.get("tier"):
                 status_ok = status_ok and factory_status.get("tier") == expected["tier"]
             if "put_e2e_passed" in expected:
-                status_ok = status_ok and factory_status.get("put_e2e_passed") == expected["put_e2e_passed"]
+                status_ok = (
+                    status_ok and factory_status.get("put_e2e_passed") == expected["put_e2e_passed"]
+                )
 
         summary.update(
             {
@@ -117,6 +133,35 @@ def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
         return summary
     finally:
         stop_put_preview(preview.handle)
+
+
+def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
+    repo = repo_root or REPO_ROOT
+    entries = load_factory_golden_entries(repo)
+    summary: dict[str, Any] = {
+        "golden_manifest": MANIFEST_PATH.name if MANIFEST_PATH.is_file() else GOLDEN_PATH.name,
+        "skipped": False,
+        "passed": False,
+        "entry_count": len(entries),
+    }
+    if not entries:
+        summary["error"] = "golden_fixture_missing"
+        return summary
+
+    pw_ready, pw_detail = _playwright_ready()
+    summary["playwright_ready"] = pw_ready
+    summary["playwright_detail"] = pw_detail
+    if not pw_ready:
+        summary["skipped"] = True
+        summary["reason"] = "playwright_not_installed"
+        summary["passed"] = True
+        summary["golden_valid"] = True
+        return summary
+
+    results = [run_factory_golden_entry(spec, repo_root=repo) for spec in entries]
+    summary["results"] = results
+    summary["passed"] = all(r.get("passed") for r in results)
+    return summary
 
 
 def main() -> int:

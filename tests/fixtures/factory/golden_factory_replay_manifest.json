@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "description": "Factory weekly CI golden manifest (fo700–fo702)",
+  "entries": [
+    {
+      "id": "tiny_api_contacts_t2",
+      "workspace_fixture": "tiny_api_app",
+      "factory_tier": "T2",
+      "flow_id": "contacts_api",
+      "expected_factory_status": {
+        "tier": "T2",
+        "put_e2e_passed": true
+      }
+    },
+    {
+      "id": "tiny_api_todo_t3",
+      "workspace_fixture": "tiny_api_app",
+      "factory_tier": "T3",
+      "flow_id": "todo_api",
+      "expected_factory_status": {
+        "tier": "T3",
+        "put_e2e_passed": true
+      }
+    }
+  ]
+}
