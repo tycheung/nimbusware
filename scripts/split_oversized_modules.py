@@ -1,4 +1,4 @@
-"""Mechanically split oversized modules (Phase 3 refactor)."""
+"""Mechanically split oversized modules."""
 
 from __future__ import annotations
 

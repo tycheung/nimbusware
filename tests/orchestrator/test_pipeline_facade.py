@@ -1,4 +1,4 @@
-"""Pipeline facade — composed mixins and stable patch target (Phase 6)."""
+"""Pipeline facade — composed mixins and stable patch target."""
 
 from __future__ import annotations
 

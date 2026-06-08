@@ -61,7 +61,7 @@ RUN_TIMELINE_RESPONSE_200: dict[str, Any] = {
     "description": (
         "Replayed canonical events for the run plus top-level read-model "
         "summaries (``integrator_gate`` / ``self_refinement`` optional keys are "
-        "presence-gated; degraded-metadata skip-vs-emit differs per helper — fo112): "
+        "presence-gated; degraded-metadata skip-vs-emit differs per helper): "
         "``integrator_gate`` (latest; optional ``bundle_compatibility_ranking`` "
         "pipeline inputs, ``selected_bundle_rank``, ``selected_bundle_id``), "
         "``integrator_gate_history`` "

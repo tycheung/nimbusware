@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Build Nimbusware memory FAISS index (Phase 4).")
+    p = argparse.ArgumentParser(description="Build Nimbusware memory FAISS index.")
     p.add_argument(
         "--repo-root",
         type=Path,

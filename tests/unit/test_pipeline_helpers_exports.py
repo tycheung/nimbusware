@@ -1,4 +1,4 @@
-"""Pipeline _helpers must export symbols mixins rely on (Phase 4 guard)."""
+"""Pipeline _helpers export surface guard."""
 
 from __future__ import annotations
 

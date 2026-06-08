@@ -1,4 +1,4 @@
-"""LLM common must export symbols critique modules rely on (Phase S1 guard)."""
+"""LLM common export surface guard."""
 
 from __future__ import annotations
 

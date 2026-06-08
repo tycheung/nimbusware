@@ -20,7 +20,7 @@
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 
-Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`, `POST /v1/runs/{id}/compactions/{compaction_id}/revert`. Package notes: [../packages/nimbusware_mcp/README.md](../packages/nimbusware_mcp/README.md).
+Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`, `POST /v1/runs/{id}/compactions/{compaction_id}/revert`, `POST /v1/runs/{id}/replay-from`, `GET/POST /v1/projects/{id}/context-artifacts`, `POST .../context-artifacts/{artifact_id}/bridge-memory`. Factory weekly CI: `scripts/run_factory_weekly_ci.py` (`factory-weekly` in `slow_tests.yml`). Package notes: [../packages/nimbusware_mcp/README.md](../packages/nimbusware_mcp/README.md).
 
 Gitignored local planning (not in git) — **two files only:**
 
