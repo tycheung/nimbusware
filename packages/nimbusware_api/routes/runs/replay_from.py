@@ -5,9 +5,11 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from nimbusware_maker.workspace import resolve_run_workspace
+from nimbusware_orchestrator.campaign import campaign_enabled_for_run
 from nimbusware_orchestrator.replay_from import ReplayPolicy, emit_replay_started_event
 
 router = APIRouter()
@@ -27,6 +29,7 @@ class ReplayFromResponse(BaseModel):
     from_store_seq: int
     replay_started: bool
     compact_enabled: bool
+    campaign_tick_enqueued: bool = False
 
 
 @router.post(
@@ -38,6 +41,7 @@ def replay_from_checkpoint(
     run_id: UUID,
     body: ReplayFromBody,
     store: StoreDep,
+    orch: OrchDep,
 ) -> ReplayFromResponse:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -68,9 +72,15 @@ def replay_from_checkpoint(
         operator_ack=True,
         reason=body.reason,
     )
+    campaign_tick_enqueued = False
+    if campaign_enabled_for_run(rows):
+        ws = resolve_run_workspace(rows)
+        mode = orch.dispatch_or_run_campaign_tick(run_id, workspace=ws if ws.is_dir() else None)
+        campaign_tick_enqueued = mode in {"queued", "sync"}
     return ReplayFromResponse(
         run_id=str(run_id),
         from_store_seq=body.from_store_seq,
         replay_started=True,
         compact_enabled=policy.compact_enabled,
+        campaign_tick_enqueued=campaign_tick_enqueued,
     )
