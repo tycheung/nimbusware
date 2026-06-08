@@ -7,6 +7,7 @@ import { MaintenanceEventsPanel } from "../components/MaintenanceEventsPanel";
 import { ProbationNoticePanel } from "../components/ProbationNoticePanel";
 import { ResearchPanel } from "../components/ResearchPanel";
 import { IntegrationAdapterPanel } from "../components/IntegrationAdapterPanel";
+import { FactoryEvidencePanel } from "../components/FactoryEvidencePanel";
 import { LaunchScorecardPanel } from "../components/LaunchScorecardPanel";
 import { StitchSummaryPanel } from "../components/StitchSummaryPanel";
 import { TheaterPanel } from "../components/TheaterPanel";
@@ -214,6 +215,8 @@ export function RunDetailPage({ id }: { id?: string }) {
       <StitchSummaryPanel runId={id} />
       <h3>Integration adapter</h3>
       <IntegrationAdapterPanel runId={id} />
+      <h3>Factory evidence</h3>
+      <FactoryEvidencePanel runId={id} />
       <h3>Launch eval</h3>
       <LaunchScorecardPanel
         runId={id}
