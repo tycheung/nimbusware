@@ -11,6 +11,8 @@ from pathlib import Path
 
 import httpx
 
+_READY_PROBE_PATH = "/v1/platform/edition"
+
 
 def free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -24,20 +26,47 @@ class StackProcess:
     port: int
     base_url: str
 
-    def wait_ready(self, *, timeout_sec: float = 60.0) -> None:
+    def wait_ready(self, *, timeout_sec: float = 60.0, stable_hits: int = 2) -> None:
         deadline = time.monotonic() + timeout_sec
-        url = f"{self.base_url}/v1/maker/app/"
+        url = f"{self.base_url}{_READY_PROBE_PATH}"
+        hits = 0
         while time.monotonic() < deadline:
             if self.proc.poll() is not None:
                 raise RuntimeError(f"API process exited early code={self.proc.returncode}")
             try:
                 resp = httpx.get(url, timeout=2.0)
                 if resp.status_code == 200:
-                    return
+                    hits += 1
+                    if hits >= stable_hits:
+                        return
+                else:
+                    hits = 0
             except httpx.HTTPError:
-                pass
+                hits = 0
             time.sleep(0.25)
         raise TimeoutError(f"API not ready at {url}")
+
+
+def stack_http_request(
+    method: str,
+    url: str,
+    *,
+    retries: int = 12,
+    retry_delay_sec: float = 0.5,
+    **kwargs: object,
+) -> httpx.Response:
+    last_error: Exception | None = None
+    for attempt in range(retries):
+        try:
+            return httpx.request(method, url, **kwargs)  # type: ignore[arg-type]
+        except httpx.ConnectError as exc:
+            last_error = exc
+            if attempt + 1 >= retries:
+                raise
+            time.sleep(retry_delay_sec)
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("stack_http_request exhausted retries without a response")
 
 
 def start_api_subprocess(
@@ -141,7 +170,7 @@ def stop_worker_subprocess(worker: WorkerProcess) -> None:
             worker.proc.wait(timeout=5)
 
 
-def stop_api_subprocess(stack: StackProcess) -> None:
+def stop_api_subprocess(stack: StackProcess, *, settle_sec: float = 0.5) -> None:
     if stack.proc.poll() is None:
         stack.proc.terminate()
         try:
@@ -149,3 +178,5 @@ def stop_api_subprocess(stack: StackProcess) -> None:
         except subprocess.TimeoutExpired:
             stack.proc.kill()
             stack.proc.wait(timeout=5)
+    if settle_sec > 0:
+        time.sleep(settle_sec)
