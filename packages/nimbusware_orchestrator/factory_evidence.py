@@ -97,7 +97,9 @@ def export_factory_evidence_zip(
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("factory_evidence.json", json.dumps(bundle, indent=2))
-        put_artifacts = bundle.get("put_artifacts") if isinstance(bundle.get("put_artifacts"), dict) else {}
+        put_artifacts = (
+            bundle.get("put_artifacts") if isinstance(bundle.get("put_artifacts"), dict) else {}
+        )
         manifest_path = put_artifacts.get("manifest_path")
         if manifest_path and Path(str(manifest_path)).is_file():
             archive.write(str(manifest_path), arcname="put_artifacts/manifest.json")
