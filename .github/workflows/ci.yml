@@ -155,3 +155,20 @@ jobs:
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_E2E_FLAKE_RETRIES: "1"
+
+  put_e2e_gate:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(toJson(github.event.pull_request.labels.*.name), 'put-e2e')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: PUT E2E opt-in gate
+        run: poetry run python scripts/run_put_e2e_ci_gate.py
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
