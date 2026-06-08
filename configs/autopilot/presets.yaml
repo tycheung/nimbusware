@@ -1,0 +1,25 @@
+levels:
+  "0":
+    name: Full co-pilot
+    checkpoints:
+      - stop_after_run_plan
+      - stop_after_slice_plan
+      - stop_before_workspace_apply
+      - stop_on_slice_test_fail
+      - stop_on_dev_env_regression_fail
+      - stop_on_ui_regression_fail
+      - stop_on_gate_fail
+      - stop_before_factory_complete
+      - stop_at_terminal_review
+  "5":
+    name: Balanced
+    checkpoints:
+      - stop_on_dev_env_regression_fail
+      - stop_on_ui_regression_fail
+      - stop_on_gate_fail
+      - stop_before_factory_complete
+      - stop_at_terminal_review
+  "10":
+    name: Continuous improve
+    checkpoints:
+      - stop_at_terminal_review

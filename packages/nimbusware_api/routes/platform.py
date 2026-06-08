@@ -17,6 +17,7 @@ from nimbusware_hw.probe import probe_hardware
 from nimbusware_hw.profile import profile_from_probe
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
+from nimbusware_orchestrator.autopilot_profiles import resolve_autopilot_profile
 
 router = APIRouter(tags=["platform"])
 
@@ -130,3 +131,14 @@ def get_platform_onboarding() -> dict:
 def post_platform_onboarding() -> dict:
     mark_onboarded_server()
     return {"onboarded": True}
+
+
+@router.get("/autopilot/presets/{level}")
+def get_autopilot_preset(level: int) -> dict:
+    profile = resolve_autopilot_profile(level=level)
+    return {
+        "level": profile.level,
+        "name": profile.name,
+        "checkpoints": sorted(profile.checkpoints),
+        "custom": profile.custom,
+    }
