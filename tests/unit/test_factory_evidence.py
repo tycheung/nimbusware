@@ -44,6 +44,26 @@ def test_factory_evidence_bundle_from_stage_events() -> None:
     assert len(bundle["factory_stages"]) == 2
 
 
+def test_factory_evidence_includes_ism_diff() -> None:
+    events = [
+        {
+            "event_type": "stage.passed",
+            "payload": {"stage_name": "factory.cadence"},
+            "metadata": {
+                "ism_diff": {
+                    "added": ["/new"],
+                    "removed": ["/old"],
+                    "changed": ["/health"],
+                },
+            },
+        },
+    ]
+    bundle = build_factory_evidence_bundle(events)
+    assert bundle["ism_diff"]["added"] == ["/new"]
+    assert bundle["ism_diff"]["removed"] == ["/old"]
+    assert bundle["ism_diff"]["changed"] == ["/health"]
+
+
 def test_factory_evidence_reads_put_artifacts(tmp_path: Path) -> None:
     artifacts = tmp_path / ".nimbusware" / "put_artifacts"
     artifacts.mkdir(parents=True)
