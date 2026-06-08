@@ -12,7 +12,9 @@ from nimbusware_api.routes.runs.context_budget import router as context_budget_r
 from nimbusware_api.routes.runs.create import CreateRunBody
 from nimbusware_api.routes.runs.create import router as create_router
 from nimbusware_api.routes.runs.detail import router as detail_router
+from nimbusware_api.routes.runs.dev_env import router as dev_env_router
 from nimbusware_api.routes.runs.factory_evidence import router as factory_evidence_router
+from nimbusware_api.routes.runs.interjection import router as interjection_router
 from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
 from nimbusware_api.routes.runs.maker_approval import router as maker_approval_router
@@ -57,6 +59,8 @@ def build_runs_router() -> APIRouter:
     composed.include_router(lifecycle_router)
     composed.include_router(maker_progress_router)
     composed.include_router(factory_evidence_router)
+    composed.include_router(dev_env_router)
+    composed.include_router(interjection_router)
     composed.include_router(context_budget_router)
     composed.include_router(compact_router)
     composed.include_router(compactions_router)

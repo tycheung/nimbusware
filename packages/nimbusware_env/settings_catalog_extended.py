@@ -782,6 +782,18 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _internal("NIMBUSWARE_PUT_SANDBOX", "PUT preview sandbox mode (docker)"),
         _internal(
+            "NIMBUSWARE_DEV_ENV_ENABLED", "Enable persistent dev environment supervisor", kind=_BOOL
+        ),
+        _internal(
+            "NIMBUSWARE_DEV_ENV_PORT_BASE", "Base port for dev env session allocation", kind=_INT
+        ),
+        _internal(
+            "NIMBUSWARE_DEV_ENV_BASE_URL", "Attach to external dev server instead of spawning"
+        ),
+        _internal(
+            "NIMBUSWARE_UI_CONTROLLER_ENABLED", "Enable UI controller regression", kind=_BOOL
+        ),
+        _internal(
             "NIMBUSWARE_FACTORY_EVIDENCE_OBJECT_STORE_URL",
             "S3-compatible URL for factory evidence zip mirror",
         ),
