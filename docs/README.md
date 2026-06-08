@@ -20,7 +20,7 @@
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 
-Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`, `POST /v1/runs/{id}/compactions/{compaction_id}/revert`, `POST /v1/runs/{id}/replay-from`, `GET/POST /v1/projects/{id}/context-artifacts`, `POST .../context-artifacts/{artifact_id}/bridge-memory` (optional `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD=1`). Factory: `campaign_factory_t3` profile, `golden_factory_replay_manifest.json` (crm/contacts/todo/static_site), `run_factory_weekly_ci.py` matrix; fleet Playwright pool via `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT`; `GET /v1/runs/{id}/factory-evidence`. Maker PWA: offline `sw.js` + push notification handlers.
+Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`, `POST /v1/runs/{id}/compactions/{compaction_id}/revert`, `POST /v1/runs/{id}/replay-from`, `GET/POST /v1/projects/{id}/context-artifacts`, `POST .../context-artifacts/{artifact_id}/bridge-memory` (optional `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD=1`). Factory: `campaign_factory_t3` profile, `golden_factory_replay_manifest.json` (crm/contacts/todo/static_site T1+T3), `run_factory_weekly_ci.py` matrix; PUT E2E failure evidence zip; `GET /v1/runs/{id}/factory-evidence` + `.../export`; fleet Playwright pool via `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT`. Maker PWA: offline `sw.js` + `POST /v1/maker/push-subscriptions` when `NIMBUSWARE_MAKER_VAPID_PUBLIC_KEY` is set.
 
 Gitignored local planning (not in git) — **two files only:**
 
