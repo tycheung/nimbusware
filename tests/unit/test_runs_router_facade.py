@@ -1,4 +1,4 @@
-"""Runs router facade — route surface and import shim contracts (Phase 3)."""
+"""Runs router facade — route surface and sub-router contracts."""
 
 from __future__ import annotations
 
@@ -115,6 +115,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "context_budget_router",
         "compact_router",
         "compactions_router",
+        "replay_from_router",
         "context_artifacts_router",
         "maker_approval_router",
         "research_router",
