@@ -272,27 +272,82 @@ def discover_surfaces_runtime(
     return InteractionSurfaceMap(version="1", surfaces=surfaces, source="runtime_crawl")
 
 
+def exploratory_put_crawl(
+    preview_base_url: str,
+    *,
+    max_clicks: int = 8,
+    max_depth: int = 2,
+) -> InteractionSurfaceMap:
+    """Bounded Playwright link walk for factory T3 depth."""
+    from nimbusware_orchestrator.fleet_playwright import fleet_playwright_page
+
+    base = preview_base_url.rstrip("/")
+    surfaces: list[ISMSurface] = []
+    seen: set[str] = set()
+    with fleet_playwright_page() as page:
+        if page is None:
+            return InteractionSurfaceMap(version="1", surfaces=[], source="exploratory_unavailable")
+        visited: set[str] = set()
+        queue: list[tuple[str, int]] = [(base, 0)]
+        clicks = 0
+        while queue and clicks < max_clicks:
+            url, depth = queue.pop(0)
+            if url in visited or depth > max_depth:
+                continue
+            visited.add(url)
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=12000)
+            except Exception:
+                continue
+            clicks += 1
+            path = url.replace(base, "") or "/"
+            sid = f"explore:{path}"
+            if sid not in seen:
+                seen.add(sid)
+                surfaces.append(ISMSurface(surface_id=sid, kind="page", path=path))
+            if depth >= max_depth:
+                continue
+            for anchor in page.query_selector_all("a[href]"):
+                href = anchor.get_attribute("href") or ""
+                if not href or href.startswith("#") or href.startswith("mailto:"):
+                    continue
+                joined = urljoin(url + "/", href)
+                if joined.startswith(base) and joined not in visited:
+                    queue.append((joined, depth + 1))
+    return InteractionSurfaceMap(version="1", surfaces=surfaces, source="exploratory_crawl")
+
+
 def discover_surfaces_combined(
     workspace: Path,
     *,
     preview_base_url: str | None = None,
     runtime_crawl: bool = False,
+    exploratory: bool = False,
 ) -> InteractionSurfaceMap:
     static_map = discover_surfaces_static(workspace, preview_base_url=preview_base_url)
-    if not runtime_crawl or not preview_base_url:
-        return static_map
-    runtime_map = discover_surfaces_runtime(preview_base_url)
-    seen = {s.surface_id for s in static_map.surfaces}
     merged = list(static_map.surfaces)
-    for surface in runtime_map.surfaces:
-        if surface.surface_id in seen:
-            continue
-        seen.add(surface.surface_id)
-        merged.append(surface)
+    seen = {s.surface_id for s in merged}
+    source_parts = [static_map.source]
+    if runtime_crawl and preview_base_url:
+        runtime_map = discover_surfaces_runtime(preview_base_url)
+        source_parts.append("runtime_crawl")
+        for surface in runtime_map.surfaces:
+            if surface.surface_id in seen:
+                continue
+            seen.add(surface.surface_id)
+            merged.append(surface)
+    if exploratory and preview_base_url:
+        explore_map = exploratory_put_crawl(preview_base_url)
+        source_parts.append("exploratory_crawl")
+        for surface in explore_map.surfaces:
+            if surface.surface_id in seen:
+                continue
+            seen.add(surface.surface_id)
+            merged.append(surface)
     return InteractionSurfaceMap(
         version="1",
         surfaces=merged,
-        source=f"{static_map.source}+runtime_crawl",
+        source="+".join(source_parts),
     )
 
 

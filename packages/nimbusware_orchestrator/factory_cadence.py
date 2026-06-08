@@ -150,13 +150,17 @@ def _run_put_e2e_for_run(
     *,
     tier: FactoryTier,
     repo_root: Path | None,
-) -> tuple[bool | None, PutE2EResult | None, Any | None, float | None]:
-    from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_static
+    store: Any | None = None,
+    run_id: UUID | None = None,
+    slices_completed: int = 0,
+) -> tuple[bool | None, PutE2EResult | None, Any | None, float | None, dict[str, Any] | None]:
+    from nimbusware_env.env_flags import env_str
+    from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_combined
     from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
     from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
 
     if tier in {"T0", "T1"}:
-        return None, None, None, None
+        return None, None, None, None, None
 
     attach = attach_context_from_run(rows, repo_root)
     flow_id = match_factory_flow_id(
@@ -171,7 +175,7 @@ def _run_put_e2e_for_run(
             base_url="",
             detail="no catalog flow match",
         )
-        return False, skip, None, None
+        return False, skip, None, None, None
 
     port = 19876 + (hash(str(workspace)) % 400)
     preview = start_put_preview(workspace, port, startup_timeout_seconds=12.0)
@@ -180,10 +184,38 @@ def _run_put_e2e_for_run(
     ism = None
     put_e2e: PutE2EResult | None = None
     coverage: float | None = None
+    ism_diff: dict[str, Any] | None = None
+    if store is not None and run_id is not None and preview.handle is not None:
+        from nimbusware_orchestrator.put_runtime import emit_put_preview_started
+
+        emit_put_preview_started(store, run_id, preview.handle)
     try:
-        ism = discover_surfaces_static(
-            workspace, preview_base_url=base_url if put_preview_ok else None
+        exploratory = env_str("NIMBUSWARE_FACTORY_EXPLORATORY_CRAWL").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
         )
+        ism = discover_surfaces_combined(
+            workspace,
+            preview_base_url=base_url if put_preview_ok else None,
+            runtime_crawl=tier == "T3",
+            exploratory=exploratory and tier == "T3",
+        )
+        from nimbusware_orchestrator.ism_diff import (
+            diff_ism_snapshots,
+            load_ism_snapshot,
+            persist_ism_snapshot,
+        )
+
+        prior_path = workspace / ".nimbusware" / "ism" / "_latest.json"
+        before = load_ism_snapshot(prior_path) if prior_path.is_file() else None
+        persist_ism_snapshot(workspace, f"cadence-{slices_completed}", ism)
+        prior_path.write_text(
+            __import__("json").dumps(ism.to_dict(), indent=2),
+            encoding="utf-8",
+        )
+        ism_diff = diff_ism_snapshots(before, ism)
         put_e2e = run_put_e2e_flow(
             base_url,
             flow_id,
@@ -200,8 +232,12 @@ def _run_put_e2e_for_run(
         )
         coverage_raw = gates.details.get("ism_coverage_pct")
         coverage = float(coverage_raw) if coverage_raw is not None else None
-        return put_preview_ok, put_e2e, ism, coverage
+        return put_preview_ok, put_e2e, ism, coverage, ism_diff
     finally:
+        if store is not None and run_id is not None and preview.handle is not None:
+            from nimbusware_orchestrator.put_runtime import emit_put_preview_stopped
+
+            emit_put_preview_stopped(store, run_id, preview.handle)
         stop_put_preview(preview.handle)
 
 
@@ -238,17 +274,21 @@ def maybe_run_factory_cadence_pass(
     put_e2e: PutE2EResult | None = None
     ism = None
     coverage: float | None = None
+    ism_diff: dict[str, Any] | None = None
     ws_path = workspace
     if ws_path is None:
         from nimbusware_maker.workspace import resolve_run_workspace
 
         ws_path = resolve_run_workspace(rows)
     if ws_path.is_dir() and tier in {"T2", "T3"}:
-        put_preview_ok, put_e2e, ism, coverage = _run_put_e2e_for_run(
+        put_preview_ok, put_e2e, ism, coverage, ism_diff = _run_put_e2e_for_run(
             ws_path,
             rows,
             tier=tier,
             repo_root=repo_root,
+            store=store,
+            run_id=run_id,
+            slices_completed=slices_completed,
         )
         if put_e2e is not None and put_e2e.verdict == "FAIL":
             from nimbusware_orchestrator.backlog_generator import (
@@ -288,6 +328,9 @@ def maybe_run_factory_cadence_pass(
     }
     if put_e2e is not None:
         meta["put_e2e"] = put_e2e.to_dict()
+        meta["put"] = {"base_url": put_e2e.base_url}
+    if ism_diff is not None:
+        meta["ism_diff"] = ism_diff
     _emit_factory_stage(store, run_id, stage_name=FACTORY_CADENCE_STAGE, metadata=meta)
 
     factory_complete = (

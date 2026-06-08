@@ -775,6 +775,29 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _internal("NIMBUSWARE_TEST_SQL_QUERY_COUNT", "Test SQL query count flag", kind=_BOOL),
         _internal("NIMBUSWARE_TEST_WRITER_STAGE_CMD", "Test writer stage command override"),
         _internal("NIMBUSWARE_QUICK_MODE", "Quick mode bootstrap", kind=_BOOL),
+        _internal(
+            "NIMBUSWARE_FACTORY_EXPLORATORY_CRAWL",
+            "Enable exploratory Playwright ISM crawl on factory T3",
+            kind=_BOOL,
+        ),
+        _internal("NIMBUSWARE_PUT_SANDBOX", "PUT preview sandbox mode (docker)"),
+        _internal(
+            "NIMBUSWARE_FACTORY_EVIDENCE_OBJECT_STORE_URL",
+            "S3-compatible URL for factory evidence zip mirror",
+        ),
+        _internal(
+            "NIMBUSWARE_FACTORY_EVIDENCE_OBJECT_STORE_BUCKET",
+            "Bucket for factory evidence object store",
+        ),
+        _internal("NIMBUSWARE_MAKER_VAPID_PRIVATE_KEY", "Maker Web Push VAPID private key"),
+        _internal("NIMBUSWARE_MAKER_VAPID_SUBJECT", "Maker Web Push VAPID subject (mailto:)"),
+        _internal(
+            "NIMBUSWARE_MAKER_PUSH_SUBSCRIPTIONS_FILE",
+            "Path to persisted push subscription JSON",
+        ),
+        _internal("NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT", "Fleet Playwright WS endpoint"),
+        _internal("NIMBUSWARE_MAKER_VAPID_PUBLIC_KEY", "Maker Web Push VAPID public key"),
+        _internal("NIMBUSWARE_DATA_DIR", "Nimbusware data directory root"),
     )
 
     return uc + install + system_extra + user_extra + internal

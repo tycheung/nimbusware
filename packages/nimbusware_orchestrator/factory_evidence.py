@@ -74,10 +74,17 @@ def build_factory_evidence_bundle(
     stages = _factory_stages(events)
     complete = any(s.get("stage_name") == FACTORY_COMPLETE_STAGE for s in stages)
     capture = put_e2e.get("capture") if isinstance(put_e2e, dict) else None
+    ism_diff = None
+    for stage in reversed(stages):
+        meta = stage.get("metadata") if isinstance(stage.get("metadata"), dict) else {}
+        if isinstance(meta.get("ism_diff"), dict):
+            ism_diff = meta["ism_diff"]
+            break
     return {
         "factory_complete": complete,
         "factory_status": factory_status,
         "put_e2e": put_e2e,
+        "ism_diff": ism_diff,
         "factory_stages": stages,
         "put_artifacts": _read_put_artifacts(workspace),
         "evidence": {
@@ -92,8 +99,12 @@ def export_factory_evidence_zip(
     events: list[dict[str, Any]],
     *,
     workspace: Path | None = None,
+    run_id: str | None = None,
 ) -> bytes:
     bundle = build_factory_evidence_bundle(events, workspace=workspace)
+    rid = (run_id or str(events[0].get("run_id") or "") if events else "").strip()
+    if rid:
+        bundle["run_id"] = rid
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("factory_evidence.json", json.dumps(bundle, indent=2))
@@ -109,4 +120,11 @@ def export_factory_evidence_zip(
         zip_path = evidence.get("evidence_zip")
         if zip_path and Path(str(zip_path)).is_file():
             archive.write(str(zip_path), arcname="put_e2e/evidence.zip")
-    return buffer.getvalue()
+    payload = buffer.getvalue()
+    if rid:
+        from nimbusware_orchestrator.factory_evidence_object_store import (
+            put_factory_evidence_object,
+        )
+
+        put_factory_evidence_object(run_id=rid, payload=payload)
+    return payload

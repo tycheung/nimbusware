@@ -58,7 +58,7 @@ def export_factory_evidence(run_id: UUID, store: StoreDep) -> Response:
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     workspace = resolve_run_workspace(rows)
-    payload = export_factory_evidence_zip(rows, workspace=workspace)
+    payload = export_factory_evidence_zip(rows, workspace=workspace, run_id=str(run_id))
     filename = f"factory-evidence-{run_id}.zip"
     return Response(
         content=payload,

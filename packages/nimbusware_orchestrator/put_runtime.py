@@ -153,6 +153,9 @@ def start_put_preview(
     ws = workspace.resolve()
     stack = detect_put_stack(ws)
     command = _preview_command(ws, stack, port)
+    from nimbusware_orchestrator.put_sandbox import wrap_put_preview_command
+
+    command = wrap_put_preview_command(command, port=port, workspace=str(ws))
     base_url = f"http://127.0.0.1:{port}"
 
     try:
@@ -275,6 +278,54 @@ def collect_put_artifacts(
         "manifest_path": str(manifest_path),
         "manifest": manifest,
     }
+
+
+def emit_put_preview_started(store: Any, run_id: Any, handle: PutPreviewHandle) -> None:
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
+
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "put": {
+                    "base_url": handle.base_url,
+                    "stack": handle.stack,
+                    "port": handle.port,
+                },
+            },
+            payload=StageStartedPayload(stage_name="put.preview.started", attempt=1),
+        ),
+    )
+
+
+def emit_put_preview_stopped(store: Any, run_id: Any, handle: PutPreviewHandle) -> None:
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    from agent_core.models import EventType, StageStartedEvent, StageStartedPayload
+
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "put": {
+                    "base_url": handle.base_url,
+                    "stack": handle.stack,
+                    "port": handle.port,
+                },
+            },
+            payload=StageStartedPayload(stage_name="put.preview.stopped", attempt=1),
+        ),
+    )
 
 
 def put_stack_note(workspace: Path | None) -> str:
