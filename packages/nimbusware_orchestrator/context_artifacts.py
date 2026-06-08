@@ -191,7 +191,6 @@ def maybe_rebuild_memory_faiss_from_bridges(
     *,
     repo_root: Path | None = None,
 ) -> dict[str, Any] | None:
-    """Env-gated FAISS rebuild from memory-bridge sidecars (fo589)."""
     from nimbusware_env.env_flags import env_truthy
 
     if not env_truthy("NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD"):

@@ -1,5 +1,3 @@
-"""Enterprise fleet Playwright worker endpoint resolution (fo702 stub)."""
-
 from __future__ import annotations
 
 from typing import Any

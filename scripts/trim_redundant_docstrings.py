@@ -46,27 +46,34 @@ def _rel(path: Path) -> str:
     return path.relative_to(_ROOT).as_posix()
 
 
+def _first_line(doc: str) -> str:
+    return doc.strip().splitlines()[0].strip()
+
+
 def _should_drop(doc: str) -> bool:
     stripped = doc.strip()
-    if not stripped or "\n" in stripped:
+    if not stripped:
         return False
-    if any(stripped.startswith(p) for p in _REDUNDANT_PREFIXES):
+    head = _first_line(doc)
+    if any(head.startswith(p) for p in _REDUNDANT_PREFIXES):
         return True
-    if stripped.endswith(" module.") or stripped.endswith(" package."):
+    if head.endswith(" module.") or head.endswith(" package."):
         return True
-    if stripped.endswith(" .") or stripped.endswith("."):
-        if stripped.startswith("LLM-backed plan stage"):
+    if head.endswith(" .") or head.endswith("."):
+        if head.startswith("LLM-backed plan stage"):
             return True
-    if stripped == "Backward-compatible shim.":
+    if head == "Backward-compatible shim.":
         return True
-    if stripped.startswith("Mechanical split of ") or stripped.startswith("Split "):
+    if head.startswith("Mechanical split of ") or head.startswith("Split "):
         return True
-    if " direct contract" in stripped or " direct-contract" in stripped:
+    if " direct contract" in head or " direct-contract" in head:
         return True
-    if stripped.endswith(" contract.") or stripped.endswith(" contracts."):
+    if head.endswith(" contract.") or head.endswith(" contracts."):
         return True
-    if re.search(r"\(fo\d{3,4}\)", stripped) and len(stripped) < 100:
+    if re.search(r"\(fo\d+[^)]*\)", head) and len(head) < 100:
         return True
+    if "\n" in stripped:
+        return False
     return len(stripped) > 120
 
 

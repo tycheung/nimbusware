@@ -1,5 +1,3 @@
-"""P1 Stitch core (fo520–fo522) — events, manifest, stages, snapshot revert."""
-
 from __future__ import annotations
 
 from pathlib import Path

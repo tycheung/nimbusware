@@ -1,8 +1,3 @@
-"""Postgres append-only store.
-
-Requires ``NIMBUSWARE_DATABASE_URL`` and applied ``packages/nimbusware_store/schema/postgres.sql``.
-"""
-
 from __future__ import annotations
 
 import os

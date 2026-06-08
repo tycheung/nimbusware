@@ -1,5 +1,3 @@
-"""Maker web mobile PWA static assets."""
-
 from __future__ import annotations
 
 import json

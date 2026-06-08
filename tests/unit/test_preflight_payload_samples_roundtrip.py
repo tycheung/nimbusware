@@ -1,10 +1,3 @@
-"""Tests for ``health_latency_samples_ms`` payload extension.
-
-Asserts that ``ModelPreflightPassedPayload`` accepts the new optional field,
-rejects malformed entries, and round-trips through JSON (the persistence
-shape for the JSONB events table).
-"""
-
 from __future__ import annotations
 
 import pytest
