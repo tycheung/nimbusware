@@ -102,3 +102,26 @@ def test_symbol_sketch_fallback_appends_import_graph(tmp_path: Path) -> None:
     assert "pkg/a.py" in text or "a.py" in text
     assert "imports:" in text
     assert "pkg.a" in text
+
+
+def test_lsp_fallback_expands_import_neighbors_two_hops(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text("", encoding="utf-8")
+    (pkg / "a.py").write_text("from pkg import b\n", encoding="utf-8")
+    (pkg / "b.py").write_text("from pkg import c\n", encoding="utf-8")
+    (pkg / "c.py").write_text("def chain() -> int:\n    return 3\n", encoding="utf-8")
+    with patch(
+        "nimbusware_orchestrator.slice_lsp_client.build_lsp_symbol_sketch",
+        return_value=("", "disabled"),
+    ):
+        text, reason = build_symbol_sketch_with_lsp_fallback(
+            tmp_path,
+            ["pkg/a.py"],
+            lsp_enabled=True,
+            expand_neighbors=True,
+            max_chars=4000,
+        )
+    assert reason in {"", "ast_fallback"}
+    assert "imports:" in text
+    assert "pkg.b" in text
