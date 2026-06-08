@@ -310,6 +310,7 @@ def run_put_e2e_flow(
     flow_id: str,
     *,
     repo_root: Path | None = None,
+    workspace: Path | None = None,
     timeout_seconds: float = 60.0,
     require_playwright: bool = False,
 ) -> PutE2EResult:
@@ -340,6 +341,39 @@ def run_put_e2e_flow(
     findings: list[PutE2EFinding] = []
     steps = flow.get("steps") if isinstance(flow.get("steps"), list) else []
 
+    def _fail_result(
+        *,
+        detail: str,
+        exercised_paths: set[str],
+        capture: dict[str, Any],
+    ) -> PutE2EResult:
+        if workspace is not None and workspace.is_dir():
+            from nimbusware_orchestrator.put_e2e_evidence import write_put_e2e_failure_evidence
+
+            pending = PutE2EResult(
+                verdict="FAIL",
+                flow_id=flow_id,
+                base_url=base_url,
+                detail=detail,
+                exercised_paths=exercised_paths,
+                findings=findings,
+                capture=capture,
+            )
+            evidence = write_put_e2e_failure_evidence(workspace, pending)
+            capture = dict(capture)
+            capture["evidence"] = evidence
+            pending.capture = capture
+            return pending
+        return PutE2EResult(
+            verdict="FAIL",
+            flow_id=flow_id,
+            base_url=base_url,
+            detail=detail,
+            exercised_paths=exercised_paths,
+            findings=findings,
+            capture=capture,
+        )
+
     try:
         with httpx.Client(timeout=timeout_seconds, follow_redirects=True) as client:
             for step in steps:
@@ -358,23 +392,16 @@ def run_put_e2e_flow(
                         ],
                     }
                     detail = findings[-1].message if findings else "flow step failed"
-                    return PutE2EResult(
-                        verdict="FAIL",
-                        flow_id=flow_id,
-                        base_url=base_url,
+                    return _fail_result(
                         detail=detail,
                         exercised_paths=exercised,
-                        findings=findings,
                         capture=capture,
                     )
     except httpx.HTTPError as exc:
-        return PutE2EResult(
-            verdict="FAIL",
-            flow_id=flow_id,
-            base_url=base_url,
+        return _fail_result(
             detail=str(exc),
             exercised_paths=exercised,
-            findings=findings,
+            capture={},
         )
 
     findings.extend(stub_console_capture(enabled=console_on))

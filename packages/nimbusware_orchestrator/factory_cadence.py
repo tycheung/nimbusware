@@ -188,6 +188,7 @@ def _run_put_e2e_for_run(
             base_url,
             flow_id,
             repo_root=repo_root,
+            workspace=workspace,
             require_playwright=False,
         )
         gates = evaluate_factory_gates(

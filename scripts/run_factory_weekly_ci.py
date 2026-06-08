@@ -79,6 +79,7 @@ def run_factory_golden_entry(
             base_url,
             flow_id,
             repo_root=repo,
+            workspace=ws,
             require_playwright=False,
         )
         gates = evaluate_factory_gates(
