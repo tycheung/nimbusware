@@ -206,7 +206,7 @@ def bridge_artifact_to_memory_index(
     *,
     repo_root: Path | None = None,
 ) -> dict[str, str]:
-    """Write artifact excerpt as a memory-bridge sidecar for optional FAISS rebuild."""
+    """Write artifact excerpt as a memory-bridge sidecar."""
     from nimbusware_env import find_repo_root
 
     root = repo_root or find_repo_root()

@@ -81,13 +81,17 @@ def test_replay_from_enqueues_campaign_tick(monkeypatch: pytest.MonkeyPatch) -> 
     queue = InMemoryRunQueue()
     set_run_queue(queue)
     repo = Path(__file__).resolve().parents[2]
-    ws = str((repo / "tests" / "fixtures" / "repos" / "tiny_python_app").resolve()).replace("\\", "/")
+    ws = str((repo / "tests" / "fixtures" / "repos" / "tiny_python_app").resolve()).replace(
+        "\\", "/"
+    )
     with TestClient(app) as tc:
         tc.app.state.run_queue = queue
         project = tc.post(
             "/v1/projects",
             json={"name": "replay-campaign", "workspace_path": ws, "template": "attach"},
-            headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
+            headers={
+                "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+            },
         )
         assert project.status_code == 200
         pid = project.json()["project_id"]
@@ -99,7 +103,9 @@ def test_replay_from_enqueues_campaign_tick(monkeypatch: pytest.MonkeyPatch) -> 
                 "autonomous": False,
                 "workflow_profile": "campaign_micro_slice",
             },
-            headers={"X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"},
+            headers={
+                "X-Nimbusware-Admin-Token": "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD"
+            },
         )
         assert campaign.status_code == 200
         run_id = campaign.json()["run_id"]
