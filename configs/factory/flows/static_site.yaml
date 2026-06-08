@@ -1,0 +1,12 @@
+id: static_site
+label: Static site PUT E2E
+prompt_id: static_site
+capture:
+  console: false
+  network: true
+steps:
+  - action: goto
+    path: /
+  - action: expect_status
+    path: /
+    status: 200

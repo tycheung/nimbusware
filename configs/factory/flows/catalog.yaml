@@ -10,3 +10,6 @@ flows:
   - id: contacts_api
     path: contacts_api.yaml
     prompt_id: contacts_api
+  - id: static_site
+    path: static_site.yaml
+    prompt_id: static_site

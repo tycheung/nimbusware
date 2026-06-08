@@ -214,6 +214,11 @@ def discover_surfaces_static(
                 continue
             seen_ids.add(surface.surface_id)
             surfaces.append(surface)
+        if not any(s.kind == "html_link" for s in surfaces):
+            root = ISMSurface(surface_id="page:/", kind="html_page", path="/", label="index")
+            if root.surface_id not in seen_ids:
+                seen_ids.add(root.surface_id)
+                surfaces.append(root)
 
     source = "static_discovery"
     if spec is not None and html:

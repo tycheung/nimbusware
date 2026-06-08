@@ -13,12 +13,14 @@ def _load_factory_weekly():
     return mod
 
 
-def test_factory_golden_manifest_has_t2_and_t3_entries() -> None:
+def test_factory_golden_manifest_has_catalog_flows() -> None:
     mod = _load_factory_weekly()
     entries = mod.load_factory_golden_entries(REPO)
-    assert len(entries) >= 2
+    assert len(entries) >= 4
+    flow_ids = {str(e.get("flow_id")) for e in entries}
+    assert {"crm", "contacts_api", "todo_api", "static_site"}.issubset(flow_ids)
     tiers = {str(e.get("factory_tier")) for e in entries}
-    assert "T2" in tiers and "T3" in tiers
+    assert {"T1", "T2", "T3"}.issubset(tiers)
 
 
 def test_factory_golden_manifest_entries_pass() -> None:
