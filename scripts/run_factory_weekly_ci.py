@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Factory weekly CI — golden replay + PUT E2E (fo700–fo702)."""
+"""Factory weekly CI — golden replay + PUT E2E."""
 
 from __future__ import annotations
 

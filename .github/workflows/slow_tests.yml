@@ -68,3 +68,17 @@ jobs:
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_REDIS_FLEET_URLS: redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0
         run: poetry run python scripts/run_redis_fleet_soak_ci.py
+
+  factory-weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - name: Factory golden replay (skip without Playwright)
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+        run: poetry run python scripts/run_factory_weekly_ci.py

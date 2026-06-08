@@ -27,6 +27,12 @@ def test_slow_tests_workflow_includes_redis_fleet_soak() -> None:
     assert "NIMBUSWARE_REDIS_FLEET_URLS" in text
 
 
+def test_slow_tests_workflow_includes_factory_weekly() -> None:
+    text = _SLOW.read_text(encoding="utf-8")
+    assert "factory-weekly:" in text
+    assert "run_factory_weekly_ci.py" in text
+
+
 def test_redis_fleet_soak_runbook_documents_ci() -> None:
     text = _RUNBOOK.read_text(encoding="utf-8")
     assert "slow_tests.yml" in text

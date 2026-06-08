@@ -226,6 +226,71 @@ def discover_surfaces_static(
     return InteractionSurfaceMap(version="1", surfaces=surfaces, source=source)
 
 
+def discover_surfaces_runtime(
+    preview_base_url: str,
+    *,
+    max_links: int = 20,
+    timeout_seconds: float = 2.0,
+) -> InteractionSurfaceMap:
+    """Bounded same-origin link crawl from a live preview URL."""
+    base = preview_base_url.rstrip("/")
+    visited: set[str] = set()
+    queue: list[str] = [base]
+    surfaces: list[ISMSurface] = []
+    seen_ids: set[str] = set()
+
+    while queue and len(visited) < max_links:
+        url = queue.pop(0)
+        if url in visited:
+            continue
+        visited.add(url)
+        try:
+            resp = httpx.get(url, timeout=timeout_seconds, follow_redirects=True)
+        except httpx.HTTPError:
+            continue
+        if not resp.is_success:
+            continue
+        path = url.replace(base, "") or "/"
+        sid = f"runtime:{path}"
+        if sid not in seen_ids:
+            seen_ids.add(sid)
+            surfaces.append(ISMSurface(surface_id=sid, kind="page", path=path))
+        for href in _HREF_RE.findall(resp.text):
+            if href.startswith("#") or href.startswith("mailto:"):
+                continue
+            joined = urljoin(url + "/", href)
+            if not joined.startswith(base):
+                continue
+            if joined not in visited and joined not in queue:
+                queue.append(joined)
+
+    return InteractionSurfaceMap(version="1", surfaces=surfaces, source="runtime_crawl")
+
+
+def discover_surfaces_combined(
+    workspace: Path,
+    *,
+    preview_base_url: str | None = None,
+    runtime_crawl: bool = False,
+) -> InteractionSurfaceMap:
+    static_map = discover_surfaces_static(workspace, preview_base_url=preview_base_url)
+    if not runtime_crawl or not preview_base_url:
+        return static_map
+    runtime_map = discover_surfaces_runtime(preview_base_url)
+    seen = {s.surface_id for s in static_map.surfaces}
+    merged = list(static_map.surfaces)
+    for surface in runtime_map.surfaces:
+        if surface.surface_id in seen:
+            continue
+        seen.add(surface.surface_id)
+        merged.append(surface)
+    return InteractionSurfaceMap(
+        version="1",
+        surfaces=merged,
+        source=f"{static_map.source}+runtime_crawl",
+    )
+
+
 def coverage_pct(ism: InteractionSurfaceMap, exercised: set[str]) -> float:
     if not ism.surfaces:
         return 0.0
