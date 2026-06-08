@@ -68,6 +68,12 @@ function wireRunIdSync() {
   pushFromVisible(document.getElementById("desktop-run-id"));
 }
 
+function maybeEnableMobilePush() {
+  if (!detectMobileMode() || !("Notification" in window)) return;
+  if (Notification.permission !== "default") return;
+  Notification.requestPermission().catch(() => {});
+}
+
 function makerShellFactory() {
   return {
     tabs: ALL_TABS,
@@ -115,6 +121,7 @@ function makerShellFactory() {
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
+      maybeEnableMobilePush();
     },
     navigate(hash) {
       window.location.hash = hash;

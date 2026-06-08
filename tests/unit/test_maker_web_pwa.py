@@ -40,7 +40,12 @@ def test_maker_web_mobile_css_and_tabs() -> None:
     assert "mobileMode" in shell_js
     assert "detectMobileMode" in shell_js
     assert "serviceWorker" in shell_js
+    assert "maybeEnableMobilePush" in shell_js
+    assert "Notification" in shell_js
     assert (_STATIC / "sw.js").is_file()
+    sw = (_STATIC / "sw.js").read_text(encoding="utf-8")
+    assert "addEventListener(\"push\"" in sw
+    assert "notificationclick" in sw
 
 
 def test_maker_models_preset_wizard_paths() -> None:
