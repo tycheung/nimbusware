@@ -57,6 +57,10 @@ jobs:
         env:
           NIMBUSWARE_SLICE_E2E_COMMAND: 'python -c "print(''ok'')"'
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+      - name: Framework pack CI gate
+        run: poetry run python scripts/run_framework_pack_ci_gate.py
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
 
   web:
     runs-on: ubuntu-latest
