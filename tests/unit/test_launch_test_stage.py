@@ -3,10 +3,21 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_orchestrator.launch_test_stage import (
+    build_launch_test_writer_prompt,
     run_launch_test_critique,
     run_launch_test_plan,
     run_launch_test_write,
 )
+
+
+def test_build_launch_test_writer_prompt_injects_pack(tmp_path: Path) -> None:
+    (tmp_path / "package.json").write_text(
+        '{"dependencies":{"react":"18"},"devDependencies":{"vite":"5"}}',
+        encoding="utf-8",
+    )
+    prompt = build_launch_test_writer_prompt(tmp_path)
+    assert "Launch Test Writer" in prompt
+    assert "react_vite" in prompt
 
 
 def test_launch_test_plan_and_write(tmp_path: Path) -> None:

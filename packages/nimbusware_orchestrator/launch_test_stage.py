@@ -33,6 +33,17 @@ def _load_prompt(name: str) -> str:
     return ""
 
 
+def build_launch_test_writer_prompt(workspace: Path, *, repo_root: Path | None = None) -> str:
+    root = repo_root or find_repo_root()
+    base = _load_prompt("launch_test_writer_stable.txt")
+    pack_id = detect_js_framework(workspace, repo_root=root)
+    pack = load_framework_pack(pack_id, repo_root=root)
+    instructions = str(pack.get("writer_instructions") or "").strip()
+    if not instructions:
+        return base
+    return f"{base}\n\n## Framework pack ({pack_id})\n{instructions}"
+
+
 def _critique_flow(flow_yaml: dict[str, Any]) -> tuple[bool, str, list[str]]:
     errors = validate_ui_flow_yaml(flow_yaml)
     for step in flow_yaml.get("steps") or []:
@@ -56,12 +67,16 @@ def run_launch_test_plan(
     pack_id = detect_js_framework(workspace)
     pack = load_framework_pack(pack_id)
     flow = synthesize_ui_flow_from_ism(workspace, preview_base_url=preview_base_url)
+    writer_prompt = build_launch_test_writer_prompt(workspace)
     return LaunchTestStageResult(
         passed=True,
         detail="plan_ready",
         flow_id=flow.flow_id,
         pack_id=pack_id,
-        findings=[{"pack_version": pack.get("pack_version"), "surfaces": len(flow.steps)}],
+        findings=[
+            {"pack_version": pack.get("pack_version"), "surfaces": len(flow.steps)},
+            {"writer_prompt": writer_prompt},
+        ],
     )
 
 
@@ -75,11 +90,13 @@ def run_launch_test_write(
         workspace, flow_id=flow_id, preview_base_url=preview_base_url
     )
     path = write_draft_ui_flow(workspace, flow)
+    pack_id = detect_js_framework(workspace)
     return LaunchTestStageResult(
         passed=True,
         detail=f"wrote:{path.name}",
         flow_id=flow.flow_id,
-        pack_id=detect_js_framework(workspace),
+        pack_id=pack_id,
+        findings=[{"writer_prompt": build_launch_test_writer_prompt(workspace)}],
     )
 
 
