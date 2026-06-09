@@ -21,14 +21,14 @@ SECURITY_SCAN_CATEGORIES: tuple[str, ...] = (
 )
 
 
-def _phase3_scanners_enabled() -> bool:
+def _optional_perf_scanners_enabled() -> bool:
     return nimbusware_run_perf_scan_enabled()
 
 
 def run_security_scan(
     workspace: Path,
 ) -> tuple[int, str, int, int, int, int, int, int]:
-    """Run security + optional Phase 3 perf/N+1/semgrep scanners.
+    """Run security scanners and optional perf/N+1/semgrep when enabled.
 
     Returns ``(worst_exit, merged_log, ruff, bandit, mypy, ruff_perf, n_plus_one, semgrep)``.
     Skipped tools count as success (exit 0).
@@ -38,7 +38,7 @@ def run_security_scan(
     mypy_code, mypy_out = run_mypy(workspace)
     perf_code, perf_out = (0, "ruff perf skipped\n")
     n1_code, n1_out = (0, "n+1 heuristic skipped\n")
-    if _phase3_scanners_enabled():
+    if _optional_perf_scanners_enabled():
         perf_code, perf_out = run_ruff_perf(workspace)
         n1_code, n1_out = scan_n_plus_one_heuristic(workspace)
     semgrep_code, semgrep_out = run_semgrep_scan(workspace)
@@ -63,7 +63,7 @@ def security_scan_tool_summary(
     semgrep_exit: int = 0,
     sql_profiler_exit: int = 0,
 ) -> dict[str, Any]:
-    """Structured per-tool exits for timeline / finding metadata (§14 #18 breadth)."""
+    """Structured per-tool exits for timeline / finding metadata."""
     return {
         "security_scan_categories": list(SECURITY_SCAN_CATEGORIES),
         "security_scan_tools": {

@@ -11,7 +11,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/integration/` | Postgres-marked (`-m integration`); includes `test_campaign_multi_tick.py` |
 | `tests/e2e/` | PR e2e subset (`-m e2e`); L1 journeys in `tests/e2e/journeys/` (`e2e_journey`); stack tests (`e2e_stack`) |
 | `tests/e2e/harness/` | Shared journey helpers (`JourneyClient`, golden timelines, stack subprocess, embed/in-process dispatch worker) |
-| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay, campaign dispatch worker, slice.e2e apply, interjection queue ordering, stack soak, factory cadence, PUT E2E CI gate, `tiny_api_app` micro-slice + campaign dispatch |
+| `tests/e2e/journeys/` | Operator micro-slice, lifecycle, external workspace, enterprise auth, launch-eval replay (+ dev-env merge), campaign dispatch worker, slice.e2e apply, interjection queue ordering, stack soak, factory cadence, PUT E2E CI gate, `tiny_api_app` micro-slice + campaign dispatch |
 | `tests/integration/` | Postgres, Redis dispatch worker stack (`test_redis_dispatch_worker_stack.py`, `-m integration`) |
 | `tests/e2e/golden/timelines/` | Minimum timeline subsequences and required stage names (`micro_slice_web_apply.json`, etc.) |
 | `tests/fixtures/repos/` | Attachable workspace copies (`tiny_python_app`, `tiny_web_app`, `tiny_broken_app`, `tiny_api_app`) |
