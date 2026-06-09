@@ -1,4 +1,4 @@
-"""Gradual dev-env activation milestones M1–M6 (§20.16)."""
+"""Gradual dev-env activation milestones M1–M6."""
 
 from __future__ import annotations
 
