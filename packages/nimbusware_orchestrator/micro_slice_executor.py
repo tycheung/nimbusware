@@ -271,12 +271,16 @@ def execute_single_micro_slice(
     max_replan = slice_replan_max_for_run(rows)
 
     from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
+    from nimbusware_orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
     from nimbusware_orchestrator.slice_cycle_integration import (
         apply_interjection_to_plan,
         apply_operator_pause,
         ensure_dev_environment_for_slice,
         gate_result_for_force_break,
+        handle_build_from_chat_interjection,
         handle_gate_failure_learning,
+        maybe_run_human_fidelity_pre_gate,
+        maybe_run_repo_explore_slice_stage,
         merge_pre_gate_into_verify,
         process_interjection_cycle,
         run_pre_gate_dev_env_regression,
@@ -285,6 +289,10 @@ def execute_single_micro_slice(
     profile = autopilot_profile_from_rows(rows)
     interjection = process_interjection_cycle(orch._store, run_id)
     if interjection.force_break:
+        stub = plan or default_stub_slice_plan(slice_index)
+        return gate_result_for_force_break(stub)
+    if interjection.build_from_chat:
+        handle_build_from_chat_interjection(orch, run_id, interjection, rows)
         stub = plan or default_stub_slice_plan(slice_index)
         return gate_result_for_force_break(stub)
 
@@ -296,6 +304,13 @@ def execute_single_micro_slice(
         budget_feedback=budget_feedback,
     )
     active_plan = apply_interjection_to_plan(active_plan, interjection)
+    maybe_run_repo_explore_slice_stage(
+        orch._store,
+        run_id,
+        ws,
+        slice_index=slice_index,
+    )
+    learning_excerpt = latest_learning_excerpt_from_rows(rows)
     replan_attempt = 0
     diff_unified = ""
     stats_source = "plan_estimate"
@@ -316,6 +331,7 @@ def execute_single_micro_slice(
                 orch,
                 orch._store.list_run_events(str(run_id)),
             ),
+            learning_excerpt=learning_excerpt,
         )
         symbol_sketch = ""
         from nimbusware_env.env_flags import (
@@ -499,6 +515,15 @@ def execute_single_micro_slice(
     ensure_dev_environment_for_slice(orch._store, run_id, ws, rows)
     pre_regression = run_pre_gate_dev_env_regression(orch._store, run_id, ws, rows, profile)
     verify_ok, verify_log = merge_pre_gate_into_verify(verify_ok, verify_log, pre_regression)
+    fidelity_passed, fidelity_detail = maybe_run_human_fidelity_pre_gate(
+        orch._store,
+        run_id,
+        ws,
+        rows,
+    )
+    if fidelity_passed is False:
+        verify_ok = False
+        verify_log = f"{verify_log}\n[human_fidelity] {fidelity_detail}".strip()
 
     final_stats = collect_slice_diff_stats(ws, active_plan)
     final_budget = check_slice_diff_budget(final_stats, block)

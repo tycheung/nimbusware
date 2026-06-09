@@ -92,6 +92,32 @@ def diagnose_from_failure(
     )
 
 
+def latest_learning_excerpt_from_rows(rows: list[dict[str, Any]]) -> str:
+    """Return the most recent diagnose.learn excerpt for agent volatile context."""
+    for row in reversed(rows):
+        payload = row.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        if str(payload.get("stage_name") or "") != "diagnose.learn":
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            continue
+        block = meta.get("diagnose_learn")
+        if not isinstance(block, dict):
+            continue
+        excerpt = str(block.get("excerpt") or "").strip()
+        if excerpt:
+            return excerpt[:2000]
+        path_raw = block.get("learning_path")
+        if not isinstance(path_raw, str) or not path_raw.strip():
+            continue
+        path = Path(path_raw)
+        if path.is_file():
+            return path.read_text(encoding="utf-8")[:2000]
+    return ""
+
+
 def agent_packet_from_learning(workspace: Path, fingerprint: str) -> dict[str, Any]:
     path = learnings_dir(workspace) / f"{fingerprint[:12]}.md"
     if not path.is_file():

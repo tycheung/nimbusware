@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import shutil
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -45,6 +46,39 @@ def create_variant_worktree(base_workspace: Path, tmp_root: Path, label: str) ->
     dest = tmp_root / f"variant_{vid}"
     shutil.copytree(base_workspace, dest, dirs_exist_ok=True)
     return VariantCandidate(variant_id=vid, label=label, workspace=dest)
+
+
+def _count_py_lines(workspace: Path) -> int:
+    total = 0
+    for path in workspace.rglob("*.py"):
+        if ".nimbusware" in path.parts or "node_modules" in path.parts:
+            continue
+        try:
+            total += sum(1 for _ in path.open(encoding="utf-8", errors="ignore"))
+        except OSError:
+            continue
+    return total
+
+
+def measure_variant_fitness(
+    candidate: VariantCandidate,
+    base_workspace: Path,
+    *,
+    timeout_seconds: float = 60.0,
+) -> tuple[bool, int]:
+    tests_passed = True
+    tests_dir = candidate.workspace / "tests"
+    if tests_dir.is_dir():
+        proc = subprocess.run(
+            ["python", "-m", "pytest", "tests", "-q", "--tb=no", "-x"],
+            cwd=candidate.workspace,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+        tests_passed = proc.returncode == 0
+    loc_delta = max(0, _count_py_lines(candidate.workspace) - _count_py_lines(base_workspace))
+    return tests_passed, loc_delta
 
 
 def score_variant(candidate: VariantCandidate, *, tests_passed: bool, loc_delta: int) -> float:

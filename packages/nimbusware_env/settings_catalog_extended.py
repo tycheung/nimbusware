@@ -794,6 +794,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_UI_CONTROLLER_ENABLED", "Enable UI controller regression", kind=_BOOL
         ),
         _internal(
+            "NIMBUSWARE_DEV_ENV_MILESTONES_BYPASS",
+            "Skip M1–M6 gating for dev-env auto-start and regression",
+            kind=_BOOL,
+        ),
+        _internal(
+            "NIMBUSWARE_HUMAN_FIDELITY_ENABLED",
+            "Run human-fidelity suite before slice gate when dev env is up",
+            kind=_BOOL,
+        ),
+        _internal(
             "NIMBUSWARE_FACTORY_EVIDENCE_OBJECT_STORE_URL",
             "S3-compatible URL for factory evidence zip mirror",
         ),

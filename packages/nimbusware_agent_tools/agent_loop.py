@@ -37,6 +37,7 @@ def _volatile_user_prompt(
     *,
     handoff_summary: str = "",
     memory_excerpt: str = "",
+    learning_excerpt: str = "",
 ) -> str:
     parts = [
         f"Slice: {plan.slice_id}",
@@ -48,6 +49,11 @@ def _volatile_user_prompt(
         parts.append(f"Prior handoff:\n{handoff_summary}")
     if memory_excerpt.strip():
         parts.append(f"Memory (advisory):\n{truncate_for_llm_history(memory_excerpt)}")
+    if learning_excerpt.strip():
+        parts.append(
+            f"Prior failure learning (apply fixes, do not repeat mistakes):\n"
+            f"{truncate_for_llm_history(learning_excerpt)}",
+        )
     parts.append("Use tools to inspect and change files. Do not assume file contents.")
     return "\n\n".join(parts)
 
@@ -99,6 +105,7 @@ def run(
     risk_caps: AgentRiskCaps | None = None,
     handoff_summary: str = "",
     memory_excerpt: str = "",
+    learning_excerpt: str = "",
     chat_fn: ChatFn | None = None,
 ) -> AgentLoopResult:
     from nimbusware_agent_tools.risk_caps import resolve_agent_risk_caps
@@ -115,6 +122,7 @@ def run(
             plan,
             handoff_summary=handoff_summary,
             memory_excerpt=memory_excerpt,
+            learning_excerpt=learning_excerpt,
         ),
     )
 

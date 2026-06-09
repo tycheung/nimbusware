@@ -42,6 +42,20 @@ def run_maintenance_refactor(
             ),
         ),
     )
+    index_meta: dict[str, Any] = {}
+    rows_for_index = store.list_run_events(str(run_id))
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.orphan_index import build_orphan_report
+    from nimbusware_orchestrator.similarity_index import build_similarity_index
+
+    ws_index = resolve_run_workspace(rows_for_index)
+    orphan_report = build_orphan_report(ws_index)
+    similarity = build_similarity_index(ws_index)
+    duplicate_clusters = [c for c in similarity.clusters if len(c.paths) > 1]
+    index_meta = {
+        "orphan_count": len(orphan_report.orphans),
+        "duplicate_clusters": len(duplicate_clusters),
+    }
     gate_fail = False
     if hasattr(orch, "_emit_refactor_stage_optional"):
         rows = store.list_run_events(str(run_id))
@@ -54,7 +68,7 @@ def run_maintenance_refactor(
                 break
         gate_fail = bool(orch._emit_refactor_stage_optional(run_id, workflow_profile=wf))
     fix_slices = 0
-    if gate_fail and insert_fix_slices:
+    if insert_fix_slices and (gate_fail or orphan_report.orphans or duplicate_clusters):
         from agent_core.models.backlog import BacklogSlice
         from nimbusware_orchestrator.backlog_generator import (
             backlog_from_events,
@@ -64,10 +78,20 @@ def run_maintenance_refactor(
         rows = store.list_run_events(str(run_id))
         backlog = backlog_from_events(rows)
         if backlog is not None:
+            target_paths: tuple[str, ...] = ("packages/",)
+            rationale = "Refactor maintenance fix slice"
+            if orphan_report.orphans:
+                target_paths = (orphan_report.orphans[0],)
+                rationale = f"Simplify orphan module: {orphan_report.orphans[0]}"
+            elif duplicate_clusters:
+                cluster = duplicate_clusters[0]
+                if cluster.paths:
+                    target_paths = (cluster.paths[0],)
+                    rationale = f"Deduplicate similar code cluster ({cluster.hash})"
             fix = BacklogSlice(
                 slice_id=f"fix-refactor-{slices_completed}",
-                rationale="Refactor maintenance fix slice",
-                target_paths=("packages/",),
+                rationale=rationale,
+                target_paths=target_paths,
             )
             epics = list(backlog.epics)
             if epics and epics[0].features:
@@ -110,6 +134,7 @@ def run_maintenance_refactor(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
+            metadata={"code_intel": index_meta},
             payload=MaintenanceRefactorPassedPayload(
                 campaign_id=str(run_id),
                 fix_slices_queued=fix_slices,

@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from nimbusware_orchestrator.autopilot_profiles import (
     autopilot_profile_from_rows,
+    persist_run_autopilot,
     resolve_autopilot_profile,
 )
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
@@ -16,6 +17,21 @@ from nimbusware_orchestrator.slice_cycle_integration import (
     process_interjection_cycle,
 )
 from nimbusware_store.memory import InMemoryEventStore
+
+
+def test_autopilot_persist_and_reload_from_events() -> None:
+    store = InMemoryEventStore()
+    run_id = uuid4()
+    profile = resolve_autopilot_profile(
+        level=7,
+        custom_checkpoints={"stop_on_gate_fail", "stop_at_terminal_review"},
+    )
+    persist_run_autopilot(store, run_id, profile)
+    rows = store.list_run_events(str(run_id))
+    reloaded = autopilot_profile_from_rows(rows)
+    assert reloaded.level == 7
+    assert reloaded.should_stop("stop_on_gate_fail")
+    assert reloaded.custom is True
 
 
 def test_autopilot_profile_from_run_metadata() -> None:
@@ -70,6 +86,64 @@ def test_operator_pause_on_gate_fail() -> None:
     paused = apply_operator_pause(gate, profile)
     assert paused.status == "paused_for_operator"
     assert any(s.name == "autopilot.pause" for s in paused.steps)
+
+
+def test_latest_learning_excerpt_from_diagnose_event() -> None:
+    from nimbusware_orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
+
+    rows = [
+        {
+            "payload": {"stage_name": "diagnose.learn"},
+            "metadata": {
+                "diagnose_learn": {
+                    "learning_path": "missing.md",
+                    "excerpt": "Root cause: missing import",
+                },
+            },
+        },
+    ]
+    assert "missing import" in latest_learning_excerpt_from_rows(rows)
+
+
+def test_theater_visibility_filters_low_autopilot() -> None:
+    from nimbusware_orchestrator.autopilot_profiles import filter_theater_messages_for_autopilot
+
+    messages = [
+        {"severity": "info", "message_kind": "system", "headline": "a"},
+        {"severity": "block", "message_kind": "slice", "headline": "b"},
+    ]
+    filtered = filter_theater_messages_for_autopilot(messages, level=10)
+    assert len(filtered) == 1
+    assert filtered[0]["headline"] == "b"
+
+
+def test_dev_env_milestone_gating() -> None:
+    from nimbusware_orchestrator.dev_env_milestones import (
+        dev_env_auto_start_enabled,
+        dev_env_http_regression_enabled,
+    )
+
+    profile_rows = [
+        {
+            "event_type": "run.created",
+            "metadata": {
+                "campaign_effective": {
+                    "enabled": True,
+                    "workflow_profile": "micro_slice_web",
+                    "persistent_dev_env": {"enabled": True},
+                },
+            },
+        },
+    ]
+    assert dev_env_auto_start_enabled(profile_rows) is False
+    assert dev_env_http_regression_enabled(profile_rows) is False
+    passed_rows = profile_rows + [
+        {
+            "event_type": "stage.passed",
+            "payload": {"stage_name": "slice.test"},
+        },
+    ]
+    assert dev_env_auto_start_enabled(passed_rows) is True
 
 
 def test_merge_pre_gate_regression_failures() -> None:

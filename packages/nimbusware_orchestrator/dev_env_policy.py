@@ -31,7 +31,7 @@ def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool
     return False
 
 
-def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
+def ui_controller_profile_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
     if os.environ.get("NIMBUSWARE_UI_CONTROLLER_ENABLED", "").strip().lower() in {
         "1",
         "true",
@@ -50,3 +50,7 @@ def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
     if isinstance(ui_block, dict):
         return bool(ui_block.get("ui_regression"))
     return persistent_dev_env_enabled(rows)
+
+
+def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
+    return ui_controller_profile_enabled(rows)
