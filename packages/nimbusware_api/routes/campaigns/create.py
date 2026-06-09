@@ -9,10 +9,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from nimbusware_api.access import assert_project_accessible
-from nimbusware_api.deps import OrchDep, ProjectStoreDep
+from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.runs.create import RunRequirementsBody
 from nimbusware_maker.intent import build_requirements_artifact
+from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ class CreateCampaignBody(BaseModel):
     requirements: RunRequirementsBody
     autonomous: bool = True
     workflow_profile: str = Field(default="campaign_micro_slice", min_length=1)
+    autopilot_profile_id: str | None = Field(default=None, max_length=120)
 
 
 @router.post("/campaigns")
@@ -29,6 +31,7 @@ def create_campaign(
     body: CreateCampaignBody,
     orch: OrchDep,
     project_store: ProjectStoreDep,
+    store: StoreDep,
 ) -> dict[str, Any]:
     try:
         project_uuid = UUID(str(body.project_id).strip())
@@ -72,6 +75,22 @@ def create_campaign(
             from pathlib import Path
 
             ws = Path(project.workspace_path)
+        if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
+            applied = apply_user_autopilot_at_run_start(
+                store,
+                run_id,
+                str(body.autopilot_profile_id),
+                repo_root=orch.repo_root,
+            )
+            if applied is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail=problem(
+                        "autopilot_profile_not_found",
+                        "Unknown autopilot profile id",
+                        details={"profile_id": body.autopilot_profile_id},
+                    ),
+                )
         mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
     except FileNotFoundError as exc:
         raise HTTPException(

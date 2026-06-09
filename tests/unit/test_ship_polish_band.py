@@ -4,10 +4,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from agent_core.models import EventType, StagePassedEvent, StagePassedPayload
+from agent_core.models import (
+    EventType,
+    RunCreatedEvent,
+    RunCreatedPayload,
+    StagePassedEvent,
+    StagePassedPayload,
+)
 from nimbusware_orchestrator.diagnose_learn import write_learning_doc
 from nimbusware_orchestrator.learnings_catalog import list_workspace_learnings
 from nimbusware_orchestrator.user_autopilot_profiles import (
+    apply_user_autopilot_at_run_start,
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,
 )
@@ -73,3 +80,33 @@ def test_user_autopilot_profiles_roundtrip(tmp_path: Path) -> None:
     profiles = load_user_autopilot_profiles(tmp_path)
     assert "ship_fast" in profiles
     assert profiles["ship_fast"].level == 8
+
+
+def test_apply_user_autopilot_at_run_start(tmp_path: Path) -> None:
+    from nimbusware_store.memory import InMemoryEventStore
+
+    upsert_user_autopilot_profile(
+        profile_id="run_start",
+        name="Run start",
+        level=7,
+        checkpoints=["stop_on_gate_fail"],
+        repo_root=tmp_path,
+    )
+    store = InMemoryEventStore()
+    run_id = uuid4()
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+        ),
+    )
+    applied = apply_user_autopilot_at_run_start(store, run_id, "run_start", repo_root=tmp_path)
+    assert applied is not None
+    assert applied.level == 7

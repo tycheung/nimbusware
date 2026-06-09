@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from uuid import UUID
 
 import yaml
 
@@ -105,3 +106,22 @@ def resolve_user_autopilot_profile(
         level=entry.level,
         custom_checkpoints=set(entry.checkpoints) if entry.checkpoints else None,
     )
+
+
+def apply_user_autopilot_at_run_start(
+    store: Any,
+    run_id: UUID,
+    profile_id: str,
+    *,
+    repo_root: Path | None = None,
+) -> AutopilotProfile | None:
+    from uuid import UUID as UUIDType
+
+    from nimbusware_orchestrator.autopilot_profiles import persist_run_autopilot
+
+    profile = resolve_user_autopilot_profile(profile_id.strip(), repo_root=repo_root)
+    if profile is None:
+        return None
+    rid = run_id if isinstance(run_id, UUIDType) else UUIDType(str(run_id))
+    persist_run_autopilot(store, rid, profile)
+    return profile
