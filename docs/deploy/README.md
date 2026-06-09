@@ -39,7 +39,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Unit** — default PR job (`ci.yml`): ruff, mypy, pytest unit subset @ 75% coverage.
 - **Integration** — Postgres `-m integration` on PR.
 - **E2E** — `tests/e2e -m e2e` on PR (import smoke + API `run.created` with Postgres).
-- **Weekly** — `slow_tests.yml` (`-m slow`, stack-soak, redis-fleet-soak, factory-weekly); `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + required scored `--run` with `min_pass_rate: 1.0`).
+- **Weekly** — `slow_tests.yml` (`-m slow`, stack-soak, redis-fleet-soak, factory-weekly, **dev-env-weekly-soak**); `e2e_smoke.yml`, `swe_bench.yml` (dry-run layout check + required scored `--run` with `min_pass_rate: 1.0`).
 - **Quarterly / manual** — `k8s_reference_smoke.yml` (`helm lint` + `kubectl apply --dry-run=client` on [`docs/deploy/k8s/`](k8s/README.md) manifests).
 - **Weekly / manual** — `ssh_hardware_probe.yml` (Enterprise fleet SSH tier probe; [runbook](ssh-hardware-probe.md)).
 - **PR / manual** — `oidc_smoke.yml` (mock Enterprise OIDC session tests).
@@ -75,6 +75,7 @@ Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate cont
 | Fleet Redis secrets | [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md) |
 | Remote Playwright pool | [fleet-playwright-pool.md](fleet-playwright-pool.md) |
 | Long-run campaign soak | [campaign-soak-runbook.md](campaign-soak-runbook.md) |
+| Persistent dev-env journey soak | [`scripts/run_dev_env_weekly_soak.py`](../../scripts/run_dev_env_weekly_soak.py) (weekly **dev-env-weekly-soak** in `slow_tests.yml`) |
 
 ## Kubernetes
 

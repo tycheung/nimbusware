@@ -82,3 +82,18 @@ jobs:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
         run: poetry run python scripts/run_factory_weekly_ci.py
+
+  dev-env-weekly-soak:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install
+      - run: poetry run playwright install chromium
+      - name: Persistent dev-env journey soak
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+        run: poetry run python scripts/run_dev_env_weekly_soak.py
