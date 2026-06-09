@@ -67,6 +67,15 @@ packages/nimbusware_console/pages/
 logs/
 .cache/
 
+# Python linter / test tool caches (local only)
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# CI scratch (local ci_check / coverage floors)
+.ci_coverage.json
+.ci_*.log
+
 # Python test coverage (pytest-cov / coverage.py — local only)
 .coverage
 .coverage.*
@@ -109,6 +118,10 @@ plan_gap.md
 e2e-testing-extension-plan.md
 e2e-true-variable-launch-testing.md
 benchmarks/
+
+# Diagnose/learn runtime docs (per-workspace; see diagnose_learn.py, ADR 012)
+docs/learnings/
+**/docs/learnings/
 
 # Nimbusware agent local run artifacts (integration adapter workspaces, etc.)
 .nimbusware/

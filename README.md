@@ -181,7 +181,7 @@ scripts/                Install, FAISS build, workers, e2e smoke, runbooks
 tests/                  Pytest suite (unit/api/console/orchestrator/integration/e2e)
 ```
 
-Generated/local paths are **gitignored** (`.cache/`, `.nimbusware/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
+Generated/local paths are **gitignored** (`.cache/`, `.nimbusware/`, `docs/learnings/`, `configs/memory/`, `configs/bundles/index/`, `.env`).
 
 ## Quick start
 

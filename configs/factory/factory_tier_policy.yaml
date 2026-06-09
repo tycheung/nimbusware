@@ -1,5 +1,5 @@
 version: 1
-# Factory tier policy stub (fo650–fo654 / fo660 scaffold).
+# Factory tier policy (T0 scaffold; T1–T3 integrated preview tiers).
 factory_tiers:
   T0:
     label: scaffold
