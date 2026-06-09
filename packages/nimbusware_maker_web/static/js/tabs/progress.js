@@ -525,6 +525,9 @@ export async function mountProgress(root) {
     let ui = null;
     let httpDetail = "";
     let uiDetail = "";
+    let uiFlowId = "";
+    let uiFailedStep = null;
+    let uiFailedLocator = "";
     for (const ev of [...(events || [])].reverse()) {
       if (ev.event_type !== "stage.passed" && ev.event_type !== "stage.started") continue;
       const stage = ev.payload?.stage_name || "";
@@ -536,11 +539,19 @@ export async function mountProgress(root) {
       }
       if (stage.startsWith("dev_env.ui_regression") && ui === null) {
         ui = stage.endsWith(".passed");
-        uiDetail = typeof block?.regression === "string" ? block.regression : block?.detail || "";
+        uiDetail =
+          typeof block?.ui_regression === "string"
+            ? block.ui_regression
+            : typeof block?.regression === "string"
+              ? block.regression
+              : block?.detail || "";
+        uiFlowId = block?.flow_id || "";
+        uiFailedStep = block?.failed_step ?? null;
+        uiFailedLocator = block?.locator || "";
       }
       if (http !== null && ui !== null) break;
     }
-    return { http, ui, httpDetail, uiDetail };
+    return { http, ui, httpDetail, uiDetail, uiFlowId, uiFailedStep, uiFailedLocator };
   }
 
   async function refreshDevEnvStatus(runId) {
@@ -559,7 +570,16 @@ export async function mountProgress(root) {
           bits.push(`HTTP regression: ${reg.http ? "passed" : "failed"}${reg.httpDetail ? ` (${reg.httpDetail.slice(0, 80)})` : ""}`);
         }
         if (reg.ui !== null) {
-          bits.push(`UI regression: ${reg.ui ? "passed" : "failed"}${reg.uiDetail ? ` (${reg.uiDetail.slice(0, 80)})` : ""}`);
+          let uiLine = `UI regression: ${reg.ui ? "passed" : "failed"}`;
+          if (reg.uiFlowId) uiLine += ` [${reg.uiFlowId}]`;
+          if (!reg.ui && reg.uiFailedStep != null) {
+            uiLine += ` step ${reg.uiFailedStep}`;
+          }
+          if (!reg.ui && reg.uiFailedLocator) {
+            uiLine += ` ${reg.uiFailedLocator}`;
+          }
+          if (reg.uiDetail) uiLine += ` (${reg.uiDetail.slice(0, 80)})`;
+          bits.push(uiLine);
         }
         detail.textContent = bits.length ? bits.join(" · ") : "No regression runs yet";
       }

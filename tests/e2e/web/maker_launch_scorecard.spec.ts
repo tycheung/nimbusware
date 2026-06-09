@@ -89,6 +89,11 @@ test("launch scorecard shows dev-env regression rows after live session", async 
   const regression = await request.post(`/v1/runs/${runId}/dev-env/regression`);
   expect(regression.ok()).toBeTruthy();
 
+  const uiRegression = await request.post(`/v1/runs/${runId}/dev-env/ui-regression`);
+  expect(uiRegression.ok()).toBeTruthy();
+  const uiBody = await uiRegression.json();
+  expect(uiBody.flow_id).toBeTruthy();
+
   const launchEval = await request.post(`/v1/runs/${runId}/maker/launch-eval`);
   expect(launchEval.ok()).toBeTruthy();
   const scorecard = await launchEval.json();
@@ -102,4 +107,6 @@ test("launch scorecard shows dev-env regression rows after live session", async 
   await expect(page.getByTestId("maker-review-scorecard-dev_env_http_regression_passed")).toContainText(
     "dev_env HTTP regression",
   );
+  await expect(page.getByTestId("maker-review-scorecard-put_ui_flow_id")).toBeVisible();
+  await expect(page.getByTestId("maker-review-scorecard-put_ui_flow_id")).toContainText(uiBody.flow_id);
 });

@@ -43,7 +43,14 @@ def test_launch_eval_merges_dev_env_regression_from_run_events(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
-            metadata={"dev_env": {"regression": "button missing"}},
+            metadata={
+                "dev_env": {
+                    "ui_regression": "button missing",
+                    "flow_id": "tiny_web_smoke",
+                    "failed_step": 3,
+                    "locator": "role=button:Add",
+                }
+            },
             payload=StagePassedPayload(stage_name="dev_env.ui_regression.failed", duration_ms=0),
         ),
     )
@@ -54,6 +61,8 @@ def test_launch_eval_merges_dev_env_regression_from_run_events(
     assert body.get("dev_env_http_regression_passed") is True
     assert body.get("dev_env_ui_regression_passed") is False
     assert body.get("dev_env_live_regression_passed") is False
+    assert body.get("put_ui_flow_id") == "tiny_web_smoke"
+    assert body.get("dev_env_ui_failed_step") == 3
     assert body.get("passed") is False
 
     rows = store.list_run_events(str(run_id))

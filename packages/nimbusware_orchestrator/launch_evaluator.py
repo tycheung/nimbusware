@@ -29,21 +29,25 @@ class LaunchEvalScorecard:
     dev_env_live_regression_passed: bool | None = None
     dev_env_http_regression_passed: bool | None = None
     dev_env_ui_regression_passed: bool | None = None
+    put_ui_flow_id: str | None = None
+    slice_e2e_passed: bool | None = None
+    dev_env_ui_failed_step: int | None = None
+    dev_env_ui_failed_locator: str | None = None
 
     def to_dict(self) -> dict[str, object]:
-        payload = {
-            k: v
-            for k, v in asdict(self).items()
-            if k
-            not in (
-                "findings",
-                "llm_findings",
-                "llm_dimensions",
-                "dev_env_live_regression_passed",
-                "dev_env_http_regression_passed",
-                "dev_env_ui_regression_passed",
-            )
-        }
+        optional_keys = (
+            "findings",
+            "llm_findings",
+            "llm_dimensions",
+            "dev_env_live_regression_passed",
+            "dev_env_http_regression_passed",
+            "dev_env_ui_regression_passed",
+            "put_ui_flow_id",
+            "slice_e2e_passed",
+            "dev_env_ui_failed_step",
+            "dev_env_ui_failed_locator",
+        )
+        payload = {k: v for k, v in asdict(self).items() if k not in optional_keys}
         payload["findings"] = list(self.findings)
         if self.llm_findings:
             payload["llm_findings"] = list(self.llm_findings)
@@ -55,6 +59,14 @@ class LaunchEvalScorecard:
             payload["dev_env_http_regression_passed"] = self.dev_env_http_regression_passed
         if self.dev_env_ui_regression_passed is not None:
             payload["dev_env_ui_regression_passed"] = self.dev_env_ui_regression_passed
+        if self.put_ui_flow_id:
+            payload["put_ui_flow_id"] = self.put_ui_flow_id
+        if self.slice_e2e_passed is not None:
+            payload["slice_e2e_passed"] = self.slice_e2e_passed
+        if self.dev_env_ui_failed_step is not None:
+            payload["dev_env_ui_failed_step"] = self.dev_env_ui_failed_step
+        if self.dev_env_ui_failed_locator:
+            payload["dev_env_ui_failed_locator"] = self.dev_env_ui_failed_locator
         return payload
 
 
@@ -265,6 +277,10 @@ def merge_dev_env_into_scorecard(
     passed = scorecard.passed
     if live is False:
         passed = False
+    flow_id = bits.get("put_ui_flow_id")
+    slice_e2e = bits.get("slice_e2e_passed")
+    failed_step = bits.get("dev_env_ui_failed_step")
+    failed_locator = bits.get("dev_env_ui_failed_locator")
     return LaunchEvalScorecard(
         aggregate=scorecard.aggregate,
         maturity=scorecard.maturity,
@@ -279,6 +295,10 @@ def merge_dev_env_into_scorecard(
         dev_env_live_regression_passed=(bool(live) if isinstance(live, bool) else None),
         dev_env_http_regression_passed=http if isinstance(http, bool) else None,
         dev_env_ui_regression_passed=ui if isinstance(ui, bool) else None,
+        put_ui_flow_id=str(flow_id) if flow_id else None,
+        slice_e2e_passed=slice_e2e if isinstance(slice_e2e, bool) else None,
+        dev_env_ui_failed_step=int(failed_step) if failed_step is not None else None,
+        dev_env_ui_failed_locator=str(failed_locator) if failed_locator else None,
     )
 
 

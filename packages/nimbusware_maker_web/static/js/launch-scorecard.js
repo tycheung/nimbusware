@@ -33,6 +33,7 @@ export function renderLaunchScorecard(container, scorecard, { testIdPrefix = "ma
     ["dev_env live regression", "dev_env_live_regression_passed"],
     ["dev_env HTTP regression", "dev_env_http_regression_passed"],
     ["dev_env UI regression", "dev_env_ui_regression_passed"],
+    ["slice E2E", "slice_e2e_passed"],
   ];
   for (const [label, key] of devRows) {
     if (scorecard[key] == null) continue;
@@ -40,6 +41,25 @@ export function renderLaunchScorecard(container, scorecard, { testIdPrefix = "ma
     row.dataset.testid = `${testIdPrefix}-scorecard-${key}`;
     row.textContent = `${label}: ${scorecard[key] ? "passed" : "failed"}`;
     container.appendChild(row);
+  }
+  if (scorecard.put_ui_flow_id) {
+    const flowRow = document.createElement("p");
+    flowRow.dataset.testid = `${testIdPrefix}-scorecard-put_ui_flow_id`;
+    flowRow.textContent = `UI flow: ${scorecard.put_ui_flow_id}`;
+    container.appendChild(flowRow);
+  }
+  if (scorecard.dev_env_ui_failed_step != null || scorecard.dev_env_ui_failed_locator) {
+    const failRow = document.createElement("p");
+    failRow.dataset.testid = `${testIdPrefix}-scorecard-ui-flow-failure`;
+    const parts = [];
+    if (scorecard.dev_env_ui_failed_step != null) {
+      parts.push(`step ${scorecard.dev_env_ui_failed_step}`);
+    }
+    if (scorecard.dev_env_ui_failed_locator) {
+      parts.push(scorecard.dev_env_ui_failed_locator);
+    }
+    failRow.textContent = `UI flow failure: ${parts.join(" · ")}`;
+    container.appendChild(failRow);
   }
   const llmDims = scorecard.llm_dimensions;
   if (llmDims && typeof llmDims === "object" && Object.keys(llmDims).length) {

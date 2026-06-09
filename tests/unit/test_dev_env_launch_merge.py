@@ -18,12 +18,21 @@ def test_dev_env_live_regression_from_rows() -> None:
         {
             "event_type": EventType.STAGE_PASSED.value,
             "payload": {"stage_name": "dev_env.ui_regression.failed"},
-            "metadata": {"dev_env": {"regression": "button missing"}},
+            "metadata": {
+                "dev_env": {
+                    "ui_regression": "button missing",
+                    "flow_id": "todo_api_ui",
+                    "failed_step": 2,
+                    "locator": "testid=todo-add-button",
+                }
+            },
         },
     ]
     bits = dev_env_live_regression_from_rows(rows)
     assert bits["dev_env_http_regression_passed"] is True
     assert bits["dev_env_ui_regression_passed"] is False
+    assert bits["put_ui_flow_id"] == "todo_api_ui"
+    assert bits["dev_env_ui_failed_step"] == 2
     assert bits["dev_env_live_regression_passed"] is False
 
 

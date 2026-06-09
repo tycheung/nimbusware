@@ -11,6 +11,8 @@ def dev_env_live_regression_from_rows(rows: list[dict[str, Any]]) -> dict[str, A
     http_detail = ""
     ui_detail = ""
     ui_flow_id = ""
+    failed_step: int | None = None
+    failed_locator = ""
     slice_e2e: bool | None = None
     for row in reversed(rows):
         payload = row.get("payload")
@@ -32,6 +34,10 @@ def dev_env_live_regression_from_rows(rows: list[dict[str, Any]]) -> dict[str, A
                 ui = stage.endswith(".passed")
                 ui_detail = str(block.get("ui_regression") or block.get("detail") or "")[:500]
                 ui_flow_id = str(block.get("flow_id") or "")
+                raw_step = block.get("failed_step")
+                if raw_step is not None:
+                    failed_step = int(raw_step)
+                failed_locator = str(block.get("locator") or "")
         if stage.startswith("slice.e2e") and slice_e2e is None:
             slice_e2e = stage.endswith(".passed") or et == EventType.STAGE_PASSED.value
         if http is not None and ui is not None and slice_e2e is not None:
@@ -48,6 +54,10 @@ def dev_env_live_regression_from_rows(rows: list[dict[str, Any]]) -> dict[str, A
             out["dev_env_ui_regression_detail"] = ui_detail
         if ui_flow_id:
             out["put_ui_flow_id"] = ui_flow_id
+        if failed_step is not None:
+            out["dev_env_ui_failed_step"] = failed_step
+        if failed_locator:
+            out["dev_env_ui_failed_locator"] = failed_locator
     if slice_e2e is not None:
         out["slice_e2e_passed"] = slice_e2e
     if http is not None or ui is not None:
