@@ -69,6 +69,8 @@ helm upgrade nimbusware charts/nimbusware \
 
 See [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md).
 
+Fleet Playwright (`secrets.fleetPlaywrightWs`) and campaign soak preflight: [campaign-soak-runbook.md](campaign-soak-runbook.md), `scripts/run_campaign_soak_check.py` (weekly **campaign-soak-preflight** in `slow_tests.yml`).
+
 ## Secrets rotation
 
 Update `secrets.databaseUrl` / `secrets.adminToken` / `secrets.redisFleetUrls` in values, run `helm upgrade`, then restart API and worker pods.

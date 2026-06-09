@@ -48,6 +48,13 @@ spec:
               value: redis://redis:6379/0
             {{- end }}
             {{- end }}
+            {{- if .Values.secrets.fleetPlaywrightWs }}
+            - name: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: nimbusware-api-secrets
+                  key: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /v1/platform/edition

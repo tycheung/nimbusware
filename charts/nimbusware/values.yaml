@@ -37,6 +37,8 @@ secrets:
   # Optional managed Redis (when redis.enabled=false). Use redisFleetUrls for multi-broker fleets.
   redisUrl: ""
   redisFleetUrls: ""
+  # Optional remote Playwright pool for factory T3 / dev-env UI regression at scale.
+  fleetPlaywrightWs: ""
 
 ingress:
   enabled: false

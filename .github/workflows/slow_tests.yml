@@ -97,3 +97,30 @@ jobs:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
         run: poetry run python scripts/run_dev_env_weekly_soak.py
+
+  campaign-soak-preflight:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - run: pip install poetry && poetry install --with redis
+      - name: Campaign soak prerequisites
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+          NIMBUSWARE_EDITION: enterprise
+          NIMBUSWARE_RUN_DISPATCH: redis
+          NIMBUSWARE_REDIS_URL: redis://127.0.0.1:6379/0
+        run: poetry run python scripts/run_campaign_soak_check.py
