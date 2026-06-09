@@ -1,5 +1,3 @@
-"""Policy helpers for persistent dev environment defaults."""
-
 from __future__ import annotations
 
 import os

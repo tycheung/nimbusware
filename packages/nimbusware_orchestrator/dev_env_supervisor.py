@@ -1,5 +1,3 @@
-"""Persistent dev environment supervisor — start, attach, health, stop."""
-
 from __future__ import annotations
 
 import os

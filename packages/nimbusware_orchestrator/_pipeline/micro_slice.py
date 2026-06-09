@@ -26,7 +26,6 @@ class MicroSliceMixin:
         run_id: UUID,
         plan: dict[str, Any] | Any,
     ) -> None:
-        """Persist a slice plan marker for timeline read-models."""
         from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
@@ -60,7 +59,6 @@ class MicroSliceMixin:
         diff_unified: str = "",
         test_output: str = "",
     ) -> SliceGateChainResult:
-        """Run per-slice gate chain and append pass/fail stage events."""
         from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from nimbusware_orchestrator.slice_context_packet import build_slice_context_packet
         from nimbusware_orchestrator.slice_gate import run_slice_gate_chain

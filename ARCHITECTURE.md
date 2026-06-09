@@ -39,7 +39,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 |---------|------|
 | `agent_core` | Event models, `context_budget`, slice handoff models |
 | `nimbusware_store` | Event store (Postgres / memory) |
-| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + compaction revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
+| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** (interjection drain, pre-gate dev-env regression, resolution council, diagnose-learn, improvement council), **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + compaction revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
@@ -47,7 +47,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_agent_tools` | JIT `agent_loop`, dual `ToolResult` output, tool allowlist, stable prompt file; jail + sandbox + risk caps |
 | `nimbusware_config` | Versioned config documents + materializer |
 | `nimbusware_projections` | Events → timeline, maker-progress, theater, context budget, `factory_status`, agent-tool prune (+ export, research briefs) |
-| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings) at `/v1/maker/app` |
+| `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings, operator ribbons) at `/v1/maker/app` |
 | `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
 | `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |

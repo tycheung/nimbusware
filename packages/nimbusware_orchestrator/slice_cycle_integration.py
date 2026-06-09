@@ -1,5 +1,3 @@
-"""Wire v2.1–v2.3 operator modules into slice and campaign loops."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

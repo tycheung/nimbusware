@@ -1,5 +1,3 @@
-"""Persistent dev environment session model and on-disk registry."""
-
 from __future__ import annotations
 
 import json

@@ -1,5 +1,3 @@
-"""Autopilot slider presets and custom checkpoint profiles."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

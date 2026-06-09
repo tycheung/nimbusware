@@ -1,5 +1,3 @@
-"""Incremental HTTP regression against a persistent dev environment."""
-
 from __future__ import annotations
 
 import json

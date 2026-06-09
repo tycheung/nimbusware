@@ -1,5 +1,3 @@
-"""Live observability for persistent dev environments."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -19,7 +19,7 @@ Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` 
 | `tests/fixtures/launch_eval/` | Golden scorecard floors + campaign replay manifest (`golden_replay_manifest.json`, CRM + todo_api + contacts_api snapshots) |
 | `tests/fixtures/factory/` | Factory golden replay manifest (`golden_factory_replay_manifest.json` — crm, contacts, todo, static_site T1/T3) + legacy `golden_factory_replay.json` |
 | `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) + launch wiring manifest (`parity_launch_wiring.yaml`) |
-| `tests/e2e/web/` | Playwright smoke, apply-slice, session hub, launch scorecard (dimension rows), Settings launch check, Admin launch scorecard + factory evidence, scoped compaction toolbar, campaign progress + full replay, mobile theater parity (**27** tests / **20** spec files; sets `NIMBUSWARE_API_BASE` to test server port) |
+| `tests/e2e/web/` | Playwright smoke, apply-slice, session hub, launch scorecard (dimension rows), Settings launch check, Admin launch scorecard + factory evidence, scoped compaction toolbar, operator ribbons, campaign progress + full replay, mobile theater parity (**30** tests / **21** spec files; sets `NIMBUSWARE_API_BASE` to test server port) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |

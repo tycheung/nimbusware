@@ -221,7 +221,6 @@ def _run_slice_verify_and_test(
     *,
     timeout_seconds: float,
 ) -> tuple[bool, str, bool, str]:
-    """Verify (ruff + path existence) and scoped pytest for one slice."""
     missing = [p for p in plan.target_paths if not (workspace / p).is_file()]
     sections: list[str] = []
     verify_ok = True
@@ -261,7 +260,6 @@ def execute_single_micro_slice(
     plan: SlicePlan | None = None,
     backlog_slice_id: str | None = None,
 ) -> SliceGateChainResult:
-    """Run slice.plan → implement → verify → critique → test → gate for one slice."""
     rows = orch._store.list_run_events(str(run_id))
     from nimbusware_maker.workspace import resolve_run_workspace
 
@@ -557,7 +555,6 @@ def execute_micro_slice_pass(
     *,
     workspace: Path | None = None,
 ) -> list[SliceGateChainResult]:
-    """Run slice.plan → implement → verify → critique → test → gate for N slices."""
     rows = orch._store.list_run_events(str(run_id))
     from nimbusware_maker.workspace import resolve_run_workspace
 

@@ -47,7 +47,6 @@ def run_slice_gate_chain(
     autopilot_level: int = 5,
     resolution_callback: Any | None = None,
 ) -> SliceGateChainResult:
-    """Deterministic per-slice gate: all steps must pass before next slice."""
     steps: list[SliceGateStep] = []
     critique_verdicts = critique_verdicts or []
 

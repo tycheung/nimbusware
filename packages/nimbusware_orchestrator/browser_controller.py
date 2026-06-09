@@ -1,5 +1,3 @@
-"""Persistent Playwright browser controller for UI regression."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

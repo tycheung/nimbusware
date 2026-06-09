@@ -1,5 +1,3 @@
-"""Framework adapters for persistent dev environment processes."""
-
 from __future__ import annotations
 
 import json
@@ -81,7 +79,7 @@ def _npm_dev_command(workspace: Path, port: int) -> list[str]:
     npm = "npm.cmd" if sys.platform == "win32" else "npm"
     env_prefix: list[str] = []
     if port:
-        env_prefix = []  # caller sets PORT in env when spawning
+        env_prefix = []
     return env_prefix + [npm, "run", "dev", "--", "--host", "127.0.0.1", "--port", str(port)]
 
 

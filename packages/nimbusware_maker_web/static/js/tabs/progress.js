@@ -688,7 +688,6 @@ export async function mountProgress(root) {
       renderCriticReliabilityPanel(criticMount, criticBody, { testIdPrefix: "maker-progress-critic" });
     }
   } catch {
-    /* critic panel omitted */
   }
 
   try {
@@ -783,7 +782,6 @@ export async function mountProgress(root) {
         bodyEl.textContent = `${bodyEl.textContent ? bodyEl.textContent + " · " : ""}${pending.length} stitch candidate(s) pending`;
       }
     } catch {
-      /* stitch catalog optional */
     }
   }
 
@@ -811,7 +809,6 @@ export async function mountProgress(root) {
     const projectId = created?.metadata?.project?.id;
     if (projectId) await renderContextArtifacts(projectId);
   } catch {
-    /* project artifacts optional */
   }
 
   try {
@@ -826,7 +823,6 @@ export async function mountProgress(root) {
       }
     }
   } catch {
-    /* memory influence optional */
   }
 }
 

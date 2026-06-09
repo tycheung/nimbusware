@@ -1,5 +1,3 @@
-"""Operator interjection queue — next/last ordering between slice cycles."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -1,5 +1,3 @@
-"""Diagnose-fix-learn loop — probes, learnings docs, stack fingerprints."""
-
 from __future__ import annotations
 
 import hashlib

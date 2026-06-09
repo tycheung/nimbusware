@@ -1,5 +1,3 @@
-"""Continuous improvement council — vote on improvement track."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

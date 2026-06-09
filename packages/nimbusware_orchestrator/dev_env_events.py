@@ -1,5 +1,3 @@
-"""Timeline events for persistent dev environment lifecycle."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
