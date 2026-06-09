@@ -1,0 +1,11 @@
+id: static_site_ui
+label: Static site navigation
+prompt_id: static_site
+base: frontend
+steps:
+  - kind: goto
+    url: /
+  - kind: expect_visible
+    locator: { strategy: role, role: heading, name: OK }
+  - kind: click
+    locator: { strategy: role, role: link, name: Contact }

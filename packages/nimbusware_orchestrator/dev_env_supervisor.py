@@ -35,6 +35,7 @@ from nimbusware_orchestrator.put_runtime import (
 from nimbusware_orchestrator.put_sandbox import wrap_put_preview_command
 
 _ACTIVE: dict[str, PutPreviewHandle] = {}
+_FRONTEND_ACTIVE: dict[str, PutPreviewHandle] = {}
 
 
 @dataclass(frozen=True)
@@ -66,14 +67,17 @@ def _spawn_preview(
     adapter_name: str | None = None,
     prefer_reload: bool = True,
     startup_timeout_seconds: float = 20.0,
+    role: str = "primary",
 ) -> PutPreviewStartResult:
     ws = workspace.resolve()
     stack = detect_put_stack(ws)
+    probe_stack = "spa" if role == "frontend" else stack
     name, command = build_adapter_command(
         ws,
         port,
         adapter_name=adapter_name,
         prefer_reload=prefer_reload,
+        role=role,
     )
     command = wrap_put_preview_command(command, port=port, workspace=str(ws))
     base_url = f"http://127.0.0.1:{port}"
@@ -93,7 +97,7 @@ def _spawn_preview(
         process=proc,
         workspace=ws,
         port=port,
-        stack=stack,
+        stack=probe_stack,
         base_url=base_url,
         command=tuple(command),
     )
@@ -102,16 +106,18 @@ def _spawn_preview(
     while time.monotonic() < deadline:
         if proc.poll() is not None:
             break
-        probe = _probe_preview_health(base_url, stack)
+        probe = _probe_preview_health(base_url, probe_stack)
         if probe.get("reachable") and probe.get("ok"):
-            _ACTIVE[str(ws)] = handle
+            if role != "frontend":
+                _ACTIVE[str(ws)] = handle
             return PutPreviewStartResult(ok=True, handle=handle, probe=probe)
         time.sleep(0.25)
 
     if proc.poll() is None:
-        probe = _probe_preview_health(base_url, stack)
+        probe = _probe_preview_health(base_url, probe_stack)
         if probe.get("reachable") and probe.get("ok"):
-            _ACTIVE[str(ws)] = handle
+            if role != "frontend":
+                _ACTIVE[str(ws)] = handle
             return PutPreviewStartResult(ok=True, handle=handle, probe=probe)
 
     error = probe.get("error") or f"preview exited with code {proc.poll()}"
@@ -150,11 +156,13 @@ def start_dev_environment(
         return DevEnvStartResult(ok=True, session=session, probe={"reachable": True, "ok": True})
 
     chosen_port = port if port is not None else _default_port(ws)
+    stack = detect_put_stack(ws)
     preview = _spawn_preview(
         ws,
         chosen_port,
         adapter_name=adapter_name,
         prefer_reload=prefer_reload,
+        role="primary",
     )
     if not preview.ok or preview.handle is None:
         return DevEnvStartResult(ok=False, error=preview.error, probe=preview.probe)
@@ -167,6 +175,23 @@ def start_dev_environment(
     )
     session.probe = dict(preview.probe)
     session.last_probe_at = datetime.now(timezone.utc).isoformat()
+
+    if stack == "fullstack":
+        fe_port = chosen_port + 1
+        fe_preview = _spawn_preview(
+            ws,
+            fe_port,
+            prefer_reload=prefer_reload,
+            role="frontend",
+        )
+        if fe_preview.ok and fe_preview.handle is not None:
+            _FRONTEND_ACTIVE[str(ws)] = fe_preview.handle
+            session.stack = "fullstack"
+            session.api_base_url = session.base_url
+            session.frontend_base_url = fe_preview.handle.base_url
+            session.frontend_port = fe_port
+            session.base_url = session.api_base_url
+
     persist_session(session)
     if emit_events:
         emit_dev_env_started(store, run_id, session)
@@ -185,6 +210,9 @@ def stop_dev_environment(
     handle = _ACTIVE.pop(str(ws), None)
     if handle is not None:
         stop_put_preview(handle)
+    fe_handle = _FRONTEND_ACTIVE.pop(str(ws), None)
+    if fe_handle is not None:
+        stop_put_preview(fe_handle)
     elif session is not None and not session.attach_mode:
         pass
     if session is not None:
@@ -233,7 +261,20 @@ def active_base_url(workspace: Path) -> str | None:
     session = load_session(workspace.resolve())
     if session is None:
         return None
-    probe = _probe_preview_health(session.base_url, session.stack)
+    url = session.api_base_url or session.base_url
+    probe = _probe_preview_health(url, session.stack)
     if probe.get("reachable") and probe.get("ok"):
-        return session.base_url
+        return url
+    return None
+
+
+def frontend_base_url(workspace: Path) -> str | None:
+    session = load_session(workspace.resolve())
+    if session is None:
+        return None
+    url = session.frontend_base_url or session.base_url
+    stack = "spa" if session.stack == "fullstack" else session.stack
+    probe = _probe_preview_health(url, stack)
+    if probe.get("reachable") and probe.get("ok"):
+        return url
     return None

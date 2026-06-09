@@ -25,6 +25,9 @@ class DevEnvironmentSession:
     probe: dict[str, Any] = field(default_factory=dict)
     adapter: str = "default"
     command: tuple[str, ...] = ()
+    api_base_url: str | None = None
+    frontend_base_url: str | None = None
+    frontend_port: int = 0
 
     @classmethod
     def from_handle(
@@ -77,11 +80,14 @@ class DevEnvironmentSession:
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> DevEnvironmentSession:
+        api_url = raw.get("api_base_url")
+        fe_url = raw.get("frontend_base_url")
+        base = str(raw.get("base_url") or "")
         return cls(
             session_id=str(raw.get("session_id") or uuid4()),
             run_id=str(raw.get("run_id") or ""),
             workspace=Path(str(raw.get("workspace") or ".")),
-            base_url=str(raw.get("base_url") or ""),
+            base_url=base,
             stack=raw.get("stack") or "unknown",  # type: ignore[arg-type]
             port=int(raw.get("port") or 0),
             attach_mode=bool(raw.get("attach_mode")),
@@ -91,6 +97,9 @@ class DevEnvironmentSession:
             probe=dict(raw.get("probe") or {}),
             adapter=str(raw.get("adapter") or "default"),
             command=tuple(str(x) for x in (raw.get("command") or [])),
+            api_base_url=str(api_url) if api_url else None,
+            frontend_base_url=str(fe_url) if fe_url else None,
+            frontend_port=int(raw.get("frontend_port") or 0),
         )
 
 

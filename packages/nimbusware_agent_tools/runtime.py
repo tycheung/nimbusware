@@ -132,6 +132,22 @@ def _execute_step(
             value=str(step.arguments.get("value") or ""),
             url=str(step.arguments.get("url") or ""),
         )
+    if step.tool == "write_ui_flow":
+        from nimbusware_agent_tools.tools import tool_write_ui_flow
+
+        return tool_write_ui_flow(
+            workspace,
+            str(step.arguments.get("flow_id") or "draft"),
+            str(step.arguments.get("yaml") or ""),
+        )
+    if step.tool == "run_ui_regression":
+        from nimbusware_agent_tools.tools import tool_run_ui_regression
+
+        return tool_run_ui_regression(
+            workspace,
+            base_url=str(step.arguments.get("base_url") or ""),
+            flow_id=str(step.arguments.get("flow_id") or ""),
+        )
     from nimbusware_agent_tools.tools import _result
 
     return _result(step.tool, False, f"unknown tool: {step.tool}")

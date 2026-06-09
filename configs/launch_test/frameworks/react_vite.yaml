@@ -1,0 +1,17 @@
+id: react_vite
+pack_version: "1"
+display_name: React + Vite
+stack: fullstack_capable
+dev:
+  cwd: frontend
+  command: ["npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", "{port}"]
+  health_path: /
+ism:
+  router_kind: client
+  root_selector: "#root"
+locators:
+  prefer: [testid, role, label]
+  anti_patterns: ["nth-child"]
+writer_instructions: |
+  React SPA with client-side routing. After goto, wait for #root.
+  Prefer data-testid on buttons.

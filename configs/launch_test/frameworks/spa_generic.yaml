@@ -1,0 +1,11 @@
+id: spa_generic
+pack_version: "1"
+display_name: Generic SPA
+dev:
+  command: ["npm", "run", "dev"]
+ism:
+  router_kind: client
+locators:
+  prefer: [testid, role, label, css]
+writer_instructions: |
+  Unknown SPA framework. Prefer accessible locators over deep CSS paths.

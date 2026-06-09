@@ -54,3 +54,22 @@ def ui_controller_profile_enabled(rows: list[dict[str, Any]] | None = None) -> b
 
 def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
     return ui_controller_profile_enabled(rows)
+
+
+def launch_test_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
+    if os.environ.get("NIMBUSWARE_LAUNCH_TEST_ENABLED", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        return True
+    if not rows:
+        return False
+    ce = campaign_effective_from_rows(rows)
+    if not isinstance(ce, dict):
+        return False
+    block = ce.get("launch_test")
+    if isinstance(block, dict):
+        return bool(block.get("enabled"))
+    profile = ce.get("workflow_profile") or ce.get("profile")
+    return isinstance(profile, str) and profile == "micro_slice_fullstack"

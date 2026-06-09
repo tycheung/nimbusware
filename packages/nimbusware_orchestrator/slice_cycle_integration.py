@@ -29,6 +29,7 @@ from nimbusware_orchestrator.improvement_council import (
     run_improvement_council,
 )
 from nimbusware_orchestrator.interjection_queue import InterjectionItem, queue_for_run
+from nimbusware_orchestrator.launch_flow_resolver import resolve_launch_flows
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.repo_explorer import run_repo_explore
 from nimbusware_orchestrator.resolution_council import (
@@ -431,15 +432,17 @@ def run_pre_gate_dev_env_regression(
 
     if dev_env_ui_regression_enabled(rows):
         from nimbusware_orchestrator.browser_controller import run_dev_env_ui_regression
-        from nimbusware_orchestrator.dev_env_supervisor import active_base_url
+        from nimbusware_orchestrator.dev_env_supervisor import frontend_base_url
 
-        base = active_base_url(workspace)
+        base = frontend_base_url(workspace)
         if base:
+            resolved = resolve_launch_flows(rows, workspace)
+            flow = resolved.ui_flow or DEFAULT_TINY_WEB_LOGIN_FLOW
             ui = run_dev_env_ui_regression(
                 store,
                 run_id,
                 base_url=base,
-                flow=DEFAULT_TINY_WEB_LOGIN_FLOW,
+                flow=flow,
                 workspace=workspace,
                 emit_events=True,
             )

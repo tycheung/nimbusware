@@ -1,0 +1,14 @@
+id: vue_vite
+pack_version: "1"
+display_name: Vue + Vite
+stack: fullstack_capable
+dev:
+  cwd: frontend
+  command: ["npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", "{port}"]
+ism:
+  router_kind: client
+  root_selector: "#app"
+locators:
+  prefer: [testid, role, label]
+writer_instructions: |
+  Vue SPA. Prefer data-testid and role+name locators.

@@ -1,0 +1,14 @@
+id: tiny_web_smoke
+label: Tiny web smoke
+prompt_id: static_site
+base: frontend
+steps:
+  - kind: goto
+    url: /
+  - kind: expect_text
+    locator: { strategy: css, value: body }
+    value: Welcome
+  - kind: click
+    locator: { strategy: css, value: 'a[href="contact.html"]' }
+  - kind: expect_visible
+    locator: { strategy: css, value: form }

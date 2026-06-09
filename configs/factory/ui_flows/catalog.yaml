@@ -1,0 +1,11 @@
+version: 1
+flows:
+  - id: tiny_web_smoke
+    path: tiny_web_smoke.yaml
+    prompt_id: static_site
+  - id: static_site_ui
+    path: static_site_ui.yaml
+    prompt_id: static_site
+  - id: todo_api_ui
+    path: todo_api_ui.yaml
+    prompt_id: todo_api

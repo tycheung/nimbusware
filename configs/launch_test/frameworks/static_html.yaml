@@ -1,0 +1,11 @@
+id: static_html
+pack_version: "1"
+display_name: Static HTML
+dev:
+  command: ["python", "-m", "http.server", "{port}", "--bind", "127.0.0.1"]
+ism:
+  router_kind: file
+locators:
+  prefer: [role, css, text]
+writer_instructions: |
+  Multi-page static HTML. Use role+name for links and buttons.

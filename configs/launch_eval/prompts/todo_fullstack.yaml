@@ -1,0 +1,8 @@
+id: todo_fullstack
+extends_prompt_id: todo_api
+business_prompt: >
+  Build a todo app: FastAPI backend with /health and /todos CRUD,
+  plus a React TypeScript frontend to list, add, and delete todos.
+workflow_profile: micro_slice_fullstack
+min_aggregate_score: 5.0
+factory_tier: T2b

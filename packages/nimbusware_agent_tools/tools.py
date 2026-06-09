@@ -264,6 +264,37 @@ def tool_browser_act(
     return _result("browser_act", outcome.passed, detail)
 
 
+def tool_write_ui_flow(workspace: Path, flow_id: str, yaml_body: str) -> ToolResult:
+    import yaml
+
+    from nimbusware_orchestrator.ui_flow_dsl import load_ui_flow
+    from nimbusware_orchestrator.ui_flow_synthesis import validate_ui_flow_yaml, write_draft_ui_flow
+
+    try:
+        raw = yaml.safe_load(yaml_body) or {}
+    except yaml.YAMLError as exc:
+        return _result("write_ui_flow", False, str(exc))
+    if not isinstance(raw, dict):
+        return _result("write_ui_flow", False, "yaml must be a mapping")
+    errors = validate_ui_flow_yaml(raw)
+    if errors:
+        return _result("write_ui_flow", False, "; ".join(errors))
+    flow = load_ui_flow(flow_id, raw)
+    path = write_draft_ui_flow(workspace, flow)
+    return _result("write_ui_flow", True, str(path))
+
+
+def tool_run_ui_regression(workspace: Path, *, base_url: str, flow_id: str) -> ToolResult:
+    from nimbusware_orchestrator.browser_controller import run_ui_flow
+    from nimbusware_orchestrator.launch_flow_resolver import resolve_ui_flow
+
+    flow, _ = resolve_ui_flow(workspace, flow_id=flow_id)
+    if flow is None:
+        return _result("run_ui_regression", False, f"unknown flow: {flow_id}")
+    outcome = run_ui_flow(base_url, flow)
+    return _result("run_ui_regression", outcome.passed, outcome.detail)
+
+
 def tool_run_shell(
     workspace: Path,
     command: str,

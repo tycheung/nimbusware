@@ -1,0 +1,12 @@
+version: 1
+max_replans_per_slice: 2
+max_flow_steps: 24
+max_dom_excerpt_chars: 8000
+require_critique_pass_before_regression: true
+promotion:
+  write_to: .nimbusware/dev_env/ui_flows/
+  require_green_regression: true
+trigger:
+  on_globs: ["**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.svelte"]
+  after_milestones: [M3, M6]
+  when_no_green_ui_flow: true

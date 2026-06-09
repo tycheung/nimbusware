@@ -45,6 +45,12 @@ if TYPE_CHECKING:
     from nimbusware_orchestrator.pipeline import RunOrchestrator
 
 
+def _launch_test_enabled(rows: list[dict[str, Any]]) -> bool:
+    from nimbusware_orchestrator.dev_env_policy import launch_test_enabled
+
+    return launch_test_enabled(rows)
+
+
 def fast_slice_effective_from_rows(rows: list[dict[str, Any]]) -> bool:
     for row in rows:
         if row.get("event_type") != EventType.RUN_CREATED.value:
@@ -483,6 +489,24 @@ def execute_single_micro_slice(
         metadata={"slice_id": active_plan.slice_id, "tests_passed": tests_passed},
         duration_ms=0,
     )
+
+    if _launch_test_enabled(rows):
+        from nimbusware_orchestrator.dev_env_supervisor import frontend_base_url
+        from nimbusware_orchestrator.launch_test_stage import run_launch_test_stage
+
+        preview = frontend_base_url(ws)
+        for lt_stage in ("launch_test.plan", "launch_test.write", "launch_test.critique"):
+            code, detail, _ = run_launch_test_stage(ws, lt_stage, preview_base_url=preview)
+            _emit_slice_stage(
+                orch,
+                run_id,
+                lt_stage,
+                metadata={"slice_id": active_plan.slice_id, "detail": detail[:500]},
+                duration_ms=0,
+            )
+            if code != 0:
+                verify_ok = False
+                verify_log = f"{verify_log}\n[{lt_stage}] {detail}".strip()
 
     e2e_passed: bool | None = None
     e2e_detail = ""

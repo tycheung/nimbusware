@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
-PutStack = Literal["fastapi", "static", "spa", "unknown"]
+PutStack = Literal["fastapi", "static", "spa", "fullstack", "unknown"]
 
 _SPA_MARKERS = frozenset({"vite", "react", "vue", "angular", "svelte"})
 _FASTAPI_MARKERS = frozenset({"fastapi", "from fastapi import"})
@@ -37,12 +37,45 @@ class PutPreviewStartResult:
     artifacts: dict[str, Any] = field(default_factory=dict)
 
 
+def _has_spa_marker(ws: Path) -> bool:
+    pkg = ws / "package.json"
+    if pkg.is_file():
+        text = pkg.read_text(encoding="utf-8", errors="replace").lower()
+        if any(marker in text for marker in _SPA_MARKERS):
+            return True
+    frontend = ws / "frontend"
+    if frontend.is_dir() and (frontend / "package.json").is_file():
+        text = (frontend / "package.json").read_text(encoding="utf-8", errors="replace").lower()
+        if any(marker in text for marker in _SPA_MARKERS):
+            return True
+    for html_path in (
+        ws / "index.html",
+        ws / "dist" / "index.html",
+        ws / "public" / "index.html",
+        ws / "frontend" / "index.html",
+        ws / "frontend" / "dist" / "index.html",
+    ):
+        if not html_path.is_file():
+            continue
+        html = html_path.read_text(encoding="utf-8", errors="replace").lower()
+        if any(marker in html for marker in _SPA_MARKERS):
+            return True
+        if 'id="root"' in html or 'id="app"' in html:
+            return True
+    return False
+
+
 def detect_put_stack(workspace: Path) -> PutStack:
     ws = workspace.resolve()
     if not ws.is_dir():
         return "unknown"
 
-    if _has_fastapi_marker(ws):
+    has_api = _has_fastapi_marker(ws)
+    has_spa = _has_spa_marker(ws)
+    if has_api and has_spa:
+        return "fullstack"
+
+    if has_api:
         return "fastapi"
 
     pkg = ws / "package.json"
@@ -127,7 +160,7 @@ def _preview_command(workspace: Path, stack: PutStack, port: int) -> list[str]:
 
 
 def _health_paths_for_stack(stack: PutStack) -> tuple[str, ...]:
-    if stack == "fastapi":
+    if stack in {"fastapi", "fullstack"}:
         return ("/docs", "/openapi.json", "/health", "/")
     return ("/", "/index.html")
 

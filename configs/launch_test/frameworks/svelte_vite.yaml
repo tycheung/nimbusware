@@ -1,0 +1,12 @@
+id: svelte_vite
+pack_version: "1"
+display_name: Svelte + Vite
+dev:
+  command: ["npm", "run", "dev", "--", "--host", "127.0.0.1", "--port", "{port}"]
+ism:
+  router_kind: client
+  root_selector: "body"
+locators:
+  prefer: [testid, role, text]
+writer_instructions: |
+  Svelte SPA. Prefer data-testid on interactive elements.

@@ -1,0 +1,16 @@
+id: todo_api_ui
+label: Todo React UI smoke
+prompt_id: todo_api
+base: frontend
+steps:
+  - kind: goto
+    url: /
+  - kind: expect_visible
+    locator: { strategy: role, role: heading, name: Todos }
+  - kind: fill
+    locator: { strategy: testid, value: todo-title-input }
+    value: Buy milk
+  - kind: click
+    locator: { strategy: testid, value: todo-add-button }
+  - kind: expect_visible
+    locator: { strategy: text, value: Buy milk }

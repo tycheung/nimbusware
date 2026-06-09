@@ -123,11 +123,33 @@ def _custom_yaml_command(workspace: Path, port: int) -> list[str]:
     return rendered
 
 
+def _frontend_static_command(workspace: Path, port: int) -> list[str]:
+    frontend = workspace / "frontend"
+    serve = frontend
+    if (frontend / "dist" / "index.html").is_file():
+        serve = frontend / "dist"
+    elif (frontend / "public" / "index.html").is_file():
+        serve = frontend / "public"
+    return [
+        sys.executable,
+        "-m",
+        "http.server",
+        str(port),
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        str(serve),
+    ]
+
+
 _BUILTIN: tuple[DevEnvAdapterSpec, ...] = (
-    DevEnvAdapterSpec("fastapi_reload", frozenset({"fastapi"}), _fastapi_reload_command, True),
-    DevEnvAdapterSpec("fastapi", frozenset({"fastapi"}), _fastapi_plain_command),
+    DevEnvAdapterSpec(
+        "fastapi_reload", frozenset({"fastapi", "fullstack"}), _fastapi_reload_command, True
+    ),
+    DevEnvAdapterSpec("fastapi", frozenset({"fastapi", "fullstack"}), _fastapi_plain_command),
     DevEnvAdapterSpec("static", frozenset({"static", "spa", "unknown"}), _static_http_command),
-    DevEnvAdapterSpec("npm_dev", frozenset({"spa"}), _npm_dev_command, True),
+    DevEnvAdapterSpec("frontend_static", frozenset({"fullstack"}), _frontend_static_command),
+    DevEnvAdapterSpec("npm_dev", frozenset({"spa", "fullstack"}), _npm_dev_command, True),
     DevEnvAdapterSpec("nextjs_dev", frozenset({"spa"}), _nextjs_dev_command, True),
     DevEnvAdapterSpec("custom_yaml", frozenset({"unknown"}), _custom_yaml_command),
 )
@@ -143,14 +165,27 @@ def list_dev_env_adapters() -> list[str]:
     return sorted(_REGISTRY)
 
 
-def resolve_adapter_name(workspace: Path, *, prefer_reload: bool = True) -> str:
+def resolve_adapter_name(
+    workspace: Path,
+    *,
+    prefer_reload: bool = True,
+    role: str = "primary",
+) -> str:
     custom = workspace / ".nimbusware" / "dev_env" / "adapter.yaml"
-    if custom.is_file():
+    if custom.is_file() and role == "primary":
         return "custom_yaml"
     stack = detect_put_stack(workspace)
+    if stack == "fullstack" and role == "frontend":
+        frontend = workspace / "frontend"
+        if (frontend / "package.json").is_file() and (frontend / "node_modules").is_dir():
+            pkg = json.loads((frontend / "package.json").read_text(encoding="utf-8"))
+            scripts = pkg.get("scripts") if isinstance(pkg, dict) else None
+            if isinstance(scripts, dict) and "dev" in scripts:
+                return "npm_dev"
+        return "frontend_static"
     if stack == "spa" and _is_nextjs_workspace(workspace):
         return "nextjs_dev"
-    if stack == "fastapi" and prefer_reload:
+    if stack in {"fastapi", "fullstack"} and prefer_reload:
         return "fastapi_reload"
     if stack == "spa" and (workspace / "package.json").is_file():
         pkg = json.loads((workspace / "package.json").read_text(encoding="utf-8"))
@@ -168,8 +203,9 @@ def build_adapter_command(
     *,
     adapter_name: str | None = None,
     prefer_reload: bool = True,
+    role: str = "primary",
 ) -> tuple[str, list[str]]:
-    name = adapter_name or resolve_adapter_name(workspace, prefer_reload=prefer_reload)
+    name = adapter_name or resolve_adapter_name(workspace, prefer_reload=prefer_reload, role=role)
     spec = _REGISTRY.get(name)
     if spec is None:
         raise KeyError(f"unknown dev env adapter: {name}")

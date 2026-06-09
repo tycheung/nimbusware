@@ -1,0 +1,14 @@
+version: 1
+packs:
+  - id: react_vite
+    path: react_vite.yaml
+  - id: vue_vite
+    path: vue_vite.yaml
+  - id: angular_cli
+    path: angular_cli.yaml
+  - id: svelte_vite
+    path: svelte_vite.yaml
+  - id: static_html
+    path: static_html.yaml
+  - id: spa_generic
+    path: spa_generic.yaml

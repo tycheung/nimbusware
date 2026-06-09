@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Todos</title>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Todos</h1>
+      <form id="add-form">
+        <input data-testid="todo-title-input" type="text" placeholder="New todo" />
+        <button data-testid="todo-add-button" type="submit">Add todo</button>
+      </form>
+      <ul id="todo-list"></ul>
+    </div>
+    <script>
+      const fePort = parseInt(window.location.port || "80", 10);
+      const API = "http://127.0.0.1:" + (fePort - 1);
+      const list = document.getElementById("todo-list");
+      const form = document.getElementById("add-form");
+      const input = document.querySelector('[data-testid="todo-title-input"]');
+
+      async function refresh() {
+        const res = await fetch(API + "/todos");
+        const todos = await res.json();
+        list.innerHTML = todos.map((t) => `<li>${t.title}</li>`).join("");
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = input.value.trim();
+        if (!title) return;
+        await fetch(API + "/todos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        });
+        input.value = "";
+        await refresh();
+      });
+
+      refresh();
+    </script>
+  </body>
+</html>

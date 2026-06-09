@@ -1,0 +1,64 @@
+slice:
+  enabled: true
+  max_files: 5
+  max_loc: 200
+  allowed_globs:
+    - "**/*.py"
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "**/*.html"
+    - "**/package.json"
+  e2e:
+    enabled: true
+
+dev_env:
+  enabled: true
+  ui_controller:
+    enabled: true
+    required: true
+
+launch_test:
+  enabled: true
+
+stage_graph:
+  - stage_name: plan
+  - stage_name: slice.plan
+    depends_on: [plan]
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.critique
+    depends_on: [slice.verify]
+  - stage_name: slice.test
+    depends_on: [slice.critique]
+  - stage_name: launch_test.plan
+    depends_on: [slice.test]
+  - stage_name: launch_test.write
+    depends_on: [launch_test.plan]
+  - stage_name: launch_test.critique
+    depends_on: [launch_test.write]
+  - stage_name: slice.e2e
+    depends_on: [launch_test.critique]
+  - stage_name: slice.gate
+    depends_on: [slice.e2e]
+
+universal_critique:
+  default_enabled: true
+  unanimous_gate_enforce: true
+
+integrator_gate:
+  enabled: false
+
+agent_evaluator:
+  enabled: false
+
+theater:
+  enabled: true
+  max_message_chars: 1200
+  show_evidence_links: true
+  llm_summary: false
+
+memory:
+  retrieval_enabled: false
+  index_contribution: false

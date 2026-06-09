@@ -99,22 +99,30 @@ def emit_dev_env_ui_regression(
     passed: bool,
     steps_run: int,
     detail: str,
+    flow_id: str = "",
+    failed_step: int | None = None,
+    locator: str | None = None,
 ) -> None:
     stage = "dev_env.ui_regression.passed" if passed else "dev_env.ui_regression.failed"
     event_cls = StagePassedEvent if passed else StageStartedEvent
     payload_cls = StagePassedPayload if passed else StageStartedPayload
+    block: dict[str, Any] = {
+        "ui_regression": detail,
+        "steps_run": steps_run,
+    }
+    if flow_id:
+        block["flow_id"] = flow_id
+    if failed_step is not None:
+        block["failed_step"] = failed_step
+    if locator:
+        block["locator"] = locator
     store.append(
         event_cls(
             event_type=EventType.STAGE_PASSED if passed else EventType.STAGE_STARTED,
             event_id=uuid4(),
             run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
             occurred_at=datetime.now(timezone.utc),
-            metadata={
-                "dev_env": {
-                    "ui_regression": detail,
-                    "steps_run": steps_run,
-                }
-            },
+            metadata={"dev_env": block},
             payload=payload_cls(stage_name=stage, attempt=1),
         ),
     )

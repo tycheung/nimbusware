@@ -1,0 +1,12 @@
+id: angular_cli
+pack_version: "1"
+display_name: Angular CLI
+dev:
+  command: ["npx", "ng", "serve", "--host", "127.0.0.1", "--port", "{port}"]
+ism:
+  router_kind: client
+  root_selector: "app-root"
+locators:
+  prefer: [role, label, testid]
+writer_instructions: |
+  Angular app. Use role+name for Material components when testid absent.

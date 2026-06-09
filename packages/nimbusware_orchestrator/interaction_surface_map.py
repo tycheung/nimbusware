@@ -15,6 +15,17 @@ _HREF_RE = re.compile(
     r"""<a\s+[^>]*href\s*=\s*["']([^"']+)["']""",
     re.IGNORECASE,
 )
+_BUTTON_RE = re.compile(
+    r"""<button[^>]*>([^<]*)</button>""",
+    re.IGNORECASE,
+)
+_INPUT_RE = re.compile(
+    r"""<input[^>]*>""",
+    re.IGNORECASE,
+)
+_FORM_RE = re.compile(r"""<form[^>]*>""", re.IGNORECASE)
+_TESTID_RE = re.compile(r"""data-testid\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_ATTR_RE = re.compile(r"""(\w+)\s*=\s*["']([^"']*)["']""")
 
 
 @dataclass(frozen=True)
@@ -119,6 +130,34 @@ def discover_surfaces_from_openapi(spec: dict[str, Any]) -> list[ISMSurface]:
     return surfaces
 
 
+def discover_interactive_surfaces_from_html(html: str) -> list[ISMSurface]:
+    surfaces: list[ISMSurface] = []
+    seen: set[str] = set()
+    for match in _BUTTON_RE.finditer(html):
+        label = match.group(1).strip() or "button"
+        sid = f"button:{label}"
+        if sid in seen:
+            continue
+        seen.add(sid)
+        surfaces.append(ISMSurface(surface_id=sid, kind="button", path="/", label=label))
+    for match in _INPUT_RE.finditer(html):
+        tag = match.group(0)
+        attrs = {m.group(1).lower(): m.group(2) for m in _ATTR_RE.finditer(tag)}
+        testid = attrs.get("data-testid") or attrs.get("id") or attrs.get("name") or "input"
+        sid = f"input:{testid}"
+        if sid in seen:
+            continue
+        seen.add(sid)
+        surfaces.append(ISMSurface(surface_id=sid, kind="input", path="/", label=testid))
+    for idx, _ in enumerate(_FORM_RE.finditer(html)):
+        sid = f"form:{idx}"
+        if sid in seen:
+            continue
+        seen.add(sid)
+        surfaces.append(ISMSurface(surface_id=sid, kind="form", path="/", label=f"form_{idx}"))
+    return surfaces
+
+
 def discover_surfaces_from_html(
     html: str,
     *,
@@ -210,6 +249,11 @@ def discover_surfaces_static(
     html = _load_html(ws, preview_base_url)
     if html:
         for surface in discover_surfaces_from_html(html):
+            if surface.surface_id in seen_ids:
+                continue
+            seen_ids.add(surface.surface_id)
+            surfaces.append(surface)
+        for surface in discover_interactive_surfaces_from_html(html):
             if surface.surface_id in seen_ids:
                 continue
             seen_ids.add(surface.surface_id)

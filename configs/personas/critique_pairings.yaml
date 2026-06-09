@@ -24,6 +24,11 @@ pairings:
     - domain_critic
     - security_critic
     - performance_critic
+    - launch_test_critic
+  launch_test_writer:
+    - launch_test_critic
+    - interaction_critic
+    - product_reference_critic
   module_integrator:
     - product_reference_critic
     - domain_critic

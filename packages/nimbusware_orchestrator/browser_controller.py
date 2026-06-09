@@ -6,7 +6,7 @@ from typing import Any
 from uuid import UUID
 
 from nimbusware_orchestrator.dev_env_events import emit_dev_env_ui_regression
-from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep
+from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, UiLocator
 
 _PERSISTENT: dict[str, Any] = {}
 
@@ -16,6 +16,9 @@ class UiFlowRunResult:
     passed: bool
     steps_run: int = 0
     detail: str = ""
+    flow_id: str = ""
+    failed_step: int | None = None
+    failed_locator: str | None = None
     findings: list[dict[str, Any]] = field(default_factory=list)
 
 
@@ -24,34 +27,54 @@ def _resolve_url(base_url: str, step: UiFlowStep) -> str:
     return f"{base_url.rstrip('/')}{path if path.startswith('/') else '/' + path}"
 
 
+def _locator_to_playwright(page: Any, locator: UiLocator) -> Any:
+    if locator.strategy == "role":
+        return page.get_by_role(locator.role or "button", name=locator.name or "")
+    if locator.strategy == "testid":
+        return page.get_by_test_id(locator.value or "")
+    if locator.strategy == "label":
+        return page.get_by_label(locator.value or "")
+    if locator.strategy == "text":
+        return page.get_by_text(locator.value or "")
+    return page.locator(locator.value or "body")
+
+
+def _locator_label(locator: UiLocator) -> str:
+    if locator.strategy == "role":
+        return f"role={locator.role}:{locator.name}"
+    return f"{locator.strategy}={locator.value}"
+
+
 def _execute_step(page: Any, base_url: str, step: UiFlowStep) -> tuple[bool, str]:
     timeout = step.timeout_ms
+    loc = step.effective_locator()
     if step.kind == "goto":
         page.goto(_resolve_url(base_url, step), wait_until="domcontentloaded", timeout=timeout)
         return True, "goto_ok"
+    target = _locator_to_playwright(page, loc)
     if step.kind == "click":
-        page.locator(step.selector or "body").click(timeout=timeout)
+        target.click(timeout=timeout)
         return True, "click_ok"
     if step.kind == "fill":
-        page.locator(step.selector or "input").fill(step.value or "", timeout=timeout)
+        target.fill(step.value or "", timeout=timeout)
         return True, "fill_ok"
     if step.kind == "press":
-        page.locator(step.selector or "body").press(step.value or "Enter", timeout=timeout)
+        target.press(step.value or "Enter", timeout=timeout)
         return True, "press_ok"
     if step.kind == "select":
-        page.locator(step.selector or "select").select_option(step.value or "", timeout=timeout)
+        target.select_option(step.value or "", timeout=timeout)
         return True, "select_ok"
     if step.kind == "wait_for":
-        page.locator(step.selector or "body").wait_for(state="visible", timeout=timeout)
+        target.wait_for(state="visible", timeout=timeout)
         return True, "wait_ok"
     if step.kind == "expect_text":
-        text = page.locator(step.selector or "body").inner_text(timeout=timeout)
+        text = target.inner_text(timeout=timeout)
         if step.value and step.value not in text:
             return False, f"text_missing:{step.value}"
         return True, "expect_text_ok"
     if step.kind == "expect_visible":
-        if not page.locator(step.selector or "body").is_visible(timeout=timeout):
-            return False, f"not_visible:{step.selector}"
+        if not target.is_visible(timeout=timeout):
+            return False, f"not_visible:{_locator_label(loc)}"
         return True, "expect_visible_ok"
     return False, f"unknown_step:{step.kind}"
 
@@ -66,7 +89,9 @@ def run_ui_flow(
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return UiFlowRunResult(passed=False, detail="playwright_not_installed")
+        return UiFlowRunResult(
+            passed=False, detail="playwright_not_installed", flow_id=flow.flow_id
+        )
 
     findings: list[dict[str, Any]] = []
     steps_run = 0
@@ -86,14 +111,31 @@ def run_ui_flow(
             ok, detail = _execute_step(page, base_url, step)
             steps_run += 1
             if not ok:
-                findings.append({"step": step.kind, "detail": detail})
+                loc = step.effective_locator()
+                findings.append(
+                    {
+                        "step": step.kind,
+                        "detail": detail,
+                        "locator": _locator_label(loc),
+                        "step_index": steps_run,
+                    },
+                )
                 return UiFlowRunResult(
                     passed=False,
                     steps_run=steps_run,
                     detail=detail,
+                    flow_id=flow.flow_id,
+                    failed_step=steps_run,
+                    failed_locator=_locator_label(loc),
                     findings=findings,
                 )
-    return UiFlowRunResult(passed=True, steps_run=steps_run, detail="pass", findings=findings)
+    return UiFlowRunResult(
+        passed=True,
+        steps_run=steps_run,
+        detail="pass",
+        flow_id=flow.flow_id,
+        findings=findings,
+    )
 
 
 def run_dev_env_ui_regression(
@@ -118,6 +160,9 @@ def run_dev_env_ui_regression(
             passed=result.passed,
             steps_run=result.steps_run,
             detail=result.detail,
+            flow_id=result.flow_id or flow.flow_id,
+            failed_step=result.failed_step,
+            locator=result.failed_locator,
         )
     return result
 

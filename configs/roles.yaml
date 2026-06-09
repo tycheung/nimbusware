@@ -67,3 +67,12 @@ roles:
   - taxonomy_key: stitcher
     role_id: "14141414-1414-4414-8414-141414141401"
     display_name: Stitcher
+  - taxonomy_key: launch_test_writer
+    role_id: "17171717-1717-4717-8717-171717171701"
+    display_name: Launch Test Writer
+  - taxonomy_key: launch_test_critic
+    role_id: "18181818-1818-4818-8818-181818181801"
+    display_name: Launch Test Critic
+  - taxonomy_key: interaction_critic
+    role_id: "19191919-1919-4919-8919-191919191901"
+    display_name: Interaction Critic

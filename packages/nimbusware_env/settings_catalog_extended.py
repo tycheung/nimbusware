@@ -794,6 +794,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_UI_CONTROLLER_ENABLED", "Enable UI controller regression", kind=_BOOL
         ),
         _internal(
+            "NIMBUSWARE_LAUNCH_TEST_ENABLED",
+            "Enable launch-test writer/critic stages on full-stack profiles",
+            kind=_BOOL,
+        ),
+        _internal(
+            "NIMBUSWARE_LAUNCH_TEST_STUB",
+            "Stub unknown launch_test stages (tests only)",
+            kind=_BOOL,
+        ),
+        _internal(
             "NIMBUSWARE_DEV_ENV_MILESTONES_BYPASS",
             "Skip M1–M6 gating for dev-env auto-start and regression",
             kind=_BOOL,

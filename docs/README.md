@@ -32,6 +32,7 @@ Gitignored local planning (not in git) — **two files only:**
 | File | Role |
 |------|------|
 | `nimbusware-orchestrator-local-plan.md` | Normative product contract (§1–§20) |
-| `plan_gap.md` | Epics ledger, maturity %, polish queue |
+| `plan_gap.md` | Epics ledger, maturity %, polish queue (gitignored) |
+| `e2e-true-variable-launch-testing.md` | §20.24–§20.26 variable PUT launch plan (gitignored) |
 
 Former split docs (autonomous completion, Pi transplant, Streamlit migration) are consolidated into these two (Jun 2026).
