@@ -2,7 +2,7 @@
 
 Personas, bundles, escalation policy helpers, and YAML-backed extension surfaces consumed by orchestrator and Admin Console config tooling.
 
-## Persona narrow scope (plan §3E)
+## Persona narrow scope
 
 Promoted personas should define **`scope_in`**, **`scope_out`**, **`capability_profile`**, and
 **`boundary_statement`** so agents stay expert at one job and defer the rest. Optional:

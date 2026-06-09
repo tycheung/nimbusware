@@ -146,7 +146,7 @@ def self_refinement_llm_critique_effective_for_run(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """Union of YAML branch + production profile live Ollama path (§14 #17 optional)."""
+    """Union of YAML branch + production profile live Ollama path."""
     if self_refinement_llm_critique_branch_effective(block):
         return True
     return self_refinement_production_llm_critique_effective(

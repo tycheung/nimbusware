@@ -61,7 +61,7 @@ def build_bundle_faiss_index(*, catalog_path: Path, out_dir: Path) -> int:
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Build optional FAISS index for bundle catalog search (§14 #12).",
+        description="Build optional FAISS index for bundle catalog search.",
     )
     p.add_argument(
         "--repo-root",

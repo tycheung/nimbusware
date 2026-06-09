@@ -12,7 +12,7 @@ Sibling packages (same Poetry workspace): `nimbusware_store` (Postgres + in-memo
 ## Wire format
 
 - **Role identifiers** (`owner_role`, `actor_role`, critic / routing role fields): **UUID** values
-  from the Role Registry (plan §3, §5). JSON uses **UUID strings** (`serialize_event_persistent` /
+  from the Role Registry. JSON uses **UUID strings** (`serialize_event_persistent` /
   `model_dump(mode="json")`).
 - **Event envelope**: discriminated union on `event_type`; use `validate_event_dict` so
   `event_type` and `payload` stay coupled.
