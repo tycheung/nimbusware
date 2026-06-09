@@ -107,6 +107,7 @@ nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
 e2e-testing-extension-plan.md
+e2e-true-variable-launch-testing.md
 benchmarks/
 
 # Nimbusware agent local run artifacts (integration adapter workspaces, etc.)

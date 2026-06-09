@@ -74,7 +74,7 @@ Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate cont
 | Helm ingress + TLS | [helm.md](helm.md) — wire `ingress.hosts`, cert-manager or cloud LB TLS before exposing API off loopback |
 | Fleet Redis secrets | [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md) |
 | Remote Playwright pool | [fleet-playwright-pool.md](fleet-playwright-pool.md) — set `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT` on API + workers |
-| Long-run campaign soak | [campaign-soak-runbook.md](campaign-soak-runbook.md) — preflight `scripts/run_campaign_soak_check.py` |
+| Long-run campaign soak | [campaign-soak-runbook.md](campaign-soak-runbook.md) — preflight `run_campaign_soak_check.py`, execution `run_campaign_soak.py`, optional [`k8s/campaign-soak-cronjob.yaml`](k8s/campaign-soak-cronjob.yaml) |
 | Persistent dev-env journey soak | [`scripts/run_dev_env_weekly_soak.py`](../../scripts/run_dev_env_weekly_soak.py) (weekly **dev-env-weekly-soak** in `slow_tests.yml`) |
 
 **Staging → production checklist:** apply schema, rotate admin token, enable Helm ingress TLS ([helm.md](helm.md)), configure fleet Redis + worker fleet ([production-fleet-redis-secrets.md](production-fleet-redis-secrets.md)), attach remote Playwright when factory tiers run concurrently ([fleet-playwright-pool.md](fleet-playwright-pool.md)), then schedule campaign soak per [campaign-soak-runbook.md](campaign-soak-runbook.md).

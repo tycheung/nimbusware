@@ -72,7 +72,7 @@ The orchestrator and related packages provide:
 - **Code intelligence + continuous improvement** — in-repo code graph, orphan/similarity/cohesion indexes (`code_graph.py`, `orphan_index.py`, `similarity_index.py`, `cohesion_graph.py`); allowlisted graph tools (`repo_graph_tools.py`); repo explorer and variant arena with workspace promotion (`repo_explorer.py`, `variant_arena.py`); improvement council with repo-scope matrix (`improvement_council.py`, `improvement_scope.py`, `repo_inventory.py`); debate-first resolution council with loc accord before remediable gate blocks (`resolution_council.py`); council deliberation lines in theater; ADR [016](docs/adr/016-repo-exploration-variants.md)–[019](docs/adr/019-debate-first-resolution.md).
 - **Parallel optional critics** — when `hardware_tier=strong`, set `NIMBUSWARE_ALLOW_PARALLEL_CRITICS=1` (or `parallel_critics.enabled: true` in the workflow profile) to run security/performance/network resilience critiques concurrently during verify instead of sequential short-circuit.
 - **Mid-run pressure warnings** — rate-limited `resource.pressure.warn` events when the hardware governor throttles RAM mid-run; Admin **Hardware** timeline and competitive-summary projections surface the tail
-- **Slice implement agent** — `NIMBUSWARE_SLICE_IMPLEMENT=agent` uses a multi-turn JIT tool loop (`agent_loop.py`) with `read`, `edit`, `write`, `grep`, and `shell`; no upfront file preload when `NIMBUSWARE_AGENT_JIT_LOOP=1` (default)
+- **Slice implement agent** — `NIMBUSWARE_SLICE_IMPLEMENT=agent` uses a multi-turn JIT tool loop (`agent_loop.py`) with `read`, `edit`, `write`, `grep`, `shell`, and optional `browser_act` (Playwright UI steps against the active dev-env URL); no upfront file preload when `NIMBUSWARE_AGENT_JIT_LOOP=1` (default)
 - **Cross-slice handoffs** — deterministic `slice.handoff` summaries feed planner and agent volatile prompts (not full unified diffs)
 - **Campaign compaction** — `campaign.context.compacted` events summarize older handoffs in long runs (`NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED`)
 - **Slice symbol sketch** — Pyright LSP `documentSymbol` by default (`NIMBUSWARE_SLICE_LSP_ENABLED=1` after install; bundled via `poetry install`; override with `NIMBUSWARE_SLICE_LSP_COMMAND`); AST fallback when LSP is off or unavailable
@@ -92,7 +92,9 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. See
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Agent `read` tool output |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Agent `shell` output |
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn agent loop vs single-shot plan |
-| `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Agent tool allowlist (optional `find`, `ls`) |
+| `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Agent tool allowlist (optional `find`, `ls`, `browser_act`) |
+| `NIMBUSWARE_THEATER_LLM_SUMMARY` | off | Append rules-based theater digest when `1` or run metadata `theater.llm_summary` |
+| `NIMBUSWARE_AXE_ENABLED` | off | Run axe-core rule packs in human-fidelity suite |
 | `NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS` | 1 | Prune stale agent tool lines in theater/timeline |
 | `NIMBUSWARE_AGENT_COMPACT` | 1 | `POST /v1/runs/{id}/compact` and MCP `nimbusware_compact_run` |
 | `NIMBUSWARE_BACKLOG_MAX_SLICES` | 500 | Max slices in campaign delivery backlog |

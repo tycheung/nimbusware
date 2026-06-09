@@ -33,6 +33,7 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 | `worker-deployment.yaml` | `run_dispatch_worker.py` (enterprise + redis dispatch) |
 | `schema-job.yaml` | One-shot schema apply via `scripts/apply_event_store.sh` |
 | `console-deployment.yaml` | Legacy note only — Admin UI ships with API (`/v1/admin/app/`) |
+| `campaign-soak-cronjob.yaml` | Optional monthly campaign soak CronJob (production) |
 
 ## Environment matrix
 
