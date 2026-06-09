@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
+import yaml
+
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
 from nimbusware_orchestrator.ui_flow_synthesis import (
@@ -14,6 +16,8 @@ from nimbusware_orchestrator.ui_flow_synthesis import (
     validate_ui_flow_yaml,
     write_draft_ui_flow,
 )
+
+MAX_LAUNCH_TEST_WRITE_ATTEMPTS = 3
 
 
 @dataclass
@@ -80,23 +84,94 @@ def run_launch_test_plan(
     )
 
 
+def _write_ui_flow_yaml(workspace: Path, raw: dict[str, Any], *, flow_id: str) -> Path:
+    out_dir = workspace.resolve() / ".nimbusware" / "dev_env" / "ui_flows"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{flow_id}.yaml"
+    path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def _write_flow_attempt(
+    workspace: Path,
+    *,
+    preview_base_url: str | None,
+    flow_id: str,
+    attempt: int,
+    critique_errors: tuple[str, ...],
+) -> tuple[Path, str]:
+    from nimbusware_orchestrator.launch_test_llm import (
+        generate_llm_ui_flow_dict,
+        launch_test_llm_enabled,
+    )
+
+    mode = "ism"
+    if launch_test_llm_enabled():
+        llm_raw = generate_llm_ui_flow_dict(
+            workspace,
+            flow_id=flow_id,
+            preview_base_url=preview_base_url,
+            critique_errors=critique_errors,
+        )
+        if llm_raw is not None:
+            mode = "llm"
+            path = _write_ui_flow_yaml(workspace, llm_raw, flow_id=flow_id)
+            return path, mode
+    flow = synthesize_ui_flow_from_ism(
+        workspace, flow_id=flow_id, preview_base_url=preview_base_url
+    )
+    path = write_draft_ui_flow(workspace, flow)
+    return path, mode
+
+
 def run_launch_test_write(
     workspace: Path,
     *,
     preview_base_url: str | None = None,
     flow_id: str = "launch_draft",
 ) -> LaunchTestStageResult:
-    flow = synthesize_ui_flow_from_ism(
-        workspace, flow_id=flow_id, preview_base_url=preview_base_url
-    )
-    path = write_draft_ui_flow(workspace, flow)
     pack_id = detect_js_framework(workspace)
+    findings: list[dict[str, Any]] = [
+        {"writer_prompt": build_launch_test_writer_prompt(workspace)},
+    ]
+    critique_errors: tuple[str, ...] = ()
+    last_detail = ""
+    for attempt in range(1, MAX_LAUNCH_TEST_WRITE_ATTEMPTS + 1):
+        path, mode = _write_flow_attempt(
+            workspace,
+            preview_base_url=preview_base_url,
+            flow_id=flow_id,
+            attempt=attempt,
+            critique_errors=critique_errors,
+        )
+        critique = run_launch_test_critique(workspace, flow_id=flow_id)
+        findings.append(
+            {
+                "attempt": attempt,
+                "mode": mode,
+                "critique": critique.critique_verdict,
+                "errors": [f.get("error") for f in critique.findings if f.get("error")],
+            },
+        )
+        if critique.passed:
+            return LaunchTestStageResult(
+                passed=True,
+                detail=f"wrote:{path.name}:attempt={attempt}:mode={mode}",
+                flow_id=flow_id,
+                pack_id=pack_id,
+                findings=findings,
+            )
+        critique_errors = tuple(
+            str(f.get("error") or "") for f in critique.findings if f.get("error")
+        )
+        last_detail = critique.detail
     return LaunchTestStageResult(
-        passed=True,
-        detail=f"wrote:{path.name}",
-        flow_id=flow.flow_id,
+        passed=False,
+        detail=f"replan_exhausted:{last_detail}",
+        flow_id=flow_id,
         pack_id=pack_id,
-        findings=[{"writer_prompt": build_launch_test_writer_prompt(workspace)}],
+        critique_verdict="FAIL",
+        findings=findings,
     )
 
 
@@ -106,8 +181,6 @@ def run_launch_test_critique(
     path = workspace / ".nimbusware" / "dev_env" / "ui_flows" / f"{flow_id}.yaml"
     if not path.is_file():
         return LaunchTestStageResult(passed=False, detail="missing_flow", flow_id=flow_id)
-    import yaml
-
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     ok, verdict, errors = _critique_flow(raw)
     return LaunchTestStageResult(

@@ -804,6 +804,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
             kind=_BOOL,
         ),
         _internal(
+            "NIMBUSWARE_LAUNCH_TEST_WRITER_MODEL",
+            "Ollama model for launch-test UI flow writer (empty = ISM synthesis only)",
+            kind=_STR,
+        ),
+        _internal(
             "NIMBUSWARE_DEV_ENV_MILESTONES_BYPASS",
             "Skip M1–M6 gating for dev-env auto-start and regression",
             kind=_BOOL,
