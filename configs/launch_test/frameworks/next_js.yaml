@@ -1,0 +1,17 @@
+id: next_js
+pack_version: "1"
+display_name: Next.js
+stack: fullstack_capable
+dev:
+  cwd: .
+  command: ["npm", "run", "dev", "--", "-p", "{port}"]
+  health_path: /
+ism:
+  router_kind: file
+  root_selector: "#__next"
+locators:
+  prefer: [testid, role, label]
+  anti_patterns: ["nth-child"]
+writer_instructions: |
+  Next.js app router or pages router. Prefer data-testid on interactive elements.
+  After goto, wait for #__next or main landmark before clicks.

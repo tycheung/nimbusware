@@ -12,3 +12,9 @@ packs:
     path: static_html.yaml
   - id: spa_generic
     path: spa_generic.yaml
+  - id: next_js
+    path: next_js.yaml
+  - id: nuxt
+    path: nuxt.yaml
+  - id: remix
+    path: remix.yaml

@@ -1,0 +1,15 @@
+id: nuxt
+pack_version: "1"
+display_name: Nuxt
+stack: spa
+dev:
+  cwd: .
+  command: ["npm", "run", "dev", "--", "--port", "{port}", "--host", "127.0.0.1"]
+  health_path: /
+ism:
+  router_kind: file
+  root_selector: "#__nuxt"
+locators:
+  prefer: [testid, role, label]
+writer_instructions: |
+  Nuxt SPA. Use role+name for nav links; avoid brittle generated class names.

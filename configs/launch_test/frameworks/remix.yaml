@@ -1,0 +1,15 @@
+id: remix
+pack_version: "1"
+display_name: Remix
+stack: fullstack_capable
+dev:
+  cwd: .
+  command: ["npm", "run", "dev"]
+  health_path: /
+ism:
+  router_kind: nested
+  root_selector: "main"
+locators:
+  prefer: [testid, role, label]
+writer_instructions: |
+  Remix app with nested routes. Target main landmark and form actions by role.
