@@ -48,29 +48,39 @@ def run_improvement_council(workspace) -> ImprovementCouncilResult:
 
     ws = Path(workspace)
     inventory = build_repo_inventory(ws)
+    health = inventory.health_score
+    debt_boost = max(0.0, (70.0 - health) / 100.0)
     votes: list[CouncilVote] = []
     if inventory.orphan_count > 0:
         votes.append(
             CouncilVote(
                 ImprovementTrack.SIMPLIFY,
-                0.8,
-                f"{inventory.orphan_count} orphan modules",
+                min(0.95, 0.55 + debt_boost + inventory.orphan_count * 0.05),
+                f"{inventory.orphan_count} orphan modules (health={health})",
             ),
         )
     if inventory.duplicate_clusters > 0:
         votes.append(
             CouncilVote(
                 ImprovementTrack.SIMPLIFY,
-                0.7,
-                f"{inventory.duplicate_clusters} duplicate clusters",
+                min(0.9, 0.5 + debt_boost + inventory.duplicate_clusters * 0.08),
+                f"{inventory.duplicate_clusters} duplicate clusters (health={health})",
             ),
         )
     if inventory.cohesion_proposals > 5:
         votes.append(
             CouncilVote(
                 ImprovementTrack.REFACTOR_COHESION,
-                0.6,
-                "cohesion proposals available",
+                min(0.85, 0.45 + debt_boost + inventory.cohesion_proposals * 0.02),
+                f"{inventory.cohesion_proposals} cohesion proposals (health={health})",
+            ),
+        )
+    if health >= 75:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.IMPLEMENT_PLANNED,
+                min(0.9, 0.45 + (health - 70.0) / 60.0),
+                f"inventory healthy ({health}) — continue backlog",
             ),
         )
     if not votes:

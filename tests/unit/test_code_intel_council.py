@@ -7,7 +7,7 @@ from nimbusware_orchestrator.cohesion_graph import build_cohesion_graph
 from nimbusware_orchestrator.improvement_council import run_improvement_council
 from nimbusware_orchestrator.orphan_index import build_orphan_report
 from nimbusware_orchestrator.repo_explorer import run_repo_explore
-from nimbusware_orchestrator.repo_inventory import build_repo_inventory
+from nimbusware_orchestrator.repo_inventory import build_repo_inventory, inventory_health_score
 from nimbusware_orchestrator.similarity_index import build_similarity_index
 from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
 
@@ -29,8 +29,28 @@ def test_repo_inventory_and_council(tmp_path: Path) -> None:
     (pkg / "b.py").write_text("y = 2\n", encoding="utf-8")
     inventory = build_repo_inventory(ws)
     assert inventory.complexity.loc >= 2
+    assert 0 <= inventory.health_score <= 100
     council = run_improvement_council(ws)
     assert council.selected is not None
+    assert council.inventory.health_score == inventory.health_score
+
+
+def test_inventory_health_score_penalizes_debt() -> None:
+    healthy = inventory_health_score(
+        simplicity=9.0,
+        orphan_count=0,
+        duplicate_clusters=0,
+        cohesion_proposals=2,
+        feature_depth=40.0,
+    )
+    stressed = inventory_health_score(
+        simplicity=4.0,
+        orphan_count=8,
+        duplicate_clusters=4,
+        cohesion_proposals=12,
+        feature_depth=240.0,
+    )
+    assert healthy > stressed
 
 
 def test_similarity_and_orphans(tmp_path: Path) -> None:

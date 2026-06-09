@@ -21,6 +21,7 @@ class RepoInventory:
     cohesion_proposals: int
     feature_breadth: int = 0
     feature_depth: float = 0.0
+    health_score: float = 100.0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -35,7 +36,28 @@ class RepoInventory:
             "cohesion_proposals": self.cohesion_proposals,
             "feature_breadth": self.feature_breadth,
             "feature_depth": self.feature_depth,
+            "health_score": self.health_score,
         }
+
+
+def inventory_health_score(
+    *,
+    simplicity: float,
+    orphan_count: int,
+    duplicate_clusters: int,
+    cohesion_proposals: int,
+    feature_depth: float,
+) -> float:
+    score = 100.0
+    score -= min(30.0, float(orphan_count) * 3.0)
+    score -= min(20.0, float(duplicate_clusters) * 5.0)
+    score -= min(15.0, max(0, cohesion_proposals - 5) * 2.0)
+    score -= max(0.0, 10.0 - simplicity) * 2.0
+    if feature_depth > 200:
+        score -= 10.0
+    elif feature_depth > 120:
+        score -= 5.0
+    return round(max(0.0, min(100.0, score)), 1)
 
 
 def build_repo_inventory(workspace: Path) -> RepoInventory:
@@ -46,12 +68,23 @@ def build_repo_inventory(workspace: Path) -> RepoInventory:
     dupes = sum(1 for c in similarity.clusters if len(c.paths) > 1)
     breadth = complexity.file_count
     depth = round(complexity.loc / max(1, complexity.file_count), 2)
+    simplicity = simplicity_score(complexity)
+    orphans_n = len(orphans.orphans)
+    cohesion_n = len(cohesion.proposals)
+    health = inventory_health_score(
+        simplicity=simplicity,
+        orphan_count=orphans_n,
+        duplicate_clusters=dupes,
+        cohesion_proposals=cohesion_n,
+        feature_depth=depth,
+    )
     return RepoInventory(
         complexity=complexity,
-        simplicity=simplicity_score(complexity),
-        orphan_count=len(orphans.orphans),
+        simplicity=simplicity,
+        orphan_count=orphans_n,
         duplicate_clusters=dupes,
-        cohesion_proposals=len(cohesion.proposals),
+        cohesion_proposals=cohesion_n,
         feature_breadth=breadth,
         feature_depth=depth,
+        health_score=health,
     )
