@@ -95,6 +95,24 @@ def promote_winner(candidates: list[VariantCandidate]) -> VariantArenaResult:
     return VariantArenaResult(candidates=candidates, winner=winner)
 
 
+def run_variant_arena(
+    workspace: Path,
+    tmp_root: Path,
+    *,
+    max_candidates: int = 1,
+) -> VariantArenaResult:
+    """Score up to four competing worktrees (operator gate at autopilot ≥6)."""
+    count = max(1, min(4, int(max_candidates)))
+    tmp_root.mkdir(parents=True, exist_ok=True)
+    candidates: list[VariantCandidate] = []
+    for index in range(count):
+        candidate = create_variant_worktree(workspace, tmp_root, label=f"variant_{index + 1}")
+        tests_passed, loc_delta = measure_variant_fitness(candidate, workspace)
+        score_variant(candidate, tests_passed=tests_passed, loc_delta=loc_delta)
+        candidates.append(candidate)
+    return promote_winner(candidates)
+
+
 def promote_variant_to_workspace(winner: VariantCandidate, target_workspace: Path) -> bool:
     if not winner.workspace.is_dir() or not target_workspace.is_dir():
         return False

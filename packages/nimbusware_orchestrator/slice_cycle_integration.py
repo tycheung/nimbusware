@@ -37,11 +37,6 @@ from nimbusware_orchestrator.resolution_council import (
 )
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
 from nimbusware_orchestrator.ui_flow_dsl import DEFAULT_TINY_WEB_LOGIN_FLOW
-from nimbusware_orchestrator.variant_arena import (
-    create_variant_worktree,
-    promote_winner,
-    score_variant,
-)
 
 
 @dataclass
@@ -662,20 +657,19 @@ def execute_improvement_track(
         return
     if track == ImprovementTrack.VARIANT_EXPERIMENT:
         from nimbusware_orchestrator.variant_arena import (
-            measure_variant_fitness,
             promote_variant_to_workspace,
+            run_variant_arena,
         )
 
         tmp = workspace.resolve() / ".nimbusware" / "variants"
-        tmp.mkdir(parents=True, exist_ok=True)
-        candidate = create_variant_worktree(workspace, tmp, label="council_variant")
-        tests_passed, loc_delta = measure_variant_fitness(candidate, workspace)
-        score_variant(candidate, tests_passed=tests_passed, loc_delta=loc_delta)
-        arena = promote_winner([candidate])
-        promoted = False
         profile = autopilot_profile_from_rows(store.list_run_events(str(run_id)))
-        if arena.winner and arena.winner.fitness >= 0.9 and tests_passed and profile.level >= 6:
-            promoted = promote_variant_to_workspace(arena.winner, workspace)
+        max_candidates = 4 if profile.level >= 6 else 1
+        arena = run_variant_arena(workspace, tmp, max_candidates=max_candidates)
+        winner = arena.winner
+        tests_passed = winner is not None and winner.fitness >= 0.9
+        promoted = False
+        if winner and tests_passed and profile.level >= 6:
+            promoted = promote_variant_to_workspace(winner, workspace)
         rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
         meta = arena.to_dict()
         if promoted:
@@ -697,6 +691,25 @@ def execute_improvement_track(
         cohesion = build_cohesion_graph(workspace)
         if cohesion.proposals:
             top = cohesion.proposals[0]
+            from nimbusware_orchestrator.simplification_gate import delete_with_tests_allowed
+
+            allowed, gate_detail = delete_with_tests_allowed(workspace, (top.module,))
+            if not allowed:
+                rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+                store.append(
+                    StagePassedEvent(
+                        event_type=EventType.STAGE_PASSED,
+                        event_id=uuid4(),
+                        run_id=rid,
+                        occurred_at=datetime.now(timezone.utc),
+                        metadata={"simplification_gate": {"allowed": False, "detail": gate_detail}},
+                        payload=StagePassedPayload(
+                            stage_name="simplification.delete_with_tests.blocked",
+                            duration_ms=0,
+                        ),
+                    ),
+                )
+                return
             from agent_core.models.backlog import BacklogSlice
             from nimbusware_orchestrator.backlog_generator import (
                 backlog_from_events,

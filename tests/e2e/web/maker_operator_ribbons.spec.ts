@@ -47,6 +47,8 @@ test("progress tab exposes dev-env, interjection, and autopilot ribbons", async 
   await expect(page.getByTestId("maker-autopilot-save")).toBeVisible();
   await expect(page.getByTestId("maker-learnings-ribbon")).toBeVisible();
   await expect(page.getByTestId("maker-autopilot-profile-select")).toBeVisible();
+  await expect(page.getByTestId("maker-variant-ribbon")).toBeVisible();
+  await expect(page.getByTestId("maker-variant-body")).toContainText("No variant experiments yet");
 });
 
 test("interjection ribbon queues next-priority message via UI", async ({ page, request }) => {

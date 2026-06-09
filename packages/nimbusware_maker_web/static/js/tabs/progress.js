@@ -131,6 +131,10 @@ export async function mountProgress(root) {
         <h4>Learnings</h4>
         <ul id="learnings-list" data-testid="maker-learnings-list"></ul>
       </section>
+      <section id="variant-ribbon" class="panel" data-testid="maker-variant-ribbon">
+        <h4>Variant arena</h4>
+        <p id="variant-body" class="muted" data-testid="maker-variant-body">No variant experiments yet</p>
+      </section>
       <section id="council-ribbon" class="panel" data-testid="maker-council-ribbon" hidden>
         <h4>Improvement council</h4>
         <p id="council-body" class="muted"></p>
@@ -579,6 +583,28 @@ export async function mountProgress(root) {
     }
   }
 
+  async function refreshVariantRibbon(runId) {
+    const body = document.getElementById("variant-body");
+    if (!body || !runId) return;
+    try {
+      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`);
+      for (const ev of [...(timeline.events || [])].reverse()) {
+        const arena = ev.metadata?.variant_arena;
+        if (!arena) continue;
+        const candidates = Array.isArray(arena.candidates) ? arena.candidates : [];
+        const winner = arena.winner;
+        const bits = [`${candidates.length} candidate(s)`];
+        if (winner?.label) bits.push(`winner: ${winner.label} (${winner.fitness ?? "?"})`);
+        if (arena.promoted_to_workspace) bits.push("promoted");
+        body.textContent = bits.join(" · ");
+        return;
+      }
+      body.textContent = "No variant experiments yet";
+    } catch {
+      body.textContent = "Variant arena unavailable";
+    }
+  }
+
   async function refreshCouncilRibbon(runId) {
     const panel = document.getElementById("council-ribbon");
     const body = document.getElementById("council-body");
@@ -800,6 +826,7 @@ export async function mountProgress(root) {
     void refreshDevEnvStatus(runId);
     void refreshInterjectionQueue(runId);
     void refreshCouncilRibbon(runId);
+    void refreshVariantRibbon(runId);
     void refreshLearningsPanel(runId);
     void loadAutopilotProfiles();
     apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
