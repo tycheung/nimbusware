@@ -78,6 +78,15 @@ class MicroSliceMixin:
         )
 
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
+        rows = self._store.list_run_events(str(run_id))
+        from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
+        from nimbusware_orchestrator.slice_cycle_integration import resolution_for_gate
+
+        profile = autopilot_profile_from_rows(rows)
+
+        def _resolution_cb(findings: list[dict[str, Any]]) -> Any:
+            return resolution_for_gate(self._store, run_id, rows, findings)
+
         gate = run_slice_gate_chain(
             p,
             verify_ok=verify_ok,
@@ -85,6 +94,8 @@ class MicroSliceMixin:
             tests_passed=tests_passed,
             e2e_passed=e2e_passed,
             e2e_detail=e2e_detail,
+            autopilot_level=profile.level,
+            resolution_callback=_resolution_cb,
         )
         run_meta = self._run_created_metadata(run_id)
         memory_excerpt = ""

@@ -4,6 +4,7 @@ from fastapi import APIRouter
 
 from nimbusware_api.read_models import *  # noqa: F403
 from nimbusware_api.read_models import __all__ as _read_model_exports
+from nimbusware_api.routes.runs.autopilot import router as autopilot_router
 from nimbusware_api.routes.runs.compact import router as compact_router
 from nimbusware_api.routes.runs.compactions import router as compactions_router
 from nimbusware_api.routes.runs.constants import INCLUDE_SUMMARY_MAX_LIMIT
@@ -61,6 +62,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(factory_evidence_router)
     composed.include_router(dev_env_router)
     composed.include_router(interjection_router)
+    composed.include_router(autopilot_router)
     composed.include_router(context_budget_router)
     composed.include_router(compact_router)
     composed.include_router(compactions_router)

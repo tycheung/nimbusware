@@ -44,6 +44,8 @@ def run_slice_gate_chain(
     e2e_passed: bool | None = None,
     e2e_detail: str = "",
     unanimous_required: bool = True,
+    autopilot_level: int = 5,
+    resolution_callback: Any | None = None,
 ) -> SliceGateChainResult:
     """Deterministic per-slice gate: all steps must pass before next slice."""
     steps: list[SliceGateStep] = []
@@ -64,7 +66,10 @@ def run_slice_gate_chain(
             if v.upper() == "FAIL" or ":FAIL" in v.upper():
                 kind = v.split(":", 1)[0] if ":" in v else "critic"
                 findings.append({"kind": kind, "message": v, "severity": "info"})
-        resolution = run_resolution_council(findings=findings, autopilot_level=6)
+        if resolution_callback is not None:
+            resolution = resolution_callback(findings)
+        else:
+            resolution = run_resolution_council(findings=findings, autopilot_level=autopilot_level)
         if resolution.verdict.accord and not resolution.verdict.hard_block:
             critique_fail = False
             resolution_detail = resolution.verdict.detail

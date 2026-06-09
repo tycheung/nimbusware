@@ -88,7 +88,89 @@ def resolve_autopilot_profile(
             checkpoints=set(custom_checkpoints),
             custom=True,
         )
+    if level is not None:
+        raw = load_autopilot_presets()
+        levels = raw.get("levels") if isinstance(raw, dict) else None
+        if isinstance(levels, dict):
+            entry = levels.get(str(level))
+            if isinstance(entry, dict) and isinstance(entry.get("checkpoints"), list):
+                return AutopilotProfile(
+                    level=level,
+                    name=str(entry.get("name") or preset_for_level(level).name),
+                    checkpoints=set(str(c) for c in entry["checkpoints"]),
+                )
     return preset_for_level(level if level is not None else 5)
+
+
+_RUN_AUTOPILOT_OVERRIDES: dict[str, dict[str, Any]] = {}
+
+
+def set_run_autopilot_override(
+    run_id: str,
+    *,
+    level: int,
+    checkpoints: set[str] | None = None,
+) -> AutopilotProfile:
+    profile = resolve_autopilot_profile(level=level, custom_checkpoints=checkpoints)
+    _RUN_AUTOPILOT_OVERRIDES[str(run_id)] = {
+        "level": profile.level,
+        "checkpoints": sorted(profile.checkpoints),
+        "name": profile.name,
+        "custom": profile.custom,
+    }
+    return profile
+
+
+def autopilot_level_from_rows(rows: list[dict[str, Any]]) -> int:
+    if rows:
+        rid = str(rows[0].get("run_id", ""))
+        override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
+        if isinstance(override, dict) and override.get("level") is not None:
+            return max(0, min(10, int(override["level"])))
+    for row in rows:
+        if row.get("event_type") != "run.created":
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            break
+        for key in ("autopilot_effective", "autopilot"):
+            block = meta.get(key)
+            if isinstance(block, dict) and block.get("level") is not None:
+                return max(0, min(10, int(block["level"])))
+        if meta.get("autopilot_level") is not None:
+            return max(0, min(10, int(meta["autopilot_level"])))
+        break
+    return 5
+
+
+def autopilot_profile_from_rows(rows: list[dict[str, Any]]) -> AutopilotProfile:
+    if rows:
+        rid = str(rows[0].get("run_id", ""))
+        override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
+        if isinstance(override, dict):
+            cps = override.get("checkpoints")
+            if isinstance(cps, list) and cps:
+                return resolve_autopilot_profile(
+                    level=int(override.get("level", 5)),
+                    custom_checkpoints={str(c) for c in cps},
+                )
+            if override.get("level") is not None:
+                return resolve_autopilot_profile(level=int(override["level"]))
+    level = autopilot_level_from_rows(rows)
+    custom: set[str] | None = None
+    for row in rows:
+        if row.get("event_type") != "run.created":
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            break
+        for key in ("autopilot_effective", "autopilot"):
+            block = meta.get(key)
+            if isinstance(block, dict) and isinstance(block.get("checkpoints"), list):
+                custom = {str(c) for c in block["checkpoints"]}
+                break
+        break
+    return resolve_autopilot_profile(level=level, custom_checkpoints=custom)
 
 
 def deliberation_rounds_for_level(level: int) -> int:

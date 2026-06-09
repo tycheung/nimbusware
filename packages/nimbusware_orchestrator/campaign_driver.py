@@ -237,6 +237,18 @@ def campaign_driver_tick(
             )
             rows = orch._store.list_run_events(str(run_id))
             backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        if workspace is not None:
+            from nimbusware_orchestrator.slice_cycle_integration import (
+                maybe_run_improvement_council_tick,
+            )
+
+            maybe_run_improvement_council_tick(
+                orch._store,
+                run_id,
+                Path(workspace),
+                rows,
+                slices_completed=completed,
+            )
 
     if all_slices_terminal(backlog):
         from nimbusware_orchestrator.completion_evaluator import evaluate_and_finalize_campaign

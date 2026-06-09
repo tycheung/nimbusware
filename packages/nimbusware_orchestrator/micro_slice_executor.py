@@ -36,11 +36,7 @@ from nimbusware_orchestrator.slice_diff import (
     slice_replan_max_attempts,
     subdivide_slice_plan,
 )
-from nimbusware_orchestrator.slice_gate import (
-    SliceGateChainResult,
-    SliceGateStep,
-    map_paths_to_test_targets,
-)
+from nimbusware_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
 from nimbusware_orchestrator.slice_implement import execute_slice_implement
 from nimbusware_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
@@ -276,6 +272,24 @@ def execute_single_micro_slice(
     timeout = float(runtime.get("request_timeout_seconds", 120))
     max_replan = slice_replan_max_for_run(rows)
 
+    from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
+    from nimbusware_orchestrator.slice_cycle_integration import (
+        apply_interjection_to_plan,
+        apply_operator_pause,
+        ensure_dev_environment_for_slice,
+        gate_result_for_force_break,
+        handle_gate_failure_learning,
+        merge_pre_gate_into_verify,
+        process_interjection_cycle,
+        run_pre_gate_dev_env_regression,
+    )
+
+    profile = autopilot_profile_from_rows(rows)
+    interjection = process_interjection_cycle(orch._store, run_id)
+    if interjection.force_break:
+        stub = plan or default_stub_slice_plan(slice_index)
+        return gate_result_for_force_break(stub)
+
     budget_feedback: str | None = None
     active_plan = plan or _plan_one_slice(
         orch,
@@ -283,6 +297,7 @@ def execute_single_micro_slice(
         slice_index=slice_index,
         budget_feedback=budget_feedback,
     )
+    active_plan = apply_interjection_to_plan(active_plan, interjection)
     replan_attempt = 0
     diff_unified = ""
     stats_source = "plan_estimate"
@@ -483,6 +498,10 @@ def execute_single_micro_slice(
             verify_ok = False
             verify_log = f"{verify_log}\n[e2e] {e2e_detail}"
 
+    ensure_dev_environment_for_slice(orch._store, run_id, ws, rows)
+    pre_regression = run_pre_gate_dev_env_regression(orch._store, run_id, ws, rows, profile)
+    verify_ok, verify_log = merge_pre_gate_into_verify(verify_ok, verify_log, pre_regression)
+
     final_stats = collect_slice_diff_stats(ws, active_plan)
     final_budget = check_slice_diff_budget(final_stats, block)
     if not final_budget.ok:
@@ -504,27 +523,15 @@ def execute_single_micro_slice(
         diff_unified=diff_for_gate[:8000],
         test_output=test_out[:4000],
     )
+    if not gate.passed:
+        handle_gate_failure_learning(orch._store, run_id, ws, active_plan, gate)
+    gate = apply_operator_pause(
+        gate,
+        profile,
+        dev_env_failed=pre_regression.http_passed is False,
+        ui_regression_failed=pre_regression.ui_passed is False,
+    )
     if gate.passed:
-        from nimbusware_orchestrator.dev_env_policy import persistent_dev_env_enabled
-
-        if persistent_dev_env_enabled(rows):
-            from nimbusware_orchestrator.dev_env_regression import run_dev_env_regression
-
-            regression = run_dev_env_regression(orch._store, run_id, ws, emit_events=True)
-            if not regression.passed:
-                gate = SliceGateChainResult(
-                    slice_id=gate.slice_id,
-                    passed=False,
-                    steps=gate.steps
-                    + (
-                        SliceGateStep(
-                            "dev_env.regression",
-                            "FAIL",
-                            regression.detail,
-                        ),
-                    ),
-                    status="blocked",
-                )
         from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
 
         run_meta = orch._run_created_metadata(run_id)
