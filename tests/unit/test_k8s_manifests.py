@@ -14,6 +14,7 @@ _MANIFESTS = (
     "worker-deployment.yaml",
     "schema-job.yaml",
     "console-deployment.yaml",
+    "campaign-soak-cronjob.yaml",
 )
 
 

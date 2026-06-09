@@ -9,6 +9,27 @@ Individual ships a **24h golden replay** in CI (`tests/e2e/journeys/` slow tier)
 | Staging | Weekly (Sunday) | 4–24h autonomous campaign |
 | Production | Monthly or post-release | 4h smoke + optional 24h |
 
+## Automated staging (CI)
+
+Weekly **slow_tests.yml** jobs:
+
+| Job | Script | Purpose |
+|-----|--------|---------|
+| `campaign-soak-preflight` | `run_campaign_soak_check.py` | Redis + Enterprise dispatch prerequisites |
+| `campaign-soak` | `run_campaign_soak.py` | Bounded campaign journey replay (2 passes) |
+| `redis-fleet-soak` | `run_redis_fleet_soak_ci.py` | Multi-broker dispatch stack |
+| `dev-env-weekly-soak` | `run_dev_env_weekly_soak.py` | Persistent dev-env journey |
+
+Local smoke (matches staging):
+
+```bash
+NIMBUSWARE_EDITION=enterprise NIMBUSWARE_RUN_DISPATCH=redis \
+  NIMBUSWARE_REDIS_URL=redis://127.0.0.1:6379/0 \
+  python scripts/run_campaign_soak.py
+```
+
+Production: run the same script monthly post-release with buyer workspace env vars, or apply [`k8s/campaign-soak-cronjob.yaml`](k8s/campaign-soak-cronjob.yaml) for in-cluster scheduling.
+
 ## Procedure
 
 1. **Preflight** — `python scripts/run_campaign_soak_check.py` (Redis fleet reachable, `NIMBUSWARE_RUN_DISPATCH=redis`, Enterprise edition). For integration depth, run `python scripts/run_redis_fleet_soak_ci.py` in staging first.
