@@ -661,7 +661,10 @@ def execute_improvement_track(
         )
         return
     if track == ImprovementTrack.VARIANT_EXPERIMENT:
-        from nimbusware_orchestrator.variant_arena import measure_variant_fitness
+        from nimbusware_orchestrator.variant_arena import (
+            measure_variant_fitness,
+            promote_variant_to_workspace,
+        )
 
         tmp = workspace.resolve() / ".nimbusware" / "variants"
         tmp.mkdir(parents=True, exist_ok=True)
@@ -669,6 +672,61 @@ def execute_improvement_track(
         tests_passed, loc_delta = measure_variant_fitness(candidate, workspace)
         score_variant(candidate, tests_passed=tests_passed, loc_delta=loc_delta)
         arena = promote_winner([candidate])
+        promoted = False
+        profile = autopilot_profile_from_rows(store.list_run_events(str(run_id)))
+        if arena.winner and arena.winner.fitness >= 0.9 and tests_passed and profile.level >= 6:
+            promoted = promote_variant_to_workspace(arena.winner, workspace)
+        rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+        meta = arena.to_dict()
+        if promoted:
+            meta["promoted_to_workspace"] = True
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={"variant_arena": meta},
+                payload=StagePassedPayload(stage_name="variant.arena", duration_ms=0),
+            ),
+        )
+        return
+    if track == ImprovementTrack.REFACTOR_COHESION:
+        from nimbusware_orchestrator.cohesion_graph import build_cohesion_graph
+
+        cohesion = build_cohesion_graph(workspace)
+        if cohesion.proposals:
+            top = cohesion.proposals[0]
+            from agent_core.models.backlog import BacklogSlice
+            from nimbusware_orchestrator.backlog_generator import (
+                backlog_from_events,
+                emit_backlog_revised,
+            )
+
+            rows = store.list_run_events(str(run_id))
+            backlog = backlog_from_events(rows)
+            if backlog is not None and backlog.epics and backlog.epics[0].features:
+                fix = BacklogSlice(
+                    slice_id=f"cohesion-{uuid4().hex[:8]}",
+                    rationale=f"Cohesion refactor: {top.suggestion[:120]}",
+                    target_paths=(top.module,),
+                )
+                feat = backlog.epics[0].features[0]
+                epics = list(backlog.epics)
+                epics[0] = epics[0].model_copy(
+                    update={
+                        "features": (
+                            feat.model_copy(update={"slices": tuple(list(feat.slices) + [fix])}),
+                            *epics[0].features[1:],
+                        ),
+                    },
+                )
+                emit_backlog_revised(
+                    store,
+                    run_id,
+                    backlog.model_copy(update={"epics": tuple(epics)}),
+                    revision_reason="cohesion_proposal",
+                )
         rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
         store.append(
             StagePassedEvent(
@@ -676,10 +734,15 @@ def execute_improvement_track(
                 event_id=uuid4(),
                 run_id=rid,
                 occurred_at=datetime.now(timezone.utc),
-                metadata={"variant_arena": arena.to_dict()},
-                payload=StagePassedPayload(stage_name="variant.arena", duration_ms=0),
+                metadata={
+                    "cohesion_refactor": {
+                        "proposals": len(cohesion.proposals),
+                    },
+                },
+                payload=StagePassedPayload(stage_name="cohesion.refactor", duration_ms=0),
             ),
         )
+        return
 
 
 def resolution_for_gate(
