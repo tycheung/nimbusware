@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "unknown-spa-runtime": "0.0.0"
+  },
+  "scripts": {
+    "dev": "npx serve ."
+  }
+}
