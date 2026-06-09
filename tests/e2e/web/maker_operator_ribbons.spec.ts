@@ -37,6 +37,7 @@ test("progress tab exposes dev-env, interjection, and autopilot ribbons", async 
   await activateMakerRoute(page, "/progress");
 
   await expect(page.getByTestId("maker-dev-env-ribbon")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("maker-dev-env-regression-detail")).toBeVisible();
   await expect(page.getByTestId("maker-dev-env-start")).toBeVisible();
   await expect(page.getByTestId("maker-interjection-ribbon")).toBeVisible();
   await expect(page.getByTestId("maker-interjection-next")).toBeVisible();

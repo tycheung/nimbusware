@@ -96,6 +96,7 @@ export async function mountProgress(root) {
       <section id="dev-env-ribbon" class="panel" data-testid="maker-dev-env-ribbon">
         <h4>Dev environment</h4>
         <p id="dev-env-status-body" class="muted"></p>
+        <p id="dev-env-regression-detail" class="muted" data-testid="maker-dev-env-regression-detail"></p>
         <div class="actions">
           <button type="button" id="dev-env-start-btn" data-testid="maker-dev-env-start">Start session</button>
           <button type="button" id="dev-env-stop-btn" data-testid="maker-dev-env-stop">Stop session</button>
@@ -515,15 +516,52 @@ export async function mountProgress(root) {
   wireIntegratorRibbon();
   void renderIntegratorRibbon(id);
 
+  function devEnvRegressionFromTimeline(events) {
+    let http = null;
+    let ui = null;
+    let httpDetail = "";
+    let uiDetail = "";
+    for (const ev of [...(events || [])].reverse()) {
+      if (ev.event_type !== "stage.passed" && ev.event_type !== "stage.started") continue;
+      const stage = ev.payload?.stage_name || "";
+      const block = ev.metadata?.dev_env;
+      if (!stage.startsWith("dev_env.")) continue;
+      if (stage.startsWith("dev_env.regression") && http === null) {
+        http = stage.endsWith(".passed");
+        httpDetail = typeof block?.regression === "string" ? block.regression : block?.detail || "";
+      }
+      if (stage.startsWith("dev_env.ui_regression") && ui === null) {
+        ui = stage.endsWith(".passed");
+        uiDetail = typeof block?.regression === "string" ? block.regression : block?.detail || "";
+      }
+      if (http !== null && ui !== null) break;
+    }
+    return { http, ui, httpDetail, uiDetail };
+  }
+
   async function refreshDevEnvStatus(runId) {
     const body = document.getElementById("dev-env-status-body");
+    const detail = document.getElementById("dev-env-regression-detail");
     if (!body) return;
     try {
       const st = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`);
       const active = st.active ? "active" : "inactive";
       body.textContent = `Session ${active}${st.session?.base_url ? ` · ${st.session.base_url}` : ""}`;
+      if (detail) {
+        const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`);
+        const reg = devEnvRegressionFromTimeline(timeline.events || []);
+        const bits = [];
+        if (reg.http !== null) {
+          bits.push(`HTTP regression: ${reg.http ? "passed" : "failed"}${reg.httpDetail ? ` (${reg.httpDetail.slice(0, 80)})` : ""}`);
+        }
+        if (reg.ui !== null) {
+          bits.push(`UI regression: ${reg.ui ? "passed" : "failed"}${reg.uiDetail ? ` (${reg.uiDetail.slice(0, 80)})` : ""}`);
+        }
+        detail.textContent = bits.length ? bits.join(" · ") : "No regression runs yet";
+      }
     } catch {
       body.textContent = "Dev env status unavailable";
+      if (detail) detail.textContent = "";
     }
   }
 
@@ -689,6 +727,7 @@ export async function mountProgress(root) {
           method: "POST",
         });
         toast(res.passed ? "Regression passed" : `Regression failed: ${res.detail}`, res.passed ? "success" : "error");
+        await refreshDevEnvStatus(runId);
       } catch (e) {
         toast(String(e.message || e), "error");
       }

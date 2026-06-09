@@ -1,5 +1,3 @@
-"""Human-fidelity E2E checks — negative paths, a11y, perf budgets."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -7,6 +5,8 @@ from typing import Any
 
 from nimbusware_orchestrator.browser_controller import run_ui_flow
 from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep
+
+PERF_BUDGET_MS = 8000
 
 
 @dataclass
@@ -32,13 +32,39 @@ def run_axe_smoke(base_url: str) -> dict[str, Any]:
         from playwright.sync_api import sync_playwright
     except ImportError:
         return {"ok": False, "detail": "playwright_not_installed"}
+    issues: list[str] = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded")
         title = page.title()
+        if page.locator("html[lang]").count() == 0:
+            issues.append("missing_lang")
+        if page.locator("h1").count() == 0 and not str(title).strip():
+            issues.append("missing_heading")
+        dcl = page.evaluate(
+            """() => {
+              const t = performance.timing;
+              if (!t || !t.navigationStart) return null;
+              return t.domContentLoadedEventEnd - t.navigationStart;
+            }""",
+        )
         browser.close()
-    return {"ok": True, "detail": "axe_smoke_stub", "title": title}
+    perf_ok = dcl is None or int(dcl) <= PERF_BUDGET_MS
+    if not perf_ok:
+        issues.append(f"slow_dcl_{int(dcl)}ms")
+    ok = not issues and perf_ok
+    detail = "pass" if ok else ",".join(issues) if issues else "perf_budget_exceeded"
+    return {"ok": ok, "detail": detail, "title": title, "dcl_ms": dcl}
+
+
+def run_perf_budget_check(base_url: str) -> dict[str, Any]:
+    axe = run_axe_smoke(base_url)
+    return {
+        "passed": axe.get("ok") is True,
+        "detail": str(axe.get("detail") or ""),
+        "dcl_ms": axe.get("dcl_ms"),
+    }
 
 
 def _page_has_login_form(base_url: str) -> bool:
