@@ -1,0 +1,5 @@
+{
+  "profile": "micro_slice_fullstack",
+  "required_subsequence": ["run.created"],
+  "allow_extra": true
+}

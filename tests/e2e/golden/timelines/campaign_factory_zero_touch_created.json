@@ -1,0 +1,5 @@
+{
+  "profile": "campaign_factory_zero_touch",
+  "required_subsequence": ["run.created"],
+  "allow_extra": true
+}
