@@ -38,6 +38,8 @@ class RepoExploreResult:
 
 
 def run_repo_explore(workspace: Path, *, max_files: int = 200) -> RepoExploreResult:
+    from nimbusware_orchestrator.repo_graph_tools import find_similar_symbols, list_orphans
+
     graph = build_code_graph(workspace, max_files=max_files)
     findings: list[RepoExploreFinding] = []
     if len(graph.nodes) < 3:
@@ -57,4 +59,26 @@ def run_repo_explore(workspace: Path, *, max_files: int = 200) -> RepoExploreRes
                 severity="info",
             ),
         )
+    orphan_result = list_orphans(workspace)
+    orphan_count = int(orphan_result.data.get("count") or 0)
+    if orphan_count > 0:
+        findings.append(
+            RepoExploreFinding(
+                kind="orphan_modules",
+                message=f"{orphan_count} orphan module(s) detected",
+                severity="info",
+            ),
+        )
+    for node in module_nodes[:3]:
+        sim = find_similar_symbols(workspace, node.path)
+        clusters = sim.data.get("clusters") if isinstance(sim.data, dict) else None
+        if isinstance(clusters, list) and clusters:
+            findings.append(
+                RepoExploreFinding(
+                    kind="similar_symbols",
+                    message=f"Similar symbols near {node.path}",
+                    path=node.path,
+                    severity="info",
+                ),
+            )
     return RepoExploreResult(findings=findings, graph=graph)

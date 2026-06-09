@@ -41,6 +41,20 @@ def run_axe_smoke(base_url: str) -> dict[str, Any]:
     return {"ok": True, "detail": "axe_smoke_stub", "title": title}
 
 
+def _page_has_login_form(base_url: str) -> bool:
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return False
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded")
+        has_form = page.locator('input[name="password"]').count() > 0
+        browser.close()
+    return has_form
+
+
 def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     checks: list[dict[str, Any]] = []
     axe = run_axe_smoke(base_url)
@@ -57,5 +71,13 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
         reuse_context=False,
     )
     checks.append({"kind": "keyboard_nav", "passed": nav.passed, "detail": nav.detail})
-    passed = axe.get("ok") is True and nav.passed
+    if _page_has_login_form(base_url):
+        negative = run_ui_flow(base_url, NEGATIVE_LOGIN_FAIL_FLOW, reuse_context=False)
+        checks.append(
+            {"kind": "negative_login", "passed": negative.passed, "detail": negative.detail}
+        )
+    else:
+        checks.append({"kind": "negative_login", "passed": True, "detail": "skipped_no_login_form"})
+    negative_passed = checks[-1]["passed"] is True
+    passed = axe.get("ok") is True and nav.passed and negative_passed
     return HumanFidelityResult(passed=passed, checks=checks, detail="pass" if passed else "fail")

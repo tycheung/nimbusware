@@ -33,6 +33,7 @@ class ResolutionVerdict:
     rounds: int
     detail: str
     dissent: list[str] = field(default_factory=list)
+    loc_accord: bool = True
 
 
 @dataclass
@@ -48,7 +49,17 @@ class ResolutionCouncilResult:
             "rounds": self.verdict.rounds,
             "detail": self.verdict.detail,
             "dissent": self.verdict.dissent,
+            "loc_accord": self.verdict.loc_accord,
         }
+
+
+def loc_accord_for_findings(findings: list[dict[str, Any]], *, loc_budget: int = 400) -> bool:
+    total = 0
+    for item in findings:
+        loc_raw = item.get("loc_delta") or item.get("loc")
+        if isinstance(loc_raw, (int, float)):
+            total += int(loc_raw)
+    return total <= loc_budget
 
 
 def classify_hard_block(finding_kind: str, *, severity: str = "") -> bool:
@@ -93,8 +104,13 @@ def run_resolution_council(
             ),
         )
     remediable = [f for f in findings if not classify_hard_block(str(f.get("kind", "")))]
-    accord = len(remediable) == 0 or autopilot_level >= 6
-    detail = "accord_fix_slice" if accord else "pause_for_operator"
+    loc_ok = loc_accord_for_findings(remediable)
+    accord = (len(remediable) == 0 or autopilot_level >= 6) and loc_ok
+    detail = (
+        "accord_fix_slice"
+        if accord
+        else ("loc_budget_exceeded" if not loc_ok else "pause_for_operator")
+    )
     return ResolutionCouncilResult(
         verdict=ResolutionVerdict(
             accord=accord,
@@ -102,5 +118,6 @@ def run_resolution_council(
             rounds=rounds,
             detail=detail,
             dissent=[str(f.get("message", ""))[:200] for f in remediable[:5]],
+            loc_accord=loc_ok,
         ),
     )

@@ -44,6 +44,8 @@ class ImprovementCouncilResult:
 def run_improvement_council(workspace) -> ImprovementCouncilResult:
     from pathlib import Path
 
+    from nimbusware_orchestrator.improvement_scope import filter_votes_by_scope, infer_repo_scope
+
     ws = Path(workspace)
     inventory = build_repo_inventory(ws)
     votes: list[CouncilVote] = []
@@ -75,5 +77,11 @@ def run_improvement_council(workspace) -> ImprovementCouncilResult:
         votes.append(
             CouncilVote(ImprovementTrack.IMPLEMENT_PLANNED, 0.5, "default backlog track"),
         )
+    scope = infer_repo_scope(
+        loc=inventory.complexity.loc,
+        orphan_count=inventory.orphan_count,
+        duplicate_clusters=inventory.duplicate_clusters,
+    )
+    votes = filter_votes_by_scope(votes, scope)
     selected = max(votes, key=lambda v: v.score).track
     return ImprovementCouncilResult(inventory=inventory, votes=votes, selected=selected)

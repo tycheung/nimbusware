@@ -93,3 +93,18 @@ def promote_winner(candidates: list[VariantCandidate]) -> VariantArenaResult:
         return VariantArenaResult()
     winner = max(candidates, key=lambda c: c.fitness)
     return VariantArenaResult(candidates=candidates, winner=winner)
+
+
+def promote_variant_to_workspace(winner: VariantCandidate, target_workspace: Path) -> bool:
+    if not winner.workspace.is_dir() or not target_workspace.is_dir():
+        return False
+    for path in winner.workspace.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(winner.workspace)
+        if ".nimbusware" in rel.parts or "node_modules" in rel.parts:
+            continue
+        dest = target_workspace / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, dest)
+    return True
