@@ -81,6 +81,34 @@ export async function mountProgress(root) {
           <button type="button" id="integrator-stitch-promote-batch" data-testid="maker-integrator-stitch-promote-batch">Promote pending batch</button>
         </div>
       </section>
+      <section id="dev-env-ribbon" class="panel" data-testid="maker-dev-env-ribbon">
+        <h4>Dev environment</h4>
+        <p id="dev-env-status-body" class="muted"></p>
+        <div class="actions">
+          <button type="button" id="dev-env-start-btn" data-testid="maker-dev-env-start">Start session</button>
+          <button type="button" id="dev-env-stop-btn" data-testid="maker-dev-env-stop">Stop session</button>
+          <button type="button" id="dev-env-regression-btn" data-testid="maker-dev-env-regression">Run regression</button>
+        </div>
+      </section>
+      <section id="interjection-ribbon" class="panel" data-testid="maker-interjection-ribbon">
+        <h4>Interjection queue</h4>
+        <textarea id="interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-interjection-input"></textarea>
+        <div class="actions">
+          <button type="button" id="interjection-next-btn" data-testid="maker-interjection-next">Next in queue</button>
+          <button type="button" id="interjection-last-btn" data-testid="maker-interjection-last">Last in queue</button>
+        </div>
+        <p id="interjection-queue-body" class="muted"></p>
+      </section>
+      <section id="autopilot-ribbon" class="panel" data-testid="maker-autopilot-ribbon">
+        <h4>Autopilot</h4>
+        <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>
+        <span id="autopilot-level-label">5</span>
+        <button type="button" id="autopilot-save-btn" data-testid="maker-autopilot-save">Apply to run</button>
+      </section>
+      <section id="council-ribbon" class="panel" data-testid="maker-council-ribbon" hidden>
+        <h4>Improvement council</h4>
+        <p id="council-body" class="muted"></p>
+      </section>
       <ul id="theater-list"></ul>
       <p id="pressure-banner" class="pressure-banner" hidden></p>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
@@ -461,6 +489,146 @@ export async function mountProgress(root) {
   wireCompactToolbar();
   wireIntegratorRibbon();
   void renderIntegratorRibbon(id);
+
+  async function refreshDevEnvStatus(runId) {
+    const body = document.getElementById("dev-env-status-body");
+    if (!body) return;
+    try {
+      const st = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/status`);
+      const active = st.active ? "active" : "inactive";
+      body.textContent = `Session ${active}${st.session?.base_url ? ` · ${st.session.base_url}` : ""}`;
+    } catch {
+      body.textContent = "Dev env status unavailable";
+    }
+  }
+
+  async function refreshInterjectionQueue(runId) {
+    const body = document.getElementById("interjection-queue-body");
+    if (!body) return;
+    try {
+      const q = await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`);
+      const items = q.queue?.items || [];
+      body.textContent = items.length
+        ? items.map((i) => `[${i.priority}] ${i.message}`).join(" · ")
+        : "Queue empty";
+    } catch {
+      body.textContent = "";
+    }
+  }
+
+  async function refreshCouncilRibbon(runId) {
+    const panel = document.getElementById("council-ribbon");
+    const body = document.getElementById("council-body");
+    if (!panel || !body || !runId) return;
+    try {
+      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=50`);
+      const events = timeline.events || [];
+      const parts = [];
+      for (const ev of [...events].reverse()) {
+        const meta = ev.metadata || {};
+        const imp = meta.improvement_council;
+        if (imp?.selected) {
+          parts.push(`Improvement: ${imp.selected}`);
+          break;
+        }
+      }
+      for (const ev of [...events].reverse()) {
+        const meta = ev.metadata || {};
+        const res = meta.resolution_council;
+        if (res?.detail) {
+          parts.push(`Resolution: ${res.detail}${res.accord ? " (accord)" : ""}`);
+          break;
+        }
+      }
+      if (!parts.length) {
+        panel.hidden = true;
+        body.textContent = "";
+        return;
+      }
+      panel.hidden = false;
+      body.textContent = parts.join(" · ");
+    } catch {
+      panel.hidden = true;
+    }
+  }
+
+  function wireOperatorRibbons(runId) {
+    document.getElementById("dev-env-start-btn")?.addEventListener("click", async () => {
+      try {
+        await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/start`, { method: "POST" });
+        toast("Dev env started", "success");
+        await refreshDevEnvStatus(runId);
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    document.getElementById("dev-env-stop-btn")?.addEventListener("click", async () => {
+      try {
+        await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/stop`, { method: "POST" });
+        toast("Dev env stopped", "success");
+        await refreshDevEnvStatus(runId);
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    document.getElementById("dev-env-regression-btn")?.addEventListener("click", async () => {
+      try {
+        const res = await apiJson(`/runs/${encodeURIComponent(runId)}/dev-env/regression`, {
+          method: "POST",
+        });
+        toast(res.passed ? "Regression passed" : `Regression failed: ${res.detail}`, res.passed ? "success" : "error");
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    const postInterjection = async (priority) => {
+      const msg = document.getElementById("interjection-message")?.value?.trim();
+      if (!msg) return toast("Enter a message", "error");
+      try {
+        await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg, priority }),
+        });
+        toast("Queued", "success");
+        document.getElementById("interjection-message").value = "";
+        await refreshInterjectionQueue(runId);
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    };
+    document.getElementById("interjection-next-btn")?.addEventListener("click", () => postInterjection("next"));
+    document.getElementById("interjection-last-btn")?.addEventListener("click", () => postInterjection("last"));
+    const slider = document.getElementById("autopilot-slider");
+    const label = document.getElementById("autopilot-level-label");
+    slider?.addEventListener("input", () => {
+      if (label) label.textContent = String(slider.value);
+    });
+    document.getElementById("autopilot-save-btn")?.addEventListener("click", async () => {
+      const level = Number(slider?.value || 5);
+      try {
+        await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ level }),
+        });
+        toast(`Autopilot level ${level} applied`, "success");
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    void refreshDevEnvStatus(runId);
+    void refreshInterjectionQueue(runId);
+    void refreshCouncilRibbon(runId);
+    apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
+      .then((ap) => {
+        if (slider) slider.value = String(ap.level ?? 5);
+        if (label) label.textContent = String(ap.level ?? 5);
+      })
+      .catch(() => {});
+  }
+
+  wireOperatorRibbons(id);
 
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
     onMessage: (ev) => {
