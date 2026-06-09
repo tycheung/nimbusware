@@ -79,7 +79,7 @@ def run_dev_env_regression(
         return result
 
     resolved_flow = flow_id or match_factory_flow_id(prompt, prompt_id=prompt_id)
-    put_result = run_put_e2e_flow(resolved_flow, base_url=base_url, workspace=ws)
+    put_result = run_put_e2e_flow(base_url, resolved_flow, workspace=ws)
     passed = put_result.verdict == "PASS"
     baseline = load_regression_baseline(ws)
     diff: dict[str, Any] = {}

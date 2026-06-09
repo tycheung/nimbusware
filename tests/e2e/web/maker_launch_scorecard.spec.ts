@@ -55,3 +55,51 @@ test("review tab loads launch scorecard after API run", async ({ page, request }
   await expect(page.getByTestId("maker-review-scorecard-testability")).toBeVisible();
   await expect(page.getByTestId("maker-review-run-launch-eval")).toBeVisible();
 });
+
+test("launch scorecard shows dev-env regression rows after live session", async ({ page, request }) => {
+  const headers = { "X-Nimbusware-Admin-Token": adminToken };
+  const webWorkspace = path
+    .join(repoRoot, "tests", "fixtures", "repos", "tiny_web_app")
+    .replace(/\\/g, "/");
+
+  const project = await request.post("/v1/projects", {
+    headers,
+    data: {
+      name: `pw-launch-dev-env-${Date.now()}`,
+      workspace_path: webWorkspace,
+      template: "attach",
+    },
+  });
+  expect(project.ok()).toBeTruthy();
+  const projectId = (await project.json()).project_id as string;
+
+  const runResp = await request.post("/v1/runs", {
+    data: {
+      workflow_profile: "micro_slice",
+      project_id: projectId,
+      requirements: { business_prompt: "Launch scorecard dev-env merge UI" },
+    },
+  });
+  expect(runResp.ok()).toBeTruthy();
+  const runId = (await runResp.json()).run_id as string;
+
+  const devStart = await request.post(`/v1/runs/${runId}/dev-env/start`);
+  expect(devStart.ok()).toBeTruthy();
+
+  const regression = await request.post(`/v1/runs/${runId}/dev-env/regression`);
+  expect(regression.ok()).toBeTruthy();
+
+  const launchEval = await request.post(`/v1/runs/${runId}/maker/launch-eval`);
+  expect(launchEval.ok()).toBeTruthy();
+  const scorecard = await launchEval.json();
+  expect(scorecard.dev_env_http_regression_passed).not.toBeUndefined();
+
+  await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/review`);
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/review");
+  await page.getByTestId("maker-review-launch-scorecard").click();
+  await expect(page.getByTestId("maker-review-scorecard-dev_env_http_regression_passed")).toBeVisible();
+  await expect(page.getByTestId("maker-review-scorecard-dev_env_http_regression_passed")).toContainText(
+    "dev_env HTTP regression",
+  );
+});
