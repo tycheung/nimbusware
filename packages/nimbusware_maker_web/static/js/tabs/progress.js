@@ -116,7 +116,19 @@ export async function mountProgress(root) {
         <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>
         <span id="autopilot-level-label">5</span>
         <div id="autopilot-checkpoints" class="autopilot-checkpoints" data-testid="maker-autopilot-checkpoints"></div>
-        <button type="button" id="autopilot-save-btn" data-testid="maker-autopilot-save">Apply to run</button>
+        <div class="actions">
+          <label>Saved profile
+            <select id="autopilot-profile-select" data-testid="maker-autopilot-profile-select">
+              <option value="">— custom —</option>
+            </select>
+          </label>
+          <button type="button" id="autopilot-profile-save-btn" data-testid="maker-autopilot-profile-save">Save profile</button>
+          <button type="button" id="autopilot-save-btn" data-testid="maker-autopilot-save">Apply to run</button>
+        </div>
+      </section>
+      <section id="learnings-ribbon" class="panel" data-testid="maker-learnings-ribbon">
+        <h4>Learnings</h4>
+        <ul id="learnings-list" data-testid="maker-learnings-list"></ul>
       </section>
       <section id="council-ribbon" class="panel" data-testid="maker-council-ribbon" hidden>
         <h4>Improvement council</h4>
@@ -590,6 +602,68 @@ export async function mountProgress(root) {
       .filter(Boolean);
   }
 
+  async function refreshLearningsPanel(runId) {
+    const list = document.getElementById("learnings-list");
+    if (!list) return;
+    try {
+      const body = await apiJson(`/runs/${encodeURIComponent(runId)}/learnings`);
+      const items = body.learnings || [];
+      list.replaceChildren();
+      if (!items.length) {
+        const empty = document.createElement("li");
+        empty.className = "muted";
+        empty.textContent = "No learnings yet";
+        list.appendChild(empty);
+        return;
+      }
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.dataset.testid = `maker-learning-${item.learning_id || "item"}`;
+        li.textContent = item.title || item.learning_id || "Learning";
+        if (item.excerpt) li.title = item.excerpt;
+        list.appendChild(li);
+      });
+    } catch {
+      list.replaceChildren();
+      const err = document.createElement("li");
+      err.className = "muted";
+      err.textContent = "Learnings unavailable";
+      list.appendChild(err);
+    }
+  }
+
+  async function loadAutopilotProfiles() {
+    const select = document.getElementById("autopilot-profile-select");
+    if (!select) return;
+    try {
+      const body = await apiJson("/platform/autopilot/user-profiles");
+      const profiles = body.profiles || [];
+      select.replaceChildren();
+      const custom = document.createElement("option");
+      custom.value = "";
+      custom.textContent = "— custom —";
+      select.appendChild(custom);
+      profiles.forEach((p) => {
+        const opt = document.createElement("option");
+        opt.value = p.profile_id;
+        opt.textContent = p.name || p.profile_id;
+        select.appendChild(opt);
+      });
+    } catch {
+      /* optional */
+    }
+  }
+
+  function applyAutopilotProfile(profileId, profiles) {
+    const match = (profiles || []).find((p) => p.profile_id === profileId);
+    if (!match) return;
+    const slider = document.getElementById("autopilot-slider");
+    const label = document.getElementById("autopilot-level-label");
+    if (slider) slider.value = String(match.level ?? 5);
+    if (label) label.textContent = String(match.level ?? 5);
+    renderAutopilotCheckpoints(match.checkpoints || []);
+  }
+
   function wireOperatorRibbons(runId) {
     document.getElementById("dev-env-start-btn")?.addEventListener("click", async () => {
       try {
@@ -656,9 +730,39 @@ export async function mountProgress(root) {
         toast(String(e.message || e), "error");
       }
     });
+    document.getElementById("autopilot-profile-save-btn")?.addEventListener("click", async () => {
+      const level = Number(slider?.value || 5);
+      const checkpoints = selectedAutopilotCheckpoints();
+      const profileId = window.prompt("Profile id (slug)", "default")?.trim();
+      if (!profileId) return;
+      const name = window.prompt("Display name", profileId)?.trim() || profileId;
+      try {
+        await apiJson(`/platform/autopilot/user-profiles/${encodeURIComponent(profileId)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, level, checkpoints }),
+        });
+        toast(`Saved profile ${profileId}`, "success");
+        await loadAutopilotProfiles();
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+    document.getElementById("autopilot-profile-select")?.addEventListener("change", async (ev) => {
+      const pid = ev.target?.value;
+      if (!pid) return;
+      try {
+        const body = await apiJson("/platform/autopilot/user-profiles");
+        applyAutopilotProfile(pid, body.profiles || []);
+      } catch {
+        /* ignore */
+      }
+    });
     void refreshDevEnvStatus(runId);
     void refreshInterjectionQueue(runId);
     void refreshCouncilRibbon(runId);
+    void refreshLearningsPanel(runId);
+    void loadAutopilotProfiles();
     apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
       .then((ap) => {
         const level = ap.level ?? 5;

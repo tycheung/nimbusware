@@ -29,6 +29,18 @@ export function renderLaunchScorecard(container, scorecard, { testIdPrefix = "ma
     status.dataset.testid = `${testIdPrefix}-scorecard-status`;
     container.appendChild(status);
   }
+  const devRows = [
+    ["dev_env live regression", "dev_env_live_regression_passed"],
+    ["dev_env HTTP regression", "dev_env_http_regression_passed"],
+    ["dev_env UI regression", "dev_env_ui_regression_passed"],
+  ];
+  for (const [label, key] of devRows) {
+    if (scorecard[key] == null) continue;
+    const row = document.createElement("p");
+    row.dataset.testid = `${testIdPrefix}-scorecard-${key}`;
+    row.textContent = `${label}: ${scorecard[key] ? "passed" : "failed"}`;
+    container.appendChild(row);
+  }
   const llmDims = scorecard.llm_dimensions;
   if (llmDims && typeof llmDims === "object" && Object.keys(llmDims).length) {
     const heading = document.createElement("h4");

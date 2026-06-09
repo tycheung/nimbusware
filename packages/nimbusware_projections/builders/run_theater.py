@@ -471,6 +471,56 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "data_testid": "theater-interjection-build-from-chat",
                     },
                 )
+            elif sn == "resolution.council":
+                block = row_meta.get("resolution_council")
+                detail = ""
+                accord = False
+                rounds = 0
+                if isinstance(block, dict):
+                    detail = str(block.get("detail") or "")
+                    accord = bool(block.get("accord"))
+                    rounds = int(block.get("rounds") or 0)
+                dissent = []
+                if isinstance(block, dict):
+                    dissent_raw = block.get("dissent")
+                    if isinstance(dissent_raw, list):
+                        dissent = [str(d) for d in dissent_raw[:3] if d]
+                headline = f"Resolution council: {detail or 'deliberation'}"
+                if rounds:
+                    headline = f"{headline} ({rounds} round(s))"
+                body = None
+                if dissent:
+                    body = "Dissent: " + "; ".join(dissent)
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Council",
+                        "message_kind": "system",
+                        "severity": "pass" if accord else "warn",
+                        "headline": headline,
+                        "body_md": body,
+                        "data_testid": "theater-resolution-council",
+                    },
+                )
+            elif sn == "improvement.council":
+                block = row_meta.get("improvement_council")
+                selected = ""
+                if isinstance(block, dict):
+                    selected = str(block.get("selected") or "")
+                headline = "Improvement council deliberation"
+                if selected:
+                    headline = f"{headline}: {selected.replace('_', ' ')}"
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Council",
+                        "message_kind": "system",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": None,
+                        "data_testid": "theater-improvement-council",
+                    },
+                )
             elif sn in _SLICE_STAGE_NAMES:
                 slice_id = str(row_meta.get("slice_id") or "")
                 messages.append(

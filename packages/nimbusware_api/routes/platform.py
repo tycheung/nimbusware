@@ -18,8 +18,18 @@ from nimbusware_hw.profile import profile_from_probe
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_orchestrator.autopilot_profiles import resolve_autopilot_profile
+from nimbusware_orchestrator.user_autopilot_profiles import (
+    load_user_autopilot_profiles,
+    upsert_user_autopilot_profile,
+)
 
 router = APIRouter(tags=["platform"])
+
+
+class UserAutopilotProfileBody(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+    level: int = Field(ge=0, le=10, default=5)
+    checkpoints: list[str] = Field(default_factory=list)
 
 
 class HardwareRescanBody(BaseModel):
@@ -142,3 +152,33 @@ def get_autopilot_preset(level: int) -> dict:
         "checkpoints": sorted(profile.checkpoints),
         "custom": profile.custom,
     }
+
+
+@router.get("/platform/autopilot/user-profiles")
+def get_user_autopilot_profiles(orch: OrchDep) -> dict:
+    profiles = load_user_autopilot_profiles(orch.repo_root)
+    return {
+        "profiles": [p.to_dict() for p in profiles.values()],
+    }
+
+
+@router.put("/platform/autopilot/user-profiles/{profile_id}")
+def put_user_autopilot_profile(
+    profile_id: str,
+    body: UserAutopilotProfileBody,
+    orch: OrchDep,
+) -> dict:
+    pid = profile_id.strip()
+    if not pid:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_profile_id", "profile_id is required"),
+        )
+    entry = upsert_user_autopilot_profile(
+        profile_id=pid,
+        name=body.name,
+        level=body.level,
+        checkpoints=body.checkpoints,
+        repo_root=orch.repo_root,
+    )
+    return entry.to_dict()

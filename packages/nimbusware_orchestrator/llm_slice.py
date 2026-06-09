@@ -190,6 +190,7 @@ def execute_slice_implement_llm(
     model_id: str,
     timeout_seconds: float = 120.0,
     system_prompt: str | None = None,
+    learning_excerpt: str = "",
 ) -> list[dict[str, str]] | None:
     """Return file edits for slice.implement, or None to fall back to scoped ruff."""
     from pathlib import Path as _Path
@@ -216,8 +217,13 @@ def execute_slice_implement_llm(
         f"Implement slice {plan.slice_id} for paths {list(plan.target_paths)}. "
         f"Acceptance: {plan.acceptance_criteria or 'tests pass'}. "
         f"Rationale: {plan.rationale}\n\n"
-        f"Current files:\n{truncate_for_llm_history(''.join(excerpts), max_chars=12000)}"
     )
+    if learning_excerpt.strip():
+        user += (
+            f"Prior failure learning (avoid repeating):\n"
+            f"{truncate_for_llm_history(learning_excerpt)}\n\n"
+        )
+    user += f"Current files:\n{truncate_for_llm_history(''.join(excerpts), max_chars=12000)}"
     try:
         data = ollama_chat_json(
             base_url=base_url,

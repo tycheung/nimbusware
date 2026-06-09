@@ -26,18 +26,35 @@ class LaunchEvalScorecard:
     passed: bool
     llm_findings: tuple[str, ...] = field(default_factory=tuple)
     llm_dimensions: tuple[tuple[str, float], ...] = field(default_factory=tuple)
+    dev_env_live_regression_passed: bool | None = None
+    dev_env_http_regression_passed: bool | None = None
+    dev_env_ui_regression_passed: bool | None = None
 
     def to_dict(self) -> dict[str, object]:
         payload = {
             k: v
             for k, v in asdict(self).items()
-            if k not in ("findings", "llm_findings", "llm_dimensions")
+            if k
+            not in (
+                "findings",
+                "llm_findings",
+                "llm_dimensions",
+                "dev_env_live_regression_passed",
+                "dev_env_http_regression_passed",
+                "dev_env_ui_regression_passed",
+            )
         }
         payload["findings"] = list(self.findings)
         if self.llm_findings:
             payload["llm_findings"] = list(self.llm_findings)
         if self.llm_dimensions:
             payload["llm_dimensions"] = {k: v for k, v in self.llm_dimensions}
+        if self.dev_env_live_regression_passed is not None:
+            payload["dev_env_live_regression_passed"] = self.dev_env_live_regression_passed
+        if self.dev_env_http_regression_passed is not None:
+            payload["dev_env_http_regression_passed"] = self.dev_env_http_regression_passed
+        if self.dev_env_ui_regression_passed is not None:
+            payload["dev_env_ui_regression_passed"] = self.dev_env_ui_regression_passed
         return payload
 
 
@@ -228,6 +245,43 @@ def evaluate_workspace_rubric(
     )
 
 
+def merge_dev_env_into_scorecard(
+    scorecard: LaunchEvalScorecard,
+    rows: list[dict[str, Any]],
+) -> LaunchEvalScorecard:
+    from nimbusware_orchestrator.dev_env_launch_merge import dev_env_live_regression_from_rows
+
+    bits = dev_env_live_regression_from_rows(rows)
+    if not bits:
+        return scorecard
+    http = bits.get("dev_env_http_regression_passed")
+    ui = bits.get("dev_env_ui_regression_passed")
+    live = bits.get("dev_env_live_regression_passed")
+    findings = list(scorecard.findings)
+    if http is False:
+        findings.append("dev_env HTTP regression failed")
+    if ui is False:
+        findings.append("dev_env UI regression failed")
+    passed = scorecard.passed
+    if live is False:
+        passed = False
+    return LaunchEvalScorecard(
+        aggregate=scorecard.aggregate,
+        maturity=scorecard.maturity,
+        maintainability=scorecard.maintainability,
+        scalability=scorecard.scalability,
+        security=scorecard.security,
+        testability=scorecard.testability,
+        findings=tuple(findings),
+        passed=passed,
+        llm_findings=scorecard.llm_findings,
+        llm_dimensions=scorecard.llm_dimensions,
+        dev_env_live_regression_passed=(bool(live) if isinstance(live, bool) else None),
+        dev_env_http_regression_passed=http if isinstance(http, bool) else None,
+        dev_env_ui_regression_passed=ui if isinstance(ui, bool) else None,
+    )
+
+
 def emit_launch_eval_completed(
     store: Any,
     run_id: UUID,
@@ -294,6 +348,7 @@ def maybe_run_launch_eval_for_campaign(
     from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
 
     scorecard = evaluate_workspace_rubric(ws)
+    scorecard = merge_dev_env_into_scorecard(scorecard, rows)
     emit_launch_eval_completed(
         store,
         run_id,

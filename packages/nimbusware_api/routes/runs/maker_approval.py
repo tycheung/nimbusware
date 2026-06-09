@@ -198,8 +198,11 @@ def post_maker_launch_eval(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             status_code=422,
             detail=problem("workspace_not_found", "run has no attached workspace"),
         )
+    from nimbusware_orchestrator.launch_evaluator import merge_dev_env_into_scorecard
+
     attach = attach_context_from_run(rows)
     scorecard = evaluate_workspace_rubric(ws)
+    scorecard = merge_dev_env_into_scorecard(scorecard, rows)
     emit_launch_eval_completed(store, run_id, scorecard, attach_context=attach or None)
     payload = scorecard.to_dict()
     if attach:
