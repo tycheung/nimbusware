@@ -46,7 +46,32 @@ def apply_theater_paraphrase(
     *,
     enabled: bool,
 ) -> list[dict[str, Any]]:
-    """Optional theater paraphrase hook; no LLM call when disabled (default)."""
-    if not enabled:
+    """Append a rules-based theater digest when LLM summary is enabled."""
+    if not enabled or not messages:
         return messages
-    return messages
+    kinds: dict[str, int] = {}
+    for msg in messages:
+        kind = str(msg.get("message_kind") or "other")
+        kinds[kind] = kinds.get(kind, 0) + 1
+    recent = [
+        str(msg.get("headline") or "").strip()
+        for msg in messages[-6:]
+        if str(msg.get("headline") or "").strip()
+    ]
+    parts = [f"{kind}={count}" for kind, count in sorted(kinds.items())]
+    body = f"Digest ({len(messages)} lines): " + ", ".join(parts)
+    if recent:
+        body += ". Recent: " + "; ".join(recent[:5])
+    last_seq = int(messages[-1].get("store_seq") or 0)
+    digest = {
+        "store_seq": last_seq,
+        "event_id": "",
+        "occurred_at": None,
+        "refs": {},
+        "actor_display": "System",
+        "message_kind": "summary",
+        "severity": "info",
+        "headline": "Theater digest",
+        "body_md": body,
+    }
+    return [*messages, digest]

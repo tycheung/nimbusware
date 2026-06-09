@@ -26,8 +26,12 @@ def test_theater_llm_summary_disabled_by_default() -> None:
         ),
     ).model_dump(mode="json")
     assert theater_llm_summary_enabled([row]) is False
-    msgs = [{"headline": "a"}]
+    msgs = [{"headline": "a", "message_kind": "stage", "store_seq": 1}]
     assert apply_theater_paraphrase(msgs, enabled=False) == msgs
+    out = apply_theater_paraphrase(msgs, enabled=True)
+    assert len(out) == 2
+    assert out[-1]["headline"] == "Theater digest"
+    assert "Digest" in str(out[-1]["body_md"])
 
 
 def test_theater_llm_summary_enabled_from_metadata() -> None:
