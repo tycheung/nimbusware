@@ -33,6 +33,18 @@ spec:
               value: redis://nimbusware-redis:6379/0
             - name: NIMBUSWARE_SKIP_PREFLIGHT
               value: "1"
+            - name: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: nimbusware-api-secrets
+                  key: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+                  optional: true
+            - name: NIMBUSWARE_REDIS_FLEET_URLS
+              valueFrom:
+                secretKeyRef:
+                  name: nimbusware-api-secrets
+                  key: NIMBUSWARE_REDIS_FLEET_URLS
+                  optional: true
           resources:
             requests:
               cpu: 100m

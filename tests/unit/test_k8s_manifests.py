@@ -42,5 +42,15 @@ def test_redis_service_selects_redis() -> None:
 
 def test_worker_uses_redis_dispatch() -> None:
     dep = next(d for d in _load_docs("worker-deployment.yaml") if d.get("kind") == "Deployment")
-    env = {e["name"]: e["value"] for e in dep["spec"]["template"]["spec"]["containers"][0]["env"]}
+    env_list = dep["spec"]["template"]["spec"]["containers"][0]["env"]
+    env = {e["name"]: e["value"] for e in env_list if "value" in e}
+    names = {e["name"] for e in env_list}
     assert env.get("NIMBUSWARE_RUN_DISPATCH") == "redis"
+    assert "NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT" in names
+    assert "NIMBUSWARE_REDIS_FLEET_URLS" in names
+
+
+def test_api_deployment_optional_fleet_playwright_env() -> None:
+    dep = next(d for d in _load_docs("api-deployment.yaml") if d.get("kind") == "Deployment")
+    names = {e["name"] for e in dep["spec"]["template"]["spec"]["containers"][0]["env"]}
+    assert "NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT" in names

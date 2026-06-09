@@ -26,7 +26,7 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 
 | File | Purpose |
 |------|---------|
-| `api-secrets.yaml` | DSN + admin token placeholders |
+| `api-secrets.yaml` | DSN, admin token, optional fleet Playwright WS + Redis fleet URLs |
 | `postgres-deployment.yaml` | **Lab/non-prod** in-cluster Postgres + Service `postgres` |
 | `api-deployment.yaml` | API Deployment + ClusterIP Service |
 | `redis-deployment.yaml` | Redis 7 for fleet worker queue |
@@ -55,12 +55,19 @@ Worker / Redis fleet dispatch is also documented in `scripts/run_dispatch_fleet_
 | Campaign soak cadence | [campaign-soak-runbook.md](../campaign-soak-runbook.md) |
 | Weekly dev-env soak | `scripts/run_dev_env_weekly_soak.py` (CI job `dev-env-weekly-soak`) |
 
-Optional worker env (add to `worker-deployment.yaml` `env` when using a remote browser pool):
+Optional worker env (wired in `worker-deployment.yaml` when secrets are set):
 
 ```yaml
 - name: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
   valueFrom:
     secretKeyRef:
       name: nimbusware-api-secrets
-      key: fleet_playwright_ws
+      key: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+      optional: true
+- name: NIMBUSWARE_REDIS_FLEET_URLS
+  valueFrom:
+    secretKeyRef:
+      name: nimbusware-api-secrets
+      key: NIMBUSWARE_REDIS_FLEET_URLS
+      optional: true
 ```

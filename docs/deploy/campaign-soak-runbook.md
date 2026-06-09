@@ -11,11 +11,12 @@ Individual ships a **24h golden replay** in CI (`tests/e2e/journeys/` slow tier)
 
 ## Procedure
 
-1. Create project from golden fixture workspace (`tests/fixtures/repos/tiny_api_app` or buyer workspace).
-2. `POST /v1/campaigns` with `workflow_profile=campaign_factory_zero_touch` or `campaign_micro_slice`, `autonomous=true`.
-3. Enable memory dispatch: `NIMBUSWARE_RUN_DISPATCH=redis` with fleet URLs ([production-fleet-redis-secrets.md](production-fleet-redis-secrets.md)).
-4. Run worker fleet: `scripts/run_dispatch_worker.py` (one consumer per Redis broker URL).
-5. Monitor:
+1. **Preflight** — `python scripts/run_campaign_soak_check.py` (Redis fleet reachable, `NIMBUSWARE_RUN_DISPATCH=redis`, Enterprise edition). For integration depth, run `python scripts/run_redis_fleet_soak_ci.py` in staging first.
+2. Create project from golden fixture workspace (`tests/fixtures/repos/tiny_api_app` or buyer workspace).
+3. `POST /v1/campaigns` with `workflow_profile=campaign_factory_zero_touch` or `campaign_micro_slice`, `autonomous=true`.
+4. Enable memory dispatch: `NIMBUSWARE_RUN_DISPATCH=redis` with fleet URLs ([production-fleet-redis-secrets.md](production-fleet-redis-secrets.md)).
+5. Run worker fleet: `scripts/run_dispatch_worker.py` (one consumer per Redis broker URL).
+6. Monitor:
    - `GET /v1/runs/{id}/timeline` — `campaign.tick`, maintenance passes, `factory.gate`, `launch_eval.completed`
    - Queue depth via Redis `LLEN` on dispatch keys
    - Maker push notifications when VAPID keys configured
@@ -32,5 +33,6 @@ Export theater transcript (`GET /v1/runs/{id}/theater/export`) and factory evide
 
 ## Related
 
+- Kubernetes reference manifests: [k8s/README.md](k8s/README.md) (`api-secrets.yaml` fleet keys, worker optional env)
 - Eval tuning: [../eval-tuning-guide.md](../eval-tuning-guide.md)
 - Fleet Playwright: [fleet-playwright-pool.md](fleet-playwright-pool.md)
