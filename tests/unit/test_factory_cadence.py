@@ -12,6 +12,7 @@ from nimbusware_orchestrator.factory_cadence import (
     maybe_run_factory_cadence_pass,
     should_run_factory_cadence,
 )
+from nimbusware_orchestrator.factory_completion import factory_ui_flow_required
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_campaign import parse_completion_workflow_block
 
@@ -29,6 +30,31 @@ def test_should_run_factory_cadence_on_slice_multiple() -> None:
     assert should_run_factory_cadence(3, 3, tier="T2") is True
     assert should_run_factory_cadence(4, 3, tier="T2") is False
     assert should_run_factory_cadence(3, 3, tier="T0") is False
+
+
+def test_factory_ui_flow_required_for_t2b_and_t3() -> None:
+    assert factory_ui_flow_required(metadata_tier="T2b") is True
+    assert factory_ui_flow_required(metadata_tier="T3") is True
+    assert factory_ui_flow_required(metadata_tier="T2") is False
+
+
+def test_factory_completion_policy_t2b_sets_ui_flow_required() -> None:
+    rows = [
+        {
+            "event_type": "run.created",
+            "metadata": {
+                "campaign_effective": {
+                    "enabled": True,
+                    "completion": {"factory_tier": "T2b"},
+                },
+            },
+        },
+    ]
+    policy = factory_completion_policy_from_rows(rows)
+    assert policy is not None
+    assert policy.factory_tier == "T2"
+    assert policy.raw_factory_tier == "T2b"
+    assert policy.ui_flow_required is True
 
 
 def test_factory_completion_policy_from_campaign_metadata() -> None:

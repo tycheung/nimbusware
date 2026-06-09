@@ -35,6 +35,8 @@ class FactoryCompletionPolicy:
     factory_tier: FactoryTier = "T1"
     e2e_on_every_n_slices: int = 5
     auto_launch_eval: bool = True
+    raw_factory_tier: str = "T1"
+    ui_flow_required: bool = False
 
 
 @dataclass(frozen=True)
@@ -60,13 +62,18 @@ def factory_completion_policy_from_rows(
     tier_raw = raw.get("factory_tier")
     if tier_raw is None:
         return None
-    tier = resolve_factory_tier(metadata_tier=str(tier_raw))
+    raw_str = str(tier_raw)
+    tier = resolve_factory_tier(metadata_tier=raw_str)
+    from nimbusware_orchestrator.factory_completion import factory_ui_flow_required
+
     every_n = max(1, int(raw.get("e2e_on_every_n_slices", 5) or 5))
     auto_launch = bool(raw.get("auto_launch_eval", True))
     return FactoryCompletionPolicy(
         factory_tier=tier,
         e2e_on_every_n_slices=every_n,
         auto_launch_eval=auto_launch,
+        raw_factory_tier=raw_str,
+        ui_flow_required=factory_ui_flow_required(metadata_tier=raw_str),
     )
 
 
@@ -154,14 +161,23 @@ def _run_put_e2e_for_run(
     store: Any | None = None,
     run_id: UUID | None = None,
     slices_completed: int = 0,
-) -> tuple[bool | None, PutE2EResult | None, Any | None, float | None, dict[str, Any] | None]:
+    ui_flow_required: bool = False,
+) -> tuple[
+    bool | None,
+    PutE2EResult | None,
+    Any | None,
+    float | None,
+    dict[str, Any] | None,
+    bool | None,
+    str | None,
+]:
     from nimbusware_env.env_flags import env_str
     from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_combined
     from nimbusware_orchestrator.launch_eval_catalog import attach_context_from_run
     from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
 
     if tier in {"T0", "T1"}:
-        return None, None, None, None, None
+        return None, None, None, None, None, None, None
 
     attach = attach_context_from_run(rows, repo_root)
     flow_id = match_factory_flow_id(
@@ -176,7 +192,7 @@ def _run_put_e2e_for_run(
             base_url="",
             detail="no catalog flow match",
         )
-        return False, skip, None, None, None
+        return False, skip, None, None, None, None, None
 
     port = 19876 + (hash(str(workspace)) % 400)
     preview = start_put_preview(workspace, port, startup_timeout_seconds=12.0)
@@ -233,7 +249,32 @@ def _run_put_e2e_for_run(
         )
         coverage_raw = gates.details.get("ism_coverage_pct")
         coverage = float(coverage_raw) if coverage_raw is not None else None
-        return put_preview_ok, put_e2e, ism, coverage, ism_diff
+
+        ui_passed: bool | None = None
+        ui_flow_id: str | None = None
+        if ui_flow_required and put_preview_ok and put_e2e and put_e2e.verdict == "PASS":
+            from nimbusware_orchestrator.browser_controller import run_ui_flow
+            from nimbusware_orchestrator.dev_env_events import emit_dev_env_ui_regression
+            from nimbusware_orchestrator.launch_flow_resolver import resolve_launch_flows
+
+            resolved = resolve_launch_flows(rows, workspace, repo_root=repo_root)
+            if resolved.ui_flow is not None:
+                ui_flow_id = resolved.ui_flow.flow_id
+                ui_result = run_ui_flow(base_url, resolved.ui_flow)
+                ui_passed = ui_result.passed
+                if store is not None and run_id is not None:
+                    emit_dev_env_ui_regression(
+                        store,
+                        run_id,
+                        passed=ui_result.passed,
+                        steps_run=ui_result.steps_run,
+                        detail=ui_result.detail,
+                        flow_id=ui_flow_id,
+                        failed_step=ui_result.failed_step,
+                        locator=ui_result.failed_locator,
+                    )
+
+        return put_preview_ok, put_e2e, ism, coverage, ism_diff, ui_passed, ui_flow_id
     finally:
         if store is not None and run_id is not None and preview.handle is not None:
             from nimbusware_orchestrator.put_runtime import emit_put_preview_stopped
@@ -281,15 +322,20 @@ def maybe_run_factory_cadence_pass(
         from nimbusware_maker.workspace import resolve_run_workspace
 
         ws_path = resolve_run_workspace(rows)
+    ui_passed: bool | None = None
+    ui_flow_id: str | None = None
     if ws_path.is_dir() and tier in {"T2", "T3"}:
-        put_preview_ok, put_e2e, ism, coverage, ism_diff = _run_put_e2e_for_run(
-            ws_path,
-            rows,
-            tier=tier,
-            repo_root=repo_root,
-            store=store,
-            run_id=run_id,
-            slices_completed=slices_completed,
+        put_preview_ok, put_e2e, ism, coverage, ism_diff, ui_passed, ui_flow_id = (
+            _run_put_e2e_for_run(
+                ws_path,
+                rows,
+                tier=tier,
+                repo_root=repo_root,
+                store=store,
+                run_id=run_id,
+                slices_completed=slices_completed,
+                ui_flow_required=policy.ui_flow_required if policy else False,
+            )
         )
         if put_e2e is not None and put_e2e.verdict == "FAIL":
             from nimbusware_orchestrator.backlog_generator import (
@@ -319,14 +365,24 @@ def maybe_run_factory_cadence_pass(
     meta: dict[str, Any] = {
         "factory": {
             "tier": tier,
+            "raw_tier": policy.raw_factory_tier if policy else tier,
             "ism_coverage_pct": coverage
             if coverage is not None
             else gates.details.get("ism_coverage_pct"),
             "put_e2e_passed": put_e2e.passed if put_e2e is not None else None,
+            "put_ui_flow_passed": ui_passed,
+            "put_ui_flow_id": ui_flow_id,
             "gates_passed": gates.passed,
             "blocking": list(gates.blocking),
         },
     }
+    if policy and policy.ui_flow_required and ui_passed is False:
+        gates = FactoryGateResult(
+            tier=gates.tier,
+            passed=False,
+            blocking=(*gates.blocking, "put_ui_flow_failed"),
+            details=dict(gates.details),
+        )
     if put_e2e is not None:
         meta["put_e2e"] = put_e2e.to_dict()
         meta["put"] = {"base_url": put_e2e.base_url}
@@ -343,8 +399,13 @@ def maybe_run_factory_cadence_pass(
     _emit_factory_stage(store, run_id, stage_name=FACTORY_GATE_STAGE, metadata=gate_meta)
     _emit_factory_stage(store, run_id, stage_name=FACTORY_CADENCE_STAGE, metadata=meta)
 
+    ui_ok = not (policy and policy.ui_flow_required) or ui_passed is True
     factory_complete = (
-        gates.passed and tier in {"T2", "T3"} and put_e2e is not None and put_e2e.verdict == "PASS"
+        gates.passed
+        and ui_ok
+        and tier in {"T2", "T3"}
+        and put_e2e is not None
+        and put_e2e.verdict == "PASS"
     )
     if factory_complete and not factory_complete_emitted(rows):
         complete_meta = dict(meta)

@@ -56,9 +56,16 @@ def resolve_factory_tier(
 ) -> FactoryTier:
     for raw in (metadata_tier, env_tier):
         token = str(raw or "").strip().upper()
+        if token == "T2B":
+            return "T2"
         if token in {"T0", "T1", "T2", "T3"}:
             return token  # type: ignore[return-value]
     return default
+
+
+def factory_ui_flow_required(*, metadata_tier: str | None = None) -> bool:
+    token = str(metadata_tier or "").strip().upper()
+    return token in {"T2B", "T3"}
 
 
 def evaluate_factory_gates(
