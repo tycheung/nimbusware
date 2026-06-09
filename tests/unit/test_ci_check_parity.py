@@ -18,6 +18,7 @@ _CRITICAL_STEPS = (
     "pytest tests",
     "coverage_package_floors.py",
     "test_slice_e2e_workflow.py",
+    "run_framework_pack_ci_gate.py",
 )
 
 
