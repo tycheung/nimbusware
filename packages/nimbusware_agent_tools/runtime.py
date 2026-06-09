@@ -122,6 +122,16 @@ def _execute_step(
         args = step.arguments.get("args")
         arg_list = [str(a) for a in args] if isinstance(args, list) else None
         return tool_run_shell(workspace, cmd, arg_list, timeout_seconds=timeout_seconds)
+    if step.tool == "browser_act":
+        from nimbusware_agent_tools.tools import tool_browser_act
+
+        return tool_browser_act(
+            base_url=str(step.arguments.get("base_url") or ""),
+            action=str(step.arguments.get("action") or "goto"),
+            selector=str(step.arguments.get("selector") or "body"),
+            value=str(step.arguments.get("value") or ""),
+            url=str(step.arguments.get("url") or ""),
+        )
     from nimbusware_agent_tools.tools import _result
 
     return _result(step.tool, False, f"unknown tool: {step.tool}")

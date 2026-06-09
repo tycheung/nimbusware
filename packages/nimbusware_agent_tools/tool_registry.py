@@ -15,9 +15,11 @@ def nimbusware_agent_tools_allowlist() -> frozenset[str]:
 
 def agent_tool_list_prompt() -> str:
     tools = sorted(nimbusware_agent_tools_allowlist())
-    return "read, write, edit, grep, shell" + (
-        ", find, ls" if "find" in tools or "ls" in tools else ""
-    )
+    base = "read, write, edit, grep, shell"
+    extras = [t for t in ("find", "ls", "browser_act") if t in tools]
+    if extras:
+        return base + ", " + ", ".join(extras)
+    return base
 
 
 def is_agent_tool_enabled(name: str) -> bool:

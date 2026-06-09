@@ -6,6 +6,7 @@ import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from nimbusware_orchestrator.put_runtime import PutStack, detect_put_stack
 
@@ -75,6 +76,29 @@ def _static_http_command(workspace: Path, port: int) -> list[str]:
     ]
 
 
+def _nextjs_dev_command(workspace: Path, port: int) -> list[str]:
+    npx = "npx.cmd" if sys.platform == "win32" else "npx"
+    return [npx, "next", "dev", "--hostname", "127.0.0.1", "-p", str(port)]
+
+
+def _is_nextjs_workspace(workspace: Path) -> bool:
+    pkg_path = workspace / "package.json"
+    if not pkg_path.is_file():
+        return False
+    try:
+        pkg = json.loads(pkg_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    if not isinstance(pkg, dict):
+        return False
+    deps: dict[str, Any] = {}
+    for key in ("dependencies", "devDependencies", "peerDependencies"):
+        block = pkg.get(key)
+        if isinstance(block, dict):
+            deps.update(block)
+    return "next" in deps
+
+
 def _npm_dev_command(workspace: Path, port: int) -> list[str]:
     npm = "npm.cmd" if sys.platform == "win32" else "npm"
     env_prefix: list[str] = []
@@ -104,6 +128,7 @@ _BUILTIN: tuple[DevEnvAdapterSpec, ...] = (
     DevEnvAdapterSpec("fastapi", frozenset({"fastapi"}), _fastapi_plain_command),
     DevEnvAdapterSpec("static", frozenset({"static", "spa", "unknown"}), _static_http_command),
     DevEnvAdapterSpec("npm_dev", frozenset({"spa"}), _npm_dev_command, True),
+    DevEnvAdapterSpec("nextjs_dev", frozenset({"spa"}), _nextjs_dev_command, True),
     DevEnvAdapterSpec("custom_yaml", frozenset({"unknown"}), _custom_yaml_command),
 )
 
@@ -123,6 +148,8 @@ def resolve_adapter_name(workspace: Path, *, prefer_reload: bool = True) -> str:
     if custom.is_file():
         return "custom_yaml"
     stack = detect_put_stack(workspace)
+    if stack == "spa" and _is_nextjs_workspace(workspace):
+        return "nextjs_dev"
     if stack == "fastapi" and prefer_reload:
         return "fastapi_reload"
     if stack == "spa" and (workspace / "package.json").is_file():

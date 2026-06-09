@@ -229,6 +229,41 @@ def tool_ls(
         return _result("ls", False, str(exc))
 
 
+def tool_browser_act(
+    *,
+    base_url: str,
+    action: str,
+    selector: str = "body",
+    value: str = "",
+    url: str = "",
+) -> ToolResult:
+    from nimbusware_orchestrator.browser_controller import run_ui_flow
+    from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep
+
+    kind = action.strip().lower()
+    allowed = {
+        "goto",
+        "click",
+        "fill",
+        "press",
+        "select",
+        "wait_for",
+        "expect_text",
+        "expect_visible",
+    }
+    if kind not in allowed:
+        return _result("browser_act", False, f"unsupported action: {action}")
+    step = UiFlowStep(
+        kind=kind,  # type: ignore[arg-type]
+        selector=selector or None,
+        value=value or None,
+        url=url or (value if kind == "goto" else None),
+    )
+    outcome = run_ui_flow(base_url, UiFlowDefinition(flow_id="browser_act", steps=[step]))
+    detail = outcome.detail or ("pass" if outcome.passed else "fail")
+    return _result("browser_act", outcome.passed, detail)
+
+
 def tool_run_shell(
     workspace: Path,
     command: str,

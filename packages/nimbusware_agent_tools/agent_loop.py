@@ -191,7 +191,22 @@ def run(
                     result.paths_touched = list(dict.fromkeys(touched))
                     return result
 
-            if step.tool == "write":
+            if step.tool == "browser_act":
+                from nimbusware_agent_tools.tools import tool_browser_act
+
+                page_url = str(step.arguments.get("base_url") or "").strip()
+                if not page_url:
+                    from nimbusware_orchestrator.dev_env_supervisor import active_base_url
+
+                    page_url = active_base_url(ws) or ""
+                tool_result = tool_browser_act(
+                    base_url=page_url,
+                    action=str(step.arguments.get("action") or "goto"),
+                    selector=str(step.arguments.get("selector") or "body"),
+                    value=str(step.arguments.get("value") or ""),
+                    url=str(step.arguments.get("url") or ""),
+                )
+            elif step.tool == "write":
                 from nimbusware_agent_tools.tools import tool_write_file
                 from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
 
