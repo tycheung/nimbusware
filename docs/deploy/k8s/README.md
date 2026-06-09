@@ -44,3 +44,23 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 | Console | `NIMBUSWARE_API_BASE`, admin token in secrets |
 
 Worker / Redis fleet dispatch is also documented in `scripts/run_dispatch_fleet_runbook.md`.
+
+## Production hardening (O-band)
+
+| Concern | Reference |
+|---------|-----------|
+| Ingress + TLS | [helm.md](../helm.md) — prefer Helm chart over raw manifests for TLS termination |
+| Fleet Redis secrets | [production-fleet-redis-secrets.md](../production-fleet-redis-secrets.md) |
+| Remote Playwright pool | [fleet-playwright-pool.md](../fleet-playwright-pool.md) — set `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT` on API **and** worker Deployments when factory T3 runs concurrent browser checks |
+| Campaign soak cadence | [campaign-soak-runbook.md](../campaign-soak-runbook.md) |
+| Weekly dev-env soak | `scripts/run_dev_env_weekly_soak.py` (CI job `dev-env-weekly-soak`) |
+
+Optional worker env (add to `worker-deployment.yaml` `env` when using a remote browser pool):
+
+```yaml
+- name: NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT
+  valueFrom:
+    secretKeyRef:
+      name: nimbusware-api-secrets
+      key: fleet_playwright_ws
+```
