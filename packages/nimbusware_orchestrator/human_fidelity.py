@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from nimbusware_env.env_flags import env_bool
 from nimbusware_orchestrator.browser_controller import run_ui_flow
 from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep
 
 PERF_BUDGET_MS = 8000
+AXE_CDN = "https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js"
+AXE_RULE_IDS = ("color-contrast", "document-title", "html-has-lang", "landmark-one-main")
 
 
 @dataclass
@@ -58,6 +61,40 @@ def run_axe_smoke(base_url: str) -> dict[str, Any]:
     return {"ok": ok, "detail": detail, "title": title, "dcl_ms": dcl}
 
 
+def run_axe_rules_check(base_url: str) -> dict[str, Any]:
+    """Run axe-core rule packs when ``NIMBUSWARE_AXE_ENABLED=1``."""
+    if not env_bool("NIMBUSWARE_AXE_ENABLED", default=False):
+        return {"ok": True, "detail": "axe_disabled", "violations": []}
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return {"ok": False, "detail": "playwright_not_installed", "violations": []}
+    violations: list[str] = []
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded")
+        page.add_script_tag(url=AXE_CDN)
+        raw = page.evaluate(
+            """async (ruleIds) => {
+              if (typeof axe === 'undefined') return { error: 'axe_missing' };
+              const results = await axe.run(document, { runOnly: { type: 'rule', values: ruleIds } });
+              return {
+                violations: (results.violations || []).map((v) => v.id),
+              };
+            }""",
+            list(AXE_RULE_IDS),
+        )
+        browser.close()
+    if isinstance(raw, dict) and raw.get("error"):
+        return {"ok": False, "detail": str(raw["error"]), "violations": []}
+    if isinstance(raw, dict):
+        violations = [str(v) for v in raw.get("violations") or []]
+    ok = not violations
+    detail = "pass" if ok else ",".join(violations[:6])
+    return {"ok": ok, "detail": detail, "violations": violations}
+
+
 def run_perf_budget_check(base_url: str) -> dict[str, Any]:
     axe = run_axe_smoke(base_url)
     return {
@@ -85,6 +122,8 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     checks: list[dict[str, Any]] = []
     axe = run_axe_smoke(base_url)
     checks.append({"kind": "a11y_smoke", **axe})
+    rules = run_axe_rules_check(base_url)
+    checks.append({"kind": "axe_rules", **rules})
     nav = run_ui_flow(
         base_url,
         UiFlowDefinition(
@@ -105,5 +144,6 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     else:
         checks.append({"kind": "negative_login", "passed": True, "detail": "skipped_no_login_form"})
     negative_passed = checks[-1]["passed"] is True
-    passed = axe.get("ok") is True and nav.passed and negative_passed
+    axe_ok = axe.get("ok") is True and rules.get("ok") is not False
+    passed = axe_ok and nav.passed and negative_passed
     return HumanFidelityResult(passed=passed, checks=checks, detail="pass" if passed else "fail")

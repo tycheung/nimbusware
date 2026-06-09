@@ -10,6 +10,7 @@ import pytest
 
 from nimbusware_orchestrator.human_fidelity import (
     PERF_BUDGET_MS,
+    run_axe_rules_check,
     run_axe_smoke,
     run_human_fidelity_suite,
 )
@@ -70,5 +71,23 @@ def test_human_fidelity_static_site(tmp_path: Path) -> None:
         assert suite.passed is True
         kinds = {c.get("kind") for c in suite.checks}
         assert "keyboard_nav" in kinds
+        assert "axe_rules" in kinds
+    finally:
+        server.shutdown()
+
+
+def test_axe_rules_disabled_by_default(tmp_path: Path) -> None:
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        pytest.skip("playwright not installed")
+
+    port = _free_port()
+    html = '<html lang="en"><head><title>T</title></head><body><h1>Hi</h1></body>'
+    server = _serve(tmp_path, html, port)
+    try:
+        result = run_axe_rules_check(f"http://127.0.0.1:{port}")
+        assert result.get("ok") is True
+        assert result.get("detail") == "axe_disabled"
     finally:
         server.shutdown()
