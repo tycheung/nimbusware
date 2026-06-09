@@ -7,7 +7,7 @@ from uuid import UUID
 
 
 def host_matches_allowlist(host: str, domain_allowlist: list[str]) -> bool:
-    """Hostname suffix rules for ASCII/punycode; exact match for IP literals (plan §6.3A)."""
+    """Hostname suffix rules for ASCII/punycode; exact match for IP literals."""
     h = host.strip().lower()
     try:
         ip_address(h)

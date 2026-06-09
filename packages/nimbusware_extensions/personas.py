@@ -274,7 +274,7 @@ class PersonaShelf:
     def validate_structure(self) -> None:
         """Raise ``ValueError`` if shelves YAML is not a valid persona catalog.
 
-        Legacy invariants (plan §14 #14): root mapping, ``business_area`` and
+        Legacy invariants: root mapping, ``business_area`` and
         ``development_role`` non-empty lists, each entry a mapping with
         non-empty string ``id``. fo127 additionally type-checks the seven new
         OPTIONAL fields when present (length caps + literal enum + version >= 1).

@@ -17,7 +17,7 @@ def security_scan_metadata_on_verify_enabled(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when env enables (and not kill-switched), else workflow YAML flag (§14 #18).
+    """True when env enables (and not kill-switched), else workflow YAML flag.
 
     ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA``:
       ``1`` / ``true`` / ``yes`` forces attach even when workflow is off;

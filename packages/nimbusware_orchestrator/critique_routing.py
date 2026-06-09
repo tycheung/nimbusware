@@ -91,7 +91,7 @@ def critique_coverage_snapshot(
 
 
 def assert_critique_coverage_complete(snapshot: dict[str, Any]) -> None:
-    """Raise ``ValueError`` when registry producers lack pairings (plan §3B.5)."""
+    """Raise ``ValueError`` when registry producers lack pairings."""
     unpaired = snapshot.get("unpaired_producers")
     if isinstance(unpaired, list) and unpaired:
         msg = (

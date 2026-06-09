@@ -51,7 +51,7 @@ class SelfRefinementOptionalStagesMixin:
         self: SelfRefinementOptionalStagesHost,
         run_id: UUID,
     ) -> None:
-        """Auto-continue ungated Phase D iterations when the last signal requests it (§14 #17)."""
+        """Auto-continue ungated Phase D iterations when the last signal requests it."""
         for _ in range(16):
             rows = self._store.list_run_events(str(run_id))
             if _self_refinement_max_iterations_exceeded(rows):

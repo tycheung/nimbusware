@@ -32,7 +32,7 @@ class CritiqueGateOptionalEmitMixin:
         log_snippet: str,
         eff: EffectiveUniversalCritique,
     ) -> None:
-        """Optional **test_writer.critique** after implementation critique (§14 #16).
+        """Optional **test_writer.critique** after implementation critique.
 
         Master switch ``NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE`` or workflow
         ``universal_critique.test_writer.enabled``. LLM / stub envs follow the same
@@ -76,7 +76,7 @@ class CritiqueGateOptionalEmitMixin:
         log_snippet: str,
         eff: EffectiveUniversalCritique,
     ) -> None:
-        """Optional **planner.critique** after **test_writer.critique** (§14 #16).
+        """Optional **planner.critique** after **test_writer.critique**.
 
         Master switch ``NIMBUSWARE_ENABLE_PLANNER_CRITIQUE`` or workflow
         ``universal_critique.planner.enabled``.

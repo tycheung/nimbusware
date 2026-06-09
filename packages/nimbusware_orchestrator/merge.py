@@ -1,4 +1,4 @@
-"""§6.3A policy snapshot merge (base config → workflow → run overrides)."""
+"""Policy snapshot merge (base config → workflow → run overrides)."""
 
 from __future__ import annotations
 
@@ -112,7 +112,7 @@ def merge_policy_snapshot(
     workflow_profile: dict[str, Any] | None,
     run_overrides: dict[str, Any] | None,
 ) -> PolicySnapshotV1:
-    """Merge three YAML-shaped layers into a frozen ``PolicySnapshotV1`` (plan §6.3A)."""
+    """Merge three YAML-shaped layers into a frozen ``PolicySnapshotV1``."""
     layers_fs: list[dict[str, Any] | None] = [base_config, workflow_profile, run_overrides]
     strictness = _merge_finding_strictness(layers_fs)
     scraper = _merge_uuid_allowlist(layers_fs, "scraper_role_allowlist")

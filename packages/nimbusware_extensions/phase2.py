@@ -84,7 +84,7 @@ def agent_evaluator_score_band(
     promotion_threshold: float = AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD,
     strong_threshold: float = AGENT_EVALUATOR_STRONG_SCORE_THRESHOLD,
 ) -> str:
-    """Depth label for rules/LLM evaluator scoring (plan §14 #15)."""
+    """Depth label for rules/LLM evaluator scoring."""
     if score < promotion_threshold:
         return "below_threshold"
     if score < strong_threshold:

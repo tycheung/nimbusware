@@ -1,4 +1,4 @@
-"""Dispatch single Role Registry roles for admin debug execution (plan §6.6)."""
+"""Dispatch single Role Registry roles for admin debug execution."""
 
 from __future__ import annotations
 
