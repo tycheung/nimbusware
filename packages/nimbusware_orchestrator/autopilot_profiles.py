@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from uuid import UUID, uuid4
 
 import yaml
 
+from agent_core.models import EventType, StagePassedEvent
+from agent_core.models.events_payloads import StagePassedPayload
 from nimbusware_env import find_repo_root
+
+AUTOPILOT_UPDATED_STAGE = "run.autopilot.updated"
 
 CHECKPOINT_CATALOG = (
     "stop_after_run_plan",
@@ -103,6 +109,68 @@ def resolve_autopilot_profile(
 _RUN_AUTOPILOT_OVERRIDES: dict[str, dict[str, Any]] = {}
 
 
+def _autopilot_block_from_event_metadata(meta: dict[str, Any]) -> dict[str, Any] | None:
+    block = meta.get("autopilot")
+    return block if isinstance(block, dict) else None
+
+
+def _profile_from_autopilot_block(block: dict[str, Any]) -> AutopilotProfile:
+    level_raw = block.get("level")
+    level = int(level_raw) if level_raw is not None else 5
+    checkpoints_raw = block.get("checkpoints")
+    if isinstance(checkpoints_raw, list) and checkpoints_raw:
+        return resolve_autopilot_profile(
+            level=level,
+            custom_checkpoints={str(c) for c in checkpoints_raw},
+        )
+    return resolve_autopilot_profile(level=level)
+
+
+def persist_run_autopilot(
+    store: Any,
+    run_id: UUID | str,
+    profile: AutopilotProfile,
+) -> None:
+    """Append durable autopilot override; also refresh in-process cache."""
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    block = {
+        "level": profile.level,
+        "name": profile.name,
+        "checkpoints": sorted(profile.checkpoints),
+        "custom": profile.custom,
+    }
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={"autopilot": block},
+            payload=StagePassedPayload(stage_name=AUTOPILOT_UPDATED_STAGE, duration_ms=0),
+        ),
+    )
+    set_run_autopilot_override(
+        str(rid),
+        level=profile.level,
+        checkpoints=set(profile.checkpoints) if profile.checkpoints else None,
+    )
+
+
+def latest_autopilot_block_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    for row in reversed(rows):
+        payload = row.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        if str(payload.get("stage_name") or "") != AUTOPILOT_UPDATED_STAGE:
+            continue
+        meta = row.get("metadata")
+        if isinstance(meta, dict):
+            block = _autopilot_block_from_event_metadata(meta)
+            if block is not None:
+                return block
+    return None
+
+
 def set_run_autopilot_override(
     run_id: str,
     *,
@@ -120,6 +188,9 @@ def set_run_autopilot_override(
 
 
 def autopilot_level_from_rows(rows: list[dict[str, Any]]) -> int:
+    persisted = latest_autopilot_block_from_rows(rows)
+    if persisted is not None and persisted.get("level") is not None:
+        return max(0, min(10, int(persisted["level"])))
     if rows:
         rid = str(rows[0].get("run_id", ""))
         override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
@@ -142,6 +213,9 @@ def autopilot_level_from_rows(rows: list[dict[str, Any]]) -> int:
 
 
 def autopilot_profile_from_rows(rows: list[dict[str, Any]]) -> AutopilotProfile:
+    persisted = latest_autopilot_block_from_rows(rows)
+    if persisted is not None:
+        return _profile_from_autopilot_block(persisted)
     if rows:
         rid = str(rows[0].get("run_id", ""))
         override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
@@ -169,6 +243,78 @@ def autopilot_profile_from_rows(rows: list[dict[str, Any]]) -> AutopilotProfile:
                 break
         break
     return resolve_autopilot_profile(level=level, custom_checkpoints=custom)
+
+
+_SEVERITY_RANK = {
+    "info": 0,
+    "low": 1,
+    "warn": 2,
+    "warning": 2,
+    "medium": 3,
+    "high": 4,
+    "error": 4,
+    "block": 5,
+    "blocker": 5,
+    "critical": 5,
+    "pass": 0,
+    "success": 0,
+}
+
+
+@dataclass(frozen=True)
+class TheaterVisibility:
+    min_severity: str
+    include_context_compaction: bool
+    include_agent_tool_detail: bool
+
+
+def theater_visibility_for_level(level: int) -> TheaterVisibility:
+    if level <= 2:
+        return TheaterVisibility("info", True, True)
+    if level <= 8:
+        return TheaterVisibility("warn", True, False)
+    return TheaterVisibility("block", False, False)
+
+
+def autopilot_theater_filter_active(rows: list[dict[str, Any]]) -> bool:
+    if latest_autopilot_block_from_rows(rows) is not None:
+        return True
+    for row in rows:
+        if row.get("event_type") != "run.created":
+            continue
+        meta = row.get("metadata")
+        if not isinstance(meta, dict):
+            break
+        for key in ("autopilot_effective", "autopilot"):
+            block = meta.get(key)
+            if isinstance(block, dict) and block.get("level") is not None:
+                return True
+        if meta.get("autopilot_level") is not None:
+            return True
+        break
+    return False
+
+
+def filter_theater_messages_for_autopilot(
+    messages: list[dict[str, Any]],
+    *,
+    level: int,
+) -> list[dict[str, Any]]:
+    vis = theater_visibility_for_level(level)
+    floor = _SEVERITY_RANK.get(vis.min_severity, 0)
+    out: list[dict[str, Any]] = []
+    for msg in messages:
+        sev = str(msg.get("severity") or "info").lower()
+        if _SEVERITY_RANK.get(sev, 0) < floor:
+            continue
+        kind = str(msg.get("message_kind") or "")
+        if not vis.include_context_compaction and kind == "context":
+            if sev not in {"block", "error", "high", "blocker", "critical"}:
+                continue
+        if not vis.include_agent_tool_detail and kind == "agent_tool":
+            continue
+        out.append(msg)
+    return out
 
 
 def deliberation_rounds_for_level(level: int) -> int:

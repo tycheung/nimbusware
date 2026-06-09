@@ -10,7 +10,8 @@ from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_orchestrator.autopilot_profiles import (
     autopilot_profile_from_rows,
-    set_run_autopilot_override,
+    persist_run_autopilot,
+    resolve_autopilot_profile,
 )
 
 router = APIRouter()
@@ -68,7 +69,8 @@ def put_run_autopilot(
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     custom = set(body.checkpoints) if body.checkpoints else None
-    profile = set_run_autopilot_override(str(run_id), level=body.level, checkpoints=custom)
+    profile = resolve_autopilot_profile(level=body.level, custom_checkpoints=custom)
+    persist_run_autopilot(store, run_id, profile)
     return RunAutopilotResponse(
         run_id=str(run_id),
         level=profile.level,

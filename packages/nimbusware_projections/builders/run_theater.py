@@ -249,6 +249,29 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "data_testid": "theater-run-replay-started",
                     },
                 )
+            elif sn == "interjection.drained":
+                interjection = row_meta.get("interjection")
+                if isinstance(interjection, dict):
+                    count = int(interjection.get("count") or 0)
+                    build = bool(interjection.get("build_from_chat"))
+                    headline = f"Operator interjection drained ({count} message(s))"
+                    if build:
+                        headline = f"{headline} — build-from-chat"
+                    interjection_lines: list[str] = []
+                    for msg in interjection.get("messages") or []:
+                        if isinstance(msg, str) and msg.strip():
+                            interjection_lines.append(f"- {msg.strip()[:300]}")
+                    messages.append(
+                        {
+                            **base,
+                            "actor_display": "Operator",
+                            "message_kind": "system",
+                            "severity": "info",
+                            "headline": headline,
+                            "body_md": "\n".join(interjection_lines[:5]) or None,
+                            "data_testid": "theater-interjection-drained",
+                        },
+                    )
             elif sn == "campaign.context.compacted":
                 tokens_before = row_meta.get("tokens_before")
                 tokens_after = row_meta.get("tokens_after")
@@ -427,6 +450,25 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "severity": "pass",
                         "headline": f"Stage passed: {sn}",
                         "body_md": _approved_research_body_md(rows, plan_seq),
+                    },
+                )
+            elif sn == "interjection.build_from_chat":
+                interjection = row_meta.get("interjection")
+                campaign_id = ""
+                if isinstance(interjection, dict):
+                    campaign_id = str(interjection.get("campaign_run_id") or "")
+                headline = "Build-from-chat launched campaign"
+                if campaign_id:
+                    headline = f"{headline} ({campaign_id[:8]}…)"
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Operator",
+                        "message_kind": "system",
+                        "severity": "info",
+                        "headline": headline,
+                        "body_md": None,
+                        "data_testid": "theater-interjection-build-from-chat",
                     },
                 )
             elif sn in _SLICE_STAGE_NAMES:
@@ -639,6 +681,17 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
 
     if projection_prune_agent_tools_enabled():
         messages = prune_theater_agent_tool_messages(messages)
+    from nimbusware_orchestrator.autopilot_profiles import (
+        autopilot_level_from_rows,
+        autopilot_theater_filter_active,
+        filter_theater_messages_for_autopilot,
+    )
+
+    if autopilot_theater_filter_active(rows):
+        messages = filter_theater_messages_for_autopilot(
+            messages,
+            level=autopilot_level_from_rows(rows),
+        )
     return apply_theater_paraphrase(
         messages,
         enabled=theater_llm_summary_enabled(rows),

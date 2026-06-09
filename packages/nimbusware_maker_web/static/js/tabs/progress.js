@@ -6,6 +6,18 @@ import { openSseStream, parseSseJson } from "../sse-client.js";
 
 const BLOCKING_SEVERITIES = new Set(["BLOCKER", "HIGH"]);
 
+const AUTOPILOT_CHECKPOINT_CATALOG = [
+  "stop_after_run_plan",
+  "stop_after_slice_plan",
+  "stop_before_workspace_apply",
+  "stop_on_slice_test_fail",
+  "stop_on_dev_env_regression_fail",
+  "stop_on_ui_regression_fail",
+  "stop_on_gate_fail",
+  "stop_before_factory_complete",
+  "stop_at_terminal_review",
+];
+
 function reproSummary(steps) {
   if (!Array.isArray(steps) || !steps.length) return "";
   const joined = steps.map((s) => String(s).trim()).filter(Boolean).join(" → ");
@@ -103,6 +115,7 @@ export async function mountProgress(root) {
         <h4>Autopilot</h4>
         <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>
         <span id="autopilot-level-label">5</span>
+        <div id="autopilot-checkpoints" class="autopilot-checkpoints" data-testid="maker-autopilot-checkpoints"></div>
         <button type="button" id="autopilot-save-btn" data-testid="maker-autopilot-save">Apply to run</button>
       </section>
       <section id="council-ribbon" class="panel" data-testid="maker-council-ribbon" hidden>
@@ -552,6 +565,31 @@ export async function mountProgress(root) {
     }
   }
 
+  function renderAutopilotCheckpoints(selected) {
+    const mount = document.getElementById("autopilot-checkpoints");
+    if (!mount) return;
+    mount.replaceChildren();
+    const selectedSet = new Set(selected || []);
+    AUTOPILOT_CHECKPOINT_CATALOG.forEach((id) => {
+      const label = document.createElement("label");
+      label.className = "autopilot-checkpoint";
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.value = id;
+      box.dataset.testid = `maker-autopilot-cp-${id}`;
+      box.checked = selectedSet.has(id);
+      label.appendChild(box);
+      label.append(` ${id.replaceAll("_", " ")}`);
+      mount.appendChild(label);
+    });
+  }
+
+  function selectedAutopilotCheckpoints() {
+    return [...document.querySelectorAll("#autopilot-checkpoints input[type=checkbox]:checked")]
+      .map((el) => el.value)
+      .filter(Boolean);
+  }
+
   function wireOperatorRibbons(runId) {
     document.getElementById("dev-env-start-btn")?.addEventListener("click", async () => {
       try {
@@ -606,11 +644,12 @@ export async function mountProgress(root) {
     });
     document.getElementById("autopilot-save-btn")?.addEventListener("click", async () => {
       const level = Number(slider?.value || 5);
+      const checkpoints = selectedAutopilotCheckpoints();
       try {
         await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ level }),
+          body: JSON.stringify({ level, checkpoints }),
         });
         toast(`Autopilot level ${level} applied`, "success");
       } catch (e) {
@@ -622,10 +661,16 @@ export async function mountProgress(root) {
     void refreshCouncilRibbon(runId);
     apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
       .then((ap) => {
-        if (slider) slider.value = String(ap.level ?? 5);
-        if (label) label.textContent = String(ap.level ?? 5);
+        const level = ap.level ?? 5;
+        if (slider) slider.value = String(level);
+        if (label) label.textContent = String(level);
+        renderAutopilotCheckpoints(ap.checkpoints || []);
+        const compactPick = document.getElementById("theater-compact-pick-btn");
+        if (compactPick) compactPick.hidden = level >= 9;
+        const checkpointsMount = document.getElementById("autopilot-checkpoints");
+        if (checkpointsMount) checkpointsMount.hidden = level >= 9;
       })
-      .catch(() => {});
+      .catch(() => renderAutopilotCheckpoints([]));
   }
 
   wireOperatorRibbons(id);
