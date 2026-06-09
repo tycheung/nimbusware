@@ -36,7 +36,7 @@ from nimbusware_orchestrator.slice_diff import (
     slice_replan_max_attempts,
     subdivide_slice_plan,
 )
-from nimbusware_orchestrator.slice_gate import SliceGateChainResult, map_paths_to_test_targets
+from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 from nimbusware_orchestrator.slice_implement import execute_slice_implement
 from nimbusware_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
@@ -226,6 +226,7 @@ def _run_slice_verify_and_test(
     plan: SlicePlan,
     *,
     timeout_seconds: float,
+    rows: list[dict[str, Any]] | None = None,
 ) -> tuple[bool, str, bool, str]:
     missing = [p for p in plan.target_paths if not (workspace / p).is_file()]
     sections: list[str] = []
@@ -241,7 +242,13 @@ def _run_slice_verify_and_test(
     sections.append(f"=== ruff (exit {ruff_code}) ===\n{ruff_out}")
     if ruff_code != 0:
         verify_ok = False
-    test_targets = map_paths_to_test_targets(plan.target_paths)
+    from nimbusware_orchestrator.patch_context import (
+        patch_context_from_run_rows,
+        resolve_patch_test_targets,
+    )
+
+    patch_ctx = patch_context_from_run_rows(rows or [])
+    test_targets = resolve_patch_test_targets(plan.target_paths, patch_ctx)
     existing_tests = [t for t in test_targets if (workspace / t).is_file()]
     if existing_tests:
         test_code, test_out = run_pytest_targets(
@@ -433,6 +440,7 @@ def execute_single_micro_slice(
         ws,
         active_plan,
         timeout_seconds=timeout,
+        rows=rows,
     )
     _emit_slice_stage(
         orch,

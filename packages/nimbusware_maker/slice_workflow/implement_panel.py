@@ -47,10 +47,12 @@ def complete_slice_after_implement(
     runtime = orch._base_cfg().get("runtime") or {}
     timeout = float(runtime.get("request_timeout_seconds", 120))
 
+    rows = orch._store.list_run_events(str(run_id))
     verify_ok, verify_log, tests_passed, test_out = _run_slice_verify_and_test(
         ws,
         plan,
         timeout_seconds=timeout,
+        rows=rows,
     )
     _emit_slice_stage(
         orch,

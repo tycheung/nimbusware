@@ -37,8 +37,18 @@ class RunRequirementsBody(BaseModel):
     clarifications: list[ClarificationAnswerBody] = Field(default_factory=list, max_length=10)
 
 
+class PatchContextBody(BaseModel):
+    target_paths: list[str] = Field(default_factory=list, max_length=8)
+    failing_test: str | None = Field(default=None, max_length=500)
+    stack_trace: str | None = Field(default=None, max_length=4000)
+    error_snippet: str | None = Field(default=None, max_length=2000)
+
+
 class CreateRunBody(BaseModel):
     workflow_profile: str = Field(default_factory=default_workflow_profile, min_length=1)
+    work_type: str | None = Field(default=None, max_length=32)
+    work_type_source: str | None = Field(default=None, max_length=32)
+    patch_context: PatchContextBody | None = None
     business_area_persona_id: str | None = Field(default=None, max_length=200)
     development_role_persona_id: str | None = Field(default=None, max_length=200)
     custom_agent_id: str | None = Field(default=None, max_length=120)
@@ -126,6 +136,11 @@ def create_run(
                     detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
                 )
             assert_project_accessible(project)
+        patch_ctx = (
+            body.patch_context.model_dump(mode="json", exclude_none=True)
+            if body.patch_context is not None
+            else None
+        )
         run_id = orch.create_run(
             body.workflow_profile,
             idempotency_key=key_uuid,
@@ -148,6 +163,9 @@ def create_run(
                 if body.requirements is not None
                 else None
             ),
+            patch_context=patch_ctx,
+            work_type=body.work_type,
+            work_type_source=body.work_type_source,
         )
     except FileNotFoundError as exc:
         raise HTTPException(

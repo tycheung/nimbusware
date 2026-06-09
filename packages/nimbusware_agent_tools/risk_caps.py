@@ -55,6 +55,25 @@ def resolve_agent_risk_caps() -> AgentRiskCaps:
     )
 
 
+PATCH_DEFAULT_CAPS = AgentRiskCaps(
+    max_tool_steps=12,
+    max_shell_invocations=3,
+    max_write_bytes=65536,
+)
+
+
+def agent_risk_caps_from_run_rows(rows: list[dict[str, Any]]) -> AgentRiskCaps:
+    if rows:
+        meta = rows[0].get("metadata")
+        if isinstance(meta, dict):
+            tools = meta.get("agent_tools_effective")
+            if isinstance(tools, dict):
+                frozen = caps_from_metadata(tools.get("risk_caps"))
+                if frozen is not None:
+                    return frozen
+    return resolve_agent_risk_caps()
+
+
 def caps_from_metadata(raw: Any) -> AgentRiskCaps | None:
     if not isinstance(raw, dict):
         return None

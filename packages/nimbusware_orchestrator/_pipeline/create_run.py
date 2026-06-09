@@ -68,6 +68,9 @@ class CreateRunMixin:
         project_template: str | None = None,
         requirements: dict[str, Any] | None = None,
         autonomous: bool | None = None,
+        patch_context: dict[str, Any] | None = None,
+        work_type: str | None = None,
+        work_type_source: str | None = None,
     ) -> UUID:
         mat = self._config_materializer
         assert_known_workflow(
@@ -149,6 +152,7 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
+        from nimbusware_orchestrator.patch_context import normalize_patch_context
         from nimbusware_orchestrator.workflow_campaign import (
             campaign_effective_metadata,
             parse_backlog_workflow_block,
@@ -162,7 +166,16 @@ class CreateRunMixin:
             resolve_memory_index_version,
         )
         from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
+        from nimbusware_orchestrator.workflow_patch import (
+            parse_patch_workflow_block,
+            patch_effective_metadata,
+        )
 
+        patch_block = parse_patch_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
         campaign_block = parse_campaign_workflow_block(
             self._repo_root,
             workflow_profile,
@@ -330,17 +343,25 @@ class CreateRunMixin:
                 run_policy_overrides,
             )
         from nimbusware_agent_tools.filesystem_jail import default_jail_policy
-        from nimbusware_agent_tools.risk_caps import resolve_agent_risk_caps
+        from nimbusware_agent_tools.risk_caps import (
+            PATCH_DEFAULT_CAPS,
+            resolve_agent_risk_caps,
+        )
         from nimbusware_agent_tools.sandbox import resolve_sandbox_backend
         from nimbusware_hw.cache import get_cached_profile
         from nimbusware_hw.governor import governor_for_profile
 
         hw_profile = get_cached_profile()
         resource_governor = governor_for_profile(hw_profile).to_metadata()
+        risk_caps = resolve_agent_risk_caps()
+        if patch_block.enabled and patch_block.risk_caps is not None:
+            risk_caps = patch_block.risk_caps
+        elif patch_block.enabled:
+            risk_caps = PATCH_DEFAULT_CAPS
         agent_tools_effective = {
             "sandbox_backend": resolve_sandbox_backend(),
             "filesystem_jail": default_jail_policy().enabled,
-            "risk_caps": resolve_agent_risk_caps().to_metadata(),
+            "risk_caps": risk_caps.to_metadata(),
         }
         from nimbusware_orchestrator.slice_budget_presets import resolve_slice_budget_preset
 
@@ -370,6 +391,12 @@ class CreateRunMixin:
             if campaign_block.enabled
             else None
         )
+        patch_ctx_norm = normalize_patch_context(patch_context)
+        wt = str(work_type or "").strip().lower() or None
+        if patch_block.enabled and not wt:
+            wt = "patch"
+        wts = str(work_type_source or "").strip().lower() or None
+        is_patch_run = patch_block.enabled or wt == "patch"
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
@@ -411,6 +438,14 @@ class CreateRunMixin:
                     "one_at_a_time": campaign_block.enabled,
                 },
                 **({"campaign_effective": campaign_meta} if campaign_meta else {}),
+                **(
+                    {"patch_effective": patch_effective_metadata(patch_block)}
+                    if patch_block.enabled
+                    else {}
+                ),
+                **({"patch_context": patch_ctx_norm} if patch_ctx_norm else {}),
+                **({"work_type": wt} if wt else {}),
+                **({"work_type_source": wts} if wts else {}),
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],
@@ -432,6 +467,7 @@ class CreateRunMixin:
                     {"maker_approval": {"enabled": True}}
                     if requirements_meta is not None
                     and not (isinstance(campaign_meta, dict) and campaign_meta.get("autonomous"))
+                    and not is_patch_run
                     else {}
                 ),
                 **(

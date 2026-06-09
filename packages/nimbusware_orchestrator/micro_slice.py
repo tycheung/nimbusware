@@ -133,6 +133,10 @@ def micro_slice_count_for_run(rows: list[dict[str, Any]] | None = None) -> int:
                 continue
             meta = row.get("metadata")
             if isinstance(meta, dict):
+                wt = str(meta.get("work_type") or "").strip().lower()
+                patch_eff = meta.get("patch_effective")
+                if wt == "patch" or (isinstance(patch_eff, dict) and patch_eff.get("enabled")):
+                    return 1
                 op = operator_settings_from_run_metadata(meta)
                 raw = op.get("NIMBUSWARE_MICRO_SLICE_COUNT")
                 if raw:
