@@ -12,11 +12,15 @@ def test_tool_specs_include_required_tools() -> None:
     names = {t["name"] for t in TOOL_SPECS}
     assert names == {
         "nimbusware_apply_slice",
+        "nimbusware_classify_intent",
+        "nimbusware_interject",
         "nimbusware_maker_pending",
+        "nimbusware_patch",
         "nimbusware_prepare_slice",
         "nimbusware_resume_campaign",
         "nimbusware_revert_workspace",
         "nimbusware_run_status",
+        "nimbusware_run_tests",
         "nimbusware_run_theater",
         "nimbusware_skip_slice",
         "nimbusware_slice_diff",
@@ -105,6 +109,50 @@ def test_nimbusware_compact_run(mock_post: Any) -> None:
     out = call_tool("nimbusware_compact_run", {"run_id": "abc"})
     mock_post.assert_called_once_with("/runs/abc/compact", {})
     assert "compacted" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_classify_intent(mock_post: Any) -> None:
+    mock_post.return_value = {
+        "classification": {"work_type": "patch", "confidence": 0.9, "suggested_profile": "patch"},
+    }
+    out = call_tool("nimbusware_classify_intent", {"message": "fix bug"})
+    mock_post.assert_called_once()
+    assert "patch" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_interject(mock_post: Any) -> None:
+    mock_post.return_value = {"queue": {"count": 1}}
+    out = call_tool("nimbusware_interject", {"run_id": "abc", "message": "[steer] smaller diff"})
+    mock_post.assert_called_once_with(
+        "/runs/abc/interjection-queue",
+        {"message": "[steer] smaller diff", "priority": "next", "force_break": False},
+    )
+    assert "count" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_run_tests(mock_post: Any) -> None:
+    mock_post.return_value = {"tests_passed": True, "exit_code": 0}
+    out = call_tool("nimbusware_run_tests", {"run_id": "abc"})
+    mock_post.assert_called_once_with("/runs/abc/maker/run-tests", {})
+    assert "tests_passed" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_patch(mock_post: Any) -> None:
+    mock_post.side_effect = [
+        {"run_id": "run-patch-1"},
+        {"status": "started"},
+        {"status": "micro_slice_recorded", "slices_completed": 1},
+    ]
+    out = call_tool(
+        "nimbusware_patch",
+        {"project_id": "proj-1", "message": "fix login", "failing_test": "tests/test_x.py"},
+    )
+    assert mock_post.call_count == 3
+    assert "run-patch-1" in out["content"][0]["text"]
 
 
 def test_unknown_tool_raises() -> None:

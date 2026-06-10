@@ -218,6 +218,57 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "required": ["run_id", "artifact_id"],
         },
     },
+    {
+        "name": "nimbusware_classify_intent",
+        "description": "Classify operator intent via POST /v1/chat/classify.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string"},
+                "project_id": {"type": "string"},
+                "attachments": {"type": "array", "items": {"type": "object"}},
+            },
+            "required": ["message"],
+        },
+    },
+    {
+        "name": "nimbusware_patch",
+        "description": "Create a patch run and start the first slice (work_type_source=ide).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "project_id": {"type": "string"},
+                "message": {"type": "string"},
+                "target_paths": {"type": "array", "items": {"type": "string"}},
+                "failing_test": {"type": "string"},
+                "stack_trace": {"type": "string"},
+            },
+            "required": ["project_id", "message"],
+        },
+    },
+    {
+        "name": "nimbusware_interject",
+        "description": "Enqueue an operator interjection (supports [patch]/[steer]/[skip] prefixes).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "message": {"type": "string"},
+                "priority": {"type": "string", "enum": ["next", "last"]},
+                "force_break": {"type": "boolean"},
+            },
+            "required": ["run_id", "message"],
+        },
+    },
+    {
+        "name": "nimbusware_run_tests",
+        "description": "Run targeted slice tests for a run workspace.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"run_id": {"type": "string"}},
+            "required": ["run_id"],
+        },
+    },
 ]
 
 
@@ -227,6 +278,10 @@ def _text_result(payload: Any) -> dict[str, Any]:
 
 
 def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+    if name == "nimbusware_classify_intent":
+        return _call_classify_tool(arguments)
+    if name == "nimbusware_patch":
+        return _call_patch_tool(arguments)
     if name in ("nimbusware_list_context_artifacts", "nimbusware_create_context_artifact"):
         return _call_project_tool(name, arguments)
     if name in (
@@ -323,7 +378,69 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(
             post_json(f"/runs/{run_id}/context-artifacts/{aid}/insert", {}),
         )
+    if name == "nimbusware_interject":
+        message = str(arguments.get("message") or "").strip()
+        if not message:
+            raise ValueError("message is required")
+        priority = str(arguments.get("priority") or "next").strip().lower()
+        interject_body: dict[str, Any] = {
+            "message": message,
+            "priority": priority,
+            "force_break": bool(arguments.get("force_break", False)),
+        }
+        return _text_result(post_json(f"/runs/{run_id}/interjection-queue", interject_body))
+    if name == "nimbusware_run_tests":
+        return _text_result(post_json(f"/runs/{run_id}/maker/run-tests", {}))
     raise ValueError(f"unknown tool: {name}")
+
+
+def _call_classify_tool(arguments: dict[str, Any]) -> dict[str, Any]:
+    message = str(arguments.get("message") or "").strip()
+    if not message:
+        raise ValueError("message is required")
+    body: dict[str, Any] = {"message": message}
+    project_id = str(arguments.get("project_id") or "").strip()
+    if project_id:
+        body["project_id"] = project_id
+    attachments = arguments.get("attachments")
+    if isinstance(attachments, list) and attachments:
+        body["attachments"] = attachments
+    return _text_result(post_json("/chat/classify", body))
+
+
+def _call_patch_tool(arguments: dict[str, Any]) -> dict[str, Any]:
+    project_id = str(arguments.get("project_id") or "").strip()
+    message = str(arguments.get("message") or "").strip()
+    if not project_id:
+        raise ValueError("project_id is required")
+    if not message:
+        raise ValueError("message is required")
+    patch_ctx: dict[str, Any] = {}
+    paths = arguments.get("target_paths")
+    if isinstance(paths, list) and paths:
+        patch_ctx["target_paths"] = [str(p) for p in paths if str(p).strip()]
+    failing = str(arguments.get("failing_test") or "").strip()
+    if failing:
+        patch_ctx["failing_test"] = failing
+    trace = str(arguments.get("stack_trace") or "").strip()
+    if trace:
+        patch_ctx["stack_trace"] = trace
+    create_body: dict[str, Any] = {
+        "project_id": project_id,
+        "workflow_profile": "patch",
+        "work_type": "patch",
+        "work_type_source": "ide",
+        "requirements": {"business_prompt": message},
+    }
+    if patch_ctx:
+        create_body["patch_context"] = patch_ctx
+    created = post_json("/runs", create_body)
+    run_id = str(created.get("run_id") or "").strip()
+    if not run_id:
+        raise ValueError("create run response missing run_id")
+    post_json(f"/runs/{run_id}/lifecycle/start", {})
+    slice_result = post_json(f"/runs/{run_id}/lifecycle/slice?mode=auto", {})
+    return _text_result({"run_id": run_id, "create": created, "slice": slice_result})
 
 
 def _call_project_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
