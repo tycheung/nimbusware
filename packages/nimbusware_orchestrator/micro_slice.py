@@ -26,6 +26,7 @@ class DiffBudgetResult:
 
 def parse_slice_plan(raw: dict[str, Any]) -> SlicePlan:
     paths_raw = raw.get("target_paths") or raw.get("paths") or []
+    paths: tuple[str, ...]
     if isinstance(paths_raw, str):
         paths = (paths_raw.strip(),) if paths_raw.strip() else ()
     elif isinstance(paths_raw, list):
@@ -92,7 +93,8 @@ def micro_slice_timeline_summary(
     blocked: list[str] = []
     completed: list[str] = []
     for row in events:
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        meta_raw = row.get("metadata")
+        meta = meta_raw if isinstance(meta_raw, dict) else {}
         if meta.get("slice_plan"):
             sid = str(meta.get("slice_id", ""))
             if sid:

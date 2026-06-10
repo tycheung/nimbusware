@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -21,7 +22,7 @@ class InterjectionEnqueueBody(BaseModel):
 
 class InterjectionQueueResponse(BaseModel):
     run_id: str
-    queue: dict = Field(default_factory=dict)
+    queue: dict[str, Any] = Field(default_factory=dict)
 
 
 @router.get(

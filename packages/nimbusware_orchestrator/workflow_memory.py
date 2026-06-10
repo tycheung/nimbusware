@@ -50,7 +50,7 @@ def memory_effective_metadata(
     run_policy_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build ``run.created`` ``metadata.memory`` from workflow defaults + overrides."""
-    mem = {
+    mem: dict[str, Any] = {
         "retrieval_enabled": block.retrieval_enabled,
         "index_contribution": block.index_contribution,
         "retrieval_k": block.retrieval_k,
@@ -206,7 +206,7 @@ def _env_or_metadata_int(
             return max(0, min(max_val, int(env_raw)))
         except ValueError:
             pass
-    if raw is not None:
+    if isinstance(raw, (int, float, str)):
         try:
             return max(0, min(max_val, int(raw)))
         except (TypeError, ValueError):

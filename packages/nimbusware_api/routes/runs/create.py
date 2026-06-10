@@ -150,9 +150,9 @@ def create_run(
             custom_agent_id=body.custom_agent_id,
             run_policy_overrides=run_policy_overrides,
             project_id=project_uuid,
-            project_name=project.name if project_uuid else None,
-            project_workspace_path=project.workspace_path if project_uuid else None,
-            project_template=project.template if project_uuid else None,
+            project_name=project.name if project is not None else None,
+            project_workspace_path=project.workspace_path if project is not None else None,
+            project_template=project.template if project is not None else None,
             requirements=(
                 build_requirements_artifact(
                     business_prompt=body.requirements.business_prompt,

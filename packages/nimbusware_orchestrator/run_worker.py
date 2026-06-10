@@ -58,7 +58,10 @@ def run_worker_loop(
         idle_loops = 0
         step = str(task.step).strip().lower()
         if step == "verify":
-            orchestrator.process_verify_dispatch_task(task)
+            from typing import Any
+
+            host: Any = orchestrator
+            host.process_verify_dispatch_task(task)
         elif step == "campaign_tick":
             orchestrator.process_campaign_dispatch_task(task)
         else:

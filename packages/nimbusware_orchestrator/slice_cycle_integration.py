@@ -278,8 +278,8 @@ def handle_build_from_chat_interjection(
         requirements=requirements,
         autonomous=True,
     )
-    ws = Path(workspace_path) if workspace_path else None
-    orch.start_campaign(new_run_id, workspace=ws, autonomous=True)
+    attach_ws: Path | None = Path(workspace_path) if workspace_path else None
+    orch.start_campaign(new_run_id, workspace=attach_ws, autonomous=True)
     emit_build_from_chat_campaign(
         orch._store,
         rid,

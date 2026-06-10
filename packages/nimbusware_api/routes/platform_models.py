@@ -74,8 +74,10 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
                 "model_not_found", "model not in allowlist", details={"model_id": body.model_id}
             ),
         )
-    presets = row.get("presets") if isinstance(row.get("presets"), dict) else {}
-    chosen = presets.get(body.preset) if isinstance(presets, dict) else {}
+    presets_raw = row.get("presets")
+    presets = presets_raw if isinstance(presets_raw, dict) else {}
+    chosen_raw = presets.get(body.preset) if isinstance(presets, dict) else {}
+    chosen = chosen_raw if isinstance(chosen_raw, dict) else {}
     tag = str(chosen.get("ollama_tag") or body.model_id)
     routing_path = orch.repo_root / "configs" / "model-routing.yaml"
     content = _load_routing_yaml(routing_path)
@@ -107,8 +109,10 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
 @router.get("/platform/models/dependencies")
 def get_model_dependencies(orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     readiness = build_platform_readiness(repo_root=orch.repo_root, store=store)
-    checks = readiness.get("checks") if isinstance(readiness.get("checks"), dict) else {}
-    ollama = checks.get("ollama") if isinstance(checks.get("ollama"), dict) else {}
+    checks_raw = readiness.get("checks")
+    checks = checks_raw if isinstance(checks_raw, dict) else {}
+    ollama_raw = checks.get("ollama")
+    ollama = ollama_raw if isinstance(ollama_raw, dict) else {}
     return {
         "ollama_reachable": ollama.get("status") == "ok",
         "ollama_message": ollama.get("message"),

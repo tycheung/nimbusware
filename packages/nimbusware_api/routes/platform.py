@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -44,18 +45,18 @@ class HardwareRescanBody(BaseModel):
 
 
 @router.get("/platform/edition")
-def get_platform_edition() -> dict:
+def get_platform_edition() -> dict[str, Any]:
     body = edition_manifest()
     body["compose_profiles"] = enterprise_compose_profiles()
     return body
 
 
 @router.get("/platform/readiness")
-def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict:
+def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     return build_platform_readiness(repo_root=orch.repo_root, store=store)
 
 
-def _hardware_response(orch: OrchDep, *, remote_host: str | None) -> dict:
+def _hardware_response(orch: OrchDep, *, remote_host: str | None) -> dict[str, Any]:
     if remote_host and remote_host.strip():
         raw = probe_hardware(remote_host=remote_host.strip())
         profile = profile_from_probe(raw)
@@ -63,7 +64,7 @@ def _hardware_response(orch: OrchDep, *, remote_host: str | None) -> dict:
         profile = get_cached_profile()
     governor = governor_for_profile(profile)
     ranked = rank_models(orch.repo_root, profile, limit=20)
-    body: dict = {
+    body: dict[str, Any] = {
         "profile": profile.model_dump_public(),
         "resource_governor": governor.to_metadata(),
         "models_ranked": ranked[:20],
@@ -77,7 +78,7 @@ def _hardware_response(orch: OrchDep, *, remote_host: str | None) -> dict:
 def get_platform_hardware(
     orch: OrchDep,
     remote_host: str | None = Query(default=None, max_length=256),
-) -> dict:
+) -> dict[str, Any]:
     return _hardware_response(orch, remote_host=remote_host)
 
 
@@ -87,13 +88,13 @@ def post_platform_hardware_rescan(
     store: StoreDep,
     body: HardwareRescanBody | None = None,
     remote_host: str | None = Query(default=None, max_length=256),
-) -> dict:
+) -> dict[str, Any]:
     if remote_host and remote_host.strip():
         return _hardware_response(orch, remote_host=remote_host)
     profile = rescan_hardware()
     governor = governor_for_profile(profile)
     ranked = rank_models(orch.repo_root, profile, limit=20)
-    out: dict = {
+    out: dict[str, Any] = {
         "profile": profile.model_dump_public(),
         "resource_governor": governor.to_metadata(),
         "models_ranked": ranked[:20],
@@ -120,7 +121,7 @@ def post_platform_hardware_rescan(
 
 
 @router.get("/platform/hardware/fleet")
-def get_platform_hardware_fleet() -> dict:
+def get_platform_hardware_fleet() -> dict[str, Any]:
     if not is_enterprise():
         raise HTTPException(
             status_code=404,
@@ -133,18 +134,18 @@ def get_platform_hardware_fleet() -> dict:
 
 
 @router.get("/platform/onboarding")
-def get_platform_onboarding() -> dict:
+def get_platform_onboarding() -> dict[str, Any]:
     return {"onboarded": is_onboarded_server()}
 
 
 @router.post("/platform/onboarding")
-def post_platform_onboarding() -> dict:
+def post_platform_onboarding() -> dict[str, Any]:
     mark_onboarded_server()
     return {"onboarded": True}
 
 
 @router.get("/autopilot/presets/{level}")
-def get_autopilot_preset(level: int) -> dict:
+def get_autopilot_preset(level: int) -> dict[str, Any]:
     profile = resolve_autopilot_profile(level=level)
     return {
         "level": profile.level,
@@ -155,7 +156,7 @@ def get_autopilot_preset(level: int) -> dict:
 
 
 @router.get("/platform/autopilot/user-profiles")
-def get_user_autopilot_profiles(orch: OrchDep) -> dict:
+def get_user_autopilot_profiles(orch: OrchDep) -> dict[str, Any]:
     profiles = load_user_autopilot_profiles(orch.repo_root)
     return {
         "profiles": [p.to_dict() for p in profiles.values()],
@@ -167,7 +168,7 @@ def put_user_autopilot_profile(
     profile_id: str,
     body: UserAutopilotProfileBody,
     orch: OrchDep,
-) -> dict:
+) -> dict[str, Any]:
     pid = profile_id.strip()
     if not pid:
         raise HTTPException(

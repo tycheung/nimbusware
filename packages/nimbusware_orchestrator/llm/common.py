@@ -175,6 +175,24 @@ def _parse_severity(raw: str) -> Severity:
     return Severity(str(raw).strip().upper())
 
 
+def ollama_chat_json_via_plan_patch(
+    *,
+    base_url: str,
+    model: str,
+    messages: list[dict[str, str]],
+    timeout_seconds: float = 120.0,
+) -> dict[str, Any]:
+    """Delegate to ``llm_plan.ollama_chat_json`` so tests can patch one import target."""
+    import nimbusware_orchestrator.llm_plan as _patch
+
+    return _patch.ollama_chat_json(
+        base_url=base_url,
+        model=model,
+        messages=messages,
+        timeout_seconds=timeout_seconds,
+    )
+
+
 def _fixes_from_llm(raw: object) -> list[RequiredFixArtifact]:
     if not isinstance(raw, list) or not raw:
         return []

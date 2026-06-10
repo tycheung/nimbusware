@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from agent_core.context_budget import truncate_for_llm_history
 from agent_core.models.slice_handoff import SliceHandoffSummary
 from nimbusware_orchestrator.micro_slice import SlicePlan
@@ -71,7 +73,7 @@ def handoff_markdown_capped(summary: SliceHandoffSummary) -> str:
     )
 
 
-def latest_handoff_from_events(events: list[dict]) -> SliceHandoffSummary | None:
+def latest_handoff_from_events(events: list[dict[str, Any]]) -> SliceHandoffSummary | None:
     latest: SliceHandoffSummary | None = None
     for row in events:
         payload = row.get("payload") or {}

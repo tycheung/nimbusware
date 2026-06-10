@@ -250,16 +250,17 @@ def ensure_backlog(
 
 def emit_backlog_revised(
     store: Any,
-    run_id: UUID,
+    run_id: UUID | str,
     backlog: DeliveryBacklog,
     *,
     revision_reason: str,
 ) -> None:
+    resolved_run_id = run_id if isinstance(run_id, UUID) else UUID(str(run_id))
     store.append(
         DeliveryBacklogRevisedEvent(
             event_type=EventType.DELIVERY_BACKLOG_REVISED,
             event_id=uuid4(),
-            run_id=run_id,
+            run_id=resolved_run_id,
             occurred_at=datetime.now(timezone.utc),
             payload=DeliveryBacklogRevisedPayload(
                 campaign_id=backlog.campaign_id,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -58,7 +59,7 @@ def get_slice_diff(run_id: UUID, slice_index: int, store: StoreDep) -> SliceDiff
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": rid_s}),
         )
-    events: list[dict] = []
+    events: list[dict[str, Any]] = []
     for r in rows:
         d = serialized_event_from_row(r)
         ev = validate_event_dict(d)

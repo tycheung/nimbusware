@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Any
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -22,7 +23,7 @@ class CampaignActionBody(BaseModel):
 
 
 @router.post("/campaigns/{campaign_id}/pause")
-def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict:
+def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
         raise HTTPException(status_code=404, detail=problem("run_not_found", "campaign not found"))
@@ -49,7 +50,7 @@ def pause_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep)
 
 
 @router.post("/campaigns/{campaign_id}/resume")
-def resume_campaign(campaign_id: UUID, orch: OrchDep, store: StoreDep) -> dict:
+def resume_campaign(campaign_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
         raise HTTPException(status_code=404, detail=problem("run_not_found", "campaign not found"))
@@ -58,7 +59,7 @@ def resume_campaign(campaign_id: UUID, orch: OrchDep, store: StoreDep) -> dict:
 
 
 @router.post("/campaigns/{campaign_id}/cancel")
-def cancel_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict:
+def cancel_campaign(campaign_id: UUID, body: CampaignActionBody, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
         raise HTTPException(status_code=404, detail=problem("run_not_found", "campaign not found"))

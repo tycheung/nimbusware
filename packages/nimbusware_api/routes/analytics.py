@@ -51,6 +51,8 @@ def get_platform_pressure_history(
     store: StoreDep,
     limit: int = Query(default=20, ge=1, le=200),
 ) -> dict[str, Any]:
+    if not hasattr(store, "list_all_event_rows"):
+        return {"limit": limit, "count": 0, "entries": []}
     rows = store.list_all_event_rows()
     history = pressure_history_from_event_rows(rows, limit=limit)
     return {"limit": limit, "count": len(history), "entries": history}

@@ -79,6 +79,11 @@ def run_dev_env_regression(
         return result
 
     resolved_flow = flow_id or match_factory_flow_id(prompt, prompt_id=prompt_id)
+    if not resolved_flow:
+        result = DevEnvRegressionResult(passed=False, detail="flow_id_unresolved")
+        if emit_events:
+            emit_dev_env_regression(store, run_id, passed=False, detail=result.detail)
+        return result
     put_result = run_put_e2e_flow(base_url, resolved_flow, workspace=ws)
     passed = put_result.verdict == "PASS"
     baseline = load_regression_baseline(ws)

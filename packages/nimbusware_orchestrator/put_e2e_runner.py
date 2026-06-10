@@ -333,13 +333,15 @@ def run_put_e2e_flow(
             detail=pw_detail,
         )
 
-    capture_cfg = flow.get("capture") if isinstance(flow.get("capture"), dict) else {}
+    capture_raw = flow.get("capture")
+    capture_cfg = capture_raw if isinstance(capture_raw, dict) else {}
     console_on = bool(capture_cfg.get("console", False))
     network_on = bool(capture_cfg.get("network", False))
 
     exercised: set[str] = set()
     findings: list[PutE2EFinding] = []
-    steps = flow.get("steps") if isinstance(flow.get("steps"), list) else []
+    steps_raw = flow.get("steps")
+    steps: list[Any] = steps_raw if isinstance(steps_raw, list) else []
 
     def _failed_goto_path() -> str:
         for finding in reversed(findings):
@@ -427,7 +429,7 @@ def run_put_e2e_flow(
                 if not _run_http_step(
                     client, base_url, step, exercised=exercised, findings=findings
                 ):
-                    capture = {
+                    step_capture = {
                         "console": [f.to_dict() for f in stub_console_capture(enabled=console_on)],
                         "network": [
                             f.to_dict()
@@ -440,7 +442,7 @@ def run_put_e2e_flow(
                     return _fail_result(
                         detail=detail,
                         exercised_paths=exercised,
-                        capture=capture,
+                        capture=step_capture,
                     )
     except httpx.HTTPError as exc:
         return _fail_result(
@@ -451,7 +453,7 @@ def run_put_e2e_flow(
 
     findings.extend(stub_console_capture(enabled=console_on))
     findings.extend(stub_network_capture(enabled=network_on, exercised_paths=exercised))
-    capture = {
+    capture: dict[str, Any] = {
         "console": [f.to_dict() for f in findings if f.kind == "console"],
         "network": [f.to_dict() for f in findings if f.kind == "network"],
         "playwright_ready": pw_ready,

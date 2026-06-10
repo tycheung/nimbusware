@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -17,7 +18,7 @@ router = APIRouter()
     "/runs/{run_id}/learnings",
     responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
 )
-def get_run_learnings(run_id: UUID, store: StoreDep) -> dict:
+def get_run_learnings(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
         raise HTTPException(

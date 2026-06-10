@@ -112,9 +112,9 @@ def execute_slice_implement(
         )
         if edits:
             touched, errors = apply_slice_file_edits(workspace, plan, edits)
-            sections = [f"LLM applied {len(touched)} file(s)"]
+            log_parts = [f"LLM applied {len(touched)} file(s)"]
             if errors:
-                sections.append("errors: " + "; ".join(errors))
+                log_parts.append("errors: " + "; ".join(errors))
             files = [workspace / p for p in touched]
             if files:
                 fmt_code, fmt_out = _run_ruff_format(
@@ -122,11 +122,11 @@ def execute_slice_implement(
                     files,
                     timeout_seconds=timeout_seconds,
                 )
-                sections.append(f"ruff format exit {fmt_code}")
+                log_parts.append(f"ruff format exit {fmt_code}")
                 return SliceImplementResult(
                     mode="llm",
                     exit_code=fmt_code,
-                    log="\n".join(sections) + "\n" + fmt_out[:2000],
+                    log="\n".join(log_parts) + "\n" + fmt_out[:2000],
                     paths_touched=tuple(touched),
                 )
             return SliceImplementResult(

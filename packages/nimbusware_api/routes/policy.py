@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -29,7 +29,7 @@ class PolicyDiffResponse(BaseModel):
     run_b: str
     identical: bool
     changed_count: int
-    changed: list[dict]
+    changed: list[dict[str, Any]]
 
 
 @router.get(

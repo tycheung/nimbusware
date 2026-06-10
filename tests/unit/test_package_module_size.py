@@ -16,6 +16,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
                 "slice_cycle_integration.py",
                 "_pipeline/_helpers.py",
                 "_pipeline/create_run.py",
+                "_pipeline/protocol_hosts.py",
                 "put_e2e_runner.py",
             }
         ),

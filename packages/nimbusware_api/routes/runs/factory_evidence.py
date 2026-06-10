@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -21,11 +22,11 @@ router = APIRouter()
 class FactoryEvidenceResponse(BaseModel):
     run_id: str
     factory_complete: bool = False
-    factory_status: dict | None = None
-    put_e2e: dict | None = None
-    factory_stages: list[dict] = Field(default_factory=list)
-    put_artifacts: dict = Field(default_factory=dict)
-    evidence: dict = Field(default_factory=dict)
+    factory_status: dict[str, Any] | None = None
+    put_e2e: dict[str, Any] | None = None
+    factory_stages: list[dict[str, Any]] = Field(default_factory=list)
+    put_artifacts: dict[str, Any] = Field(default_factory=dict)
+    evidence: dict[str, Any] = Field(default_factory=dict)
 
 
 @router.get(

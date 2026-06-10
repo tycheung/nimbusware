@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -28,23 +29,23 @@ router = APIRouter()
 class DevEnvStatusResponse(BaseModel):
     run_id: str
     active: bool = False
-    session: dict | None = None
-    probe: dict = Field(default_factory=dict)
-    logs: dict = Field(default_factory=dict)
+    session: dict[str, Any] | None = None
+    probe: dict[str, Any] = Field(default_factory=dict)
+    logs: dict[str, Any] = Field(default_factory=dict)
 
 
 class DevEnvActionResponse(BaseModel):
     ok: bool
     run_id: str
-    session: dict | None = None
+    session: dict[str, Any] | None = None
     error: str | None = None
-    probe: dict = Field(default_factory=dict)
+    probe: dict[str, Any] = Field(default_factory=dict)
 
 
 class DevEnvRegressionResponse(BaseModel):
     passed: bool
     detail: str = ""
-    put_e2e: dict | None = None
+    put_e2e: dict[str, Any] | None = None
     flow_id: str | None = None
 
 
@@ -176,7 +177,7 @@ def post_dev_env_ui_regression(
     "/runs/{run_id}/dev-env/theater",
     responses={404: PROBLEM_RESPONSE_404},
 )
-def get_dev_env_theater(run_id: UUID, store: StoreDep) -> dict:
+def get_dev_env_theater(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
         raise HTTPException(

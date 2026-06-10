@@ -7,15 +7,14 @@ from uuid import UUID
 import httpx
 from pydantic import ValidationError
 
-from nimbusware_orchestrator.llm.common import LlmAgentEvaluatorPolicyResponse
+from nimbusware_orchestrator.llm.common import (
+    LlmAgentEvaluatorPolicyResponse,
+)
+from nimbusware_orchestrator.llm.common import (
+    ollama_chat_json_via_plan_patch as _ollama_chat_json,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
-
-
-def _ollama_chat_json(*args: object, **kwargs: object) -> object:
-    import nimbusware_orchestrator.llm_plan as _patch
-
-    return _patch.ollama_chat_json(*args, **kwargs)
 
 
 def execute_agent_evaluator_policy_llm(

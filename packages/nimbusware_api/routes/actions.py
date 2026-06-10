@@ -214,7 +214,13 @@ def execute_role(
         ) from None
     ws = Path(body.workspace_path).resolve() if body.workspace_path else None
     try:
-        return orch.execute_role_for_run(body.run_id, role_id, workspace=ws)
+        from typing import Any, cast
+
+        host: Any = orch
+        return cast(
+            dict[str, Any],
+            host.execute_role_for_run(body.run_id, role_id, workspace=ws),
+        )
     except ValueError as exc:
         raise HTTPException(
             status_code=422,

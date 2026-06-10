@@ -222,7 +222,7 @@ def bridge_artifact_to_memory_index(
         "source": "context_artifact",
     }
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    result = {"bridge_path": str(path), "artifact_id": artifact.artifact_id}
+    result: dict[str, Any] = {"bridge_path": str(path), "artifact_id": artifact.artifact_id}
     rebuild = maybe_rebuild_memory_faiss_from_bridges(artifact.project_id, repo_root=root)
     if rebuild is not None:
         result["faiss_rebuild"] = rebuild

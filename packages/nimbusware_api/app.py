@@ -8,12 +8,14 @@ load_dotenv()
 
 import logging
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.responses import Response
 
 from nimbusware_api.errors import problem
 from nimbusware_api.facade import build_v1_router
@@ -230,7 +232,10 @@ async def nimbusware_uncaught_exception_handler(
 
 
 @app.middleware("http")
-async def _request_id_middleware(request: Request, call_next):
+async def _request_id_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     import uuid
 
     incoming = request.headers.get("X-Request-Id", "").strip()
@@ -242,7 +247,10 @@ async def _request_id_middleware(request: Request, call_next):
 
 
 @app.middleware("http")
-async def _request_logging_middleware(request: Request, call_next):
+async def _request_logging_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     import time
 
     started = time.perf_counter()
@@ -261,7 +269,10 @@ async def _request_logging_middleware(request: Request, call_next):
 
 
 @app.middleware("http")
-async def _enterprise_iam(request: Request, call_next):
+async def _enterprise_iam(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     return await enterprise_iam_middleware(request, call_next)
 
 
@@ -274,7 +285,7 @@ mount_maker_web(app)
 mount_admin_web(app)
 
 
-def _build_openapi_schema() -> dict:
+def _build_openapi_schema() -> dict[str, Any]:
     from fastapi.openapi.utils import get_openapi
 
     from nimbusware_api.openapi_access import enrich_openapi_access_tags
@@ -291,11 +302,11 @@ def _build_openapi_schema() -> dict:
     return schema
 
 
-def custom_openapi() -> dict:
+def custom_openapi() -> dict[str, Any]:
     if app.openapi_schema:
         return app.openapi_schema
     app.openapi_schema = _build_openapi_schema()
     return app.openapi_schema
 
 
-app.openapi = custom_openapi
+app.openapi = custom_openapi  # type: ignore[method-assign]

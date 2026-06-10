@@ -25,6 +25,9 @@ from nimbusware_orchestrator.llm.common import (
     _parse_severity,
     _parse_verdict,
 )
+from nimbusware_orchestrator.llm.common import (
+    ollama_chat_json_via_plan_patch as _ollama_chat_json,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_research.planner_context import planner_research_context_from_events
 from nimbusware_store.protocol import EventStore
@@ -45,12 +48,6 @@ def _plan_evidence_refs(store: EventStore, run_id: UUID, *, prefix: str) -> list
     if planner_research_context_from_events(rows).strip():
         refs.append("research://briefs-merged")
     return refs
-
-
-def _ollama_chat_json(*args: object, **kwargs: object) -> object:
-    import nimbusware_orchestrator.llm_plan as _patch
-
-    return _patch.ollama_chat_json(*args, **kwargs)
 
 
 def emit_stub_plan_stage(

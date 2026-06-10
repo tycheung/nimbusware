@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -271,7 +271,7 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_caption(
 
 
 def integration_adapter_writer_from_events(
-    rows: list[Mapping[str, Any]],
+    rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any] | None:
     """Latest IAW metadata from ``stage.started`` rows."""
     from nimbusware_orchestrator.integration_adapter_writer_stage import (

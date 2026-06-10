@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Header, HTTPException, Query, Response
 
 from nimbusware_api.admin import AdminDep
@@ -61,7 +63,7 @@ def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
     responses={200: PERSONAS_RESPONSE_200, 401: PROBLEM_RESPONSE_401, 500: PROBLEM_RESPONSE_500},
     summary="Persona scope_in overlap report",
 )
-def get_persona_overlap_report(orch: OrchDep, _admin: AdminDep) -> dict:
+def get_persona_overlap_report(orch: OrchDep, _admin: AdminDep) -> dict[str, Any]:
     shelf = load_shelf(orch)
     rows = persona_scope_overlap_report(shelf)
     warning = None

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -15,7 +16,7 @@ router = APIRouter()
 
 
 @router.get("/campaigns/{campaign_id}/progress")
-def get_campaign_progress(campaign_id: UUID, store: StoreDep) -> dict:
+def get_campaign_progress(campaign_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
         raise HTTPException(status_code=404, detail=problem("run_not_found", "campaign not found"))

@@ -26,14 +26,11 @@ from nimbusware_orchestrator.llm.common import (
     _parse_severity,
     _parse_verdict,
 )
+from nimbusware_orchestrator.llm.common import (
+    ollama_chat_json_via_plan_patch as _ollama_chat_json,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
-
-
-def _ollama_chat_json(*args: object, **kwargs: object) -> object:
-    import nimbusware_orchestrator.llm_plan as _patch
-
-    return _patch.ollama_chat_json(*args, **kwargs)
 
 
 def emit_stub_planner_critique_panel(

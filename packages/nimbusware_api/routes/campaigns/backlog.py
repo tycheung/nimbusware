@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -18,7 +19,7 @@ router = APIRouter()
     "/campaigns/{campaign_id}/backlog",
     responses={404: PROBLEM_RESPONSE_404},
 )
-def get_campaign_backlog(campaign_id: UUID, store: StoreDep) -> dict:
+def get_campaign_backlog(campaign_id: UUID, store: StoreDep) -> dict[str, Any]:
     rows = store.list_run_events(str(campaign_id))
     if not rows:
         raise HTTPException(

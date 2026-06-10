@@ -95,7 +95,9 @@ def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, 
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
-    dispatch = orch.dispatch_or_run_verify(run_id, workspace=repo)
+
+    host: Any = orch
+    dispatch = host.dispatch_or_run_verify(run_id, workspace=repo)
     return {"status": "verify_recorded", "dispatch": dispatch}
 
 

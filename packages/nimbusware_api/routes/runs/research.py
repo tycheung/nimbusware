@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Literal, cast
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -87,6 +87,7 @@ def post_research_approve(
     kind = brief.get("brief_kind")
     if kind not in ("domain", "code"):
         kind = "domain"
+    brief_kind = cast(Literal["domain", "code"], kind)
     store.append(
         ResearchBriefApprovedEvent(
             event_type=EventType.RESEARCH_BRIEF_APPROVED,
@@ -95,7 +96,7 @@ def post_research_approve(
             occurred_at=datetime.now(timezone.utc),
             payload=ResearchBriefReviewPayload(
                 artifact_id=brief_id,
-                brief_kind=kind,
+                brief_kind=brief_kind,
                 notes=body.notes,
             ),
         ),
@@ -135,6 +136,7 @@ def post_research_reject(
     kind = brief.get("brief_kind")
     if kind not in ("domain", "code"):
         kind = "domain"
+    brief_kind = cast(Literal["domain", "code"], kind)
     store.append(
         ResearchBriefRejectedEvent(
             event_type=EventType.RESEARCH_BRIEF_REJECTED,
@@ -143,7 +145,7 @@ def post_research_reject(
             occurred_at=datetime.now(timezone.utc),
             payload=ResearchBriefReviewPayload(
                 artifact_id=brief_id,
-                brief_kind=kind,
+                brief_kind=brief_kind,
                 notes=body.notes,
             ),
         ),

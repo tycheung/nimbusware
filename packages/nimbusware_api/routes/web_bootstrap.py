@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import APIRouter, Request
 
 from nimbusware_env.edition import edition, is_enterprise
@@ -18,7 +20,7 @@ def _api_base(request: Request) -> str:
     return str(request.base_url).rstrip("/") + "/v1"
 
 
-def maker_bootstrap_payload(request: Request) -> dict:
+def maker_bootstrap_payload(request: Request) -> dict[str, Any]:
     return {
         "api_base": _api_base(request),
         "edition": edition(),
@@ -39,7 +41,7 @@ def maker_bootstrap_payload(request: Request) -> dict:
     }
 
 
-def admin_bootstrap_payload(request: Request) -> dict:
+def admin_bootstrap_payload(request: Request) -> dict[str, Any]:
     body = maker_bootstrap_payload(request)
     body["admin_token_required"] = True
     features = body.setdefault("features", {})
@@ -50,10 +52,10 @@ def admin_bootstrap_payload(request: Request) -> dict:
 
 
 @router.get("/maker/app/bootstrap.json")
-def get_maker_app_bootstrap(request: Request) -> dict:
+def get_maker_app_bootstrap(request: Request) -> dict[str, Any]:
     return maker_bootstrap_payload(request)
 
 
 @router.get("/admin/app/bootstrap.json")
-def get_admin_app_bootstrap(request: Request) -> dict:
+def get_admin_app_bootstrap(request: Request) -> dict[str, Any]:
     return admin_bootstrap_payload(request)

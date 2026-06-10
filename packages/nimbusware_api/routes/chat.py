@@ -30,6 +30,7 @@ from nimbusware_api.routes.chat_common import (
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
+from nimbusware_maker.chat_models import ChatSessionRecord
 from nimbusware_maker.chat_service import (
     classification_dict,
     requirements_from_path,
@@ -50,7 +51,7 @@ def _platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
     return hints
 
 
-def _session_or_404(chat_store: ChatStoreDep, session_id: UUID):
+def _session_or_404(chat_store: ChatStoreDep, session_id: UUID) -> ChatSessionRecord:
     session = chat_store.get_session(session_id)
     if session is None:
         raise HTTPException(
@@ -122,9 +123,10 @@ def list_chat_sessions(
 )
 def get_chat_session(
     session_id: UUID,
+    *,
     chat_store: ChatStoreDep,
+    _user: UserDep,
     include_turns: bool = Query(default=False),
-    _user: UserDep = ...,
 ) -> ChatSessionResponse:
     session = _session_or_404(chat_store, session_id)
     return ChatSessionResponse(**session_response(chat_store, session, include_turns=include_turns))

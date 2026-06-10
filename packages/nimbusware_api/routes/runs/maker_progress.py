@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -26,12 +27,12 @@ class MakerProgressResponse(BaseModel):
     slices_completed: int
     current_headline: str
     sentences: list[str] = Field(default_factory=list)
-    slices: list[dict] = Field(default_factory=list)
-    requirements: dict | None = None
-    resource_pressure: dict | None = None
-    context_budget: dict | None = None
-    campaign_progress: dict | None = None
-    latest_handoff: dict | None = None
+    slices: list[dict[str, Any]] = Field(default_factory=list)
+    requirements: dict[str, Any] | None = None
+    resource_pressure: dict[str, Any] | None = None
+    context_budget: dict[str, Any] | None = None
+    campaign_progress: dict[str, Any] | None = None
+    latest_handoff: dict[str, Any] | None = None
     simple_mode: bool = True
 
 

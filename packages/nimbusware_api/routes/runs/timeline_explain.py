@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
@@ -15,14 +16,14 @@ from nimbusware_store.protocol import serialized_event_from_row
 router: _APIRouter = APIRouter()
 
 
-def _timeline_body_for_run(store: StoreDep, run_id: UUID) -> dict:
+def _timeline_body_for_run(store: StoreDep, run_id: UUID) -> dict[str, Any]:
     rows = store.list_run_events(str(run_id))
     if not rows:
         raise HTTPException(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    events: list[dict] = []
+    events: list[dict[str, Any]] = []
     for r in rows:
         d = serialized_event_from_row(r)
         ev = validate_event_dict(d)
@@ -32,7 +33,7 @@ def _timeline_body_for_run(store: StoreDep, run_id: UUID) -> dict:
     return {"run_id": str(run_id), "events": events}
 
 
-def _markdown_for_section(section: str, timeline_body: dict) -> str:
+def _markdown_for_section(section: str, timeline_body: dict[str, Any]) -> str:
     key = section.strip().lower().replace("-", "_")
     if key == "integrator_gate":
         ig = integrator_gate_from_timeline(timeline_body)
@@ -55,7 +56,7 @@ def get_timeline_section_explain(
     run_id: UUID,
     section: str,
     store: StoreDep,
-) -> dict:
+) -> dict[str, Any]:
     timeline_body = _timeline_body_for_run(store, run_id)
     return {
         "run_id": str(run_id),
