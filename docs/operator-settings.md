@@ -36,7 +36,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ### Context budget (`*_MAX_CHARS`)
 
-Slice packet, repo map, symbol sketch, LLM history, read, shell output, and handoff limits resolve through `_context_max_chars` in `env_flags.py` (single `resolve_int` path). Prefer `NIMBUSWARE_SLICE_BUDGET_PRESET` when tuning multiple limits together.
+Slice packet, repo map, symbol sketch, LLM history, read, shell output, and handoff limits resolve through `_context_max_chars` in `env_flags.py` (single `resolve_int` path). Prefer `NIMBUSWARE_SLICE_BUDGET_PRESET` when tuning multiple limits together. **38** universal-critique env keys override workflow YAML only when explicitly set (see `effective_universal_critique` table map).
 
 ### Redundant / alias keys (prefer one)
 
