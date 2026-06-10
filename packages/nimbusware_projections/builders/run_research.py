@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 
 
 def _payload(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("payload")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("payload"))
 
 
 def run_research_briefs_from_events(rows: list[dict[str, Any]]) -> dict[str, Any]:

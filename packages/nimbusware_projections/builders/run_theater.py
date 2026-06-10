@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 
 MessageKind = Literal[
@@ -34,8 +35,7 @@ _SLICE_STAGE_NAMES = frozenset(
 
 
 def _payload(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("payload")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("payload"))
 
 
 def _stage_name(pl: dict[str, Any]) -> str:
@@ -44,8 +44,7 @@ def _stage_name(pl: dict[str, Any]) -> str:
 
 
 def _metadata(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("metadata")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("metadata"))
 
 
 def _metadata_theater_lines(row: dict[str, Any], base: dict[str, Any]) -> list[dict[str, Any]]:

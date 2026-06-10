@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
+
 
 def _metadata(row: dict[str, Any]) -> dict[str, Any]:
     meta = row.get("metadata")
-    return dict(meta) if isinstance(meta, dict) else {}
+    return mapping_or_empty(meta)
 
 
 def _latest_put_e2e(events: list[dict[str, Any]]) -> dict[str, Any] | None:

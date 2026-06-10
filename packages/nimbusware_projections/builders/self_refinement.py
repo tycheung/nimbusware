@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.builders.universal_critique import universal_critique_timeline_entries
 from nimbusware_projections.fields.self_refinement import SELF_REFINEMENT_SUMMARY_KEYS
@@ -21,7 +22,7 @@ def self_refinement_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
         if ev.get("event_type") != want:
             continue
         payload = ev.get("payload")
-        pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+        pl = mapping_or_empty(payload)
         sn = pl.get("stage_name")
         if sn != _SELF_REFINEMENT_POLICY_STAGE:
             continue
@@ -109,7 +110,7 @@ def self_refinement_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
             continue
         loop_signal_count += 1
         payload = ev.get("payload")
-        signal_pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+        signal_pl = mapping_or_empty(payload)
         if signal_pl.get("signal") == "phase_d_iteration":
             ungated_iteration_count += 1
         phase_d_signal = {
@@ -168,7 +169,7 @@ def self_refinement_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
 
 def _self_refinement_marker_row_from_event(ev: dict[str, Any]) -> dict[str, Any] | None:
     payload = ev.get("payload")
-    pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+    pl = mapping_or_empty(payload)
     if pl.get("stage_name") != _SELF_REFINEMENT_POLICY_STAGE:
         return None
     version: Any = None

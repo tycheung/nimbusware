@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_ROW_KEYS
 
@@ -9,9 +10,8 @@ from nimbusware_projections.fields.integrator_gate import INTEGRATOR_GATE_ROW_KE
 def integrator_gate_row_from_event(ev: dict[str, Any]) -> dict[str, Any]:
     """Shape one timeline row from a ``gate.decision.emitted`` event (caller filters type)."""
     meta = ev.get("metadata")
-    meta_d = meta if isinstance(meta, dict) else {}
-    payload = ev.get("payload")
-    pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+    meta_d = mapping_or_empty(meta)
+    pl = mapping_or_empty(ev.get("payload"))
     out = {
         "event_id": ev.get("event_id"),
         "occurred_at": ev.get("occurred_at"),

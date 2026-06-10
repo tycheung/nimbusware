@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.fields.security_scan import SECURITY_SCAN_ROW_KEYS
 
@@ -17,9 +18,8 @@ def security_scan_row_from_event(ev: dict[str, Any]) -> dict[str, Any] | None:
     meta = ev.get("metadata")
     if not _finding_has_security_scan_metadata(meta):
         return None
-    m: dict[str, Any] = meta if isinstance(meta, dict) else {}
-    payload = ev.get("payload")
-    pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+    m = mapping_or_empty(meta)
+    pl = mapping_or_empty(ev.get("payload"))
     return {
         "event_id": ev.get("event_id"),
         "occurred_at": ev.get("occurred_at"),

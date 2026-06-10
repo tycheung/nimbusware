@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
+
 _PRESSURE_MESSAGES = {
     "warn": "Memory use is near the governor cap — some parallel work may slow down.",
     "throttle": "Governor is throttling parallel writers due to memory pressure.",
@@ -10,7 +12,7 @@ _PRESSURE_MESSAGES = {
 
 
 def pressure_headline(level: str, payload: dict[str, Any] | None = None) -> str:
-    pl = payload if isinstance(payload, dict) else {}
+    pl = mapping_or_empty(payload)
     base = _PRESSURE_MESSAGES.get(level, f"Resource pressure: {level}")
     reason = pl.get("pressure_reason")
     if isinstance(reason, str) and reason.strip():

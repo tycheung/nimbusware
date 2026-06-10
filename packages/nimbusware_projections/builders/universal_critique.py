@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from agent_core.timeline_metadata import critique_coverage_from_run_created_metadata
 from nimbusware_orchestrator.critique_routing import CRITIQUE_STAGE_TO_PRODUCER
@@ -20,12 +21,12 @@ _CRITIQUE_STAGE_ORDER: tuple[str, ...] = (
 
 def _critique_row_from_gate_event(ev: dict[str, Any]) -> dict[str, Any] | None:
     payload = ev.get("payload")
-    pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+    pl = mapping_or_empty(payload)
     sn = pl.get("stage_name")
     if not isinstance(sn, str) or not sn.endswith(".critique"):
         return None
     meta = ev.get("metadata")
-    meta_d = meta if isinstance(meta, dict) else {}
+    meta_d = mapping_or_empty(meta)
     if meta_d.get("integrator_gate") is True:
         return None
     row = {

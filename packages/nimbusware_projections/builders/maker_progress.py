@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_maker.intent import (
     plan_summary_from_requirements,
@@ -53,7 +54,7 @@ def _stage_name(row: dict[str, Any]) -> str:
 
 def _metadata(row: dict[str, Any]) -> dict[str, Any]:
     meta = row.get("metadata")
-    return dict(meta) if isinstance(meta, dict) else {}
+    return mapping_or_empty(meta)
 
 
 def pytest_bullets(test_output: str) -> list[str]:

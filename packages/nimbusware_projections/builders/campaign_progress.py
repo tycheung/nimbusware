@@ -11,8 +11,7 @@ from nimbusware_projections.builders.backlog_tree import backlog_tree_from_event
 
 
 def _payload(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("payload")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("payload"))
 
 
 def campaign_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any] | None:

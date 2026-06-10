@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Literal
 
 from agent_core.context_budget import estimate_tokens
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from agent_core.models.slice_packet import SliceContextPacket
 
@@ -18,13 +19,11 @@ _TIER_WINDOW_DEFAULTS: dict[str, int] = {
 
 
 def _payload(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("payload")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("payload"))
 
 
 def _metadata(row: dict[str, Any]) -> dict[str, Any]:
-    raw = row.get("metadata")
-    return dict(raw) if isinstance(raw, dict) else {}
+    return mapping_or_empty(row.get("metadata"))
 
 
 def window_tokens_from_events(events: list[dict[str, Any]]) -> int:

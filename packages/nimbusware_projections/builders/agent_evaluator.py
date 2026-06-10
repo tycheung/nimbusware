@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_extensions.phase2 import agent_evaluator_score_band
 from nimbusware_projections.fields.agent_evaluator import AGENT_EVALUATOR_SUMMARY_KEYS
@@ -86,7 +87,7 @@ def agent_evaluator_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
         if ev.get("event_type") != want:
             continue
         payload = ev.get("payload")
-        pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+        pl = mapping_or_empty(payload)
         sn = pl.get("stage_name")
         if not isinstance(sn, str) or not sn.startswith(_AGENT_EVAL_STAGE_PREFIX):
             continue

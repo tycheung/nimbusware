@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_orchestrator.critic_matrix_live import (
     build_live_critic_matrix_rows,
@@ -78,7 +79,7 @@ def parallel_writer_groups_timeline_summary(
             continue
         sn = sn_raw.strip()
         stage_meta_raw = ev.get("metadata")
-        stage_meta: dict[str, Any] = stage_meta_raw if isinstance(stage_meta_raw, dict) else {}
+        stage_meta = mapping_or_empty(stage_meta_raw)
         if et == EventType.STAGE_STARTED.value and sn in (
             "implementation",
             "test_writer",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.fields.scraper_fetch import SCRAPER_FETCH_ROW_KEYS
 
@@ -38,14 +39,12 @@ def scraper_fetch_timeline_summary(events: list[dict[str, Any]]) -> dict[str, An
         if et not in (passed_want, failed_want):
             continue
         payload = ev.get("payload")
-        pl: dict[str, Any] = payload if isinstance(payload, dict) else {}
+        pl = mapping_or_empty(payload)
         sn = pl.get("stage_name")
         if sn != _SCRAPER_FETCH_STAGE:
             continue
-        meta = ev.get("metadata")
-        meta_d = meta if isinstance(meta, dict) else {}
-        sf = meta_d.get("scraper_fetch")
-        sf_d: dict[str, Any] = sf if isinstance(sf, dict) else {}
+        meta_d = mapping_or_empty(ev.get("metadata"))
+        sf_d = mapping_or_empty(meta_d.get("scraper_fetch"))
         fetches = sf_d.get("fetches")
         fetch_list = fetches if isinstance(fetches, list) else []
         fetch_count = 0
