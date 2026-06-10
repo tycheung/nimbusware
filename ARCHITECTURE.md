@@ -133,6 +133,6 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%.
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%. Mypy debt is tracked in local `plan_gap.md` (**S9**); Jun 2026 burn-down reduced CI errors from ~362 → ~167 (OpenAPI `__all__`, run-detail loop shadowing, critique re-exports).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).
