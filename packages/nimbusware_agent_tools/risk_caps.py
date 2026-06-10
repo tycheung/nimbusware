@@ -1,8 +1,4 @@
-"""Per-run autonomous agent tool limits (OpenHands-style guardrails).
-
-``max_write_bytes`` counts full-file write payloads and net byte deltas for
-``edit`` steps (``abs(len(new_text) - len(old_text))``), not entire file size.
-"""
+"""Per-run agent tool limits (write/edit byte caps)."""
 
 from __future__ import annotations
 

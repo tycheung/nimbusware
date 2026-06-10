@@ -23,7 +23,7 @@ def test_catalog_has_internal_and_install_scopes() -> None:
     scopes = {d.scope for d in CATALOG.values()}
     assert SettingScope.INTERNAL in scopes
     assert SettingScope.INSTALL in scopes
-    assert len(CATALOG) >= 230
+    assert len(CATALOG) >= 239
 
 
 def test_env_over_yaml_resolved_honors_explicit_env(

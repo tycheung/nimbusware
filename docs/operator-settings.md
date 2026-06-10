@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**238** keys; Jun 2026 orphan-key closure + fleet/scraper/memory groups)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**239** keys; Jun 2026 orphan-key closure + fleet/scraper/memory groups)
 
 ### Redundant / alias keys (prefer one)
 
@@ -75,5 +75,7 @@ Add new tunables to the catalog first, then read via `env_flags` / `settings_res
 | `NIMBUSWARE_DEFAULT_MODEL` | (empty) | Fallback Ollama model when stage model unset |
 
 **Fleet / scraper (system):** `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH` (100), `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT` (20), `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE` (0).
+
+**Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC; legacy `AUDIT_EXPORT_SIGNING_KEY` still read).
 
 Helpers: `agent_core.context_budget`, `nimbusware_orchestrator.prompt_tiers`, `nimbusware_orchestrator.context_compaction`.

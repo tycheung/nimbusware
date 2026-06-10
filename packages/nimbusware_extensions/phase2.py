@@ -1,8 +1,4 @@
-"""Nimbusware extension building blocks (personas, bundles, escalation).
-
-Concrete YAML-backed types live in sibling modules; integrator/evaluator/scanner
-verticals remain thin until wired to events.
-"""
+"""Extension building blocks: personas, bundles, escalation."""
 
 from __future__ import annotations
 
