@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType, StagePassedEvent, StageStartedEvent
 from agent_core.models.events_payloads import StagePassedPayload, StageStartedPayload
 from nimbusware_orchestrator.autopilot_profiles import (
@@ -844,8 +845,7 @@ def run_research_transplant_track(
             if isinstance(block, dict):
                 meta = block
             break
-    stitch_raw = meta.get("stitch")
-    stitch_meta: dict[str, Any] = stitch_raw if isinstance(stitch_raw, dict) else {}
+    stitch_meta = mapping_or_empty(meta.get("stitch"))
     if manifest is not None:
         return emit_stitch_stages_for_manifest(
             store,

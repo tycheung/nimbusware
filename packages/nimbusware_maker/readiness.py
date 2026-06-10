@@ -9,6 +9,7 @@ from typing import Any
 import httpx
 import yaml
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_env.edition import edition_manifest
 from nimbusware_env.env_flags import nimbusware_skip_preflight_enabled
 from nimbusware_store.memory import InMemoryEventStore
@@ -69,13 +70,16 @@ def _check_database(store: Any) -> dict[str, Any]:
     }
 
 
+def _ollama_routing_sections(
+    repo_root: Path,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    routing = _load_model_routing(repo_root)
+    return mapping_or_empty(routing.get("runtime")), mapping_or_empty(routing.get("models"))
+
+
 def _check_ollama(repo_root: Path) -> dict[str, Any]:
+    runtime, models = _ollama_routing_sections(repo_root)
     if nimbusware_skip_preflight_enabled():
-        routing = _load_model_routing(repo_root)
-        runtime_raw = routing.get("runtime")
-        runtime = runtime_raw if isinstance(runtime_raw, dict) else {}
-        models_raw = routing.get("models")
-        models = models_raw if isinstance(models_raw, dict) else {}
         primary = _primary_model_id(models) or "unknown"
         return {
             "status": "degraded",
@@ -84,12 +88,6 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
             "primary_model": primary,
             "base_url": str(runtime.get("base_url") or "http://localhost:11434"),
         }
-
-    routing = _load_model_routing(repo_root)
-    runtime_raw = routing.get("runtime")
-    runtime = runtime_raw if isinstance(runtime_raw, dict) else {}
-    models_raw = routing.get("models")
-    models = models_raw if isinstance(models_raw, dict) else {}
     base_url = str(runtime.get("base_url") or "http://localhost:11434")
     health_path = str(runtime.get("health_endpoint") or "/api/tags")
     primary = _primary_model_id(models)

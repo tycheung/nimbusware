@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from agent_core.read.campaign import campaign_effective_from_rows
 from nimbusware_projections.builders.backlog_tree import backlog_tree_from_events
@@ -42,8 +43,7 @@ def campaign_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any
         raw_summary = tree.get("summary")
         if isinstance(raw_summary, dict):
             summary = raw_summary
-    policy_raw = ce.get("policy")
-    policy: dict[str, Any] = policy_raw if isinstance(policy_raw, dict) else {}
+    policy = mapping_or_empty(ce.get("policy"))
     completed = int(summary.get("slices_completed", 0))
     refactor_every = int(policy.get("refactor_every_n_slices", 5) or 5)
     arch_every = int(policy.get("architecture_every_n_slices", 10) or 10)

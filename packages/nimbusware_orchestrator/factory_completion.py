@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 import yaml
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models.backlog import (
     BacklogSlice,
     DeliveryBacklog,
@@ -43,7 +44,7 @@ def load_factory_tier_policy(repo_root: Path | None = None) -> dict[str, Any]:
 
 def tier_config(tier: FactoryTier, repo_root: Path | None = None) -> dict[str, Any]:
     doc = load_factory_tier_policy(repo_root)
-    tiers = doc.get("factory_tiers") if isinstance(doc.get("factory_tiers"), dict) else {}
+    tiers = mapping_or_empty(doc.get("factory_tiers"))
     block = tiers.get(tier) if isinstance(tiers, dict) else None
     return dict(block) if isinstance(block, dict) else {}
 

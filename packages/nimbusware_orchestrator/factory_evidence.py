@@ -74,7 +74,8 @@ def build_factory_evidence_bundle(
     put_e2e = _latest_put_e2e(events)
     stages = _factory_stages(events)
     complete = any(s.get("stage_name") == FACTORY_COMPLETE_STAGE for s in stages)
-    capture = put_e2e.get("capture") if isinstance(put_e2e, dict) else None
+    put_e2e_map = mapping_or_empty(put_e2e)
+    capture = mapping_or_empty(put_e2e_map.get("capture"))
     ism_diff = None
     for stage in reversed(stages):
         meta = mapping_or_empty(stage.get("metadata"))
@@ -90,9 +91,9 @@ def build_factory_evidence_bundle(
         "factory_stages": stages,
         "put_artifacts": _read_put_artifacts(workspace),
         "evidence": {
-            "capture": capture if isinstance(capture, dict) else {},
-            "exercised_paths": put_e2e.get("exercised_paths") if isinstance(put_e2e, dict) else [],
-            "findings": put_e2e.get("findings") if isinstance(put_e2e, dict) else [],
+            "capture": capture,
+            "exercised_paths": put_e2e_map.get("exercised_paths") or [],
+            "findings": put_e2e_map.get("findings") or [],
         },
     }
 

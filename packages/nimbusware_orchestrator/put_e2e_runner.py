@@ -12,6 +12,7 @@ from typing import Any, Literal
 import httpx
 import yaml
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_env import find_repo_root
 
 PutE2EVerdict = Literal["PASS", "FAIL", "SKIP"]
@@ -333,8 +334,7 @@ def run_put_e2e_flow(
             detail=pw_detail,
         )
 
-    capture_raw = flow.get("capture")
-    capture_cfg = capture_raw if isinstance(capture_raw, dict) else {}
+    capture_cfg = mapping_or_empty(flow.get("capture"))
     console_on = bool(capture_cfg.get("console", False))
     network_on = bool(capture_cfg.get("network", False))
 

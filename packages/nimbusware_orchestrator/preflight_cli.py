@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_orchestrator.pipeline import default_paths
 from nimbusware_orchestrator.preflight import PreflightError, run_model_preflight
@@ -79,7 +80,7 @@ def _extract_routing(cfg: dict[str, Any]) -> dict[str, Any]:
     ]
     base_url = str(runtime.get("base_url", "http://localhost:11434"))
     health = str(runtime.get("health_endpoint", "/api/tags"))
-    preflight_cfg = cfg.get("preflight") if isinstance(cfg.get("preflight"), dict) else {}
+    preflight_cfg = mapping_or_empty(cfg.get("preflight"))
     request_timeout = float(runtime.get("request_timeout_seconds", 10))
     return {
         "base_url": base_url,

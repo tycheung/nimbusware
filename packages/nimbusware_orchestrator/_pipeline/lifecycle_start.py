@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     EventType,
@@ -35,7 +36,7 @@ class LifecycleStartMixin:
 
         base_url = str(runtime.get("base_url", "http://localhost:11434"))
         health = str(runtime.get("health_endpoint", "/api/tags"))
-        preflight_cfg = base.get("preflight") if isinstance(base.get("preflight"), dict) else {}
+        preflight_cfg = mapping_or_empty(base.get("preflight"))
 
         self._store.append(
             ModelPreflightStartedEvent(
