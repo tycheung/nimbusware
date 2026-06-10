@@ -51,3 +51,10 @@ def refactor_stage_effective(block: RefactorWorkflowBlock) -> bool:
     if env_raw in ("1", "true", "yes"):
         return True
     return block.enabled
+
+
+__all__ = (
+    "RefactorWorkflowBlock",
+    "parse_refactor_workflow_block",
+    "refactor_stage_effective",
+)

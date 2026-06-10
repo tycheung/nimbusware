@@ -116,7 +116,7 @@ def project_metadata(project_store: ProjectStoreDep, project_uuid: UUID) -> dict
             detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
         )
     assert_project_accessible(record)
-    data = record.to_dict()  # type: ignore[attr-defined]
+    data = record.to_dict()
     return {
         "project_id": data.get("project_id"),
         "name": data.get("name"),

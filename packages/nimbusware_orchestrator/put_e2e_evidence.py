@@ -21,7 +21,7 @@ def write_put_e2e_failure_evidence(
     evidence_dir.mkdir(parents=True, exist_ok=True)
     zip_path = evidence_dir / "evidence.zip"
     summary = result.to_dict()
-    trace_meta = {}
+    trace_meta: dict[str, Any] = {}
     if isinstance(result.capture, dict):
         trace_meta = result.capture.get("trace") or {}
     trace_path_raw = trace_meta.get("trace_path") if isinstance(trace_meta, dict) else None

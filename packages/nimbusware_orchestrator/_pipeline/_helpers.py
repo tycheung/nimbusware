@@ -159,7 +159,7 @@ from nimbusware_orchestrator.run_dispatch import (
     run_dispatch_enabled,
     task_payload_workspace,
 )
-from nimbusware_orchestrator.scraper_artifacts import (  # type: ignore[attr-defined]
+from nimbusware_orchestrator.scraper_artifacts import (
     resolve_scraper_artifact_base_dir,
 )
 from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
