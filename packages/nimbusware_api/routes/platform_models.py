@@ -7,6 +7,7 @@ import yaml
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
@@ -109,10 +110,8 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
 @router.get("/platform/models/dependencies")
 def get_model_dependencies(orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     readiness = build_platform_readiness(repo_root=orch.repo_root, store=store)
-    checks_raw = readiness.get("checks")
-    checks = checks_raw if isinstance(checks_raw, dict) else {}
-    ollama_raw = checks.get("ollama")
-    ollama = ollama_raw if isinstance(ollama_raw, dict) else {}
+    checks = mapping_or_empty(readiness.get("checks"))
+    ollama = mapping_or_empty(checks.get("ollama"))
     return {
         "ollama_reachable": ollama.get("status") == "ok",
         "ollama_message": ollama.get("message"),

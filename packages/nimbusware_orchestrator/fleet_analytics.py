@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID, uuid4
 
+from agent_core.mapping import mapping_or_empty
+
 
 def _tenant_from_rows(rows: list[dict[str, Any]]) -> str:
     for row in rows:
@@ -16,12 +18,10 @@ def _gate_stats_from_rows(rows: list[dict[str, Any]]) -> dict[str, int]:
     passed = 0
     failed = 0
     for row in rows:
-        payload_raw = row.get("payload")
-        payload = payload_raw if isinstance(payload_raw, dict) else {}
+        payload = mapping_or_empty(row.get("payload"))
         if payload.get("stage_name") != "slice.gate":
             continue
-        meta_raw = row.get("metadata")
-        meta = meta_raw if isinstance(meta_raw, dict) else {}
+        meta = mapping_or_empty(row.get("metadata"))
         verdict = str(meta.get("slice_gate_verdict", "")).upper()
         if verdict == "PASS":
             passed += 1

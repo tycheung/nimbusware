@@ -6,6 +6,7 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_orchestrator.factory_cadence import (
     FACTORY_CADENCE_STAGE,
@@ -76,8 +77,7 @@ def build_factory_evidence_bundle(
     capture = put_e2e.get("capture") if isinstance(put_e2e, dict) else None
     ism_diff = None
     for stage in reversed(stages):
-        meta_raw = stage.get("metadata")
-        meta = meta_raw if isinstance(meta_raw, dict) else {}
+        meta = mapping_or_empty(stage.get("metadata"))
         ism_raw = meta.get("ism_diff")
         if isinstance(ism_raw, dict):
             ism_diff = ism_raw
@@ -110,17 +110,13 @@ def export_factory_evidence_zip(
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("factory_evidence.json", json.dumps(bundle, indent=2))
-        put_artifacts_raw = bundle.get("put_artifacts")
-        put_artifacts = put_artifacts_raw if isinstance(put_artifacts_raw, dict) else {}
+        put_artifacts = mapping_or_empty(bundle.get("put_artifacts"))
         manifest_path = put_artifacts.get("manifest_path")
         if manifest_path and Path(str(manifest_path)).is_file():
             archive.write(str(manifest_path), arcname="put_artifacts/manifest.json")
-        put_e2e_raw = bundle.get("put_e2e")
-        put_e2e = put_e2e_raw if isinstance(put_e2e_raw, dict) else {}
-        capture_raw = put_e2e.get("capture")
-        capture = capture_raw if isinstance(capture_raw, dict) else {}
-        evidence_raw = capture.get("evidence")
-        evidence = evidence_raw if isinstance(evidence_raw, dict) else {}
+        put_e2e = mapping_or_empty(bundle.get("put_e2e"))
+        capture = mapping_or_empty(put_e2e.get("capture"))
+        evidence = mapping_or_empty(capture.get("evidence"))
         zip_path = evidence.get("evidence_zip")
         if zip_path and Path(str(zip_path)).is_file():
             archive.write(str(zip_path), arcname="put_e2e/evidence.zip")

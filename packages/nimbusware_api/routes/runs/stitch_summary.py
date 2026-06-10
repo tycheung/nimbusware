@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
@@ -51,8 +52,7 @@ def get_run_stitch_summary(run_id: UUID, store: StoreDep) -> StitchSummaryRespon
         if et not in _STITCH_EVENT_TYPES:
             continue
         seq = int(row.get("store_seq") or 0)
-        payload_raw = row.get("payload")
-        payload = payload_raw if isinstance(payload_raw, dict) else {}
+        payload = mapping_or_empty(row.get("payload"))
         summary_line = ""
         if et == EventType.STITCH_PLAN_EMITTED.value:
             summary_line = str(

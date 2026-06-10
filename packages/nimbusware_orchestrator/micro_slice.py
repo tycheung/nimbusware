@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 
 
@@ -93,8 +94,7 @@ def micro_slice_timeline_summary(
     blocked: list[str] = []
     completed: list[str] = []
     for row in events:
-        meta_raw = row.get("metadata")
-        meta = meta_raw if isinstance(meta_raw, dict) else {}
+        meta = mapping_or_empty(row.get("metadata"))
         if meta.get("slice_plan"):
             sid = str(meta.get("slice_id", ""))
             if sid:

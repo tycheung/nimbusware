@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 
 
@@ -60,8 +61,7 @@ def memory_indexed_timeline_summary(events: list[dict[str, Any]]) -> dict[str, A
     if not indexed:
         return None
     last = indexed[-1]
-    payload_raw = last.get("payload")
-    pl: dict[str, Any] = payload_raw if isinstance(payload_raw, dict) else {}
+    pl = mapping_or_empty(last.get("payload"))
     return {
         "index_event_count": len(indexed),
         "chunks_added": pl.get("chunks_added"),
