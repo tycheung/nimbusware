@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from nimbusware_orchestrator.stage_graph import stage_graph_from_run_created_metadata
@@ -172,4 +172,4 @@ def enrich_gate_metadata_with_critic_matrix_live(
             "summary": summary,
         },
     )
-    return _json_safe_metadata(meta)
+    return cast(dict[str, Any], _json_safe_metadata(meta))

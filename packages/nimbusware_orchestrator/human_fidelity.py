@@ -115,7 +115,7 @@ def _page_has_login_form(base_url: str) -> bool:
         page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded")
         has_form = page.locator('input[name="password"]').count() > 0
         browser.close()
-    return has_form
+    return bool(has_form)
 
 
 def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:

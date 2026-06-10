@@ -53,7 +53,8 @@ def object_store_prune_enabled() -> bool:
         scraper_artifact_storage_backend_signals,
     )
 
-    return scraper_artifact_storage_backend_signals()["storage_backend"] == "object_store_ready"
+    signals = scraper_artifact_storage_backend_signals()
+    return bool(signals.get("storage_backend") == "object_store_ready")
 
 
 def retention_execution_mode() -> RetentionExecutionMode:

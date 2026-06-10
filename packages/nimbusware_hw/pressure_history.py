@@ -35,8 +35,11 @@ def _pressure_row_from_event(row: dict[str, Any]) -> dict[str, Any] | None:
     ram_pct = pl.get("ram_used_pct")
     if ram_pct is None:
         ram_pct = _ram_used_pct_from_payload(pl)
+    occurred_at: str | Any = occurred
+    if occurred is not None and hasattr(occurred, "isoformat"):
+        occurred_at = occurred.isoformat()
     return {
-        "occurred_at": occurred.isoformat() if hasattr(occurred, "isoformat") else occurred,
+        "occurred_at": occurred_at,
         "pressure_level": level,
         "pressure_reason": pl.get("pressure_reason"),
         "hardware_tier": pl.get("hardware_tier") or pl.get("tier"),

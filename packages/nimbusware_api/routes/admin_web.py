@@ -5,7 +5,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
-from starlette.responses import FileResponse
+from starlette.responses import FileResponse, Response
+from starlette.types import Scope
 
 ADMIN_STATIC_DIR = Path(__file__).resolve().parents[2] / "nimbusware_admin_ui" / "dist"
 _ADMIN_INDEX = ADMIN_STATIC_DIR / "index.html"
@@ -14,7 +15,7 @@ _ADMIN_INDEX = ADMIN_STATIC_DIR / "index.html"
 class AdminSPAStaticFiles(StaticFiles):
     """Serve built assets; fall back to index.html for client-side routes."""
 
-    async def get_response(self, path: str, scope):
+    async def get_response(self, path: str, scope: Scope) -> Response:
         try:
             return await super().get_response(path, scope)
         except StarletteHTTPException as exc:

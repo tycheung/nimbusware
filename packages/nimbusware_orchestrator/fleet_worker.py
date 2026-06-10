@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from nimbusware_orchestrator.run_dispatch import RunQueuePort, run_dispatch_mode
 
@@ -94,7 +94,7 @@ def read_worker_heartbeat(path: Path | str | None = None) -> dict[str, Any] | No
     if not hb_path.is_file():
         return None
     try:
-        return json.loads(hb_path.read_text(encoding="utf-8"))
+        return cast(dict[str, Any], json.loads(hb_path.read_text(encoding="utf-8")))
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -114,7 +114,8 @@ def fleet_worker_health_snapshot(*, heartbeat_path: Path | str | None = None) ->
     hb = read_worker_heartbeat(heartbeat_path)
     if hb is not None:
         metrics["worker_heartbeat"] = hb
-    queue_info = metrics.get("queue") if isinstance(metrics.get("queue"), dict) else {}
+    queue_raw = metrics.get("queue")
+    queue_info: dict[str, Any] = queue_raw if isinstance(queue_raw, dict) else {}
     backpressure = queue_info.get("backpressure", "unknown")
     return {
         "ok": backpressure in ("ok", "warn") and metrics.get("dispatch_mode") == "redis",

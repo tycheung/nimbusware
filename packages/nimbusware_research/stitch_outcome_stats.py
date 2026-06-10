@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from agent_core.models import EventType, Verdict
 
@@ -37,7 +37,7 @@ def fetch_stitch_analytics_event_rows(store: Any, *, limit_runs: int) -> list[di
         return out
     fetcher = getattr(store, "list_stitch_analytics_event_rows", None)
     if callable(fetcher):
-        return fetcher(cap)
+        return cast(list[dict[str, Any]], fetcher(cap))
     return []
 
 

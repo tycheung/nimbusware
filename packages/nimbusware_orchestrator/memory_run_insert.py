@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from nimbusware_memory.models import MemoryChunkRecord
@@ -56,5 +56,5 @@ def find_memory_chunk_for_scope(
     target = str(chunk_id)
     for row in rows:
         if str(row.chunk_id) == target:
-            return row
+            return cast(MemoryChunkRecord, row)
     return None

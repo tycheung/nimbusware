@@ -43,20 +43,29 @@ def parse_probation_automation_workflow_block(
     except (TypeError, ValueError):
         min_runs = 2
     min_score_raw = block.get("min_score")
-    try:
-        min_score = float(min_score_raw)
-    except (TypeError, ValueError):
+    if min_score_raw is None:
         min_score = AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
+    else:
+        try:
+            min_score = float(min_score_raw)
+        except (TypeError, ValueError):
+            min_score = AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
     max_below_raw = block.get("max_below_ratio")
-    try:
-        max_below = float(max_below_raw)
-    except (TypeError, ValueError):
+    if max_below_raw is None:
         max_below = 0.5
+    else:
+        try:
+            max_below = float(max_below_raw)
+        except (TypeError, ValueError):
+            max_below = 0.5
     hist_raw = block.get("history_run_limit")
-    try:
-        history_run_limit = int(hist_raw)
-    except (TypeError, ValueError):
+    if hist_raw is None:
         history_run_limit = 20
+    else:
+        try:
+            history_run_limit = int(hist_raw)
+        except (TypeError, ValueError):
+            history_run_limit = 20
     return ProbationAutomationWorkflowBlock(
         enabled=enabled,
         auto_shelve=auto_shelve,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from nimbusware_orchestrator.merge import load_yaml
 
@@ -14,7 +14,7 @@ def _escalation_policy_raw(
 ) -> dict[str, Any] | None:
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
         try:
-            return config_materializer.get_escalation_policy()
+            return cast(dict[str, Any], config_materializer.get_escalation_policy())
         except KeyError:
             return None
     path = repo_root / "configs" / "escalation" / "policy.yaml"

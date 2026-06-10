@@ -5,7 +5,7 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 
@@ -72,7 +72,7 @@ def _post_json(
         raw = resp.read().decode("utf-8")
         if not raw.strip():
             return {}
-        return json.loads(raw)
+        return cast(dict[str, Any], json.loads(raw))
 
 
 def _notify_github(

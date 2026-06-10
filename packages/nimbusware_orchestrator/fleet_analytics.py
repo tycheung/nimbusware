@@ -16,10 +16,12 @@ def _gate_stats_from_rows(rows: list[dict[str, Any]]) -> dict[str, int]:
     passed = 0
     failed = 0
     for row in rows:
-        payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        payload_raw = row.get("payload")
+        payload = payload_raw if isinstance(payload_raw, dict) else {}
         if payload.get("stage_name") != "slice.gate":
             continue
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        meta_raw = row.get("metadata")
+        meta = meta_raw if isinstance(meta_raw, dict) else {}
         verdict = str(meta.get("slice_gate_verdict", "")).upper()
         if verdict == "PASS":
             passed += 1
