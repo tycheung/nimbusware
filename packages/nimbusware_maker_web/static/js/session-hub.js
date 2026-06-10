@@ -1,7 +1,3 @@
-/**
- * Per-project active run_id in sessionStorage — reduces UUID paste across Maker tabs.
- */
-
 const ACTIVE_RUN_PREFIX = "maker_active_run_id:";
 const ACTIVE_PROJECT_KEY = "maker_active_project_id";
 

@@ -1,6 +1,3 @@
-/**
- * EventSource wrapper with reconnect backoff for theater and maker-progress streams.
- */
 export function openSseStream(path, { onMessage, onError, maxRetries = 8 } = {}) {
   const base = (window.__NIMBUSWARE__?.api_base || "/v1").replace(/\/$/, "");
   const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;

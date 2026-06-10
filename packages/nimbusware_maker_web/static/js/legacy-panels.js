@@ -1,6 +1,3 @@
-/**
- * Progress / review panels (poll + approval) until full tab modules ship.
- */
 import { apiJson, toast } from "./api-client.js";
 
 function runId() {

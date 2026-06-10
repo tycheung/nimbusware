@@ -1,6 +1,3 @@
-/**
- * Shared /v1 fetch helper with Problem+JSON errors and optional admin token.
- */
 export function getBootstrap() {
   return window.__NIMBUSWARE__ || { api_base: "/v1" };
 }
