@@ -54,6 +54,35 @@ def list_orphans(workspace: Path) -> GraphToolResult:
     )
 
 
+def list_module_deps(workspace: Path, module_path: str) -> GraphToolResult:
+    import ast
+
+    ws = workspace.resolve()
+    rel = module_path.replace("\\", "/").strip()
+    target = ws / rel
+    if not target.is_file():
+        return GraphToolResult(tool="list_module_deps", ok=False, detail="not_found")
+    try:
+        tree = ast.parse(target.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError) as exc:
+        return GraphToolResult(tool="list_module_deps", ok=False, detail=str(exc))
+    deps: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                deps.append(alias.name.split(".")[0])
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                deps.append(node.module.split(".")[0])
+    unique = sorted({d for d in deps if d})
+    return GraphToolResult(
+        tool="list_module_deps",
+        ok=True,
+        data={"module": rel, "dependencies": unique[:40]},
+        detail=f"count={len(unique)}",
+    )
+
+
 def find_similar_symbols(workspace: Path, path: str) -> GraphToolResult:
     from nimbusware_orchestrator.similarity_index import build_similarity_index
 
@@ -83,4 +112,9 @@ def run_graph_tool(workspace: Path, tool: str, **kwargs: Any) -> GraphToolResult
         return list_orphans(workspace)
     if name == "find_similar_symbols":
         return find_similar_symbols(workspace, str(kwargs.get("path") or ""))
+    if name == "list_module_deps":
+        return list_module_deps(
+            workspace,
+            str(kwargs.get("path") or kwargs.get("module_path") or ""),
+        )
     return GraphToolResult(tool=name, ok=False, detail="unknown_tool")
