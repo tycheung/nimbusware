@@ -32,7 +32,20 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (~140 keys)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**~207** keys after Jun 2026 dedup)
+
+### Redundant / alias keys (prefer one)
+
+| Prefer | Legacy alias | Notes |
+|--------|--------------|-------|
+| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | `env_flags.nimbusware_workflow_profile()` checks both |
+| `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
+| `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
+| `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
+
+**Tri-state system keys** (empty = follow workflow YAML): optional stages and universal-critique panel overrides. Prefer workflow profile YAML in `configs/workflows/` for defaults; use env only for operator overrides.
+
+**Parallelism:** `NIMBUSWARE_PARALLEL_WRITERS` (system), `NIMBUSWARE_MAX_PARALLEL_WRITERS` (user governor) — different layers; not duplicates.
 - Store: `packages/nimbusware_env/settings_store.py`
 - Resolver: `packages/nimbusware_env/settings_resolve.py`
 - Helpers: `packages/nimbusware_env/env_flags.py`

@@ -1,5 +1,3 @@
-"""Parallel optional critic matrix — workflow YAML + governor tier gate."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

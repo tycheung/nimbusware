@@ -59,4 +59,6 @@ Add to your MCP settings:
 | `nimbusware_chat_fork` | `POST /v1/chat/sessions/{id}/fork` — restore from turn, retain sibling branches |
 | `nimbusware_chat_select_branch` | `PUT /v1/chat/sessions/{id}/active-leaf` — navigate to branch tip |
 
+Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies plain-language intent via the same `/chat/classify` rules and suggests `/run auto` with the mapped workflow profile.
+
 Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

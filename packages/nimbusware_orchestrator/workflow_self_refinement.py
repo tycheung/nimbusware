@@ -1,5 +1,3 @@
-"""Workflow YAML knobs for self-refinement stage marker."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

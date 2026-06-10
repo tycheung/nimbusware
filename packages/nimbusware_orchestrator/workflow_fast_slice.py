@@ -1,5 +1,3 @@
-"""Parse workflow ``fast_slice`` opt-in for skipping low-severity critic matrix."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

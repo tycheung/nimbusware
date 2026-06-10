@@ -1,5 +1,3 @@
-"""Workflow YAML overrides for automatic escalation."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

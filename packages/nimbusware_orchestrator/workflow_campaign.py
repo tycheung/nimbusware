@@ -1,5 +1,3 @@
-"""Parse workflow ``campaign`` / ``backlog`` / ``maintenance`` / ``completion`` blocks."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

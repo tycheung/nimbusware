@@ -1,5 +1,3 @@
-"""Workflow YAML + env knobs for parallel writer dispatch."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,5 +1,3 @@
-"""Workflow YAML and env overrides for universal post-verify critique panels."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

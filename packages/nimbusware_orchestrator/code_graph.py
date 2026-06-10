@@ -1,5 +1,3 @@
-"""Code graph index for in-repo exploration."""
-
 from __future__ import annotations
 
 import ast

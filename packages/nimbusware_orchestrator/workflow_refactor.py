@@ -1,5 +1,3 @@
-"""Workflow YAML knobs for ``refactor`` stage."""
-
 from __future__ import annotations
 
 import os

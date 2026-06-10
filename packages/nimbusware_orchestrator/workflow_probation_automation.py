@@ -1,5 +1,3 @@
-"""Parse workflow ``probation_automation`` block for persona shelf automation."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

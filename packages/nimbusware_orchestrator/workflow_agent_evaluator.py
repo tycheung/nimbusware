@@ -1,5 +1,3 @@
-"""Workflow YAML knobs for agent evaluator ``stage.started`` marker."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

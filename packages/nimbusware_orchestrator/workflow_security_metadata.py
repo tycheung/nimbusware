@@ -1,5 +1,3 @@
-"""Workflow YAML toggle for security scan metadata on verifier failure."""
-
 from __future__ import annotations
 
 from pathlib import Path

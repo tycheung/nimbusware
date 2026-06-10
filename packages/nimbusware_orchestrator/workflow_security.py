@@ -1,5 +1,3 @@
-"""Workflow-driven security scan metadata on verifier failures."""
-
 from __future__ import annotations
 
 from pathlib import Path

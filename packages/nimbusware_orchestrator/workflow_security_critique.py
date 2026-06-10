@@ -5,7 +5,11 @@ from typing import Any
 
 from nimbusware_orchestrator.workflow_scan_critique import (
     ScanCritiqueBlock as SecurityCritiqueBlock,
+)
+from nimbusware_orchestrator.workflow_scan_critique import (
     parse_scan_critique_workflow_block as _parse,
+)
+from nimbusware_orchestrator.workflow_scan_critique import (
     scan_critique_effective,
     scan_critique_llm_effective,
 )

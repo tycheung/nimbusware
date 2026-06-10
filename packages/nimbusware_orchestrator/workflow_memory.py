@@ -1,5 +1,3 @@
-"""Workflow memory block parsing and slice retrieval."""
-
 from __future__ import annotations
 
 import hashlib

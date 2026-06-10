@@ -1,5 +1,3 @@
-"""Periodic architecture maintenance passes during campaigns."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

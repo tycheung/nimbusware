@@ -1,5 +1,3 @@
-"""Resolve ``workflow_profile`` string to YAML path under ``configs/workflows/``."""
-
 from __future__ import annotations
 
 import re
