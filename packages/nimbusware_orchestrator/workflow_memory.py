@@ -12,6 +12,7 @@ from nimbusware_memory.models import EmbeddingMode, MemoryRetrievalHit
 from nimbusware_memory.repo_scope import repo_scope_hash
 from nimbusware_memory.search import format_memory_excerpt, pinned_generation_id, search_memory
 from nimbusware_memory.store import MemoryChunkStore
+from nimbusware_env.env_flags import nimbusware_memory_excerpt_max_chars
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
@@ -120,7 +121,7 @@ def memory_settings_from_run_metadata(metadata: object) -> MemoryWorkflowBlock:
         excerpt_max_chars=_env_or_metadata_int(
             "NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS",
             mem.get("excerpt_max_chars"),
-            default=2000,
+            default=nimbusware_memory_excerpt_max_chars(),
             max_val=20000,
         ),
         embedding_mode=_parse_embedding_mode(mem.get("embedding_mode")),

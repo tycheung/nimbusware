@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import (
+    nimbusware_handoff_max_chars,
+    nimbusware_slice_packet_max_chars,
+)
 from nimbusware_orchestrator.micro_slice_executor import slice_replan_max_for_run
 from nimbusware_orchestrator.slice_budget_presets import (
     resolve_slice_budget_preset,
@@ -22,6 +26,33 @@ def test_resolve_from_operator_settings() -> None:
     )
     assert preset.name == "careful"
     assert preset.max_loc == 80
+
+
+def test_slice_budget_preset_char_caps() -> None:
+    tiny = slice_budget_preset("tiny")
+    assert tiny.packet_max_chars == 4000
+    assert tiny.handoff_max_chars == 1500
+    standard = slice_budget_preset("standard")
+    assert standard.packet_max_chars == 12000
+    assert standard.llm_history_max_chars == 2000
+
+
+def test_context_max_chars_follow_preset_when_env_unset(
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_HANDOFF_MAX_CHARS", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_SLICE_BUDGET_PRESET", "tiny")
+    assert nimbusware_slice_packet_max_chars() == 4000
+    assert nimbusware_handoff_max_chars() == 1500
+
+
+def test_context_max_chars_explicit_env_overrides_preset(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("NIMBUSWARE_SLICE_BUDGET_PRESET", "tiny")
+    monkeypatch.setenv("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", "9999")
+    assert nimbusware_slice_packet_max_chars() == 9999
 
 
 def test_slice_replan_max_for_run_uses_frozen_metadata() -> None:

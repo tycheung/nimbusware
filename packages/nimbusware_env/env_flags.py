@@ -218,12 +218,22 @@ def nimbusware_slice_branch_prefix(default: str = "nimbusware/run-") -> str:
     return resolve_str("NIMBUSWARE_SLICE_BRANCH_PREFIX", default=default)
 
 
-def _context_max_chars(env_key: str, default: int) -> int:
-    return resolve_int(env_key, default=default)
+def _context_max_chars_from_preset(env_key: str, preset_attr: str, fallback: int) -> int:
+    from nimbusware_env.settings_resolve import resolve_explicit_raw
+
+    if resolve_explicit_raw(env_key) is not None:
+        return resolve_int(env_key, default=fallback)
+    from nimbusware_orchestrator.slice_budget_presets import resolve_slice_budget_preset
+
+    return int(getattr(resolve_slice_budget_preset(), preset_attr))
 
 
 def nimbusware_slice_packet_max_chars(default: int = 12000) -> int:
-    return _context_max_chars("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", default)
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_SLICE_PACKET_MAX_CHARS",
+        "packet_max_chars",
+        default,
+    )
 
 
 def nimbusware_slice_repo_map_enabled() -> bool:
@@ -233,7 +243,11 @@ def nimbusware_slice_repo_map_enabled() -> bool:
 
 
 def nimbusware_slice_repo_map_max_chars(default: int = 4000) -> int:
-    return _context_max_chars("NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS", default)
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS",
+        "repo_map_max_chars",
+        default,
+    )
 
 
 def nimbusware_slice_lsp_enabled() -> bool:
@@ -265,11 +279,19 @@ def nimbusware_slice_lsp_timeout_sec(default: float = 8.0) -> float:
 
 
 def nimbusware_slice_symbol_sketch_max_chars(default: int = 3000) -> int:
-    return resolve_int("NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS", default=default)
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS",
+        "symbol_sketch_max_chars",
+        default,
+    )
 
 
 def nimbusware_llm_history_max_chars(default: int = 2000) -> int:
-    return resolve_int("NIMBUSWARE_LLM_HISTORY_MAX_CHARS", default=default)
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_LLM_HISTORY_MAX_CHARS",
+        "llm_history_max_chars",
+        default,
+    )
 
 
 def nimbusware_read_max_chars(default: int = 16000) -> int:
@@ -307,7 +329,19 @@ def nimbusware_agent_tools_list(
 
 
 def nimbusware_handoff_max_chars(default: int = 4000) -> int:
-    return _context_max_chars("NIMBUSWARE_HANDOFF_MAX_CHARS", default)
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_HANDOFF_MAX_CHARS",
+        "handoff_max_chars",
+        default,
+    )
+
+
+def nimbusware_memory_excerpt_max_chars(default: int = 4000) -> int:
+    return _context_max_chars_from_preset(
+        "NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS",
+        "memory_excerpt_max_chars",
+        default,
+    )
 
 
 def nimbusware_handoff_llm_summary_enabled() -> bool:

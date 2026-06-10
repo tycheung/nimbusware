@@ -259,7 +259,7 @@ def _defs() -> tuple[SettingDef, ...]:
             e,
             "standard",
             "Slice budget preset",
-            "tiny, standard, or careful — maps to max_files, max_loc, replan max.",
+            "tiny, standard, or careful — maps to max_files, max_loc, replan max, and context char caps.",
             "User — maker runtime",
             choices=("tiny", "standard", "careful"),
         ),

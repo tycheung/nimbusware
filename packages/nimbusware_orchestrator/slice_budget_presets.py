@@ -11,12 +11,51 @@ class SliceBudgetPreset:
     max_files: int
     max_loc: int
     replan_max: int
+    packet_max_chars: int
+    repo_map_max_chars: int
+    symbol_sketch_max_chars: int
+    llm_history_max_chars: int
+    handoff_max_chars: int
+    memory_excerpt_max_chars: int
 
 
 _PRESETS: dict[str, SliceBudgetPreset] = {
-    "tiny": SliceBudgetPreset("tiny", max_files=1, max_loc=40, replan_max=1),
-    "standard": SliceBudgetPreset("standard", max_files=3, max_loc=120, replan_max=3),
-    "careful": SliceBudgetPreset("careful", max_files=2, max_loc=80, replan_max=5),
+    "tiny": SliceBudgetPreset(
+        "tiny",
+        max_files=1,
+        max_loc=40,
+        replan_max=1,
+        packet_max_chars=4000,
+        repo_map_max_chars=1500,
+        symbol_sketch_max_chars=1000,
+        llm_history_max_chars=700,
+        handoff_max_chars=1500,
+        memory_excerpt_max_chars=1500,
+    ),
+    "standard": SliceBudgetPreset(
+        "standard",
+        max_files=3,
+        max_loc=120,
+        replan_max=3,
+        packet_max_chars=12000,
+        repo_map_max_chars=4000,
+        symbol_sketch_max_chars=3000,
+        llm_history_max_chars=2000,
+        handoff_max_chars=4000,
+        memory_excerpt_max_chars=4000,
+    ),
+    "careful": SliceBudgetPreset(
+        "careful",
+        max_files=2,
+        max_loc=80,
+        replan_max=5,
+        packet_max_chars=8000,
+        repo_map_max_chars=3000,
+        symbol_sketch_max_chars=2200,
+        llm_history_max_chars=1400,
+        handoff_max_chars=3000,
+        memory_excerpt_max_chars=3000,
+    ),
 }
 
 
