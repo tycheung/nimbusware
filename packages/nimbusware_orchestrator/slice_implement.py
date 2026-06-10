@@ -71,6 +71,7 @@ def execute_slice_implement(
     llm_model_id: str | None = None,
     llm_system_prompt: str | None = None,
     learning_excerpt: str = "",
+    steer_excerpt: str = "",
 ) -> SliceImplementResult:
     """Apply bounded, scoped changes for one micro-slice (default: ruff format + --fix)."""
     mode = slice_implement_mode()
@@ -93,6 +94,7 @@ def execute_slice_implement(
             llm_model_id=llm_model_id,
             llm_system_prompt=llm_system_prompt,
             learning_excerpt=learning_excerpt,
+            steer_excerpt=steer_excerpt,
         )
 
     if mode == "llm" and llm_base_url and llm_model_id:

@@ -1,5 +1,3 @@
-"""Automatic micro-slice stage execution."""
-
 from __future__ import annotations
 
 import time
@@ -290,13 +288,17 @@ def execute_single_micro_slice(
         apply_operator_pause,
         ensure_dev_environment_for_slice,
         gate_result_for_force_break,
+        gate_result_for_skip_slice,
         handle_build_from_chat_interjection,
         handle_gate_failure_learning,
+        handle_patch_from_chat_interjection,
+        handle_skip_slice_interjection,
         maybe_run_human_fidelity_pre_gate,
         maybe_run_repo_explore_slice_stage,
         merge_pre_gate_into_verify,
         process_interjection_cycle,
         run_pre_gate_dev_env_regression,
+        steer_excerpt_from_cycle,
     )
 
     profile = autopilot_profile_from_rows(rows)
@@ -308,6 +310,20 @@ def execute_single_micro_slice(
         handle_build_from_chat_interjection(orch, run_id, interjection, rows)
         stub = plan or default_stub_slice_plan(slice_index)
         return gate_result_for_force_break(stub)
+    if interjection.skip_slice:
+        handle_skip_slice_interjection(orch._store, run_id, interjection, rows)
+        stub = plan or default_stub_slice_plan(slice_index)
+        return gate_result_for_skip_slice(stub)
+
+    patch_backlog_id: str | None = None
+    if interjection.patch_from_chat:
+        patch_backlog_id = handle_patch_from_chat_interjection(
+            orch._store,
+            run_id,
+            interjection,
+            rows,
+        )
+    steer_excerpt = steer_excerpt_from_cycle(interjection)
 
     budget_feedback: str | None = None
     active_plan = plan or _plan_one_slice(
@@ -317,6 +333,18 @@ def execute_single_micro_slice(
         budget_feedback=budget_feedback,
     )
     active_plan = apply_interjection_to_plan(active_plan, interjection)
+    effective_backlog_slice_id = backlog_slice_id
+    if patch_backlog_id:
+        patch_msgs = [i.message for i in interjection.items if i.patch_from_chat]
+        from nimbusware_orchestrator.slice_cycle_integration import _infer_patch_target_paths
+
+        active_plan = SlicePlan(
+            slice_id=patch_backlog_id,
+            target_paths=_infer_patch_target_paths("\n".join(patch_msgs), rows),
+            rationale="\n".join(patch_msgs)[:4000] or "Operator patch request",
+            acceptance_criteria=active_plan.acceptance_criteria,
+        )
+        effective_backlog_slice_id = patch_backlog_id
     maybe_run_repo_explore_slice_stage(
         orch._store,
         run_id,
@@ -345,6 +373,7 @@ def execute_single_micro_slice(
                 orch._store.list_run_events(str(run_id)),
             ),
             learning_excerpt=learning_excerpt,
+            steer_excerpt=steer_excerpt,
         )
         symbol_sketch = ""
         from nimbusware_env.env_flags import (
@@ -371,8 +400,8 @@ def execute_single_micro_slice(
             "paths_touched": list(impl_result.paths_touched),
             "symbol_sketch": symbol_sketch,
         }
-        if backlog_slice_id:
-            impl_meta["backlog_slice_id"] = backlog_slice_id
+        if effective_backlog_slice_id:
+            impl_meta["backlog_slice_id"] = effective_backlog_slice_id
         if impl_result.mode == "agent" and impl_result.log.strip():
             impl_meta["agent_tool_log"] = impl_result.log[:8000]
         if lsp_reason:
@@ -452,8 +481,8 @@ def execute_single_micro_slice(
 
     critique_verdicts = ["PASS"]
     critique_meta: dict[str, Any] = {"slice_id": active_plan.slice_id}
-    if backlog_slice_id:
-        critique_meta["backlog_slice_id"] = backlog_slice_id
+    if effective_backlog_slice_id:
+        critique_meta["backlog_slice_id"] = effective_backlog_slice_id
     if nimbusware_slice_p3_evidence_enabled():
         from nimbusware_orchestrator.performance_scan import run_ruff_perf
         from nimbusware_orchestrator.security_scan import run_security_scan
@@ -587,7 +616,41 @@ def execute_single_micro_slice(
         ui_regression_failed=pre_regression.ui_passed is False,
     )
     if gate.passed:
+        from nimbusware_orchestrator.patch_context import (
+            patch_auto_apply_allowed,
+            patch_effective_from_run_rows,
+            work_type_from_run_rows,
+        )
         from nimbusware_orchestrator.slice_git_commit import maybe_commit_slice
+
+        patch_eff = patch_effective_from_run_rows(rows)
+        wt = work_type_from_run_rows(rows)
+        if patch_eff and patch_eff.get("enabled") and (wt == "patch" or patch_eff):
+            policy = patch_eff.get("auto_apply_policy") or {}
+            if isinstance(policy, dict):
+                auto_ok = patch_auto_apply_allowed(
+                    policy=policy,
+                    files_changed=len(final_stats.changed_files),
+                    loc_changed=final_stats.loc_added + final_stats.loc_removed,
+                    tests_passed=tests_passed,
+                    gate_passed=True,
+                )
+                if auto_ok:
+                    _emit_slice_stage(
+                        orch,
+                        run_id,
+                        "slice.applied",
+                        metadata={
+                            "slice_id": active_plan.slice_id,
+                            "auto_applied": True,
+                            "patch_auto_apply": True,
+                            **(
+                                {"backlog_slice_id": effective_backlog_slice_id}
+                                if effective_backlog_slice_id
+                                else {}
+                            ),
+                        },
+                    )
 
         run_meta = orch._run_created_metadata(run_id)
         commit_result = maybe_commit_slice(

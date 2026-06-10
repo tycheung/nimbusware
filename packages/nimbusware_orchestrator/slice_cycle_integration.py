@@ -45,10 +45,21 @@ class InterjectionCycle:
     items: list[InterjectionItem] = field(default_factory=list)
     force_break: bool = False
     build_from_chat: bool = False
+    patch_from_chat: bool = False
+    steer_from_chat: bool = False
+    skip_slice: bool = False
 
     @property
     def messages(self) -> list[str]:
         return [i.message for i in self.items if i.message.strip()]
+
+    @property
+    def plain_messages(self) -> list[str]:
+        return [
+            i.message
+            for i in self.items
+            if i.message.strip() and not (i.patch_from_chat or i.steer_from_chat or i.skip_slice)
+        ]
 
 
 @dataclass(frozen=True)
@@ -96,6 +107,9 @@ def emit_interjection_drained(
                     "count": len(cycle.items),
                     "force_break": cycle.force_break,
                     "build_from_chat": cycle.build_from_chat,
+                    "patch_from_chat": cycle.patch_from_chat,
+                    "steer_from_chat": cycle.steer_from_chat,
+                    "skip_slice": cycle.skip_slice,
                     "messages": cycle.messages[:10],
                 }
             },
@@ -282,15 +296,151 @@ def process_interjection_cycle(store: Any, run_id: UUID | str) -> InterjectionCy
         items=items,
         force_break=any(i.force_break for i in items),
         build_from_chat=any(i.build_from_chat for i in items),
+        patch_from_chat=any(i.patch_from_chat for i in items),
+        steer_from_chat=any(i.steer_from_chat for i in items),
+        skip_slice=any(i.skip_slice for i in items),
     )
     emit_interjection_drained(store, run_id, cycle)
     return cycle
 
 
+def steer_excerpt_from_cycle(cycle: InterjectionCycle) -> str:
+    lines = [i.message for i in cycle.items if i.steer_from_chat and i.message.strip()]
+    return "\n".join(lines)[:4000]
+
+
+def _infer_patch_target_paths(prompt: str, rows: list[dict[str, Any]]) -> tuple[str, ...]:
+    from nimbusware_maker.intent_classifier import _infer_paths
+
+    extracted = _infer_paths(prompt, {})
+    if extracted:
+        return tuple(extracted[:2])
+    patch_ctx = None
+    if rows:
+        meta = rows[0].get("metadata")
+        if isinstance(meta, dict):
+            from nimbusware_orchestrator.patch_context import normalize_patch_context
+
+            patch_ctx = normalize_patch_context(meta.get("patch_context"))
+    if patch_ctx:
+        paths = patch_ctx.get("target_paths")
+        if isinstance(paths, list) and paths:
+            return tuple(str(p) for p in paths[:2])
+    return ("packages/",)
+
+
+def emit_patch_from_chat_slice(
+    store: Any,
+    run_id: UUID | str,
+    *,
+    slice_id: str,
+    source_messages: list[str],
+) -> None:
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "interjection": {
+                    "patch_from_chat": True,
+                    "backlog_slice_id": slice_id,
+                    "messages": source_messages[:5],
+                },
+            },
+            payload=StagePassedPayload(stage_name="interjection.patch_from_chat", duration_ms=0),
+        ),
+    )
+
+
+def handle_patch_from_chat_interjection(
+    store: Any,
+    run_id: UUID | str,
+    cycle: InterjectionCycle,
+    rows: list[dict[str, Any]],
+) -> str | None:
+    """Insert one patch-profile backlog slice at head (no new campaign)."""
+    patch_messages = [i.message for i in cycle.items if i.patch_from_chat and i.message.strip()]
+    if not patch_messages:
+        return None
+    prompt = "\n".join(patch_messages)[:4000] or "Operator patch request"
+    from agent_core.models.backlog import BacklogSlice, sync_backlog_metadata
+    from nimbusware_orchestrator.backlog_generator import backlog_from_events, emit_backlog_revised
+
+    slice_id = f"patch-{uuid4().hex[:8]}"
+    patch_slice = BacklogSlice(
+        slice_id=slice_id,
+        rationale=f"Operator patch request:\n{prompt}",
+        target_paths=_infer_patch_target_paths(prompt, rows),
+    )
+    backlog = backlog_from_events(rows)
+    if backlog is not None and backlog.epics and backlog.epics[0].features:
+        feat = backlog.epics[0].features[0]
+        epics = list(backlog.epics)
+        new_slices = tuple([patch_slice, *feat.slices])
+        epics[0] = epics[0].model_copy(
+            update={
+                "features": (
+                    feat.model_copy(update={"slices": new_slices}),
+                    *epics[0].features[1:],
+                ),
+            },
+        )
+        revised = sync_backlog_metadata(backlog.model_copy(update={"epics": tuple(epics)}))
+        emit_backlog_revised(store, run_id, revised, revision_reason="interjection_patch_from_chat")
+    emit_patch_from_chat_slice(
+        store,
+        run_id,
+        slice_id=slice_id,
+        source_messages=patch_messages,
+    )
+    return slice_id
+
+
+def handle_skip_slice_interjection(
+    store: Any,
+    run_id: UUID | str,
+    cycle: InterjectionCycle,
+    rows: list[dict[str, Any]],
+) -> None:
+    if not cycle.skip_slice:
+        return
+    from agent_core.models.backlog import SliceStatus, sync_backlog_metadata
+    from nimbusware_orchestrator.backlog_generator import backlog_from_events, emit_backlog_revised
+    from nimbusware_orchestrator.campaign_slice_selector import select_next_slice
+
+    backlog = backlog_from_events(rows)
+    if backlog is None:
+        return
+    selected = select_next_slice(backlog)
+    if selected is None:
+        return
+    deferred_id = selected.slice.slice_id
+    epics = list(backlog.epics)
+    updated = False
+    for ei, epic in enumerate(epics):
+        features = list(epic.features)
+        for fi, feature in enumerate(features):
+            slices = list(feature.slices)
+            for si, sl in enumerate(slices):
+                if sl.slice_id != deferred_id:
+                    continue
+                slices[si] = sl.model_copy(update={"status": SliceStatus.DEFERRED})
+                features[fi] = feature.model_copy(update={"slices": tuple(slices)})
+                epics[ei] = epic.model_copy(update={"features": tuple(features)})
+                updated = True
+                break
+    if updated:
+        revised = sync_backlog_metadata(backlog.model_copy(update={"epics": tuple(epics)}))
+        emit_backlog_revised(store, run_id, revised, revision_reason="interjection_skip_slice")
+
+
 def apply_interjection_to_plan(plan: SlicePlan, cycle: InterjectionCycle) -> SlicePlan:
-    if not cycle.messages:
+    if not cycle.plain_messages:
         return plan
-    block = "\n".join(f"- {m}" for m in cycle.messages[:5])
+    block = "\n".join(f"- {m}" for m in cycle.plain_messages[:5])
     rationale = f"{plan.rationale}\n\nOperator interjection:\n{block}"
     return SlicePlan(
         slice_id=plan.slice_id,
@@ -310,6 +460,16 @@ def gate_result_for_force_break(plan: SlicePlan) -> SliceGateChainResult:
         passed=False,
         steps=steps,
         status="paused_for_operator",
+    )
+
+
+def gate_result_for_skip_slice(plan: SlicePlan) -> SliceGateChainResult:
+    steps = (SliceGateStep("interjection.skip_slice", "PASS", "operator skip/defer"),)
+    return SliceGateChainResult(
+        slice_id=plan.slice_id,
+        passed=True,
+        steps=steps,
+        status="skipped_by_operator",
     )
 
 

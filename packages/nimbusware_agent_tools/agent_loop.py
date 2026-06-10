@@ -1,5 +1,3 @@
-"""Multi-turn JIT tool loop for slice implement agent mode."""
-
 from __future__ import annotations
 
 import json
@@ -38,6 +36,7 @@ def _volatile_user_prompt(
     handoff_summary: str = "",
     memory_excerpt: str = "",
     learning_excerpt: str = "",
+    steer_excerpt: str = "",
 ) -> str:
     parts = [
         f"Slice: {plan.slice_id}",
@@ -47,6 +46,10 @@ def _volatile_user_prompt(
     ]
     if handoff_summary.strip():
         parts.append(f"Prior handoff:\n{handoff_summary}")
+    if steer_excerpt.strip():
+        parts.append(
+            f"Operator steer (follow for this slice):\n{truncate_for_llm_history(steer_excerpt)}",
+        )
     if memory_excerpt.strip():
         parts.append(f"Memory (advisory):\n{truncate_for_llm_history(memory_excerpt)}")
     if learning_excerpt.strip():
@@ -106,6 +109,7 @@ def run(
     handoff_summary: str = "",
     memory_excerpt: str = "",
     learning_excerpt: str = "",
+    steer_excerpt: str = "",
     chat_fn: ChatFn | None = None,
 ) -> AgentLoopResult:
     from nimbusware_agent_tools.risk_caps import resolve_agent_risk_caps
@@ -123,6 +127,7 @@ def run(
             handoff_summary=handoff_summary,
             memory_excerpt=memory_excerpt,
             learning_excerpt=learning_excerpt,
+            steer_excerpt=steer_excerpt,
         ),
     )
 

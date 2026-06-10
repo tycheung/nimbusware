@@ -207,6 +207,7 @@ def execute_slice_implement_agent(
     llm_system_prompt: str | None = None,
     risk_caps: AgentRiskCaps | None = None,
     learning_excerpt: str = "",
+    steer_excerpt: str = "",
 ) -> SliceImplementResult:
     ws = Path(workspace).resolve()
     allowed = _allowed_paths(plan)
@@ -241,6 +242,7 @@ def execute_slice_implement_agent(
                     system_prompt=llm_system_prompt,
                     risk_caps=caps,
                     learning_excerpt=learning_excerpt,
+                    steer_excerpt=steer_excerpt,
                 )
             except Exception as exc:  # noqa: BLE001
                 logs.append(f"agent JIT loop failed: {exc}")
