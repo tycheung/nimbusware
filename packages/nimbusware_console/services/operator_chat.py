@@ -25,3 +25,13 @@ def fetch_timeline_response(run_id: str, *, timeout: float = 30.0) -> Response:
         timeout=timeout,
         raise_for_status=False,
     )
+
+
+def classify_intent(message: str, *, timeout: float = 30.0) -> Response:
+    return post_response(
+        "/chat/classify",
+        payload={"message": message},
+        headers=user_headers(),
+        timeout=timeout,
+        raise_for_status=False,
+    )

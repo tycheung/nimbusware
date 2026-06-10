@@ -6,6 +6,14 @@ from typing import Any
 from nimbusware_client.http import HTTPError, api_base
 from nimbusware_console.services import operator_chat as chat_svc
 
+WORK_TYPE_PROFILES: dict[str, str] = {
+    "patch": "patch",
+    "slice": "micro_slice",
+    "campaign": "campaign_micro_slice",
+    "factory": "campaign_factory_zero_touch",
+    "quick": "quick_local",
+}
+
 
 @dataclass
 class ChatState:
@@ -14,24 +22,57 @@ class ChatState:
     memory_retrieval_enabled: bool = True
     memory_index_contribution: bool = True
     messages: list[dict[str, str]] = field(default_factory=list)
+    suggested_profile: str = ""
+    last_intent_text: str = ""
 
 
 def process_user_message(text: str, state: ChatState) -> str:
     reply = _handle_command(text, state)
     if reply is not None:
         return reply
+    classification = _classify_intent(text)
+    if classification:
+        work_type = str(classification.get("work_type") or "slice")
+        profile = WORK_TYPE_PROFILES.get(work_type, "micro_slice")
+        state.suggested_profile = profile
+        state.last_intent_text = text
+        confidence = float(classification.get("confidence") or 0)
+        rationale = str(classification.get("rationale") or "").strip()
+        hint = f"{rationale} " if rationale else ""
+        return (
+            f"Suggested {work_type} → `{profile}` ({confidence:.0%}). {hint}"
+            "Use `/run auto` to start or `/run <profile>` to override."
+        )
     return (
-        "I can start runs and show timelines. Try `/run micro_slice` or set an agent, "
-        "then describe the change you want in small slices."
+        "I can classify intent and start runs. Try describing your change, then `/run auto`, "
+        "or `/run micro_slice` directly."
     )
+
+
+def _classify_intent(text: str) -> dict[str, Any] | None:
+    try:
+        resp = chat_svc.classify_intent(text.strip())
+        if resp.status_code >= 400:
+            return None
+        body = resp.json()
+        data = body.get("classification") if isinstance(body, dict) else None
+        return data if isinstance(data, dict) else None
+    except HTTPError:
+        return None
 
 
 def _handle_command(text: str, state: ChatState) -> str | None:
     parts = text.strip().split()
     cmd = parts[0].lower() if parts else ""
     if cmd in ("/help", "help"):
-        return "Commands:\n- /run [workflow_profile]\n- /timeline\n- /agent <id>"
+        return (
+            "Commands:\n- /run [profile|auto]\n- /timeline\n- /agent <id>\n"
+            "Describe a change in plain language for intent classification."
+        )
     if cmd == "/run":
+        if len(parts) > 1 and parts[1].lower() == "auto":
+            profile = state.suggested_profile or "micro_slice"
+            return _start_run(profile, state)
         profile = parts[1] if len(parts) > 1 else "micro_slice"
         return _start_run(profile, state)
     if cmd == "/timeline":
