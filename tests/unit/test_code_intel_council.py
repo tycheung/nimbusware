@@ -56,8 +56,8 @@ def test_inventory_health_score_penalizes_debt() -> None:
 def test_similarity_and_orphans(tmp_path: Path) -> None:
     ws = tmp_path / "proj"
     ws.mkdir()
-    (ws / "dup1.py").write_text("a = 1\n", encoding="utf-8")
-    (ws / "dup2.py").write_text("a = 1\n", encoding="utf-8")
+    (ws / "dup1.py").write_text("import json\na = 1\n", encoding="utf-8")
+    (ws / "dup2.py").write_text("import json\na = 1\n", encoding="utf-8")
     sim = build_similarity_index(ws)
     orphans = build_orphan_report(ws)
     explore = run_repo_explore(ws)
@@ -66,6 +66,7 @@ def test_similarity_and_orphans(tmp_path: Path) -> None:
     assert len(orphans.orphans) >= 0
     assert explore.graph is not None
     assert cohesion.proposals is not None
+    assert any(f.kind == "module_deps" for f in explore.findings)
 
 
 def test_complexity_index(tmp_path: Path) -> None:

@@ -24,7 +24,10 @@ from nimbusware_maker.workspace import workspace_path_from_run_created_metadata
 from nimbusware_maker.workspace_snapshot import create_workspace_snapshot
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_research.stages import _emit_critique_panel
-from nimbusware_research.stitch_manifests import persist_transplant_manifest
+from nimbusware_research.stitch_manifests import (
+    persist_transplant_manifest,
+    read_transplant_manifest,
+)
 from nimbusware_research.stitch_models import TransplantManifest
 from nimbusware_research.stitch_read_model import has_code_research_brief
 from nimbusware_research.stitch_verifiers import (
@@ -107,7 +110,31 @@ def _apply_stub_transplant(workspace: Path, paths: tuple[str, ...]) -> list[str]
     return added
 
 
-def emit_stitch_stages_stub(
+def manifest_from_catalog_candidate(
+    repo_root: Path,
+    candidate: dict[str, Any],
+) -> TransplantManifest:
+    manifest_id = str(candidate.get("manifest_id") or "").strip()
+    if manifest_id:
+        loaded = read_transplant_manifest(repo_root, manifest_id)
+        if loaded is not None:
+            return loaded
+    files_raw = candidate.get("files_added")
+    files = [str(f) for f in files_raw if f is not None] if isinstance(files_raw, list) else []
+    candidate_id = str(candidate.get("candidate_id") or uuid4())[:32]
+    if files:
+        return TransplantManifest(
+            manifest_id=manifest_id or f"candidate-{candidate_id[:12]}",
+            source_kind="bundle",
+            source_tree_hash=f"catalog:{candidate_id[:16]}",
+            file_paths=tuple(files),
+            license_paths=("LICENSE",),
+            required_env_vars=(),
+        )
+    return _stub_manifest(manifest_id or str(uuid4()))
+
+
+def emit_stitch_stages_for_manifest(
     store: EventStore,
     registry: RoleRegistry,
     critique_router: UniversalCritiqueRouter,
@@ -117,8 +144,11 @@ def emit_stitch_stages_stub(
     run_created_metadata: dict[str, Any],
     stitch_meta: dict[str, Any],
     prior_events: list[dict[str, Any]],
+    manifest: TransplantManifest,
+    wiring_delta_summary: str | None = None,
+    write_catalog_on_apply: bool = True,
 ) -> bool:
-    """Emit stitch plan/apply (or failed). Returns True if stitch.applied was emitted."""
+    """Emit stitch plan/apply (or failed) for a concrete manifest."""
     if not has_code_research_brief(prior_events):
         return False
 
@@ -126,8 +156,7 @@ def emit_stitch_stages_stub(
     max_loc = int(stitch_meta.get("max_loc", 2500) or 2500)
     max_deps = int(stitch_meta.get("max_new_dependencies", 10) or 10)
 
-    manifest_id = str(uuid4())
-    manifest = _stub_manifest(manifest_id)
+    manifest_id = manifest.manifest_id
     target_paths = list(manifest.file_paths)
 
     if len(target_paths) > max_files:
@@ -209,9 +238,8 @@ def emit_stitch_stages_stub(
             payload=StitchPlanEmittedPayload(
                 target_paths=target_paths,
                 source_manifest_id=manifest_id,
-                wiring_delta_summary=(
-                    "Stub transplant: add minimal auth helper modules from indexed pattern."
-                ),
+                wiring_delta_summary=wiring_delta_summary
+                or "Transplant: apply manifest file paths from research brief.",
             ),
         ),
     )
@@ -264,12 +292,43 @@ def emit_stitch_stages_stub(
             ),
         ),
     )
-    from nimbusware_research.bundle_promotion import write_stitch_catalog_candidate
+    if write_catalog_on_apply:
+        from nimbusware_research.bundle_promotion import write_stitch_catalog_candidate
 
-    write_stitch_catalog_candidate(
-        repo_root,
-        run_id=run_id,
-        manifest_id=manifest_id,
-        files_added=files_added,
-    )
+        write_stitch_catalog_candidate(
+            repo_root,
+            run_id=run_id,
+            manifest_id=manifest_id,
+            files_added=files_added,
+        )
     return True
+
+
+def emit_stitch_stages_stub(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    repo_root: Path,
+    run_created_metadata: dict[str, Any],
+    stitch_meta: dict[str, Any],
+    prior_events: list[dict[str, Any]],
+) -> bool:
+    """Emit stitch plan/apply (or failed). Returns True if stitch.applied was emitted."""
+    manifest_id = str(uuid4())
+    manifest = _stub_manifest(manifest_id)
+    return emit_stitch_stages_for_manifest(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        repo_root=repo_root,
+        run_created_metadata=run_created_metadata,
+        stitch_meta=stitch_meta,
+        prior_events=prior_events,
+        manifest=manifest,
+        wiring_delta_summary=(
+            "Stub transplant: add minimal auth helper modules from indexed pattern."
+        ),
+    )

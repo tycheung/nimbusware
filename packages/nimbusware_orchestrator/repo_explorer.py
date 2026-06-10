@@ -38,7 +38,11 @@ class RepoExploreResult:
 
 
 def run_repo_explore(workspace: Path, *, max_files: int = 200) -> RepoExploreResult:
-    from nimbusware_orchestrator.repo_graph_tools import find_similar_symbols, list_orphans
+    from nimbusware_orchestrator.repo_graph_tools import (
+        find_similar_symbols,
+        list_module_deps,
+        list_orphans,
+    )
 
     graph = build_code_graph(workspace, max_files=max_files)
     findings: list[RepoExploreFinding] = []
@@ -77,6 +81,17 @@ def run_repo_explore(workspace: Path, *, max_files: int = 200) -> RepoExploreRes
                 RepoExploreFinding(
                     kind="similar_symbols",
                     message=f"Similar symbols near {node.path}",
+                    path=node.path,
+                    severity="info",
+                ),
+            )
+        deps = list_module_deps(workspace, node.path)
+        dep_list = deps.data.get("dependencies") if isinstance(deps.data, dict) else None
+        if isinstance(dep_list, list) and dep_list:
+            findings.append(
+                RepoExploreFinding(
+                    kind="module_deps",
+                    message=f"{len(dep_list)} import dep(s) in {node.path}",
                     path=node.path,
                     severity="info",
                 ),

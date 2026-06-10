@@ -316,13 +316,33 @@ def discover_surfaces_runtime(
     return InteractionSurfaceMap(version="1", surfaces=surfaces, source="runtime_crawl")
 
 
+def exploratory_crawl_limits() -> tuple[int, int]:
+    from nimbusware_env.env_flags import env_str
+
+    clicks_raw = env_str("NIMBUSWARE_FACTORY_EXPLORATORY_MAX_CLICKS", "12")
+    depth_raw = env_str("NIMBUSWARE_FACTORY_EXPLORATORY_MAX_DEPTH", "3")
+    try:
+        max_clicks = max(1, min(64, int(clicks_raw)))
+    except ValueError:
+        max_clicks = 12
+    try:
+        max_depth = max(0, min(8, int(depth_raw)))
+    except ValueError:
+        max_depth = 3
+    return max_clicks, max_depth
+
+
 def exploratory_put_crawl(
     preview_base_url: str,
     *,
-    max_clicks: int = 8,
-    max_depth: int = 2,
+    max_clicks: int | None = None,
+    max_depth: int | None = None,
 ) -> InteractionSurfaceMap:
     """Bounded Playwright link walk for factory T3 depth."""
+    if max_clicks is None or max_depth is None:
+        default_clicks, default_depth = exploratory_crawl_limits()
+        max_clicks = default_clicks if max_clicks is None else max_clicks
+        max_depth = default_depth if max_depth is None else max_depth
     from nimbusware_orchestrator.fleet_playwright import fleet_playwright_page
 
     base = preview_base_url.rstrip("/")
@@ -349,6 +369,25 @@ def exploratory_put_crawl(
             if sid not in seen:
                 seen.add(sid)
                 surfaces.append(ISMSurface(surface_id=sid, kind="page", path=path))
+            for form in page.query_selector_all("form"):
+                form_id = form.get_attribute("id") or form.get_attribute("name") or "form"
+                fid = f"explore-form:{path}:{form_id}"
+                if fid not in seen:
+                    seen.add(fid)
+                    surfaces.append(
+                        ISMSurface(surface_id=fid, kind="form", path=path),
+                    )
+            for control in page.query_selector_all(
+                "button, [role=button], input[type=submit], [data-testid]",
+            ):
+                test_id = control.get_attribute("data-testid")
+                label = test_id or control.get_attribute("name") or control.tag_name
+                cid = f"explore-control:{path}:{label}"
+                if cid not in seen:
+                    seen.add(cid)
+                    surfaces.append(
+                        ISMSurface(surface_id=cid, kind="control", path=path),
+                    )
             if depth >= max_depth:
                 continue
             for anchor in page.query_selector_all("a[href]"):

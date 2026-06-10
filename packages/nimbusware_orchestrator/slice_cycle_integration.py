@@ -716,6 +716,8 @@ def run_research_transplant_track(
     *,
     repo_root: Path | None = None,
 ) -> bool:
+    import json
+
     from agent_core.models.events_payloads import (
         ResearchBriefEmittedPayload,
         ResearchBriefSourcePayload,
@@ -725,29 +727,92 @@ def run_research_transplant_track(
     from nimbusware_extensions.phase2 import UniversalCritiqueRouter
     from nimbusware_orchestrator.registry import RoleRegistry
     from nimbusware_research.artifacts import persist_research_brief
+    from nimbusware_research.bundle_promotion import list_pending_stitch_catalog_candidates
     from nimbusware_research.models import ResearchBrief, ResearchBriefSource
-    from nimbusware_research.stages_stitch import emit_stitch_stages_stub
+    from nimbusware_research.pattern_index import pattern_index_path
+    from nimbusware_research.stages_stitch import (
+        emit_stitch_stages_for_manifest,
+        emit_stitch_stages_stub,
+        manifest_from_catalog_candidate,
+    )
+    from nimbusware_research.stitch_models import TransplantManifest
 
     rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
-    root = repo_root or find_repo_root(start=workspace)
-    reg = RoleRegistry.from_yaml(root / "configs" / "roles.yaml")
-    router = UniversalCritiqueRouter.from_yaml(
-        root / "configs" / "personas" / "critique_pairings.yaml"
+    catalog_root = (
+        workspace.resolve()
+        if (workspace / ".nimbusware" / "research").is_dir()
+        else (repo_root or find_repo_root(start=workspace)).resolve()
     )
+    config_root = (repo_root or find_repo_root(start=workspace)).resolve()
+    reg = RoleRegistry.from_yaml(config_root / "configs" / "roles.yaml")
+    router = UniversalCritiqueRouter.from_yaml(
+        config_root / "configs" / "personas" / "critique_pairings.yaml"
+    )
+    pending = list_pending_stitch_catalog_candidates(catalog_root, limit=1)
+    candidate = pending[0] if pending else None
+    manifest: TransplantManifest | None = None
+    brief_url = "stub://council/research_transplant"
+    brief_summary = "Council-selected research transplant brief (fallback stub)."
+    write_catalog_on_apply = True
+    wiring_summary: str | None = None
+    if candidate is not None:
+        manifest = manifest_from_catalog_candidate(catalog_root, candidate)
+        run_key = str(candidate.get("run_id") or "unknown")
+        candidate_id = str(candidate.get("candidate_id") or "unknown")
+        brief_url = f"catalog://{run_key}/{candidate_id}"
+        brief_summary = str(
+            candidate.get("title") or candidate.get("summary") or "Stitch catalog transplant",
+        )
+        write_catalog_on_apply = False
+        wiring_summary = (
+            f"Integrate pending stitch catalog candidate {candidate_id} "
+            f"(manifest {manifest.manifest_id})."
+        )
+    else:
+        pattern_path = pattern_index_path(catalog_root)
+        if pattern_path.is_file():
+            try:
+                loaded = json.loads(pattern_path.read_text(encoding="utf-8"))
+                entries = (
+                    [e for e in loaded if isinstance(e, dict)] if isinstance(loaded, list) else []
+                )
+            except (OSError, json.JSONDecodeError):
+                entries = []
+            if entries:
+                entry = entries[-1]
+                brief_url = str(entry.get("repo_url") or brief_url)
+                pattern_id = str(entry.get("pattern_id") or "pattern")
+                brief_summary = f"Research transplant from indexed pattern {pattern_id}."
+                paths_raw = entry.get("paths") or []
+                paths = (
+                    tuple(str(p) for p in paths_raw if p is not None)
+                    if isinstance(paths_raw, list)
+                    else ()
+                )
+                license_name = str(entry.get("license") or "MIT")
+                manifest = TransplantManifest(
+                    manifest_id=f"pattern-{pattern_id[:24]}",
+                    source_kind="oss",
+                    source_tree_hash=f"pattern:{pattern_id[:16]}",
+                    file_paths=paths,
+                    license_paths=("LICENSE",),
+                    required_env_vars=(),
+                )
+                wiring_summary = f"Transplant paths from pattern index ({license_name})."
     brief = ResearchBrief(
         brief_kind="code",
         domain_tag="transplant",
-        summary="Council-selected research transplant brief (stub).",
+        summary=brief_summary,
         artifact_id=str(uuid4()),
         sources=(
             ResearchBriefSource(
-                url="stub://council/research_transplant",
+                url=brief_url,
                 license="MIT",
                 trust_tier="medium",
             ),
         ),
     )
-    persist_research_brief(root, brief)
+    persist_research_brief(catalog_root, brief)
     store.append(
         ResearchBriefEmittedEvent(
             event_type=EventType.RESEARCH_BRIEF_EMITTED,
@@ -780,12 +845,26 @@ def run_research_transplant_track(
                 meta = block
             break
     stitch_meta = meta.get("stitch") if isinstance(meta.get("stitch"), dict) else {}
+    if manifest is not None:
+        return emit_stitch_stages_for_manifest(
+            store,
+            reg,
+            router,
+            run_id=rid,
+            repo_root=catalog_root,
+            run_created_metadata=meta,
+            stitch_meta=stitch_meta,
+            prior_events=rows,
+            manifest=manifest,
+            wiring_delta_summary=wiring_summary,
+            write_catalog_on_apply=write_catalog_on_apply,
+        )
     return emit_stitch_stages_stub(
         store,
         reg,
         router,
         run_id=rid,
-        repo_root=root,
+        repo_root=catalog_root,
         run_created_metadata=meta,
         stitch_meta=stitch_meta,
         prior_events=rows,

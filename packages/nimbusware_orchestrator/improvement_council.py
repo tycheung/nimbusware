@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 from nimbusware_orchestrator.repo_inventory import RepoInventory, build_repo_inventory
@@ -41,12 +42,10 @@ class ImprovementCouncilResult:
         }
 
 
-def run_improvement_council(workspace) -> ImprovementCouncilResult:
-    from pathlib import Path
-
+def run_improvement_council(workspace: Path) -> ImprovementCouncilResult:
     from nimbusware_orchestrator.improvement_scope import filter_votes_by_scope, infer_repo_scope
 
-    ws = Path(workspace)
+    ws = workspace.resolve()
     inventory = build_repo_inventory(ws)
     health = inventory.health_score
     debt_boost = max(0.0, (70.0 - health) / 100.0)
@@ -75,7 +74,11 @@ def run_improvement_council(workspace) -> ImprovementCouncilResult:
                 f"{inventory.cohesion_proposals} cohesion proposals (health={health})",
             ),
         )
-    if health >= 75:
+    from nimbusware_research.bundle_promotion import list_pending_stitch_catalog_candidates
+    from nimbusware_research.pattern_index import pattern_index_path
+
+    pending = list_pending_stitch_catalog_candidates(ws, limit=5)
+    if health >= 75 and not pending:
         votes.append(
             CouncilVote(
                 ImprovementTrack.IMPLEMENT_PLANNED,
@@ -83,6 +86,31 @@ def run_improvement_council(workspace) -> ImprovementCouncilResult:
                 f"inventory healthy ({health}) — continue backlog",
             ),
         )
+    if pending and health >= 50:
+        votes.append(
+            CouncilVote(
+                ImprovementTrack.RESEARCH_TRANSPLANT,
+                min(0.96, 0.9 + len(pending) * 0.02),
+                f"{len(pending)} pending stitch catalog candidate(s) (health={health})",
+            ),
+        )
+    pattern_path = pattern_index_path(ws)
+    if pattern_path.is_file() and health >= 60 and inventory.orphan_count <= 3:
+        try:
+            import json
+
+            loaded = json.loads(pattern_path.read_text(encoding="utf-8"))
+            pattern_count = len(loaded) if isinstance(loaded, list) else 0
+        except (OSError, json.JSONDecodeError):
+            pattern_count = 0
+        if pattern_count > 0 and not pending:
+            votes.append(
+                CouncilVote(
+                    ImprovementTrack.RESEARCH_TRANSPLANT,
+                    min(0.82, 0.52 + pattern_count * 0.04),
+                    f"{pattern_count} indexed research pattern(s) (health={health})",
+                ),
+            )
     if not votes:
         votes.append(
             CouncilVote(ImprovementTrack.IMPLEMENT_PLANNED, 0.5, "default backlog track"),

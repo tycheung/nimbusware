@@ -25,6 +25,7 @@ _SCOPE_MATRIX: dict[RepoScope, frozenset[ImprovementTrack]] = {
             ImprovementTrack.REFACTOR_COHESION,
             ImprovementTrack.IMPROVE_COVERAGE,
             ImprovementTrack.IMPLEMENT_PLANNED,
+            ImprovementTrack.RESEARCH_TRANSPLANT,
         },
     ),
     RepoScope.HARDEN: frozenset(

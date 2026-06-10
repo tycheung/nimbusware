@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from nimbusware_orchestrator.autopilot_profiles import preset_for_level, resolve_autopilot_profile
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
-from nimbusware_orchestrator.resolution_council import classify_hard_block, run_resolution_council
+from nimbusware_orchestrator.resolution_council import (
+    aggregate_resolution_soak_metrics,
+    classify_hard_block,
+    run_resolution_council,
+)
 
 
 def test_interjection_queue_next_before_last() -> None:
@@ -42,3 +46,37 @@ def test_resolution_council_accord_at_high_autopilot() -> None:
 def test_classify_hard_block() -> None:
     assert classify_hard_block("auth_bypass") is True
     assert classify_hard_block("style") is False
+
+
+def test_resolution_council_emits_soak_metrics() -> None:
+    result = run_resolution_council(
+        findings=[{"kind": "style", "message": "naming", "severity": "info"}],
+        autopilot_level=4,
+    )
+    assert result.soak is not None
+    block = result.to_dict()
+    assert block["soak"]["finding_count"] == 1
+    assert block["soak"]["debate_first"] is True
+
+
+def test_aggregate_resolution_soak_metrics() -> None:
+    rows = [
+        {
+            "metadata": {
+                "resolution_council": {
+                    "soak": {"debate_first": True, "accord": False, "hard_block": False},
+                },
+            },
+        },
+        {
+            "metadata": {
+                "resolution_council": {
+                    "soak": {"debate_first": False, "accord": True, "hard_block": False},
+                },
+            },
+        },
+    ]
+    agg = aggregate_resolution_soak_metrics(rows)
+    assert agg["resolution_council_runs"] == 2
+    assert agg["debate_first_rate"] == 0.5
+    assert agg["accord_rate"] == 0.5
