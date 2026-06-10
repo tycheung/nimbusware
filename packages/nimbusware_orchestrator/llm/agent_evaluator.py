@@ -7,7 +7,7 @@ from uuid import UUID
 import httpx
 from pydantic import ValidationError
 
-from nimbusware_orchestrator.llm.common import *  # noqa: F403
+from nimbusware_orchestrator.llm.common import LlmAgentEvaluatorPolicyResponse
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
