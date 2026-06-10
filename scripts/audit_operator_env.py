@@ -19,6 +19,16 @@ ENV_SETITEM = re.compile(
 SETENV = re.compile(
     r'(?:monkeypatch\.)?setenv\(\s*["\']((?:NIMBUSWARE|OLLAMA|PORT)[A-Z0-9_]*)["\']',
 )
+ENV_HELPER = re.compile(
+    r"(?:env_str|env_bool|env_truthy|env_falsy|env_force_on|env_force_off|resolve_str|resolve_int)"
+    r'\(\s*["\']((?:NIMBUSWARE|OLLAMA|PORT)[A-Z0-9_]*)["\']',
+)
+INT_ENV = re.compile(
+    r'_int_env\(\s*["\']((?:NIMBUSWARE|OLLAMA|PORT)[A-Z0-9_]*)["\']',
+)
+TRUTHY_ENV = re.compile(
+    r'_truthy_env\(\s*["\']((?:NIMBUSWARE|OLLAMA|PORT)[A-Z0-9_]*)["\']',
+)
 
 # Files allowed to read install vars before Postgres store is available.
 BOOTSTRAP_REL = frozenset(
@@ -99,7 +109,7 @@ def audit(*, strict_writes: bool = True) -> list[str]:
             continue
         rel = _rel(py)
         text = py.read_text(encoding="utf-8", errors="ignore")
-        for pat in (ENV_GET, SETENV):
+        for pat in (ENV_GET, SETENV, ENV_HELPER, INT_ENV, TRUTHY_ENV):
             for m in pat.finditer(text):
                 key = m.group(1)
                 if key not in CATALOG:
@@ -107,9 +117,10 @@ def audit(*, strict_writes: bool = True) -> list[str]:
                     continue
                 scope = CATALOG[key].scope
                 if rel not in BOOTSTRAP_REL and scope == SettingScope.INSTALL:
-                    errors.append(
-                        f"{rel}: install key {key!r} must use env_flags/bootstrap helpers",
-                    )
+                    if pat in (ENV_GET, SETENV):
+                        errors.append(
+                            f"{rel}: install key {key!r} must use env_flags/bootstrap helpers",
+                        )
         if strict_writes:
             for m in ENV_SETITEM.finditer(text):
                 key = m.group(1)
