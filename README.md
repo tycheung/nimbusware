@@ -304,7 +304,8 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - Rules-first classifier (`nimbusware_maker.intent_classifier`) with optional LLM when `NIMBUSWARE_INTENT_CLASSIFIER_MODEL` is set; rules hard-override unsafe LLM routes
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` — mapped to workflow profiles (`quick_local`, `patch`, `micro_slice` or project default, `campaign_micro_slice`, `campaign_factory_zero_touch`); `work_type` + `work_type_source` (`classifier`, `operator_override`, `ide`) frozen on `run.created`
 - Patch attachments: target paths, failing test, stack trace → `patch_context` on start; mid-run steering via `[steer]` interjection (chat) or Progress interjection ribbon
-- APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`; MCP parity: `nimbusware_classify_intent`, `nimbusware_patch`, `nimbusware_interject` ([docs/ide-bridge.md](docs/ide-bridge.md)); ADR [020](docs/adr/020-unified-chat-work-type-routing.md)
+- Congruent thread: classifier, run status, and steering stay on `#/chat` (no mandatory Progress redirect); fork from any user turn; branch picker retains sibling paths ([ADR 021](docs/adr/021-conversation-dag-branching.md))
+- APIs: `POST /v1/chat/sessions`, `GET /v1/chat/sessions`, `POST /v1/chat/sessions/{id}/turns`, `POST .../fork`, `PUT .../active-leaf`, `GET .../graph`, `POST .../turns/{id}/switch-mode`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`; MCP: `nimbusware_classify_intent`, `nimbusware_patch`, `nimbusware_interject`, `nimbusware_chat_graph`, `nimbusware_chat_fork`, `nimbusware_chat_select_branch` ([docs/ide-bridge.md](docs/ide-bridge.md)); ADR [020](docs/adr/020-unified-chat-work-type-routing.md), [021](docs/adr/021-conversation-dag-branching.md)
 - **Build** tab redirects to Chat for new runs; legacy Build flow remains available via API
 
 **Build** (API / catalog)

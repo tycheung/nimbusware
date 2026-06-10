@@ -2,6 +2,7 @@ import { apiJson, toast } from "../api-client.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
+const SESSION_KEY = "maker_chat_session_id";
 
 function workTypeLabel(value) {
   if (!value || value === "auto") return "Auto";
@@ -29,18 +30,47 @@ function attachmentPayload(root) {
 }
 
 const ESCALATION_SLICE_OFFER =
-  "Patch did not pass — widen to a micro-slice run? Use the Slice work type or type `[patch]` to retry a smaller fix.";
+  "Patch did not pass — widen to a micro-slice run? Switch work type to Slice or use Restore from here to branch.";
 
-function appendThreadMessage(thread, { role, text, testId }) {
+function renderTurnLine(thread, turn) {
   const li = document.createElement("li");
+  const role = turn.role === "user" ? "user" : "system";
   li.className = `chat-thread-line chat-thread-line--${role}`;
-  if (testId) li.dataset.testid = testId;
+  li.dataset.turnId = turn.turn_id || "";
+  if (turn.turn_id) li.dataset.testid = `maker-chat-turn-${turn.turn_id}`;
+
   const label = document.createElement("strong");
   label.textContent = role === "user" ? "You" : "System";
   li.appendChild(label);
-  li.appendChild(document.createTextNode(` ${text}`));
+  li.appendChild(document.createTextNode(` ${turn.text || ""}`));
+
+  if (turn.role === "user" && turn.turn_id) {
+    const actions = document.createElement("span");
+    actions.className = "chat-turn-actions";
+    const forkBtn = document.createElement("button");
+    forkBtn.type = "button";
+    forkBtn.className = "linkish";
+    forkBtn.textContent = "Restore from here";
+    forkBtn.dataset.testid = `maker-chat-fork-${turn.turn_id}`;
+    forkBtn.addEventListener("click", () => li.dispatchEvent(new CustomEvent("chat-fork", { bubbles: true })));
+    actions.appendChild(forkBtn);
+    li.appendChild(actions);
+  }
   thread.appendChild(li);
   thread.scrollTop = thread.scrollHeight;
+}
+
+function renderMessagesFromSession(root, session) {
+  const thread = root.querySelector("#chat-thread");
+  if (!thread) return;
+  thread.replaceChildren();
+  for (const msg of session.messages || []) {
+    renderTurnLine(thread, {
+      turn_id: msg.turn_id,
+      role: msg.role === "user" ? "user" : "system",
+      text: msg.text,
+    });
+  }
 }
 
 function renderClassifierCard(root, classification, { onAccept, onOverride }) {
@@ -66,18 +96,6 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
     card.appendChild(rationale);
   }
 
-  const signals = Array.isArray(classification.signals) ? classification.signals : [];
-  if (signals.length) {
-    const sigList = document.createElement("ul");
-    sigList.className = "chat-signals";
-    for (const sig of signals.slice(0, 5)) {
-      const li = document.createElement("li");
-      li.textContent = String(sig);
-      sigList.appendChild(li);
-    }
-    card.appendChild(sigList);
-  }
-
   const chips = document.createElement("div");
   chips.className = "actions chat-action-chips";
 
@@ -100,18 +118,70 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
 
   card.appendChild(chips);
   mount.appendChild(card);
+}
 
-  const thread = root.querySelector("#chat-thread");
-  if (thread) {
-    appendThreadMessage(thread, {
-      role: "system",
-      text: `Classifier suggests ${workTypeLabel(wt)}${classification.rationale ? ` — ${classification.rationale}` : ""}`,
-      testId: "maker-chat-classifier-thread",
-    });
+async function refreshBranchPanel(root, sessionId) {
+  const panel = root.querySelector("#chat-branch-panel");
+  if (!panel || !sessionId) return;
+  try {
+    const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`);
+    panel.replaceChildren();
+    if (!graph.branches?.length) {
+      panel.classList.add("hidden");
+      return;
+    }
+    panel.classList.remove("hidden");
+    const title = document.createElement("h4");
+    title.textContent = "Conversation branches";
+    panel.appendChild(title);
+    const list = document.createElement("ul");
+    list.className = "chat-branch-list";
+    for (const branch of graph.branches) {
+      for (const childId of branch.child_turn_ids || []) {
+        const node = (graph.nodes || []).find((n) => n.turn_id === childId);
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "linkish";
+        btn.textContent = node?.text?.slice(0, 60) || childId;
+        btn.dataset.testid = `maker-chat-branch-${childId}`;
+        btn.addEventListener("click", async () => {
+          const leaves = (graph.nodes || []).filter(
+            (n) => !graph.edges?.some((e) => e.from_turn_id === n.turn_id),
+          );
+          const leaf = leaves.find((n) => {
+            let cur = n.turn_id;
+            while (cur) {
+              if (cur === childId) return true;
+              const edge = graph.edges?.find((e) => e.to_turn_id === cur);
+              cur = edge?.from_turn_id;
+            }
+            return false;
+          });
+          if (!leaf) return;
+          const updated = await apiJson(
+            `/chat/sessions/${encodeURIComponent(sessionId)}/active-leaf`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ leaf_turn_id: leaf.turn_id }),
+            },
+          );
+          renderMessagesFromSession(root, updated);
+          await refreshBranchPanel(root, sessionId);
+          toast("Switched branch", "success");
+        });
+        li.appendChild(btn);
+        list.appendChild(li);
+      }
+    }
+    panel.appendChild(list);
+  } catch {
+    panel.classList.add("hidden");
   }
 }
 
-async function startRunFromSession(sessionId, workType, classification, root, projectId) {
+async function startRunFromSession(sessionId, workType, root, projectId) {
   const message = root.querySelector("#chat-message")?.value?.trim() || "";
   const patchContext = attachmentFields(root);
   const dropdown = root.querySelector("#chat-work-type")?.value || "auto";
@@ -142,11 +212,32 @@ async function startRunFromSession(sessionId, workType, classification, root, pr
     setActiveRun(projectId, runId);
   }
   syncRunIdToShell(runId);
+  const thread = root.querySelector("#chat-thread");
+  if (thread && body.turn) {
+    renderTurnLine(thread, { ...body.turn, role: "system" });
+  }
+  window.location.hash = `/chat?run_id=${encodeURIComponent(runId)}`;
   toast(`${workTypeLabel(workType)} run started`, "success");
-  window.location.hash = `/progress?run_id=${encodeURIComponent(runId)}`;
+  root.querySelector("#chat-classifier-mount")?.replaceChildren();
+  root.querySelector("#chat-message").value = "";
 }
 
-async function maybeOfferPatchEscalation(root, runId) {
+async function switchWorkType(root, sessionId, turnId, workType) {
+  const updated = await apiJson(
+    `/chat/sessions/${encodeURIComponent(sessionId)}/turns/${encodeURIComponent(turnId)}/switch-mode`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ work_type: workType }),
+    },
+  );
+  const select = root.querySelector("#chat-work-type");
+  if (select) select.value = workType;
+  renderMessagesFromSession(root, updated);
+  toast(`Mode: ${workTypeLabel(workType)}`, "success");
+}
+
+async function maybeOfferPatchEscalation(root, runId, sessionId) {
   if (!runId) return;
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
@@ -157,29 +248,35 @@ async function maybeOfferPatchEscalation(root, runId) {
       const meta = ev.metadata || {};
       if (ev.event_type === "run.created") {
         const wt = String(meta.work_type || "").toLowerCase();
-        const patchEff = meta.patch_effective;
-        patchRun = wt === "patch" || (patchEff && patchEff.enabled);
+        patchRun = wt === "patch" || Boolean(meta.patch_effective?.enabled);
       }
       const payload = ev.payload || {};
-      const stage = String(payload.stage_name || "");
-      if (stage === "slice.gate") {
-        const verdict = String(meta.slice_gate_verdict || "").toUpperCase();
-        if (verdict === "FAIL") patchFailed = true;
+      if (String(payload.stage_name || "") === "slice.gate") {
+        if (String(meta.slice_gate_verdict || "").toUpperCase() === "FAIL") patchFailed = true;
       }
-      if (stage === "slice.verify" && meta.verify_ok === false) patchFailed = true;
     }
     if (!patchRun || !patchFailed) return;
     const thread = root.querySelector("#chat-thread");
-    if (!thread) return;
-    const prior = thread.querySelector('[data-testid="maker-chat-escalation-slice"]');
-    if (prior) return;
-    appendThreadMessage(thread, {
-      role: "system",
-      text: ESCALATION_SLICE_OFFER,
-      testId: "maker-chat-escalation-slice",
+    if (!thread || thread.querySelector('[data-testid="maker-chat-escalation-slice"]')) return;
+    const li = document.createElement("li");
+    li.className = "chat-thread-line chat-thread-line--system";
+    li.dataset.testid = "maker-chat-escalation-slice";
+    li.textContent = ESCALATION_SLICE_OFFER;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Switch to Slice";
+    btn.dataset.testid = "maker-chat-escalate-slice";
+    btn.addEventListener("click", async () => {
+      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast(
+        (el) => el.classList.contains("chat-thread-line--user"),
+      );
+      const turnId = userTurn?.dataset?.turnId;
+      if (sessionId && turnId) await switchWorkType(root, sessionId, turnId, "slice");
     });
+    li.appendChild(btn);
+    thread.appendChild(li);
   } catch {
-    /* advisory only */
+    /* advisory */
   }
 }
 
@@ -192,11 +289,7 @@ async function steerActiveRun(root, runId, message) {
   });
   const thread = root.querySelector("#chat-thread");
   if (thread) {
-    appendThreadMessage(thread, {
-      role: "system",
-      text: "Steering queued for the active run.",
-      testId: "maker-chat-steer-queued",
-    });
+    renderTurnLine(thread, { role: "system", text: "Steering queued for the active run." });
   }
   toast("Steering queued", "success");
 }
@@ -220,7 +313,7 @@ export async function mountChat(root) {
         <legend>Attachments (optional)</legend>
         <label>File paths
           <textarea name="target_paths" id="chat-target-paths" rows="2"
-            data-testid="maker-chat-target-path" placeholder="src/foo.py (comma or newline separated)"></textarea>
+            data-testid="maker-chat-target-path" placeholder="src/foo.py"></textarea>
         </label>
         <label>Failing test
           <input name="failing_test" id="chat-failing-test" type="text"
@@ -231,8 +324,9 @@ export async function mountChat(root) {
             data-testid="maker-chat-stack-trace" placeholder="AssertionError: …"></textarea>
         </label>
       </fieldset>
-      <button type="submit" class="primary" data-testid="maker-chat-start">Start</button>
+      <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
     </form>
+    <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
     <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
     <div id="chat-classifier-mount"></div>`;
 
@@ -247,31 +341,41 @@ export async function mountChat(root) {
   const saved = sessionStorage.getItem("maker_active_project_id");
   if (saved && sel) sel.value = saved;
 
-  let sessionId = "";
+  let sessionId = sessionStorage.getItem(SESSION_KEY) || "";
   let lastClassification = null;
   let startPending = false;
 
+  async function ensureSession(projectId) {
+    if (sessionId) {
+      try {
+        const existing = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`);
+        if (existing.project_id === projectId) {
+          renderMessagesFromSession(root, existing);
+          await refreshBranchPanel(root, sessionId);
+          return sessionId;
+        }
+      } catch {
+        sessionId = "";
+      }
+    }
+    const session = await apiJson("/chat/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ project_id: projectId }),
+    });
+    sessionId = String(session.session_id || "");
+    sessionStorage.setItem(SESSION_KEY, sessionId);
+    return sessionId;
+  }
+
   async function runStart(workType) {
-    if (startPending) return;
+    if (startPending || !sessionId) return;
     startPending = true;
     const startBtn = root.querySelector('[data-testid="maker-chat-start"]');
     if (startBtn) startBtn.disabled = true;
     try {
       const projectId = String(root.querySelector("#chat-project-select")?.value || "");
-      if (!projectId) {
-        toast("Select a project", "error");
-        return;
-      }
-      if (!sessionId) {
-        const session = await apiJson("/chat/sessions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ project_id: projectId }),
-        });
-        sessionId = String(session.session_id || session.id || "");
-        if (!sessionId) throw new Error("Session response missing session_id");
-      }
-      await startRunFromSession(sessionId, workType, lastClassification, root, projectId);
+      await startRunFromSession(sessionId, workType, root, projectId);
     } catch (e) {
       toast(String(e.message || e), "error");
     } finally {
@@ -280,11 +384,27 @@ export async function mountChat(root) {
     }
   }
 
-  const params = new URLSearchParams(window.location.search);
+  root.querySelector("#chat-thread")?.addEventListener("chat-fork", async (ev) => {
+    const turnId = ev.target?.closest("[data-turn-id]")?.dataset?.turnId;
+    if (!turnId || !sessionId) return;
+    try {
+      const updated = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/fork`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ turn_id: turnId }),
+      });
+      renderMessagesFromSession(root, updated);
+      await refreshBranchPanel(root, sessionId);
+      toast("Forked — next message starts a new branch", "info");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+
   const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
-  const activeRunId = params.get("run_id") || hashParams.get("run_id") || "";
-  if (activeRunId) {
-    await maybeOfferPatchEscalation(root, activeRunId);
+  const activeRunId = hashParams.get("run_id") || "";
+  if (activeRunId && sessionId) {
+    await maybeOfferPatchEscalation(root, activeRunId, sessionId);
   }
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {
@@ -303,9 +423,7 @@ export async function mountChat(root) {
     }
 
     const runFromUrl =
-      new URLSearchParams(window.location.search).get("run_id") ||
-      new URLSearchParams(window.location.hash.split("?")[1] || "").get("run_id") ||
-      "";
+      new URLSearchParams(window.location.hash.split("?")[1] || "").get("run_id") || "";
     if (runFromUrl && !message.toLowerCase().startsWith("/run")) {
       try {
         await steerActiveRun(root, runFromUrl, message);
@@ -317,11 +435,6 @@ export async function mountChat(root) {
       }
     }
 
-    const thread = root.querySelector("#chat-thread");
-    if (thread) {
-      appendThreadMessage(thread, { role: "user", text: message, testId: "maker-chat-user-thread" });
-    }
-
     const dropdownWt = root.querySelector("#chat-work-type")?.value || "auto";
     const attachments = attachmentPayload(root);
     startPending = true;
@@ -329,43 +442,23 @@ export async function mountChat(root) {
     if (startBtn) startBtn.disabled = true;
 
     try {
-      const session = await apiJson("/chat/sessions", {
+      await ensureSession(projectId);
+      const turnResp = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/turns`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ project_id: projectId }),
+        body: JSON.stringify({ text: message, attachments }),
       });
-      sessionId = String(session.session_id || session.id || "");
-      if (!sessionId) throw new Error("Session response missing session_id");
+      const session = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`);
+      renderMessagesFromSession(root, session);
+      await refreshBranchPanel(root, sessionId);
 
-      const classifyResp = await apiJson("/chat/classify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionId,
-          project_id: projectId,
-          message,
-          attachments,
-        }),
-      });
-      const classification = classifyResp.classification || classifyResp;
+      const classification = turnResp.classification || {};
       lastClassification = classification;
 
       if (dropdownWt !== "auto") {
-        await startRunFromSession(sessionId, dropdownWt, classification, root, projectId);
-        return;
-      }
-
-      const suggested = String(classification.work_type || "slice");
-      const confidence = Number(classification.confidence ?? 1);
-      if (confidence >= 0.5) {
-        renderClassifierCard(root, classification, {
-          onAccept: (wt) => runStart(wt),
-          onOverride: (wt) => {
-            const select = root.querySelector("#chat-work-type");
-            if (select) select.value = wt;
-            runStart(wt);
-          },
-        });
+        startPending = false;
+        if (startBtn) startBtn.disabled = false;
+        await runStart(dropdownWt);
         return;
       }
 
@@ -377,7 +470,10 @@ export async function mountChat(root) {
           runStart(wt);
         },
       });
-      toast("Low confidence — confirm work type before starting", "info");
+      const confidence = Number(classification.confidence ?? 1);
+      if (confidence < 0.5) {
+        toast("Low confidence — confirm work type before starting", "info");
+      }
     } catch (e) {
       toast(String(e.message || e), "error");
     } finally {
@@ -385,4 +481,12 @@ export async function mountChat(root) {
       if (startBtn) startBtn.disabled = false;
     }
   });
+
+  if (saved) {
+    try {
+      await ensureSession(saved);
+    } catch {
+      /* fresh session on send */
+    }
+  }
 }

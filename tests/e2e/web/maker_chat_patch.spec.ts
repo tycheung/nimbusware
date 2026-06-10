@@ -15,29 +15,44 @@ test("chat tab patch flow creates session, classifies, and starts", async ({ pag
     }),
   );
 
-  await page.route("**/v1/chat/sessions", async (route) => {
-    if (route.request().method() !== "POST") return route.continue();
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({ session_id: SESSION_ID }),
-    });
+  await page.route("**/v1/chat/sessions**", async (route) => {
+    const url = route.request().url();
+    if (route.request().method() === "POST" && url.endsWith("/sessions")) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ session_id: SESSION_ID, project_id: PROJECT_ID, messages: [] }),
+      });
+      return;
+    }
+    if (route.request().method() === "GET" && url.includes(SESSION_ID)) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          session_id: SESSION_ID,
+          project_id: PROJECT_ID,
+          messages: [{ role: "user", text: "Fix the failing test", turn_id: "turn-1" }],
+        }),
+      });
+      return;
+    }
+    if (url.includes("/graph")) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ session_id: SESSION_ID, nodes: [], edges: [], branches: [] }),
+      });
+      return;
+    }
+    return route.continue();
   });
 
-  await page.route("**/v1/chat/classify", async (route) => {
+  await page.route(`**/v1/chat/sessions/${SESSION_ID}/turns`, async (route) => {
     if (route.request().method() !== "POST") return route.continue();
     const body = route.request().postDataJSON() as Record<string, unknown>;
-    expect(body.message).toContain("failing test");
-    expect(body.attachments).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          failing_test: "tests/test_login.py::test_bad",
-          stack_trace: "AssertionError",
-        }),
-      ]),
-    );
+    expect(body.text).toContain("failing test");
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
+        message: { role: "user", text: body.text, turn_id: "turn-1" },
         classification: {
           work_type: "patch",
           confidence: 0.92,
@@ -55,7 +70,10 @@ test("chat tab patch flow creates session, classifies, and starts", async ({ pag
     expect(body.work_type).toBe("patch");
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ run_id: RUN_ID }),
+      body: JSON.stringify({
+        run_id: RUN_ID,
+        turn: { role: "run_status", text: "Started patch run (patch).", turn_id: "turn-2" },
+      }),
     });
   });
 
@@ -74,7 +92,7 @@ test("chat tab patch flow creates session, classifies, and starts", async ({ pag
   await expect(page.getByTestId("maker-chat-classifier-card")).toContainText("Patch");
   await page.getByTestId("maker-chat-accept-chip").click();
 
-  await expect(page).toHaveURL(new RegExp(`run_id=${RUN_ID.replace(/-/g, "\\-")}`), {
+  await expect(page).toHaveURL(new RegExp(`#/chat.*run_id=${RUN_ID.replace(/-/g, "\\-")}`), {
     timeout: 10_000,
   });
 });

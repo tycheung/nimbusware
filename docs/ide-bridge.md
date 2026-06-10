@@ -55,5 +55,8 @@ Add to your MCP settings:
 | `nimbusware_patch` | `POST /v1/runs` with `workflow_profile=patch`, `work_type_source=ide`, then lifecycle `start` + `slice?mode=auto` |
 | `nimbusware_interject` | Enqueue steering on an active run; prefix messages with `[patch]`, `[steer]`, or `[skip]` (or rely on queue semantics) |
 | `nimbusware_run_tests` | Targeted slice tests (`POST /v1/runs/{id}/maker/run-tests`) — uses `patch_context.failing_test` when set |
+| `nimbusware_chat_graph` | `GET /v1/chat/sessions/{id}/graph` — full conversation DAG |
+| `nimbusware_chat_fork` | `POST /v1/chat/sessions/{id}/fork` — restore from turn, retain sibling branches |
+| `nimbusware_chat_select_branch` | `PUT /v1/chat/sessions/{id}/active-leaf` — navigate to branch tip |
 
 Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

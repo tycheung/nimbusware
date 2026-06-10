@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from nimbusware_client.http import get_json, post_json
+from nimbusware_client.http import get_json, post_json, put_response
 
 TOOL_SPECS: list[dict[str, Any]] = [
     {
@@ -269,6 +269,39 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "required": ["run_id"],
         },
     },
+    {
+        "name": "nimbusware_chat_graph",
+        "description": "Fetch conversation DAG for a chat session.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"session_id": {"type": "string"}},
+            "required": ["session_id"],
+        },
+    },
+    {
+        "name": "nimbusware_chat_fork",
+        "description": "Fork a chat session from a prior turn (non-destructive branch).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string"},
+                "turn_id": {"type": "string"},
+            },
+            "required": ["session_id", "turn_id"],
+        },
+    },
+    {
+        "name": "nimbusware_chat_select_branch",
+        "description": "Navigate to an existing branch leaf in a chat session.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string"},
+                "leaf_turn_id": {"type": "string"},
+            },
+            "required": ["session_id", "leaf_turn_id"],
+        },
+    },
 ]
 
 
@@ -282,6 +315,30 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _call_classify_tool(arguments)
     if name == "nimbusware_patch":
         return _call_patch_tool(arguments)
+    if name == "nimbusware_chat_graph":
+        session_id = str(arguments.get("session_id") or "").strip()
+        if not session_id:
+            raise ValueError("session_id is required")
+        return _text_result(get_json(f"/chat/sessions/{session_id}/graph"))
+    if name == "nimbusware_chat_fork":
+        session_id = str(arguments.get("session_id") or "").strip()
+        turn_id = str(arguments.get("turn_id") or "").strip()
+        if not session_id or not turn_id:
+            raise ValueError("session_id and turn_id are required")
+        return _text_result(
+            post_json(f"/chat/sessions/{session_id}/fork", {"turn_id": turn_id}),
+        )
+    if name == "nimbusware_chat_select_branch":
+        session_id = str(arguments.get("session_id") or "").strip()
+        leaf_turn_id = str(arguments.get("leaf_turn_id") or "").strip()
+        if not session_id or not leaf_turn_id:
+            raise ValueError("session_id and leaf_turn_id are required")
+        resp = put_response(
+            f"/chat/sessions/{session_id}/active-leaf",
+            {"leaf_turn_id": leaf_turn_id},
+        )
+        leaf_body = resp.json()
+        return _text_result(leaf_body if isinstance(leaf_body, dict) else {"data": leaf_body})
     if name in ("nimbusware_list_context_artifacts", "nimbusware_create_context_artifact"):
         return _call_project_tool(name, arguments)
     if name in (

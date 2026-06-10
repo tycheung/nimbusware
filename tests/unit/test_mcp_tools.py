@@ -12,6 +12,9 @@ def test_tool_specs_include_required_tools() -> None:
     names = {t["name"] for t in TOOL_SPECS}
     assert names == {
         "nimbusware_apply_slice",
+        "nimbusware_chat_fork",
+        "nimbusware_chat_graph",
+        "nimbusware_chat_select_branch",
         "nimbusware_classify_intent",
         "nimbusware_interject",
         "nimbusware_maker_pending",

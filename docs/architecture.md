@@ -28,6 +28,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [018-improvement-council.md](adr/018-improvement-council.md) | Continuous improvement council |
 | [019-debate-first-resolution.md](adr/019-debate-first-resolution.md) | Debate-first gate resolution |
 | [020-unified-chat-work-type-routing.md](adr/020-unified-chat-work-type-routing.md) | Unified Maker chat, work-type routing, patch lane |
+| [021-conversation-dag-branching.md](adr/021-conversation-dag-branching.md) | Persistent conversation DAG, fork/branch navigation |
 
 Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
 
