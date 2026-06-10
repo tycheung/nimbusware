@@ -148,7 +148,6 @@ def extended_defs() -> tuple[SettingDef, ...]:
 
     install = (
         _install("NIMBUSWARE_API_HOST", "API bind host", default="0.0.0.0"),
-        _install("NIMBUSWARE_API_HOST", "Legacy API bind host"),
         _install(
             "NIMBUSWARE_UI",
             "Desktop UI mode",
@@ -708,17 +707,8 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _USER,
             _STR,
             "",
-            "Workflow profile (legacy)",
-            "Legacy alias for default workflow profile.",
-            "User — maker runtime",
-        ),
-        SettingDef(
-            "NIMBUSWARE_WORKFLOW_PROFILE",
-            _USER,
-            _STR,
-            "",
-            "Nimbusware workflow profile (legacy)",
-            "Legacy Nimbusware workflow profile name.",
+            "Workflow profile (legacy alias)",
+            "Legacy alias for NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE.",
             "User — maker runtime",
         ),
         SettingDef(

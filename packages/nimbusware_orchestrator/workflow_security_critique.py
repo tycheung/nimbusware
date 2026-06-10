@@ -1,21 +1,14 @@
-"""Workflow YAML knobs for ``security_critique``."""
-
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_env.env_flags import env_tri_state, nimbusware_use_llm_explicitly_off
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
-
-
-@dataclass(frozen=True)
-class SecurityCritiqueBlock:
-    enabled: bool = False
-    stub: bool = True
-    llm_enabled: bool = False
-    severity_floor: str = "MEDIUM"
+from nimbusware_orchestrator.workflow_scan_critique import (
+    ScanCritiqueBlock as SecurityCritiqueBlock,
+    parse_scan_critique_workflow_block as _parse,
+    scan_critique_effective,
+    scan_critique_llm_effective,
+)
 
 
 def parse_security_critique_workflow_block(
@@ -24,40 +17,17 @@ def parse_security_critique_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> SecurityCritiqueBlock:
-    if workflow_profile is None or not str(workflow_profile).strip():
-        return SecurityCritiqueBlock()
-    key = str(workflow_profile).strip()
-    try:
-        raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
-    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
-        return SecurityCritiqueBlock()
-    block = raw.get("security_critique")
-    if not isinstance(block, dict):
-        return SecurityCritiqueBlock()
-    floor_raw = block.get("severity_floor", "MEDIUM")
-    return SecurityCritiqueBlock(
-        enabled=bool(block.get("enabled", False)),
-        stub=bool(block.get("stub", True)),
-        llm_enabled=bool(block.get("llm_enabled", False)),
-        severity_floor=str(floor_raw).strip().upper() or "MEDIUM",
+    return _parse(
+        repo_root,
+        workflow_profile,
+        "security_critique",
+        config_materializer=config_materializer,
     )
 
 
 def security_critique_effective(block: SecurityCritiqueBlock) -> bool:
-    tri = env_tri_state("NIMBUSWARE_SECURITY_CRITIQUE")
-    if tri == "off":
-        return False
-    if tri == "on":
-        return True
-    return block.enabled
+    return scan_critique_effective(block, "NIMBUSWARE_SECURITY_CRITIQUE")
 
 
 def security_critique_llm_branch_effective(block: SecurityCritiqueBlock) -> bool:
-    tri = env_tri_state("NIMBUSWARE_SECURITY_CRITIQUE_LLM")
-    if tri == "off":
-        return False
-    if tri == "on":
-        return True
-    if nimbusware_use_llm_explicitly_off():
-        return False
-    return block.llm_enabled
+    return scan_critique_llm_effective(block, "NIMBUSWARE_SECURITY_CRITIQUE_LLM")
