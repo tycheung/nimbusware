@@ -56,7 +56,6 @@ def build_v1_router() -> APIRouter:
     router.include_router(platform.router)
     router.include_router(memory_chunks.router)
     router.include_router(analytics.router)
-    router.include_router(platform_models.router)
     router.include_router(operator_settings.router)
     router.include_router(ollama.router)
     router.include_router(build_enterprise_router())
