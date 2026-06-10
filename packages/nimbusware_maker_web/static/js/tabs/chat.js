@@ -1,8 +1,16 @@
 import { apiJson, toast } from "../api-client.js";
+import { openSseStream, parseSseJson } from "../sse-client.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
+const RESUME_KEY = "maker_chat_resume_session";
+const THEATER_CAP = 12;
+
+function chatResumeEnabled() {
+  const raw = localStorage.getItem(RESUME_KEY);
+  return raw == null || raw === "1" || raw === "true";
+}
 
 function workTypeLabel(value) {
   if (!value || value === "auto") return "Auto";
@@ -31,6 +39,9 @@ function attachmentPayload(root) {
 
 const ESCALATION_SLICE_OFFER =
   "Patch did not pass — widen to a micro-slice run? Switch work type to Slice or use Restore from here to branch.";
+
+const ESCALATION_CAMPAIGN_OFFER =
+  "Slice keeps replanning or failing — promote to an autonomous campaign for broader delivery?";
 
 function renderTurnLine(thread, turn) {
   const li = document.createElement("li");
@@ -237,6 +248,96 @@ async function switchWorkType(root, sessionId, turnId, workType) {
   toast(`Mode: ${workTypeLabel(workType)}`, "success");
 }
 
+function appendTheaterLine(root, text) {
+  const mount = root.querySelector("#chat-theater-mount");
+  if (!mount || !text) return;
+  mount.hidden = false;
+  const list = mount.querySelector(".chat-theater-lines") || (() => {
+    const ul = document.createElement("ul");
+    ul.className = "chat-theater-lines";
+    mount.appendChild(ul);
+    return ul;
+  })();
+  const li = document.createElement("li");
+  li.className = "chat-thread-line chat-thread-line--theater";
+  li.dataset.testid = "maker-chat-theater-line";
+  li.textContent = String(text).slice(0, 500);
+  list.appendChild(li);
+  while (list.children.length > THEATER_CAP) {
+    list.removeChild(list.firstChild);
+  }
+  list.scrollTop = list.scrollHeight;
+}
+
+function attachChatTheaterStream(root, runId) {
+  if (!runId) return null;
+  const mount = root.querySelector("#chat-theater-mount");
+  if (mount) {
+    mount.removeAttribute("hidden");
+    mount.open = true;
+  }
+  return openSseStream(`/runs/${encodeURIComponent(runId)}/theater/stream`, {
+    onMessage: (ev) => {
+      const data = parseSseJson(ev);
+      if (data?.message) appendTheaterLine(root, data.message);
+      else if (Array.isArray(data?.messages)) {
+        for (const msg of data.messages) appendTheaterLine(root, msg);
+      }
+    },
+  });
+}
+
+async function maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun) {
+  if (!runId) return;
+  try {
+    const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
+    const events = timeline.events || [];
+    let sliceRun = false;
+    let gateFail = false;
+    let replanCount = 0;
+    for (const ev of events) {
+      const meta = ev.metadata || {};
+      if (ev.event_type === "run.created") {
+        sliceRun = String(meta.work_type || "").toLowerCase() === "slice";
+      }
+      const payload = ev.payload || {};
+      if (String(payload.stage_name || "") === "slice.gate") {
+        if (String(meta.slice_gate_verdict || "").toUpperCase() === "FAIL") gateFail = true;
+      }
+      if (ev.event_type === "slice.replan" || String(payload.stage_name || "") === "slice.replan") {
+        replanCount += 1;
+      }
+    }
+    if (!sliceRun || (!gateFail && replanCount < 2)) return;
+    const thread = root.querySelector("#chat-thread");
+    if (!thread || thread.querySelector('[data-testid="maker-chat-escalation-campaign"]')) return;
+    const li = document.createElement("li");
+    li.className = "chat-thread-line chat-thread-line--system";
+    li.dataset.testid = "maker-chat-escalation-campaign";
+    li.appendChild(document.createTextNode(ESCALATION_CAMPAIGN_OFFER));
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Switch to Campaign";
+    btn.dataset.testid = "maker-chat-escalate-campaign";
+    btn.addEventListener("click", async () => {
+      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast((el) =>
+        el.classList.contains("chat-thread-line--user"),
+      );
+      const turnId = userTurn?.dataset?.turnId;
+      if (sessionId && turnId) {
+        await switchWorkType(root, sessionId, turnId, "campaign");
+        const select = root.querySelector("#chat-work-type");
+        if (select) select.value = "campaign";
+        if (onStartRun) await onStartRun("campaign");
+      }
+    });
+    li.appendChild(btn);
+    thread.appendChild(li);
+  } catch {
+    /* advisory */
+  }
+}
+
 async function maybeOfferPatchEscalation(root, runId, sessionId) {
   if (!runId) return;
   try {
@@ -327,6 +428,9 @@ export async function mountChat(root) {
       <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
     </form>
     <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
+    <details id="chat-theater-mount" class="chat-theater-mount" hidden data-testid="maker-chat-theater-mount">
+      <summary>Run theater (live)</summary>
+    </details>
     <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
     <div id="chat-classifier-mount"></div>`;
 
@@ -341,11 +445,15 @@ export async function mountChat(root) {
   const saved = sessionStorage.getItem("maker_active_project_id");
   if (saved && sel) sel.value = saved;
 
-  let sessionId = sessionStorage.getItem(SESSION_KEY) || "";
+  let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";
   let lastClassification = null;
   let startPending = false;
+  let theaterHandle = null;
 
   async function ensureSession(projectId) {
+    if (!chatResumeEnabled()) {
+      sessionId = "";
+    }
     if (sessionId) {
       try {
         const existing = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`);
@@ -403,8 +511,16 @@ export async function mountChat(root) {
 
   const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
   const activeRunId = hashParams.get("run_id") || "";
-  if (activeRunId && sessionId) {
-    await maybeOfferPatchEscalation(root, activeRunId, sessionId);
+
+  async function offerRunEscalations(runId) {
+    if (!runId) return;
+    await maybeOfferPatchEscalation(root, runId, sessionId);
+    await maybeOfferSliceCampaignPromotion(root, runId, sessionId, (wt) => runStart(wt));
+  }
+
+  if (activeRunId) {
+    theaterHandle?.close();
+    theaterHandle = attachChatTheaterStream(root, activeRunId);
   }
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {
@@ -482,11 +598,27 @@ export async function mountChat(root) {
     }
   });
 
-  if (saved) {
+  if (saved && chatResumeEnabled()) {
     try {
       await ensureSession(saved);
     } catch {
       /* fresh session on send */
     }
   }
+
+  if (activeRunId) {
+    await offerRunEscalations(activeRunId);
+  }
+
+  chatUnmount = () => {
+    theaterHandle?.close();
+    theaterHandle = null;
+  };
+}
+
+let chatUnmount = () => {};
+
+export function unmountChat() {
+  chatUnmount();
+  chatUnmount = () => {};
 }

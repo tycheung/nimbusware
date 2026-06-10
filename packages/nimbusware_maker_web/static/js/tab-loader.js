@@ -1,4 +1,4 @@
-import { mountChat } from "./tabs/chat.js";
+import { mountChat, unmountChat } from "./tabs/chat.js";
 import { mountHome } from "./tabs/home.js";
 import { mountBuild } from "./tabs/build.js";
 import { mountPlan, unmountPlan } from "./tabs/plan.js";
@@ -28,6 +28,9 @@ export async function loadRoute(route) {
   }
   if (lastRoute === "/plan" && route !== "/plan") {
     unmountPlan();
+  }
+  if (lastRoute === "/chat" && route !== "/chat") {
+    unmountChat();
   }
   lastRoute = route;
 

@@ -78,6 +78,13 @@ export async function mountSettings(root) {
       </div>
       <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
     </section>
+    <section id="settings-chat-panel" class="panel" data-testid="maker-settings-chat-panel">
+      <h3>Chat</h3>
+      <label>
+        <input type="checkbox" id="settings-chat-resume" data-testid="maker-settings-chat-resume" />
+        Resume last chat session when opening the Chat tab
+      </label>
+    </section>
     <section id="settings-memory-library" class="panel" data-testid="maker-settings-memory-library">
       <h3>Memory library</h3>
       <p class="muted" id="settings-memory-caption"></p>
@@ -106,6 +113,17 @@ export async function mountSettings(root) {
       <strong>Re-research on plan fail</strong> (<code>NIMBUSWARE_RERESARCH_MISSING_CONTEXT</code>):
       when enabled, the pipeline may re-run research after planner missing-context failures.
     </p>`;
+
+  const chatResume = root.querySelector("#settings-chat-resume");
+  if (chatResume) {
+    const resumeRaw = localStorage.getItem("maker_chat_resume_session");
+    chatResume.checked = resumeRaw == null || resumeRaw === "1" || resumeRaw === "true";
+    chatResume.addEventListener("change", () => {
+      localStorage.setItem("maker_chat_resume_session", chatResume.checked ? "1" : "0");
+      if (!chatResume.checked) sessionStorage.removeItem("maker_chat_session_id");
+      toast("Chat session preference saved", "success");
+    });
+  }
 
   const ramPct = storedValue(stored, "NIMBUSWARE_MAX_SYSTEM_RAM_PCT", "75");
   const vramPct = storedValue(stored, "NIMBUSWARE_MAX_VRAM_PCT", "85");

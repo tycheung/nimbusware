@@ -76,6 +76,45 @@ def test_chat_switch_mode(client: TestClient, tmp_path: Path) -> None:
     assert "work_type_switch" in kinds
 
 
+def test_chat_mid_thread_patch_to_slice_journey(client: TestClient, tmp_path: Path) -> None:
+    """Same session: patch turn, widen to slice via switch-mode, then start slice run."""
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[
+        "session_id"
+    ]
+    turn = client.post(
+        f"/v1/chat/sessions/{session_id}/turns",
+        json={"text": "fix login test", "attachments": []},
+    ).json()
+    user_turn_id = turn["message"]["turn_id"]
+
+    patch_start = client.post(
+        f"/v1/chat/sessions/{session_id}/start",
+        json={"work_type": "patch"},
+    )
+    assert patch_start.status_code == 200
+    patch_run_id = patch_start.json()["run_id"]
+
+    widened = client.post(
+        f"/v1/chat/sessions/{session_id}/turns/{user_turn_id}/switch-mode",
+        json={"work_type": "slice", "rationale": "Patch gate failed — micro-slice"},
+    )
+    assert widened.status_code == 200
+    assert widened.json()["work_type_override"] == "slice"
+
+    slice_start = client.post(
+        f"/v1/chat/sessions/{session_id}/start",
+        json={"work_type": "slice"},
+    )
+    assert slice_start.status_code == 200
+    slice_run_id = slice_start.json()["run_id"]
+    assert slice_run_id != patch_run_id
+
+    session = client.get(f"/v1/chat/sessions/{session_id}?include_turns=true").json()
+    kinds = [m.get("kind") for m in session.get("messages", [])]
+    assert "work_type_switch" in kinds
+
+
 def test_list_chat_sessions(client: TestClient, tmp_path: Path) -> None:
     project_id = _create_project(client, tmp_path)
     client.post("/v1/chat/sessions", json={"project_id": project_id})

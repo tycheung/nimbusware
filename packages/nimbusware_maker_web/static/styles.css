@@ -532,6 +532,23 @@ body.mobile-mode #rev-stitch {
   text-align: left;
 }
 
+.chat-theater-mount {
+  margin: 0.5rem 0;
+}
+
+.chat-theater-lines {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.chat-thread-line--theater {
+  font-size: 0.9rem;
+  color: var(--muted-fg, #666);
+}
+
 .chat-attachments {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
