@@ -10,6 +10,12 @@ from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     mapping_export_json,
 )
+from nimbusware_console.explainer_core.workflow_exports import (
+    explainer_json_cell as _full_workflow_merge_diff_cell,
+)
+from nimbusware_console.explainer_core.workflow_exports import (
+    workflow_explainer_payload_export_json,
+)
 from nimbusware_console.integrator_preview.merge import (
     full_workflow_merge_attention_rows,
 )
@@ -17,14 +23,6 @@ from nimbusware_console.integrator_preview.merge import (
 
 def full_workflow_merge_diff_export_filename_slug() -> str:
     return "full_workflow_merge_diff"
-
-
-def _full_workflow_merge_diff_cell(value: Any) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, ensure_ascii=False)
-    return str(value)
 
 
 def full_workflow_merge_diff_table_rows(
@@ -48,7 +46,7 @@ def full_workflow_merge_diff_table_rows(
 def full_workflow_merge_diff_export_json(
     diff: Mapping[str, Any] | None,
 ) -> str:
-    return mapping_export_json(diff)
+    return workflow_explainer_payload_export_json(diff)
 
 
 def full_workflow_merge_diff_table_rows_csv(
