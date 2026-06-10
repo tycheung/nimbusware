@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from nimbusware_orchestrator._pipeline._helpers import (
-    mapping_or_empty,
     UUID,
     EventType,
     ModelPreflightPassedEvent,
@@ -16,6 +15,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     RunStartedPayload,
     _coerce_samples_ms,
     datetime,
+    mapping_or_empty,
     run_model_preflight,
     timezone,
     uuid4,
