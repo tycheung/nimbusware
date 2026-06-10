@@ -121,8 +121,8 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     events: list[dict[str, Any]] = []
     for r in rows:
         d = serialized_event_from_row(r)
-        ev = validate_event_dict(d)
-        persisted = serialize_event_persistent(ev)
+        parsed = validate_event_dict(d)
+        persisted = serialize_event_persistent(parsed)
         persisted["store_seq"] = int(r.get("store_seq") or 0)
         events.append(persisted)
     ig_hist = integrator_gate_timeline_history(events)
@@ -145,9 +145,9 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     from nimbusware_orchestrator.security_critique import security_critique_timeline_summary
 
     custom_agent_summary: dict[str, Any] | None = None
-    for ev in events:
-        if ev.get("event_type") == "run.created":
-            meta = ev.get("metadata")
+    for event_row in events:
+        if event_row.get("event_type") == "run.created":
+            meta = event_row.get("metadata")
             if isinstance(meta, dict) and isinstance(meta.get("custom_agent"), dict):
                 custom_agent_summary = meta["custom_agent"]
             break
