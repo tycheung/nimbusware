@@ -10,10 +10,12 @@ from nimbusware_orchestrator.autopilot_profiles import (
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.slice_cycle_integration import (
-    apply_interjection_to_plan,
     apply_operator_pause,
-    gate_result_for_force_break,
     merge_pre_gate_into_verify,
+)
+from nimbusware_orchestrator.slice_interjection import (
+    apply_interjection_to_plan,
+    gate_result_for_force_break,
     process_interjection_cycle,
 )
 from nimbusware_store.memory import InMemoryEventStore

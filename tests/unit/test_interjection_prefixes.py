@@ -8,7 +8,7 @@ from nimbusware_orchestrator.interjection_queue import (
     queue_for_run,
 )
 from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.slice_cycle_integration import (
+from nimbusware_orchestrator.slice_interjection import (
     apply_interjection_to_plan,
     gate_result_for_skip_slice,
     handle_patch_from_chat_interjection,

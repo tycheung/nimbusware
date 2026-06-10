@@ -284,20 +284,23 @@ def execute_single_micro_slice(
     from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
     from nimbusware_orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
     from nimbusware_orchestrator.slice_cycle_integration import (
-        apply_interjection_to_plan,
         apply_operator_pause,
         ensure_dev_environment_for_slice,
-        gate_result_for_force_break,
-        gate_result_for_skip_slice,
-        handle_build_from_chat_interjection,
         handle_gate_failure_learning,
-        handle_patch_from_chat_interjection,
-        handle_skip_slice_interjection,
         maybe_run_human_fidelity_pre_gate,
         maybe_run_repo_explore_slice_stage,
         merge_pre_gate_into_verify,
-        process_interjection_cycle,
         run_pre_gate_dev_env_regression,
+    )
+    from nimbusware_orchestrator.slice_interjection import (
+        _infer_patch_target_paths,
+        apply_interjection_to_plan,
+        gate_result_for_force_break,
+        gate_result_for_skip_slice,
+        handle_build_from_chat_interjection,
+        handle_patch_from_chat_interjection,
+        handle_skip_slice_interjection,
+        process_interjection_cycle,
         steer_excerpt_from_cycle,
     )
 
@@ -336,8 +339,6 @@ def execute_single_micro_slice(
     effective_backlog_slice_id = backlog_slice_id
     if patch_backlog_id:
         patch_msgs = [i.message for i in interjection.items if i.patch_from_chat]
-        from nimbusware_orchestrator.slice_cycle_integration import _infer_patch_target_paths
-
         active_plan = SlicePlan(
             slice_id=patch_backlog_id,
             target_paths=_infer_patch_target_paths("\n".join(patch_msgs), rows),
