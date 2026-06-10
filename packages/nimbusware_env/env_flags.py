@@ -218,8 +218,12 @@ def nimbusware_slice_branch_prefix(default: str = "nimbusware/run-") -> str:
     return resolve_str("NIMBUSWARE_SLICE_BRANCH_PREFIX", default=default)
 
 
+def _context_max_chars(env_key: str, default: int) -> int:
+    return resolve_int(env_key, default=default)
+
+
 def nimbusware_slice_packet_max_chars(default: int = 12000) -> int:
-    return resolve_int("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", default=default)
+    return _context_max_chars("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", default)
 
 
 def nimbusware_slice_repo_map_enabled() -> bool:
@@ -229,7 +233,7 @@ def nimbusware_slice_repo_map_enabled() -> bool:
 
 
 def nimbusware_slice_repo_map_max_chars(default: int = 4000) -> int:
-    return resolve_int("NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS", default=default)
+    return _context_max_chars("NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS", default)
 
 
 def nimbusware_slice_lsp_enabled() -> bool:
@@ -303,7 +307,7 @@ def nimbusware_agent_tools_list(
 
 
 def nimbusware_handoff_max_chars(default: int = 4000) -> int:
-    return resolve_int("NIMBUSWARE_HANDOFF_MAX_CHARS", default=default)
+    return _context_max_chars("NIMBUSWARE_HANDOFF_MAX_CHARS", default)
 
 
 def nimbusware_handoff_llm_summary_enabled() -> bool:
