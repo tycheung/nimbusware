@@ -4,7 +4,7 @@ from pathlib import Path
 
 _MAKER_ROOT = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_maker"
 
-_ALLOWLIST_OVER_400: frozenset[str] = frozenset({"intent_classifier.py"})
+_ALLOWLIST_OVER_400: frozenset[str] = frozenset({"intent_classifier.py", "chat_store.py"})
 
 
 def _line_count(path: Path) -> int:

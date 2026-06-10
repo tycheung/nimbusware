@@ -20,6 +20,7 @@ from nimbusware_api.facade import build_v1_router
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
 from nimbusware_iam.middleware import enterprise_iam_middleware
 from nimbusware_iam.store import PostgresIamStore, build_iam_store
+from nimbusware_maker.chat_store import build_chat_store
 from nimbusware_maker.store import build_project_store
 from nimbusware_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
 from nimbusware_orchestrator.runtime_bootstrap import (
@@ -52,6 +53,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.store = runtime.store
     app.state.iam_store = build_iam_store(url)
     app.state.project_store = build_project_store(url)
+    app.state.chat_store = build_chat_store(url)
     if url and isinstance(app.state.iam_store, PostgresIamStore):
         app.state.iam_store.ensure_default_tenant()
     app.state.config_materializer = runtime.materializer

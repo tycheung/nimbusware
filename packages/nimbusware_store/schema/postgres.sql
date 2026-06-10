@@ -57,6 +57,55 @@ CREATE INDEX IF NOT EXISTS idx_nimbusware_project_tenant
   ON nimbusware_project (tenant_id, created_at DESC);
 
 -- =============================================================================
+-- nimbusware_chat_session / nimbusware_chat_turn (Maker congruent chat, §20.28)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_chat_session (
+  session_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  project_id UUID NOT NULL REFERENCES nimbusware_project(project_id) ON DELETE CASCADE,
+  title TEXT NULL,
+  root_turn_id UUID NULL,
+  active_leaf_turn_id UUID NULL,
+  last_classification JSONB NULL,
+  work_type_override TEXT NULL,
+  run_id UUID NULL,
+  campaign_id UUID NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (last_classification IS NULL OR jsonb_typeof(last_classification) = 'object')
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_session_project
+  ON nimbusware_chat_session (project_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS nimbusware_chat_turn (
+  turn_id UUID PRIMARY KEY,
+  session_id UUID NOT NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
+  parent_turn_id UUID NULL,
+  ordinal INT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN (
+    'user', 'classifier', 'work_type_switch', 'run_status', 'theater', 'system'
+  )),
+  text TEXT NOT NULL DEFAULT '',
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  work_type TEXT NULL,
+  work_type_source TEXT NULL,
+  run_id UUID NULL,
+  campaign_id UUID NULL,
+  event_seq BIGINT NULL,
+  posted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(payload) = 'object'),
+  FOREIGN KEY (parent_turn_id) REFERENCES nimbusware_chat_turn(turn_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_turn_session
+  ON nimbusware_chat_turn (session_id, ordinal ASC);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_turn_parent
+  ON nimbusware_chat_turn (session_id, parent_turn_id);
+
+-- =============================================================================
 -- event_store (Nimbusware agent append-only run events, plan §19.2)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS event_store (

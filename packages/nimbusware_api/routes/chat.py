@@ -1,137 +1,47 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, Query
 
-from nimbusware_api.access import assert_project_accessible
-from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
+from nimbusware_api.deps import ChatStoreDep, OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.routes.runs.create import PatchContextBody, RunRequirementsBody
+from nimbusware_api.routes.chat_common import (
+    ActiveLeafBody,
+    AppendTurnBody,
+    ChatGraphResponse,
+    ChatMessageBody,
+    ChatMessageResponse,
+    ChatSessionResponse,
+    ClassificationResponse,
+    ClassifyIntentBody,
+    CreateChatSessionBody,
+    ForkChatBody,
+    StartChatSessionBody,
+    StartChatSessionResponse,
+    SwitchModeBody,
+    patch_context_payload,
+    project_metadata,
+    requirements_payload,
+    resolve_workflow_profile,
+    start_campaign,
+    start_run,
+)
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
-from nimbusware_maker.intent import build_requirements_artifact
-from nimbusware_maker.intent_classifier import (
-    ClassificationResult,
-    WorkType,
-    classify_intent,
+from nimbusware_maker.chat_service import (
+    classification_dict,
+    requirements_from_path,
+    resolve_work_type,
+    resolve_work_type_source,
+    session_response,
+    switch_mode_rationale,
 )
-from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabled
-from nimbusware_orchestrator.patch_context import normalize_patch_context
-from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from nimbusware_maker.intent_classifier import WorkType, classify_intent
+from nimbusware_maker.quick_mode import quick_mode_enabled
 
 router = APIRouter(prefix="/chat", tags=["maker"])
-
-
-@dataclass
-class ChatSession:
-    session_id: str
-    project_id: str
-    created_at: str
-    messages: list[dict[str, Any]] = field(default_factory=list)
-    last_classification: dict[str, Any] | None = None
-    work_type_override: str | None = None
-    run_id: str | None = None
-    campaign_id: str | None = None
-
-
-_chat_sessions: dict[str, ChatSession] = {}
-
-
-class CreateChatSessionBody(BaseModel):
-    project_id: str = Field(min_length=1, max_length=36)
-
-
-class ChatMessageBody(BaseModel):
-    text: str = Field(min_length=1, max_length=8000)
-    attachments: list[dict[str, Any]] = Field(default_factory=list, max_length=8)
-
-
-class ClassifyIntentBody(BaseModel):
-    message: str = Field(min_length=1, max_length=8000)
-    attachments: list[dict[str, Any]] = Field(default_factory=list, max_length=8)
-    project_id: str | None = Field(default=None, max_length=36)
-    platform_hints: dict[str, Any] = Field(default_factory=dict)
-
-
-class StartChatSessionBody(BaseModel):
-    work_type: str | None = Field(default=None, max_length=32)
-    work_type_source: str | None = Field(default=None, max_length=32)
-    workflow_profile: str | None = Field(default=None, max_length=120)
-    requirements: RunRequirementsBody | None = None
-    patch_context: PatchContextBody | None = None
-    autopilot_profile_id: str | None = Field(default=None, max_length=120)
-    autonomous: bool = True
-
-
-class ChatSessionResponse(BaseModel):
-    session_id: str
-    project_id: str
-    created_at: str
-    messages: list[dict[str, Any]]
-    last_classification: dict[str, Any] | None = None
-    work_type_override: str | None = None
-    run_id: str | None = None
-    campaign_id: str | None = None
-
-
-class ChatMessageResponse(BaseModel):
-    message: dict[str, Any]
-    classification: dict[str, Any]
-
-
-class ClassificationResponse(BaseModel):
-    classification: dict[str, Any]
-
-
-class StartChatSessionResponse(BaseModel):
-    session_id: str
-    work_type: str
-    workflow_profile: str
-    run_id: str | None = None
-    campaign_id: str | None = None
-    dispatch_mode: str | None = None
-
-
-def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _session_or_404(session_id: str) -> ChatSession:
-    state = _chat_sessions.get(session_id)
-    if state is None:
-        raise HTTPException(
-            status_code=404,
-            detail=problem(
-                "chat_session_not_found",
-                "Unknown chat session",
-                details={"session_id": session_id},
-            ),
-        )
-    return state
-
-
-def _project_metadata(project_store: ProjectStoreDep, project_uuid: UUID) -> dict[str, Any]:
-    record = project_store.get(project_uuid)
-    if record is None:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
-        )
-    assert_project_accessible(record)
-    data = record.to_dict()  # type: ignore[attr-defined]
-    return {
-        "project_id": data.get("project_id"),
-        "name": data.get("name"),
-        "template": data.get("template"),
-        "default_workflow_profile": data.get("default_workflow_profile"),
-        "default_work_type": data.get("default_work_type"),
-    }
 
 
 def _platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -140,175 +50,44 @@ def _platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
     return hints
 
 
-def _classification_dict(result: ClassificationResult) -> dict[str, Any]:
-    return result.to_dict()
-
-
-def _requirements_payload(
-    body: StartChatSessionBody, session: ChatSession
-) -> dict[str, Any] | None:
-    if body.requirements is not None:
-        return build_requirements_artifact(
-            business_prompt=body.requirements.business_prompt,
-            clarifications=[c.model_dump(mode="json") for c in body.requirements.clarifications],
-        )
-    for msg in reversed(session.messages):
-        if msg.get("role") == "user" and str(msg.get("text") or "").strip():
-            return build_requirements_artifact(business_prompt=str(msg["text"]))
-    return None
-
-
-def _patch_context_payload(
-    body: StartChatSessionBody,
-    session: ChatSession,
-) -> dict[str, Any] | None:
-    if body.patch_context is not None:
-        return normalize_patch_context(
-            body.patch_context.model_dump(mode="json", exclude_none=True)
-        )
-    extracted = (session.last_classification or {}).get("attachments_extracted")
-    return normalize_patch_context(extracted)
-
-
-def _resolve_work_type_source(body: StartChatSessionBody, session: ChatSession) -> str:
-    raw = (body.work_type_source or "").strip().lower()
-    if raw in {"classifier", "operator_override", "ide"}:
-        return raw
-    if body.work_type or session.work_type_override:
-        return "operator_override"
-    return "classifier"
-
-
-def _resolve_work_type(body: StartChatSessionBody, session: ChatSession) -> WorkType:
-    raw = (body.work_type or session.work_type_override or "").strip().lower()
-    if not raw and session.last_classification:
-        raw = str(session.last_classification.get("work_type") or "").strip().lower()
-    try:
-        return WorkType(raw)
-    except ValueError as exc:
+def _session_or_404(chat_store: ChatStoreDep, session_id: UUID):
+    session = chat_store.get_session(session_id)
+    if session is None:
         raise HTTPException(
-            status_code=422,
+            status_code=404,
             detail=problem(
-                "invalid_request",
-                "work_type must be one of quick, patch, slice, campaign, factory",
-            ),
-        ) from exc
-
-
-def _start_campaign(
-    *,
-    orch: OrchDep,
-    project_store: ProjectStoreDep,
-    store: StoreDep,
-    project_uuid: UUID,
-    workflow_profile: str,
-    work_type: WorkType,
-    work_type_source: str,
-    requirements: dict[str, Any] | None,
-    body: StartChatSessionBody,
-) -> dict[str, Any]:
-    project = project_store.get(project_uuid)
-    if project is None:
-        raise HTTPException(
-            status_code=422,
-            detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
-        )
-    if orch.active_campaigns_for_project(str(project_uuid)) >= 1:
-        raise HTTPException(
-            status_code=429,
-            detail=problem(
-                "campaign_rate_limited",
-                "one active campaign per project (safety policy)",
+                "chat_session_not_found",
+                "Unknown chat session",
+                details={"session_id": str(session_id)},
             ),
         )
-    run_id = orch.create_run(
-        workflow_profile,
-        project_id=project_uuid,
-        project_name=project.name,
-        project_workspace_path=project.workspace_path,
-        project_template=project.template,
-        requirements=requirements,
-        autonomous=body.autonomous,
-        work_type=work_type.value,
-        work_type_source=work_type_source,
-    )
-    ws = Path(project.workspace_path) if project.workspace_path else None
-    if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-        applied = apply_user_autopilot_at_run_start(
-            store,
-            run_id,
-            str(body.autopilot_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "autopilot_profile_not_found",
-                    "Unknown autopilot profile id",
-                    details={"profile_id": body.autopilot_profile_id},
-                ),
+    return session
+
+
+def _chat_http_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, KeyError):
+        code = str(exc.args[0]) if exc.args else "not_found"
+        if code == "chat_turn_not_found":
+            return HTTPException(
+                status_code=404,
+                detail=problem(code, "Unknown chat turn"),
             )
-    mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
-    return {
-        "run_id": str(run_id),
-        "campaign_id": str(run_id),
-        "dispatch_mode": mode,
-    }
-
-
-def _start_run(
-    *,
-    orch: OrchDep,
-    project_store: ProjectStoreDep,
-    store: StoreDep,
-    project_uuid: UUID,
-    workflow_profile: str,
-    work_type: WorkType,
-    work_type_source: str,
-    requirements: dict[str, Any] | None,
-    patch_context: dict[str, Any] | None,
-    body: StartChatSessionBody,
-) -> dict[str, Any]:
-    project = project_store.get(project_uuid)
-    if project is None:
-        raise HTTPException(
+        return HTTPException(
+            status_code=404,
+            detail=problem("chat_session_not_found", "Unknown chat session"),
+        )
+    if isinstance(exc, ValueError):
+        return HTTPException(
             status_code=422,
-            detail=problem("project_not_found", f"Unknown project id: {project_uuid}"),
+            detail=problem("invalid_request", str(exc)),
         )
-    run_id = orch.create_run(
-        workflow_profile,
-        project_id=project_uuid,
-        project_name=project.name,
-        project_workspace_path=project.workspace_path,
-        project_template=project.template,
-        requirements=requirements,
-        patch_context=patch_context,
-        work_type=work_type.value,
-        work_type_source=work_type_source,
-    )
-    if body.autopilot_profile_id and str(body.autopilot_profile_id).strip():
-        applied = apply_user_autopilot_at_run_start(
-            store,
-            run_id,
-            str(body.autopilot_profile_id),
-            repo_root=orch.repo_root,
-        )
-        if applied is None:
-            raise HTTPException(
-                status_code=422,
-                detail=problem(
-                    "autopilot_profile_not_found",
-                    "Unknown autopilot profile id",
-                    details={"profile_id": body.autopilot_profile_id},
-                ),
-            )
-    return {"run_id": str(run_id), "campaign_id": None, "dispatch_mode": None}
+    raise exc
 
 
 @router.post("/sessions", response_model=ChatSessionResponse)
 def create_chat_session(
     body: CreateChatSessionBody,
+    chat_store: ChatStoreDep,
     project_store: ProjectStoreDep,
     _user: UserDep,
 ) -> ChatSessionResponse:
@@ -319,24 +98,21 @@ def create_chat_session(
             status_code=422,
             detail=problem("invalid_request", "project_id must be a UUID"),
         ) from exc
-    _project_metadata(project_store, project_uuid)
-    session_id = str(uuid4())
-    state = ChatSession(
-        session_id=session_id,
-        project_id=str(project_uuid),
-        created_at=_utc_now(),
-    )
-    _chat_sessions[session_id] = state
-    return ChatSessionResponse(
-        session_id=state.session_id,
-        project_id=state.project_id,
-        created_at=state.created_at,
-        messages=state.messages,
-        last_classification=state.last_classification,
-        work_type_override=state.work_type_override,
-        run_id=state.run_id,
-        campaign_id=state.campaign_id,
-    )
+    project_metadata(project_store, project_uuid)
+    session = chat_store.create_session(project_id=project_uuid)
+    return ChatSessionResponse(**session_response(chat_store, session))
+
+
+@router.get("/sessions", response_model=list[ChatSessionResponse])
+def list_chat_sessions(
+    project_id: UUID,
+    chat_store: ChatStoreDep,
+    project_store: ProjectStoreDep,
+    _user: UserDep,
+) -> list[ChatSessionResponse]:
+    project_metadata(project_store, project_id)
+    sessions = chat_store.list_sessions(project_id=project_id)
+    return [ChatSessionResponse(**session_response(chat_store, s)) for s in sessions]
 
 
 @router.get(
@@ -344,17 +120,123 @@ def create_chat_session(
     response_model=ChatSessionResponse,
     responses={404: PROBLEM_RESPONSE_404},
 )
-def get_chat_session(session_id: UUID, _user: UserDep) -> ChatSessionResponse:
-    state = _session_or_404(str(session_id))
-    return ChatSessionResponse(
-        session_id=state.session_id,
-        project_id=state.project_id,
-        created_at=state.created_at,
-        messages=state.messages,
-        last_classification=state.last_classification,
-        work_type_override=state.work_type_override,
-        run_id=state.run_id,
-        campaign_id=state.campaign_id,
+def get_chat_session(
+    session_id: UUID,
+    chat_store: ChatStoreDep,
+    include_turns: bool = Query(default=False),
+    _user: UserDep = ...,
+) -> ChatSessionResponse:
+    session = _session_or_404(chat_store, session_id)
+    return ChatSessionResponse(**session_response(chat_store, session, include_turns=include_turns))
+
+
+@router.get(
+    "/sessions/{session_id}/graph",
+    response_model=ChatGraphResponse,
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def get_chat_graph(session_id: UUID, chat_store: ChatStoreDep, _user: UserDep) -> ChatGraphResponse:
+    _session_or_404(chat_store, session_id)
+    try:
+        graph = chat_store.get_graph(session_id)
+    except KeyError as exc:
+        raise _chat_http_error(exc) from exc
+    return ChatGraphResponse(**graph)
+
+
+@router.post(
+    "/sessions/{session_id}/fork",
+    response_model=ChatSessionResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def fork_chat_session(
+    session_id: UUID,
+    body: ForkChatBody,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> ChatSessionResponse:
+    _session_or_404(chat_store, session_id)
+    try:
+        turn_id = UUID(body.turn_id)
+        session = chat_store.fork_at_turn(session_id, turn_id)
+    except (KeyError, ValueError) as exc:
+        raise _chat_http_error(exc) from exc
+    return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
+
+
+@router.put(
+    "/sessions/{session_id}/active-leaf",
+    response_model=ChatSessionResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def set_chat_active_leaf(
+    session_id: UUID,
+    body: ActiveLeafBody,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> ChatSessionResponse:
+    _session_or_404(chat_store, session_id)
+    try:
+        leaf = UUID(body.leaf_turn_id)
+        session = chat_store.set_active_leaf(session_id, leaf)
+    except (KeyError, ValueError) as exc:
+        raise _chat_http_error(exc) from exc
+    return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
+
+
+@router.post(
+    "/sessions/{session_id}/turns",
+    response_model=ChatMessageResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def append_chat_turn(
+    session_id: UUID,
+    body: AppendTurnBody,
+    chat_store: ChatStoreDep,
+    project_store: ProjectStoreDep,
+    _user: UserDep,
+) -> ChatMessageResponse:
+    session = _session_or_404(chat_store, session_id)
+    project_uuid = UUID(str(session.project_id))
+    meta = project_metadata(project_store, project_uuid)
+    result = classify_intent(
+        body.text,
+        attachments=body.attachments,
+        project_metadata=meta,
+        platform_hints=_platform_hints(),
+    )
+    try:
+        turn = chat_store.append_turn(
+            session_id,
+            role=body.role,
+            text=body.text,
+            payload={"attachments": body.attachments},
+        )
+        session = chat_store.update_session(
+            session_id,
+            last_classification=classification_dict(result),
+        )
+        classifier_turn = chat_store.append_turn(
+            session_id,
+            role="classifier",
+            text=result.rationale,
+            payload={"classification": classification_dict(result)},
+            work_type=result.work_type.value,
+            work_type_source="classifier",
+        )
+    except (KeyError, ValueError) as exc:
+        raise _chat_http_error(exc) from exc
+    message = {
+        "role": "user",
+        "text": body.text,
+        "attachments": body.attachments,
+        "turn_id": str(turn.turn_id),
+        "posted_at": turn.posted_at.isoformat() if turn.posted_at else None,
+    }
+    return ChatMessageResponse(
+        message=message,
+        classification=classification_dict(result),
+        turn=classifier_turn.to_dict(),
     )
 
 
@@ -366,30 +248,69 @@ def get_chat_session(session_id: UUID, _user: UserDep) -> ChatSessionResponse:
 def post_chat_message(
     session_id: UUID,
     body: ChatMessageBody,
+    chat_store: ChatStoreDep,
     project_store: ProjectStoreDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
-    state = _session_or_404(str(session_id))
-    project_uuid = UUID(state.project_id)
-    meta = _project_metadata(project_store, project_uuid)
-    result = classify_intent(
-        body.text,
-        attachments=body.attachments,
-        project_metadata=meta,
-        platform_hints=_platform_hints(),
+    return append_chat_turn(
+        session_id,
+        AppendTurnBody(text=body.text, attachments=body.attachments),
+        chat_store,
+        project_store,
+        _user,
     )
-    message = {
-        "role": "user",
-        "text": body.text,
-        "attachments": body.attachments,
-        "posted_at": _utc_now(),
-    }
-    state.messages.append(message)
-    state.last_classification = _classification_dict(result)
-    return ChatMessageResponse(
-        message=message,
-        classification=state.last_classification,
+
+
+@router.post(
+    "/sessions/{session_id}/turns/{turn_id}/switch-mode",
+    response_model=ChatSessionResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def switch_chat_mode(
+    session_id: UUID,
+    turn_id: UUID,
+    body: SwitchModeBody,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> ChatSessionResponse:
+    session = _session_or_404(chat_store, session_id)
+    try:
+        work_type = WorkType(body.work_type.strip().lower())
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "invalid_request",
+                "work_type must be one of quick, patch, slice, campaign, factory",
+            ),
+        ) from exc
+    prior = session.work_type_override or ((session.last_classification or {}).get("work_type"))
+    rationale = body.rationale or switch_mode_rationale(
+        str(prior) if prior else None, work_type.value
     )
+    try:
+        chat_store.fork_at_turn(session_id, turn_id)
+        payload: dict[str, Any] = {
+            "from_work_type": prior,
+            "to_work_type": work_type.value,
+        }
+        if body.align_run_replay and body.replay_from_seq is not None:
+            payload["replay_from_seq"] = body.replay_from_seq
+        chat_store.append_turn(
+            session_id,
+            role="work_type_switch",
+            text=rationale,
+            payload=payload,
+            work_type=work_type.value,
+            work_type_source="mode_switch",
+        )
+        session = chat_store.update_session(
+            session_id,
+            work_type_override=work_type.value,
+        )
+    except (KeyError, ValueError) as exc:
+        raise _chat_http_error(exc) from exc
+    return ChatSessionResponse(**session_response(chat_store, session, include_turns=True))
 
 
 @router.post("/classify", response_model=ClassificationResponse)
@@ -407,14 +328,14 @@ def classify_chat_intent(
                 status_code=422,
                 detail=problem("invalid_request", "project_id must be a UUID"),
             ) from exc
-        meta = _project_metadata(project_store, project_uuid)
+        meta = project_metadata(project_store, project_uuid)
     result = classify_intent(
         body.message,
         attachments=body.attachments,
         project_metadata=meta,
         platform_hints=_platform_hints(body.platform_hints),
     )
-    return ClassificationResponse(classification=_classification_dict(result))
+    return ClassificationResponse(classification=classification_dict(result))
 
 
 @router.post(
@@ -425,47 +346,57 @@ def classify_chat_intent(
 def start_chat_session(
     session_id: UUID,
     body: StartChatSessionBody,
+    chat_store: ChatStoreDep,
     orch: OrchDep,
     project_store: ProjectStoreDep,
     store: StoreDep,
     _user: UserDep,
 ) -> StartChatSessionResponse:
-    state = _session_or_404(str(session_id))
-    project_uuid = UUID(state.project_id)
-    work_type = _resolve_work_type(body, state)
-    work_type_source = _resolve_work_type_source(body, state)
+    session = _session_or_404(chat_store, session_id)
+    project_uuid = UUID(str(session.project_id))
+    path = chat_store.get_active_path(session_id)
+    try:
+        work_type = resolve_work_type(body.work_type, session)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "invalid_request",
+                "work_type must be one of quick, patch, slice, campaign, factory",
+            ),
+        ) from exc
+    work_type_source = resolve_work_type_source(body.work_type_source, session)
     if body.work_type:
-        state.work_type_override = work_type.value
+        session = chat_store.update_session(session_id, work_type_override=work_type.value)
 
-    profile = (body.workflow_profile or "").strip()
-    if not profile:
-        if state.last_classification:
-            profile = str(state.last_classification.get("suggested_profile") or "").strip()
-        if not profile:
-            if work_type == WorkType.QUICK:
-                profile = DEFAULT_QUICK_WORKFLOW
-            elif work_type in (WorkType.CAMPAIGN, WorkType.FACTORY):
-                profile = (
-                    "campaign_factory_zero_touch"
-                    if work_type == WorkType.FACTORY
-                    else "campaign_micro_slice"
-                )
-            else:
-                meta = _project_metadata(project_store, project_uuid)
-                profile = str(meta.get("default_workflow_profile") or "micro_slice")
+    profile = resolve_workflow_profile(
+        body=body,
+        work_type=work_type,
+        project_store=project_store,
+        project_uuid=project_uuid,
+        last_classification=session.last_classification,
+    )
 
-    requirements = _requirements_payload(body, state)
+    last_user = next((t for t in reversed(path) if t.role == "user"), None)
+    requirements = requirements_payload(
+        body, last_user.text if last_user else None
+    ) or requirements_from_path(path)
     if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY) and requirements is None:
         raise HTTPException(
             status_code=422,
             detail=problem("invalid_request", "requirements or prior chat message required"),
         )
 
-    patch_context = _patch_context_payload(body, state) if work_type == WorkType.PATCH else None
+    path_attachments = last_user.payload.get("attachments") if last_user else None
+    patch_context = (
+        patch_context_payload(body, session.last_classification, path_attachments)
+        if work_type == WorkType.PATCH
+        else None
+    )
 
     try:
         if work_type in (WorkType.CAMPAIGN, WorkType.FACTORY):
-            started = _start_campaign(
+            started = start_campaign(
                 orch=orch,
                 project_store=project_store,
                 store=store,
@@ -477,7 +408,7 @@ def start_chat_session(
                 body=body,
             )
         else:
-            started = _start_run(
+            started = start_run(
                 orch=orch,
                 project_store=project_store,
                 store=store,
@@ -505,13 +436,38 @@ def start_chat_session(
             detail=problem("registry_key_error", str(exc)),
         ) from exc
 
-    state.run_id = started.get("run_id")
-    state.campaign_id = started.get("campaign_id")
+    run_uuid = UUID(started["run_id"]) if started.get("run_id") else None
+    campaign_uuid = UUID(started["campaign_id"]) if started.get("campaign_id") else None
+    session = chat_store.update_session(
+        session_id,
+        run_id=run_uuid,
+        campaign_id=campaign_uuid,
+    )
+    status_text = f"Started {work_type.value} run ({profile})."
+    try:
+        run_turn = chat_store.append_turn(
+            session_id,
+            role="run_status",
+            text=status_text,
+            payload={
+                "workflow_profile": profile,
+                "work_type": work_type.value,
+                "work_type_source": work_type_source,
+            },
+            work_type=work_type.value,
+            work_type_source=work_type_source,
+            run_id=run_uuid,
+            campaign_id=campaign_uuid,
+        )
+    except (KeyError, ValueError) as exc:
+        raise _chat_http_error(exc) from exc
+
     return StartChatSessionResponse(
-        session_id=state.session_id,
+        session_id=str(session_id),
         work_type=work_type.value,
         workflow_profile=profile,
-        run_id=state.run_id,
-        campaign_id=state.campaign_id,
+        run_id=started.get("run_id"),
+        campaign_id=started.get("campaign_id"),
         dispatch_mode=started.get("dispatch_mode"),
+        turn=run_turn.to_dict(),
     )
