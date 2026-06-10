@@ -19,7 +19,7 @@ from agent_core.models import (
     Verdict,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm_plan import append_gate_decision_event
+from nimbusware_orchestrator.llm.common import append_gate_decision_event
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_orchestrator.workflow_refactor import RefactorWorkflowBlock

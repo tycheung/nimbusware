@@ -35,3 +35,11 @@ def security_critique_effective(block: SecurityCritiqueBlock) -> bool:
 
 def security_critique_llm_branch_effective(block: SecurityCritiqueBlock) -> bool:
     return scan_critique_llm_effective(block, "NIMBUSWARE_SECURITY_CRITIQUE_LLM")
+
+
+__all__ = (
+    "SecurityCritiqueBlock",
+    "parse_security_critique_workflow_block",
+    "security_critique_effective",
+    "security_critique_llm_branch_effective",
+)
