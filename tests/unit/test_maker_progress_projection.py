@@ -67,6 +67,20 @@ def test_maker_progress_slice_pass_sentence() -> None:
     assert body["slices"][0]["test_summary"]["bullets"]
 
 
+def test_maker_progress_includes_work_type() -> None:
+    events = [
+        {
+            "event_type": "run.created",
+            "metadata": {
+                "requirements": {"business_prompt": "Fix login"},
+                "work_type": "patch",
+            },
+        },
+    ]
+    body = maker_progress_from_events(events)
+    assert body["work_type"] == "patch"
+
+
 def test_maker_progress_surfaces_resource_pressure() -> None:
     events = [
         {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "x"}}},

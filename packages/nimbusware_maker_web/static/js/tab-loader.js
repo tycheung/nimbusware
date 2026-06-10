@@ -1,3 +1,4 @@
+import { mountChat } from "./tabs/chat.js";
 import { mountHome } from "./tabs/home.js";
 import { mountBuild } from "./tabs/build.js";
 import { mountPlan, unmountPlan } from "./tabs/plan.js";
@@ -9,6 +10,7 @@ import { mountWizard } from "./tabs/wizard.js";
 import { apiJson } from "./api-client.js";
 
 const MOUNTERS = {
+  "/chat": { el: "chat-mount", fn: mountChat },
   "/home": { el: "home-mount", fn: mountHome },
   "/build": { el: "build-mount", fn: mountBuild },
   "/plan": { el: "plan-mount", fn: mountPlan },
@@ -50,5 +52,5 @@ export async function loadRoute(route) {
 }
 
 window.addEventListener("maker-route", (ev) => {
-  loadRoute(ev.detail?.route || "/home").catch(console.error);
+  loadRoute(ev.detail?.route || "/chat").catch(console.error);
 });

@@ -14,5 +14,5 @@ def test_maker_web_shell_assets_present() -> None:
 
 def test_maker_tab_modules_present() -> None:
     tabs = _STATIC / "js" / "tabs"
-    for name in ("home", "build", "review", "progress", "models", "settings"):
+    for name in ("chat", "home", "build", "review", "progress", "models", "settings"):
         assert (tabs / f"{name}.js").is_file()

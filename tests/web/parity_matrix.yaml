@@ -10,6 +10,24 @@ maker:
   - id: wizard_creates_run
     web: true
     notes: Wizard Start building links to Build tab
+  - id: chat_unified_entry
+    web: true
+    notes: Chat tab default route; classify → start via /chat/sessions API
+  - id: chat_classifier_cards
+    web: true
+    notes: Classifier suggestion cards with accept/override action chips
+  - id: chat_work_type_override
+    web: true
+    notes: Work type dropdown overrides classifier suggestion
+  - id: chat_patch_attachments
+    web: true
+    notes: Optional target_paths, failing_test, stack_trace attachment fields
+  - id: build_redirect_chat
+    web: true
+    notes: Build tab shows redirect banner to Chat
+  - id: progress_work_type_badge
+    web: true
+    notes: Progress tab shows work_type badge from maker-progress projection
   - id: build_intent
     web: true
   - id: slice_approval_apply_skip

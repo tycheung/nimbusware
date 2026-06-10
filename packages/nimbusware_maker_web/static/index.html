@@ -49,6 +49,10 @@
           <button type="button" @click="dismissQuickBanner()">Dismiss</button>
         </div>
         <div class="toast" x-show="toastMsg" x-text="toastMsg" :class="toastKind"></div>
+        <div id="view-chat" class="view" x-show="route === '/chat'">
+          <h2>Chat</h2>
+          <div id="chat-mount"></div>
+        </div>
         <div id="view-home" class="view" x-show="route === '/home'">
           <h2>Home</h2>
           <p class="muted">Projects and readiness — loading…</p>

@@ -13,6 +13,7 @@ function loadRouteOnInit() {
 }
 
 const ALL_TABS = [
+  { id: "chat", hash: "/chat", label: "Chat" },
   { id: "home", hash: "/home", label: "Home" },
   { id: "build", hash: "/build", label: "Build" },
   { id: "plan", hash: "/plan", label: "Plan" },
@@ -36,8 +37,8 @@ export function detectMobileMode() {
 }
 
 function parseRoute() {
-  const hash = window.location.hash.replace(/^#/, "") || "/home";
-  const path = hash.split("?")[0] || "/home";
+  const hash = window.location.hash.replace(/^#/, "") || "/chat";
+  const path = hash.split("?")[0] || "/chat";
   return path.startsWith("/") ? path : `/${path}`;
 }
 
@@ -118,7 +119,7 @@ function makerShellFactory() {
   return {
     tabs: ALL_TABS,
     mobileMode: false,
-    route: "/home",
+    route: "/chat",
     statusText: "",
     toastMsg: "",
     toastKind: "info",

@@ -9,6 +9,9 @@ function campaignModeFromHash() {
 export async function mountBuild(root) {
   const campaignMode = campaignModeFromHash() && !window.__NIMBUSWARE__?.quick_mode;
   root.innerHTML = `
+    <p id="build-redirect-banner" class="build-mode-banner" data-testid="maker-build-redirect-banner">
+      Build moved to <a href="#/chat">Chat</a> — use the unified chat to classify intent and start runs.
+    </p>
     <p id="build-mode-banner" class="build-mode-banner" data-testid="maker-build-mode-banner"></p>
     <form id="intent-form">
       <label>Project <select name="project_id" id="build-project-select"></select></label>

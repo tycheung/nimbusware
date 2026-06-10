@@ -141,6 +141,7 @@ export async function mountProgress(root) {
       </section>
       <ul id="theater-list"></ul>
       <p id="pressure-banner" class="pressure-banner" hidden></p>
+      <span id="work-type-badge" class="work-type-badge" hidden data-testid="maker-work-type-badge"></span>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="factory-status-chip" class="factory-status-chip" hidden data-testid="maker-factory-status"></p>
       <p id="handoff-preview" class="handoff-preview" hidden></p>
@@ -288,6 +289,21 @@ export async function mountProgress(root) {
       li.appendChild(pre);
     }
     list.appendChild(li);
+  }
+
+  function renderWorkType(body) {
+    const badge = document.getElementById("work-type-badge");
+    if (!badge) return;
+    const wt = String(body.work_type || "").trim().toLowerCase();
+    if (!wt) {
+      badge.hidden = true;
+      badge.textContent = "";
+      badge.dataset.workType = "";
+      return;
+    }
+    badge.hidden = false;
+    badge.dataset.workType = wt;
+    badge.textContent = `Work type: ${wt}`;
   }
 
   function renderFactoryStatus(body) {
@@ -464,6 +480,7 @@ export async function mountProgress(root) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
     renderPressure(body);
+    renderWorkType(body);
     renderFactoryStatus(body);
     renderContextBudget(body);
     if (summary) {

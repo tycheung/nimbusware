@@ -156,6 +156,7 @@ def _headline_for_slice(
 
 def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     requirements: dict[str, Any] | None = None
+    work_type: str | None = None
     slice_total_hint = 2
     campaign_mode = False
     run_status = "created"
@@ -164,6 +165,9 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
             continue
         meta = _metadata(row)
         requirements = requirements_from_run_created_metadata(meta)
+        raw_wt = str(meta.get("work_type") or "").strip().lower()
+        if raw_wt:
+            work_type = raw_wt
         ce = meta.get("campaign_effective")
         if isinstance(ce, dict) and ce.get("enabled"):
             campaign_mode = True
@@ -301,6 +305,8 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
         "slices": slices_out,
         "simple_mode": True,
     }
+    if work_type:
+        out["work_type"] = work_type
     if pressure:
         out["resource_pressure"] = pressure
     handoff = _latest_handoff_summary(events)
