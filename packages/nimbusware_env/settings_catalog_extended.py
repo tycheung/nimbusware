@@ -177,6 +177,31 @@ def extended_defs() -> tuple[SettingDef, ...]:
             kind=_BOOL,
             default="0",
         ),
+        _install(
+            "NIMBUSWARE_SCRAPER_ARTIFACT_LOCAL_MIRROR",
+            "Mirror object-store scraper artifacts locally",
+            kind=_BOOL,
+            default="0",
+        ),
+        _install(
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS",
+            "Object store request timeout seconds",
+            kind=_INT,
+            default="30",
+        ),
+        _install(
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS",
+            "Max delete attempts for object-store prune",
+            kind=_INT,
+            default="1",
+        ),
+        _install(
+            "NIMBUSWARE_HW_EXPECT_MIN_TIER",
+            "Expected minimum hardware tier for fleet aggregate",
+            kind=_STR,
+            default="",
+            choices=("", "weak", "standard", "strong"),
+        ),
         _install("NIMBUSWARE_TENANT_ID", "Enterprise tenant id"),
         _install("NIMBUSWARE_MAKER_STATE_DIR", "Maker session state directory"),
         _install("NIMBUSWARE_OLLAMA_BASE_URL", "Ollama base URL override"),
@@ -465,6 +490,33 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "Interval between fleet Ollama SLI samples.",
             "System — fleet",
         ),
+        SettingDef(
+            "NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH",
+            _SYSTEM,
+            _INT,
+            "100",
+            "Fleet queue pending depth cap",
+            "Pause verify dispatch when Redis pending depth exceeds cap.",
+            "System — fleet",
+        ),
+        SettingDef(
+            "NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT",
+            _SYSTEM,
+            _INT,
+            "20",
+            "Fleet queue in-flight cap",
+            "Pause verify dispatch when in-flight tasks exceed cap.",
+            "System — fleet",
+        ),
+        SettingDef(
+            "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE",
+            _SYSTEM,
+            _BOOL,
+            "0",
+            "Prune scraper artifacts from object store",
+            "Enable retention prune against object-store primary backend.",
+            "System — scraper",
+        ),
     )
 
     user_extra = (
@@ -658,6 +710,42 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_MEMORY_RETRIEVAL_K",
+            _USER,
+            _INT,
+            "5",
+            "Memory retrieval top-k",
+            "Max memory chunks injected per slice (workflow YAML may override).",
+            "User — context efficiency",
+        ),
+        SettingDef(
+            "NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS",
+            _USER,
+            _INT,
+            "4000",
+            "Memory excerpt max chars",
+            "Cap injected memory excerpt size per slice.",
+            "User — context efficiency",
+        ),
+        SettingDef(
+            "NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD",
+            _USER,
+            _BOOL,
+            "0",
+            "Rebuild FAISS after context-artifact bridge",
+            "Rebuild memory FAISS index after context-artifact bridge-memory.",
+            "User — context efficiency",
+        ),
+        SettingDef(
+            "NIMBUSWARE_AXE_ENABLED",
+            _USER,
+            _BOOL,
+            "0",
+            "Axe-core in human-fidelity suite",
+            "Run axe-core accessibility rule packs during human-fidelity checks.",
+            "User — maker runtime",
+        ),
+        SettingDef(
             "NIMBUSWARE_SWE_BENCH_ENABLED",
             _USER,
             _BOOL,
@@ -770,6 +858,16 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "Enable exploratory Playwright ISM crawl on factory T3",
             kind=_BOOL,
         ),
+        _internal(
+            "NIMBUSWARE_FACTORY_EXPLORATORY_MAX_CLICKS",
+            "Max Playwright navigations during factory exploratory ISM crawl",
+            kind=_INT,
+        ),
+        _internal(
+            "NIMBUSWARE_FACTORY_EXPLORATORY_MAX_DEPTH",
+            "Max link depth during factory exploratory ISM crawl",
+            kind=_INT,
+        ),
         _internal("NIMBUSWARE_PUT_SANDBOX", "PUT preview sandbox mode (docker)"),
         _internal(
             "NIMBUSWARE_DEV_ENV_ENABLED", "Enable persistent dev environment supervisor", kind=_BOOL
@@ -779,6 +877,19 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _internal(
             "NIMBUSWARE_DEV_ENV_BASE_URL", "Attach to external dev server instead of spawning"
+        ),
+        _internal("NIMBUSWARE_PUT_BASE_URL", "External PUT preview base URL override"),
+        _internal(
+            "NIMBUSWARE_ALLOW_WORKFLOW_YAML_WRITE",
+            "Allow integrator workflow YAML write from console",
+            kind=_BOOL,
+            default="0",
+        ),
+        _internal(
+            "NIMBUSWARE_OIDC_MOCK",
+            "Mock OIDC admin sign-in (dev only)",
+            kind=_BOOL,
+            default="0",
         ),
         _internal(
             "NIMBUSWARE_UI_CONTROLLER_ENABLED", "Enable UI controller regression", kind=_BOOL

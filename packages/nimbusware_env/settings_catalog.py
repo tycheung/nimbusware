@@ -234,6 +234,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
+            "NIMBUSWARE_DEFAULT_MODEL",
+            user,
+            s,
+            "",
+            "Default Ollama model",
+            "Fallback model when a stage-specific model env is empty.",
+            "User — maker runtime",
+        ),
+        SettingDef(
             "NIMBUSWARE_SLICE_BUDGET_PRESET",
             user,
             e,

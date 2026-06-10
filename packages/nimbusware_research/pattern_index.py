@@ -31,10 +31,10 @@ def append_pattern_index(
                 entries = [e for e in loaded if isinstance(e, dict)]
         except (OSError, json.JSONDecodeError):
             entries = []
-    entry = {
+    entry: dict[str, object] = {
         "pattern_id": pattern_id,
         "repo_url": repo_url,
-        "paths": paths,
+        "paths": list(paths),
         "license": license_name,
         "embedding_ref": embedding_ref,
     }
