@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers tests under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
+Pytest discovers **~3,500** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~2,650** tests at **≥75%** coverage. Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
 
 | Directory | Purpose |
 |-----------|---------|

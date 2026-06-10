@@ -38,7 +38,6 @@ BOOTSTRAP_REL = frozenset(
         "nimbusware_env/admin_token.py",
         "nimbusware_env/edition.py",
         "nimbusware_env/run_app.py",
-        "nimbusware_env/admin_token.py",
         "nimbusware_orchestrator/preflight_cli.py",
         "nimbusware_orchestrator/run_dispatch.py",
         "nimbusware_orchestrator/fleet_worker.py",

@@ -34,6 +34,10 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 - Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**239** keys; Jun 2026 orphan-key closure + fleet/scraper/memory groups)
 
+### Context budget (`*_MAX_CHARS`)
+
+Slice packet, repo map, symbol sketch, LLM history, read, shell output, and handoff limits resolve through `_context_max_chars` in `env_flags.py` (single `resolve_int` path). Prefer `NIMBUSWARE_SLICE_BUDGET_PRESET` when tuning multiple limits together.
+
 ### Redundant / alias keys (prefer one)
 
 | Prefer | Legacy alias | Notes |

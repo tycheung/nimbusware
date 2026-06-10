@@ -133,6 +133,6 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%. CI mypy targets pass with **0** errors (Jun 2026 burn-down from ~362 via OpenAPI `__all__`, LLM patch consolidation, API `dict[str, Any]` annotations, and orchestrator union-attr guards). Remaining env consolidation epics are tracked in local `plan_gap.md` (**S3**–**S5**).
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, mypy (targets above), bandit (`pyproject.toml`), pip-audit, package coverage floors, pytest @ 75%. CI mypy targets pass with **0** errors (Jun 2026 burn-down from ~362). Shared helpers: `agent_core.mapping.mapping_or_empty` (event dict coercion), table-driven universal-critique env resolution, `_context_max_chars` in `env_flags.py`. Env catalog consolidation epics: local `plan_gap.md` (**S3**–**S8**).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

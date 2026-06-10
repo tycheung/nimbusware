@@ -538,7 +538,7 @@ The `micro_slice_web` workflow profile enables `slice.e2e` during Maker apply wh
 
 ## Testing
 
-Layout and CI subsets: [`tests/README.md`](tests/README.md).
+Layout and CI subsets: [`tests/README.md`](tests/README.md). Pytest collects **~3,500** items repo-wide; the default PR **unit** job runs **~2,650** tests at **≥75%** coverage (81% total line coverage as of Jun 2026). Playwright: **39** tests across **27** specs in [`tests/e2e/web`](tests/e2e/web).
 
 ```bash
 # Matches GitHub CI unit + web jobs (ruff, audit_operator_env, format, mypy, bandit, pip-audit, floors, pytest @ 75%; optional vitest + Playwright when node is installed):
