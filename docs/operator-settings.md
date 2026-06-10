@@ -28,11 +28,11 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## CI guard
 
-`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist.
+`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers.
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**~207** keys after Jun 2026 dedup)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**238** keys; Jun 2026 orphan-key closure + fleet/scraper/memory groups)
 
 ### Redundant / alias keys (prefer one)
 
@@ -68,5 +68,12 @@ Add new tunables to the catalog first, then read via `env_flags` / `settings_res
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Campaign compaction |
 | `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS` | 12000 | Recent verbatim window (HW override when unset) |
 | `NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS` | 8000 | Output reservation |
+| `NIMBUSWARE_MEMORY_RETRIEVAL_K` | 5 | Memory chunks per slice (YAML may override) |
+| `NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS` | 4000 | Injected memory excerpt cap |
+| `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD` | 0 | Rebuild FAISS after context-artifact bridge |
+| `NIMBUSWARE_AXE_ENABLED` | 0 | axe-core in human-fidelity suite |
+| `NIMBUSWARE_DEFAULT_MODEL` | (empty) | Fallback Ollama model when stage model unset |
+
+**Fleet / scraper (system):** `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH` (100), `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT` (20), `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE` (0).
 
 Helpers: `agent_core.context_budget`, `nimbusware_orchestrator.prompt_tiers`, `nimbusware_orchestrator.context_compaction`.
