@@ -6,6 +6,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     emit_stub_plan_stage,
     execute_plan_stage_llm,
 )
+from nimbusware_orchestrator._pipeline.optional_stage_helpers import optional_meta_section
 from nimbusware_orchestrator._pipeline.protocol_hosts import LifecyclePlanHost
 
 
@@ -43,9 +44,7 @@ class LifecyclePlanMixin:
         else:
             self._execute_plan_stage_stub(run_id)
         meta = self._run_created_metadata(run_id)
-        research_meta = meta.get("research")
-        if not isinstance(research_meta, dict):
-            research_meta = {}
+        research_meta = optional_meta_section(self, run_id, "research")
         requirements = meta.get("requirements")
         req_dict = requirements if isinstance(requirements, dict) else None
         from nimbusware_research.reresearch import maybe_reresearch_after_plan_fail

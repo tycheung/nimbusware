@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from nimbusware_env.env_flags import env_tri_state
-from nimbusware_orchestrator._pipeline._helpers import (
-    UUID,
-    parse_research_workflow_block,
-    workflow_profile_from_run_created_rows,
+from nimbusware_orchestrator._pipeline._helpers import UUID, parse_research_workflow_block
+from nimbusware_orchestrator._pipeline.optional_stage_helpers import (
+    optional_meta_section,
+    optional_rows_and_profile,
+    optional_tri_allows_emit,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import ResearchOptionalStagesHost
 
@@ -12,10 +13,9 @@ from nimbusware_orchestrator._pipeline.protocol_hosts import ResearchOptionalSta
 class ResearchOptionalStagesMixin:
     def _maybe_emit_research_stages(self: ResearchOptionalStagesHost, run_id: UUID) -> None:
         tri = env_tri_state("NIMBUSWARE_RESEARCH")
-        if tri == "off":
+        if not optional_tri_allows_emit(tri):
             return
-        rows = self._store.list_run_events(str(run_id))
-        wf = workflow_profile_from_run_created_rows(rows) or ""
+        _rows, wf = optional_rows_and_profile(self, run_id)
         block = parse_research_workflow_block(
             self._repo_root,
             wf,
@@ -23,10 +23,8 @@ class ResearchOptionalStagesMixin:
         )
         if tri != "on" and not block.enabled:
             return
+        research_meta = optional_meta_section(self, run_id, "research")
         meta = self._run_created_metadata(run_id)
-        research_meta = meta.get("research")
-        if not isinstance(research_meta, dict):
-            research_meta = {}
         requirements = meta.get("requirements")
         req_dict = requirements if isinstance(requirements, dict) else None
         from nimbusware_research.stages import emit_research_stages_stub
