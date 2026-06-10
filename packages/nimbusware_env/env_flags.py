@@ -398,3 +398,18 @@ def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
     return env_over_yaml_resolved(key, yaml_value)
+
+
+def env_over_yaml_with_global_fallback(
+    panel_key: str,
+    global_key: str,
+    yaml_value: bool,
+) -> bool:
+    """Per-panel explicit env overrides global; both defer to workflow YAML when unset."""
+    from nimbusware_env.settings_resolve import env_over_yaml_resolved, resolve_explicit_raw
+
+    if resolve_explicit_raw(panel_key) is not None:
+        return env_over_yaml_resolved(panel_key, yaml_value)
+    if resolve_explicit_raw(global_key) is not None:
+        return env_over_yaml_resolved(global_key, yaml_value)
+    return yaml_value

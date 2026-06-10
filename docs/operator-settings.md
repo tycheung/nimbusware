@@ -32,11 +32,11 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**239** keys; Jun 2026 orphan-key closure + fleet/scraper/memory groups)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**227** keys; UC gate-fail global consolidation Jun 2026)
 
 ### Context budget (`*_MAX_CHARS`)
 
-Slice packet, repo map, symbol sketch, LLM history, read, shell output, and handoff limits resolve through `_context_max_chars` in `env_flags.py` (single `resolve_int` path). Prefer `NIMBUSWARE_SLICE_BUDGET_PRESET` when tuning multiple limits together. **38** universal-critique env keys override workflow YAML only when explicitly set (see `effective_universal_critique` table map).
+Slice packet, repo map, symbol sketch, LLM history, read, shell output, and handoff limits resolve through `_context_max_chars` in `env_flags.py` (single `resolve_int` path). Prefer `NIMBUSWARE_SLICE_BUDGET_PRESET` when tuning multiple limits together. **26** universal-critique env keys override workflow YAML only when explicitly set (3 global gate-fail keys + panel enable/llm/stub knobs; see `effective_universal_critique`).
 
 ### Redundant / alias keys (prefer one)
 
@@ -46,6 +46,7 @@ Slice packet, repo map, symbol sketch, LLM history, read, shell output, and hand
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
+| `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | Per-panel `*_CRITIQUE_*_ON_GATE_FAIL` (15 legacy) | Global UC gate-fail env applies all panels; per-panel still wins when explicitly set |
 
 **Tri-state system keys** (empty = follow workflow YAML): optional stages and universal-critique panel overrides. Prefer workflow profile YAML in `configs/workflows/` for defaults; use env only for operator overrides.
 

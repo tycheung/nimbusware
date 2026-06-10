@@ -4,7 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_env.env_flags import env_falsy, env_over_yaml
+from nimbusware_env.env_flags import (
+    env_falsy,
+    env_over_yaml,
+    env_over_yaml_with_global_fallback,
+)
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 
@@ -224,55 +228,104 @@ class EffectiveUniversalCritique:
     default_enabled: bool = False
 
 
+_UC_STAGE_FAILED_GLOBAL = "NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL"
+_UC_EMIT_FINDING_GLOBAL = "NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL"
+_UC_HARD_BLOCK_GLOBAL = "NIMBUSWARE_UNIVERSAL_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"
+
 _UC_ENV_FIELDS: tuple[tuple[str, str], ...] = (
     ("impl_llm", "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM"),
     ("impl_stub", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS"),
+    ("tw_enabled", "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE"),
+    ("tw_llm", "NIMBUSWARE_TEST_WRITER_CRITIQUE_LLM"),
+    ("tw_stub", "NIMBUSWARE_STUB_TEST_WRITER_CRITICS"),
+    ("pll_enabled", "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE"),
+    ("pll_llm", "NIMBUSWARE_PLANNER_CRITIQUE_LLM"),
+    ("pll_stub", "NIMBUSWARE_STUB_PLANNER_CRITICS"),
+    ("fw_enabled", "NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE"),
+    ("fw_llm", "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_LLM"),
+    ("fw_stub", "NIMBUSWARE_STUB_FRONTEND_WRITER_CRITICS"),
+    ("mi_enabled", "NIMBUSWARE_ENABLE_MODULE_INTEGRATOR_CRITIQUE"),
+    ("mi_llm", "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_LLM"),
+    ("mi_stub", "NIMBUSWARE_STUB_MODULE_INTEGRATOR_CRITICS"),
+    ("unanimous_gate_enforce", "NIMBUSWARE_UNANIMOUS_GATE_ENFORCE"),
+)
+
+_UC_GATE_FAIL_ENV_FIELDS: tuple[tuple[str, str, str], ...] = (
     (
         "impl_stage_failed_on_gate_fail",
         "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        _UC_STAGE_FAILED_GLOBAL,
     ),
     (
         "impl_emit_finding_on_gate_fail",
         "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        _UC_EMIT_FINDING_GLOBAL,
     ),
-    ("impl_hard_block_on_gate_fail", "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"),
-    ("tw_enabled", "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE"),
-    ("tw_llm", "NIMBUSWARE_TEST_WRITER_CRITIQUE_LLM"),
-    ("tw_stub", "NIMBUSWARE_STUB_TEST_WRITER_CRITICS"),
-    ("tw_stage_failed_on_gate_fail", "NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL"),
-    ("tw_emit_finding_on_gate_fail", "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL"),
-    ("tw_hard_block_on_gate_fail", "NIMBUSWARE_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"),
-    ("pll_enabled", "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE"),
-    ("pll_llm", "NIMBUSWARE_PLANNER_CRITIQUE_LLM"),
-    ("pll_stub", "NIMBUSWARE_STUB_PLANNER_CRITICS"),
-    ("pll_stage_failed_on_gate_fail", "NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL"),
-    ("pll_emit_finding_on_gate_fail", "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL"),
-    ("pll_hard_block_on_gate_fail", "NIMBUSWARE_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"),
-    ("fw_enabled", "NIMBUSWARE_ENABLE_FRONTEND_WRITER_CRITIQUE"),
-    ("fw_llm", "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_LLM"),
-    ("fw_stub", "NIMBUSWARE_STUB_FRONTEND_WRITER_CRITICS"),
+    (
+        "impl_hard_block_on_gate_fail",
+        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        _UC_HARD_BLOCK_GLOBAL,
+    ),
+    (
+        "tw_stage_failed_on_gate_fail",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        _UC_STAGE_FAILED_GLOBAL,
+    ),
+    (
+        "tw_emit_finding_on_gate_fail",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        _UC_EMIT_FINDING_GLOBAL,
+    ),
+    (
+        "tw_hard_block_on_gate_fail",
+        "NIMBUSWARE_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        _UC_HARD_BLOCK_GLOBAL,
+    ),
+    (
+        "pll_stage_failed_on_gate_fail",
+        "NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        _UC_STAGE_FAILED_GLOBAL,
+    ),
+    (
+        "pll_emit_finding_on_gate_fail",
+        "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        _UC_EMIT_FINDING_GLOBAL,
+    ),
+    (
+        "pll_hard_block_on_gate_fail",
+        "NIMBUSWARE_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        _UC_HARD_BLOCK_GLOBAL,
+    ),
     (
         "fw_stage_failed_on_gate_fail",
         "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        _UC_STAGE_FAILED_GLOBAL,
     ),
     (
         "fw_emit_finding_on_gate_fail",
         "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        _UC_EMIT_FINDING_GLOBAL,
     ),
-    ("fw_hard_block_on_gate_fail", "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"),
-    ("mi_enabled", "NIMBUSWARE_ENABLE_MODULE_INTEGRATOR_CRITIQUE"),
-    ("mi_llm", "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_LLM"),
-    ("mi_stub", "NIMBUSWARE_STUB_MODULE_INTEGRATOR_CRITICS"),
+    (
+        "fw_hard_block_on_gate_fail",
+        "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        _UC_HARD_BLOCK_GLOBAL,
+    ),
     (
         "mi_stage_failed_on_gate_fail",
         "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
+        _UC_STAGE_FAILED_GLOBAL,
     ),
     (
         "mi_emit_finding_on_gate_fail",
         "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
+        _UC_EMIT_FINDING_GLOBAL,
     ),
-    ("mi_hard_block_on_gate_fail", "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL"),
-    ("unanimous_gate_enforce", "NIMBUSWARE_UNANIMOUS_GATE_ENFORCE"),
+    (
+        "mi_hard_block_on_gate_fail",
+        "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
+        _UC_HARD_BLOCK_GLOBAL,
+    ),
 )
 
 
@@ -290,5 +343,11 @@ def effective_universal_critique(
     resolved = {
         field: env_over_yaml(env_key, getattr(wf, field)) for field, env_key in _UC_ENV_FIELDS
     }
+    for field, panel_key, global_key in _UC_GATE_FAIL_ENV_FIELDS:
+        resolved[field] = env_over_yaml_with_global_fallback(
+            panel_key,
+            global_key,
+            getattr(wf, field),
+        )
     resolved["default_enabled"] = wf.default_enabled
     return EffectiveUniversalCritique(**resolved)

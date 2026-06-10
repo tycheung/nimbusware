@@ -182,6 +182,26 @@ def test_effective_universal_critique_impl_emit_finding_env_overrides_yaml(
     assert eff.impl_emit_finding_on_gate_fail is True
 
 
+def test_effective_universal_critique_global_gate_fail_env_applies_all_panels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL", "1")
+    eff = effective_universal_critique(ROOT, "universal_critique_stub_on")
+    assert eff.impl_stage_failed_on_gate_fail is True
+    assert eff.tw_stage_failed_on_gate_fail is True
+    assert eff.pll_stage_failed_on_gate_fail is True
+
+
+def test_effective_universal_critique_panel_gate_fail_beats_global(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("NIMBUSWARE_UNIVERSAL_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "1")
+    monkeypatch.setenv("NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL", "0")
+    eff = effective_universal_critique(ROOT, "universal_critique_hard_block_on")
+    assert eff.impl_hard_block_on_gate_fail is False
+    assert eff.tw_hard_block_on_gate_fail is True
+
+
 def test_effective_universal_critique_non_truthy_env_disables_yaml() -> None:
     import os
     from unittest.mock import patch
