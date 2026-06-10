@@ -22,7 +22,6 @@ from nimbusware_api.routes import (
     operator_settings,
     personas,
     platform,
-    platform_models,
     policy,
     preflight,
     project_context_artifacts,

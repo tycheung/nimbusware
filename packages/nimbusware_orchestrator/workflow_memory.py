@@ -7,12 +7,12 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import nimbusware_memory_excerpt_max_chars
 from nimbusware_memory.manifest import default_memory_index_dir, latest_generation_id
 from nimbusware_memory.models import EmbeddingMode, MemoryRetrievalHit
 from nimbusware_memory.repo_scope import repo_scope_hash
 from nimbusware_memory.search import format_memory_excerpt, pinned_generation_id, search_memory
 from nimbusware_memory.store import MemoryChunkStore
-from nimbusware_env.env_flags import nimbusware_memory_excerpt_max_chars
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
