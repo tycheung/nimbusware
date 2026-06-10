@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi import APIRouter, Header, HTTPException, Query, Response
 
 from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep, StoreDep
@@ -17,7 +17,6 @@ from nimbusware_api.routes.personas_helpers import (
 )
 from nimbusware_api.schemas.openapi import (
     PERSONA_ALREADY_EXISTS_409,
-    PERSONA_DELETE_RESPONSE_204,
     PERSONA_UPSERT_RESPONSE_200,
     PERSONA_VERSION_CONFLICT_409,
     PERSONAS_RESPONSE_200,
@@ -364,7 +363,6 @@ def patch_persona(
     "/{shelf}/{persona_id}",
     status_code=204,
     responses={
-        204: PERSONA_DELETE_RESPONSE_204,
         401: PROBLEM_RESPONSE_401,
         404: PROBLEM_RESPONSE_404,
         409: PERSONA_VERSION_CONFLICT_409,
@@ -382,7 +380,7 @@ def delete_persona(
     _admin: AdminDep,
     expected_version: int = Query(..., ge=1),
     actor: str | None = Query(default=None, max_length=200),
-) -> None:
+) -> Response:
     validate_shelf_name(shelf)
     persona_shelf = load_shelf(orch)
     existing = persona_shelf.find_entry(shelf, persona_id)
@@ -422,3 +420,4 @@ def delete_persona(
         actor=actor,
         correlation_id=None,
     )
+    return Response(status_code=204)

@@ -12,6 +12,7 @@ from nimbusware_api.routes import (
     audit,
     bundles,
     campaigns,
+    chat,
     config_ops,
     critic_packs,
     custom_agents,
@@ -48,6 +49,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(personas.router)
     router.include_router(custom_agents.router)
     router.include_router(projects.router)
+    router.include_router(chat.router)
     router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)

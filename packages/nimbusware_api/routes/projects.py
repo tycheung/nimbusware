@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 
 from nimbusware_api.admin import AdminDep
@@ -146,9 +146,10 @@ def update_project(
     status_code=204,
     responses={404: PROBLEM_RESPONSE_404},
 )
-def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> None:
+def delete_project(project_id: UUID, store: ProjectStoreDep, _admin: AdminDep) -> Response:
     if not store.delete(project_id):
         raise HTTPException(
             status_code=404,
             detail=problem("project_not_found", f"Unknown project id: {project_id}"),
         )
+    return Response(status_code=204)

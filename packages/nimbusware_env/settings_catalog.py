@@ -383,6 +383,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "Run — campaign",
         ),
         SettingDef(
+            "NIMBUSWARE_INTENT_CLASSIFIER_MODEL",
+            run,
+            s,
+            "",
+            "Intent classifier model",
+            "Ollama model for optional Chat work-type LLM assist (empty = rules only).",
+            "Run — chat",
+        ),
+        SettingDef(
             "NIMBUSWARE_RERESARCH_MISSING_CONTEXT",
             system,
             b,
