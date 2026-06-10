@@ -844,7 +844,8 @@ def run_research_transplant_track(
             if isinstance(block, dict):
                 meta = block
             break
-    stitch_meta = meta.get("stitch") if isinstance(meta.get("stitch"), dict) else {}
+    stitch_raw = meta.get("stitch")
+    stitch_meta: dict[str, Any] = stitch_raw if isinstance(stitch_raw, dict) else {}
     if manifest is not None:
         return emit_stitch_stages_for_manifest(
             store,

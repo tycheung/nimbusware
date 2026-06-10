@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
-from nimbusware_env.env_flags import env_bool, resolve_str
+from nimbusware_env.env_flags import env_bool, env_str
 from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_combined
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.ui_flow_synthesis import validate_ui_flow_yaml
@@ -28,14 +28,14 @@ def launch_test_llm_enabled() -> bool:
 
 def launch_test_writer_model() -> str:
     return (
-        resolve_str("NIMBUSWARE_LAUNCH_TEST_WRITER_MODEL")
-        or resolve_str("NIMBUSWARE_DEFAULT_MODEL")
+        env_str("NIMBUSWARE_LAUNCH_TEST_WRITER_MODEL")
+        or env_str("NIMBUSWARE_DEFAULT_MODEL")
         or ""
     ).strip()
 
 
 def launch_test_ollama_base_url() -> str:
-    return (resolve_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434").strip()
+    return (env_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434").strip()
 
 
 def generate_llm_ui_flow_dict(
