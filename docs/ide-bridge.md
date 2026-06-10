@@ -47,7 +47,7 @@ Add to your MCP settings:
 | `nimbusware_resume_campaign` | `POST /v1/campaigns/{campaign_id}/resume` |
 | `nimbusware_backlog_summary` | `GET /v1/campaigns/{campaign_id}/backlog` |
 
-### Chat / patch parity (§20.27)
+### Chat / patch parity
 
 | Tool | Behavior |
 |------|----------|
