@@ -4,10 +4,19 @@ import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 from nimbusware_orchestrator.put_runtime import PutPreviewHandle, PutStack
+
+_PUT_STACKS = frozenset({"fastapi", "static", "spa", "fullstack", "unknown"})
+
+
+def _coerce_put_stack(value: object) -> PutStack:
+    stack = str(value or "unknown")
+    if stack in _PUT_STACKS:
+        return cast(PutStack, stack)
+    return "unknown"
 
 
 @dataclass
@@ -88,7 +97,7 @@ class DevEnvironmentSession:
             run_id=str(raw.get("run_id") or ""),
             workspace=Path(str(raw.get("workspace") or ".")),
             base_url=base,
-            stack=raw.get("stack") or "unknown",  # type: ignore[arg-type]
+            stack=_coerce_put_stack(raw.get("stack")),
             port=int(raw.get("port") or 0),
             attach_mode=bool(raw.get("attach_mode")),
             health=str(raw.get("health") or "unknown"),

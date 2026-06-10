@@ -191,7 +191,7 @@ def set_run_queue(queue: RunQueuePort | None) -> None:
         elif isinstance(queue, InMemoryRunQueue):
             _GLOBAL_QUEUE = queue
         else:
-            _GLOBAL_QUEUE = queue  # type: ignore[assignment]
+            _GLOBAL_QUEUE = queue
 
 
 def task_payload_workspace(payload: Mapping[str, Any] | None) -> str | None:
