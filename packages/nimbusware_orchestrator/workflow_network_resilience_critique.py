@@ -38,3 +38,11 @@ def network_resilience_critique_llm_branch_effective(
     block: NetworkResilienceCritiqueBlock,
 ) -> bool:
     return scan_critique_llm_effective(block, "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE_LLM")
+
+
+__all__ = (
+    "NetworkResilienceCritiqueBlock",
+    "parse_network_resilience_critique_workflow_block",
+    "network_resilience_critique_effective",
+    "network_resilience_critique_llm_branch_effective",
+)

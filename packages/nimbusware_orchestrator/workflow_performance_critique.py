@@ -35,3 +35,11 @@ def performance_critique_effective(block: PerformanceCritiqueBlock) -> bool:
 
 def performance_critique_llm_branch_effective(block: PerformanceCritiqueBlock) -> bool:
     return scan_critique_llm_effective(block, "NIMBUSWARE_PERFORMANCE_CRITIQUE_LLM")
+
+
+__all__ = (
+    "PerformanceCritiqueBlock",
+    "parse_performance_critique_workflow_block",
+    "performance_critique_effective",
+    "performance_critique_llm_branch_effective",
+)
