@@ -1,5 +1,3 @@
-"""Parse workflow ``patch`` block for hotfix lane policy."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

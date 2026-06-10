@@ -1,5 +1,3 @@
-"""Patch run context helpers (hotfix lane)."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,5 +1,3 @@
-"""Patch hotfix workflow profile and context helpers."""
-
 from __future__ import annotations
 
 from pathlib import Path

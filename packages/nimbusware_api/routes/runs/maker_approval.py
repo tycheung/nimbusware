@@ -175,6 +175,41 @@ def post_workspace_revert(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[
 
 
 @router.post(
+    "/runs/{run_id}/maker/run-tests",
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def post_maker_run_tests(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.patch_context import (
+        patch_context_from_run_rows,
+        resolve_patch_test_targets,
+    )
+    from nimbusware_orchestrator.verifiers import run_pytest_targets
+
+    ws = resolve_run_workspace(rows)
+    patch_ctx = patch_context_from_run_rows(rows)
+    targets = resolve_patch_test_targets((), patch_ctx)
+    if not targets:
+        targets = ["tests/"]
+    existing = [t for t in targets if (ws / t).is_file() or (ws / t).is_dir()]
+    if not existing:
+        return {"tests_passed": True, "detail": "no mapped test targets; skipped", "exit_code": 0}
+    code, out = run_pytest_targets(ws, existing, timeout_seconds=120.0)
+    return {
+        "tests_passed": code == 0,
+        "exit_code": code,
+        "detail": (out or "")[:4000],
+        "targets": existing,
+    }
+
+
+@router.post(
     "/runs/{run_id}/maker/launch-eval",
     responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
 )

@@ -19,6 +19,11 @@ levels:
       - stop_on_gate_fail
       - stop_before_factory_complete
       - stop_at_terminal_review
+  "8":
+    name: Nimble
+    checkpoints:
+      - stop_on_slice_test_fail
+      - stop_at_terminal_review
   "10":
     name: Continuous improve
     checkpoints:
