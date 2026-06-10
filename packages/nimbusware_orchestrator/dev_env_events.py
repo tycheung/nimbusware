@@ -23,12 +23,16 @@ def _dev_env_metadata(session: DevEnvironmentSession, **extra: Any) -> dict[str,
     return {"dev_env": block}
 
 
+def _run_uuid(run_id: UUID | str) -> UUID:
+    return run_id if isinstance(run_id, UUID) else UUID(str(run_id))
+
+
 def emit_dev_env_started(store: Any, run_id: UUID | str, session: DevEnvironmentSession) -> None:
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,
             event_id=uuid4(),
-            run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
+            run_id=_run_uuid(run_id),
             occurred_at=datetime.now(timezone.utc),
             metadata=_dev_env_metadata(session),
             payload=StageStartedPayload(stage_name="dev_env.started", attempt=1),
@@ -41,7 +45,7 @@ def emit_dev_env_stopped(store: Any, run_id: UUID | str, session: DevEnvironment
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,
             event_id=uuid4(),
-            run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
+            run_id=_run_uuid(run_id),
             occurred_at=datetime.now(timezone.utc),
             metadata=_dev_env_metadata(session, health="stopped"),
             payload=StageStartedPayload(stage_name="dev_env.stopped", attempt=1),
@@ -61,10 +65,10 @@ def emit_dev_env_health(
         StagePassedEvent(
             event_type=EventType.STAGE_PASSED,
             event_id=uuid4(),
-            run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
+            run_id=_run_uuid(run_id),
             occurred_at=datetime.now(timezone.utc),
             metadata=_dev_env_metadata(session),
-            payload=StagePassedPayload(stage_name=stage, attempt=1),
+            payload=StagePassedPayload(stage_name=stage, duration_ms=0),
         ),
     )
 
@@ -77,17 +81,32 @@ def emit_dev_env_regression(
     detail: str,
     metadata: dict[str, Any] | None = None,
 ) -> None:
-    stage = "dev_env.regression.passed" if passed else "dev_env.regression.failed"
-    event_cls = StagePassedEvent if passed else StageStartedEvent
-    payload_cls = StagePassedPayload if passed else StageStartedPayload
+    meta = {"dev_env": {"regression": detail, **(metadata or {})}}
+    rid = _run_uuid(run_id)
+    occurred = datetime.now(timezone.utc)
+    if passed:
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=occurred,
+                metadata=meta,
+                payload=StagePassedPayload(
+                    stage_name="dev_env.regression.passed",
+                    duration_ms=0,
+                ),
+            ),
+        )
+        return
     store.append(
-        event_cls(
-            event_type=EventType.STAGE_PASSED if passed else EventType.STAGE_STARTED,
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
             event_id=uuid4(),
-            run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"dev_env": {"regression": detail, **(metadata or {})}},
-            payload=payload_cls(stage_name=stage, attempt=1),
+            run_id=rid,
+            occurred_at=occurred,
+            metadata=meta,
+            payload=StageStartedPayload(stage_name="dev_env.regression.failed", attempt=1),
         ),
     )
 
@@ -103,9 +122,6 @@ def emit_dev_env_ui_regression(
     failed_step: int | None = None,
     locator: str | None = None,
 ) -> None:
-    stage = "dev_env.ui_regression.passed" if passed else "dev_env.ui_regression.failed"
-    event_cls = StagePassedEvent if passed else StageStartedEvent
-    payload_cls = StagePassedPayload if passed else StageStartedPayload
     block: dict[str, Any] = {
         "ui_regression": detail,
         "steps_run": steps_run,
@@ -116,13 +132,31 @@ def emit_dev_env_ui_regression(
         block["failed_step"] = failed_step
     if locator:
         block["locator"] = locator
+    meta = {"dev_env": block}
+    rid = _run_uuid(run_id)
+    occurred = datetime.now(timezone.utc)
+    if passed:
+        store.append(
+            StagePassedEvent(
+                event_type=EventType.STAGE_PASSED,
+                event_id=uuid4(),
+                run_id=rid,
+                occurred_at=occurred,
+                metadata=meta,
+                payload=StagePassedPayload(
+                    stage_name="dev_env.ui_regression.passed",
+                    duration_ms=0,
+                ),
+            ),
+        )
+        return
     store.append(
-        event_cls(
-            event_type=EventType.STAGE_PASSED if passed else EventType.STAGE_STARTED,
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
             event_id=uuid4(),
-            run_id=UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"dev_env": block},
-            payload=payload_cls(stage_name=stage, attempt=1),
+            run_id=rid,
+            occurred_at=occurred,
+            metadata=meta,
+            payload=StageStartedPayload(stage_name="dev_env.ui_regression.failed", attempt=1),
         ),
     )
