@@ -105,6 +105,17 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
+            "NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY",
+            install,
+            s,
+            "",
+            "Audit bundle HMAC key",
+            "Signs run audit export tarballs. Legacy alias: AUDIT_EXPORT_SIGNING_KEY.",
+            "Install — secrets",
+            admin_editable=False,
+            user_editable=False,
+        ),
+        SettingDef(
             "NIMBUSWARE_EDITION",
             install,
             e,

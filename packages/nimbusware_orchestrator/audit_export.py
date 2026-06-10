@@ -12,7 +12,12 @@ from typing import Any
 
 
 def _signing_key() -> bytes | None:
-    raw = os.environ.get("AUDIT_EXPORT_SIGNING_KEY", "").strip()
+    from nimbusware_env.env_flags import env_str
+
+    raw = (
+        env_str("NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY")
+        or os.environ.get("AUDIT_EXPORT_SIGNING_KEY", "").strip()
+    )
     return raw.encode("utf-8") if raw else None
 
 
