@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from agent_core.mapping import mapping_or_empty
 from nimbusware_orchestrator._pipeline._helpers import (
+    mapping_or_empty,
     UUID,
     EventType,
     ModelPreflightPassedEvent,

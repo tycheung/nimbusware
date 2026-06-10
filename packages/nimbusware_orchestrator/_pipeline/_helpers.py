@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 
 import httpx
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import (
     EventType,
     FindingCreatedEvent,
@@ -355,6 +356,7 @@ __all__ = (
     "IMPLEMENTATION_CRITIQUE_STAGE",
     "InMemoryEventStore",
     "Literal",
+    "mapping_or_empty",
     "MODULE_INTEGRATOR_CRITIQUE_STAGE",
     "ModelPreflightPassedEvent",
     "ModelPreflightPassedPayload",
