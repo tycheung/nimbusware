@@ -28,9 +28,7 @@ def launch_test_llm_enabled() -> bool:
 
 def launch_test_writer_model() -> str:
     return (
-        env_str("NIMBUSWARE_LAUNCH_TEST_WRITER_MODEL")
-        or env_str("NIMBUSWARE_DEFAULT_MODEL")
-        or ""
+        env_str("NIMBUSWARE_LAUNCH_TEST_WRITER_MODEL") or env_str("NIMBUSWARE_DEFAULT_MODEL") or ""
     ).strip()
 
 
