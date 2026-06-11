@@ -19,6 +19,7 @@ def test_patch_stack_fixtures_exist() -> None:
     fixtures = Path(__file__).resolve().parents[1] / "fixtures" / "repos"
     assert (fixtures / "tiny_go_app" / "go.mod").is_file()
     assert (fixtures / "tiny_go_app" / "calculator_test.go").is_file()
+    assert (fixtures / "tiny_jvm_app" / "pom.xml").is_file()
     assert (
         fixtures / "tiny_jvm_app" / "src" / "main" / "java" / "com" / "example" / "Calculator.java"
     ).is_file()

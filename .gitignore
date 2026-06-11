@@ -51,6 +51,8 @@ node_modules/
 tests/e2e/web/test-results/
 tests/e2e/web/playwright-report/
 tests/e2e/web/blob-report/
+# Maven build output from local JVM patch fixture verification
+tests/fixtures/repos/tiny_jvm_app/target/
 
 # Environment and local secrets (never commit real credentials)
 .env
