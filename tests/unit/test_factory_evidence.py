@@ -7,7 +7,6 @@ from pathlib import Path
 from nimbusware_orchestrator.factory_evidence import (
     build_factory_evidence_bundle,
     export_factory_evidence_zip,
-    factory_evidence_scorecard_rows,
 )
 
 REPO = Path(__file__).resolve().parents[2]

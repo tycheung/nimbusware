@@ -349,6 +349,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 - Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject); stitch panel (`GET /v1/runs/{id}/stitch-summary`)
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
+- **Factory evidence scorecard** — Review tab table from `GET /v1/runs/{id}/factory-evidence` (`scorecard_rows`: tier, ISM, PUT E2E)
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
 - Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `NIMBUSWARE_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
 
