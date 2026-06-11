@@ -10,11 +10,13 @@ from nimbusware_orchestrator._pipeline._helpers import (
     emit_stub_network_resilience_critique_panel,
     emit_stub_performance_critique_panel,
     emit_stub_security_critique_panel,
+    gate_fail_for_stage,
     execute_network_resilience_critique_llm,
     execute_performance_critique_llm,
     execute_security_critique_llm,
     network_resilience_critique_effective,
     network_resilience_critique_llm_branch_effective,
+    ollama_runtime_from_host,
     parse_network_resilience_critique_workflow_block,
     parse_performance_critique_workflow_block,
     parse_refactor_workflow_block,
@@ -67,8 +69,7 @@ class OptionalCritiqueMixin:
         if security_critique_llm_branch_effective(block):
             model = self._selected_model_for_run(run_id)
             if model:
-                base = self._base_cfg()
-                runtime = base.get("runtime") or {}
+                base_url, timeout = ollama_runtime_from_host(self)
                 emitted_llm = execute_security_critique_llm(
                     self._store,
                     self._registry,
@@ -76,10 +77,10 @@ class OptionalCritiqueMixin:
                     run_id=run_id,
                     producer_tax_key=producer,
                     scan_summary=scan_summary,
-                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    base_url=base_url,
                     model_id=model,
                     block=block,
-                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    timeout_seconds=timeout,
                     unanimous_gate_enforce=enforce,
                 )
         if not emitted_llm and block.stub:
@@ -93,15 +94,10 @@ class OptionalCritiqueMixin:
                 block=block,
                 unanimous_gate_enforce=enforce,
             )
-        rows = self._store.list_run_events(str(run_id))
-        for row in reversed(rows):
-            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
-                continue
-            pl = row.get("payload") or {}
-            if pl.get("stage_name") != "implementation.security_critique":
-                continue
-            return str(pl.get("verdict", "")).upper() == "FAIL"
-        return False
+        return gate_fail_for_stage(
+            self._store.list_run_events(str(run_id)),
+            "implementation.security_critique",
+        )
 
     def _emit_performance_critique_optional(
         self: OptionalCritiqueHost,
@@ -127,8 +123,7 @@ class OptionalCritiqueMixin:
         if performance_critique_llm_branch_effective(block):
             model = self._selected_model_for_run(run_id)
             if model:
-                base = self._base_cfg()
-                runtime = base.get("runtime") or {}
+                base_url, timeout = ollama_runtime_from_host(self)
                 emitted_llm = execute_performance_critique_llm(
                     self._store,
                     self._registry,
@@ -136,10 +131,10 @@ class OptionalCritiqueMixin:
                     run_id=run_id,
                     producer_tax_key=producer,
                     scan_summary=scan_summary,
-                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    base_url=base_url,
                     model_id=model,
                     block=block,
-                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    timeout_seconds=timeout,
                     unanimous_gate_enforce=enforce,
                 )
         if not emitted_llm and block.stub:
@@ -153,15 +148,10 @@ class OptionalCritiqueMixin:
                 block=block,
                 unanimous_gate_enforce=enforce,
             )
-        rows = self._store.list_run_events(str(run_id))
-        for row in reversed(rows):
-            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
-                continue
-            pl = row.get("payload") or {}
-            if pl.get("stage_name") != "implementation.performance_critique":
-                continue
-            return str(pl.get("verdict", "")).upper() == "FAIL"
-        return False
+        return gate_fail_for_stage(
+            self._store.list_run_events(str(run_id)),
+            "implementation.performance_critique",
+        )
 
     def _emit_network_resilience_critique_optional(
         self: OptionalCritiqueHost,
@@ -191,18 +181,17 @@ class OptionalCritiqueMixin:
         if network_resilience_critique_llm_branch_effective(block):
             model = self._selected_model_for_run(run_id)
             if model:
-                base = self._base_cfg()
-                runtime = base.get("runtime") or {}
+                base_url, timeout = ollama_runtime_from_host(self)
                 emitted_llm = execute_network_resilience_critique_llm(
                     self._store,
                     self._registry,
                     self._critique_router,
                     run_id=run_id,
                     scan_summary=scan_summary,
-                    base_url=str(runtime.get("base_url", "http://localhost:11434")),
+                    base_url=base_url,
                     model_id=model,
                     block=block,
-                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
+                    timeout_seconds=timeout,
                     unanimous_gate_enforce=enforce,
                 )
         if not emitted_llm and block.stub:
@@ -215,15 +204,10 @@ class OptionalCritiqueMixin:
                 block=block,
                 unanimous_gate_enforce=enforce,
             )
-        rows = self._store.list_run_events(str(run_id))
-        for row in reversed(rows):
-            if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
-                continue
-            pl = row.get("payload") or {}
-            if pl.get("stage_name") != "implementation.network_resilience_critique":
-                continue
-            return str(pl.get("verdict", "")).upper() == "FAIL"
-        return False
+        return gate_fail_for_stage(
+            self._store.list_run_events(str(run_id)),
+            "implementation.network_resilience_critique",
+        )
 
     def _emit_refactor_stage_optional(
         self: OptionalCritiqueHost,

@@ -355,6 +355,25 @@ def optional_meta_section(host: Any, run_id: UUID, key: str) -> dict[str, Any]:
     return mapping_or_empty(meta.get(key))
 
 
+def gate_fail_for_stage(rows: list[dict[str, Any]], stage_name: str) -> bool:
+    for row in reversed(rows):
+        if row.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
+            continue
+        pl = mapping_or_empty(row.get("payload"))
+        if pl.get("stage_name") != stage_name:
+            continue
+        return str(pl.get("verdict", "")).upper() == "FAIL"
+    return False
+
+
+def ollama_runtime_from_host(host: Any) -> tuple[str, float]:
+    runtime = mapping_or_empty(host._base_cfg().get("runtime"))
+    return (
+        str(runtime.get("base_url", "http://localhost:11434")),
+        float(runtime.get("request_timeout_seconds", 120)),
+    )
+
+
 __all__ = (
     "AgentEvaluator",
     "Any",
@@ -462,10 +481,12 @@ __all__ = (
     "execute_test_writer_critique_llm",
     "fast_slice_env_effective",
     "fast_slice_skips_optional_critique_matrix",
+    "gate_fail_for_stage",
     "get_run_queue",
     "hashlib",
     "nimbusware_outbound_fetch_enabled",
     "nimbusware_use_llm_enabled",
+    "ollama_runtime_from_host",
     "httpx",
     "integration_adapter_writer_stage_would_emit",
     "integrator_gate_workflow_enabled",
