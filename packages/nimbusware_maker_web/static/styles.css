@@ -656,3 +656,8 @@ button.intent-card:hover {
   color: var(--color-warn, #b45309);
   font-weight: 500;
 }
+
+.chat-autopilot-hint {
+  margin-bottom: 0.75rem;
+  border-left: 3px solid var(--color-accent, #2563eb);
+}

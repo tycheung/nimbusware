@@ -5,6 +5,7 @@ import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-h
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
 const RESUME_KEY = "maker_chat_resume_session";
+const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
 const THEATER_CAP = 12;
 
 function chatResumeEnabled() {
@@ -395,6 +396,30 @@ async function steerActiveRun(root, runId, message) {
   toast("Steering queued", "success");
 }
 
+function mountAutopilotLadderHint(root) {
+  if (localStorage.getItem(AUTOPILOT_LADDER_HINT_KEY) === "1") return;
+  const hint = document.createElement("aside");
+  hint.className = "panel chat-autopilot-hint";
+  hint.dataset.testid = "maker-chat-autopilot-hint";
+  const p = document.createElement("p");
+  p.innerHTML =
+    "<strong>Autonomy ladder (Nimble autopilot ~8):</strong> " +
+    "Fix a bug (patch) → Build a feature (micro-slice) → Build an app (factory). " +
+    "Chat offers escalation when a gate fails.";
+  hint.appendChild(p);
+  const dismiss = document.createElement("button");
+  dismiss.type = "button";
+  dismiss.className = "linkish";
+  dismiss.textContent = "Dismiss";
+  dismiss.dataset.testid = "maker-chat-autopilot-hint-dismiss";
+  dismiss.addEventListener("click", () => {
+    localStorage.setItem(AUTOPILOT_LADDER_HINT_KEY, "1");
+    hint.remove();
+  });
+  hint.appendChild(dismiss);
+  root.prepend(hint);
+}
+
 export async function mountChat(root) {
   root.innerHTML = `
     <form id="chat-form" class="chat-form">
@@ -433,6 +458,8 @@ export async function mountChat(root) {
     </details>
     <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
     <div id="chat-classifier-mount"></div>`;
+
+  mountAutopilotLadderHint(root);
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#chat-project-select");

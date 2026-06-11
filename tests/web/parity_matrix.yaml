@@ -118,6 +118,12 @@ maker:
   - id: progress_learnings_after_block
     web: true
     notes: Learnings ribbon highlighted when gate_summary indicates blocked run
+  - id: chat_autopilot_ladder_hint
+    web: true
+    notes: Chat tab dismissible autonomy ladder hint (patch to slice to factory)
+  - id: review_factory_evidence_scorecard
+    web: true
+    notes: Review tab factory evidence scorecard table from GET factory-evidence
   - id: slice_prepare
     web: true
   - id: theater_export
