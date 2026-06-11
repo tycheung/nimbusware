@@ -112,9 +112,15 @@ def _run_micro_slice_benchmark(
     run_id = orch.create_run(workflow_profile)
     checks.append("run_created")
     plan_factory = _fixture_slice_plan_factory(target_paths)
-    with patch(
-        "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
-        plan_factory,
+    with (
+        patch(
+            "nimbusware_orchestrator.micro_slice_plan.default_stub_slice_plan",
+            plan_factory,
+        ),
+        patch(
+            "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
+            plan_factory,
+        ),
     ):
         results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
     duration_sec = time.perf_counter() - t0

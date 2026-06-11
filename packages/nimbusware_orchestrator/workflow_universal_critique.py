@@ -51,9 +51,10 @@ def _implementation_panel_flags(
     default_enabled: bool,
 ) -> tuple[bool, bool]:
     mapping = mapping_or_empty(block)
-    impl_llm = _leaf_bool(mapping, "llm") if mapping else False
-    impl_stub = _leaf_bool(mapping, "stub") if mapping else False
-    if default_enabled and mapping and not impl_llm and not impl_stub:
+    present = block is not None
+    impl_llm = _leaf_bool(mapping, "llm") if present else False
+    impl_stub = _leaf_bool(mapping, "stub") if present else False
+    if default_enabled and present and not impl_llm and not impl_stub:
         impl_stub = True
     return impl_llm, impl_stub
 
