@@ -33,6 +33,9 @@ class MakerProgressResponse(BaseModel):
     context_budget: dict[str, Any] | None = None
     campaign_progress: dict[str, Any] | None = None
     latest_handoff: dict[str, Any] | None = None
+    factory_status: dict[str, Any] | None = None
+    gate_summary: str | None = None
+    role_cost_summary: dict[str, Any] | None = None
     simple_mode: bool = True
 
 

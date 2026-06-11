@@ -26,6 +26,11 @@ from nimbusware_hw.profile import profile_from_probe
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_orchestrator.autopilot_profiles import resolve_autopilot_profile
+from nimbusware_orchestrator.hybrid_routing import (
+    apply_routing_preset,
+    list_routing_preset_summaries,
+    probe_cloud_runtime,
+)
 from nimbusware_orchestrator.user_autopilot_profiles import (
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,
@@ -198,6 +203,10 @@ class ApplyPresetBody(BaseModel):
     target: Literal["model-routing", "run_defaults"] = "model-routing"
 
 
+class ApplyRoutingPresetBody(BaseModel):
+    preset_id: str = Field(min_length=1, max_length=80)
+
+
 @router.get("/platform/models/catalog-info")
 def get_model_catalog_info(orch: OrchDep) -> dict[str, Any]:
     path = orch.repo_root / "configs" / "hardware" / "model_catalog.json"
@@ -274,6 +283,43 @@ def post_apply_preset(orch: OrchDep, body: ApplyPresetBody) -> dict[str, Any]:
             "target": body.target,
         },
     }
+
+
+@router.get("/platform/routing-presets")
+def get_routing_presets(orch: OrchDep) -> dict[str, Any]:
+    presets = list_routing_preset_summaries(orch.repo_root)
+    routing = _load_routing_yaml(orch.repo_root / "configs" / "model-routing.yaml")
+    active = str(routing.get("routing_preset_id") or "local_only")
+    cloud_probe = probe_cloud_runtime(routing)
+    return {
+        "presets": presets,
+        "active_preset_id": active,
+        "cloud_preflight": cloud_probe,
+    }
+
+
+@router.post("/platform/routing-presets/apply")
+def post_apply_routing_preset(orch: OrchDep, body: ApplyRoutingPresetBody) -> dict[str, Any]:
+    try:
+        applied = apply_routing_preset(orch.repo_root, body.preset_id)
+    except KeyError:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "invalid_routing_preset",
+                "routing preset not found",
+                details={"preset_id": body.preset_id},
+            ),
+        ) from None
+    routing_path = orch.repo_root / "configs" / "model-routing.yaml"
+    content = _load_routing_yaml(routing_path)
+    from nimbusware_env.env_flags import env_str
+
+    conn = env_str("NIMBUSWARE_DATABASE_URL")
+    if conn:
+        PostgresConfigStore(conn).upsert(NS_POLICY, KEY_MODEL_ROUTING, content)
+    applied["cloud_preflight"] = probe_cloud_runtime(content)
+    return applied
 
 
 @router.get("/platform/models/dependencies")
