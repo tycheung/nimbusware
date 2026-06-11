@@ -32,7 +32,14 @@ from nimbusware_console.services import enterprise as enterprise_svc
 from nimbusware_env.edition import is_enterprise
 from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
 from nimbusware_iam.constants import API_KEY_HEADER
+from nimbusware_orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
 from nimbusware_orchestrator.fleet_analytics import compare_tenant_metrics
+from nimbusware_orchestrator.fleet_autopilot_policy import (
+    FleetAutopilotPolicy,
+    load_fleet_autopilot_policies,
+    save_fleet_autopilot_policies,
+    tenant_autopilot_policy,
+)
 from nimbusware_store.protocol import serialized_event_from_row
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
@@ -252,6 +259,62 @@ def admin_persona_overlap_report(_admin: AdminDep, orch: OrchDep) -> dict[str, A
             f"{len(rows)} shelf pair(s) have overlapping scope_in — assign personas carefully."
         )
     return {"pair_count": len(rows), "warning": warning, "rows": table_rows}
+
+
+class FleetAutopilotPolicyBody(BaseModel):
+    max_autopilot_level: int = Field(ge=0, le=10, default=10)
+    required_checkpoints: list[str] = Field(default_factory=list)
+
+
+@router.get("/enterprise/fleet-autopilot-policy")
+def enterprise_fleet_autopilot_policy_get(
+    _admin: AdminDep,
+    iam: IamStoreDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_id: Annotated[str, Query(default="")] = "",
+) -> dict[str, Any]:
+    slug = ""
+    if tenant_id.strip():
+        tid = _resolve_tenant_uuid(iam, tenant_id)
+        for tenant in iam.list_tenants():
+            if str(tenant.tenant_id) == tid:
+                slug = tenant.slug
+                break
+        if not slug:
+            slug = tenant_id.strip()
+    policy = tenant_autopilot_policy(slug or None)
+    return {
+        **policy.to_dict(),
+        "checkpoint_catalog": sorted(CHECKPOINT_CATALOG),
+    }
+
+
+@router.put("/enterprise/fleet-autopilot-policy")
+def enterprise_fleet_autopilot_policy_put(
+    body: FleetAutopilotPolicyBody,
+    _admin: AdminDep,
+    iam: IamStoreDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_id: Annotated[str, Query(min_length=1)],
+) -> dict[str, Any]:
+    slug = ""
+    tid = _resolve_tenant_uuid(iam, tenant_id)
+    for tenant in iam.list_tenants():
+        if str(tenant.tenant_id) == tid:
+            slug = tenant.slug
+            break
+    if not slug:
+        slug = tenant_id.strip()
+    checkpoints = {c for c in body.required_checkpoints if c in CHECKPOINT_CATALOG}
+    policy = FleetAutopilotPolicy(
+        tenant_slug=slug,
+        max_autopilot_level=body.max_autopilot_level,
+        required_checkpoints=frozenset(checkpoints),
+    )
+    policies = load_fleet_autopilot_policies()
+    policies[slug] = policy
+    save_fleet_autopilot_policies(policies)
+    return policy.to_dict()
 
 
 @router.get("/enterprise/fleet-compare")

@@ -46,6 +46,10 @@ export function FleetPage() {
     { tenant: string; runs_scanned: string; gates_passed: string; gates_failed: string; ollama_p95_ms: string }[]
   >([]);
   const [compareCaption, setCompareCaption] = useState("");
+  const [policyLevel, setPolicyLevel] = useState(10);
+  const [policyCheckpoints, setPolicyCheckpoints] = useState("");
+  const [policyCatalog, setPolicyCatalog] = useState<string[]>([]);
+  const [policyCaption, setPolicyCaption] = useState("");
   const [error, setError] = useState("");
 
   const loadDashboard = useCallback(() => {
@@ -80,6 +84,59 @@ export function FleetPage() {
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  const loadAutopilotPolicy = useCallback(() => {
+    if (!enterpriseApiKey() || !tenantId) {
+      setPolicyCaption("");
+      return;
+    }
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    const q = `?tenant_id=${encodeURIComponent(tenantId)}`;
+    apiJson<{
+      max_autopilot_level?: number;
+      required_checkpoints?: string[];
+      checkpoint_catalog?: string[];
+      tenant_slug?: string;
+    }>(`/admin/ui/enterprise/fleet-autopilot-policy${q}`, {
+      headers: { "X-Nimbusware-Api-Key": key },
+    })
+      .then((body) => {
+        setPolicyLevel(body.max_autopilot_level ?? 10);
+        setPolicyCheckpoints((body.required_checkpoints || []).join(", "));
+        setPolicyCatalog(body.checkpoint_catalog || []);
+        setPolicyCaption(`Tenant policy: ${body.tenant_slug || slug}`);
+      })
+      .catch(() => setPolicyCaption(""));
+  }, [tenantId, tenants]);
+
+  useEffect(() => {
+    loadAutopilotPolicy();
+  }, [loadAutopilotPolicy]);
+
+  const saveAutopilotPolicy = () => {
+    if (!enterpriseApiKey() || !tenantId) return;
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    const q = `?tenant_id=${encodeURIComponent(tenantId)}`;
+    const checkpoints = policyCheckpoints
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+    apiJson(`/admin/ui/enterprise/fleet-autopilot-policy${q}`, {
+      method: "PUT",
+      headers: {
+        "X-Nimbusware-Api-Key": key,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        max_autopilot_level: policyLevel,
+        required_checkpoints: checkpoints,
+      }),
+    })
+      .then(() => loadAutopilotPolicy())
+      .catch((e) => setError(String((e as Error).message || e)));
+  };
 
   const onTenantChange = (id: string) => {
     setTenantId(id);
@@ -220,6 +277,36 @@ export function FleetPage() {
           <button type="button" onClick={downloadExport} disabled={!dashboard.export_json}>
             Export JSON
           </button>
+          {tenantId ? (
+            <>
+              <h3>Fleet autopilot policy</h3>
+              <p class="muted">
+                Cap max autonomy level and require checkpoints for runs in the selected tenant.
+              </p>
+              {policyCaption ? <p class="hint">{policyCaption}</p> : null}
+              <label>
+                Max autopilot level{" "}
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={policyLevel}
+                  onInput={(e) => setPolicyLevel(Number((e.target as HTMLInputElement).value) || 0)}
+                />
+              </label>{" "}
+              <label>
+                Required checkpoints (comma-separated){" "}
+                <input
+                  value={policyCheckpoints}
+                  onInput={(e) => setPolicyCheckpoints((e.target as HTMLInputElement).value)}
+                  placeholder={policyCatalog.slice(0, 2).join(", ")}
+                />
+              </label>{" "}
+              <button type="button" class="secondary" onClick={saveAutopilotPolicy}>
+                Save policy
+              </button>
+            </>
+          ) : null}
           <h3>Cross-tenant comparison</h3>
           <p class="muted">Compare slice gate pass/fail rates between two tenants.</p>
           {tenants.length >= 2 ? (

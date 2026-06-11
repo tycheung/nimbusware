@@ -129,8 +129,18 @@ def persist_run_autopilot(
     store: Any,
     run_id: UUID | str,
     profile: AutopilotProfile,
-) -> None:
+    *,
+    tenant_slug: str | None = None,
+    repo_root: Path | None = None,
+) -> AutopilotProfile:
     """Append durable autopilot override; also refresh in-process cache."""
+    from nimbusware_orchestrator.fleet_autopilot_policy import enforce_tenant_autopilot_policy
+
+    profile = enforce_tenant_autopilot_policy(
+        profile,
+        tenant_slug,
+        repo_root=repo_root,
+    )
     rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
     block = {
         "level": profile.level,
@@ -153,6 +163,7 @@ def persist_run_autopilot(
         level=profile.level,
         checkpoints=set(profile.checkpoints) if profile.checkpoints else None,
     )
+    return profile
 
 
 def latest_autopilot_block_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:

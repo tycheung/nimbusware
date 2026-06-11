@@ -1,0 +1,12 @@
+version: 1
+# Per-tenant autopilot ceilings for Enterprise fleet governance.
+# Keys are tenant slugs (see GET /v1/enterprise/tenants).
+tenants:
+  default:
+    max_autopilot_level: 10
+    required_checkpoints: []
+  ops:
+    max_autopilot_level: 8
+    required_checkpoints:
+      - stop_on_gate_fail
+      - stop_at_terminal_review

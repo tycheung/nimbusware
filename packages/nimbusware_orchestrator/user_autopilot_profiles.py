@@ -119,9 +119,17 @@ def apply_user_autopilot_at_run_start(
 
     from nimbusware_orchestrator.autopilot_profiles import persist_run_autopilot
 
+    from nimbusware_iam.context import get_auth_context
+
     profile = resolve_user_autopilot_profile(profile_id.strip(), repo_root=repo_root)
     if profile is None:
         return None
     rid = run_id if isinstance(run_id, UUIDType) else UUIDType(str(run_id))
-    persist_run_autopilot(store, rid, profile)
-    return profile
+    ctx = get_auth_context()
+    return persist_run_autopilot(
+        store,
+        rid,
+        profile,
+        tenant_slug=ctx.tenant_slug if ctx else None,
+        repo_root=repo_root,
+    )

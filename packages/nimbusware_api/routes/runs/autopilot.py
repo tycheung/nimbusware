@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
+from nimbusware_iam.context import get_auth_context
 from nimbusware_orchestrator.autopilot_profiles import (
     autopilot_profile_from_rows,
     persist_run_autopilot,
@@ -70,7 +71,13 @@ def put_run_autopilot(
         )
     custom = set(body.checkpoints) if body.checkpoints else None
     profile = resolve_autopilot_profile(level=body.level, custom_checkpoints=custom)
-    persist_run_autopilot(store, run_id, profile)
+    ctx = get_auth_context()
+    profile = persist_run_autopilot(
+        store,
+        run_id,
+        profile,
+        tenant_slug=ctx.tenant_slug if ctx else None,
+    )
     return RunAutopilotResponse(
         run_id=str(run_id),
         level=profile.level,
