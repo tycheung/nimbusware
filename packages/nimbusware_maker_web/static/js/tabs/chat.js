@@ -530,7 +530,6 @@ export async function mountChat(root) {
     }
   });
 
-  const hashParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
   const activeRunId = hashParams.get("run_id") || "";
 
   async function offerRunEscalations(runId) {
