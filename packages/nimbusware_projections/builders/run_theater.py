@@ -4,6 +4,13 @@ from typing import Any, Literal
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
+from nimbusware_projections.fields.theater_metadata import (
+    append_agent_tool_theater_line,
+    approved_research_body_md,
+    governor_headline_from_run_created,
+    metadata_theater_lines,
+    path_list_summary,
+)
 
 MessageKind = Literal[
     "plan",
@@ -47,121 +54,6 @@ def _metadata(row: dict[str, Any]) -> dict[str, Any]:
     return mapping_or_empty(row.get("metadata"))
 
 
-def _metadata_theater_lines(row: dict[str, Any], base: dict[str, Any]) -> list[dict[str, Any]]:
-    meta = _metadata(row)
-    out: list[dict[str, Any]] = []
-    defer = meta.get("defer_to_role")
-    if isinstance(defer, dict):
-        role = str(defer.get("role_id") or defer.get("role") or "role")
-        reason = str(defer.get("reason_code") or defer.get("reason") or "")[:300]
-        out.append(
-            {
-                **base,
-                "actor_display": "System",
-                "message_kind": "system",
-                "severity": "info",
-                "headline": f"Deferring to {role}",
-                "body_md": reason or None,
-            },
-        )
-    elif isinstance(defer, str) and defer.strip():
-        out.append(
-            {
-                **base,
-                "actor_display": "System",
-                "message_kind": "system",
-                "severity": "info",
-                "headline": f"Deferring to {defer.strip()}",
-                "body_md": None,
-            },
-        )
-    creep = meta.get("scope_creep_warning")
-    if isinstance(creep, str) and creep.strip():
-        out.append(
-            {
-                **base,
-                "actor_display": "System",
-                "message_kind": "system",
-                "severity": "warn",
-                "headline": "Scope creep warning",
-                "body_md": creep.strip()[:400],
-            },
-        )
-    return out
-
-
-def _governor_headline_from_run_created(meta: dict[str, Any]) -> str | None:
-    gov = meta.get("resource_governor")
-    if not isinstance(gov, dict):
-        return None
-    max_writers = gov.get("max_parallel_writers")
-    tier = gov.get("hardware_tier") or gov.get("tier")
-    parts: list[str] = []
-    if max_writers is not None:
-        parts.append(f"max parallel writers: {max_writers}")
-    if tier:
-        parts.append(f"tier: {tier}")
-    if not parts:
-        return None
-    return "Resource governor — " + ", ".join(parts)
-
-
-def _approved_research_body_md(rows: list[dict[str, Any]], before_seq: int) -> str | None:
-    from nimbusware_projections.builders.run_research import run_research_briefs_from_events
-
-    prior = [r for r in rows if int(r.get("store_seq") or 0) < before_seq]
-    briefs = run_research_briefs_from_events(prior).get("briefs") or []
-    approved = [b for b in briefs if b.get("status") == "approved"]
-    if not approved:
-        return None
-    parts: list[str] = []
-    for brief in approved:
-        bid = str(brief.get("brief_id") or brief.get("artifact_id") or "").strip()
-        if not bid:
-            continue
-        summary = str(brief.get("summary") or "").strip()[:120]
-        parts.append(f"{bid} — {summary}" if summary else bid)
-    if not parts:
-        return None
-    return "Approved research: " + "; ".join(parts)
-
-
-def _append_agent_tool_theater_line(
-    messages: list[dict[str, Any]],
-    *,
-    base: dict[str, Any],
-    row_meta: dict[str, Any],
-) -> None:
-    raw = row_meta.get("agent_tool_log")
-    if not isinstance(raw, str) or not raw.strip():
-        return
-    slice_id = str(row_meta.get("slice_id") or "")
-    headline = "Agent tools"
-    if slice_id:
-        headline = f"Agent tools ({slice_id})"
-    messages.append(
-        {
-            **base,
-            "actor_display": "Agent",
-            "message_kind": "agent_tool",
-            "severity": "info",
-            "headline": headline,
-            "body_md": raw.strip()[:8000],
-        },
-    )
-
-
-def _path_list_summary(pl: dict[str, Any], key: str, *, max_items: int = 3) -> str:
-    raw = pl.get(key)
-    if not isinstance(raw, list) or not raw:
-        return ""
-    parts = [str(p).strip() for p in raw if str(p).strip()][:max_items]
-    if not parts:
-        return ""
-    suffix = f" (+{len(raw) - len(parts)} more)" if len(raw) > len(parts) else ""
-    return ", ".join(parts) + suffix
-
-
 def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     from nimbusware_projections.builders.theater_paraphrase import (
         apply_theater_paraphrase,
@@ -184,10 +76,10 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
             "occurred_at": row.get("occurred_at"),
             "refs": {"event_id": str(row.get("event_id") or "")},
         }
-        messages.extend(_metadata_theater_lines(row, base))
+        messages.extend(metadata_theater_lines(row, base))
         if et == EventType.RUN_CREATED.value:
             meta = _metadata(row)
-            gov_headline = _governor_headline_from_run_created(meta)
+            gov_headline = governor_headline_from_run_created(meta)
             if gov_headline:
                 messages.append(
                     {
@@ -296,12 +188,12 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     modified = handoff.get("modified_files") or handoff.get("files_modified")
                     if isinstance(read_files, list) and read_files:
                         body_parts.append(
-                            "Read: " + _path_list_summary({"read_files": read_files}, "read_files")
+                            "Read: " + path_list_summary({"read_files": read_files}, "read_files")
                         )
                     if isinstance(modified, list) and modified:
                         body_parts.append(
                             "Modified: "
-                            + _path_list_summary({"modified_files": modified}, "modified_files"),
+                            + path_list_summary({"modified_files": modified}, "modified_files"),
                         )
                 messages.append(
                     {
@@ -448,7 +340,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "message_kind": "plan",
                         "severity": "pass",
                         "headline": f"Stage passed: {sn}",
-                        "body_md": _approved_research_body_md(rows, plan_seq),
+                        "body_md": approved_research_body_md(rows, plan_seq),
                     },
                 )
             elif sn == "interjection.build_from_chat":
@@ -534,7 +426,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     },
                 )
                 if sn == "slice.implement":
-                    _append_agent_tool_theater_line(messages, base=base, row_meta=row_meta)
+                    append_agent_tool_theater_line(messages, base=base, row_meta=row_meta)
         elif et == EventType.STAGE_FAILED.value:
             sn = _stage_name(pl)
             row_meta = _metadata(row)
@@ -680,7 +572,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 },
             )
         elif et == EventType.STITCH_PLAN_EMITTED.value:
-            targets = _path_list_summary(pl, "target_paths")
+            targets = path_list_summary(pl, "target_paths")
             headline = f"Stitch plan: {targets}" if targets else "Stitch plan emitted"
             messages.append(
                 {
@@ -693,7 +585,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 },
             )
         elif et == EventType.STITCH_APPLIED.value:
-            files = _path_list_summary(pl, "files_added")
+            files = path_list_summary(pl, "files_added")
             headline = f"Stitch applied: {files}" if files else "Stitch applied"
             messages.append(
                 {
