@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from nimbusware_env.env_flags import env_tri_state
-from nimbusware_orchestrator._pipeline._helpers import UUID, parse_research_workflow_block
-from nimbusware_orchestrator._pipeline.optional_stage_helpers import (
+from nimbusware_orchestrator._pipeline._helpers import (
+    UUID,
     optional_meta_section,
     optional_rows_and_profile,
     optional_tri_allows_emit,
+    parse_research_workflow_block,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import ResearchOptionalStagesHost
 

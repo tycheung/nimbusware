@@ -5,8 +5,8 @@ from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     emit_stub_plan_stage,
     execute_plan_stage_llm,
+    optional_meta_section,
 )
-from nimbusware_orchestrator._pipeline.optional_stage_helpers import optional_meta_section
 from nimbusware_orchestrator._pipeline.protocol_hosts import LifecyclePlanHost
 
 
