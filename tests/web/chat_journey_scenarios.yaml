@@ -1,0 +1,26 @@
+# §20.28.9 — Chat-tab journeys that should keep the operator on Chat (not Progress redirect).
+scenarios:
+  patch_classify_start:
+    spec: tests/e2e/web/maker_chat_patch.spec.ts
+    notes: Patch classify, accept chip, stay on #/chat with run_id
+  autopilot_ladder_hint:
+    spec: tests/e2e/web/maker_chat_patch.spec.ts
+    notes: Dismissible autonomy ladder on Chat mount
+  patch_gate_escalation:
+    spec: tests/e2e/web/maker_chat_escalation.spec.ts
+    notes: Slice escalation chip after patch gate fail
+  campaign_promotion:
+    spec: tests/e2e/web/maker_chat_escalation.spec.ts
+    notes: Campaign promotion after slice replans
+  inline_theater:
+    spec: tests/e2e/web/maker_chat_theater.spec.ts
+    notes: Theater lines on Chat tab for active run
+  branch_fork_nav:
+    spec: tests/e2e/web/maker_chat_branch.spec.ts
+    notes: Fork from user turn and branch panel
+  classifier_override:
+    spec: tests/e2e/web/maker_chat_override.spec.ts
+    notes: Work-type override chips on classifier card
+  home_intent_routes_chat:
+    spec: tests/e2e/web/maker_home_intents.spec.ts
+    notes: Home intents deep-link to #/chat
