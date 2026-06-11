@@ -94,11 +94,34 @@ _TRANCHE_E = (
     "packages/nimbusware_orchestrator/context_compaction.py",
 )
 
+# Tranche F: orchestrator root modules + API bundles/chat routes.
+_TRANCHE_F = (
+    "packages/nimbusware_orchestrator/autopilot_profiles.py",
+    "packages/nimbusware_orchestrator/micro_slice_executor.py",
+    "packages/nimbusware_orchestrator/micro_slice_plan.py",
+    "packages/nimbusware_orchestrator/micro_slice_verify.py",
+    "packages/nimbusware_orchestrator/workflow_universal_critique.py",
+    "packages/nimbusware_api/routes/bundles.py",
+    "packages/nimbusware_api/routes/bundles_helpers.py",
+    "packages/nimbusware_api/routes/bundles_search.py",
+    "packages/nimbusware_api/routes/chat.py",
+    "packages/nimbusware_api/routes/chat_handlers.py",
+    "packages/nimbusware_api/routes/chat_start.py",
+    "packages/nimbusware_console/explainer_core/workflow_profile.py",
+)
+
 _TRANCHE_MCP = ("packages/nimbusware_mcp",)
 
 # Services are included via _UI_STRICT whole-package checks (avoid duplicate module paths).
 MYPY_CI_TARGETS: tuple[str, ...] = (
-    _TRANCHE_B + _TRANCHE_C + _API_PILOT + _TRANCHE_D + _UI_STRICT + _TRANCHE_E + _TRANCHE_MCP
+    _TRANCHE_B
+    + _TRANCHE_C
+    + _API_PILOT
+    + _TRANCHE_D
+    + _UI_STRICT
+    + _TRANCHE_E
+    + _TRANCHE_F
+    + _TRANCHE_MCP
 )
 
 if __name__ == "__main__":
