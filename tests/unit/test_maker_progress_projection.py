@@ -123,7 +123,9 @@ def test_maker_progress_gate_summary_on_block() -> None:
     body = maker_progress_from_events(events)
     assert body["status"] == "blocked"
     assert "gate_summary" in body
-    assert "quality checks" in body["gate_summary"].lower() or "gate" in body["gate_summary"].lower()
+    assert (
+        "quality checks" in body["gate_summary"].lower() or "gate" in body["gate_summary"].lower()
+    )
 
 
 def test_maker_progress_role_cost_summary() -> None:

@@ -82,7 +82,9 @@ def resolve_stage_provider(routing: dict[str, Any], stage_name: str) -> Provider
     return "local"
 
 
-def probe_cloud_runtime(routing: dict[str, Any], *, timeout_seconds: float = 10.0) -> dict[str, Any]:
+def probe_cloud_runtime(
+    routing: dict[str, Any], *, timeout_seconds: float = 10.0
+) -> dict[str, Any]:
     cloud = mapping_or_empty(routing.get("cloud_runtime"))
     if not cloud.get("enabled"):
         return {"enabled": False, "reachable": None, "message": "cloud runtime disabled"}
