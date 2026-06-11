@@ -125,6 +125,7 @@ def execute_frontend_writer_critique_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name=FRONTEND_WRITER_CRITIQUE_STAGE,
         )
         parsed = LlmPlanResponse.model_validate(data)
     except (

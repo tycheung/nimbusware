@@ -181,8 +181,21 @@ def ollama_chat_json_via_plan_patch(
     model: str,
     messages: list[dict[str, str]],
     timeout_seconds: float = 120.0,
+    stage_name: str | None = None,
 ) -> dict[str, Any]:
-    """Delegate to ``llm_plan.ollama_chat_json`` so tests can patch one import target."""
+    """Delegate to stage-aware routing or ``llm_plan.ollama_chat_json`` for tests."""
+    if stage_name:
+        from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.hybrid_routing import stage_chat_json
+
+        return stage_chat_json(
+            repo_root=find_repo_root(),
+            stage_name=stage_name,
+            base_url=base_url,
+            model=model,
+            messages=messages,
+            timeout_seconds=timeout_seconds,
+        )
     import nimbusware_orchestrator.llm_plan as _patch
 
     return _patch.ollama_chat_json(

@@ -75,3 +75,4 @@ class PreflightHistoryResponse(BaseModel):
     runs_with_checks_passed: int = 0
     distinct_validated_model_id_count: int = 0
     metrics_export: PreflightMetricsExport | None = None
+    cloud_preflight: dict[str, Any] | None = None

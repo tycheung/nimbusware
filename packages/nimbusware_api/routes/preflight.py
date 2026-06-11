@@ -5,7 +5,7 @@ from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
 
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.preflight_read_model import preflight_timeline_summary
 from nimbusware_api.routes import runs as runs_routes
@@ -39,6 +39,7 @@ from nimbusware_projections.run_summary import RUN_LIST_FILTER_STATUSES
 )
 def get_preflight_history(
     store: StoreDep,
+    orch: OrchDep,
     limit: Annotated[
         int,
         Query(ge=1, le=PREFLIGHT_HISTORY_MAX_LIMIT, description="Max runs to scan"),
@@ -220,6 +221,17 @@ def get_preflight_history(
                 status=list_status_filter,
             ),
         )
+    from nimbusware_orchestrator.hybrid_routing import probe_cloud_runtime
+
+    routing_path = orch.repo_root / "configs" / "model-routing.yaml"
+    cloud_preflight: dict[str, object] | None = None
+    if routing_path.is_file():
+        import yaml
+
+        doc = yaml.safe_load(routing_path.read_text(encoding="utf-8"))
+        if isinstance(doc, dict):
+            cloud_preflight = probe_cloud_runtime(doc)
+
     return PreflightHistoryResponse(
         entries=entries,
         limit=lim,
@@ -237,4 +249,5 @@ def get_preflight_history(
         runs_with_checks_passed=runs_with_checks_passed,
         distinct_validated_model_id_count=len(validated_model_ids),
         metrics_export=metrics_export,
+        cloud_preflight=cloud_preflight,
     )

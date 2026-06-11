@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import Any, Literal
@@ -69,6 +70,75 @@ def apply_routing_preset(repo_root: Path, preset_id: str) -> dict[str, Any]:
         "stage_providers": dict(stage_providers),
         "materialize_hint": "Restart API or run nimbusware-config materialize to reload routing",
     }
+
+
+def cloud_chat_json(
+    routing: dict[str, Any],
+    *,
+    messages: list[dict[str, str]],
+    timeout_seconds: float = 120.0,
+) -> dict[str, Any]:
+    """OpenAI-compatible ``/chat/completions`` with JSON object response."""
+    cloud = mapping_or_empty(routing.get("cloud_runtime"))
+    base_url = str(cloud.get("base_url") or "").strip().rstrip("/")
+    api_key_env = str(cloud.get("api_key_env") or "OPENAI_API_KEY")
+    api_key = os.environ.get(api_key_env, "").strip()
+    if not api_key:
+        msg = f"missing API key env {api_key_env}"
+        raise ValueError(msg)
+    model = str(cloud.get("model_id") or "gpt-4o-mini")
+    url = f"{base_url}/chat/completions"
+    body = {
+        "model": model,
+        "messages": messages,
+        "response_format": {"type": "json_object"},
+    }
+    resp = httpx.post(
+        url,
+        headers={"Authorization": f"Bearer {api_key}"},
+        json=body,
+        timeout=timeout_seconds,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    choices = data.get("choices") if isinstance(data, dict) else None
+    if not isinstance(choices, list) or not choices:
+        msg = "missing choices in cloud chat response"
+        raise ValueError(msg)
+    first = choices[0]
+    message = first.get("message") if isinstance(first, dict) else None
+    content = message.get("content") if isinstance(message, dict) else None
+    if not isinstance(content, str):
+        msg = "missing message.content in cloud chat response"
+        raise ValueError(msg)
+    parsed = json.loads(content)
+    if not isinstance(parsed, dict):
+        msg = "cloud chat JSON mode did not return an object"
+        raise TypeError(msg)
+    return parsed
+
+
+def stage_chat_json(
+    *,
+    repo_root: Path,
+    stage_name: str | None,
+    base_url: str,
+    model: str,
+    messages: list[dict[str, str]],
+    timeout_seconds: float = 120.0,
+) -> dict[str, Any]:
+    """Route JSON chat to cloud or Ollama based on ``stage_providers`` policy."""
+    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+
+    routing = _load_routing_yaml(repo_root / "configs" / "model-routing.yaml")
+    if stage_name and resolve_stage_provider(routing, stage_name) == "cloud":
+        return cloud_chat_json(routing, messages=messages, timeout_seconds=timeout_seconds)
+    return ollama_chat_json(
+        base_url=base_url,
+        model=model,
+        messages=messages,
+        timeout_seconds=timeout_seconds,
+    )
 
 
 def resolve_stage_provider(routing: dict[str, Any], stage_name: str) -> ProviderKind:

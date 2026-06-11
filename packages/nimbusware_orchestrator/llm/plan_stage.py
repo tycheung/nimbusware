@@ -203,6 +203,7 @@ def execute_plan_stage_llm(
             model=model_id,
             messages=messages,
             timeout_seconds=timeout_seconds,
+            stage_name="plan",
         )
         plan = LlmPlanResponse.model_validate(data)
     except (

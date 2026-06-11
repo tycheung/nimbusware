@@ -128,6 +128,7 @@ def execute_self_refinement_critique_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name=SELF_REFINEMENT_CRITIQUE_STAGE,
         )
         parsed = LlmSelfRefinementCritiqueResponse.model_validate(data)
     except (

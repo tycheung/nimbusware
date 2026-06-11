@@ -10,6 +10,7 @@ from nimbusware_orchestrator.hybrid_routing import (
     list_routing_preset_summaries,
     probe_cloud_runtime,
     resolve_stage_provider,
+    stage_chat_json,
     summarize_run_role_cost,
 )
 from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
@@ -58,6 +59,49 @@ def test_probe_cloud_runtime_missing_key(monkeypatch: pytest.MonkeyPatch) -> Non
     probe = probe_cloud_runtime(routing)
     assert probe["reachable"] is False
     assert "OPENAI_API_KEY" in probe["message"]
+
+
+def test_stage_chat_json_routes_cloud_stage(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    routing = {
+        "cloud_runtime": {
+            "enabled": True,
+            "base_url": "https://api.example.com/v1",
+            "api_key_env": "OPENAI_API_KEY",
+            "model_id": "gpt-test",
+        },
+        "stage_providers": {"plan": "cloud"},
+    }
+    (tmp_path / "configs").mkdir(parents=True)
+    (tmp_path / "configs" / "model-routing.yaml").write_text(
+        yaml.dump(routing),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+
+    class _Resp:
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict[str, object]:
+            return {
+                "choices": [{"message": {"content": '{"ok": true}'}}],
+            }
+
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.hybrid_routing.httpx.post",
+        lambda *a, **k: _Resp(),
+    )
+    out = stage_chat_json(
+        repo_root=tmp_path,
+        stage_name="plan",
+        base_url="http://localhost:11434",
+        model="llama",
+        messages=[{"role": "user", "content": "hi"}],
+    )
+    assert out == {"ok": True}
 
 
 def test_summarize_run_role_cost_tokens() -> None:

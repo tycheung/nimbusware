@@ -148,6 +148,7 @@ def execute_implementation_critique_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name=IMPLEMENTATION_CRITIQUE_STAGE,
         )
         parsed = LlmPlanResponse.model_validate(data)
     except (
