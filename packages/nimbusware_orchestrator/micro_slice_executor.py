@@ -17,21 +17,24 @@ from nimbusware_env.env_flags import (
     nimbusware_slice_p3_evidence_enabled,
     nimbusware_use_llm_enabled,
 )
-from nimbusware_orchestrator.llm_slice import (
-    execute_slice_critique_llm,
-    execute_slice_plan_llm,
-    execute_slice_replan_llm,
+from nimbusware_orchestrator.llm_slice import execute_slice_critique_llm, execute_slice_replan_llm
+from nimbusware_orchestrator.micro_slice import SlicePlan, micro_slice_count_for_run
+from nimbusware_orchestrator.micro_slice_plan import (
+    custom_agent_system_prompt as _custom_agent_system_prompt,
 )
-from nimbusware_orchestrator.micro_slice import (
-    SlicePlan,
-    micro_slice_count_for_run,
-    parse_slice_plan,
+from nimbusware_orchestrator.micro_slice_plan import (
+    default_stub_slice_plan,
+)
+from nimbusware_orchestrator.micro_slice_plan import (
+    plan_one_slice as _plan_one_slice,
 )
 from nimbusware_orchestrator.micro_slice_run_context import (
     fast_slice_effective_from_rows,
     micro_slice_effective_from_rows,
-    run_created_metadata,
     slice_replan_max_for_run,
+)
+from nimbusware_orchestrator.micro_slice_verify import (
+    run_slice_verify_and_test as _run_slice_verify_and_test,
 )
 from nimbusware_orchestrator.slice_diff import (
     check_slice_diff_budget,
@@ -40,7 +43,6 @@ from nimbusware_orchestrator.slice_diff import (
 )
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 from nimbusware_orchestrator.slice_implement import execute_slice_implement
-from nimbusware_orchestrator.verifiers import run_pytest_targets, run_ruff_on_paths
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 
 if TYPE_CHECKING:
@@ -51,20 +53,6 @@ def _launch_test_enabled(rows: list[dict[str, Any]]) -> bool:
     from nimbusware_orchestrator.dev_env_policy import launch_test_enabled
 
     return launch_test_enabled(rows)
-
-
-def default_stub_slice_plan(slice_index: int) -> SlicePlan:
-    return parse_slice_plan(
-        {
-            "slice_id": f"slice-{slice_index}",
-            "rationale": "Conservative default micro-slice for automated verify pass",
-            "target_paths": [
-                "packages/nimbusware_orchestrator/micro_slice.py",
-                "packages/nimbusware_orchestrator/slice_gate.py",
-            ],
-            "acceptance_criteria": "Scoped unit tests pass",
-        },
-    )
 
 
 def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkflowBlock:
@@ -79,7 +67,7 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
         config_materializer=orch.config_materializer,
     )
     ms = micro_slice_effective_from_rows(rows)
-    if not isinstance(ms, dict) or not ms.get("enabled"):
+    if not ms:
         return block
     return MicroSliceWorkflowBlock(
         enabled=True,
@@ -89,69 +77,6 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
         e2e_enabled=bool(ms.get("e2e_enabled", block.e2e_enabled)),
         e2e_command=block.e2e_command,
     )
-
-
-def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]]) -> str | None:
-    from nimbusware_config.persist import load_custom_agent_registry
-
-    meta = run_created_metadata(rows)
-    if meta:
-        agent = meta.get("custom_agent")
-        if isinstance(agent, dict) and agent.get("id"):
-            reg = load_custom_agent_registry(
-                orch.repo_root,
-                materializer=orch.config_materializer,
-            )
-            full = reg.get(str(agent["id"]))
-            if full is not None:
-                return full.system_prompt
-    return None
-
-
-def _plan_one_slice(
-    orch: RunOrchestrator,
-    run_id: UUID,
-    *,
-    slice_index: int,
-    budget_feedback: str | None = None,
-) -> SlicePlan:
-    rows = orch._store.list_run_events(str(run_id))
-    use_llm = nimbusware_use_llm_enabled()
-    memory_excerpt = ""
-    run_meta = orch._run_created_metadata(run_id)
-    from nimbusware_orchestrator.workflow_memory import (
-        memory_settings_from_run_metadata,
-        retrieve_memory_excerpt_for_slice,
-        run_memory_retrieval_enabled,
-    )
-
-    if run_memory_retrieval_enabled(run_meta) and orch._memory_chunk_store is not None:
-        settings = memory_settings_from_run_metadata(run_meta)
-        stub = default_stub_slice_plan(slice_index)
-        memory_excerpt, _, _ = retrieve_memory_excerpt_for_slice(
-            orch._memory_chunk_store,
-            stub,
-            repo_root=orch.repo_root,
-            settings=settings,
-        )
-    if use_llm:
-        base = orch._base_cfg()
-        runtime = base.get("runtime") or {}
-        model = orch._selected_model_for_run(run_id)
-        if model:
-            plan = execute_slice_plan_llm(
-                rows=rows,
-                base_url=str(runtime.get("base_url", "http://localhost:11434")),
-                model_id=model,
-                slice_index=slice_index,
-                timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
-                system_prompt=_custom_agent_system_prompt(orch, rows),
-                budget_feedback=budget_feedback,
-                memory_excerpt=memory_excerpt,
-            )
-            if plan is not None:
-                return plan
-    return default_stub_slice_plan(slice_index)
 
 
 def _emit_slice_stage(
@@ -183,49 +108,6 @@ def _emit_slice_stage(
             payload=StagePassedPayload(stage_name=stage_name, duration_ms=duration_ms),
         ),
     )
-
-
-def _run_slice_verify_and_test(
-    workspace: Path,
-    plan: SlicePlan,
-    *,
-    timeout_seconds: float,
-    rows: list[dict[str, Any]] | None = None,
-) -> tuple[bool, str, bool, str]:
-    missing = [p for p in plan.target_paths if not (workspace / p).is_file()]
-    sections: list[str] = []
-    verify_ok = True
-    if missing:
-        verify_ok = False
-        sections.append(f"missing target files: {missing}")
-    ruff_code, ruff_out = run_ruff_on_paths(
-        workspace,
-        list(plan.target_paths),
-        timeout_seconds=timeout_seconds,
-    )
-    sections.append(f"=== ruff (exit {ruff_code}) ===\n{ruff_out}")
-    if ruff_code != 0:
-        verify_ok = False
-    from nimbusware_orchestrator.patch_context import (
-        patch_context_from_run_rows,
-        resolve_patch_test_targets,
-    )
-
-    patch_ctx = patch_context_from_run_rows(rows or [])
-    test_targets = resolve_patch_test_targets(plan.target_paths, patch_ctx)
-    existing_tests = [t for t in test_targets if (workspace / t).is_file()]
-    if existing_tests:
-        test_code, test_out = run_pytest_targets(
-            workspace,
-            existing_tests,
-            timeout_seconds=timeout_seconds,
-        )
-        tests_passed = test_code == 0
-    else:
-        test_code, test_out = 0, "no mapped test files; skipped\n"
-        tests_passed = True
-    sections.append(f"=== pytest (exit {test_code}) ===\n{test_out}")
-    return verify_ok, "\n".join(sections), tests_passed, test_out
 
 
 def execute_single_micro_slice(
@@ -670,3 +552,14 @@ def execute_micro_slice_pass(
         emit_stage=_emit_slice_stage,
     )
     return results
+
+
+__all__ = [
+    "_custom_agent_system_prompt",
+    "_emit_slice_stage",
+    "_plan_one_slice",
+    "_resolve_slice_block",
+    "_run_slice_verify_and_test",
+    "execute_micro_slice_pass",
+    "execute_single_micro_slice",
+]
