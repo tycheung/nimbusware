@@ -621,6 +621,26 @@ def _configure_edition(args: argparse.Namespace, repo: Path) -> str:
     return edition_name
 
 
+def _fixture_workspace(repo: Path, name: str) -> Path:
+    return (repo / "tests" / "fixtures" / "repos" / name).resolve()
+
+
+def _print_happy_path(repo: Path) -> None:
+    fixture = _fixture_workspace(repo, "tiny_python_app")
+    _log("")
+    _log("Happy path (< 15 min, no Postgres required):")
+    _log("  1. poetry run nimbusware-run --quick")
+    _log("  2. Open http://127.0.0.1:8765/v1/maker/app/#/chat")
+    _log("  3. Home → attach project workspace:")
+    _log(f"     {fixture}")
+    _log("  4. Home → Fix a bug → confirm patch classifier → gate pass on fixture")
+    _log("")
+    _log("Happy path (full stack with Postgres):")
+    _log("  1. poetry run nimbusware-run")
+    _log("  2. Attach the same fixture path above as a project")
+    _log("  3. Chat tab → patch flow (or Home intent cards)")
+
+
 def _print_next_steps(
     repo: Path,
     url: str,
@@ -662,6 +682,7 @@ def _print_next_steps(
     _log("  nimbusware-run --quick  # in-memory store, stub critics — first-run demo")
     _log("  Maker Chat (after nimbusware-run): http://127.0.0.1:8765/v1/maker/app/#/chat")
     _log("  nimbusware-admin        # Admin at /v1/admin/app/")
+    _print_happy_path(repo)
     _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
     _log("Model catalog (optional):")
     _log("  python scripts/sync_model_catalog.py --help")

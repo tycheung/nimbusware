@@ -2,6 +2,7 @@ import { apiJson, toast } from "../api-client.js";
 import { setActiveProjectId } from "../session-hub.js";
 
 const GUIDED_STEPS = [
+  { id: "quick", label: "Try quick demo (no Postgres)", hash: "/chat" },
   { id: "readiness", label: "Check platform readiness", hash: "/home" },
   { id: "project", label: "Create or select a project", hash: "/home" },
   { id: "models", label: "Pick a model preset", hash: "/models" },
@@ -18,10 +19,15 @@ export async function mountWizard(root) {
   }
   root.innerHTML = `
     <section class="guided-campaign" data-testid="maker-guided-campaign">
-      <h3>Guided first campaign</h3>
+      <h3>First-run setup</h3>
+      <p class="muted" data-testid="maker-guided-quick-hint">
+        New here? Run <code>poetry run nimbusware-run --quick</code> in a terminal for an in-memory
+        demo (stub critics, no Postgres), then open Chat below.
+      </p>
       <ol id="guided-checklist" class="guided-checklist"></ol>
       <div class="actions">
-        <button type="button" id="wizard-start-campaign" class="primary" data-testid="maker-guided-start-campaign">Start guided campaign</button>
+        <button type="button" id="wizard-start-quick" class="primary" data-testid="maker-guided-start-quick">Open Chat (quick demo)</button>
+        <button type="button" id="wizard-start-campaign" data-testid="maker-guided-start-campaign">Start guided campaign</button>
         <button type="button" id="wizard-start-build">Quick build (non-campaign)</button>
         <button type="button" id="wizard-done" class="secondary">Mark setup complete</button>
       </div>
@@ -42,6 +48,10 @@ export async function mountWizard(root) {
     list?.appendChild(li);
   }
 
+  root.querySelector("#wizard-start-quick")?.addEventListener("click", () => {
+    window.location.hash = "/chat";
+    toast("Use Chat with --quick running, or attach tests/fixtures/repos/tiny_python_app", "info");
+  });
   root.querySelector("#wizard-start-campaign")?.addEventListener("click", () => {
     const sel = document.querySelector("#build-project-select");
     const projectId = sel?.value || sessionStorage.getItem("maker_active_project_id");
