@@ -34,6 +34,7 @@ export function MetricsPage() {
   const swe = m.swe_bench as Record<string, unknown> | null | undefined;
   const factory = m.factory_weekly as Record<string, unknown> | null | undefined;
   const criticRel = m.critic_reliability as Record<string, unknown> | null | undefined;
+  const policyOutcome = (m.policy_outcome || {}) as Record<string, unknown>;
 
   return (
     <section>
@@ -64,6 +65,14 @@ export function MetricsPage() {
                 <td>
                   {fmtRate(gate.rate)} ({String(gate.pass_count ?? 0)}/
                   {String(gate.total ?? 0)} gates)
+                </td>
+              </tr>
+              <tr>
+                <td>Policy outcome (gate vs critic snapshot)</td>
+                <td>
+                  Gate {fmtRate(policyOutcome.slice_gate_pass_rate)} · critic FAIL{" "}
+                  {fmtRate(policyOutcome.critic_fail_rate_snapshot)} (
+                  {String(policyOutcome.slice_gate_sample ?? 0)} gates in sample)
                 </td>
               </tr>
               <tr>

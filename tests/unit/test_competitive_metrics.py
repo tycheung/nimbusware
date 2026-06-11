@@ -163,6 +163,15 @@ def test_competitive_summary_includes_critic_reliability_json(tmp_path: Path) ->
     assert body["metrics"]["critic_reliability"] == snap
 
 
+def test_competitive_summary_policy_outcome_links_gate_and_critic() -> None:
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5)
+    outcome = body["metrics"]["policy_outcome"]
+    assert "slice_gate_pass_rate" in outcome
+    assert "hint" in outcome
+    assert outcome["slice_gate_sample"] == 0
+
+
 def test_competitive_summary_includes_factory_weekly_json(tmp_path: Path) -> None:
     bench_dir = tmp_path / "benchmarks"
     bench_dir.mkdir()

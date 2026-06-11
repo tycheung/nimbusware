@@ -186,6 +186,22 @@ def _load_critic_reliability_snapshot(repo_root: Path | None) -> dict[str, Any] 
     return _load_benchmark_snapshot(repo_root, "latest_critic_reliability.json")
 
 
+def _policy_outcome_summary(
+    slice_gate: dict[str, Any],
+    critic_snap: dict[str, Any] | None,
+) -> dict[str, Any]:
+    critic_fail = critic_snap.get("critic_fail_rate") if critic_snap else None
+    return {
+        "slice_gate_pass_rate": slice_gate.get("rate"),
+        "slice_gate_sample": slice_gate.get("total"),
+        "critic_fail_rate_snapshot": critic_fail,
+        "hint": (
+            "After a policy or critic-pack change in Admin Config, refresh Metrics "
+            "and compare slice_gate_pass_rate with critic_fail_rate_snapshot."
+        ),
+    }
+
+
 def build_competitive_summary(
     store: Any,
     *,
@@ -196,6 +212,8 @@ def build_competitive_summary(
     by_run = _rows_by_run(rows)
     stitch_rows = fetch_stitch_analytics_event_rows(store, limit_runs=limit_runs)
     stitch_stats = compute_stitch_transplant_stats(stitch_rows)
+    slice_gate = _slice_gate_pass_rate(rows)
+    critic_snap = _load_critic_reliability_snapshot(repo_root)
     generated = datetime.now(timezone.utc).isoformat()
     return {
         "generated_at": generated,
@@ -203,7 +221,8 @@ def build_competitive_summary(
         "runs_scanned": runs_scanned,
         "snapshot": True,
         "metrics": {
-            "slice_gate_pass_rate": _slice_gate_pass_rate(rows),
+            "slice_gate_pass_rate": slice_gate,
+            "policy_outcome": _policy_outcome_summary(slice_gate, critic_snap),
             "slices_per_completed_run": _slices_per_completed_run(by_run),
             "intent_to_first_slice_ms": _intent_to_first_slice_ms(by_run),
             "stitch_transplant": stitch_stats,
