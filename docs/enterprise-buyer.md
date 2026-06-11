@@ -37,6 +37,21 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Release SBOM | Tag `v*` triggers `.github/workflows/sbom.yml` |
 | Dependency lock | `poetry.lock` pinned in repo |
 
+## Regulated / air-gapped bundle
+
+For teams that cannot use SaaS coding agents or cloud LLM defaults:
+
+| Requirement | Nimbusware control |
+|-------------|-------------------|
+| No cloud LLM by default | Individual edition uses Ollama-only `model-routing.yaml`; hybrid cloud is **opt-in** via routing presets |
+| Egress control | `nimbusware_executor.egress` role allowlists + domain budgets |
+| Agent sandbox | [deploy/agent-sandbox.md](deploy/agent-sandbox.md) — jail + tool caps on writer roles |
+| Audit trail | Per-run `GET /v1/runs/{id}/audit-export`; fleet `GET /v1/enterprise/audit-export` |
+| Self-hosted deploy | Helm chart [`charts/nimbusware`](../charts/nimbusware) — set `edition: enterprise`, wire `secrets.databaseUrl`, disable external object stores unless approved |
+| External CI only | [deploy/headless-patch-ci.md](deploy/headless-patch-ci.md) + [external-ci-bridge.md](deploy/external-ci-bridge.md) — gate status without Maker UI |
+
+Procurement packet: this page + [SECURITY.md](../SECURITY.md) + [deploy/helm.md](deploy/helm.md) values table (~8 printed pages).
+
 ## Deployment references
 
 - [deploy/README.md](deploy/README.md) — Docker, schema, secrets rotation
