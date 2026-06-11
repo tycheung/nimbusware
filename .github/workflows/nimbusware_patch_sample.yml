@@ -1,0 +1,43 @@
+# Sample: headless patch from a PR workflow (disabled by default — set repository secrets to enable).
+name: nimbusware-patch-sample
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: Nimbusware project UUID
+        required: true
+      failing_test:
+        description: Pytest node id or test name
+        required: true
+
+jobs:
+  patch:
+    if: ${{ secrets.NIMBUSWARE_API_BASE != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create patch run
+        env:
+          API: ${{ secrets.NIMBUSWARE_API_BASE }}
+          KEY: ${{ secrets.NIMBUSWARE_API_KEY }}
+        run: |
+          set -euo pipefail
+          BODY=$(jq -n \
+            --arg pid "${{ inputs.project_id }}" \
+            --arg test "${{ inputs.failing_test }}" \
+            '{
+              project_id: $pid,
+              workflow_profile: "patch",
+              work_type: "patch",
+              work_type_source: "ci",
+              requirements: { business_prompt: "Fix failing test from GitHub Actions" },
+              patch_context: { failing_test: $test }
+            }')
+          HDR=(-H "Content-Type: application/json")
+          if [ -n "${KEY:-}" ]; then HDR+=(-H "X-Nimbusware-Api-Key: ${KEY}"); fi
+          RUN=$(curl -fsS "${API}/runs" "${HDR[@]}" -d "${BODY}")
+          RUN_ID=$(echo "${RUN}" | jq -r .run_id)
+          curl -fsS -X POST "${API}/runs/${RUN_ID}/lifecycle/start" "${HDR[@]}" -d '{}'
+          curl -fsS -X POST "${API}/runs/${RUN_ID}/lifecycle/slice?mode=auto" "${HDR[@]}" -d '{}'
+          echo "run_id=${RUN_ID}" >> "${GITHUB_OUTPUT}"
