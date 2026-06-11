@@ -112,8 +112,56 @@ function openChatIntent(intent, extra = {}) {
   window.location.hash = `/chat?${params.toString()}`;
 }
 
+async function renderModelsFirstStrip(mount) {
+  if (!mount) return;
+  try {
+    const [hardware, ranked] = await Promise.all([
+      apiJson("/platform/hardware"),
+      apiJson("/platform/models/ranked?limit=5"),
+    ]);
+    const top = (ranked.models || [])[0];
+    const tier = hardware.tier || ranked.profile_tier || "unknown";
+    const ram =
+      hardware.ram_available_gb != null ? `${hardware.ram_available_gb} GB free` : "RAM n/a";
+    const gpuCount = Array.isArray(hardware.gpus) ? hardware.gpus.length : 0;
+    mount.replaceChildren();
+    const panel = document.createElement("section");
+    panel.className = "panel models-first-strip";
+    panel.dataset.testid = "maker-home-models-first";
+    const title = document.createElement("h3");
+    title.textContent = "Your machine";
+    panel.appendChild(title);
+    const summary = document.createElement("p");
+    summary.className = "muted";
+    summary.textContent = `Hardware tier ${tier} · ${ram} · ${gpuCount} GPU(s) detected`;
+    panel.appendChild(summary);
+    if (top?.model_id) {
+      const pick = document.createElement("p");
+      pick.dataset.testid = "maker-home-model-pick";
+      pick.textContent = `Recommended model: ${top.model_id} (${top.fit_level || "fit unknown"})`;
+      panel.appendChild(pick);
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const modelsBtn = document.createElement("button");
+      modelsBtn.type = "button";
+      modelsBtn.className = "secondary";
+      modelsBtn.textContent = "Apply preset on Models tab";
+      modelsBtn.dataset.testid = "maker-home-models-wizard";
+      modelsBtn.addEventListener("click", () => {
+        window.location.hash = "/models";
+      });
+      actions.appendChild(modelsBtn);
+      panel.appendChild(actions);
+    }
+    mount.appendChild(panel);
+  } catch {
+    mount.replaceChildren();
+  }
+}
+
 export async function mountHome(root) {
-  root.innerHTML = `<div id="readiness-mount"></div>
+  root.innerHTML = `<div id="models-first-mount"></div>
+    <div id="readiness-mount"></div>
     <section class="maker-intents panel" data-testid="maker-home-intents">
       <h3>What do you want to do?</h3>
       <p class="muted">Pick an intent — Chat maps it to the right workflow (no raw profile names).</p>
@@ -144,6 +192,8 @@ export async function mountHome(root) {
     btn.addEventListener("click", () => openChatIntent(card.id));
     cards?.appendChild(btn);
   }
+
+  await renderModelsFirstStrip(root.querySelector("#models-first-mount"));
 
   try {
     const readiness = await apiJson("/platform/readiness");
