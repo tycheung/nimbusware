@@ -4,7 +4,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
@@ -46,6 +46,24 @@ def get_factory_evidence(run_id: UUID, store: StoreDep) -> FactoryEvidenceRespon
     body = build_factory_evidence_bundle(rows, workspace=workspace)
     body["run_id"] = str(run_id)
     return FactoryEvidenceResponse.model_validate(body)
+
+
+@router.get(
+    "/runs/{run_id}/factory-evidence/scorecard.html",
+    response_class=HTMLResponse,
+    responses={404: PROBLEM_RESPONSE_404},
+)
+def factory_evidence_scorecard_html(run_id: UUID, store: StoreDep) -> HTMLResponse:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    workspace = resolve_run_workspace(rows)
+    bundle = build_factory_evidence_bundle(rows, workspace=workspace)
+    bundle["run_id"] = str(run_id)
+    return HTMLResponse(content=render_factory_evidence_html(bundle))
 
 
 @router.get(

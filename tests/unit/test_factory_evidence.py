@@ -8,6 +8,7 @@ from nimbusware_orchestrator.factory_evidence import (
     build_factory_evidence_bundle,
     export_factory_evidence_zip,
 )
+from nimbusware_orchestrator.factory_evidence_html import render_factory_evidence_html
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -89,4 +90,25 @@ def test_export_factory_evidence_zip_contains_bundle(tmp_path: Path) -> None:
     ]
     payload = export_factory_evidence_zip(events, workspace=tmp_path)
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:
-        assert "factory_evidence.json" in archive.namelist()
+        names = archive.namelist()
+        assert "factory_evidence.json" in names
+        assert "scorecard.html" in names
+
+
+def test_factory_evidence_html_scorecard() -> None:
+    events = [
+        {
+            "event_type": "stage.passed",
+            "payload": {"stage_name": "factory.cadence"},
+            "metadata": {
+                "factory": {"tier": "T2", "put_e2e_passed": True},
+                "put_e2e": {"verdict": "PASS", "flow_id": "crm"},
+            },
+        },
+    ]
+    bundle = build_factory_evidence_bundle(events)
+    bundle["run_id"] = "test-run"
+    html = render_factory_evidence_html(bundle)
+    assert "Factory evidence scorecard" in html
+    assert "T2" in html
+    assert "crm" in html

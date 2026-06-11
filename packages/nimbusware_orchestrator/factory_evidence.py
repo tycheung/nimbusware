@@ -12,6 +12,7 @@ from nimbusware_orchestrator.factory_cadence import (
     FACTORY_CADENCE_STAGE,
     FACTORY_COMPLETE_STAGE,
 )
+from nimbusware_orchestrator.factory_evidence_html import render_factory_evidence_html
 from nimbusware_projections.builders.factory_status import factory_status_from_events
 
 
@@ -147,6 +148,7 @@ def export_factory_evidence_zip(
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("factory_evidence.json", json.dumps(bundle, indent=2))
+        archive.writestr("scorecard.html", render_factory_evidence_html(bundle))
         put_artifacts = mapping_or_empty(bundle.get("put_artifacts"))
         manifest_path = put_artifacts.get("manifest_path")
         if manifest_path and Path(str(manifest_path)).is_file():

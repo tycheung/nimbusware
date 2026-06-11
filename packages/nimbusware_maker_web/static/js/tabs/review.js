@@ -120,6 +120,15 @@ export async function mountReview(root) {
         <tbody id="rev-factory-evidence-rows"></tbody>
       </table>
       <p id="rev-factory-evidence-empty" class="muted" hidden>No factory evidence on this run yet.</p>
+      <p id="rev-factory-evidence-links" class="muted" hidden>
+        <a id="rev-factory-evidence-html" href="#" target="_blank" rel="noopener" data-testid="maker-review-factory-evidence-html">
+          Open HTML scorecard
+        </a>
+        ·
+        <a id="rev-factory-evidence-zip" href="#" download data-testid="maker-review-factory-evidence-zip">
+          Download zip
+        </a>
+      </p>
     </section>`;
 
   async function currentRunId() {
@@ -343,17 +352,24 @@ export async function mountReview(root) {
     const table = root.querySelector("#rev-factory-evidence-table");
     const tbody = root.querySelector("#rev-factory-evidence-rows");
     const empty = root.querySelector("#rev-factory-evidence-empty");
+    const links = root.querySelector("#rev-factory-evidence-links");
+    const htmlLink = root.querySelector("#rev-factory-evidence-html");
+    const zipLink = root.querySelector("#rev-factory-evidence-zip");
     try {
       const body = await apiJson(`/runs/${id}/factory-evidence`);
       const rows = body.scorecard_rows || [];
       if (!rows.length) {
         table.hidden = true;
+        if (links) links.hidden = true;
         empty.hidden = false;
         empty.textContent = "No factory evidence on this run yet.";
         return;
       }
       empty.hidden = true;
       table.hidden = false;
+      if (links) links.hidden = false;
+      if (htmlLink) htmlLink.href = `/v1/runs/${encodeURIComponent(id)}/factory-evidence/scorecard.html`;
+      if (zipLink) zipLink.href = `/v1/runs/${encodeURIComponent(id)}/factory-evidence/export`;
       tbody.replaceChildren();
       for (const row of rows) {
         const tr = document.createElement("tr");
