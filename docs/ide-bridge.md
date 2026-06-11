@@ -7,9 +7,9 @@ The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example 
 - API reachable at `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`)
 - Optional `NIMBUSWARE_API_KEY` for Enterprise user scope
 
-## Cursor configuration
+## Cursor / VS Code configuration
 
-Add to your MCP settings:
+Copy-paste into **Cursor → Settings → MCP** or VS Code `mcp.json` (under 5 minutes with API already running):
 
 ```json
 {
@@ -24,6 +24,27 @@ Add to your MCP settings:
 }
 ```
 
+Recommended editor extensions (optional): Python, REST Client, GitLens — Nimbusware does not ship inline completion; use MCP tools for governed runs.
+
+### Patch from editor selection
+
+Use `nimbusware_patch_from_selection` (alias of `nimbusware_patch`) with:
+
+- `target_paths` — files in scope
+- `failing_test` — pytest node id or test name from the Problems panel
+- `stack_trace` — copied traceback
+
+Example MCP args:
+
+```json
+{
+  "project_id": "<uuid>",
+  "message": "Fix failing auth test",
+  "target_paths": ["src/auth.py", "tests/test_auth.py"],
+  "failing_test": "tests/test_auth.py::test_login"
+}
+```
+
 ## Tools
 
 | Tool | Description |
@@ -35,6 +56,7 @@ Add to your MCP settings:
 | `nimbusware_revert_workspace` | `POST /v1/runs/{run_id}/workspace/revert` |
 | `nimbusware_classify_intent` | `POST /v1/chat/classify` |
 | `nimbusware_patch` | `POST /v1/runs` (patch profile) + lifecycle start/slice |
+| `nimbusware_patch_from_selection` | Same as patch — IDE selection / Problems panel context |
 | `nimbusware_interject` | `POST /v1/runs/{run_id}/interjection-queue` (`[patch]`/`[steer]`/`[skip]`) |
 | `nimbusware_run_tests` | `POST /v1/runs/{run_id}/maker/run-tests` |
 | `nimbusware_run_status` | `GET /v1/runs/{run_id}` |

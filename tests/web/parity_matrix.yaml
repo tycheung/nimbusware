@@ -100,6 +100,21 @@ maker:
   - id: gate_fail_action_cards
     web: true
     notes: Progress blocking findings show Interject fix and Widen in Chat CTAs
+  - id: ide_mcp_classify_patch
+    web: true
+    notes: MCP nimbusware_classify_intent + nimbusware_patch / patch_from_selection mirror Chat
+  - id: ide_mcp_interject_fork_graph
+    web: true
+    notes: MCP interject, chat_graph, chat_fork, chat_select_branch parity with Chat tab
+  - id: factory_hero_demos
+    web: true
+    notes: Home factory catalog cards deep-link Chat with catalog prompts
+  - id: progress_gate_summary_plain
+    web: true
+    notes: maker-progress gate_summary plain-language banner on blocked runs
+  - id: progress_role_cost_chip
+    web: true
+    notes: Progress tab role_cost_summary token/latency chip when telemetry present
   - id: slice_prepare
     web: true
   - id: theater_export

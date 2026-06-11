@@ -19,6 +19,7 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_interject",
         "nimbusware_maker_pending",
         "nimbusware_patch",
+        "nimbusware_patch_from_selection",
         "nimbusware_prepare_slice",
         "nimbusware_resume_campaign",
         "nimbusware_revert_workspace",
@@ -156,6 +157,28 @@ def test_nimbusware_patch(mock_post: Any) -> None:
     )
     assert mock_post.call_count == 3
     assert "run-patch-1" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_patch_from_selection_alias(mock_post: Any) -> None:
+    mock_post.side_effect = [
+        {"run_id": "run-sel-1"},
+        {"status": "started"},
+        {"status": "micro_slice_recorded"},
+    ]
+    out = call_tool(
+        "nimbusware_patch_from_selection",
+        {
+            "project_id": "proj-1",
+            "message": "fix test",
+            "target_paths": ["src/a.py"],
+            "stack_trace": "AssertionError",
+        },
+    )
+    assert mock_post.call_count == 3
+    create_body = mock_post.call_args_list[0][0][1]
+    assert create_body["patch_context"]["target_paths"] == ["src/a.py"]
+    assert "run-sel-1" in out["content"][0]["text"]
 
 
 def test_unknown_tool_raises() -> None:

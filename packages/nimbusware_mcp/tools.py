@@ -247,6 +247,24 @@ TOOL_SPECS: list[dict[str, Any]] = [
         },
     },
     {
+        "name": "nimbusware_patch_from_selection",
+        "description": (
+            "Patch from IDE selection context (failing test, stack trace, target paths) "
+            "without opening Maker."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "project_id": {"type": "string"},
+                "message": {"type": "string"},
+                "target_paths": {"type": "array", "items": {"type": "string"}},
+                "failing_test": {"type": "string"},
+                "stack_trace": {"type": "string"},
+            },
+            "required": ["project_id", "message"],
+        },
+    },
+    {
         "name": "nimbusware_interject",
         "description": "Enqueue an operator interjection (supports [patch]/[steer]/[skip] prefixes).",
         "inputSchema": {
@@ -313,7 +331,7 @@ def _text_result(payload: Any) -> dict[str, Any]:
 def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     if name == "nimbusware_classify_intent":
         return _call_classify_tool(arguments)
-    if name == "nimbusware_patch":
+    if name in ("nimbusware_patch", "nimbusware_patch_from_selection"):
         return _call_patch_tool(arguments)
     if name == "nimbusware_chat_graph":
         session_id = str(arguments.get("session_id") or "").strip()
