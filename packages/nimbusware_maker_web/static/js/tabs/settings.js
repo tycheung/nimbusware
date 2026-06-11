@@ -78,6 +78,18 @@ export async function mountSettings(root) {
       </div>
       <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
     </section>
+    <section id="settings-routing-panel" class="panel" data-testid="maker-settings-routing-presets">
+      <h3>Hybrid model routing</h3>
+      <p class="muted" id="settings-routing-active" data-testid="maker-settings-routing-active"></p>
+      <label>
+        Preset
+        <select id="settings-routing-select" data-testid="maker-settings-routing-select"></select>
+      </label>
+      <p class="muted" id="settings-routing-cloud" data-testid="maker-settings-routing-cloud"></p>
+      <button type="button" id="settings-routing-apply" class="primary" data-testid="maker-settings-routing-apply">
+        Apply routing preset
+      </button>
+    </section>
     <section id="settings-chat-panel" class="panel" data-testid="maker-settings-chat-panel">
       <h3>Chat</h3>
       <label>
@@ -113,6 +125,56 @@ export async function mountSettings(root) {
       <strong>Re-research on plan fail</strong> (<code>NIMBUSWARE_RERESARCH_MISSING_CONTEXT</code>):
       when enabled, the pipeline may re-run research after planner missing-context failures.
     </p>`;
+
+  async function refreshRoutingPresets() {
+    const activeEl = root.querySelector("#settings-routing-active");
+    const cloudEl = root.querySelector("#settings-routing-cloud");
+    const select = root.querySelector("#settings-routing-select");
+    if (!select) return;
+    try {
+      const body = await apiJson("/platform/routing-presets");
+      const presets = body.presets || [];
+      const active = String(body.active_preset_id || "local_only");
+      select.replaceChildren();
+      for (const preset of presets) {
+        const opt = document.createElement("option");
+        opt.value = String(preset.id || "");
+        opt.textContent = String(preset.label || preset.id || "");
+        if (opt.value === active) opt.selected = true;
+        select.appendChild(opt);
+      }
+      if (activeEl) {
+        activeEl.textContent = `Active preset: ${active}`;
+      }
+      const probe = body.cloud_preflight || {};
+      if (cloudEl) {
+        const ok = probe.ok === true;
+        cloudEl.textContent = ok
+          ? "Cloud preflight: ready"
+          : `Cloud preflight: ${probe.message || probe.reason || "not configured"}`;
+      }
+    } catch (e) {
+      if (activeEl) activeEl.textContent = "Routing presets unavailable";
+      if (cloudEl) cloudEl.textContent = String(e.message || e);
+    }
+  }
+  await refreshRoutingPresets();
+  root.querySelector("#settings-routing-apply")?.addEventListener("click", async () => {
+    const select = root.querySelector("#settings-routing-select");
+    const presetId = select?.value?.trim();
+    if (!presetId) return;
+    try {
+      const applied = await apiJson("/platform/routing-presets/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preset_id: presetId }),
+      });
+      toast(`Applied routing preset: ${applied.preset_id || presetId}`, "success");
+      await refreshRoutingPresets();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
 
   const chatResume = root.querySelector("#settings-chat-resume");
   if (chatResume) {
