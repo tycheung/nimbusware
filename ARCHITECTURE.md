@@ -130,7 +130,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics** (optional `benchmarks/latest_swe_bench.json` and `latest_factory_weekly.json` snapshots); stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
 
-**Release v1 operator surfaces:** Maker Home intents + factory catalog demos; Chat escalation and PR-on-complete on Review; Progress `gate_summary` + `role_cost_summary`; hybrid routing presets at `GET/POST /v1/platform/routing-presets*`. Ledger: local `plan_gap.md` (gitignored).
+**Release v1 operator surfaces:** Maker Home intents + factory catalog demos; Chat escalation and PR-on-complete on Review; Progress `gate_summary` + `role_cost_summary` + learnings ribbon on block; hybrid routing presets at `GET/POST /v1/platform/routing-presets*`; external CI on integrator / `slice.gate` / `factory.gate`; headless patch CI (`docs/deploy/headless-patch-ci.md`); `patch_go` / `patch_jvm` stack profiles. Ledger: local `plan_gap.md` (gitignored).
 
 **Pipeline typing:** All `_pipeline` mixin modules import `_helpers` symbols without `attr-defined` ignores; `_helpers.py` exports an explicit `__all__` (size-guard allowlisted in `test_package_module_size.py`).
 
