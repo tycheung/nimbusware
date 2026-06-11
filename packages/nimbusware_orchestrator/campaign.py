@@ -7,6 +7,7 @@ from enum import Enum
 from typing import Any
 from uuid import UUID, uuid4
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from agent_core.models.backlog import CampaignPolicy
 from agent_core.models.events_payloads import CampaignCreatedPayload, CampaignPolicyPayload
@@ -36,10 +37,10 @@ class CampaignDriverState(str, Enum):
 
 def campaign_policy_from_rows(rows: list[dict[str, Any]]) -> CampaignPolicy | None:
     ce = campaign_effective_from_rows(rows)
-    if not isinstance(ce, dict):
+    if not ce:
         return None
-    raw = ce.get("policy")
-    if not isinstance(raw, dict):
+    raw = mapping_or_empty(ce.get("policy"))
+    if not raw:
         return None
     return CampaignPolicy.model_validate(raw)
 

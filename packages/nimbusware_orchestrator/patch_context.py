@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
+
 
 def normalize_patch_context(raw: Any) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
@@ -25,29 +27,22 @@ def normalize_patch_context(raw: Any) -> dict[str, Any] | None:
 def patch_context_from_run_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not rows:
         return None
-    meta = rows[0].get("metadata")
-    if not isinstance(meta, dict):
-        return None
-    return normalize_patch_context(meta.get("patch_context"))
+    return normalize_patch_context(
+        mapping_or_empty(rows[0].get("metadata")).get("patch_context"),
+    )
 
 
 def patch_effective_from_run_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not rows:
         return None
-    meta = rows[0].get("metadata")
-    if not isinstance(meta, dict):
-        return None
-    eff = meta.get("patch_effective")
-    return eff if isinstance(eff, dict) else None
+    eff = mapping_or_empty(mapping_or_empty(rows[0].get("metadata")).get("patch_effective"))
+    return eff or None
 
 
 def work_type_from_run_rows(rows: list[dict[str, Any]]) -> str | None:
     if not rows:
         return None
-    meta = rows[0].get("metadata")
-    if not isinstance(meta, dict):
-        return None
-    wt = str(meta.get("work_type") or "").strip().lower()
+    wt = str(mapping_or_empty(rows[0].get("metadata")).get("work_type") or "").strip().lower()
     return wt or None
 
 

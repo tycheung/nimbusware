@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_orchestrator.registry import RoleRegistry
 
@@ -34,8 +35,7 @@ def merge_role_telemetry_metadata(
 ) -> dict[str, Any]:
     """Merge conventional ``metadata.role_telemetry`` hints (for LLM call sites)."""
     base: dict[str, Any] = dict(metadata or {})
-    existing = base.get(ROLE_TELEMETRY_METADATA_KEY)
-    hint: dict[str, Any] = dict(existing) if isinstance(existing, dict) else {}
+    hint: dict[str, Any] = dict(mapping_or_empty(base.get(ROLE_TELEMETRY_METADATA_KEY)))
     if prompt_tokens is not None:
         hint["prompt_tokens"] = int(prompt_tokens)
     if completion_tokens is not None:
@@ -50,11 +50,8 @@ def merge_role_telemetry_metadata(
 
 
 def extract_role_telemetry_hint(row: dict[str, Any]) -> dict[str, Any] | None:
-    meta = row.get("metadata")
-    if not isinstance(meta, dict):
-        return None
-    hint = meta.get(ROLE_TELEMETRY_METADATA_KEY)
-    return dict(hint) if isinstance(hint, dict) else None
+    hint = mapping_or_empty(mapping_or_empty(row.get("metadata")).get(ROLE_TELEMETRY_METADATA_KEY))
+    return dict(hint) if hint else None
 
 
 def _p95(values: list[int]) -> int | None:
@@ -147,7 +144,7 @@ def accumulate_event_row(
     registry: RoleRegistry | None = None,
 ) -> None:
     et = str(row.get("event_type", ""))
-    pl = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    pl = mapping_or_empty(row.get("payload"))
     model_id = row.get("model_id")
     model_s = str(model_id).strip() if model_id else None
 
@@ -179,11 +176,11 @@ def accumulate_event_row(
                 bucket.model_counts.get(hint_model.strip(), 0) + 1
             )
 
-    if et == EventType.MODEL_PREFLIGHT_PASSED.value and isinstance(pl, dict):
+    if et == EventType.MODEL_PREFLIGHT_PASSED.value:
         preflight.add(pl)
         return
 
-    if et in (EventType.STAGE_PASSED.value, EventType.STAGE_FAILED.value) and isinstance(pl, dict):
+    if et in (EventType.STAGE_PASSED.value, EventType.STAGE_FAILED.value):
         stage_name = pl.get("stage_name")
         role_key = (
             _role_key_from_stage(
@@ -201,7 +198,7 @@ def accumulate_event_row(
             bucket.duration_ms_samples.append(dur)
         return
 
-    if et == EventType.CRITIC_VERDICT_EMITTED.value and isinstance(pl, dict):
+    if et == EventType.CRITIC_VERDICT_EMITTED.value:
         critic = pl.get("critic_role")
         role_key = _resolve_role_key(critic, registry=registry, fallback="critic")
         bucket = _bucket_for(

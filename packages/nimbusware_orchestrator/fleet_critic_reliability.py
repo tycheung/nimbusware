@@ -4,10 +4,11 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 from uuid import UUID, uuid4
 
+from agent_core.mapping import mapping_or_empty
+
 
 def _payload(ev: Mapping[str, Any]) -> dict[str, Any]:
-    pl = ev.get("payload")
-    return pl if isinstance(pl, dict) else {}
+    return mapping_or_empty(ev.get("payload"))
 
 
 def _is_in_domain(pl: Mapping[str, Any]) -> bool:
