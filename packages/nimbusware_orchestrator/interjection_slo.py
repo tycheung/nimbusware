@@ -11,26 +11,26 @@ SLICE_PLAN_STAGE = "slice.plan"
 DEFAULT_SLO_SLICE_CYCLES = 1
 
 
-def _stage_name(row: dict) -> str:
+def _stage_name(row: dict[str, Any]) -> str:
     return str(mapping_or_empty(row.get("payload")).get("stage_name") or "")
 
 
-def _occurred_at(row: dict) -> str:
+def _occurred_at(row: dict[str, Any]) -> str:
     return str(row.get("occurred_at") or "")
 
 
-def _is_stage_started(row: dict) -> bool:
+def _is_stage_started(row: dict[str, Any]) -> bool:
     et = str(row.get("event_type") or "")
     return et in {EventType.STAGE_STARTED.value, "stage.started"}
 
 
 def interjection_slo_summary(
-    events: list[dict],
+    events: list[dict[str, Any]],
     *,
     pending_queue_count: int = 0,
-) -> dict:
-    enqueues: list[dict] = []
-    drains: list[dict] = []
+) -> dict[str, Any]:
+    enqueues: list[dict[str, Any]] = []
+    drains: list[dict[str, Any]] = []
     slice_plan_starts: list[str] = []
     for row in events:
         sn = _stage_name(row)
@@ -54,7 +54,7 @@ def interjection_slo_summary(
         elif sn == SLICE_PLAN_STAGE and _is_stage_started(row):
             slice_plan_starts.append(_occurred_at(row))
 
-    overdue: list[dict] = []
+    overdue: list[dict[str, Any]] = []
     for eq in enqueues:
         eq_at = eq["occurred_at"]
         next_plan = next((t for t in slice_plan_starts if t > eq_at), None)
@@ -77,7 +77,7 @@ def interjection_slo_summary(
 
 
 def interjection_slo_markdown(
-    summary: dict,
+    summary: dict[str, Any],
     *,
     pending_queue_count: int = 0,
 ) -> str:
