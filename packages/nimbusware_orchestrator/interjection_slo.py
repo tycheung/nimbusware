@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 
