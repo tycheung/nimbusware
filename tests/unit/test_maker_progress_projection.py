@@ -104,3 +104,44 @@ def test_strip_operator_fields() -> None:
     stripped = strip_operator_fields(payload)
     assert "critic_matrix_live" not in stripped
     assert stripped["sentences"] == ["hi"]
+
+
+def test_maker_progress_gate_summary_on_block() -> None:
+    events = [
+        {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "Fix"}}},
+        {
+            "event_type": "stage.started",
+            "payload": {"stage_name": "slice.plan"},
+            "metadata": {"slice_plan": True, "slice_id": "s1", "target_paths": ["a.py"]},
+        },
+        {
+            "event_type": "stage.failed",
+            "payload": {"stage_name": "slice.gate"},
+            "metadata": {"slice_id": "s1", "slice_gate_verdict": "FAIL", "tests_passed": False},
+        },
+    ]
+    body = maker_progress_from_events(events)
+    assert body["status"] == "blocked"
+    assert "gate_summary" in body
+    assert "quality checks" in body["gate_summary"].lower() or "gate" in body["gate_summary"].lower()
+
+
+def test_maker_progress_role_cost_summary() -> None:
+    from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
+
+    events = [
+        {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "x"}}},
+        {
+            "event_type": "stage.passed",
+            "payload": {"stage_name": "slice.implement"},
+            "actor_role": "backend_writer",
+            "metadata": merge_role_telemetry_metadata(
+                {},
+                prompt_tokens=200,
+                completion_tokens=80,
+                latency_ms=90,
+            ),
+        },
+    ]
+    body = maker_progress_from_events(events)
+    assert body.get("role_cost_summary", {}).get("token_total") == 280

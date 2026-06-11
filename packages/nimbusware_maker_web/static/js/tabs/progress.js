@@ -169,6 +169,8 @@ export async function mountProgress(root) {
       <span id="work-type-badge" class="work-type-badge" hidden data-testid="maker-work-type-badge"></span>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="factory-status-chip" class="factory-status-chip" hidden data-testid="maker-factory-status"></p>
+      <p id="gate-summary-banner" class="gate-summary-banner" hidden></p>
+      <span id="role-cost-chip" class="role-cost-chip" hidden></span>
       <p id="handoff-preview" class="handoff-preview" hidden></p>
       <p id="slice-summary"></p>
       <p id="campaign-controls" class="actions" hidden></p>
@@ -347,6 +349,14 @@ export async function mountProgress(root) {
       fs.put_e2e_passed == null ? "" : fs.put_e2e_passed ? " · PUT E2E pass" : " · PUT E2E fail";
     chip.replaceChildren();
     chip.appendChild(document.createTextNode(`Factory ${fs.tier}${ism}${put}`));
+    const promo = fs.tier_promotion?.remaining_gates;
+    if (Array.isArray(promo) && promo.length) {
+      const promoSpan = document.createElement("span");
+      promoSpan.className = "muted";
+      promoSpan.dataset.testid = "maker-factory-tier-promotion";
+      promoSpan.textContent = ` · Next: ${promo[0]}`;
+      chip.appendChild(promoSpan);
+    }
     const rid = resolveRunId();
     if (rid) {
       const link = document.createElement("a");
@@ -501,6 +511,39 @@ export async function mountProgress(root) {
     }
   }
 
+  function renderGateSummary(body) {
+    const mount = document.getElementById("gate-summary-banner");
+    if (!mount) return;
+    const text = String(body.gate_summary || "").trim();
+    if (!text) {
+      mount.hidden = true;
+      mount.textContent = "";
+      return;
+    }
+    mount.hidden = false;
+    mount.dataset.testid = "maker-gate-summary";
+    mount.textContent = text;
+  }
+
+  function renderRoleCost(body) {
+    const chip = document.getElementById("role-cost-chip");
+    if (!chip) return;
+    const cost = body.role_cost_summary;
+    if (!cost || !cost.token_total) {
+      chip.hidden = true;
+      chip.textContent = "";
+      return;
+    }
+    chip.hidden = false;
+    chip.dataset.testid = "maker-role-cost-chip";
+    const tokens = Number(cost.token_total || 0).toLocaleString();
+    const latency =
+      cost.inference_p95_ms != null ? ` · p95 ${Math.round(cost.inference_p95_ms)}ms` : "";
+    const usd =
+      cost.estimated_cost_usd != null ? ` · ~$${cost.estimated_cost_usd}` : "";
+    chip.textContent = `Run tokens: ${tokens}${latency}${usd}`;
+  }
+
   function renderProgress(body) {
     const summary = document.getElementById("slice-summary");
     const list = document.getElementById("slice-list");
@@ -508,6 +551,8 @@ export async function mountProgress(root) {
     renderWorkType(body);
     renderFactoryStatus(body);
     renderContextBudget(body);
+    renderGateSummary(body);
+    renderRoleCost(body);
     if (summary) {
       const cp = body.campaign_progress;
       renderCampaignControls(cp);

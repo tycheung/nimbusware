@@ -25,6 +25,18 @@ _SLICE_STAGE_NAMES = frozenset(
     },
 )
 
+_PLAIN_STAGE_LABELS: dict[str, str] = {
+    "slice.plan": "planning the change",
+    "slice.implement": "writing code",
+    "slice.verify": "checking the diff",
+    "slice.critique": "running quality review",
+    "slice.test": "running tests",
+    "slice.gate": "gate checks",
+    "slice.handoff": "handoff to the next slice",
+    "plan": "planning",
+    "implementation": "implementation",
+}
+
 
 def _latest_handoff_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
     latest: dict[str, Any] | None = None
@@ -135,6 +147,19 @@ def _latest_slice_stage(events: list[dict[str, Any]]) -> tuple[str, str] | None:
         if sid:
             latest = (sid, stage)
     return latest
+
+
+def _plain_stage_label(stage_name: str) -> str:
+    key = stage_name.strip().lower()
+    return _PLAIN_STAGE_LABELS.get(key, "quality checks")
+
+
+def _gate_summary_plain(*, blocked: bool, latest_stage: str | None) -> str | None:
+    if not blocked:
+        return None
+    if latest_stage:
+        return f"Blocked during {_plain_stage_label(latest_stage)} — review findings or widen the slice in Chat."
+    return "Blocked at gates — review findings or widen the slice in Chat."
 
 
 def _headline_for_slice(
@@ -327,6 +352,22 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     factory_status = factory_status_from_events(events)
     if factory_status:
         out["factory_status"] = factory_status
+
+    latest_stage = _latest_slice_stage(events)
+    gate_summary = _gate_summary_plain(
+        blocked=blocked,
+        latest_stage=latest_stage[1] if latest_stage else None,
+    )
+    if gate_summary:
+        out["gate_summary"] = gate_summary
+        if gate_summary not in sentences:
+            sentences.append(gate_summary)
+
+    from nimbusware_orchestrator.hybrid_routing import summarize_run_role_cost
+
+    role_cost = summarize_run_role_cost(events)
+    if role_cost:
+        out["role_cost_summary"] = role_cost
     return out
 
 
