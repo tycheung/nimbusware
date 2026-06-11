@@ -33,6 +33,7 @@ export function MetricsPage() {
   const research = (m.research_brief_utilization || {}) as Record<string, unknown>;
   const swe = m.swe_bench as Record<string, unknown> | null | undefined;
   const factory = m.factory_weekly as Record<string, unknown> | null | undefined;
+  const criticRel = m.critic_reliability as Record<string, unknown> | null | undefined;
 
   return (
     <section>
@@ -115,6 +116,18 @@ export function MetricsPage() {
                         factory.entry_count ?? 0,
                       )} entries)`
                     : "No benchmarks/latest_factory_weekly.json"}
+                </td>
+              </tr>
+              <tr>
+                <td>Critic reliability (fleet snapshot)</td>
+                <td>
+                  {criticRel
+                    ? `FAIL rate ${String(
+                        typeof criticRel.critic_fail_rate === "number"
+                          ? (criticRel.critic_fail_rate as number) * 100
+                          : criticRel.critic_fail_rate ?? "—",
+                      )}% · ${String(criticRel.runs_scanned ?? 0)} runs`
+                    : "No benchmarks/latest_critic_reliability.json"}
                 </td>
               </tr>
             </tbody>

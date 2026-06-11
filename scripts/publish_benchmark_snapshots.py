@@ -24,6 +24,30 @@ def _load_factory_weekly_runner():
     return mod
 
 
+def _write_critic_reliability_snapshot() -> Path:
+    from datetime import datetime, timezone
+
+    from nimbusware_iam.constants import DEFAULT_TENANT_ID
+    from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
+    from nimbusware_store.memory import InMemoryEventStore
+
+    store = InMemoryEventStore()
+    metrics = tenant_critic_reliability_metrics(
+        store,
+        tenant_id=DEFAULT_TENANT_ID,
+        run_limit=100,
+    )
+    _BENCH_DIR.mkdir(parents=True, exist_ok=True)
+    out = _BENCH_DIR / "latest_critic_reliability.json"
+    payload = {
+        **metrics,
+        "published_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "snapshot": True,
+    }
+    out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return out
+
+
 def _write_factory_weekly_snapshot() -> Path | None:
     mod = _load_factory_weekly_runner()
     summary = mod.run_factory_weekly_ci(repo_root=_ROOT)
@@ -58,6 +82,8 @@ def main() -> int:
     factory_out = _write_factory_weekly_snapshot()
     if factory_out is not None:
         print(f"Wrote {factory_out.relative_to(_ROOT)}")
+    critic_out = _write_critic_reliability_snapshot()
+    print(f"Wrote {critic_out.relative_to(_ROOT)}")
     return proc.returncode
 
 

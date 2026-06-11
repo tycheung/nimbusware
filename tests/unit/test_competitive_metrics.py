@@ -153,6 +153,16 @@ def test_competitive_summary_includes_swe_bench_json(tmp_path: Path) -> None:
     assert body["metrics"]["swe_bench"] == snap
 
 
+def test_competitive_summary_includes_critic_reliability_json(tmp_path: Path) -> None:
+    bench_dir = tmp_path / "benchmarks"
+    bench_dir.mkdir()
+    snap = {"critic_fail_rate": 0.12, "runs_scanned": 10, "snapshot": True}
+    (bench_dir / "latest_critic_reliability.json").write_text(json.dumps(snap), encoding="utf-8")
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
+    assert body["metrics"]["critic_reliability"] == snap
+
+
 def test_competitive_summary_includes_factory_weekly_json(tmp_path: Path) -> None:
     bench_dir = tmp_path / "benchmarks"
     bench_dir.mkdir()

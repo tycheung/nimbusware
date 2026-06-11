@@ -1,0 +1,11 @@
+{
+  "critic_fail_count": 0,
+  "critic_fail_rate": 0.0,
+  "critic_verdict_count": 0,
+  "gate_block_count": 0,
+  "published_at": "2026-06-01T00:00:00Z",
+  "repeat_finding_paths": 0,
+  "runs_scanned": 0,
+  "runs_with_critics": 0,
+  "snapshot": true
+}

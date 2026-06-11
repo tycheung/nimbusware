@@ -182,6 +182,10 @@ def _load_factory_weekly_snapshot(repo_root: Path | None) -> dict[str, Any] | No
     return _load_benchmark_snapshot(repo_root, "latest_factory_weekly.json")
 
 
+def _load_critic_reliability_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_critic_reliability.json")
+
+
 def build_competitive_summary(
     store: Any,
     *,
@@ -206,11 +210,13 @@ def build_competitive_summary(
             "research_brief_utilization": _research_brief_utilization(by_run),
             "swe_bench": _load_swe_bench_snapshot(repo_root),
             "factory_weekly": _load_factory_weekly_snapshot(repo_root),
+            "critic_reliability": _load_critic_reliability_snapshot(repo_root),
         },
         "sources": {
             "event_store": "recent_run_events",
             "stitch": "stitch.applied + downstream gate/run terminal",
             "swe_bench": "benchmarks/latest_swe_bench.json (optional, local)",
             "factory_weekly": "benchmarks/latest_factory_weekly.json (optional, local)",
+            "critic_reliability": "benchmarks/latest_critic_reliability.json (optional, local)",
         },
     }

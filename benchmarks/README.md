@@ -6,6 +6,7 @@ Optional marketing artifacts consumed by Admin **Metrics** (`GET /v1/platform/an
 |------|----------|
 | `latest_swe_bench.json` | `scripts/swe_bench_harness.py --run --json` or `scripts/publish_benchmark_snapshots.py` |
 | `latest_factory_weekly.json` | `scripts/run_factory_weekly_ci.py` or `scripts/publish_benchmark_snapshots.py` |
+| `latest_critic_reliability.json` | `scripts/publish_benchmark_snapshots.py` (fleet critic metrics snapshot) |
 
 Regenerate locally:
 
