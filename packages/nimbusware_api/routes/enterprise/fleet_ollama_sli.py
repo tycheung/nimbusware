@@ -4,7 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Query
 
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.preflight import get_preflight_history
 from nimbusware_env.edition import enterprise_feature_enabled
@@ -26,6 +26,7 @@ def fleet_ollama_sli_status(_gate: EnterpriseDep) -> dict[str, Any]:
 def fleet_preflight_aggregate(
     _gate: EnterpriseDep,
     store: StoreDep,
+    orch: OrchDep,
     limit: Annotated[int, Query(ge=1, le=50)] = 10,
     include_metrics_export: Annotated[
         int,
@@ -45,6 +46,7 @@ def fleet_preflight_aggregate(
         }
     history = get_preflight_history(
         store=store,
+        orch=orch,
         limit=limit,
         include_metrics_export=include_metrics_export,
     )
