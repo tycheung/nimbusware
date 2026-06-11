@@ -70,7 +70,9 @@ def post_maker_open_pr(run_id: UUID, store: StoreDep) -> dict[str, Any]:
     if result.get("status") not in {"created", "skipped"}:
         raise HTTPException(
             status_code=422,
-            detail=problem("git_pr_failed", str(result.get("reason") or result.get("stderr") or result)),
+            detail=problem(
+                "git_pr_failed", str(result.get("reason") or result.get("stderr") or result)
+            ),
         )
     return {"run_id": str(run_id), "pr": result}
 
