@@ -36,6 +36,12 @@ from nimbusware_orchestrator.resolution_council import (
     ResolutionCouncilResult,
     run_resolution_council,
 )
+from nimbusware_orchestrator.slice_cycle_emits import (
+    emit_diagnose_learn,
+    emit_improvement_council,
+    emit_repo_explore,
+    emit_resolution_council,
+)
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
 from nimbusware_orchestrator.ui_flow_dsl import DEFAULT_TINY_WEB_LOGIN_FLOW
 
@@ -46,89 +52,6 @@ class PreGateRegression:
     http_detail: str = ""
     ui_passed: bool | None = None
     ui_detail: str = ""
-
-
-def emit_resolution_council(
-    store: Any,
-    run_id: UUID | str,
-    resolution: ResolutionCouncilResult,
-) -> None:
-    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
-    store.append(
-        StagePassedEvent(
-            event_type=EventType.STAGE_PASSED,
-            event_id=uuid4(),
-            run_id=rid,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"resolution_council": resolution.to_dict()},
-            payload=StagePassedPayload(stage_name="resolution.council", duration_ms=0),
-        ),
-    )
-
-
-def emit_repo_explore(
-    store: Any,
-    run_id: UUID | str,
-    result: Any,
-) -> None:
-    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
-    store.append(
-        StagePassedEvent(
-            event_type=EventType.STAGE_PASSED,
-            event_id=uuid4(),
-            run_id=rid,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"repo_explore": result.to_dict()},
-            payload=StagePassedPayload(stage_name="repo.explore", duration_ms=0),
-        ),
-    )
-
-
-def emit_improvement_council(
-    store: Any,
-    run_id: UUID | str,
-    council: Any,
-) -> None:
-    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
-    store.append(
-        StagePassedEvent(
-            event_type=EventType.STAGE_PASSED,
-            event_id=uuid4(),
-            run_id=rid,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"improvement_council": council.to_dict()},
-            payload=StagePassedPayload(stage_name="improvement.council", duration_ms=0),
-        ),
-    )
-
-
-def emit_diagnose_learn(
-    store: Any,
-    run_id: UUID | str,
-    *,
-    slice_id: str,
-    packet: dict[str, Any],
-    fingerprint: str,
-) -> None:
-    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
-    store.append(
-        StagePassedEvent(
-            event_type=EventType.STAGE_PASSED,
-            event_id=uuid4(),
-            run_id=rid,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={
-                "slice_id": slice_id,
-                "diagnose_learn": {
-                    "fingerprint": fingerprint,
-                    "learning_available": packet.get("available"),
-                    "learning_path": packet.get("path") or packet.get("learning_path"),
-                    "excerpt": str(packet.get("excerpt") or "")[:2000],
-                },
-            },
-            payload=StagePassedPayload(stage_name="diagnose.learn", duration_ms=0),
-        ),
-    )
 
 
 def ensure_dev_environment_for_slice(
