@@ -76,6 +76,35 @@ def test_chat_switch_mode(client: TestClient, tmp_path: Path) -> None:
     assert "work_type_switch" in kinds
 
 
+def test_chat_switch_mode_records_replay_from_seq(client: TestClient, tmp_path: Path) -> None:
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[
+        "session_id"
+    ]
+    turn = client.post(
+        f"/v1/chat/sessions/{session_id}/turns",
+        json={"text": "widen after gate fail"},
+    ).json()
+    user_turn_id = turn["message"]["turn_id"]
+
+    switched = client.post(
+        f"/v1/chat/sessions/{session_id}/turns/{user_turn_id}/switch-mode",
+        json={
+            "work_type": "slice",
+            "rationale": "Align run replay",
+            "align_run_replay": True,
+            "replay_from_seq": 42,
+        },
+    )
+    assert switched.status_code == 200
+    switch_turns = [
+        t for t in switched.json().get("turns") or [] if t.get("role") == "work_type_switch"
+    ]
+    assert switch_turns
+    payload = (switch_turns[-1].get("payload") or {}) if switch_turns else {}
+    assert payload.get("replay_from_seq") == 42
+
+
 def test_chat_mid_thread_patch_to_slice_journey(client: TestClient, tmp_path: Path) -> None:
     """Same session: patch turn, widen to slice via switch-mode, then start slice run."""
     project_id = _create_project(client, tmp_path)

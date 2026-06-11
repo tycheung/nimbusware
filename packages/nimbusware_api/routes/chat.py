@@ -255,8 +255,10 @@ def switch_chat_mode(
             "from_work_type": prior,
             "to_work_type": work_type.value,
         }
-        if body.align_run_replay and body.replay_from_seq is not None:
+        if body.replay_from_seq is not None:
             payload["replay_from_seq"] = body.replay_from_seq
+        if body.align_run_replay:
+            payload["align_run_replay"] = True
         chat_store.append_turn(
             session_id,
             role="work_type_switch",
