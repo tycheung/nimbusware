@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agent_core.context_budget import estimate_tokens
+from agent_core.mapping import mapping_or_empty
 from agent_core.models.slice_handoff import SliceHandoffSummary
 from nimbusware_orchestrator.slice_handoff import handoff_markdown_capped
 
@@ -45,15 +46,10 @@ def reverted_compaction_ids(events: list[dict[str, Any]]) -> set[str]:
     """Compaction ids marked reverted via campaign.context.compaction.reverted events."""
     reverted: set[str] = set()
     for row in events:
-        payload = row.get("payload") or {}
-        if not isinstance(payload, dict):
+        pl = mapping_or_empty(row.get("payload"))
+        if pl.get("stage_name") != "campaign.context.compaction.reverted":
             continue
-        if payload.get("stage_name") != "campaign.context.compaction.reverted":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            continue
-        cid = meta.get("compaction_id")
+        cid = mapping_or_empty(row.get("metadata")).get("compaction_id")
         if isinstance(cid, str) and cid.strip():
             reverted.add(cid.strip())
     return reverted
@@ -67,15 +63,10 @@ def find_compaction_event(
     if not target:
         return None
     for row in events:
-        payload = row.get("payload") or {}
-        if not isinstance(payload, dict):
+        pl = mapping_or_empty(row.get("payload"))
+        if pl.get("stage_name") != "campaign.context.compacted":
             continue
-        if payload.get("stage_name") != "campaign.context.compacted":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            continue
-        if str(meta.get("compaction_id") or "").strip() == target:
+        if str(mapping_or_empty(row.get("metadata")).get("compaction_id") or "").strip() == target:
             return row
     return None
 
@@ -83,8 +74,7 @@ def find_compaction_event(
 def _handoff_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for row in events:
-        payload = row.get("payload") or {}
-        if isinstance(payload, dict) and payload.get("stage_name") == "slice.handoff":
+        if mapping_or_empty(row.get("payload")).get("stage_name") == "slice.handoff":
             rows.append(row)
     return rows
 
@@ -121,8 +111,7 @@ def compact_campaign_context(
     older: list[dict[str, Any]] = []
     token_budget = 0
     for row in reversed(handoffs):
-        raw_meta = row.get("metadata")
-        meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
+        meta = mapping_or_empty(row.get("metadata"))
         summary_text = str(meta.get("handoff_summary") or "")
         tokens = estimate_tokens(summary_text)
         if token_budget + tokens <= keep:
@@ -145,15 +134,12 @@ def compact_campaign_context(
         older, prior=_latest_compaction_prior(events, reverted=skip_compaction)
     )
     recent_text = "\n\n".join(
-        str((r.get("metadata") or {}).get("handoff_summary") or "")
-        for r in recent
-        if isinstance(r.get("metadata"), dict)
+        str(mapping_or_empty(r.get("metadata")).get("handoff_summary") or "") for r in recent
     )
     tokens_before = estimate_tokens(
         "\n\n".join(
-            str((r.get("metadata") or {}).get("handoff_summary") or "")
+            str(mapping_or_empty(r.get("metadata")).get("handoff_summary") or "")
             for r in handoffs
-            if isinstance(r.get("metadata"), dict)
         ),
     )
     compact_summary = handoff_markdown_capped(merged)
@@ -188,19 +174,15 @@ def _latest_compaction_prior(
     skip = reverted if reverted is not None else reverted_compaction_ids(events)
     prior: SliceHandoffSummary | None = None
     for row in events:
-        payload = row.get("payload") or {}
-        if not isinstance(payload, dict):
+        pl = mapping_or_empty(row.get("payload"))
+        if pl.get("stage_name") != "campaign.context.compacted":
             continue
-        if payload.get("stage_name") != "campaign.context.compacted":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            continue
+        meta = mapping_or_empty(row.get("metadata"))
         cid = str(meta.get("compaction_id") or "").strip()
         if cid and cid in skip:
             continue
-        handoff_raw = meta.get("slice_handoff")
-        if isinstance(handoff_raw, dict):
+        handoff_raw = mapping_or_empty(meta.get("slice_handoff"))
+        if handoff_raw:
             prior = SliceHandoffSummary.model_validate(handoff_raw)
             continue
         summary = meta.get("summary")
@@ -230,11 +212,8 @@ def _merge_handoffs(
 ) -> SliceHandoffSummary:
     merged = prior
     for row in rows:
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            continue
-        raw = meta.get("slice_handoff")
-        if not isinstance(raw, dict):
+        raw = mapping_or_empty(mapping_or_empty(row.get("metadata")).get("slice_handoff"))
+        if not raw:
             continue
         handoff = SliceHandoffSummary.model_validate(raw)
         if merged is None:

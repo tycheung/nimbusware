@@ -214,7 +214,7 @@ class MicroSliceMixin:
         return gate
 
     def _micro_slice_enabled_for_run(self: MicroSliceHost, run_id: UUID) -> bool:
-        from nimbusware_orchestrator.micro_slice_executor import micro_slice_effective_from_rows
+        from nimbusware_orchestrator.micro_slice_run_context import micro_slice_effective_from_rows
 
         rows = self._store.list_run_events(str(run_id))
         return micro_slice_effective_from_rows(rows) is not None

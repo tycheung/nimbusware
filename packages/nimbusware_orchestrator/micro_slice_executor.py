@@ -17,7 +17,6 @@ from nimbusware_env.env_flags import (
     nimbusware_slice_p3_evidence_enabled,
     nimbusware_use_llm_enabled,
 )
-from nimbusware_orchestrator.fast_slice_critique import fast_slice_env_effective
 from nimbusware_orchestrator.llm_slice import (
     execute_slice_critique_llm,
     execute_slice_plan_llm,
@@ -28,10 +27,15 @@ from nimbusware_orchestrator.micro_slice import (
     micro_slice_count_for_run,
     parse_slice_plan,
 )
+from nimbusware_orchestrator.micro_slice_run_context import (
+    fast_slice_effective_from_rows,
+    micro_slice_effective_from_rows,
+    run_created_metadata,
+    slice_replan_max_for_run,
+)
 from nimbusware_orchestrator.slice_diff import (
     check_slice_diff_budget,
     collect_slice_diff_stats,
-    slice_replan_max_attempts,
     subdivide_slice_plan,
 )
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
@@ -47,32 +51,6 @@ def _launch_test_enabled(rows: list[dict[str, Any]]) -> bool:
     from nimbusware_orchestrator.dev_env_policy import launch_test_enabled
 
     return launch_test_enabled(rows)
-
-
-def fast_slice_effective_from_rows(rows: list[dict[str, Any]]) -> bool:
-    for row in rows:
-        if row.get("event_type") != EventType.RUN_CREATED.value:
-            continue
-        meta = row.get("metadata")
-        if isinstance(meta, dict):
-            fs = meta.get("fast_slice_effective")
-            if isinstance(fs, dict):
-                return fast_slice_env_effective(yaml_enabled=bool(fs.get("enabled")))
-        break
-    return False
-
-
-def micro_slice_effective_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
-    for row in rows:
-        if row.get("event_type") != EventType.RUN_CREATED.value:
-            continue
-        meta = row.get("metadata")
-        if isinstance(meta, dict):
-            ms = meta.get("micro_slice_effective")
-            if isinstance(ms, dict) and ms.get("enabled"):
-                return ms
-        break
-    return None
 
 
 def default_stub_slice_plan(slice_index: int) -> SlicePlan:
@@ -113,22 +91,11 @@ def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkf
     )
 
 
-def slice_replan_max_for_run(rows: list[dict[str, Any]]) -> int:
-    ms = micro_slice_effective_from_rows(rows)
-    if isinstance(ms, dict) and "replan_max" in ms:
-        return max(0, min(10, int(ms["replan_max"])))
-    return slice_replan_max_attempts()
-
-
 def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]]) -> str | None:
     from nimbusware_config.persist import load_custom_agent_registry
 
-    for row in rows:
-        if row.get("event_type") != EventType.RUN_CREATED.value:
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            break
+    meta = run_created_metadata(rows)
+    if meta:
         agent = meta.get("custom_agent")
         if isinstance(agent, dict) and agent.get("id"):
             reg = load_custom_agent_registry(
@@ -138,7 +105,6 @@ def _custom_agent_system_prompt(orch: RunOrchestrator, rows: list[dict[str, Any]
             full = reg.get(str(agent["id"]))
             if full is not None:
                 return full.system_prompt
-        break
     return None
 
 
