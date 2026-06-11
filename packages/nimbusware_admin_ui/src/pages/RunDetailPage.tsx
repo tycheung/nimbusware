@@ -230,6 +230,14 @@ export function RunDetailPage({ id }: { id?: string }) {
         <a href={`/v1/maker/app/#/review?run_id=${id}`} target="_blank" rel="noopener">
           Open in Maker review
         </a>
+        {" · "}
+        <a
+          href={`/v1/runs/${id}/audit-export`}
+          download
+          data-testid="admin-run-audit-export"
+        >
+          Download compliance bundle
+        </a>
       </p>
       <h3>Theater</h3>
       <TheaterPanel runId={id} onJumpToSeq={(seq) => setTimelineSeq(seq)} />
