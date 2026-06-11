@@ -76,6 +76,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "admin_unlock_sidebar",
         "mobile_pwa_progress_review",
         "launch_eval_scorecard",
+        "settings_hybrid_routing_presets",
         "settings_launch_check",
         "factory_hero_demos",
         "progress_gate_summary_plain",
