@@ -307,8 +307,9 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 **Home & onboarding**
 
 - First-run wizard: folder → readiness → **fit-ranked model** → intent → create run (`GET /v1/platform/hardware` + ranked models)
+- **Home models-first strip** — hardware tier + top ranked model before readiness (`GET /platform/hardware`, `GET /platform/models/ranked`); CTA opens Models tab wizard
 - **Models** tab: three-step preset wizard (`GET /platform/models/ranked` → preset → `POST /platform/models/apply-preset`); Ollama pull unchanged
-- **Optional hybrid routing** (off by default): `GET /v1/platform/routing-presets`, `POST /v1/platform/routing-presets/apply` — presets in [`configs/routing_presets.yaml`](configs/routing_presets.yaml) (`local_only`, `local_cloud_critique`, `cloud_plan_local_implement`); cloud preflight probes API key env before run
+- **Optional hybrid routing** (off by default): `GET /v1/platform/routing-presets`, `POST /v1/platform/routing-presets/apply` — presets in [`configs/routing_presets.yaml`](configs/routing_presets.yaml) (`local_only`, `local_cloud_critique`, `cloud_plan_local_implement`); critique/plan LLM stages honor `stage_providers`; `GET /v1/preflight-history` includes `cloud_preflight` when cloud runtime is configured
 - Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (hardware tier + resource governor sliders, Ollama model list, readiness presets, auto-advance hint)
 
@@ -498,7 +499,7 @@ poetry run nimbusware-api
 
 Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `NIMBUSWARE_FLEET_MEMORY_STORE_DIR`. Enable config NOTIFY: `NIMBUSWARE_CONFIG_NOTIFY=1`. Object-store primary: `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY=1` plus URL/bucket env vars (see `.env.example` and enterprise routes).
 
-Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
+Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/enterprise/fleet-learnings/search` (org-wide learnings across tenant projects), `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
 
 External chat (§20.5 boundary — not in-product workspace): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token — `/run`, `/status`, and `[patch]`/`[steer]`/`[skip]`/`[build]` steering on `last_run_id` ([docs/integrations-external-chat.md](docs/integrations-external-chat.md), [docs/operator-interjection-slo.md](docs/operator-interjection-slo.md)).
 

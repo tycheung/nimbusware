@@ -25,6 +25,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Control | Implementation |
 |---------|----------------|
 | Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped index + canonical sync |
+| Fleet learnings | `GET /v1/enterprise/fleet-learnings/search` — learnings markdown across tenant project workspaces |
 | Config propagation | Postgres `LISTEN/NOTIFY` + `config.document.updated` invalidation |
 | Worker health | Redis dispatch worker metrics; Admin **Fleet** tab at `/v1/admin/app/fleet` |
 | Hardware tiers | Local + optional SSH fleet probe; weekly scheduled workflow with failure alerts ([`docs/deploy/ssh-hardware-probe.md`](deploy/ssh-hardware-probe.md)) |
