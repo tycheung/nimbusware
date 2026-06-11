@@ -8,8 +8,8 @@ from nimbusware_api.routes.enterprise.audit_export import router as enterprise_a
 from nimbusware_api.routes.enterprise.config_notify import router as config_notify_router
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.core import router as core_router
-from nimbusware_api.routes.enterprise.fleet_autopilot import router as fleet_autopilot_router
 from nimbusware_api.routes.enterprise.fleet_analytics import router as fleet_analytics_router
+from nimbusware_api.routes.enterprise.fleet_autopilot import router as fleet_autopilot_router
 from nimbusware_api.routes.enterprise.fleet_critic_reliability import (
     router as fleet_critic_reliability_router,
 )

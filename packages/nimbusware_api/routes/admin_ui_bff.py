@@ -271,7 +271,7 @@ def enterprise_fleet_autopilot_policy_get(
     _admin: AdminDep,
     iam: IamStoreDep,
     api_key: Annotated[str, Depends(_require_enterprise_api_key)],
-    tenant_id: Annotated[str, Query(default="")] = "",
+    tenant_id: str = Query(default=""),
 ) -> dict[str, Any]:
     slug = ""
     if tenant_id.strip():

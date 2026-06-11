@@ -10,8 +10,8 @@ from agent_core.mapping import mapping_or_empty
 from nimbusware_env import find_repo_root
 from nimbusware_iam.constants import DEFAULT_TENANT_SLUG
 from nimbusware_orchestrator.autopilot_profiles import (
-    AutopilotProfile,
     CHECKPOINT_CATALOG,
+    AutopilotProfile,
     resolve_autopilot_profile,
 )
 

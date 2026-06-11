@@ -117,9 +117,8 @@ def apply_user_autopilot_at_run_start(
 ) -> AutopilotProfile | None:
     from uuid import UUID as UUIDType
 
-    from nimbusware_orchestrator.autopilot_profiles import persist_run_autopilot
-
     from nimbusware_iam.context import get_auth_context
+    from nimbusware_orchestrator.autopilot_profiles import persist_run_autopilot
 
     profile = resolve_user_autopilot_profile(profile_id.strip(), repo_root=repo_root)
     if profile is None:

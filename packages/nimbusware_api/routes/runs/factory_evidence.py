@@ -15,6 +15,7 @@ from nimbusware_orchestrator.factory_evidence import (
     build_factory_evidence_bundle,
     export_factory_evidence_zip,
 )
+from nimbusware_orchestrator.factory_evidence_html import render_factory_evidence_html
 
 router = APIRouter()
 
