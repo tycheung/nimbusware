@@ -21,11 +21,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
             }
         ),
     ),
-    (
-        "packages/nimbusware_api",
-        450,
-        frozenset({"routes/bundles.py", "routes/chat.py"}),
-    ),
+    ("packages/nimbusware_api", 450, frozenset()),
     ("packages/nimbusware_memory", 450, frozenset()),
 )
 
