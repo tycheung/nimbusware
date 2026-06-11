@@ -1,0 +1,6 @@
+id: patch_jvm_hotfix
+label: JVM patch hotfix
+business_prompt: >
+  Fix a failing Java unit test with a minimal scoped change in the service layer.
+workflow_profile: patch_jvm
+min_aggregate_score: 4.0

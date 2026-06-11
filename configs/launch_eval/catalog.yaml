@@ -8,6 +8,10 @@ prompts:
     path: prompts/static_site.yaml
   - id: contacts_api
     path: prompts/contacts_api.yaml
+  - id: patch_go_hotfix
+    path: prompts/patch_go_hotfix.yaml
+  - id: patch_jvm_hotfix
+    path: prompts/patch_jvm_hotfix.yaml
 
 default_workspaces:
   - tests/fixtures/repos/tiny_python_app
