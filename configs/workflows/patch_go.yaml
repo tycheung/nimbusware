@@ -1,0 +1,55 @@
+# Go hotfix lane — workflow_profile=patch_go
+version: 1
+fast_slice: true
+
+slice:
+  enabled: true
+  max_files: 3
+  max_loc: 80
+  allowed_globs:
+    - "**/*.go"
+    - "**/go.mod"
+    - "**/go.sum"
+  e2e:
+    enabled: false
+
+stage_graph:
+  - stage_name: slice.plan
+  - stage_name: slice.implement
+    depends_on: [slice.plan]
+  - stage_name: slice.verify
+    depends_on: [slice.implement]
+  - stage_name: slice.test
+    depends_on: [slice.verify]
+  - stage_name: slice.gate
+    depends_on: [slice.test]
+
+universal_critique:
+  default_enabled: false
+  unanimous_gate_enforce: false
+
+integrator_gate:
+  enabled: false
+
+research:
+  enabled: false
+
+stitch:
+  enabled: false
+
+patch:
+  targeted_test: true
+  skip_run_plan: true
+  risk_caps:
+    max_tool_steps: 12
+    max_shell_invocations: 4
+    max_write_bytes: 65536
+
+theater:
+  enabled: true
+  max_message_chars: 1200
+
+memory:
+  retrieval_enabled: true
+  index_contribution: true
+  retrieval_k: 3
