@@ -5,6 +5,26 @@ const SESSION_ID = "pw-chat-patch-session";
 const RUN_ID = "00000000-0000-4000-8000-000000000001";
 const PROJECT_ID = "00000000-0000-4000-8000-000000000099";
 
+test("chat tab shows dismissible autopilot ladder hint", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.removeItem("maker_chat_autopilot_ladder_dismissed");
+  });
+  await page.route("**/v1/projects**", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ projects: [] }),
+    }),
+  );
+
+  await page.goto("/v1/maker/app/");
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/chat");
+
+  await expect(page.getByTestId("maker-chat-autopilot-hint")).toBeVisible();
+  await page.getByTestId("maker-chat-autopilot-hint-dismiss").click();
+  await expect(page.getByTestId("maker-chat-autopilot-hint")).toHaveCount(0);
+});
+
 test("chat tab patch flow creates session, classifies, and starts", async ({ page }) => {
   await page.route("**/v1/projects**", (route) =>
     route.fulfill({

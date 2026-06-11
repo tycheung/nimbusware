@@ -1,8 +1,12 @@
 # Maps Chat parity rows to Playwright specs exercised in CI web job.
 maker:
+  home_intent_cards: tests/e2e/web/maker_home_intents.spec.ts
   chat_unified_entry: tests/e2e/web/maker_chat_patch.spec.ts
   chat_classifier_cards: tests/e2e/web/maker_chat_patch.spec.ts
   chat_work_type_override: tests/e2e/web/maker_chat_override.spec.ts
   chat_patch_attachments: tests/e2e/web/maker_chat_patch.spec.ts
   build_redirect_chat: tests/e2e/web/maker_chat_patch.spec.ts
   progress_work_type_badge: tests/e2e/web/maker_chat_patch.spec.ts
+  gate_fail_action_cards: tests/e2e/web/maker_progress_gate_actions.spec.ts
+  factory_hero_demos: tests/e2e/web/maker_home_intents.spec.ts
+  chat_autopilot_ladder_hint: tests/e2e/web/maker_chat_patch.spec.ts
