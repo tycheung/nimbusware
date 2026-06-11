@@ -7,8 +7,6 @@ Do not run repo-wide `ruff check --fix`; use this script instead for re-exports.
 from __future__ import annotations
 
 import ast
-import importlib
-import os
 import re
 import sys
 from pathlib import Path

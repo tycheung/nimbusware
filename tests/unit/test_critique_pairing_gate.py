@@ -1,5 +1,3 @@
-"""create_run rejects incomplete critique pairings."""
-
 from __future__ import annotations
 
 import shutil

@@ -1,5 +1,3 @@
-"""Per-run resolver composite for strictness + universal critique."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

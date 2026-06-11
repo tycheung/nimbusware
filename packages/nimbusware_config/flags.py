@@ -1,5 +1,3 @@
-"""Feature flags for Postgres vs file-backed configuration."""
-
 from __future__ import annotations
 
 from nimbusware_env.env_flags import (

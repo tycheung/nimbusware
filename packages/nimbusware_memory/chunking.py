@@ -1,5 +1,3 @@
-"""Extract memory chunks from append-only event rows."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,5 +1,3 @@
-"""RoleRegistry programmatic mapping (DB adapter hook)."""
-
 from __future__ import annotations
 
 from uuid import UUID

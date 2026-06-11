@@ -1,5 +1,3 @@
-"""SQL query profiler: runtime session counter + static hotspot scan (PZ-6)."""
-
 from __future__ import annotations
 
 import os

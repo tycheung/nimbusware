@@ -1,5 +1,3 @@
-"""Factory tier gates (T0–T3) and PUT E2E fix backlog slices."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

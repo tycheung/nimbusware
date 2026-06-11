@@ -1,5 +1,3 @@
-"""Rebuild repo-scoped memory index from the event store."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

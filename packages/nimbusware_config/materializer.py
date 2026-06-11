@@ -1,5 +1,3 @@
-"""Load validated config documents into runtime caches."""
-
 from __future__ import annotations
 
 import copy

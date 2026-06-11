@@ -1,5 +1,3 @@
-"""Aggregate operator competitive-metrics snapshot from recent run events."""
-
 from __future__ import annotations
 
 import json

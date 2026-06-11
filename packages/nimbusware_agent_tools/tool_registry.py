@@ -1,5 +1,3 @@
-"""Agent tool allowlist from operator env."""
-
 from __future__ import annotations
 
 _DEFAULT_TOOLS = ("read", "write", "edit", "grep", "shell")

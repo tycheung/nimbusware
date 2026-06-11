@@ -1,5 +1,3 @@
-"""B1 promotion: Integration Adapter Writer target I/O."""
-
 from __future__ import annotations
 
 from pathlib import Path

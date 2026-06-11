@@ -1,5 +1,3 @@
-"""Semgrep fleet hook (PZ-7)."""
-
 from __future__ import annotations
 
 import os

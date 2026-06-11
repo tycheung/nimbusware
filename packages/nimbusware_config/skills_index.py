@@ -1,5 +1,3 @@
-"""Progressive-disclosure skill catalog (description in prompts, body on demand)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

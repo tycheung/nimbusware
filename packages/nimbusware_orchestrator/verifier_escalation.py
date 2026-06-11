@@ -1,5 +1,3 @@
-"""Escalation hooks tied to writer verifier outcomes."""
-
 from __future__ import annotations
 
 from pathlib import Path

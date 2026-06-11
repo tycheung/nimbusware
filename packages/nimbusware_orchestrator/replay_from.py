@@ -1,5 +1,3 @@
-"""Replay-from-checkpoint policy overlay for campaign runs."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

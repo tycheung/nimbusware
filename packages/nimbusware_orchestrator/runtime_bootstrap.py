@@ -1,5 +1,3 @@
-"""Shared runtime wiring for API lifespan and run-dispatch worker."""
-
 from __future__ import annotations
 
 import os

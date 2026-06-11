@@ -1,5 +1,3 @@
-"""Read-model module import and runs package shim parity tests."""
-
 from __future__ import annotations
 
 import nimbusware_api.read_models as read_models

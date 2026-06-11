@@ -1,5 +1,3 @@
-"""CLI: aggregate per-role telemetry from recent runs."""
-
 from __future__ import annotations
 
 import argparse

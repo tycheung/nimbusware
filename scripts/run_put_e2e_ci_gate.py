@@ -16,7 +16,10 @@ def run_put_e2e_ci_gate(*, repo_root: Path | None = None) -> dict[str, Any]:
     repo = repo_root or REPO_ROOT
     sys.path.insert(0, str(repo / "packages"))
 
-    from nimbusware_orchestrator.factory_completion import evaluate_factory_gates, resolve_factory_tier
+    from nimbusware_orchestrator.factory_completion import (
+        evaluate_factory_gates,
+        resolve_factory_tier,
+    )
     from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_static
     from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
     from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview

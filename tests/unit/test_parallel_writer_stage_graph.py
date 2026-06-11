@@ -1,5 +1,3 @@
-"""Parallel-writer stage graph metadata."""
-
 from __future__ import annotations
 
 import os

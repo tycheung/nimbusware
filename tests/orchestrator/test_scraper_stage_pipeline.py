@@ -1,5 +1,3 @@
-"""Optional scraper fetch stage (workflow YAML + outbound HTTP)."""
-
 from __future__ import annotations
 
 from pathlib import Path

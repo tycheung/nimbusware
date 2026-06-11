@@ -1,5 +1,3 @@
-"""Repo map excerpt builder for slice context packets."""
-
 from __future__ import annotations
 
 from pathlib import Path

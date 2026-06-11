@@ -1,5 +1,3 @@
-"""Research and stitch workflow support."""
-
 from nimbusware_research.artifacts import persist_research_brief, read_research_brief
 from nimbusware_research.models import ResearchBrief, ResearchBriefSource
 from nimbusware_research.planner_context import planner_research_context_from_events

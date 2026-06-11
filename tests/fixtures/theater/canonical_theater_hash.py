@@ -1,5 +1,3 @@
-"""Canonical theater message hashing for golden regression tests."""
-
 from __future__ import annotations
 
 import hashlib

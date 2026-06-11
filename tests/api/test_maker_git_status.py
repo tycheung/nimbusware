@@ -1,5 +1,3 @@
-"""GET /v1/runs/{id}/maker/git-status."""
-
 from __future__ import annotations
 
 import os

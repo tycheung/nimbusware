@@ -1,5 +1,3 @@
-"""API key generation and verification."""
-
 from __future__ import annotations
 
 import hashlib

@@ -1,5 +1,3 @@
-"""Preflight latency statistics helpers."""
-
 from __future__ import annotations
 
 import importlib

@@ -1,5 +1,3 @@
-"""GET /v1/platform/models/catalog-info."""
-
 from __future__ import annotations
 
 import os

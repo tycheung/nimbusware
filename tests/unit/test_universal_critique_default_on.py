@@ -1,5 +1,3 @@
-"""Default-on universal critique workflow."""
-
 from __future__ import annotations
 
 from pathlib import Path

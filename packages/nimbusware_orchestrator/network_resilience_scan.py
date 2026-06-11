@@ -1,5 +1,3 @@
-"""Static network/resilience scans + optional SQL query budget."""
-
 from __future__ import annotations
 
 import re

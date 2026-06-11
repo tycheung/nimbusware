@@ -1,5 +1,3 @@
-"""CLI: replay event-store rows into timeline JSON."""
-
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,3 @@
-"""Agent evaluator LLM branch without mandatory NIMBUSWARE_USE_LLM."""
-
 from __future__ import annotations
 
 from pathlib import Path

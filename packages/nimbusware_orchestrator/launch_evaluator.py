@@ -1,5 +1,3 @@
-"""Deterministic workspace quality rubric (launch eval v0)."""
-
 from __future__ import annotations
 
 import json

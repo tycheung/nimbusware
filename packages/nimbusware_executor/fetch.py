@@ -1,5 +1,3 @@
-"""HTTP GET with network egress policy checks."""
-
 from __future__ import annotations
 
 from urllib.parse import urlparse

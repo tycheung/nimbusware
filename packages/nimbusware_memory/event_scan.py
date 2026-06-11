@@ -1,5 +1,3 @@
-"""Load event rows for memory index rebuild."""
-
 from __future__ import annotations
 
 import os

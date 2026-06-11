@@ -1,5 +1,3 @@
-"""Shared helpers for Nimbusware desktop launcher and run entry points."""
-
 from __future__ import annotations
 
 import os

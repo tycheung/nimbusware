@@ -1,5 +1,3 @@
-"""Linux GTK / WebKit system dependencies for pywebview desktop shell."""
-
 from __future__ import annotations
 
 import os

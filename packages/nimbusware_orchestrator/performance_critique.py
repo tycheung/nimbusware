@@ -1,5 +1,3 @@
-"""Performance Critic stage after security critique."""
-
 from __future__ import annotations
 
 import json

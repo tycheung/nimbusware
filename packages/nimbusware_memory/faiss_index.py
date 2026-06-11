@@ -1,5 +1,3 @@
-"""Optional FAISS index for repo-scoped memory chunks."""
-
 from __future__ import annotations
 
 import json

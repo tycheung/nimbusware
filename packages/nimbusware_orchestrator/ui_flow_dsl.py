@@ -1,5 +1,3 @@
-"""UI flow step DSL for browser controller regression."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

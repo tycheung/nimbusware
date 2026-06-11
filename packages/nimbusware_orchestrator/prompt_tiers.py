@@ -1,5 +1,3 @@
-"""Stable / context / volatile prompt assembly for cache-friendly LLM calls."""
-
 from __future__ import annotations
 
 from enum import Enum

@@ -1,5 +1,3 @@
-"""Console security scan on verify display helper."""
-
 from __future__ import annotations
 
 import pytest

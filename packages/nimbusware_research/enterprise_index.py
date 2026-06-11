@@ -1,5 +1,3 @@
-"""Tenant-scoped research index + egress audit export hook."""
-
 from __future__ import annotations
 
 import json

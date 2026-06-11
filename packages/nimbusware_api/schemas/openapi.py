@@ -1,5 +1,3 @@
-"""Shared OpenAPI response fragments (facade)."""
-
 from nimbusware_api.schemas.openapi_link_helpers import (
     RUN_DETAIL_LINK_HEADER,
     RUN_FINDINGS_LINK_HEADER,

@@ -1,5 +1,3 @@
-"""Sanitize untrusted fetched content before researcher LLM prompts."""
-
 from __future__ import annotations
 
 import re

@@ -1,5 +1,3 @@
-"""Read-only scraper artifact inventory."""
-
 from __future__ import annotations
 
 import os

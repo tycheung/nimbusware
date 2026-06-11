@@ -1,5 +1,3 @@
-"""OS-specific subprocess execution for role-gated local commands."""
-
 from __future__ import annotations
 
 import subprocess

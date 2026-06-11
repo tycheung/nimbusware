@@ -1,5 +1,3 @@
-"""AST symbol sketch for slice implement planning."""
-
 from __future__ import annotations
 
 from pathlib import Path

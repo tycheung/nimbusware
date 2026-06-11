@@ -1,5 +1,3 @@
-"""Enterprise fleet Ollama sustained p95 SLI."""
-
 from __future__ import annotations
 
 import json

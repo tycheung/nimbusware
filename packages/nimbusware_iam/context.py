@@ -1,5 +1,3 @@
-"""Request-scoped tenant and auth context."""
-
 from __future__ import annotations
 
 from contextvars import ContextVar

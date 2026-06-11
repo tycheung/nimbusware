@@ -1,5 +1,3 @@
-"""Optional per-slice git commit after gate PASS."""
-
 from __future__ import annotations
 
 import subprocess

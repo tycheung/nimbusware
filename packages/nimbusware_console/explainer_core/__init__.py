@@ -1,5 +1,3 @@
-"""Shared helpers for Admin Console workflow explainers."""
-
 from nimbusware_console.explainer_core.payload import payload_mapping, payload_str_field
 from nimbusware_console.explainer_core.time import age_seconds_utc
 from nimbusware_console.explainer_core.universal_critique_counts import (

@@ -1,5 +1,3 @@
-"""Persona shelves and optional per-entry operator-authored fields."""
-
 from __future__ import annotations
 
 import unicodedata

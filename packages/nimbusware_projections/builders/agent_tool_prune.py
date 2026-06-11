@@ -1,5 +1,3 @@
-"""Prune stale agent tool outputs in theater and timeline projections."""
-
 from __future__ import annotations
 
 import re

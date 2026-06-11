@@ -1,5 +1,3 @@
-"""Pydantic models for memory chunks and retrieval hits."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

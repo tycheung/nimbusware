@@ -1,5 +1,3 @@
-"""Dispatch worker smoke with memory dispatch mode."""
-
 from __future__ import annotations
 
 import pytest

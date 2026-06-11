@@ -1,5 +1,3 @@
-"""POST /runs create handler."""
-
 from __future__ import annotations
 
 from typing import Any

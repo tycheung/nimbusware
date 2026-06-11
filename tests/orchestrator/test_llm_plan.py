@@ -1,5 +1,3 @@
-"""LLM plan stage: schema validation + deterministic stub fallback."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""GET /v1/scraper-artifacts/inventory."""
-
 from __future__ import annotations
 
 import os

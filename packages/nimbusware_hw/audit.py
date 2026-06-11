@@ -1,5 +1,3 @@
-"""Append-only audit events for hardware profile lifecycle."""
-
 from __future__ import annotations
 
 import hashlib

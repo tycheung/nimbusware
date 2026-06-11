@@ -1,5 +1,3 @@
-"""Deterministic unanimous gate decisions from critic verdict rows."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence

@@ -1,5 +1,3 @@
-"""Optional semgrep fleet scan for security verify path (PZ-7)."""
-
 from __future__ import annotations
 
 import shutil

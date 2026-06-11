@@ -1,5 +1,3 @@
-"""Automatic factory tier checks on campaign maintenance cadence."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,5 +1,3 @@
-"""GET /v1/runs/{id}/memory-influence for Maker web progress panel."""
-
 from __future__ import annotations
 
 import os

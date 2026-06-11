@@ -1,5 +1,3 @@
-"""Enterprise IAM."""
-
 from nimbusware_iam.constants import (
     API_KEY_HEADER,
     DEFAULT_TENANT_ID,

@@ -1,5 +1,3 @@
-"""pytest-benchmark fleet harness for preflight-history scan."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Resolve per-slice diff for public API."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Stack E2E with subprocess uvicorn and Postgres."""
-
 from __future__ import annotations
 
 import os

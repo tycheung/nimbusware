@@ -1,5 +1,3 @@
-"""SWE-bench harness dry-run (no network)."""
-
 from __future__ import annotations
 
 import json

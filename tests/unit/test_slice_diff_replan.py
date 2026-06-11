@@ -1,5 +1,3 @@
-"""Diff-aware micro-slice replanning."""
-
 from __future__ import annotations
 
 from pathlib import Path

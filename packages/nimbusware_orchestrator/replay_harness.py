@@ -1,5 +1,3 @@
-"""Deterministic replay of event-store rows into read models."""
-
 from __future__ import annotations
 
 import hashlib

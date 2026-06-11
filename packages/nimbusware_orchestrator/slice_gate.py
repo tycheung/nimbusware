@@ -1,5 +1,3 @@
-"""Per-slice verify → critique → test → gate chain."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,5 +1,3 @@
-"""Tkinter desktop launcher: install, update, and run Nimbusware."""
-
 from __future__ import annotations
 
 import os

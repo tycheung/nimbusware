@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Run bounded campaign dispatch soak (staging weekly / prod smoke)."""
 
 from __future__ import annotations
 

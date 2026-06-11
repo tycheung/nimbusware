@@ -1,5 +1,3 @@
-"""OpenAPI 5xx Problem+JSON fragments and uncaught exception handler."""
-
 from __future__ import annotations
 
 import asyncio

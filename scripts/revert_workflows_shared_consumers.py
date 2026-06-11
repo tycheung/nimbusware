@@ -1,5 +1,3 @@
-"""Point workflow consumers back at the explicit _shared barrel (star import)."""
-
 from __future__ import annotations
 
 import ast

@@ -1,5 +1,3 @@
-"""On-disk scraper response artifact helpers."""
-
 from nimbusware_orchestrator.scraper_artifacts_inventory import (
     object_store_delete_artifact,
     scraper_artifact_inventory,

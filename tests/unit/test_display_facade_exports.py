@@ -1,5 +1,3 @@
-"""Display/explainer root facades must match sibling package public exports."""
-
 from __future__ import annotations
 
 import ast

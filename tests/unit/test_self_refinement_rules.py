@@ -1,5 +1,3 @@
-"""Self-refinement rules loop v1."""
-
 from __future__ import annotations
 
 import os

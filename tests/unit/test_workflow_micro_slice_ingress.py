@@ -1,5 +1,3 @@
-"""micro_slice workflow validates against known stage graph."""
-
 from __future__ import annotations
 
 from pathlib import Path

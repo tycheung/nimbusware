@@ -1,5 +1,3 @@
-"""Memory retrieval timeline filtered by slice_id."""
-
 from __future__ import annotations
 
 from nimbusware_memory.timeline import (

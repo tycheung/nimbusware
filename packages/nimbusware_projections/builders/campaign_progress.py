@@ -1,5 +1,3 @@
-"""Campaign progress projection for Maker and Admin."""
-
 from __future__ import annotations
 
 from typing import Any

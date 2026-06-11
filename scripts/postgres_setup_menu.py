@@ -1,5 +1,3 @@
-"""Interactive PostgreSQL setup menu when no server is reachable."""
-
 from __future__ import annotations
 
 import subprocess

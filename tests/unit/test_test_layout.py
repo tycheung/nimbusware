@@ -1,5 +1,3 @@
-"""Test layout guards."""
-
 from __future__ import annotations
 
 from pathlib import Path

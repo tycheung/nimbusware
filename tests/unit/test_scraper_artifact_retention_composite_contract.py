@@ -1,5 +1,3 @@
-"""Scraper artifact retention composite."""
-
 from __future__ import annotations
 
 import hashlib

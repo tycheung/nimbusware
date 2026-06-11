@@ -1,5 +1,3 @@
-"""Bundle catalog search and optional on-disk FAISS index."""
-
 from __future__ import annotations
 
 import hashlib

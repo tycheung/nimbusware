@@ -1,5 +1,3 @@
-"""Load/persist config documents (file fallback vs Postgres authority)."""
-
 from __future__ import annotations
 
 from pathlib import Path

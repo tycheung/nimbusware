@@ -1,5 +1,3 @@
-"""Fast-slice severity helpers for optional critic matrix skip."""
-
 from __future__ import annotations
 
 from collections.abc import Sequence

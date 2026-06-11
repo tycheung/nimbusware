@@ -1,5 +1,3 @@
-"""Custom agents Postgres config store."""
-
 from __future__ import annotations
 
 from pathlib import Path

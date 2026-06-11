@@ -1,5 +1,3 @@
-"""B2 promotion: YAML-first ungated self-refinement."""
-
 from __future__ import annotations
 
 import os

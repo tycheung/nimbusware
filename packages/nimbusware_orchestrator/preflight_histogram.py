@@ -1,5 +1,3 @@
-"""Preflight latency histogram helpers (CLI + Admin display)."""
-
 from __future__ import annotations
 
 import math

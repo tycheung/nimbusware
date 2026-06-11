@@ -1,5 +1,3 @@
-"""Project delivery backlog epic/feature/slice tree from campaign events."""
-
 from __future__ import annotations
 
 from typing import Any

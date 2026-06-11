@@ -1,5 +1,3 @@
-"""Stable namespace / document_key constants."""
-
 from __future__ import annotations
 
 NS_PERSONAS = "personas"

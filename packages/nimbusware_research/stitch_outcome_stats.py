@@ -1,5 +1,3 @@
-"""Aggregate stitch transplant outcomes from append-only event rows."""
-
 from __future__ import annotations
 
 from collections import defaultdict

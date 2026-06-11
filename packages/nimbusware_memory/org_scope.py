@@ -1,5 +1,3 @@
-"""Fleet / org memory scope."""
-
 from __future__ import annotations
 
 import hashlib

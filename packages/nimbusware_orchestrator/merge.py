@@ -1,5 +1,3 @@
-"""Policy snapshot merge (base config → workflow → run overrides)."""
-
 from __future__ import annotations
 
 import os

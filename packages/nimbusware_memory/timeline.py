@@ -1,5 +1,3 @@
-"""Memory timeline read-model helpers (shared by API + replay)."""
-
 from __future__ import annotations
 
 from typing import Any

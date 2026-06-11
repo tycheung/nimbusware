@@ -1,5 +1,3 @@
-"""Nimbusware agent retrieval memory: repo-scoped failure/fix index."""
-
 from nimbusware_memory.audit import (
     append_memory_indexed_event,
     append_memory_retrieval_emitted_event,

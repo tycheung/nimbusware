@@ -1,5 +1,3 @@
-"""Repo health inventory for continuous improvement council."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

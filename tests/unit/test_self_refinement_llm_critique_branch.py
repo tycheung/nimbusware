@@ -1,5 +1,3 @@
-"""Self-refinement LLM critique YAML-first branch."""
-
 from __future__ import annotations
 
 import pytest

@@ -1,5 +1,3 @@
-"""LLM common export surface guard."""
-
 from __future__ import annotations
 
 import ast

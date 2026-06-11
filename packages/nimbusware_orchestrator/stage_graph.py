@@ -1,5 +1,3 @@
-"""Explicit stage DAG from materialized workflow profiles."""
-
 from __future__ import annotations
 
 from collections import deque

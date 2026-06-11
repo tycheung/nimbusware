@@ -1,5 +1,3 @@
-"""Gradual dev-env activation milestones M1–M6."""
-
 from __future__ import annotations
 
 import os

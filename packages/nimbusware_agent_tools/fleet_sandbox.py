@@ -1,5 +1,3 @@
-"""Enterprise fleet sandbox backends (Kubernetes exec, E2B)."""
-
 from __future__ import annotations
 
 import os

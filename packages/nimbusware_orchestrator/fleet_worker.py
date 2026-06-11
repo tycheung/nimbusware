@@ -1,5 +1,3 @@
-"""Enterprise Redis fleet worker profile."""
-
 from __future__ import annotations
 
 import json

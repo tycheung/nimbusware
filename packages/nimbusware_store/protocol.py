@@ -1,5 +1,3 @@
-"""Map between DB rows and `validate_event_dict` input shapes."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

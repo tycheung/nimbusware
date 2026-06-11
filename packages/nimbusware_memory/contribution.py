@@ -1,5 +1,3 @@
-"""Rebuild memory index when a run opts in to index contribution."""
-
 from __future__ import annotations
 
 import os

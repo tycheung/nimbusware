@@ -1,5 +1,3 @@
-"""SQL profiler (PZ-6)."""
-
 from __future__ import annotations
 
 import os

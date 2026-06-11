@@ -1,5 +1,3 @@
-"""Policy snapshot from materialized config (P0-e)."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""GET /v1/memory/chunks."""
-
 from __future__ import annotations
 
 from uuid import uuid4

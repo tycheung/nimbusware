@@ -1,5 +1,3 @@
-"""Performance / N+1 static scanners."""
-
 from __future__ import annotations
 
 import re

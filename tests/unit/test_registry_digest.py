@@ -1,5 +1,3 @@
-"""Role registry YAML version + content digest."""
-
 from __future__ import annotations
 
 from pathlib import Path

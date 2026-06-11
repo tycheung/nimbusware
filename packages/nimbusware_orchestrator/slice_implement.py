@@ -1,5 +1,3 @@
-"""Scoped slice implementation: real workspace mutations before diff budget."""
-
 from __future__ import annotations
 
 import subprocess

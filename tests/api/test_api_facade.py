@@ -1,5 +1,3 @@
-"""API facade and route surface tests."""
-
 from __future__ import annotations
 
 from fastapi.routing import APIRoute

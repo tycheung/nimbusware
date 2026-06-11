@@ -1,5 +1,3 @@
-"""Delivery backlog and campaign policy models for autonomous completion."""
-
 from __future__ import annotations
 
 from enum import Enum

@@ -1,5 +1,3 @@
-"""Campaign progress projection from event rows."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

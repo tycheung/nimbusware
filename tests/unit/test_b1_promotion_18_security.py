@@ -1,5 +1,3 @@
-"""B2 promotion: security scan tool categories on verify."""
-
 from __future__ import annotations
 
 from pathlib import Path

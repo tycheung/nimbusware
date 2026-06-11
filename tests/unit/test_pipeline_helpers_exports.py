@@ -1,5 +1,3 @@
-"""Pipeline _helpers export surface guard."""
-
 from __future__ import annotations
 
 import ast

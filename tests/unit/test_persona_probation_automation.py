@@ -1,5 +1,3 @@
-"""fo422: persona probation auto-shelve and promotion notice automation."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

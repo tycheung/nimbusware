@@ -1,5 +1,3 @@
-"""Launch eval rubric after maintenance refactor passes."""
-
 from __future__ import annotations
 
 from pathlib import Path

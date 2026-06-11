@@ -1,5 +1,3 @@
-"""B1/B2 promotion slice tests."""
-
 from __future__ import annotations
 
 from pathlib import Path

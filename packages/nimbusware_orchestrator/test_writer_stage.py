@@ -1,5 +1,3 @@
-"""Minimal real test-writer stage executor for parallel writer dispatch."""
-
 from __future__ import annotations
 
 import os

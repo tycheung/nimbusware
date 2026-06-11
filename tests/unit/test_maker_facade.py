@@ -1,5 +1,3 @@
-"""Maker package structure (web UI; Streamlit UI removed)."""
-
 from __future__ import annotations
 
 from pathlib import Path

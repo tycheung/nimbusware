@@ -1,5 +1,3 @@
-"""Append-only event store (PostgreSQL + in-memory for tests)."""
-
 from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_store.postgres import PostgresEventStore
 from nimbusware_store.protocol import (

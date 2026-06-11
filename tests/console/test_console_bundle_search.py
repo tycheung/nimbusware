@@ -1,5 +1,3 @@
-"""Console bundle catalog helper."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Slice context packets."""
-
 from __future__ import annotations
 
 from nimbusware_orchestrator.micro_slice import parse_slice_plan

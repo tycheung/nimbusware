@@ -1,5 +1,3 @@
-"""Escalation YAML: cumulative findings threshold."""
-
 from __future__ import annotations
 
 from pathlib import Path

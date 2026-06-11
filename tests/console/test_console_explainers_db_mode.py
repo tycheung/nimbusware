@@ -1,5 +1,3 @@
-"""Console explainers read workflow config from materializer in DB mode."""
-
 from __future__ import annotations
 
 from pathlib import Path

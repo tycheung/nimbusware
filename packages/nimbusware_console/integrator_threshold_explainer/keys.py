@@ -1,5 +1,3 @@
-"""Stable payload keys for integrator threshold explainers (Admin BFF / web UI)."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping

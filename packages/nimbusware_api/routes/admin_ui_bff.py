@@ -1,5 +1,3 @@
-"""BFF endpoints for Admin Preact UI (operator chat, formatted tables)."""
-
 from __future__ import annotations
 
 from typing import Annotated, Any

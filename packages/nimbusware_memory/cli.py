@@ -1,5 +1,3 @@
-"""CLI entry for Nimbusware memory index rebuild."""
-
 from __future__ import annotations
 
 import argparse

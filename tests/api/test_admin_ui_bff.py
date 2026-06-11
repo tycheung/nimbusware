@@ -1,5 +1,3 @@
-"""Admin UI BFF: operator chat and formatted tables."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Config document change notifications."""
-
 from __future__ import annotations
 
 import json

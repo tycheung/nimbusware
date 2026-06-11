@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Validate production campaign soak prerequisites (Redis fleet + dispatch workers)."""
 
 from __future__ import annotations
 
 import json
 import os
-import sys
 from pathlib import Path
 from typing import Any
 

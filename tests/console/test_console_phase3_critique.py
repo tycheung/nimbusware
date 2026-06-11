@@ -1,5 +1,3 @@
-"""Console Phase 3 timeline display helpers."""
-
 from __future__ import annotations
 
 from nimbusware_console.phase3_critique_display import (

@@ -1,5 +1,3 @@
-"""Probation reliability automation: auto-shelve and promotion notice findings."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

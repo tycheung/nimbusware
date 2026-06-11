@@ -1,5 +1,3 @@
-"""Network egress allowlists from frozen policy snapshot."""
-
 from __future__ import annotations
 
 from ipaddress import ip_address

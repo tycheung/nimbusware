@@ -1,5 +1,3 @@
-"""Repo/workspace scope key for memory indexes."""
-
 from __future__ import annotations
 
 import hashlib

@@ -1,5 +1,3 @@
-"""Object-store primary scraper artifacts."""
-
 from __future__ import annotations
 
 from pathlib import Path

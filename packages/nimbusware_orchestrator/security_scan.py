@@ -1,5 +1,3 @@
-"""Static security-oriented checks for verifier / extension hooks."""
-
 from __future__ import annotations
 
 from pathlib import Path

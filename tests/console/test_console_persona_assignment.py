@@ -1,5 +1,3 @@
-"""Console persona assignment display (P1-b)."""
-
 from __future__ import annotations
 
 from nimbusware_console.persona_assignment_display import (

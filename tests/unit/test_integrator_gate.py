@@ -1,5 +1,3 @@
-"""Integrator gate YAML helpers (bundle id from workflow profile)."""
-
 from __future__ import annotations
 
 from pathlib import Path

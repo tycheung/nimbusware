@@ -1,5 +1,3 @@
-"""Automatic micro-slice execution via lifecycle verify."""
-
 from __future__ import annotations
 
 import os

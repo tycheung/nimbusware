@@ -1,5 +1,3 @@
-"""Ollama install, model pull, and health checks for Nimbusware agent LLM stages."""
-
 from __future__ import annotations
 
 import json

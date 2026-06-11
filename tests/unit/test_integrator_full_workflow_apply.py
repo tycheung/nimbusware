@@ -1,5 +1,3 @@
-"""full-profile workflow YAML paste + merge + disk apply (shallow merge)."""
-
 from __future__ import annotations
 
 import pytest

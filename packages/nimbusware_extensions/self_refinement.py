@@ -1,5 +1,3 @@
-"""Self-refinement policy loader from materialized config."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

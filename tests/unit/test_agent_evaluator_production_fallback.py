@@ -1,5 +1,3 @@
-"""Production evaluator LLM fallback without stub env."""
-
 from __future__ import annotations
 
 from nimbusware_orchestrator.workflow_agent_evaluator import (

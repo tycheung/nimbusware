@@ -1,5 +1,3 @@
-"""Gates simplification slices that delete code behind a passing test suite."""
-
 from __future__ import annotations
 
 import subprocess

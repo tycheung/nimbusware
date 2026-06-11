@@ -1,5 +1,3 @@
-"""Gitops CLI: seed Postgres config from repo YAML and export for review."""
-
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,3 @@
-"""Orphan module and dead-route tracking."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

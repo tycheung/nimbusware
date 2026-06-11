@@ -1,5 +1,3 @@
-"""Catalog loader defensive paths composite."""
-
 from __future__ import annotations
 
 from pathlib import Path

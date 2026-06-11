@@ -1,5 +1,3 @@
-"""On-disk scraper response artifact helpers."""
-
 from __future__ import annotations
 
 import fnmatch

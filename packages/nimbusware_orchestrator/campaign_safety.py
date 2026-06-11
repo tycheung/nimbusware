@@ -1,5 +1,3 @@
-"""Campaign budgets, rate limits, and pressure deferral."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

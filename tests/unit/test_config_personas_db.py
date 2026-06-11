@@ -1,5 +1,3 @@
-"""Persona API + orchestrator paths in Postgres config mode (in-memory store)."""
-
 from __future__ import annotations
 
 import os

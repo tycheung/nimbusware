@@ -1,5 +1,3 @@
-"""agent-evaluator probation→promoted auto path + timeline metadata."""
-
 from __future__ import annotations
 
 import shutil

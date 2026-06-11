@@ -1,5 +1,3 @@
-"""Pydantic models used across orchestration services."""
-
 from .events import (
     DEFAULT_FINDING_FIX_STRICTNESS,
     FINDING_FIX_STRICTNESS_CONTEXT_KEY,

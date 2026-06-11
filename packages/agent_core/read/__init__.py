@@ -1,5 +1,3 @@
-"""Event-row read helpers shared by orchestrator and projections."""
-
 from agent_core.read.campaign import (
     apply_slice_outcomes,
     backlog_from_events,

@@ -1,5 +1,3 @@
-"""Live orchestration critic matrix from gate + stage events."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping

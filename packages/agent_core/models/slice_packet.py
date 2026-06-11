@@ -1,5 +1,3 @@
-"""Bounded context passed between Nimbusware roles for one micro-slice."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel

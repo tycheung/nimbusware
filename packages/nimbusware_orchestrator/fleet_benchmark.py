@@ -1,5 +1,3 @@
-"""pytest-benchmark helpers for fleet preflight aggregation."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,5 +1,3 @@
-"""Memory retrieval with optional FAISS acceleration."""
-
 from __future__ import annotations
 
 import math

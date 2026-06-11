@@ -1,5 +1,3 @@
-"""Composite contract tests for critique_routing."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Guard: researcher stages must not pass raw business_prompt into LLM-bound summaries."""
-
 from __future__ import annotations
 
 import ast

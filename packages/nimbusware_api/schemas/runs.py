@@ -1,5 +1,3 @@
-"""Typed JSON shapes for run list/detail."""
-
 from __future__ import annotations
 
 from typing import Any, Literal

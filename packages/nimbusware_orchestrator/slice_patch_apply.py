@@ -1,5 +1,3 @@
-"""Apply LLM-proposed slice patches only within plan allowlist."""
-
 from __future__ import annotations
 
 import os

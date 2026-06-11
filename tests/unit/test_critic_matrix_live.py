@@ -1,5 +1,3 @@
-"""Live orchestration critic matrix."""
-
 from __future__ import annotations
 
 from nimbusware_orchestrator.critic_matrix_live import (

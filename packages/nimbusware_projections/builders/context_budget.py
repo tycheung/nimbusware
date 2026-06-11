@@ -1,5 +1,3 @@
-"""Advisory run context budget estimates for Maker and API."""
-
 from __future__ import annotations
 
 from typing import Any, Literal

@@ -1,5 +1,3 @@
-"""Maker git commit read model from run events."""
-
 from __future__ import annotations
 
 from agent_core.models import EventType

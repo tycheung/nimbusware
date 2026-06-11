@@ -1,5 +1,3 @@
-"""Event append and projection read path on Postgres."""
-
 from __future__ import annotations
 
 import os

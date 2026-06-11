@@ -1,5 +1,3 @@
-"""Guards against gutted facade modules after unsafe auto-fixes."""
-
 from __future__ import annotations
 
 from pathlib import Path

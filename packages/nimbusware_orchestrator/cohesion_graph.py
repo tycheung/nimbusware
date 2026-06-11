@@ -1,5 +1,3 @@
-"""Call-chain cohesion scoring for module move proposals."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

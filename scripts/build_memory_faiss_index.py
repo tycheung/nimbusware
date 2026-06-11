@@ -48,8 +48,8 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _build_arg_parser().parse_args(argv)
     repo = args.repo_root.resolve()
-    from nimbusware_memory.manifest import default_memory_index_dir
     from nimbusware_memory.faiss_index import build_memory_faiss_index, memory_faiss_index_ready
+    from nimbusware_memory.manifest import default_memory_index_dir
     from nimbusware_memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
 
     out_dir = (args.out_dir or default_memory_index_dir(repo)).resolve()

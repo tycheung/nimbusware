@@ -1,5 +1,3 @@
-"""nimbusware_hw catalog_sync normalize, validate, merge."""
-
 from __future__ import annotations
 
 import json

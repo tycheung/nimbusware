@@ -1,5 +1,3 @@
-"""B2 promotion: escalation policy breadth metrics."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""AST-hash similarity clusters for deduplication."""
-
 from __future__ import annotations
 
 import ast

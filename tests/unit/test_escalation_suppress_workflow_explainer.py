@@ -1,5 +1,3 @@
-"""Escalation suppress workflow explainer coverage."""
-
 from __future__ import annotations
 
 import pytest

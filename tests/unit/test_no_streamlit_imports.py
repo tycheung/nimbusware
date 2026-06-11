@@ -1,5 +1,3 @@
-"""Guard: production packages must not import Streamlit (web-only operator UIs)."""
-
 from __future__ import annotations
 
 import ast

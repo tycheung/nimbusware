@@ -1,5 +1,3 @@
-"""Enterprise IAM scope wiring on Postgres."""
-
 from __future__ import annotations
 
 import os

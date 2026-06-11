@@ -1,5 +1,3 @@
-"""Console run escalated display helper."""
-
 from __future__ import annotations
 
 import json

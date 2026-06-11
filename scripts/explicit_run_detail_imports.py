@@ -1,5 +1,3 @@
-"""Build explicit re-exports for run_detail import barrels."""
-
 from __future__ import annotations
 
 import ast

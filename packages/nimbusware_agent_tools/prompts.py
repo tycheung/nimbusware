@@ -1,5 +1,3 @@
-"""Load stable agent implement prompts from config."""
-
 from __future__ import annotations
 
 from pathlib import Path

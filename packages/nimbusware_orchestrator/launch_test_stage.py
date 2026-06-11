@@ -1,5 +1,3 @@
-"""Launch-test writer/critic stage executor."""
-
 from __future__ import annotations
 
 import os

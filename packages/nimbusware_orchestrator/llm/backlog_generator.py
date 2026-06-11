@@ -1,5 +1,3 @@
-"""LLM-backed delivery backlog generation."""
-
 from __future__ import annotations
 
 import json

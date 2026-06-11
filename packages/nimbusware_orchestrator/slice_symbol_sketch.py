@@ -1,5 +1,3 @@
-"""AST symbol sketch for slice target paths (LSP-assisted plan v1)."""
-
 from __future__ import annotations
 
 import ast

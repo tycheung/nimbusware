@@ -1,5 +1,3 @@
-"""Build capped repo tree + import-graph excerpts for slice context packets."""
-
 from __future__ import annotations
 
 import ast

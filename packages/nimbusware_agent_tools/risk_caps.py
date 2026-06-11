@@ -1,5 +1,3 @@
-"""Per-run agent tool limits (write/edit byte caps)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

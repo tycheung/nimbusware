@@ -1,5 +1,3 @@
-"""Micro-slice planning, diff budgets, and timeline helpers."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

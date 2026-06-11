@@ -1,5 +1,3 @@
-"""PZ-8: Phase 3 critic stages enabled on nimbusware_production."""
-
 from __future__ import annotations
 
 import os

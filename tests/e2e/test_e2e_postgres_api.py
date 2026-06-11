@@ -1,5 +1,3 @@
-"""E2E API path with Postgres-backed event store."""
-
 from __future__ import annotations
 
 import os

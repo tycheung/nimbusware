@@ -1,5 +1,3 @@
-"""Simplification metrics and complexity index."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

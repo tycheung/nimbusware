@@ -1,5 +1,3 @@
-"""Module-level helpers shared across pipeline mixins."""
-
 from __future__ import annotations
 
 import asyncio

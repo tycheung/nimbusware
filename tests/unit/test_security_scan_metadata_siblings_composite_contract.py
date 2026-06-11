@@ -1,5 +1,3 @@
-"""Security-scan metadata sibling helpers composite."""
-
 from __future__ import annotations
 
 import json

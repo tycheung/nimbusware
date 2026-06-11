@@ -1,5 +1,3 @@
-"""Campaign-level context compaction for long multi-slice runs."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -138,8 +136,7 @@ def compact_campaign_context(
     )
     tokens_before = estimate_tokens(
         "\n\n".join(
-            str(mapping_or_empty(r.get("metadata")).get("handoff_summary") or "")
-            for r in handoffs
+            str(mapping_or_empty(r.get("metadata")).get("handoff_summary") or "") for r in handoffs
         ),
     )
     compact_summary = handoff_markdown_capped(merged)

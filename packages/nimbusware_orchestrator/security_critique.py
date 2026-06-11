@@ -1,5 +1,3 @@
-"""Security Critic stage after writer verify."""
-
 from __future__ import annotations
 
 import json

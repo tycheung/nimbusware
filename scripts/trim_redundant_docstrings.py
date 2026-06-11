@@ -74,7 +74,17 @@ def _should_drop(doc: str) -> bool:
         return True
     if "\n" in stripped:
         return False
-    return len(stripped) > 120
+    if len(stripped) > 120:
+        return True
+    if (
+        head.endswith(".")
+        and "``" not in head
+        and " — " not in head
+        and len(head.split()) <= 12
+        and head.count(".") == 1
+    ):
+        return True
+    return False
 
 
 def _is_contract_test(path: Path) -> bool:
@@ -120,7 +130,10 @@ def _strip_contract_test_docstrings(path: Path) -> bool:
 
 
 def _process(path: Path) -> bool:
-    if _rel(path) in _SKIP_REL:
+    rel = _rel(path)
+    if rel in _SKIP_REL:
+        return False
+    if rel.startswith("tests/fixtures/"):
         return False
     if "_archive" in path.parts:
         return False

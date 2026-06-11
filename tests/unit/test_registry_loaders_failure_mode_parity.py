@@ -1,5 +1,3 @@
-"""RoleRegistry loader failure-mode + contract parity."""
-
 from __future__ import annotations
 
 import hashlib

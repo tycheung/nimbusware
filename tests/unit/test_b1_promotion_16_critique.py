@@ -1,5 +1,3 @@
-"""B1 promotion: default-on universal critique on production profile."""
-
 from __future__ import annotations
 
 from pathlib import Path

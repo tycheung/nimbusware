@@ -1,5 +1,3 @@
-"""Micro-slice planning and budgets."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Replace llm critique star imports with explicit common imports."""
-
 from __future__ import annotations
 
 import ast

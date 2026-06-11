@@ -1,5 +1,3 @@
-"""workflow YAML can opt in to self_refinement stage marker."""
-
 from __future__ import annotations
 
 from pathlib import Path

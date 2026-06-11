@@ -1,5 +1,3 @@
-"""Build capped SliceContextPacket for role handoffs."""
-
 from __future__ import annotations
 
 from pathlib import Path

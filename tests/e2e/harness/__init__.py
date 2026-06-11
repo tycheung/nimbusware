@@ -1,5 +1,3 @@
-"""Shared L1 journey test helpers."""
-
 from .env import apply_e2e_unit_profile
 from .journey import JourneyClient
 from .timeline import assert_timeline_golden, load_golden_timeline

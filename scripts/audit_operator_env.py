@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Audit operator env var reads under packages/ against settings catalog."""
 
 from __future__ import annotations
 

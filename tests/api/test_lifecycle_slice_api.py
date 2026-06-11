@@ -1,5 +1,3 @@
-"""POST /v1/runs/{id}/lifecycle/slice API."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Insert indexed memory chunks into an active run timeline."""
-
 from __future__ import annotations
 
 from typing import Any, cast

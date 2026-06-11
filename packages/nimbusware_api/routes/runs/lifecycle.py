@@ -1,5 +1,3 @@
-"""Run lifecycle transition handlers."""
-
 from __future__ import annotations
 
 import os

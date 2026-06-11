@@ -1,5 +1,3 @@
-"""Campaign and delivery-backlog helpers from event rows."""
-
 from __future__ import annotations
 
 from typing import Any

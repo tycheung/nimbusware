@@ -1,5 +1,3 @@
-"""Central escalation emit helpers with policy breadth metadata."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

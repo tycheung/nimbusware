@@ -1,5 +1,3 @@
-"""Aggregate agent-evaluator scores across recent runs for probation automation."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

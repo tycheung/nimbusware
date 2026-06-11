@@ -1,5 +1,3 @@
-"""Build deterministic cross-slice handoff summaries."""
-
 from __future__ import annotations
 
 from typing import Any

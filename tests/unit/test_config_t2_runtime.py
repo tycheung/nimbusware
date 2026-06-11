@@ -1,5 +1,3 @@
-"""Runtime loaders use materialized T2 config."""
-
 from __future__ import annotations
 
 from pathlib import Path

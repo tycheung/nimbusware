@@ -1,5 +1,3 @@
-"""Detect JS framework pack from workspace markers."""
-
 from __future__ import annotations
 
 import json

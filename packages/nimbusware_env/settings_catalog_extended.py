@@ -1,5 +1,3 @@
-"""Extended catalog entries (UC overrides, install, internal)."""
-
 from __future__ import annotations
 
 from nimbusware_env.settings_catalog import (

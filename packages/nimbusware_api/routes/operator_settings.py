@@ -1,5 +1,3 @@
-"""Operator settings catalog and scoped PATCH endpoints."""
-
 from __future__ import annotations
 
 from typing import Any

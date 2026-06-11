@@ -49,8 +49,6 @@ def metadata_theater_lines(row: dict[str, Any], base: dict[str, Any]) -> list[di
 
 
 def governor_headline_from_run_created(meta: dict[str, Any]) -> str | None:
-    from agent_core.mapping import mapping_or_empty
-
     gov = mapping_or_empty(meta.get("resource_governor"))
     if not gov:
         return None

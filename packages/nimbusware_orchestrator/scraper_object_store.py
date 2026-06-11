@@ -1,5 +1,3 @@
-"""S3-compatible / file:// object store for scraper artifacts."""
-
 from __future__ import annotations
 
 import os

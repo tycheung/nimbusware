@@ -1,5 +1,3 @@
-"""Nimbusware extension points (personas, bundles, escalation)."""
-
 from nimbusware_extensions.catalog import (
     BundleCatalog,
     assert_workflow_bundle_map_ids_resolve,

@@ -1,5 +1,3 @@
-"""Pydantic models for bundle catalog HTTP responses."""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

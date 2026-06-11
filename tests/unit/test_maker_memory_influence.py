@@ -1,5 +1,3 @@
-"""Maker memory influence panel helpers."""
-
 from __future__ import annotations
 
 from nimbusware_maker.memory_influence_display import format_retrieval_rows

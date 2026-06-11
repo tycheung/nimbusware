@@ -1,5 +1,3 @@
-"""Network/resilience static scan + SQL budget."""
-
 from __future__ import annotations
 
 import os

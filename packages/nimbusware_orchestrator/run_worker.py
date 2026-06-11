@@ -1,5 +1,3 @@
-"""Run-dispatch worker loop for queued verify tasks."""
-
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,3 @@
-"""Replace pipeline mixin star imports with explicit _helpers imports."""
-
 from __future__ import annotations
 
 import ast

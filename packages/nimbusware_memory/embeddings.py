@@ -1,5 +1,3 @@
-"""Embedding helpers for memory chunks."""
-
 from __future__ import annotations
 
 import hashlib

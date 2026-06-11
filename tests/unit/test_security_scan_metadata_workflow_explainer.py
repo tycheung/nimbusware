@@ -1,5 +1,3 @@
-"""Security scan metadata workflow explainer coverage."""
-
 from __future__ import annotations
 
 import json

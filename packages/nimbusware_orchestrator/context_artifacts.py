@@ -1,5 +1,3 @@
-"""Project-scoped context artifacts (in-memory + optional file cache)."""
-
 from __future__ import annotations
 
 import json

@@ -1,5 +1,3 @@
-"""Target adapter file generation for Integration Adapter Writer live path."""
-
 from __future__ import annotations
 
 import json

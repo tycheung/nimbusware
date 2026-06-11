@@ -1,5 +1,3 @@
-"""Cross-slice handoff summary carried between micro-slices."""
-
 from __future__ import annotations
 
 import re

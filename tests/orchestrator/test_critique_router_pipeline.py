@@ -1,5 +1,3 @@
-"""critique pairings drive plan stub + create_run taxonomy validation."""
-
 from __future__ import annotations
 
 import pytest

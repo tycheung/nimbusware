@@ -1,5 +1,3 @@
-"""Timeline persona_assignment read-model (P1-b)."""
-
 from __future__ import annotations
 
 from pathlib import Path

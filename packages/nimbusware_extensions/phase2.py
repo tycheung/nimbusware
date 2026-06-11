@@ -1,5 +1,3 @@
-"""Extension building blocks: personas, bundles, escalation."""
-
 from __future__ import annotations
 
 from pathlib import Path

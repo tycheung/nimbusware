@@ -1,5 +1,3 @@
-"""Select the next pending backlog slice for campaign execution."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

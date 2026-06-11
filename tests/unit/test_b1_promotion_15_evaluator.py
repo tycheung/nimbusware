@@ -1,5 +1,3 @@
-"""B1 promotion: production LLM evaluator on workflow YAML."""
-
 from __future__ import annotations
 
 from pathlib import Path

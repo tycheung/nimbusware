@@ -1,5 +1,3 @@
-"""LLM-backed micro-slice planning and critique."""
-
 from __future__ import annotations
 
 import json

@@ -1,5 +1,3 @@
-"""Golden fixtures for research + stitch pipeline (no live network)."""
-
 from __future__ import annotations
 
 import json

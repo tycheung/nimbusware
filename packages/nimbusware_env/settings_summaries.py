@@ -1,5 +1,3 @@
-"""Read-only env summaries for Admin Console workflow explainers."""
-
 from __future__ import annotations
 
 from nimbusware_env.env_flags import env_str, env_tri_state

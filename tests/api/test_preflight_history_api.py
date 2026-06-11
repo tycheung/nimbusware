@@ -1,5 +1,3 @@
-"""GET /v1/preflight-history fleet aggregation."""
-
 from __future__ import annotations
 
 import os

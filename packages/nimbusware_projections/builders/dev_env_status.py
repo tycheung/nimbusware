@@ -1,5 +1,3 @@
-"""Project dev environment status from event timeline."""
-
 from __future__ import annotations
 
 from typing import Any

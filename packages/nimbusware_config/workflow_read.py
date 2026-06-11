@@ -1,5 +1,3 @@
-"""Pure workflow YAML read helpers for UI explainers (facade over orchestrator parsers)."""
-
 from __future__ import annotations
 
 from nimbusware_orchestrator.merge import load_yaml

@@ -1,5 +1,3 @@
-"""Agent evaluator stage marker (env or workflow YAML)."""
-
 from __future__ import annotations
 
 from typing import Any

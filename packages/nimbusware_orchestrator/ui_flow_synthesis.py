@@ -1,5 +1,3 @@
-"""Advisory UI flow synthesis from ISM interactive surfaces."""
-
 from __future__ import annotations
 
 from pathlib import Path

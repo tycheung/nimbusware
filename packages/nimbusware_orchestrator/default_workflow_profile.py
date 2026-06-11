@@ -1,5 +1,3 @@
-"""Default workflow profile for API ingress and orchestrator."""
-
 from __future__ import annotations
 
 from nimbusware_env.env_flags import nimbusware_workflow_profile
