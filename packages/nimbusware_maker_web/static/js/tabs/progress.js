@@ -154,6 +154,7 @@ export async function mountProgress(root) {
       </section>
       <section id="learnings-ribbon" class="panel" data-testid="maker-learnings-ribbon">
         <h4>Learnings</h4>
+        <p id="stitch-suggestion" class="hint" hidden data-testid="maker-stitch-suggestion"></p>
         <ul id="learnings-list" data-testid="maker-learnings-list"></ul>
       </section>
       <section id="variant-ribbon" class="panel" data-testid="maker-variant-ribbon">
@@ -780,10 +781,21 @@ export async function mountProgress(root) {
 
   async function refreshLearningsPanel(runId) {
     const list = document.getElementById("learnings-list");
+    const stitchBanner = document.getElementById("stitch-suggestion");
     if (!list) return;
     try {
       const body = await apiJson(`/runs/${encodeURIComponent(runId)}/learnings`);
       const items = body.learnings || [];
+      if (stitchBanner) {
+        const sug = body.stitch_suggestion;
+        if (sug?.candidate_id) {
+          stitchBanner.hidden = false;
+          stitchBanner.textContent = `Repeated failure (${sug.fingerprint || "fingerprint"}) — consider stitch candidate ${sug.candidate_id}`;
+        } else {
+          stitchBanner.hidden = true;
+          stitchBanner.textContent = "";
+        }
+      }
       list.replaceChildren();
       if (!items.length) {
         const empty = document.createElement("li");
