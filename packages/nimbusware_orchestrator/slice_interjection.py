@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 from agent_core.models import EventType, StagePassedEvent, StageStartedEvent
 from agent_core.models.events_payloads import StagePassedPayload, StageStartedPayload
 from nimbusware_orchestrator.interjection_queue import InterjectionItem, queue_for_run
+from nimbusware_orchestrator.interjection_slo import INTERJECTION_ENQUEUED_STAGE
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
 
@@ -32,6 +33,33 @@ class InterjectionCycle:
             for i in self.items
             if i.message.strip() and not (i.patch_from_chat or i.steer_from_chat or i.skip_slice)
         ]
+
+
+def emit_interjection_enqueued(
+    store: Any,
+    run_id: UUID | str,
+    item: InterjectionItem,
+) -> None:
+    rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=rid,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={
+                "interjection": {
+                    "message": item.message[:500],
+                    "priority": item.priority.value,
+                    "patch_from_chat": item.patch_from_chat,
+                    "steer_from_chat": item.steer_from_chat,
+                    "skip_slice": item.skip_slice,
+                    "build_from_chat": item.build_from_chat,
+                },
+            },
+            payload=StageStartedPayload(stage_name=INTERJECTION_ENQUEUED_STAGE, attempt=1),
+        ),
+    )
 
 
 def emit_interjection_drained(

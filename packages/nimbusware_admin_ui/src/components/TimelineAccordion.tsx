@@ -8,6 +8,7 @@ const SECTIONS: { key: string; label: string; timelineField?: string }[] = [
   { key: "critic_matrix_live", label: "Critic matrix (live)", timelineField: "critic_matrix_live" },
   { key: "memory_retrieval", label: "Memory retrieval", timelineField: "memory_retrieval" },
   { key: "preflight", label: "Preflight", timelineField: "preflight" },
+  { key: "interjection", label: "Interjection SLO" },
 ];
 
 type Timeline = Record<string, unknown>;
@@ -46,8 +47,13 @@ export function TimelineAccordion({
     <div class="timeline-accordion">
       {SECTIONS.map((sec) => {
         const payload = sec.timelineField ? timeline[sec.timelineField] : null;
-        const hasData = sec.key === "events" ? (timeline.events as unknown[])?.length : payload != null;
-        if (!hasData && sec.key !== "events") return null;
+        const hasData =
+          sec.key === "events"
+            ? (timeline.events as unknown[])?.length
+            : sec.key === "interjection"
+              ? true
+              : payload != null;
+        if (!hasData && sec.key !== "events" && sec.key !== "interjection") return null;
         return (
           <details key={sec.key} open={open === sec.key}>
             <summary onClick={(e) => { e.preventDefault(); void toggle(sec.key); }}>

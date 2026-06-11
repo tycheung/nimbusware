@@ -10,4 +10,9 @@ test("timeline explain endpoint returns markdown", async ({ request }) => {
   expect(res.ok()).toBeTruthy();
   const body = await res.json();
   expect(body.markdown).toBeTruthy();
+
+  const inj = await request.get(`/v1/runs/${runId}/timeline/interjection/explain`);
+  expect(inj.ok()).toBeTruthy();
+  const injBody = await inj.json();
+  expect(injBody.markdown).toMatch(/Interjection SLO/i);
 });

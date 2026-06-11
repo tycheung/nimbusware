@@ -10,6 +10,7 @@ from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
+from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
 
 router = APIRouter()
 
@@ -63,9 +64,10 @@ def post_interjection_enqueue(
         else InterjectionPriority.NEXT
     )
     q = queue_for_run(str(run_id))
-    q.enqueue(
+    item = q.enqueue(
         body.message,
         priority=priority,
         force_break=body.force_break,
     )
+    emit_interjection_enqueued(store, run_id, item)
     return InterjectionQueueResponse(run_id=str(run_id), queue=q.to_dict())

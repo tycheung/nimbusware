@@ -11,6 +11,11 @@ from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_console.integrator_gate._helpers import integrator_gate_from_timeline
 from nimbusware_console.integrator_gate.latest_delta.exports import integrator_gate_summary_rows
+from nimbusware_orchestrator.interjection_queue import queue_for_run
+from nimbusware_orchestrator.interjection_slo import (
+    interjection_slo_markdown,
+    interjection_slo_summary,
+)
 from nimbusware_store.protocol import serialized_event_from_row
 
 router: _APIRouter = APIRouter()
@@ -45,6 +50,14 @@ def _markdown_for_section(section: str, timeline_body: dict[str, Any]) -> str:
     if key == "events":
         n = len(timeline_body.get("events") or [])
         return f"**{n}** persisted events in the append-only store."
+    if key == "interjection":
+        events = timeline_body.get("events") or []
+        run_id = str(timeline_body.get("run_id") or "")
+        pending = 0
+        if run_id:
+            pending = int(queue_for_run(run_id).to_dict().get("count") or 0)
+        summary = interjection_slo_summary(events, pending_queue_count=pending)
+        return interjection_slo_markdown(summary, pending_queue_count=pending)
     return (
         f"Timeline section **{section}**. "
         f"Expand explainers in `timeline_explain.py` as Admin panels need them."
