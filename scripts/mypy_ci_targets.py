@@ -107,7 +107,6 @@ _TRANCHE_F = (
     "packages/nimbusware_api/routes/chat.py",
     "packages/nimbusware_api/routes/chat_handlers.py",
     "packages/nimbusware_api/routes/chat_start.py",
-    "packages/nimbusware_console/explainer_core/workflow_profile.py",
 )
 
 _TRANCHE_MCP = ("packages/nimbusware_mcp",)
