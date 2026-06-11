@@ -45,16 +45,21 @@ def _panel_enabled(
     return default_enabled
 
 
+def _yaml_panel(root: dict[str, Any], key: str) -> dict[str, object] | None:
+    if key not in root:
+        return None
+    return mapping_or_empty(root.get(key))
+
+
 def _implementation_panel_flags(
     block: dict[str, object] | None,
     *,
     default_enabled: bool,
 ) -> tuple[bool, bool]:
     mapping = mapping_or_empty(block)
-    present = block is not None
-    impl_llm = _leaf_bool(mapping, "llm") if present else False
-    impl_stub = _leaf_bool(mapping, "stub") if present else False
-    if default_enabled and present and not impl_llm and not impl_stub:
+    impl_llm = _leaf_bool(mapping, "llm") if isinstance(block, dict) else False
+    impl_stub = _leaf_bool(mapping, "stub") if isinstance(block, dict) else False
+    if default_enabled and isinstance(block, dict) and not impl_llm and not impl_stub:
         impl_stub = True
     return impl_llm, impl_stub
 
@@ -111,11 +116,11 @@ def parse_universal_critique_workflow_block(
     except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
         return UniversalCritiqueWorkflowBlock()
     root_d = mapping_or_empty(raw.get("universal_critique"))
-    impl_d = mapping_or_empty(root_d.get("implementation"))
-    tw_d = mapping_or_empty(root_d.get("test_writer"))
-    pll_d = mapping_or_empty(root_d.get("planner"))
-    fw_d = mapping_or_empty(root_d.get("frontend_writer"))
-    mi_d = mapping_or_empty(root_d.get("module_integrator"))
+    impl_d = _yaml_panel(root_d, "implementation") if root_d else None
+    tw_d = _yaml_panel(root_d, "test_writer") if root_d else None
+    pll_d = _yaml_panel(root_d, "planner") if root_d else None
+    fw_d = _yaml_panel(root_d, "frontend_writer") if root_d else None
+    mi_d = _yaml_panel(root_d, "module_integrator") if root_d else None
 
     default_enabled = _leaf_bool(root_d, "default_enabled") if root_d else False
     unanimous_gate_enforce = (
@@ -130,9 +135,15 @@ def parse_universal_critique_workflow_block(
         default_enabled=default_enabled,
         impl_llm=impl_llm,
         impl_stub=impl_stub,
-        impl_stage_failed_on_gate_fail=_leaf_bool(impl_d, "stage_failed_on_gate_fail"),
-        impl_emit_finding_on_gate_fail=_leaf_bool(impl_d, "emit_finding_on_gate_fail"),
-        impl_hard_block_on_gate_fail=_leaf_bool(impl_d, "hard_block_on_gate_fail"),
+        impl_stage_failed_on_gate_fail=_leaf_bool(mapping_or_empty(impl_d), "stage_failed_on_gate_fail"),
+        impl_emit_finding_on_gate_fail=_leaf_bool(
+            mapping_or_empty(impl_d),
+            "emit_finding_on_gate_fail",
+        ),
+        impl_hard_block_on_gate_fail=_leaf_bool(
+            mapping_or_empty(impl_d),
+            "hard_block_on_gate_fail",
+        ),
         tw_enabled=_panel_enabled(tw_d, default_enabled=default_enabled),
         tw_llm=_leaf_bool(tw_d, "llm"),
         tw_stub=_leaf_bool(tw_d, "stub"),
