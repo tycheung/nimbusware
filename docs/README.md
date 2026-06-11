@@ -20,7 +20,8 @@
 | [deploy/README.md](deploy/README.md) | Ops | Docker Compose, CI jobs, secrets |
 | [deploy/enterprise-integrator-runbook.md](deploy/enterprise-integrator-runbook.md) | Enterprise ops | Integrator gate, live adapter probes, external CI bridge |
 | [deploy/production-fleet-redis-secrets.md](deploy/production-fleet-redis-secrets.md) | Enterprise ops | Multi-broker Redis (`NIMBUSWARE_REDIS_FLEET_URLS`) in Helm/K8s |
-| [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO |
+| [deploy/oidc.md](deploy/oidc.md) | Enterprise ops | Admin OIDC SSO + group → role mapping |
+| [deploy/replay-from-runbook.md](deploy/replay-from-runbook.md) | Operators | Replay-from checkpoint (Admin wizard + API) |
 | [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Operators | Bundle catalog candidate promotion |
 | [enterprise-research-index.md](enterprise-research-index.md) | Enterprise ops | Tenant research index + egress audit |
 | [enterprise-buyer.md](enterprise-buyer.md) | Buyers / security | Enterprise compliance checklist |

@@ -38,8 +38,10 @@ export function MetricsPage() {
     <section>
       <h2>Competitive metrics</h2>
       <p class="muted">
-        Snapshot over recent runs (not a historical time series). Regenerated on each load.
-        Blocking CI security tools: bandit and pip-audit (see repo docs/security-quality-gates.md).
+        Snapshot over recent runs (not a historical time series). Regenerated on each load. After
+        Admin run detail <strong>Policy compare</strong>, use slice gate pass rate here as an outcome
+        diff proxy before/after critic pack or workflow changes. Blocking CI: bandit and pip-audit
+        (see docs/security-quality-gates.md).
       </p>
       {error ? <p class="error">{error}</p> : null}
       {body ? (

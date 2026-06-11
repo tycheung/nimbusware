@@ -848,6 +848,14 @@ def extended_defs() -> tuple[SettingDef, ...]:
             default="0",
         ),
         _internal(
+            "NIMBUSWARE_OIDC_ADMIN_GROUPS",
+            "Comma-separated IdP groups granting Admin console write access",
+        ),
+        _internal(
+            "NIMBUSWARE_OIDC_MOCK_GROUPS",
+            "Mock OIDC groups claim for dev SSO (default nimbusware-admins)",
+        ),
+        _internal(
             "NIMBUSWARE_UI_CONTROLLER_ENABLED", "Enable UI controller regression", kind=_BOOL
         ),
         _internal(
