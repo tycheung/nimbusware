@@ -1,5 +1,3 @@
-"""Campaign entity helpers (campaign_id == run_id initially)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

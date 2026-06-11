@@ -10,10 +10,10 @@ from nimbusware_orchestrator._pipeline._helpers import (
     emit_stub_network_resilience_critique_panel,
     emit_stub_performance_critique_panel,
     emit_stub_security_critique_panel,
-    gate_fail_for_stage,
     execute_network_resilience_critique_llm,
     execute_performance_critique_llm,
     execute_security_critique_llm,
+    gate_fail_for_stage,
     network_resilience_critique_effective,
     network_resilience_critique_llm_branch_effective,
     ollama_runtime_from_host,
@@ -52,7 +52,6 @@ class OptionalCritiqueMixin:
         workflow_profile: str | None,
         sg_snapshot: dict[str, Any] | None,
     ) -> bool:
-        """Return True when security critique gate last verdict is FAIL (hard-block hint)."""
         block = parse_security_critique_workflow_block(
             self._repo_root,
             workflow_profile,

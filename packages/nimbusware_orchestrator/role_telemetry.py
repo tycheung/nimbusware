@@ -1,5 +1,3 @@
-"""Aggregate token/latency hints from event metadata per role."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
