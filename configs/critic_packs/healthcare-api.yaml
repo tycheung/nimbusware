@@ -1,0 +1,4 @@
+id: healthcare-api
+domain: healthcare
+blocking_authority: advisory
+description: Healthcare API critic pack — PHI handling, access logging, minimum-necessary data exposure

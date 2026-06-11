@@ -1,0 +1,4 @@
+id: fintech-api
+domain: fintech
+blocking_authority: advisory
+description: Fintech API critic pack — PCI-aware defaults, idempotency keys, audit logging hints
