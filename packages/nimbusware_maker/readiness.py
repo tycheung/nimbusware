@@ -50,6 +50,8 @@ def _check_repo_root(repo_root: Path) -> dict[str, Any]:
             "status": "fail",
             "message": f"Missing config files: {', '.join(missing)}",
             "repo_root": str(repo_root),
+            "action": "install_guide",
+            "action_label": "View install guide",
         }
     return {
         "status": "ok",
@@ -63,6 +65,8 @@ def _check_database(store: Any) -> dict[str, Any]:
         return {
             "status": "degraded",
             "message": "In-memory event store (dev mode — runs are not durable)",
+            "action": "quick_mode",
+            "action_label": "Use quick mode",
         }
     return {
         "status": "ok",
@@ -107,6 +111,8 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         }
         if primary:
             out["pull_command"] = f"ollama pull {primary}"
+        out["action"] = "start_ollama"
+        out["action_label"] = "Start Ollama"
         return out
 
     names: set[str] = set()
@@ -126,6 +132,8 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
             "primary_model": primary,
             "loaded_models": sorted(names)[:12],
             "pull_command": f"ollama pull {primary}",
+            "action": "pull_model",
+            "action_label": f"Pull {primary}",
         }
 
     return {

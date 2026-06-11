@@ -55,6 +55,7 @@ def test_build_platform_readiness_in_memory_store(
     body = build_platform_readiness(repo_root=repo, store=InMemoryEventStore())
     assert body["status"] in {"degraded", "not_ready", "ready"}
     assert body["checks"]["database"]["status"] == "degraded"
+    assert body["checks"]["database"].get("action") == "quick_mode"
     assert body["checks"]["ollama"]["skipped"] is True
     assert "memory" in body["checks"]
 

@@ -445,6 +445,22 @@ export async function mountChat(root) {
   const saved = sessionStorage.getItem("maker_active_project_id");
   if (saved && sel) sel.value = saved;
 
+  const hashQuery = window.location.hash.includes("?")
+    ? window.location.hash.slice(window.location.hash.indexOf("?") + 1)
+    : "";
+  const intent = new URLSearchParams(hashQuery).get("intent");
+  const workSel = root.querySelector("#chat-work-type");
+  const msgEl = root.querySelector("#chat-message");
+  const INTENT_HINTS = {
+    patch: "Describe the bug or paste a failing test name…",
+    slice: "Describe the feature to add or change…",
+    factory: "Describe the app you want (e.g. todo API with REST endpoints)…",
+  };
+  if (intent && WORK_TYPES.includes(intent) && workSel) {
+    workSel.value = intent;
+    if (msgEl && INTENT_HINTS[intent]) msgEl.placeholder = INTENT_HINTS[intent];
+  }
+
   let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";
   let lastClassification = null;
   let startPending = false;
