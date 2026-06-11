@@ -185,6 +185,14 @@ class MicroSliceMixin:
             events=self._store.list_run_events(str(run_id)),
             compaction_trigger="auto_handoff",
         )
+        from nimbusware_orchestrator.ci_bridge import attach_external_ci_metadata
+
+        attach_external_ci_metadata(
+            meta,
+            run_id=run_id,
+            verdict="PASS" if gate.passed else "FAIL",
+            stage_name="slice.gate",
+        )
         if gate.passed:
             self._store.append(
                 StagePassedEvent(

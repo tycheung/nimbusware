@@ -144,6 +144,26 @@ def _notify_gitlab(
         return {"status": "error", "provider": "gitlab", "reason": str(exc)[:200]}
 
 
+def attach_external_ci_metadata(
+    metadata: dict[str, Any],
+    *,
+    run_id: UUID,
+    verdict: str,
+    stage_name: str,
+    timeline_base_url: str | None = None,
+) -> dict[str, Any]:
+    """Merge ``external_ci`` into gate metadata when a provider posts successfully."""
+    ci_status = notify_gate_decision_external(
+        run_id=run_id,
+        verdict=verdict,
+        stage_name=stage_name,
+        timeline_base_url=timeline_base_url,
+    )
+    if ci_status.get("status") != "skipped":
+        metadata["external_ci"] = ci_status
+    return metadata
+
+
 def notify_gate_decision_external(
     *,
     run_id: UUID,

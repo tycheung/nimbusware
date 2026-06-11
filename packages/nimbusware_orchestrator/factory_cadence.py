@@ -394,6 +394,14 @@ def maybe_run_factory_cadence_pass(
             "details": dict(gates.details),
         },
     }
+    from nimbusware_orchestrator.ci_bridge import attach_external_ci_metadata
+
+    attach_external_ci_metadata(
+        gate_meta,
+        run_id=run_id,
+        verdict="PASS" if gates.passed else "FAIL",
+        stage_name=FACTORY_GATE_STAGE,
+    )
     _emit_factory_stage(store, run_id, stage_name=FACTORY_GATE_STAGE, metadata=gate_meta)
     _emit_factory_stage(store, run_id, stage_name=FACTORY_CADENCE_STAGE, metadata=meta)
 

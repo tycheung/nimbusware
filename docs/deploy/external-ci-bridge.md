@@ -1,12 +1,18 @@
 # External CI bridge (GitHub Checks / GitLab)
 
-Maps Nimbusware **integrator gate** outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py).
+Maps Nimbusware gate outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` / `attach_external_ci_metadata` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py).
 
 ## When it fires
 
-The bridge runs **best-effort** after the integrator stage emits `gate.decision.emitted` (see [`optional_stages_integrator.py`](../../packages/nimbusware_orchestrator/_pipeline/optional_stages_integrator.py)). It does **not** post checks for every slice gate or critic verdict — only the integrator gate path wired today.
+The bridge runs **best-effort** (never raises) after these stages emit:
 
-Other gates remain visible via the Nimbusware timeline and audit export.
+| Stage | Emitter |
+|-------|---------|
+| `bundle_compatibility` (integrator) | [`optional_stages_integrator.py`](../../packages/nimbusware_orchestrator/_pipeline/optional_stages_integrator.py) |
+| `slice.gate` | [`_pipeline/micro_slice.py`](../../packages/nimbusware_orchestrator/_pipeline/micro_slice.py) `record_micro_slice_gate` |
+| `factory.gate` | [`factory_cadence.py`](../../packages/nimbusware_orchestrator/factory_cadence.py) maintenance cadence pass |
+
+Successful posts attach `metadata.external_ci` on the stage event. Other gates remain visible via the Nimbusware timeline and audit export.
 
 ## Provider selection
 
