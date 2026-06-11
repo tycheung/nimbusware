@@ -101,10 +101,10 @@ maker:
     web: true
     notes: Progress blocking findings show Interject fix and Widen in Chat CTAs
   - id: ide_mcp_classify_patch
-    web: true
-    notes: MCP nimbusware_classify_intent + nimbusware_patch / patch_from_selection mirror Chat
+    web: false
+    notes: MCP nimbusware_classify_intent + nimbusware_patch / patch_from_selection mirror Chat (see docs/ide-bridge.md)
   - id: ide_mcp_interject_fork_graph
-    web: true
+    web: false
     notes: MCP interject, chat_graph, chat_fork, chat_select_branch parity with Chat tab
   - id: factory_hero_demos
     web: true
