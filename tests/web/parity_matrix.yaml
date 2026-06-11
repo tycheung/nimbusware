@@ -7,6 +7,12 @@ maker:
     web: true
   - id: home_projects
     web: true
+  - id: home_intent_cards
+    web: true
+    notes: Home tab Fix a bug / Build a feature / Build an app → Chat intent routing
+  - id: readiness_action_ctas
+    web: true
+    notes: Home readiness panel one fix action per red/yellow check
   - id: wizard_creates_run
     web: true
     notes: Wizard Start building links to Build tab
@@ -88,6 +94,12 @@ maker:
     notes: Admin SPA LoginGate (token or enterprise SSO shell)
   - id: git_commit_status
     web: true
+  - id: git_pr_primary_cta
+    web: true
+    notes: Review tab Open pull request + copy branch after gate pass
+  - id: gate_fail_action_cards
+    web: true
+    notes: Progress blocking findings show Interject fix and Widen in Chat CTAs
   - id: slice_prepare
     web: true
   - id: theater_export

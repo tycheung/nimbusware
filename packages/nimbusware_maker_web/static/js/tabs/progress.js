@@ -66,6 +66,31 @@ function renderFindings(findings) {
       steps.textContent = repro;
       li.appendChild(steps);
     }
+    if (BLOCKING_SEVERITIES.has(sev)) {
+      const actions = document.createElement("div");
+      actions.className = "finding-actions actions";
+      const interject = document.createElement("button");
+      interject.type = "button";
+      interject.textContent = "Interject fix";
+      interject.dataset.testid = "maker-finding-action-interject";
+      interject.onclick = () => {
+        const input = document.getElementById("interjection-message");
+        if (input) {
+          input.focus();
+          input.value = `[steer] Address: ${pl.summary || pl.category || "gate failure"}`;
+        }
+      };
+      actions.appendChild(interject);
+      const widen = document.createElement("button");
+      widen.type = "button";
+      widen.textContent = "Widen in Chat";
+      widen.dataset.testid = "maker-finding-action-widen";
+      widen.onclick = () => {
+        window.location.hash = "/chat?intent=slice";
+      };
+      actions.appendChild(widen);
+      li.appendChild(actions);
+    }
     list.appendChild(li);
   }
 }
