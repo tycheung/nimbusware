@@ -660,6 +660,7 @@ def _print_next_steps(
     _log("Web UI (default; requires Admin dist for /v1/admin/app/):")
     _log("  nimbusware-run          # Maker at /v1/maker/app/")
     _log("  nimbusware-run --quick  # in-memory store, stub critics — first-run demo")
+    _log("  Maker Chat (after nimbusware-run): http://127.0.0.1:8765/v1/maker/app/#/chat")
     _log("  nimbusware-admin        # Admin at /v1/admin/app/")
     _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
     _log("Model catalog (optional):")
