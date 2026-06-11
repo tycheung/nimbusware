@@ -49,9 +49,11 @@ def load_fleet_autopilot_policies(repo_root: Path | None = None) -> dict[str, Fl
         if not slug_s:
             continue
         cps_raw = entry.get("required_checkpoints")
-        checkpoints = frozenset(
-            str(c) for c in cps_raw if str(c) in CHECKPOINT_CATALOG
-        ) if isinstance(cps_raw, list) else frozenset()
+        checkpoints = (
+            frozenset(str(c) for c in cps_raw if str(c) in CHECKPOINT_CATALOG)
+            if isinstance(cps_raw, list)
+            else frozenset()
+        )
         out[slug_s] = FleetAutopilotPolicy(
             tenant_slug=slug_s,
             max_autopilot_level=max(0, min(10, int(entry.get("max_autopilot_level") or 10))),

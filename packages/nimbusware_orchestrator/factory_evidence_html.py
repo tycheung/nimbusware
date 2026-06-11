@@ -12,7 +12,7 @@ def render_factory_evidence_html(bundle: dict[str, Any]) -> str:
     fs = mapping_or_empty(bundle.get("factory_status"))
     put = mapping_or_empty(bundle.get("put_e2e"))
     row_html = "".join(
-        f"<tr><th scope=\"row\">{html.escape(str(r.get('dimension') or ''))}</th>"
+        f'<tr><th scope="row">{html.escape(str(r.get("dimension") or ""))}</th>'
         f"<td>{html.escape(str(r.get('value') or '—'))}</td></tr>"
         for r in rows
         if isinstance(r, dict)
