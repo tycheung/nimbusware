@@ -161,10 +161,10 @@ def _research_brief_utilization(by_run: dict[str, list[dict[str, Any]]]) -> dict
     }
 
 
-def _load_swe_bench_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+def _load_benchmark_snapshot(repo_root: Path | None, filename: str) -> dict[str, Any] | None:
     if repo_root is None:
         return None
-    path = repo_root / "benchmarks" / "latest_swe_bench.json"
+    path = repo_root / "benchmarks" / filename
     if not path.is_file():
         return None
     try:
@@ -172,6 +172,14 @@ def _load_swe_bench_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
     except (OSError, json.JSONDecodeError):
         return None
     return data if isinstance(data, dict) else None
+
+
+def _load_swe_bench_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_swe_bench.json")
+
+
+def _load_factory_weekly_snapshot(repo_root: Path | None) -> dict[str, Any] | None:
+    return _load_benchmark_snapshot(repo_root, "latest_factory_weekly.json")
 
 
 def build_competitive_summary(
@@ -197,10 +205,12 @@ def build_competitive_summary(
             "stitch_transplant": stitch_stats,
             "research_brief_utilization": _research_brief_utilization(by_run),
             "swe_bench": _load_swe_bench_snapshot(repo_root),
+            "factory_weekly": _load_factory_weekly_snapshot(repo_root),
         },
         "sources": {
             "event_store": "recent_run_events",
             "stitch": "stitch.applied + downstream gate/run terminal",
             "swe_bench": "benchmarks/latest_swe_bench.json (optional, local)",
+            "factory_weekly": "benchmarks/latest_factory_weekly.json (optional, local)",
         },
     }

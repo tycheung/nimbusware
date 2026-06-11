@@ -151,3 +151,13 @@ def test_competitive_summary_includes_swe_bench_json(tmp_path: Path) -> None:
     store = InMemoryEventStore()
     body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
     assert body["metrics"]["swe_bench"] == snap
+
+
+def test_competitive_summary_includes_factory_weekly_json(tmp_path: Path) -> None:
+    bench_dir = tmp_path / "benchmarks"
+    bench_dir.mkdir()
+    snap = {"passed": True, "entry_count": 3, "pass_rate": 1.0}
+    (bench_dir / "latest_factory_weekly.json").write_text(json.dumps(snap), encoding="utf-8")
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
+    assert body["metrics"]["factory_weekly"] == snap

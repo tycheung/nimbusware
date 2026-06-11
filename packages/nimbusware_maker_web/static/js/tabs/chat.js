@@ -448,7 +448,9 @@ export async function mountChat(root) {
   const hashQuery = window.location.hash.includes("?")
     ? window.location.hash.slice(window.location.hash.indexOf("?") + 1)
     : "";
-  const intent = new URLSearchParams(hashQuery).get("intent");
+  const hashParams = new URLSearchParams(hashQuery);
+  const intent = hashParams.get("intent");
+  const deepPrompt = hashParams.get("prompt");
   const workSel = root.querySelector("#chat-work-type");
   const msgEl = root.querySelector("#chat-message");
   const INTENT_HINTS = {
@@ -459,6 +461,9 @@ export async function mountChat(root) {
   if (intent && WORK_TYPES.includes(intent) && workSel) {
     workSel.value = intent;
     if (msgEl && INTENT_HINTS[intent]) msgEl.placeholder = INTENT_HINTS[intent];
+  }
+  if (msgEl && deepPrompt && !msgEl.value.trim()) {
+    msgEl.value = deepPrompt;
   }
 
   let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";

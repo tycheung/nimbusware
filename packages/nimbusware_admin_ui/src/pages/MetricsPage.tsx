@@ -32,6 +32,7 @@ export function MetricsPage() {
   const stitch = (m.stitch_transplant || {}) as Record<string, unknown>;
   const research = (m.research_brief_utilization || {}) as Record<string, unknown>;
   const swe = m.swe_bench as Record<string, unknown> | null | undefined;
+  const factory = m.factory_weekly as Record<string, unknown> | null | undefined;
 
   return (
     <section>
@@ -102,6 +103,16 @@ export function MetricsPage() {
                   {swe
                     ? `pass_rate ${String(swe.pass_rate ?? "—")}`
                     : "No benchmarks/latest_swe_bench.json"}
+                </td>
+              </tr>
+              <tr>
+                <td>Factory weekly golden</td>
+                <td>
+                  {factory
+                    ? `${factory.skipped ? "skipped" : factory.passed ? "passed" : "failed"} (${String(
+                        factory.entry_count ?? 0,
+                      )} entries)`
+                    : "No benchmarks/latest_factory_weekly.json"}
                 </td>
               </tr>
             </tbody>

@@ -67,8 +67,37 @@ def factory_status_from_events(events: list[dict[str, Any]]) -> dict[str, Any] |
     token = str(tier_raw or "").strip().upper()
     if token in {"T0", "T1", "T2", "T3"}:
         tier = token
-    return {
+    remaining = _tier_remaining_gates(
+        tier,
+        put_e2e_passed=put_e2e_passed,
+        ism_coverage_pct=ism_coverage,
+    )
+    out: dict[str, Any] = {
         "tier": tier,
         "ism_coverage_pct": ism_coverage if ism_coverage is not None else 0.0,
         "put_e2e_passed": put_e2e_passed,
     }
+    if remaining:
+        out["tier_promotion"] = {"remaining_gates": remaining}
+    return out
+
+
+def _tier_remaining_gates(
+    tier: str,
+    *,
+    put_e2e_passed: bool | None,
+    ism_coverage_pct: float | None,
+) -> list[str]:
+    remaining: list[str] = []
+    cov = ism_coverage_pct if ism_coverage_pct is not None else 0.0
+    if tier == "T0":
+        remaining.append("Enable local PUT preview (promote to T1)")
+    if tier in {"T0", "T1"}:
+        remaining.append("Pass integrated catalog PUT E2E (promote to T2)")
+    if tier in {"T0", "T1", "T2"} and put_e2e_passed is not True:
+        remaining.append("Green PUT E2E on factory catalog flow")
+    if tier in {"T0", "T1", "T2", "T3"} and cov < 80.0:
+        remaining.append("Reach ISM surface coverage ≥ 80% (T3)")
+    if tier != "T3" and not remaining:
+        remaining.append(f"Promote factory tier beyond {tier}")
+    return remaining

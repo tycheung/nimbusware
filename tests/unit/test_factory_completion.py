@@ -147,7 +147,10 @@ def test_factory_status_from_events() -> None:
         },
     ]
     status = factory_status_from_events(events)
-    assert status == {"tier": "T2", "ism_coverage_pct": 75.0, "put_e2e_passed": True}
+    assert status["tier"] == "T2"
+    assert status["ism_coverage_pct"] == 75.0
+    assert status["put_e2e_passed"] is True
+    assert "tier_promotion" in status
 
 
 def test_maker_progress_includes_factory_status() -> None:
@@ -161,11 +164,11 @@ def test_maker_progress_includes_factory_status() -> None:
         },
     ]
     body = maker_progress_from_events(events)
-    assert body.get("factory_status") == {
-        "tier": "T1",
-        "ism_coverage_pct": 10.0,
-        "put_e2e_passed": False,
-    }
+    fs = body.get("factory_status")
+    assert fs["tier"] == "T1"
+    assert fs["ism_coverage_pct"] == 10.0
+    assert fs["put_e2e_passed"] is False
+    assert fs.get("tier_promotion", {}).get("remaining_gates")
 
 
 def test_golden_factory_replay_fixture_loads() -> None:

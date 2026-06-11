@@ -1,6 +1,27 @@
 import { apiJson, toast } from "../api-client.js";
 import { setActiveProjectId } from "../session-hub.js";
 
+const FACTORY_DEMOS = [
+  {
+    promptId: "todo_api",
+    title: "Todo API",
+    prompt: "Build a minimal todo list REST API with tests",
+    testId: "maker-factory-demo-todo",
+  },
+  {
+    promptId: "basic_crm",
+    title: "Basic CRM",
+    prompt: "Build a minimal CRM with user authentication",
+    testId: "maker-factory-demo-crm",
+  },
+  {
+    promptId: "contacts_api",
+    title: "Contacts API",
+    prompt: "Build a contacts REST API with OpenAPI docs",
+    testId: "maker-factory-demo-contacts",
+  },
+];
+
 const INTENT_CARDS = [
   {
     id: "patch",
@@ -84,8 +105,11 @@ function renderReadiness(mount, readiness) {
   mount.appendChild(head);
 }
 
-function openChatIntent(intent) {
-  window.location.hash = `/chat?intent=${encodeURIComponent(intent)}`;
+function openChatIntent(intent, extra = {}) {
+  const params = new URLSearchParams({ intent });
+  if (extra.prompt) params.set("prompt", extra.prompt);
+  if (extra.prompt_id) params.set("prompt_id", extra.promptId || extra.prompt_id);
+  window.location.hash = `/chat?${params.toString()}`;
 }
 
 export async function mountHome(root) {
@@ -97,8 +121,9 @@ export async function mountHome(root) {
     </section>
     <section class="guided-campaign panel" data-testid="maker-home-guided-campaign">
       <h3>Factory hero demos</h3>
-      <p class="muted">Catalog apps: todo API, basic CRM, contacts API — zero-touch factory profile.</p>
-      <button type="button" id="home-start-factory" class="primary" data-testid="maker-home-start-factory">Build an app (factory)</button>
+      <p class="muted">Catalog zero-touch factory prompts — weekly pass rates appear in Admin Metrics.</p>
+      <div class="intent-cards" id="factory-demo-cards"></div>
+      <button type="button" id="home-start-factory" class="secondary" data-testid="maker-home-start-factory">Custom app prompt…</button>
     </section>
     <h3>Projects</h3>
     <ul id="project-list"></ul>
@@ -161,6 +186,19 @@ export async function mountHome(root) {
     toast("Project created", "success");
     await refresh();
   });
+
+  const factoryCards = root.querySelector("#factory-demo-cards");
+  for (const demo of FACTORY_DEMOS) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "intent-card";
+    btn.dataset.testid = demo.testId;
+    btn.innerHTML = `<strong>${demo.title}</strong><span class="muted">${demo.prompt}</span>`;
+    btn.addEventListener("click", () =>
+      openChatIntent("factory", { prompt: demo.prompt, promptId: demo.promptId }),
+    );
+    factoryCards?.appendChild(btn);
+  }
 
   root.querySelector("#home-start-factory")?.addEventListener("click", () => {
     openChatIntent("factory");
