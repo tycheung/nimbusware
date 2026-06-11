@@ -135,7 +135,9 @@ def parse_universal_critique_workflow_block(
         default_enabled=default_enabled,
         impl_llm=impl_llm,
         impl_stub=impl_stub,
-        impl_stage_failed_on_gate_fail=_leaf_bool(mapping_or_empty(impl_d), "stage_failed_on_gate_fail"),
+        impl_stage_failed_on_gate_fail=_leaf_bool(
+            mapping_or_empty(impl_d), "stage_failed_on_gate_fail"
+        ),
         impl_emit_finding_on_gate_fail=_leaf_bool(
             mapping_or_empty(impl_d),
             "emit_finding_on_gate_fail",
