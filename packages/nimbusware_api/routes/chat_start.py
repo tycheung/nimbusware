@@ -28,7 +28,7 @@ from nimbusware_maker.chat_service import (
 )
 from nimbusware_maker.intent_classifier import WorkType
 
-router = APIRouter(prefix="/chat", tags=["maker"])
+router = APIRouter(tags=["maker"])
 
 
 @router.post(
