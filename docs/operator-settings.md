@@ -80,6 +80,17 @@ Add new tunables to the catalog first, then read via `env_flags` / `settings_res
 | `NIMBUSWARE_AXE_ENABLED` | 0 | axe-core in human-fidelity suite |
 | `NIMBUSWARE_DEFAULT_MODEL` | (empty) | Fallback Ollama model when stage model unset |
 
+## Git outputs (run metadata)
+
+Campaign and factory runs on git-backed workspaces receive `run.created` metadata:
+
+| Key | Default | Notes |
+|-----|---------|-------|
+| `git.native_outputs` | `true` when workspace has `.git` | Branch/commit helpers in `git_outputs.py` |
+| `git.open_pr_on_complete` | `true` for campaign/factory on git workspaces | After terminal gate pass, Maker Review shows **Open PR** when `gh` / git-pr CLI is configured |
+
+Patch and micro-slice runs do not set `open_pr_on_complete` by default. Global fallback: `NIMBUSWARE_GIT_PR_ON_COMPLETE`. See [external-ci-bridge.md](deploy/external-ci-bridge.md) and Maker Review git panel.
+
 **Fleet / scraper (system):** `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH` (100), `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT` (20), `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE` (0).
 
 **Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC; legacy `AUDIT_EXPORT_SIGNING_KEY` still read).
