@@ -39,7 +39,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 |---------|------|
 | `agent_core` | Event models, `context_budget`, slice handoff models |
 | `nimbusware_store` | Event store (Postgres / memory) |
-| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets, **`micro_slice_run_context`** for run-created row helpers), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export |
+| `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets, **`micro_slice_run_context`** for run-created row helpers), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export, **`hybrid_routing`** (optional stage-level cloud fallback presets; Individual default Ollama-only) |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
 | `nimbusware_extensions` | Personas, bundles, escalation helpers |
 | `nimbusware_executor` | Role-gated outbound HTTP |
@@ -49,7 +49,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_projections` | Events → timeline, maker-progress, theater (`run_theater` + **`fields/theater_metadata`**), context budget, `factory_status`, agent-tool prune (+ export, research briefs) |
 | `nimbusware_maker_web` | Alpine Maker web app (tabs, SSE progress, session hub, compaction theater, findings, operator ribbons) at `/v1/maker/app` |
 | `nimbusware_admin_ui` | Preact Admin SPA at `/v1/admin/app` (Enterprise fleet at `/fleet`) |
-| `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
+| `nimbusware_mcp` | Stdio MCP IDE bridge (`nimbusware-mcp`; classify, patch / patch-from-selection, interject, chat graph/fork; run status, theater, pending slices, campaign pause/resume; see `docs/ide-bridge.md`) |
 | `nimbusware_api` | REST control plane |
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
@@ -128,7 +128,9 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **CI layout (PR):** `.github/workflows/ci.yml` runs **unit** (ruff, `audit_operator_env`, mypy, bandit, pip-audit, pytest @ 75%), **web** (vitest maker + admin, Playwright `tests/e2e/web`), **integration**, and **e2e** jobs in parallel. Local parity: `scripts/ci_check.ps1` / `ci_check.sh` (unit + optional web when Node is present).
 
-**Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics**; stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
+**Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics** (optional `benchmarks/latest_swe_bench.json` and `latest_factory_weekly.json` snapshots); stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
+
+**Release v1 operator surfaces:** Maker Home intents + factory catalog demos; Chat escalation and PR-on-complete on Review; Progress `gate_summary` + `role_cost_summary`; hybrid routing presets at `GET/POST /v1/platform/routing-presets*`. Ledger: local `plan_gap.md` (gitignored).
 
 **Pipeline typing:** All `_pipeline` mixin modules import `_helpers` symbols without `attr-defined` ignores; `_helpers.py` exports an explicit `__all__` (size-guard allowlisted in `test_package_module_size.py`).
 

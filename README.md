@@ -15,6 +15,7 @@ After install, open **Maker Home** (`/v1/maker/app/#/home`):
 1. **Readiness** — one fix action per red/yellow check (quick mode, Ollama, model pull).
 2. **Three intents** — *Fix a bug* (patch), *Build a feature* (micro_slice), *Build an app* (factory) — routes to **Chat** with the right work type (no raw `workflow_profile` on Home).
 3. **Quick demo** — `poetry run nimbusware-run --quick` for in-memory store + stub critics without Postgres.
+4. **Factory hero demos** — catalog cards (todo API, basic CRM, contacts API) deep-link **Chat** with `campaign_factory_zero_touch`.
 
 Target: documented path from install → first gate pass **&lt; 15 min**; intent → first applied patch on a fixture **&lt; 3 min** median.
 
@@ -148,8 +149,8 @@ Optional **SWE-bench-style** regression harness for the `micro_slice` workflow p
   - `--dry-run --json` — validate manifest + fixture layout
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
-- Published metrics: gitignored [`benchmarks/`](benchmarks/) — `poetry run python scripts/publish_benchmark_snapshots.py` or set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` when running the harness
-- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics)
+- Published metrics: gitignored [`benchmarks/`](benchmarks/) — `poetry run python scripts/publish_benchmark_snapshots.py` writes `latest_swe_bench.json` and `latest_factory_weekly.json` (factory golden replay summary); or set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` when running the harness alone
+- CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics); factory weekly via [`scripts/run_factory_weekly_ci.py`](scripts/run_factory_weekly_ci.py) in [`.github/workflows/slow_tests.yml`](.github/workflows/slow_tests.yml)
 - Env: `NIMBUSWARE_SWE_BENCH_ENABLED`, `NIMBUSWARE_SWE_BENCH_MANIFEST`, `NIMBUSWARE_SWE_BENCH_WRITE_JSON`
 
 Example scored output:
@@ -307,6 +308,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 - First-run wizard: folder → readiness → **fit-ranked model** → intent → create run (`GET /v1/platform/hardware` + ranked models)
 - **Models** tab: three-step preset wizard (`GET /platform/models/ranked` → preset → `POST /platform/models/apply-preset`); Ollama pull unchanged
+- **Optional hybrid routing** (off by default): `GET /v1/platform/routing-presets`, `POST /v1/platform/routing-presets/apply` — presets in [`configs/routing_presets.yaml`](configs/routing_presets.yaml) (`local_only`, `local_cloud_critique`, `cloud_plan_local_implement`); cloud preflight probes API key env before run
 - Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (hardware tier + resource governor sliders, Ollama model list, readiness presets, auto-advance hint)
 
@@ -319,7 +321,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - Congruent thread: classifier, run status, steering, and live **run theater** (SSE) stay on `#/chat` when `?run_id=` is set; fork from any user turn; branch picker retains sibling paths ([ADR 021](docs/adr/021-conversation-dag-branching.md))
 - Escalation: patch gate fail → offer slice widen; repeated slice replan / gate fail → offer campaign promotion; mid-thread `switch-mode` without losing session context
 - Settings → **Chat** → resume last session toggle (`localStorage` `maker_chat_resume_session`)
-- APIs: `POST /v1/chat/sessions`, `GET /v1/chat/sessions`, `POST /v1/chat/sessions/{id}/turns`, `POST .../fork`, `PUT .../active-leaf`, `GET .../graph`, `POST .../turns/{id}/switch-mode`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`; MCP: `nimbusware_classify_intent`, `nimbusware_patch`, `nimbusware_interject`, `nimbusware_chat_graph`, `nimbusware_chat_fork`, `nimbusware_chat_select_branch` ([docs/ide-bridge.md](docs/ide-bridge.md)); ADR [020](docs/adr/020-unified-chat-work-type-routing.md), [021](docs/adr/021-conversation-dag-branching.md)
+- APIs: `POST /v1/chat/sessions`, `GET /v1/chat/sessions`, `POST /v1/chat/sessions/{id}/turns`, `POST .../fork`, `PUT .../active-leaf`, `GET .../graph`, `POST .../turns/{id}/switch-mode`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`; MCP: `nimbusware_classify_intent`, `nimbusware_patch`, `nimbusware_patch_from_selection`, `nimbusware_interject`, `nimbusware_chat_graph`, `nimbusware_chat_fork`, `nimbusware_chat_select_branch` ([docs/ide-bridge.md](docs/ide-bridge.md)); ADR [020](docs/adr/020-unified-chat-work-type-routing.md), [021](docs/adr/021-conversation-dag-branching.md)
 - **Build** tab redirects to Chat for new runs; legacy Build flow remains available via API
 
 **Build** (API / catalog)
@@ -330,7 +332,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 **Progress**
 
 - **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata
-- Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream`); `resource_pressure` banner when governor throttles RAM
+- Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream?simple=true`); `gate_summary` one-liner when blocked; `role_cost_summary` token/latency chip when cloud or telemetry present; `resource_pressure` banner when governor throttles RAM
 - Optional theater LLM one-liners: `NIMBUSWARE_THEATER_LLM_SUMMARY=1` or `theater.llm_summary` on `run.created` (off by default)
 - Tabbed web UI: Home, **Chat** (default), Build (redirect), Review, Progress (SSE theater + maker-progress), Plan, Models, Settings; PWA manifest + offline service worker (`sw.js`) + Web Push registration when VAPID configured; `?run_id=` deep links
 
@@ -408,6 +410,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Interjection queue** | `GET/POST /runs/{id}/interjection-queue` | User |
 | **Platform** | `GET /platform/edition`, `GET /platform/readiness`, `GET /platform/hardware`, `POST /platform/hardware/rescan` (`emit_event` + `run_id`), `GET /platform/analytics/stitch-outcomes`, `GET /platform/analytics/competitive-summary`, `GET /platform/analytics/bundle-outcomes`, `GET /platform/analytics/pressure-history` | User |
 | **Model Manager** | `GET /platform/models/ranked`, `POST /platform/models/apply-preset`, `GET /platform/models/dependencies` | User |
+| **Hybrid routing** | `GET /platform/routing-presets`, `POST /platform/routing-presets/apply` | User |
 | **Projects** | `GET/POST/PATCH /projects` | User |
 | **Projects** | `DELETE /projects/{id}` | Admin |
 | **Lifecycle** | `POST .../lifecycle/start`, `plan`, `verify`, `slice` | Admin |
