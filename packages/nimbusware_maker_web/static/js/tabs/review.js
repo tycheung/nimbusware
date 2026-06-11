@@ -105,7 +105,11 @@ export async function mountReview(root) {
       <button type="button" id="rev-run-launch-eval" data-testid="maker-review-run-launch-eval">Run launch check</button>
       <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
-    <p id="rev-git-status" class="muted"></p>`;
+    <section id="rev-git-panel" class="panel" data-testid="maker-review-git-panel">
+      <h3>Git &amp; pull request</h3>
+      <p id="rev-git-status" class="muted"></p>
+      <div id="rev-git-actions" class="actions"></div>
+    </section>`;
 
   async function currentRunId() {
     let id = resolveRunId();
@@ -117,18 +121,66 @@ export async function mountReview(root) {
     const id = await currentRunId();
     if (!id) return;
     const el = root.querySelector("#rev-git-status");
+    const actions = root.querySelector("#rev-git-actions");
+    if (actions) actions.replaceChildren();
     try {
       const body = await apiJson(`/runs/${id}/maker/git-status`);
       const gc = body.git_commit;
-      if (!gc) {
-        el.textContent = "Git: no per-slice commits recorded yet.";
-        return;
+      const outputs = body.git_outputs || {};
+      const branch = outputs.branch || gc?.branch || "";
+      const prUrl = outputs.pr_url || "";
+      const lines = [];
+      if (gc) {
+        const status = gc.status || "unknown";
+        const sha = gc.sha ? ` (${String(gc.sha).slice(0, 8)})` : "";
+        const reason = gc.reason ? ` — ${gc.reason}` : "";
+        lines.push(`Last commit: ${status}${sha}${reason}`);
+      } else {
+        lines.push("No per-slice commits recorded yet.");
       }
-      const status = gc.status || "unknown";
-      const branch = gc.branch ? ` on ${gc.branch}` : "";
-      const sha = gc.sha ? ` (${String(gc.sha).slice(0, 8)})` : "";
-      const reason = gc.reason ? ` — ${gc.reason}` : "";
-      el.textContent = `Git ${status}${branch}${sha}${reason}`;
+      if (branch) lines.push(`Branch: ${branch}`);
+      if (prUrl) lines.push(`PR: ${prUrl}`);
+      el.textContent = lines.join(" · ");
+      if (branch && actions) {
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.textContent = "Copy branch name";
+        copyBtn.dataset.testid = "maker-review-copy-branch";
+        copyBtn.onclick = () => {
+          navigator.clipboard?.writeText(branch);
+          toast("Branch copied", "success");
+        };
+        actions.appendChild(copyBtn);
+      }
+      if (!prUrl && branch && actions) {
+        const prBtn = document.createElement("button");
+        prBtn.type = "button";
+        prBtn.className = "primary";
+        prBtn.textContent = "Open pull request";
+        prBtn.dataset.testid = "maker-review-open-pr";
+        prBtn.onclick = async () => {
+          try {
+            const res = await apiJson(`/runs/${id}/maker/open-pr`, { method: "POST" });
+            const url = res?.pr?.pr_url;
+            if (url) window.open(url, "_blank", "noopener");
+            toast(url ? "Pull request opened" : "PR step completed", "success");
+            await loadGitStatus();
+          } catch (e) {
+            toast(String(e.message || e), "error");
+          }
+        };
+        actions.appendChild(prBtn);
+      }
+      if (prUrl && actions) {
+        const open = document.createElement("a");
+        open.href = prUrl;
+        open.target = "_blank";
+        open.rel = "noopener";
+        open.textContent = "View pull request";
+        open.dataset.testid = "maker-review-view-pr";
+        open.className = "primary";
+        actions.appendChild(open);
+      }
     } catch {
       el.textContent = "";
     }

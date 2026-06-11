@@ -29,4 +29,7 @@ def test_maker_git_status_empty_run(client: TestClient) -> None:
     rid = create.json()["run_id"]
     r = client.get(f"/v1/runs/{rid}/maker/git-status")
     assert r.status_code == 200
-    assert r.json()["git_commit"] is None
+    body = r.json()
+    assert body["git_commit"] is None
+    assert "git_outputs" in body
+    assert body["git_outputs"].get("branch")

@@ -392,6 +392,11 @@ class CreateRunMixin:
             else None
         )
         patch_ctx_norm = normalize_patch_context(patch_context)
+        git_meta: dict[str, Any] | None = None
+        if project_meta and str(work_type or "").strip().lower() in {"campaign", "factory"}:
+            ws_git = Path(str(project_meta["workspace_path"]))
+            if (ws_git / ".git").is_dir():
+                git_meta = {"native_outputs": True, "open_pr_on_complete": True}
         wt = str(work_type or "").strip().lower() or None
         if patch_block.enabled and not wt:
             wt = "patch"
@@ -461,6 +466,7 @@ class CreateRunMixin:
                 "theater": theater_effective_metadata(theater_block),
                 **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
                 **({"project": project_meta} if project_meta else {}),
+                **({"git": git_meta} if git_meta else {}),
                 **({"requirements": requirements_meta} if requirements_meta else {}),
                 **({"operator_settings": operator_settings_meta} if operator_settings_meta else {}),
                 **(

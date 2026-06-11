@@ -9,7 +9,9 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from nimbusware_maker.approval import last_git_commit_from_rows
+from nimbusware_maker.approval import git_outputs_from_rows, last_git_commit_from_rows
+from nimbusware_maker.workspace import resolve_run_workspace
+from nimbusware_orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
 from nimbusware_maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
@@ -41,7 +43,36 @@ def get_maker_git_status(run_id: UUID, store: StoreDep) -> dict[str, Any]:
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
     commit = last_git_commit_from_rows(rows)
-    return {"run_id": str(run_id), "git_commit": commit}
+    outputs = git_outputs_from_rows(rows)
+    if not outputs.get("branch"):
+        outputs["branch"] = run_branch_name(run_id)
+    return {"run_id": str(run_id), "git_commit": commit, "git_outputs": outputs}
+
+
+@router.post(
+    "/runs/{run_id}/maker/open-pr",
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422},
+)
+def post_maker_open_pr(run_id: UUID, store: StoreDep) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    workspace = resolve_run_workspace(rows)
+    if workspace is None:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", "run has no project workspace"),
+        )
+    result = maybe_open_gh_pr(workspace, run_id)
+    if result.get("status") not in {"created", "skipped"}:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("git_pr_failed", str(result.get("reason") or result.get("stderr") or result)),
+        )
+    return {"run_id": str(run_id), "pr": result}
 
 
 @router.get(

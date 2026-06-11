@@ -111,6 +111,30 @@ def last_revert_snapshot_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]
     return last_approved_snapshot_from_rows(rows)
 
 
+def git_outputs_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Branch / PR summary from slice.git_finalize stages."""
+    out: dict[str, Any] = {}
+    latest_seq = -1
+    for row in rows:
+        if row.get("event_type") != EventType.STAGE_PASSED.value:
+            continue
+        if _stage_name(row) != "slice.git_finalize":
+            continue
+        seq = int(row.get("store_seq") or 0)
+        if seq < latest_seq:
+            continue
+        latest_seq = seq
+        meta = _metadata(row)
+        if meta.get("branch"):
+            out["branch"] = str(meta["branch"])
+        pr = meta.get("pr")
+        if isinstance(pr, dict):
+            if pr.get("pr_url"):
+                out["pr_url"] = str(pr["pr_url"])
+            out["pr_status"] = str(pr.get("status") or "")
+    return out
+
+
 def last_git_commit_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     """Latest per-slice git commit result from slice.applied maker stages."""
     latest: dict[str, Any] | None = None
