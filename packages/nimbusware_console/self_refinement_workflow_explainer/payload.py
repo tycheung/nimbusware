@@ -7,9 +7,10 @@ from typing import Any
 from nimbusware_config.workflow_read import (
     parse_self_refinement_workflow_block,
 )
-from nimbusware_console.components.workflow_explainer_helpers import relative_under
-from nimbusware_console.config_materializer import console_config_materializer
-from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
+from nimbusware_console.explainer_core.workflow_profile import (
+    load_workflow_disk_snapshot,
+    yaml_section,
+)
 from nimbusware_console.self_refinement_workflow_explainer.env import (
     _load_policy_or_default,
     _marker_preview,
@@ -22,42 +23,24 @@ def self_refinement_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    wf_key = str(workflow_profile).strip() if workflow_profile else ""
-    wf_sel: str | None = wf_key if wf_key else None
-
-    mat = console_config_materializer(repo_root)
-
-    workflow_yaml_relpath: str | None = None
-    load_error: str | None = None
-    sr_present = False
-    sr_yaml_mapping_string_key_count: int | None = None
-    sr_workflow_yaml_raw_type: str | None = None
-
-    if wf_sel:
-        try:
-            disk_raw, _effective_raw, wp, _file_bytes = load_workflow_profile_documents(
-                repo_root,
-                wf_sel,
-                materializer=mat,
-            )
-            workflow_yaml_relpath = relative_under(repo_root, wp)
-            raw = disk_raw
-            if isinstance(raw, dict) and "self_refinement" in raw:
-                block = raw.get("self_refinement")
-                if block is not None:
-                    sr_workflow_yaml_raw_type = type(block).__name__
-                if isinstance(block, dict):
-                    sr_yaml_mapping_string_key_count = sum(1 for k in block if isinstance(k, str))
-                sr_present = isinstance(block, dict) and bool(block)
-        except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError) as exc:
-            load_error = str(exc)
+    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    wf_sel = snap.workflow_profile
+    workflow_yaml_relpath = snap.workflow_yaml_relpath
+    load_error = snap.load_error
+    block = snap.disk_doc.get("self_refinement")
+    sr_workflow_yaml_raw_type = type(block).__name__ if block is not None else None
+    section = yaml_section(snap.disk_doc, "self_refinement")
+    sr_yaml_mapping_string_key_count = (
+        sum(1 for k in section if isinstance(k, str)) if section else None
+    )
+    sr_present = bool(section)
 
     wf_sr = parse_self_refinement_workflow_block(
         repo_root,
         wf_sel,
-        config_materializer=mat,
+        config_materializer=snap.materializer,
     )
-    pol, pol_snap = _load_policy_or_default(repo_root, config_materializer=mat)
+    pol, pol_snap = _load_policy_or_default(repo_root, config_materializer=snap.materializer)
     pol_snap["enabled"] = pol.enabled
     pol_snap["version"] = pol.version
     pol_snap["description"] = pol.description

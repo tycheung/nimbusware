@@ -11,12 +11,11 @@ from nimbusware_console.agent_evaluator_workflow_explainer.env import (
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )
-from nimbusware_console.components.workflow_explainer_helpers import (
-    json_safe_yaml_fragment,
-    relative_under,
+from nimbusware_console.components.workflow_explainer_helpers import json_safe_yaml_fragment
+from nimbusware_console.explainer_core.workflow_profile import (
+    load_workflow_disk_snapshot,
+    yaml_section,
 )
-from nimbusware_console.config_materializer import console_config_materializer
-from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
 
 
 def agent_evaluator_workflow_explainer_payload(
@@ -24,40 +23,18 @@ def agent_evaluator_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    wf_key = str(workflow_profile).strip() if workflow_profile else ""
-    wf_sel: str | None = wf_key if wf_key else None
-
-    workflow_yaml_relpath: str | None = None
-    load_error: str | None = None
-    yaml_key_present = False
-    yaml_value: Any = None
-    workflow_yaml_top_level_version_int: int | None = None
-
-    mat = console_config_materializer(repo_root)
-    if wf_sel:
-        try:
-            disk_doc, _effective_doc, wp, _file_bytes = load_workflow_profile_documents(
-                repo_root,
-                wf_sel,
-                materializer=mat,
-            )
-            workflow_yaml_relpath = relative_under(repo_root, wp)
-            doc = disk_doc
-            if isinstance(doc, dict):
-                vtop = doc.get("version")
-                if type(vtop) is int and not isinstance(vtop, bool):
-                    workflow_yaml_top_level_version_int = vtop
-                if "agent_evaluator" in doc:
-                    yaml_key_present = True
-                    yaml_value = doc.get("agent_evaluator")
-        except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError) as err:
-            load_error = str(err)
-            yaml_value = None
+    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    wf_sel = snap.workflow_profile
+    workflow_yaml_relpath = snap.workflow_yaml_relpath
+    load_error = snap.load_error
+    workflow_yaml_top_level_version_int = snap.version_int
+    yaml_key_present = "agent_evaluator" in snap.disk_doc
+    yaml_value = snap.disk_doc.get("agent_evaluator") if yaml_key_present else None
 
     block = parse_agent_evaluator_workflow_block(
         repo_root,
         wf_sel,
-        config_materializer=mat,
+        config_materializer=snap.materializer,
     )
     would_emit = _would_emit_agent_evaluator_stage(repo_root, wf_sel)
     would_emit_llm = _would_emit_llm_evaluation(repo_root, wf_sel)
@@ -71,13 +48,14 @@ def agent_evaluator_workflow_explainer_payload(
     yaml_mapping_string_key_count: int | None = None
     yaml_true_bool_value_count: int | None = None
     yaml_false_bool_value_count: int | None = None
-    if isinstance(yaml_value, dict):
-        yaml_mapping_string_key_count = sum(1 for k in yaml_value if isinstance(k, str))
+    section = yaml_section(snap.disk_doc, "agent_evaluator")
+    if section:
+        yaml_mapping_string_key_count = sum(1 for k in section if isinstance(k, str))
         yaml_true_bool_value_count = sum(
-            1 for v in yaml_value.values() if type(v) is bool and v is True
+            1 for v in section.values() if type(v) is bool and v is True
         )
         yaml_false_bool_value_count = sum(
-            1 for v in yaml_value.values() if type(v) is bool and v is False
+            1 for v in section.values() if type(v) is bool and v is False
         )
 
     ac = block.auto_create_persona

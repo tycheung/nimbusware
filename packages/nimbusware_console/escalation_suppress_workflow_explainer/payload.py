@@ -15,11 +15,13 @@ from nimbusware_console.components.workflow_explainer_helpers import (
     mtime_iso_utc,
     relative_under,
 )
-from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_console.escalation_suppress_workflow_explainer.helpers import (
     _age_seconds_utc,
 )
-from nimbusware_console.explainer_workflow_disk import load_workflow_profile_documents
+from nimbusware_console.explainer_core.workflow_profile import (
+    load_workflow_disk_snapshot,
+    yaml_section,
+)
 
 
 def escalation_suppress_workflow_explainer_payload(
@@ -27,47 +29,22 @@ def escalation_suppress_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    wf_key = str(workflow_profile).strip() if workflow_profile else ""
-    wf_sel: str | None = wf_key if wf_key else None
-
-    mat = console_config_materializer(repo_root)
+    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    wf_sel = snap.workflow_profile
     policy_breadth = escalation_policy_breadth(repo_root)
 
-    workflow_yaml_relpath: str | None = None
-    load_error: str | None = None
-    workflow_yaml_top_level_version_int: int | None = None
-    escalation_key_present = False
-    escalation_yaml_value: Any = None
-    suppress_yaml_raw: Any = None
-
-    if wf_sel:
-        try:
-            disk_doc, _effective_doc, wp, _file_bytes = load_workflow_profile_documents(
-                repo_root,
-                wf_sel,
-                materializer=mat,
-            )
-            workflow_yaml_relpath = relative_under(repo_root, wp)
-            doc = disk_doc
-            if isinstance(doc, dict):
-                vtop = doc.get("version")
-                if type(vtop) is int and not isinstance(vtop, bool):
-                    workflow_yaml_top_level_version_int = vtop
-            if isinstance(doc, dict) and "escalation" in doc:
-                escalation_key_present = True
-                escalation_yaml_value = doc.get("escalation")
-                if isinstance(escalation_yaml_value, dict):
-                    suppress_yaml_raw = escalation_yaml_value.get(
-                        "suppress_automatic_escalation",
-                    )
-        except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError) as err:
-            load_error = str(err)
-            escalation_yaml_value = None
+    workflow_yaml_relpath = snap.workflow_yaml_relpath
+    load_error = snap.load_error
+    workflow_yaml_top_level_version_int = snap.version_int
+    escalation_key_present = "escalation" in snap.disk_doc
+    escalation_yaml_value = snap.disk_doc.get("escalation") if escalation_key_present else None
+    esc_section = yaml_section(snap.disk_doc, "escalation")
+    suppress_yaml_raw = esc_section.get("suppress_automatic_escalation") if esc_section else None
 
     parsed = parse_escalation_workflow_block(
         repo_root,
         wf_sel,
-        config_materializer=mat,
+        config_materializer=snap.materializer,
     )
 
     suppress_yaml_raw_type: str | None
