@@ -10,8 +10,6 @@ from nimbusware_api.deps import OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_maker.approval import git_outputs_from_rows, last_git_commit_from_rows
-from nimbusware_maker.workspace import resolve_run_workspace
-from nimbusware_orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
 from nimbusware_maker.slice_workflow import (
     apply_pending_slice,
     approve_run_plan,
@@ -20,6 +18,8 @@ from nimbusware_maker.slice_workflow import (
     revert_workspace,
     skip_pending_slice,
 )
+from nimbusware_maker.workspace import resolve_run_workspace
+from nimbusware_orchestrator.git_outputs import maybe_open_gh_pr, run_branch_name
 
 router = APIRouter()
 

@@ -6,6 +6,18 @@ Nimbusware is a **local-first** platform for operating adversarial agentic softw
 
 **Version:** `0.5.0` · **Python:** `>=3.10` (3.11+ recommended) · **Default workflow profile:** `nimbusware_production`
 
+**Release v1 pitch:** For individuals — build and fix software on your own machine with an agent that must pass tests and security gates, not just generate code. For enterprise — a self-hosted control plane for governed agentic development: audit every run, steer autonomy, and standardize quality without sending code to a SaaS black box.
+
+## Maker onboarding (Release v1)
+
+After install, open **Maker Home** (`/v1/maker/app/#/home`):
+
+1. **Readiness** — one fix action per red/yellow check (quick mode, Ollama, model pull).
+2. **Three intents** — *Fix a bug* (patch), *Build a feature* (micro_slice), *Build an app* (factory) — routes to **Chat** with the right work type (no raw `workflow_profile` on Home).
+3. **Quick demo** — `poetry run nimbusware-run --quick` for in-memory store + stub critics without Postgres.
+
+Target: documented path from install → first gate pass **&lt; 15 min**; intent → first applied patch on a fixture **&lt; 3 min** median.
+
 ## Product editions
 
 | Edition | Install | Scope |
@@ -136,7 +148,7 @@ Optional **SWE-bench-style** regression harness for the `micro_slice` workflow p
   - `--dry-run --json` — validate manifest + fixture layout
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
-- Published metrics: gitignored [`benchmarks/`](benchmarks/) — set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` to write `benchmarks/latest_swe_bench.json`
+- Published metrics: gitignored [`benchmarks/`](benchmarks/) — `poetry run python scripts/publish_benchmark_snapshots.py` or set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` when running the harness
 - CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics)
 - Env: `NIMBUSWARE_SWE_BENCH_ENABLED`, `NIMBUSWARE_SWE_BENCH_MANIFEST`, `NIMBUSWARE_SWE_BENCH_WRITE_JSON`
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Publish local benchmark snapshots (SWE-bench) under benchmarks/ for Admin Metrics."""
 
 from __future__ import annotations
 
