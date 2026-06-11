@@ -54,6 +54,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "memory_influence",
         "readiness_strip",
         "home_intent_cards",
+        "home_models_first_strip",
         "readiness_action_ctas",
         "git_pr_primary_cta",
         "gate_fail_action_cards",

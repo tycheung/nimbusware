@@ -183,19 +183,19 @@ def ollama_chat_json_via_plan_patch(
     timeout_seconds: float = 120.0,
     stage_name: str | None = None,
 ) -> dict[str, Any]:
-    """Delegate to stage-aware routing or ``llm_plan.ollama_chat_json`` for tests."""
+    """Delegate to cloud routing or ``llm_plan.ollama_chat_json`` (patch target for tests)."""
     if stage_name:
+        from nimbusware_config.persist import load_model_routing_dict
         from nimbusware_env import find_repo_root
-        from nimbusware_orchestrator.hybrid_routing import stage_chat_json
+        from nimbusware_orchestrator.hybrid_routing import cloud_chat_json, resolve_stage_provider
 
-        return stage_chat_json(
-            repo_root=find_repo_root(),
-            stage_name=stage_name,
-            base_url=base_url,
-            model=model,
-            messages=messages,
-            timeout_seconds=timeout_seconds,
-        )
+        routing = load_model_routing_dict(find_repo_root())
+        if resolve_stage_provider(routing, stage_name) == "cloud":
+            return cloud_chat_json(
+                routing,
+                messages=messages,
+                timeout_seconds=timeout_seconds,
+            )
     import nimbusware_orchestrator.llm_plan as _patch
 
     return _patch.ollama_chat_json(
