@@ -43,7 +43,8 @@ def external_chat_capabilities(_admin: AdminDep) -> dict[str, str]:
     return {
         "scope": "operator_commands_only",
         "docs": "docs/integrations-external-chat.md",
-        "supported_commands": "/run, /timeline, /agent, /help",
+        "supported_commands": "/run, /timeline, /status, /agent, /help",
+        "steering_prefixes": "[patch], [steer], [skip], [build]",
     }
 
 

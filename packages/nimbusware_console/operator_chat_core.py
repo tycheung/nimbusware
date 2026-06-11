@@ -66,9 +66,14 @@ def _handle_command(text: str, state: ChatState) -> str | None:
     cmd = parts[0].lower() if parts else ""
     if cmd in ("/help", "help"):
         return (
-            "Commands:\n- /run [profile|auto]\n- /timeline\n- /agent <id>\n"
+            "Commands:\n- /run [profile|auto]\n- /timeline\n- /status\n- /agent <id>\n"
+            "Steer an active run with [patch], [steer], [skip], or [build] prefixes.\n"
             "Describe a change in plain language for intent classification."
         )
+    if cmd == "/status":
+        if not state.last_run_id:
+            return "No run started yet. Use /run micro_slice first."
+        return _fetch_run_status(state.last_run_id)
     if cmd == "/run":
         if len(parts) > 1 and parts[1].lower() == "auto":
             profile = state.suggested_profile or "micro_slice"
@@ -82,6 +87,13 @@ def _handle_command(text: str, state: ChatState) -> str | None:
     if cmd == "/agent" and len(parts) > 1:
         state.active_agent_id = parts[1]
         return f"Active agent set to `{parts[1]}`."
+    stripped = text.strip()
+    low_prefix = stripped.lower()
+    for prefix in ("[patch]", "[steer]", "[skip]", "[build]"):
+        if low_prefix.startswith(prefix):
+            if not state.last_run_id:
+                return "No active run — use `/run` first, then send steering messages."
+            return _enqueue_steering(state.last_run_id, stripped)
     low = text.strip().lower()
     if low.startswith("start run") or ("micro_slice" in low and ("start" in low or "run" in low)):
         return _start_run("micro_slice", state)
@@ -108,6 +120,31 @@ def _start_run(workflow_profile: str, state: ChatState) -> str:
         return f"Started run `{run_id}` with profile `{workflow_profile}`."
     except HTTPError as exc:
         return f"Could not reach API at {api_base()}: {exc}"
+
+
+def _enqueue_steering(run_id: str, message: str) -> str:
+    try:
+        resp = chat_svc.enqueue_interjection(run_id, message)
+        if resp.status_code >= 400:
+            return f"Interjection failed ({resp.status_code}): {resp.text[:500]}"
+        data = resp.json()
+        count = int((data.get("queue") or {}).get("count") or 0)
+        return f"Queued on run `{run_id}` ({count} item(s) pending)."
+    except HTTPError as exc:
+        return f"Could not reach API at {api_base()}: {exc}"
+
+
+def _fetch_run_status(run_id: str) -> str:
+    try:
+        q_resp = chat_svc.fetch_interjection_queue(run_id)
+        if q_resp.status_code >= 400:
+            return f"Status fetch failed ({q_resp.status_code})."
+        q_body = q_resp.json()
+        pending = int((q_body.get("queue") or {}).get("count") or 0)
+        tl = _fetch_timeline_summary(run_id)
+        return f"Run `{run_id}` — interjection queue: {pending} pending.\n{tl}"
+    except HTTPError as exc:
+        return f"Status error: {exc}"
 
 
 def _fetch_timeline_summary(run_id: str) -> str:

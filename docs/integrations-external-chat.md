@@ -23,6 +23,22 @@ Forward **operator commands** from Slack, Teams, or other tools via webhook:
 
 Response includes `reply` (operator chat handler output) and `last_run_id` when a run was started.
 
+### Steering an active run
+
+After `/run` (or a natural-language start), send interjection prefixes on the same webhook session:
+
+| Prefix | Effect |
+|--------|--------|
+| `[patch]` | Head patch slice from chat |
+| `[steer]` | Volatile guidance on next slice plan |
+| `[skip]` | Defer current backlog slice |
+| `[build]` | Promote to campaign from chat |
+
+`/status` returns pending interjection queue depth plus a micro-slice timeline summary for
+`last_run_id`.
+
+See [operator-interjection-slo.md](operator-interjection-slo.md) for drain latency SLO.
+
 ### Configuration
 
 Set `NIMBUSWARE_WEBHOOK_SECRET` in `.env` (install scope). External systems send:
