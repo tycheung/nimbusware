@@ -109,6 +109,17 @@ export async function mountReview(root) {
       <h3>Git &amp; pull request</h3>
       <p id="rev-git-status" class="muted"></p>
       <div id="rev-git-actions" class="actions"></div>
+    </section>
+    <section id="rev-factory-evidence" class="panel" data-testid="maker-review-factory-evidence">
+      <h3>Factory evidence</h3>
+      <button type="button" id="rev-load-factory-evidence" data-testid="maker-review-factory-evidence-load">
+        Load scorecard
+      </button>
+      <table class="data-table" id="rev-factory-evidence-table" hidden>
+        <thead><tr><th>Dimension</th><th>Value</th></tr></thead>
+        <tbody id="rev-factory-evidence-rows"></tbody>
+      </table>
+      <p id="rev-factory-evidence-empty" class="muted" hidden>No factory evidence on this run yet.</p>
     </section>`;
 
   async function currentRunId() {
@@ -324,5 +335,46 @@ export async function mountReview(root) {
     } catch (e) {
       toast(String(e.message || e), "error");
     }
+  });
+
+  async function loadFactoryEvidenceScorecard() {
+    const id = await currentRunId();
+    if (!id) return toast("Enter a run ID", "error");
+    const table = root.querySelector("#rev-factory-evidence-table");
+    const tbody = root.querySelector("#rev-factory-evidence-rows");
+    const empty = root.querySelector("#rev-factory-evidence-empty");
+    try {
+      const body = await apiJson(`/runs/${id}/factory-evidence`);
+      const rows = body.scorecard_rows || [];
+      if (!rows.length) {
+        table.hidden = true;
+        empty.hidden = false;
+        empty.textContent = "No factory evidence on this run yet.";
+        return;
+      }
+      empty.hidden = true;
+      table.hidden = false;
+      tbody.replaceChildren();
+      for (const row of rows) {
+        const tr = document.createElement("tr");
+        tr.dataset.testid = `maker-factory-evidence-row-${String(row.dimension || "")
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`;
+        const dim = document.createElement("td");
+        dim.textContent = row.dimension || "";
+        const val = document.createElement("td");
+        val.textContent = row.value || "";
+        tr.append(dim, val);
+        tbody.appendChild(tr);
+      }
+    } catch (e) {
+      table.hidden = true;
+      empty.hidden = false;
+      empty.textContent = String(e.message || e);
+    }
+  }
+
+  root.querySelector("#rev-load-factory-evidence")?.addEventListener("click", () => {
+    void loadFactoryEvidenceScorecard();
   });
 }

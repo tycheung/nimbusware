@@ -7,6 +7,7 @@ from pathlib import Path
 from nimbusware_orchestrator.factory_evidence import (
     build_factory_evidence_bundle,
     export_factory_evidence_zip,
+    factory_evidence_scorecard_rows,
 )
 
 REPO = Path(__file__).resolve().parents[2]
@@ -42,6 +43,10 @@ def test_factory_evidence_bundle_from_stage_events() -> None:
     assert bundle["factory_status"]["tier"] == "T2"
     assert bundle["put_e2e"]["flow_id"] == "crm"
     assert len(bundle["factory_stages"]) == 2
+    assert bundle["scorecard_rows"]
+    dims = {r["dimension"] for r in bundle["scorecard_rows"]}
+    assert "Factory tier" in dims
+    assert "Factory complete" in dims
 
 
 def test_factory_evidence_includes_ism_diff() -> None:

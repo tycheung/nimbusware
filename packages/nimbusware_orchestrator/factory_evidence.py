@@ -83,7 +83,7 @@ def build_factory_evidence_bundle(
         if isinstance(ism_raw, dict):
             ism_diff = ism_raw
             break
-    return {
+    bundle: dict[str, Any] = {
         "factory_complete": complete,
         "factory_status": factory_status,
         "put_e2e": put_e2e,
@@ -96,6 +96,42 @@ def build_factory_evidence_bundle(
             "findings": put_e2e_map.get("findings") or [],
         },
     }
+    bundle["scorecard_rows"] = factory_evidence_scorecard_rows(bundle)
+    return bundle
+
+
+def factory_evidence_scorecard_rows(bundle: dict[str, Any]) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    fs = mapping_or_empty(bundle.get("factory_status"))
+    if fs:
+        tier = str(fs.get("tier") or "—")
+        cov = fs.get("ism_coverage_pct")
+        cov_s = f"{float(cov):.0f}%" if isinstance(cov, (int, float)) else "—"
+        put_ok = fs.get("put_e2e_passed")
+        put_s = "pass" if put_ok is True else "fail" if put_ok is False else "—"
+        rows.append({"dimension": "Factory tier", "value": tier})
+        rows.append({"dimension": "ISM coverage", "value": cov_s})
+        rows.append({"dimension": "PUT E2E", "value": put_s})
+    put_e2e = mapping_or_empty(bundle.get("put_e2e"))
+    verdict = str(put_e2e.get("verdict") or "").upper()
+    if verdict:
+        rows.append({"dimension": "PUT verdict", "value": verdict})
+    complete = bundle.get("factory_complete")
+    rows.append(
+        {
+            "dimension": "Factory complete",
+            "value": "yes" if complete else "no",
+        },
+    )
+    evidence_block = mapping_or_empty(bundle.get("evidence"))
+    findings = evidence_block.get("findings")
+    if isinstance(findings, list) and findings:
+        rows.append({"dimension": "Open findings", "value": str(len(findings))})
+    ism_diff = mapping_or_empty(bundle.get("ism_diff"))
+    uncovered = ism_diff.get("uncovered_surfaces")
+    if isinstance(uncovered, list) and uncovered:
+        rows.append({"dimension": "Uncovered ISM surfaces", "value": str(len(uncovered))})
+    return rows
 
 
 def export_factory_evidence_zip(

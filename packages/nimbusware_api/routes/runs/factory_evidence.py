@@ -27,6 +27,7 @@ class FactoryEvidenceResponse(BaseModel):
     factory_stages: list[dict[str, Any]] = Field(default_factory=list)
     put_artifacts: dict[str, Any] = Field(default_factory=dict)
     evidence: dict[str, Any] = Field(default_factory=dict)
+    scorecard_rows: list[dict[str, str]] = Field(default_factory=list)
 
 
 @router.get(
