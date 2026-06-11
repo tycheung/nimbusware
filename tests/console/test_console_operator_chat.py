@@ -42,3 +42,21 @@ def test_run_auto_uses_suggested_profile(monkeypatch) -> None:
     state = ChatState(suggested_profile="patch")
     reply = process_user_message("/run auto", state)
     assert "Started run" in reply
+
+
+def test_steer_prefix_requires_active_run() -> None:
+    reply = process_user_message("[steer] focus on auth module", ChatState())
+    assert "No active run" in reply
+
+
+def test_steer_prefix_enqueues_on_active_run(monkeypatch) -> None:
+    q_resp = MagicMock()
+    q_resp.status_code = 200
+    q_resp.json.return_value = {"queue": {"count": 1}}
+    monkeypatch.setattr(
+        "nimbusware_console.operator_chat_core.chat_svc.enqueue_interjection",
+        lambda run_id, message: q_resp,
+    )
+    state = ChatState(last_run_id="00000000-0000-4000-8000-000000000099")
+    reply = process_user_message("[steer] tighten error handling", state)
+    assert "Queued on run" in reply
