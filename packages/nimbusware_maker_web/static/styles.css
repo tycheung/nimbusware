@@ -646,3 +646,13 @@ button.intent-card:hover {
   gap: 0.5rem;
   margin-bottom: 0.35rem;
 }
+
+.learnings-ribbon--prominent {
+  border-color: var(--color-warn, #d97706);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-warn, #d97706) 35%, transparent);
+}
+
+.gate-summary-banner {
+  color: var(--color-warn, #b45309);
+  font-weight: 500;
+}

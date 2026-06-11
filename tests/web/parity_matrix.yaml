@@ -115,6 +115,9 @@ maker:
   - id: progress_role_cost_chip
     web: true
     notes: Progress tab role_cost_summary token/latency chip when telemetry present
+  - id: progress_learnings_after_block
+    web: true
+    notes: Learnings ribbon highlighted when gate_summary indicates blocked run
   - id: slice_prepare
     web: true
   - id: theater_export

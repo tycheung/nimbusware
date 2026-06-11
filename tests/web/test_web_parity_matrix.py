@@ -79,6 +79,7 @@ def test_parity_matrix_maker_web_true_ids_documented() -> None:
         "factory_hero_demos",
         "progress_gate_summary_plain",
         "progress_role_cost_chip",
+        "progress_learnings_after_block",
     }
     web_true_ids = {r["id"] for r in data.get("maker", []) if r.get("web") is True}
     assert web_true_ids == expected

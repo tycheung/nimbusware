@@ -523,6 +523,11 @@ export async function mountProgress(root) {
     mount.hidden = false;
     mount.dataset.testid = "maker-gate-summary";
     mount.textContent = text;
+    const ribbon = document.getElementById("learnings-ribbon");
+    if (ribbon) {
+      ribbon.classList.add("learnings-ribbon--prominent");
+      ribbon.dataset.testid = "maker-learnings-ribbon-prominent";
+    }
   }
 
   function renderRoleCost(body) {
