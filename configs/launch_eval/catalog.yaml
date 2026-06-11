@@ -17,3 +17,5 @@ default_workspaces:
   - tests/fixtures/repos/tiny_python_app
   - tests/fixtures/repos/tiny_web_app
   - tests/fixtures/repos/tiny_api_app
+  - tests/fixtures/repos/tiny_go_app
+  - tests/fixtures/repos/tiny_jvm_app
