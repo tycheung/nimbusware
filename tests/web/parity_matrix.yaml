@@ -196,7 +196,7 @@ admin:
     notes: Hardware page with rescan and pressure-history timeline
   - id: fleet_compare
     web: true
-    notes: Fleet tab cross-tenant gate comparison table (enterprise)
+    notes: Fleet tab cross-tenant gate comparison table + CSV download (enterprise)
   - id: persona_scope_overlap
     web: true
     notes: Config Personas tab overlap report via overlap-report BFF

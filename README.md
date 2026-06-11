@@ -36,7 +36,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 - **Object-store primary** — S3-compatible scraper artifact backend (optional local mirror)
 - **Redis fleet worker** — shared verify queue, health/back-pressure metrics
 - **Fleet Ollama SLI** — sustained health p95 export + preflight aggregate API
-- **Enterprise fleet (Admin)** — **Fleet** tab at `/v1/admin/app/fleet` (tenant switcher, fleet memory, Ollama SLI aggregate, worker health, hardware tiers, cross-tenant gate comparison; requires `X-Nimbusware-Api-Key` in Admin sign-in)
+- **Enterprise fleet (Admin)** — **Fleet** tab at `/v1/admin/app/fleet` (tenant switcher, fleet memory, Ollama SLI aggregate, worker health, hardware tiers, cross-tenant gate comparison with CSV export; requires `X-Nimbusware-Api-Key` in Admin sign-in)
 
 ## Architecture
 
@@ -95,7 +95,7 @@ The orchestrator and related packages provide:
 - **Scraper stage** — role-gated HTTP fetch with on-disk or object-store artifacts and retention/prune tooling
 - **Retrieval memory** — index findings/gate failures; replay harness; role telemetry and routing suggestions (read-only CLI)
 
-Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles, `critic_packs/`, `skills/`). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`). Bundle catalog authority is YAML under the repo root unless `NIMBUSWARE_DATABASE_URL` is set, in which case `policy/bundle-catalog` in Postgres is authoritative (`GET /v1/bundles/catalog/source`).
+Configs live under [`configs/`](configs/) (workflows, personas, roles, `model-routing.yaml` including `ollama_user_policy`, bundles, `critic_packs/` including `fintech-api` and `healthcare-api` stubs, `skills/`). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup (optional git export via `nimbusware-config`). Bundle catalog authority is YAML under the repo root unless `NIMBUSWARE_DATABASE_URL` is set, in which case `policy/bundle-catalog` in Postgres is authoritative (`GET /v1/bundles/catalog/source`).
 
 ## Context efficiency (Pi-inspired)
 
@@ -149,7 +149,7 @@ Optional **SWE-bench-style** regression harness for the `micro_slice` workflow p
   - `--dry-run --json` — validate manifest + fixture layout
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
-- Published metrics: gitignored [`benchmarks/`](benchmarks/) — `poetry run python scripts/publish_benchmark_snapshots.py` writes `latest_swe_bench.json` and `latest_factory_weekly.json` (factory golden replay summary); or set `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1` when running the harness alone
+- Published metrics: committed snapshots in [`benchmarks/latest_*.json`](benchmarks/) (regenerate via `poetry run python scripts/publish_benchmark_snapshots.py`); other harness output stays gitignored under `benchmarks/`
 - CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics); factory weekly via [`scripts/run_factory_weekly_ci.py`](scripts/run_factory_weekly_ci.py) in [`.github/workflows/slow_tests.yml`](.github/workflows/slow_tests.yml)
 - Env: `NIMBUSWARE_SWE_BENCH_ENABLED`, `NIMBUSWARE_SWE_BENCH_MANIFEST`, `NIMBUSWARE_SWE_BENCH_WRITE_JSON`
 

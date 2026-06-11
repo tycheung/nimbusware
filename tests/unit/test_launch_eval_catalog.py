@@ -21,3 +21,5 @@ def test_launch_eval_catalog_lists_prompts_and_workspaces() -> None:
     assert any("tiny_python_app" in str(w) for w in workspaces)
     assert any("tiny_web_app" in str(w) for w in workspaces)
     assert any("tiny_api_app" in str(w) for w in workspaces)
+    assert any("tiny_go_app" in str(w) for w in workspaces)
+    assert any("tiny_jvm_app" in str(w) for w in workspaces)

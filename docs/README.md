@@ -48,8 +48,8 @@ Former split docs (autonomous completion, Pi transplant, Streamlit migration) ar
 | Profile | Patch | micro_slice | factory T0–T3 | Notes |
 |---------|-------|-------------|-----------------|-------|
 | `patch` | Yes | — | — | Python + web globs default |
-| `patch_go` | Yes | — | — | Go modules; launch eval `patch_go_hotfix` |
-| `patch_jvm` | Yes | — | — | Java/Kotlin; launch eval `patch_jvm_hotfix` |
+| `patch_go` | Yes | — | — | Go modules; fixture `tests/fixtures/repos/tiny_go_app`; launch eval `patch_go_hotfix` |
+| `patch_jvm` | Yes | — | — | Java/Kotlin; fixture `tests/fixtures/repos/tiny_jvm_app`; launch eval `patch_jvm_hotfix` |
 | `micro_slice` / `micro_slice_fullstack` | — | Yes | — | Python + JS framework packs |
 | `campaign_factory_zero_touch` | — | — | T2 default | Catalog PUT E2E flows |
 
