@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from nimbusware_env.env_flags import (
     env_falsy,
     env_over_yaml,
@@ -24,9 +25,10 @@ def _coerce_yaml_bool(raw: object, default: bool = False) -> bool:
 
 
 def _leaf_bool(block: dict[str, object] | None, key: str, default: bool = False) -> bool:
-    if not isinstance(block, dict):
+    mapping = mapping_or_empty(block)
+    if not mapping:
         return default
-    cur = block.get(key)
+    cur = mapping.get(key)
     return _coerce_yaml_bool(cur, default) if cur is not None else default
 
 
@@ -35,10 +37,11 @@ def _panel_enabled(
     *,
     default_enabled: bool,
 ) -> bool:
-    if not isinstance(block, dict):
+    mapping = mapping_or_empty(block)
+    if not mapping:
         return default_enabled
-    if "enabled" in block:
-        return _leaf_bool(block, "enabled")
+    if "enabled" in mapping:
+        return _leaf_bool(mapping, "enabled")
     return default_enabled
 
 
@@ -47,9 +50,10 @@ def _implementation_panel_flags(
     *,
     default_enabled: bool,
 ) -> tuple[bool, bool]:
-    impl_llm = _leaf_bool(block, "llm") if isinstance(block, dict) else False
-    impl_stub = _leaf_bool(block, "stub") if isinstance(block, dict) else False
-    if default_enabled and isinstance(block, dict) and not impl_llm and not impl_stub:
+    mapping = mapping_or_empty(block)
+    impl_llm = _leaf_bool(mapping, "llm") if mapping else False
+    impl_stub = _leaf_bool(mapping, "stub") if mapping else False
+    if default_enabled and mapping and not impl_llm and not impl_stub:
         impl_stub = True
     return impl_llm, impl_stub
 
@@ -105,23 +109,17 @@ def parse_universal_critique_workflow_block(
         raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
     except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
         return UniversalCritiqueWorkflowBlock()
-    root = raw.get("universal_critique")
-    impl = root.get("implementation") if isinstance(root, dict) else None
-    tw = root.get("test_writer") if isinstance(root, dict) else None
-    pll = root.get("planner") if isinstance(root, dict) else None
-    fw = root.get("frontend_writer") if isinstance(root, dict) else None
-    mi = root.get("module_integrator") if isinstance(root, dict) else None
+    root_d = mapping_or_empty(raw.get("universal_critique"))
+    impl_d = mapping_or_empty(root_d.get("implementation"))
+    tw_d = mapping_or_empty(root_d.get("test_writer"))
+    pll_d = mapping_or_empty(root_d.get("planner"))
+    fw_d = mapping_or_empty(root_d.get("frontend_writer"))
+    mi_d = mapping_or_empty(root_d.get("module_integrator"))
 
-    root_d = root if isinstance(root, dict) else None
     default_enabled = _leaf_bool(root_d, "default_enabled") if root_d else False
     unanimous_gate_enforce = (
         _leaf_bool(root_d, "unanimous_gate_enforce", default=default_enabled) if root_d else False
     )
-    impl_d = impl if isinstance(impl, dict) else None
-    tw_d = tw if isinstance(tw, dict) else None
-    pll_d = pll if isinstance(pll, dict) else None
-    fw_d = fw if isinstance(fw, dict) else None
-    mi_d = mi if isinstance(mi, dict) else None
     impl_llm, impl_stub = _implementation_panel_flags(
         impl_d,
         default_enabled=default_enabled,

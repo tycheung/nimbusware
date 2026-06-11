@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 import yaml
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType, StagePassedEvent
 from agent_core.models.events_payloads import StagePassedPayload
 from nimbusware_env import find_repo_root
@@ -76,8 +77,7 @@ def load_autopilot_presets(repo_root: Path | None = None) -> dict[str, Any]:
     path = presets_config_path(repo_root)
     if not path.is_file():
         return {"levels": {str(i): preset_for_level(i).checkpoints for i in range(11)}}
-    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return raw if isinstance(raw, dict) else {}
+    return mapping_or_empty(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
 def resolve_autopilot_profile(
@@ -93,11 +93,10 @@ def resolve_autopilot_profile(
             custom=True,
         )
     if level is not None:
-        raw = load_autopilot_presets()
-        levels = raw.get("levels") if isinstance(raw, dict) else None
+        levels = mapping_or_empty(load_autopilot_presets()).get("levels")
         if isinstance(levels, dict):
-            entry = levels.get(str(level))
-            if isinstance(entry, dict) and isinstance(entry.get("checkpoints"), list):
+            entry = mapping_or_empty(levels.get(str(level)))
+            if entry and isinstance(entry.get("checkpoints"), list):
                 return AutopilotProfile(
                     level=level,
                     name=str(entry.get("name") or preset_for_level(level).name),
@@ -110,8 +109,8 @@ _RUN_AUTOPILOT_OVERRIDES: dict[str, dict[str, Any]] = {}
 
 
 def _autopilot_block_from_event_metadata(meta: dict[str, Any]) -> dict[str, Any] | None:
-    block = meta.get("autopilot")
-    return block if isinstance(block, dict) else None
+    block = mapping_or_empty(meta.get("autopilot"))
+    return block or None
 
 
 def _profile_from_autopilot_block(block: dict[str, Any]) -> AutopilotProfile:
@@ -158,16 +157,12 @@ def persist_run_autopilot(
 
 def latest_autopilot_block_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     for row in reversed(rows):
-        payload = row.get("payload")
-        if not isinstance(payload, dict):
+        pl = mapping_or_empty(row.get("payload"))
+        if str(pl.get("stage_name") or "") != AUTOPILOT_UPDATED_STAGE:
             continue
-        if str(payload.get("stage_name") or "") != AUTOPILOT_UPDATED_STAGE:
-            continue
-        meta = row.get("metadata")
-        if isinstance(meta, dict):
-            block = _autopilot_block_from_event_metadata(meta)
-            if block is not None:
-                return block
+        block = _autopilot_block_from_event_metadata(mapping_or_empty(row.get("metadata")))
+        if block is not None:
+            return block
     return None
 
 
@@ -193,22 +188,17 @@ def autopilot_level_from_rows(rows: list[dict[str, Any]]) -> int:
         return max(0, min(10, int(persisted["level"])))
     if rows:
         rid = str(rows[0].get("run_id", ""))
-        override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
-        if isinstance(override, dict) and override.get("level") is not None:
+        override = mapping_or_empty(_RUN_AUTOPILOT_OVERRIDES.get(rid))
+        if override.get("level") is not None:
             return max(0, min(10, int(override["level"])))
-    for row in rows:
-        if row.get("event_type") != "run.created":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            break
+    meta = mapping_or_empty(_run_created_metadata(rows))
+    if meta:
         for key in ("autopilot_effective", "autopilot"):
-            block = meta.get(key)
-            if isinstance(block, dict) and block.get("level") is not None:
+            block = mapping_or_empty(meta.get(key))
+            if block.get("level") is not None:
                 return max(0, min(10, int(block["level"])))
         if meta.get("autopilot_level") is not None:
             return max(0, min(10, int(meta["autopilot_level"])))
-        break
     return 5
 
 
@@ -218,8 +208,8 @@ def autopilot_profile_from_rows(rows: list[dict[str, Any]]) -> AutopilotProfile:
         return _profile_from_autopilot_block(persisted)
     if rows:
         rid = str(rows[0].get("run_id", ""))
-        override = _RUN_AUTOPILOT_OVERRIDES.get(rid)
-        if isinstance(override, dict):
+        override = mapping_or_empty(_RUN_AUTOPILOT_OVERRIDES.get(rid))
+        if override:
             cps = override.get("checkpoints")
             if isinstance(cps, list) and cps:
                 return resolve_autopilot_profile(
@@ -230,18 +220,14 @@ def autopilot_profile_from_rows(rows: list[dict[str, Any]]) -> AutopilotProfile:
                 return resolve_autopilot_profile(level=int(override["level"]))
     level = autopilot_level_from_rows(rows)
     custom: set[str] | None = None
-    for row in rows:
-        if row.get("event_type") != "run.created":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            break
+    meta = mapping_or_empty(_run_created_metadata(rows))
+    if meta:
         for key in ("autopilot_effective", "autopilot"):
-            block = meta.get(key)
-            if isinstance(block, dict) and isinstance(block.get("checkpoints"), list):
-                custom = {str(c) for c in block["checkpoints"]}
+            block = mapping_or_empty(meta.get(key))
+            cps = block.get("checkpoints")
+            if isinstance(cps, list):
+                custom = {str(c) for c in cps}
                 break
-        break
     return resolve_autopilot_profile(level=level, custom_checkpoints=custom)
 
 
@@ -279,20 +265,22 @@ def theater_visibility_for_level(level: int) -> TheaterVisibility:
 def autopilot_theater_filter_active(rows: list[dict[str, Any]]) -> bool:
     if latest_autopilot_block_from_rows(rows) is not None:
         return True
-    for row in rows:
-        if row.get("event_type") != "run.created":
-            continue
-        meta = row.get("metadata")
-        if not isinstance(meta, dict):
-            break
+    meta = mapping_or_empty(_run_created_metadata(rows))
+    if meta:
         for key in ("autopilot_effective", "autopilot"):
-            block = meta.get(key)
-            if isinstance(block, dict) and block.get("level") is not None:
+            if mapping_or_empty(meta.get(key)).get("level") is not None:
                 return True
         if meta.get("autopilot_level") is not None:
             return True
-        break
     return False
+
+
+def _run_created_metadata(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    for row in rows:
+        if row.get("event_type") != "run.created":
+            continue
+        return mapping_or_empty(row.get("metadata"))
+    return {}
 
 
 def filter_theater_messages_for_autopilot(

@@ -95,19 +95,17 @@ def agent_evaluator_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
         persona_id: str | None = suffix if suffix else None
         ae_promote: dict[str, Any] = {}
         ae_create: dict[str, Any] = {}
-        meta = ev.get("metadata")
-        if isinstance(meta, dict):
-            inner = meta.get("agent_evaluator")
-            if isinstance(inner, dict):
-                np = inner.get("auto_promote_probation")
-                nc = inner.get("auto_create_persona")
-                if isinstance(np, dict) or isinstance(nc, dict):
-                    if isinstance(np, dict) and np:
-                        ae_promote = dict(np)
-                    if isinstance(nc, dict) and nc:
-                        ae_create = dict(nc)
-                elif inner:
-                    ae_promote = dict(inner)
+        inner = mapping_or_empty(mapping_or_empty(ev.get("metadata")).get("agent_evaluator"))
+        if inner:
+            np = mapping_or_empty(inner.get("auto_promote_probation"))
+            nc = mapping_or_empty(inner.get("auto_create_persona"))
+            if np or nc:
+                if np:
+                    ae_promote = dict(np)
+                if nc:
+                    ae_create = dict(nc)
+            else:
+                ae_promote = dict(inner)
         out = {
             "event_id": ev.get("event_id"),
             "occurred_at": ev.get("occurred_at"),
@@ -125,12 +123,10 @@ def agent_evaluator_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
             ae_create=ae_create,
         )
         evaluation: dict[str, Any] | None = None
-        if isinstance(meta, dict):
-            inner = meta.get("agent_evaluator")
-            if isinstance(inner, dict):
-                evl = inner.get("evaluation")
-                if isinstance(evl, dict):
-                    evaluation = evl
+        if inner:
+            evl = inner.get("evaluation")
+            if isinstance(evl, dict):
+                evaluation = evl
         if evaluation:
             status = evaluation.get("status")
             if isinstance(status, str) and status.strip():
@@ -149,70 +145,59 @@ def agent_evaluator_timeline_summary(events: list[dict[str, Any]]) -> dict[str, 
             gaps = evaluation.get("gaps")
             if isinstance(gaps, list):
                 out["evaluation_gaps"] = gaps
-            cov = evaluation.get("coverage")
-            if isinstance(cov, dict):
-                ba = cov.get("business_area")
-                if isinstance(ba, dict) and isinstance(ba.get("id"), str):
-                    out["coverage_business_area_id"] = ba["id"]
-                dr = cov.get("development_role")
-                if isinstance(dr, dict) and isinstance(dr.get("id"), str):
-                    out["coverage_development_role_id"] = dr["id"]
-        if isinstance(meta, dict):
-            inner = meta.get("agent_evaluator")
-            if isinstance(inner, dict):
-                branch = inner.get("evaluation_branch")
-                if isinstance(branch, str) and branch.strip():
-                    out["evaluation_branch"] = branch.strip()
-                mode = inner.get("production_scoring_mode")
-                if isinstance(mode, str) and mode.strip():
-                    out["production_scoring_mode"] = mode.strip()
-                llm_eval = inner.get("llm_evaluation")
-                if isinstance(llm_eval, dict):
-                    llm_mode = llm_eval.get("production_scoring_mode")
-                    if isinstance(llm_mode, str) and llm_mode.strip():
-                        out["llm_production_scoring_mode"] = llm_mode.strip()
-                    summary = llm_eval.get("summary")
-                    if isinstance(summary, str) and summary.strip():
-                        out["llm_evaluation_summary"] = summary.strip()
-                    llm_status = llm_eval.get("status")
-                    if isinstance(llm_status, str) and llm_status.strip():
-                        out["llm_evaluation_status"] = llm_status.strip()
-                    policy_score = llm_eval.get("policy_score")
-                    if isinstance(policy_score, (int, float)) and not isinstance(
-                        policy_score,
-                        bool,
-                    ):
-                        ps_f = float(policy_score)
-                        out["llm_evaluation_score"] = ps_f
-                        band_raw = llm_eval.get("policy_score_band")
-                        if isinstance(band_raw, str) and band_raw.strip():
-                            out["llm_evaluation_score_band"] = band_raw.strip()
-                        else:
-                            out["llm_evaluation_score_band"] = agent_evaluator_score_band(
-                                ps_f,
-                            )
+            cov = mapping_or_empty(evaluation.get("coverage"))
+            ba = mapping_or_empty(cov.get("business_area"))
+            if isinstance(ba.get("id"), str):
+                out["coverage_business_area_id"] = ba["id"]
+            dr = mapping_or_empty(cov.get("development_role"))
+            if isinstance(dr.get("id"), str):
+                out["coverage_development_role_id"] = dr["id"]
+        if inner:
+            branch = inner.get("evaluation_branch")
+            if isinstance(branch, str) and branch.strip():
+                out["evaluation_branch"] = branch.strip()
+            mode = inner.get("production_scoring_mode")
+            if isinstance(mode, str) and mode.strip():
+                out["production_scoring_mode"] = mode.strip()
+            llm_eval = mapping_or_empty(inner.get("llm_evaluation"))
+            if llm_eval:
+                llm_mode = llm_eval.get("production_scoring_mode")
+                if isinstance(llm_mode, str) and llm_mode.strip():
+                    out["llm_production_scoring_mode"] = llm_mode.strip()
+                summary = llm_eval.get("summary")
+                if isinstance(summary, str) and summary.strip():
+                    out["llm_evaluation_summary"] = summary.strip()
+                llm_status = llm_eval.get("status")
+                if isinstance(llm_status, str) and llm_status.strip():
+                    out["llm_evaluation_status"] = llm_status.strip()
+                policy_score = llm_eval.get("policy_score")
+                if isinstance(policy_score, (int, float)) and not isinstance(policy_score, bool):
+                    ps_f = float(policy_score)
+                    out["llm_evaluation_score"] = ps_f
+                    band_raw = llm_eval.get("policy_score_band")
+                    if isinstance(band_raw, str) and band_raw.strip():
+                        out["llm_evaluation_score_band"] = band_raw.strip()
+                    else:
+                        out["llm_evaluation_score_band"] = agent_evaluator_score_band(ps_f)
     gate_verdict: str | None = None
     coverage_branch: str | None = None
     coverage_summary: str | None = None
     for ev in events:
         if ev.get("event_type") == EventType.STAGE_STARTED.value:
-            pl2 = ev.get("payload")
-            if isinstance(pl2, dict) and pl2.get("stage_name") == "agent_evaluator.critique":
-                meta2 = ev.get("metadata")
-                if isinstance(meta2, dict):
-                    ae2 = meta2.get("agent_evaluator")
-                    if isinstance(ae2, dict):
-                        br = ae2.get("persona_coverage_critique_branch")
-                        sm = ae2.get("llm_summary")
-                        if isinstance(br, str) and br.strip():
-                            coverage_branch = br.strip()
-                        if isinstance(sm, str) and sm.strip():
-                            coverage_summary = sm.strip()
+            pl2 = mapping_or_empty(ev.get("payload"))
+            if pl2.get("stage_name") == "agent_evaluator.critique":
+                ae2 = mapping_or_empty(
+                    mapping_or_empty(ev.get("metadata")).get("agent_evaluator"),
+                )
+                br = ae2.get("persona_coverage_critique_branch")
+                sm = ae2.get("llm_summary")
+                if isinstance(br, str) and br.strip():
+                    coverage_branch = br.strip()
+                if isinstance(sm, str) and sm.strip():
+                    coverage_summary = sm.strip()
         if ev.get("event_type") != EventType.GATE_DECISION_EMITTED.value:
             continue
-        gate_payload = ev.get("payload")
-        if not isinstance(gate_payload, dict):
-            continue
+        gate_payload = mapping_or_empty(ev.get("payload"))
         if gate_payload.get("stage_name") == "agent_evaluator.critique":
             v = gate_payload.get("verdict")
             if v is not None:
