@@ -16,8 +16,7 @@ from nimbusware_api.errors import problem
 from nimbusware_console.services.oauth_pkce import accept_oidc_callback, build_authorize_url
 from nimbusware_env.admin_token import nimbusware_admin_token
 from nimbusware_env.edition import is_enterprise
-from nimbusware_env.env_flags import env_truthy
-from nimbusware_env.env_flags import env_str
+from nimbusware_env.env_flags import env_str, env_truthy
 from nimbusware_env.oidc_config import load_oidc_config, resolve_console_role_from_groups
 
 router = APIRouter(prefix="/admin/oauth", tags=["admin"])

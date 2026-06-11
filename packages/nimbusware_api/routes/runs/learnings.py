@@ -8,8 +8,8 @@ from fastapi import APIRouter, HTTPException
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from nimbusware_maker.workspace import resolve_run_workspace
 from nimbusware_env import find_repo_root
+from nimbusware_maker.workspace import resolve_run_workspace
 from nimbusware_orchestrator.learnings_catalog import list_workspace_learnings
 from nimbusware_orchestrator.learnings_stitch_suggest import stitch_suggestion_for_run
 
