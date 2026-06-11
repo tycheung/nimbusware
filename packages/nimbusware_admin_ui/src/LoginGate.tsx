@@ -21,12 +21,16 @@ export function LoginGate({
   const [token, setToken] = useState(() => sessionStorage.getItem(TOKEN_KEY) || "");
   const [apiKey, setApiKey] = useState(() => sessionStorage.getItem(ENTERPRISE_API_KEY_KEY) || "");
   const [oidcOk, setOidcOk] = useState(false);
+  const [consoleRole, setConsoleRole] = useState("admin");
 
   useEffect(() => {
     if (!oidcLoginReady) return;
     fetch(`${apiBase()}/admin/oauth/session`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : { authenticated: false }))
-      .then((b: { authenticated?: boolean }) => setOidcOk(Boolean(b.authenticated)))
+      .then((b: { authenticated?: boolean; console_role?: string }) => {
+        setOidcOk(Boolean(b.authenticated));
+        setConsoleRole(String(b.console_role || "admin"));
+      })
       .catch(() => setOidcOk(false));
   }, [oidcLoginReady]);
 
@@ -85,7 +89,11 @@ export function LoginGate({
     <>
       {enterpriseEdition ? (
         <div class="enterprise-key-bar">
-          {oidcOk ? <span class="muted">SSO session active.</span> : null}
+          {oidcOk ? (
+            <span class="muted">
+              SSO session active ({consoleRole === "admin" ? "admin" : "read-only"}).
+            </span>
+          ) : null}
           <label>
             Enterprise API key{" "}
             <input

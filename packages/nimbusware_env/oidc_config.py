@@ -50,6 +50,23 @@ def load_oidc_config() -> OidcConfig:
     )
 
 
+def oidc_admin_groups() -> frozenset[str]:
+    raw = env_str("NIMBUSWARE_OIDC_ADMIN_GROUPS").strip()
+    if not raw:
+        return frozenset()
+    return frozenset(g.strip() for g in raw.split(",") if g.strip())
+
+
+def resolve_console_role_from_groups(groups: list[str] | tuple[str, ...]) -> str:
+    admin_groups = oidc_admin_groups()
+    if not admin_groups:
+        return "admin"
+    normalized = {g.strip() for g in groups if g.strip()}
+    if normalized & admin_groups:
+        return "admin"
+    return "readonly"
+
+
 def oidc_required_for_console() -> bool:
     try:
         from nimbusware_env.edition import is_enterprise

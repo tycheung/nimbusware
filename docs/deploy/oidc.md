@@ -96,9 +96,17 @@ Session cookies are **HMAC-signed with the admin token secret**. Rotating the ad
 
 Automated: `.github/workflows/oidc_smoke.yml` runs `tests/api/test_admin_oauth.py`.
 
-## Group mapping (future)
+## Group mapping
 
-Map IdP `groups` claim → `maker_admin` vs read-only via env `NIMBUSWARE_OIDC_ADMIN_GROUPS` (not implemented in v1).
+Set comma-separated IdP group names that grant **admin** console access (all other SSO users get **readonly** shell):
+
+```env
+NIMBUSWARE_OIDC_ADMIN_GROUPS=nimbusware-admins,platform-ops
+```
+
+Mock flow: `NIMBUSWARE_OIDC_MOCK_GROUPS` (default `nimbusware-admins`) feeds group resolution on callback.
+
+`GET /v1/admin/oauth/session` returns `{ authenticated, console_role }` where `console_role` is `admin` or `readonly`. API mutations still require `X-Nimbusware-Admin-Token` unless your deployment maps groups to tokens separately.
 
 ## Code
 

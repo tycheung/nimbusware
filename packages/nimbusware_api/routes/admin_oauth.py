@@ -17,7 +17,8 @@ from nimbusware_console.services.oauth_pkce import accept_oidc_callback, build_a
 from nimbusware_env.admin_token import nimbusware_admin_token
 from nimbusware_env.edition import is_enterprise
 from nimbusware_env.env_flags import env_truthy
-from nimbusware_env.oidc_config import load_oidc_config
+from nimbusware_env.env_flags import env_str
+from nimbusware_env.oidc_config import load_oidc_config, resolve_console_role_from_groups
 
 router = APIRouter(prefix="/admin/oauth", tags=["admin"])
 
@@ -89,8 +90,19 @@ def _read_pkce_cookie(request: Request) -> dict[str, Any] | None:
     return _verify_signed(raw) if raw else None
 
 
-def _set_session_cookie(response: Response) -> None:
-    payload = {"ok": True, "exp": time.time() + _COOKIE_MAX_AGE}
+def _mock_oidc_groups() -> list[str]:
+    raw = env_str("NIMBUSWARE_OIDC_MOCK_GROUPS").strip()
+    if not raw:
+        return ["nimbusware-admins"]
+    return [g.strip() for g in raw.split(",") if g.strip()]
+
+
+def _set_session_cookie(response: Response, *, console_role: str = "admin") -> None:
+    payload = {
+        "ok": True,
+        "exp": time.time() + _COOKIE_MAX_AGE,
+        "console_role": console_role,
+    }
     response.set_cookie(
         _SESSION_COOKIE,
         _sign_payload(payload),
@@ -101,10 +113,16 @@ def _set_session_cookie(response: Response) -> None:
     )
 
 
-def _session_valid(request: Request) -> bool:
+def _session_payload(request: Request) -> dict[str, Any] | None:
     raw = request.cookies.get(_SESSION_COOKIE, "")
     data = _verify_signed(raw) if raw else None
-    return bool(data and data.get("ok"))
+    if not data or not data.get("ok"):
+        return None
+    return data
+
+
+def _session_valid(request: Request) -> bool:
+    return _session_payload(request) is not None
 
 
 @router.get("/login")
@@ -164,16 +182,22 @@ def admin_oauth_callback(
     )
     if not ok:
         raise HTTPException(status_code=401, detail=problem("oidc_callback_failed", msg))
+    groups = _mock_oidc_groups() if env_truthy("NIMBUSWARE_OIDC_MOCK") else []
+    role = resolve_console_role_from_groups(groups)
     response = RedirectResponse(url="/v1/admin/app/", status_code=302)
-    _set_session_cookie(response)
+    _set_session_cookie(response, console_role=role)
     response.delete_cookie(_PKCE_COOKIE, path="/v1/admin/oauth")
     return response
 
 
 @router.get("/session")
-def admin_oauth_session(request: Request) -> dict[str, bool]:
+def admin_oauth_session(request: Request) -> dict[str, Any]:
     _require_enterprise_oauth()
-    return {"authenticated": _session_valid(request)}
+    payload = _session_payload(request)
+    return {
+        "authenticated": payload is not None,
+        "console_role": str(payload.get("console_role") or "admin") if payload else "readonly",
+    }
 
 
 @router.post("/logout")

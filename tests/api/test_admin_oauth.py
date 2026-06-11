@@ -55,7 +55,29 @@ def test_oauth_mock_flow(
 
     sess = client.get("/v1/admin/oauth/session")
     assert sess.status_code == 200
-    assert sess.json()["authenticated"] is True
+    body = sess.json()
+    assert body["authenticated"] is True
+    assert body.get("console_role") == "admin"
+
+
+def test_oauth_mock_readonly_when_not_in_admin_groups(
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(ENV_EDITION, ENTERPRISE_EDITION)
+    monkeypatch.setenv("NIMBUSWARE_OIDC_ENABLED", "1")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_ISSUER", "https://idp.example.com")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_CLIENT_ID", "test-client")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_REDIRECT_URI", "http://testserver/v1/admin/oauth/callback")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_MOCK", "1")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_ADMIN_GROUPS", "nimbusware-admins")
+    monkeypatch.setenv("NIMBUSWARE_OIDC_MOCK_GROUPS", "viewers-only")
+
+    r = client.get("/v1/admin/oauth/login", follow_redirects=False)
+    r2 = client.get(r.headers["location"], follow_redirects=False)
+    client.get(r2.headers["location"], follow_redirects=False)
+    sess = client.get("/v1/admin/oauth/session")
+    assert sess.json().get("console_role") == "readonly"
 
 
 def test_oauth_callback_bad_state(
