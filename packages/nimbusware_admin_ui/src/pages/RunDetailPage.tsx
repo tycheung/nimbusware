@@ -36,6 +36,9 @@ export function RunDetailPage({ id }: { id?: string }) {
     { key: string; run_a: string; run_b: string }[]
   >([]);
   const [executeRoleId, setExecuteRoleId] = useState("planner");
+  const [replaySeq, setReplaySeq] = useState("0");
+  const [replayAck, setReplayAck] = useState(false);
+  const [replayMsg, setReplayMsg] = useState("");
 
   async function refreshTimeline() {
     if (!id) return;
@@ -80,6 +83,43 @@ export function RunDetailPage({ id }: { id?: string }) {
       setRun(await apiJson(`/runs/${id}`));
     } catch (e) {
       setActionMsg(String((e as Error).message || e));
+    }
+  }
+
+  async function replayFromCheckpoint() {
+    if (!id) return;
+    if (!replayAck) {
+      setReplayMsg("Confirm operator acknowledgement before replay.");
+      return;
+    }
+    const seq = Number(replaySeq);
+    if (!Number.isFinite(seq) || seq < 0) {
+      setReplayMsg("Enter a valid store sequence (0 or higher).");
+      return;
+    }
+    try {
+      const body = await apiJson<{
+        replay_started?: boolean;
+        campaign_tick_enqueued?: boolean;
+      }>(`/runs/${id}/replay-from`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from_store_seq: seq,
+          operator_ack: true,
+          compact_enabled: true,
+          reason: "admin replay wizard",
+        }),
+      });
+      setReplayMsg(
+        body.replay_started
+          ? `Replay started from seq ${seq}` +
+              (body.campaign_tick_enqueued ? " (campaign tick enqueued)." : ".")
+          : "Replay not started.",
+      );
+      await refreshTimeline();
+    } catch (e) {
+      setReplayMsg(String((e as Error).message || e));
     }
   }
 
@@ -256,7 +296,13 @@ export function RunDetailPage({ id }: { id?: string }) {
       <button type="button" onClick={() => void comparePolicies()}>
         Compare
       </button>
-      {policyDiffCaption ? <p class="hint">{policyDiffCaption}</p> : null}
+      {policyDiffCaption ? (
+        <p class="hint">
+          {policyDiffCaption}{" "}
+          <a href="/v1/admin/app/metrics">View competitive gate metrics</a> to compare outcomes
+          before/after policy changes.
+        </p>
+      ) : null}
       {policyDiffRows.length ? (
         <table class="data-table">
           <thead>

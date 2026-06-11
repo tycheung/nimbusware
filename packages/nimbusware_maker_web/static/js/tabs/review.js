@@ -109,6 +109,11 @@ export async function mountReview(root) {
       <h3>Git &amp; pull request</h3>
       <p id="rev-git-status" class="muted"></p>
       <div id="rev-git-actions" class="actions"></div>
+      <p class="muted">
+        <a id="rev-audit-export" href="#" download hidden data-testid="maker-review-audit-export">
+          Download compliance bundle
+        </a>
+      </p>
     </section>
     <section id="rev-factory-evidence" class="panel" data-testid="maker-review-factory-evidence">
       <h3>Factory evidence</h3>
@@ -140,6 +145,11 @@ export async function mountReview(root) {
   async function loadGitStatus() {
     const id = await currentRunId();
     if (!id) return;
+    const auditLink = root.querySelector("#rev-audit-export");
+    if (auditLink) {
+      auditLink.href = `/v1/runs/${encodeURIComponent(id)}/audit-export`;
+      auditLink.hidden = false;
+    }
     const el = root.querySelector("#rev-git-status");
     const actions = root.querySelector("#rev-git-actions");
     if (actions) actions.replaceChildren();
