@@ -118,7 +118,9 @@ plan_gap.md
 releasev1features.md
 e2e-testing-extension-plan.md
 e2e-true-variable-launch-testing.md
-benchmarks/
+benchmarks/*
+!benchmarks/README.md
+!benchmarks/latest_*.json
 
 # Diagnose/learn runtime docs (per-workspace; see diagnose_learn.py, ADR 012)
 docs/learnings/

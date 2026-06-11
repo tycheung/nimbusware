@@ -12,6 +12,7 @@ from agent_core.models import (
     StagePassedEvent,
     StagePassedPayload,
 )
+from nimbusware_console import enterprise_console as ent_console
 from nimbusware_iam.constants import DEFAULT_TENANT_ID
 from nimbusware_iam.context import reset_auth_context, set_auth_context
 from nimbusware_iam.models import AuthContext
@@ -82,3 +83,7 @@ def test_compare_tenant_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
     _seed_run(store, verdict="FAIL")
     out = compare_tenant_metrics(store, tenant_a=DEFAULT_TENANT_ID, tenant_b=tid_b, run_limit=20)
     assert "comparison" in out
+    rows = ent_console.fleet_compare_table_rows(out)
+    csv_text = ent_console.fleet_compare_csv(rows)
+    assert "gates_passed" in csv_text
+    assert "Tenant A" in csv_text

@@ -348,10 +348,12 @@ def enterprise_fleet_compare(
         tenant_b=uuid_b,
         run_limit=run_limit,
     )
+    rows = ent_console.fleet_compare_table_rows(compare)
     return {
         "compare": compare,
         "caption": ent_console.fleet_compare_caption(compare),
-        "rows": ent_console.fleet_compare_table_rows(compare),
+        "rows": rows,
+        "csv": ent_console.fleet_compare_csv(rows),
         "tenant_a": tid_a,
         "tenant_b": tid_b,
     }

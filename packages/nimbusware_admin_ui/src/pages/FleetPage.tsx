@@ -46,6 +46,7 @@ export function FleetPage() {
     { tenant: string; runs_scanned: string; gates_passed: string; gates_failed: string; ollama_p95_ms: string }[]
   >([]);
   const [compareCaption, setCompareCaption] = useState("");
+  const [compareCsv, setCompareCsv] = useState("");
   const [policyLevel, setPolicyLevel] = useState(10);
   const [policyCheckpoints, setPolicyCheckpoints] = useState("");
   const [policyCatalog, setPolicyCatalog] = useState<string[]>([]);
@@ -152,13 +153,14 @@ export function FleetPage() {
       tenants.find((t) => t.id === tenantA)?.slug || tenantA,
     );
     const q = `?tenant_a=${encodeURIComponent(tenantA)}&tenant_b=${encodeURIComponent(tenantB)}`;
-    apiJson<{ rows?: typeof compareRows; caption?: string }>(
+    apiJson<{ rows?: typeof compareRows; caption?: string; csv?: string }>(
       `/admin/ui/enterprise/fleet-compare${q}`,
       { headers: { "X-Nimbusware-Api-Key": key } },
     )
       .then((body) => {
         setCompareRows(body.rows || []);
         setCompareCaption(body.caption || "");
+        setCompareCsv(body.csv || "");
       })
       .catch((e) => setError(String((e as Error).message || e)));
   }, [tenantA, tenantB, tenants]);
@@ -346,6 +348,24 @@ export function FleetPage() {
                 disabled={!tenantA || !tenantB || tenantA === tenantB}
               >
                 Compare
+              </button>{" "}
+              <button
+                type="button"
+                class="secondary"
+                onClick={() => {
+                  if (!compareCsv) return;
+                  const blob = new Blob([compareCsv], { type: "text/csv" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "fleet_compare.csv";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                disabled={!compareCsv}
+                data-testid="fleet-compare-csv-download"
+              >
+                Download CSV
               </button>
               {compareCaption ? <p>{compareCaption}</p> : null}
               {compareRows.length ? (

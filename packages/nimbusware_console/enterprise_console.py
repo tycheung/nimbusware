@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import io
 import json
 from collections.abc import Mapping
 from typing import Any
@@ -251,3 +253,23 @@ def fleet_compare_table_rows(body: Mapping[str, Any] | None) -> list[dict[str, s
             },
         )
     return rows
+
+
+def fleet_compare_csv(rows: list[dict[str, str]]) -> str:
+    """Serialize fleet compare table rows as CSV for procurement exports."""
+    if not rows:
+        return "tenant,tenant_id,runs_scanned,gates_passed,gates_failed,ollama_p95_ms\n"
+    fieldnames = [
+        "tenant",
+        "tenant_id",
+        "runs_scanned",
+        "gates_passed",
+        "gates_failed",
+        "ollama_p95_ms",
+    ]
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=fieldnames, lineterminator="\n")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({key: row.get(key, "") for key in fieldnames})
+    return buf.getvalue()

@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "manifest_json_ok",
+    "fixture_dir_ok",
+    "benchmark_start",
+    "run_created",
+    "min_pass_rate_ok"
+  ],
+  "gates_failed": 0,
+  "gates_passed": 1,
+  "message": "micro_slice benchmark completed",
+  "mode": "run",
+  "ok": true,
+  "pass_rate": 1.0,
+  "published_at": "2026-06-01T00:00:00Z",
+  "slices_total": 1,
+  "workflow_profile": "micro_slice"
+}

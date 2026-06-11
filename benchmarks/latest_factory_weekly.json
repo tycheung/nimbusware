@@ -1,0 +1,11 @@
+{
+  "entry_count": 3,
+  "passed": true,
+  "pass_rate": 1.0,
+  "published_at": "2026-06-01T00:00:00Z",
+  "prompt_ids": [
+    "todo_api",
+    "basic_crm",
+    "contacts_api"
+  ]
+}
