@@ -343,13 +343,13 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - **Compaction theater** — compaction markers in run theater; revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Findings** — blocking findings panel on Progress (HIGH/BLOCKER severity with repro steps)
 - **Operator ribbons** — dev-env start/stop/regression, interjection Next/Last queue, autopilot slider (`GET/PUT /v1/runs/{id}/autopilot`), improvement/resolution council summary from timeline
-- **Plan / completion** — Plan tab campaign backlog tree; factory tier + ISM coverage on maker-progress (`factory_status` projection); factory evidence JSON + zip export via `GET /v1/runs/{id}/factory-evidence` and `.../export`
+- **Plan / completion** — Plan tab campaign backlog tree; factory tier + ISM coverage + tier-promotion remaining gates on maker-progress (`factory_status` projection); factory evidence JSON, **HTML scorecard** (`.../factory-evidence/scorecard.html`), and zip export (`.../export`, zip includes `scorecard.html`)
 
 **Review**
 
 - Research brief approve/reject (`GET /v1/runs/{id}/research`, POST approve/reject); stitch panel (`GET /v1/runs/{id}/stitch-summary`)
 - Plan approval and per-slice apply/skip with diff preview (`GET /v1/runs/{id}/maker/pending`, plan approve, slice prepare/apply/skip)
-- **Factory evidence scorecard** — Review tab table from `GET /v1/runs/{id}/factory-evidence` (`scorecard_rows`: tier, ISM, PUT E2E)
+- **Factory evidence scorecard** — Review tab table from `GET /v1/runs/{id}/factory-evidence` (`scorecard_rows`: tier, ISM, PUT E2E) with HTML + zip download links
 - Workspace revert to last snapshot (`POST /v1/runs/{id}/workspace/revert`)
 - Approval mode sets `maker_approval.enabled` on runs with requirements; slice chain auto-advances by default — set `NIMBUSWARE_SLICE_AUTO_ADVANCE=0` to pause for manual approve/skip
 
@@ -423,7 +423,7 @@ Enterprise routes require `NIMBUSWARE_EDITION=enterprise` and (except bootstrap)
 | **Fleet critic reliability** | `GET /enterprise/fleet/critic-reliability` | Enterprise |
 | **Personas** | Shelf read | User |
 | **Personas** | Admin CRUD, `GET /personas/overlap-report` | Admin |
-| **Admin BFF** | Run detail panels (`/admin/ui/runs/{id}/…`), fleet compare (`/admin/ui/enterprise/fleet-compare`), persona overlap (`/admin/ui/personas/overlap-report`) | Admin |
+| **Admin BFF** | Run detail panels (`/admin/ui/runs/{id}/…`), fleet compare + **fleet autopilot policy** (`/admin/ui/enterprise/fleet-compare`, `fleet-autopilot-policy`), timeline interjection SLO explain (`/runs/{id}/timeline/interjection/explain`), persona overlap | Admin |
 | **Custom agents** | `GET` list | User |
 | **Custom agents** | `POST/PATCH/DELETE` | Admin |
 | **Preflight** | `GET /preflight-history` | User |
@@ -499,7 +499,7 @@ Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `
 
 Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
 
-External chat (§20.5 boundary — not in-product workspace): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token ([docs/integrations-external-chat.md](docs/integrations-external-chat.md)).
+External chat (§20.5 boundary — not in-product workspace): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token — `/run`, `/status`, and `[patch]`/`[steer]`/`[skip]`/`[build]` steering on `last_run_id` ([docs/integrations-external-chat.md](docs/integrations-external-chat.md), [docs/operator-interjection-slo.md](docs/operator-interjection-slo.md)).
 
 ## Linux desktop (GTK / pywebview)
 
