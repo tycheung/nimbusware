@@ -7,7 +7,9 @@ import pytest
 from nimbusware_orchestrator.ci_bridge.external_ci import attach_external_ci_metadata
 
 
-def test_attach_external_ci_metadata_skipped_without_config(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_attach_external_ci_metadata_skipped_without_config(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     monkeypatch.delenv("NIMBUSWARE_CI_GITHUB_REPO", raising=False)
     monkeypatch.delenv("GITLAB_TOKEN", raising=False)
