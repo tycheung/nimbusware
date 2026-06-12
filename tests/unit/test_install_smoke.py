@@ -1,0 +1,32 @@
+from __future__ import annotations
+
+import subprocess
+import sys
+from pathlib import Path
+
+_REPO = Path(__file__).resolve().parents[2]
+_SCRIPT = _REPO / "scripts" / "install_nimbusware.py"
+
+
+def test_install_check_only_passes() -> None:
+    proc = subprocess.run(
+        [sys.executable, str(_SCRIPT), "--check-only"],
+        cwd=_REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "Prerequisite check passed" in proc.stdout
+
+
+def test_install_print_one_command_exits_zero() -> None:
+    proc = subprocess.run(
+        [sys.executable, str(_SCRIPT), "--print-one-command"],
+        cwd=_REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "One-command install" in proc.stdout

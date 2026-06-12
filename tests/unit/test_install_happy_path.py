@@ -23,3 +23,15 @@ def test_happy_path_mentions_quick_mode_and_chat(capsys) -> None:
     assert "#/chat" in out
     assert "tiny_python_app" in out
     assert "Fix a bug" in out
+
+
+def test_one_command_install_lines_documented(capsys) -> None:
+    mod = _load_install_module()
+    mod._print_one_command_install(_REPO)
+    out = capsys.readouterr().out
+    assert "--clone" in out
+    assert "--non-interactive" in out
+    assert "--skip-postgres" in out
+    lines = mod._one_command_install_lines(_REPO)
+    assert len(lines) >= 2
+    assert all("--non-interactive" in line for line in lines)

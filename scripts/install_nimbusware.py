@@ -625,6 +625,28 @@ def _fixture_workspace(repo: Path, name: str) -> Path:
     return (repo / "tests" / "fixtures" / "repos" / name).resolve()
 
 
+def _one_command_install_lines(repo: Path) -> list[str]:
+    """Return documented one-command install variants (clone-first or in-repo)."""
+    return [
+        (
+            "python scripts/install_nimbusware.py --clone <repo-url> "
+            "--target-dir ./Nimbusware --non-interactive --skip-postgres"
+        ),
+        (
+            f"cd {repo} && python scripts/install_nimbusware.py "
+            "--non-interactive --skip-postgres --no-poetry-install"
+        ),
+    ]
+
+
+def _print_one_command_install(repo: Path) -> None:
+    _log("")
+    _log("One-command install (documented consumer path):")
+    for idx, line in enumerate(_one_command_install_lines(repo), start=1):
+        _log(f"  {idx}. {line}")
+    _log("  Then: poetry run nimbusware-run --quick")
+
+
 def _print_happy_path(repo: Path) -> None:
     fixture = _fixture_workspace(repo, "tiny_python_app")
     _log("")
@@ -682,6 +704,7 @@ def _print_next_steps(
     _log("  nimbusware-run --quick  # in-memory store, stub critics — first-run demo")
     _log("  Maker Chat (after nimbusware-run): http://127.0.0.1:8765/v1/maker/app/#/chat")
     _log("  nimbusware-admin        # Admin at /v1/admin/app/")
+    _print_one_command_install(repo)
     _print_happy_path(repo)
     _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
     _log("Model catalog (optional):")
@@ -845,6 +868,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Print prerequisite checks and exit",
     )
     parser.add_argument(
+        "--print-one-command",
+        action="store_true",
+        help="Print documented one-command install lines and exit",
+    )
+    parser.add_argument(
         "--prefer-psql",
         action="store_true",
         help="Use psql for schema apply when available (default: psycopg)",
@@ -951,6 +979,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
+    if args.print_one_command:
+        _print_one_command_install(repo)
+        return 0
+
     if args.ollama_pull_only and args.ollama_choice is None:
         args.ollama_choice = "pull"
 
@@ -971,7 +1004,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.postgres_choice == "native" and sys.platform != "win32":
         raise SetupError("--postgres-choice native is only supported on Windows.")
 
-    repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
     if args.clone:
         target = args.target_dir or (Path.cwd() / "Nimbusware")
         repo = _clone_repo(args.clone, target)
