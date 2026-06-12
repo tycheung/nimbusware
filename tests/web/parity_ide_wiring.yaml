@@ -1,0 +1,4 @@
+# Maps IDE MCP parity rows to journey/API specs exercised in CI.
+ide:
+  ide_mcp_classify_patch: tests/e2e/journeys/test_mcp_ide_parity_journey.py
+  ide_mcp_interject_fork_graph: tests/e2e/journeys/test_mcp_ide_parity_journey.py

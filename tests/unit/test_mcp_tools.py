@@ -181,6 +181,34 @@ def test_nimbusware_patch_from_selection_alias(mock_post: Any) -> None:
     assert "run-sel-1" in out["content"][0]["text"]
 
 
+@patch("nimbusware_mcp.tools.get_json")
+def test_nimbusware_chat_graph(mock_get: Any) -> None:
+    mock_get.return_value = {"session_id": "sess-1", "nodes": [], "edges": [], "branches": []}
+    out = call_tool("nimbusware_chat_graph", {"session_id": "sess-1"})
+    mock_get.assert_called_once_with("/chat/sessions/sess-1/graph")
+    assert "sess-1" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_chat_fork(mock_post: Any) -> None:
+    mock_post.return_value = {"active_leaf_turn_id": "turn-1"}
+    out = call_tool("nimbusware_chat_fork", {"session_id": "sess-1", "turn_id": "turn-1"})
+    mock_post.assert_called_once_with("/chat/sessions/sess-1/fork", {"turn_id": "turn-1"})
+    assert "turn-1" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.put_response")
+def test_nimbusware_chat_select_branch(mock_put: Any) -> None:
+    mock_resp = mock_put.return_value
+    mock_resp.json.return_value = {"leaf_turn_id": "turn-2"}
+    out = call_tool(
+        "nimbusware_chat_select_branch",
+        {"session_id": "sess-1", "leaf_turn_id": "turn-2"},
+    )
+    mock_put.assert_called_once()
+    assert "turn-2" in out["content"][0]["text"]
+
+
 def test_unknown_tool_raises() -> None:
     with pytest.raises(ValueError, match="unknown tool"):
         call_tool("nope", {"run_id": "x"})

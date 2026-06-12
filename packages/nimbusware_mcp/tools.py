@@ -483,6 +483,21 @@ def _call_classify_tool(arguments: dict[str, Any]) -> dict[str, Any]:
     return _text_result(post_json("/chat/classify", body))
 
 
+def _patch_workflow_profile(project_id: str) -> str:
+    from pathlib import Path
+
+    try:
+        proj = get_json(f"/projects/{project_id}")
+        ws = Path(str(proj.get("workspace_path") or ""))
+        if (ws / "go.mod").is_file():
+            return "patch_go"
+        if (ws / "pom.xml").is_file():
+            return "patch_jvm"
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return "patch"
+
+
 def _call_patch_tool(arguments: dict[str, Any]) -> dict[str, Any]:
     project_id = str(arguments.get("project_id") or "").strip()
     message = str(arguments.get("message") or "").strip()
@@ -490,6 +505,9 @@ def _call_patch_tool(arguments: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("project_id is required")
     if not message:
         raise ValueError("message is required")
+    profile = str(arguments.get("workflow_profile") or "").strip() or _patch_workflow_profile(
+        project_id,
+    )
     patch_ctx: dict[str, Any] = {}
     paths = arguments.get("target_paths")
     if isinstance(paths, list) and paths:
@@ -502,7 +520,7 @@ def _call_patch_tool(arguments: dict[str, Any]) -> dict[str, Any]:
         patch_ctx["stack_trace"] = trace
     create_body: dict[str, Any] = {
         "project_id": project_id,
-        "workflow_profile": "patch",
+        "workflow_profile": profile,
         "work_type": "patch",
         "work_type_source": "ide",
         "requirements": {"business_prompt": message},
