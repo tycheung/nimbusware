@@ -1,6 +1,31 @@
 # Maps Admin parity rows to Playwright specs exercised in CI web job.
 admin:
+  admin_gate: tests/e2e/web/admin_run_list.spec.ts
   run_list: tests/e2e/web/admin_run_list.spec.ts
-  launch_eval_scorecard_admin: tests/e2e/web/admin_launch_scorecard.spec.ts
+  run_list_qp_bookmark: tests/e2e/web/admin_run_list.spec.ts
+  run_detail_summary: tests/e2e/web/admin_run_detail_panels.spec.ts
+  timeline_accordion: tests/e2e/web/admin_run_detail_panels.spec.ts
+  findings_panel: tests/e2e/web/admin_run_detail_panels.spec.ts
+  critic_matrix: tests/e2e/web/admin_run_detail_panels.spec.ts
+  research_briefs: tests/e2e/web/admin_run_detail_panels.spec.ts
+  stitch_summary: tests/e2e/web/admin_run_detail_panels.spec.ts
+  integration_adapter_run: tests/e2e/web/admin_run_detail_panels.spec.ts
+  launch_eval_scorecard_admin: tests/e2e/web/admin_run_detail_panels.spec.ts
+  probation_notice_run: tests/e2e/web/admin_run_detail_panels.spec.ts
+  policy_compare_run: tests/e2e/web/admin_run_detail_panels.spec.ts
+  role_execute_debug: tests/e2e/web/admin_run_detail_panels.spec.ts
+  critic_reliability_run: tests/e2e/web/admin_run_detail_panels.spec.ts
   operator_chat: tests/e2e/web/admin_operator_chat.spec.ts
   critic_pack_crud: tests/e2e/web/admin_critic_packs.spec.ts
+  config_ollama: tests/e2e/web/admin_config_tabs.spec.ts
+  config_bundles: tests/e2e/web/admin_config_tabs.spec.ts
+  bundle_catalog_crud: tests/e2e/web/admin_config_tabs.spec.ts
+  config_blast_radius: tests/e2e/web/admin_config_tabs.spec.ts
+  persona_scope_overlap: tests/e2e/web/admin_config_tabs.spec.ts
+  probation_reliability_config: tests/e2e/web/admin_config_tabs.spec.ts
+  custom_agents: tests/e2e/web/admin_nav_smoke.spec.ts
+  preflight_fleet: tests/e2e/web/admin_nav_smoke.spec.ts
+  bundle_outcome_analytics: tests/e2e/web/admin_nav_smoke.spec.ts
+  hardware_pressure_history: tests/e2e/web/admin_nav_smoke.spec.ts
+  critic_reliability_fleet: tests/e2e/web/admin_fleet_smoke.spec.ts
+  fleet_compare: tests/e2e/web/admin_fleet_smoke.spec.ts

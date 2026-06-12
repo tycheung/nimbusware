@@ -11,14 +11,6 @@ _REPO = Path(__file__).resolve().parents[2]
 _MATRIX = Path(__file__).resolve().parent / "parity_matrix.yaml"
 _WIRING = Path(__file__).resolve().parent / "parity_admin_wiring.yaml"
 
-_ADMIN_PARITY_EXTRA = frozenset(
-    {
-        "launch_eval_scorecard_admin",
-        "operator_chat",
-        "critic_pack_crud",
-    }
-)
-
 
 def _load(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -44,14 +36,11 @@ def test_parity_admin_wiring_ids_are_web_true_in_matrix() -> None:
 
 
 def _admin_parity_ids(matrix: dict) -> list[str]:
-    ids: list[str] = []
-    for row in matrix.get("admin", []):
-        if not isinstance(row, dict) or row.get("web") is not True:
-            continue
-        rid = str(row.get("id") or "")
-        if rid in {"run_list", "admin_gate"} or rid in _ADMIN_PARITY_EXTRA:
-            ids.append(rid)
-    return ids
+    return [
+        str(row.get("id") or "")
+        for row in matrix.get("admin", [])
+        if isinstance(row, dict) and row.get("web") is True
+    ]
 
 
 def test_parity_admin_wiring_covers_at_least_eighty_percent() -> None:
