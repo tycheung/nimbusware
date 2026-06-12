@@ -10,3 +10,5 @@ maker:
   gate_fail_action_cards: tests/e2e/web/maker_progress_gate_actions.spec.ts
   factory_hero_demos: tests/e2e/web/maker_home_intents.spec.ts
   chat_autopilot_ladder_hint: tests/e2e/web/maker_chat_patch.spec.ts
+  theater_sse_live: tests/e2e/web/maker_chat_theater.spec.ts
+  deep_link_run_id: tests/e2e/web/maker_chat_patch.spec.ts

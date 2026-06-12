@@ -2,20 +2,6 @@ import { test, expect } from "@playwright/test";
 const RUN_ID = "00000000-0000-4000-8000-000000000005";
 
 test("chat tab shows live theater lines for active run", async ({ page }) => {
-  await page.addInitScript(() => {
-    class MockEventSource {
-      onmessage: ((ev: MessageEvent) => void) | null = null;
-      constructor(_url: string) {
-        setTimeout(() => {
-          this.onmessage?.({ data: JSON.stringify({ message: "Planner reviewing scope" }) } as MessageEvent);
-          this.onmessage?.({ data: JSON.stringify({ message: "Writer applying patch" }) } as MessageEvent);
-        }, 30);
-      }
-      close() {}
-    }
-    window.EventSource = MockEventSource as typeof EventSource;
-  });
-
   await page.route("**/v1/projects**", (route) =>
     route.fulfill({
       contentType: "application/json",
@@ -51,4 +37,5 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
   await expect(page.getByTestId("maker-chat-theater-line").first()).toContainText("Planner", {
     timeout: 10_000,
   });
+  expect(streamHits).toBeGreaterThan(0);
 });

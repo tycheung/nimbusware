@@ -17,6 +17,8 @@ _CHAT_PARITY_EXTRA = frozenset(
         "build_redirect_chat",
         "gate_fail_action_cards",
         "factory_hero_demos",
+        "theater_sse_live",
+        "deep_link_run_id",
     }
 )
 

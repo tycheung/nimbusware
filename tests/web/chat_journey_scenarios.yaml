@@ -14,7 +14,10 @@ scenarios:
     notes: Campaign promotion after slice replans
   inline_theater:
     spec: tests/e2e/web/maker_chat_theater.spec.ts
-    notes: Theater lines on Chat tab for active run
+    notes: Route-backed theater/stream SSE on Chat tab for active run
+  chat_deep_link:
+    spec: tests/e2e/web/maker_chat_patch.spec.ts
+    notes: Chat start leaves run_id in hash for deep-link resume
   branch_fork_nav:
     spec: tests/e2e/web/maker_chat_branch.spec.ts
     notes: Fork from user turn, branch panel, and active-leaf switch
