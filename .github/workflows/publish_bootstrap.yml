@@ -3,6 +3,10 @@ name: Publish bootstrap wheel
 on:
   workflow_dispatch:
     inputs:
+      publish_testpypi:
+        description: Upload wheel to TestPyPI (requires TESTPYPI_API_TOKEN secret)
+        type: boolean
+        default: false
       publish_pypi:
         description: Upload wheel to PyPI (requires PYPI_API_TOKEN secret)
         type: boolean
@@ -27,6 +31,17 @@ jobs:
           name: nimbusware-bootstrap-wheel
           path: packages/nimbusware_bootstrap/dist/*.whl
           if-no-files-found: error
+      - name: Publish to TestPyPI
+        if: inputs.publish_testpypi == true
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_API_TOKEN }}
+        run: twine upload --repository testpypi --skip-existing packages/nimbusware_bootstrap/dist/*
+      - name: TestPyPI install smoke
+        if: inputs.publish_testpypi == true
+        run: |
+          pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ nimbusware-bootstrap
+          nimbusware-bootstrap --print-only
       - name: Publish to PyPI
         if: inputs.publish_pypi == true
         env:

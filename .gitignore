@@ -23,6 +23,8 @@ env/
 /build/
 /develop-eggs/
 /dist/
+packages/nimbusware_bootstrap/dist/
+packages/nimbusware_bootstrap/**/*.egg-info/
 /downloads/
 /eggs/
 /.eggs/
