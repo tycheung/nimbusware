@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers **3,557** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~2,696** tests at **≥75%** coverage (81% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
+Pytest discovers **3,560+** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~2,700** tests at **≥75%** coverage (81% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
 
 | Directory | Purpose |
 |-----------|---------|
@@ -18,8 +18,8 @@ Pytest discovers **3,557** items under `tests/` with `pythonpath = ["packages", 
 | `tests/fixtures/campaign/` | Golden multi-tick campaign timeline for integration tests |
 | `tests/fixtures/launch_eval/` | Golden scorecard floors + campaign replay manifest (`golden_replay_manifest.json`, CRM + todo_api + contacts_api snapshots) |
 | `tests/fixtures/factory/` | Factory golden replay manifest (`golden_factory_replay_manifest.json` — crm, contacts, todo, static_site T1/T3) + legacy `golden_factory_replay.json` |
-| `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) + launch wiring (`parity_launch_wiring.yaml`) + chat wiring (`parity_chat_wiring.yaml`; **≥80%** Chat-related `web: true` rows) + chat journey scenarios (`chat_journey_scenarios.yaml`; **≥80%** congruent-thread journeys) |
-| `tests/e2e/web/` | Playwright smoke, Chat patch/override/branch/escalation/theater, home intents + factory hero demos, Progress gate-fail action cards, Chat autopilot ladder hint, Settings hybrid routing presets, apply-slice, session hub, launch scorecard (dimension rows + dev-env merge), Settings launch check + chat resume, Admin launch scorecard + factory evidence, scoped compaction toolbar, operator ribbons (incl. variant arena), campaign progress + full replay, mobile theater parity (**43** tests / **30** spec files; sets `NIMBUSWARE_API_BASE` to test server port). Parity matrix rows: readiness CTAs, Review open-PR CTA, Progress gate_summary, IDE MCP classify/patch/interject/fork, hybrid routing API (`test_routing_presets_api.py`) |
+| `tests/web/` | Web UI parity matrix (`@pytest.mark.web`) + launch wiring (`parity_launch_wiring.yaml`) + chat wiring (`parity_chat_wiring.yaml`; **≥80%** Chat-related `web: true` rows) + IDE MCP wiring (`parity_ide_wiring.yaml`) + chat journey scenarios (`chat_journey_scenarios.yaml`; **≥80%** congruent-thread journeys) |
+| `tests/e2e/web/` | Playwright smoke, Chat patch/override/branch/escalation/theater, Admin operator chat classifier cards, home intents + factory hero demos, Progress gate-fail action cards, Chat autopilot ladder hint, Settings hybrid routing presets, apply-slice, session hub, launch scorecard (dimension rows + dev-env merge), Settings launch check + chat resume, Admin launch scorecard + factory evidence, scoped compaction toolbar, operator ribbons (incl. variant arena), campaign progress + full replay, mobile theater parity (**44** tests / **31** spec files; sets `NIMBUSWARE_API_BASE` to test server port). Parity matrix rows: readiness CTAs, Review open-PR CTA, Progress gate_summary, IDE MCP classify/patch/interject/fork, hybrid routing API (`test_routing_presets_api.py`) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
 | `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |

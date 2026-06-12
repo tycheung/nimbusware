@@ -81,6 +81,16 @@ Example MCP args:
 | `nimbusware_chat_fork` | `POST /v1/chat/sessions/{id}/fork` — restore from turn, retain sibling branches |
 | `nimbusware_chat_select_branch` | `PUT /v1/chat/sessions/{id}/active-leaf` — navigate to branch tip |
 
-Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies plain-language intent via the same `/chat/classify` rules and suggests `/run auto` with the mapped workflow profile.
+Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies plain-language intent via the same `/chat/classify` rules, returns structured `classification` for classifier cards in the Admin SPA, and suggests `/run auto` with the mapped workflow profile.
+
+## Status bar extension (optional)
+
+[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**. Build with `npm ci && npm run compile` inside the extension folder.
+
+## Verified by
+
+- MCP journey: `tests/e2e/journeys/test_mcp_ide_parity_journey.py`
+- Wiring gate: `tests/web/test_parity_ide_wiring.py`
+- Extension manifest: `tests/unit/test_vscode_extension_manifest.py`
 
 Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

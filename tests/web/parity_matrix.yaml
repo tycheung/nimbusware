@@ -105,10 +105,10 @@ maker:
     notes: Progress blocking findings show Interject fix and Widen in Chat CTAs
   - id: ide_mcp_classify_patch
     web: false
-    notes: MCP nimbusware_classify_intent + nimbusware_patch / patch_from_selection mirror Chat (see docs/ide-bridge.md)
+    notes: MCP classify/patch journey in tests/e2e/journeys/test_mcp_ide_parity_journey.py (parity_ide_wiring.yaml)
   - id: ide_mcp_interject_fork_graph
     web: false
-    notes: MCP interject, chat_graph, chat_fork, chat_select_branch parity with Chat tab
+    notes: MCP interject/fork/graph journey in test_mcp_ide_parity_journey.py (parity_ide_wiring.yaml)
   - id: factory_hero_demos
     web: true
     notes: Home factory catalog cards deep-link Chat with catalog prompts
