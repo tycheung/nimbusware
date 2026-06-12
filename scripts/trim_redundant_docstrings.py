@@ -39,6 +39,11 @@ _REDUNDANT_PREFIXES = (
     "EventStore protocol and ",
     "MCP stdio bridge for ",
     "Backward-compatible re-export shim",
+    "CLI entrypoint for ",
+    "CLI: ",
+    "re-export facade",
+    "Internal pipeline mixins",
+    "delegates to ",
 )
 
 
@@ -58,6 +63,8 @@ def _should_drop(doc: str) -> bool:
     if any(head.startswith(p) for p in _REDUNDANT_PREFIXES):
         return True
     if head.endswith(" module.") or head.endswith(" package."):
+        return True
+    if head.startswith("GET /") and len(head) < 100:
         return True
     if head.endswith(" .") or head.endswith("."):
         if head.startswith("LLM-backed plan stage"):

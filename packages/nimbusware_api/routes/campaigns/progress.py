@@ -1,5 +1,3 @@
-"""GET /campaigns/{campaign_id}/progress — Admin/BFF campaign status."""
-
 from __future__ import annotations
 
 from typing import Any

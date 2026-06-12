@@ -1,5 +1,3 @@
-"""GET /memory/chunks — repo-scoped memory library for Maker."""
-
 from __future__ import annotations
 
 from pathlib import Path

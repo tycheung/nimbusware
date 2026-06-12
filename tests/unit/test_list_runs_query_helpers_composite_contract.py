@@ -1,5 +1,3 @@
-"""GET /v1/runs`` query helpers composite."""
-
 from __future__ import annotations
 
 import base64

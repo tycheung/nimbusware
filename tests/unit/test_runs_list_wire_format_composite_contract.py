@@ -1,5 +1,3 @@
-"""GET /v1/runs`` RFC 5988 wire-format composite."""
-
 from __future__ import annotations
 
 import re

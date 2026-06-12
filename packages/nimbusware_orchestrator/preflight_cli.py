@@ -1,5 +1,3 @@
-"""CLI entrypoint for ``poetry run nimbusware-preflight`` (Ollama probe without a full run)."""
-
 from __future__ import annotations
 
 import argparse
