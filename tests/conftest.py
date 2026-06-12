@@ -1,5 +1,3 @@
-"""Pytest: load Nimbusware repository ``.env`` before package imports in tests."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Timeline and run-list read models — single source of truth for API projections."""
-
 from __future__ import annotations
 
 from nimbusware_api.read_models.agent_evaluator import agent_evaluator_timeline_summary

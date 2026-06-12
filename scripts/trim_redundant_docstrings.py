@@ -67,6 +67,12 @@ def _should_drop(doc: str) -> bool:
     head = _first_line(doc)
     if any(head.startswith(p) for p in _REDUNDANT_PREFIXES):
         return True
+    if " projections — delegates to " in head:
+        return True
+    if head.endswith(" — single source of truth for API projections."):
+        return True
+    if head.startswith("Pytest:"):
+        return True
     if head.endswith(" module.") or head.endswith(" package."):
         return True
     if head.startswith("GET /") and len(head) < 100:

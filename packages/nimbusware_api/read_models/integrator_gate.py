@@ -1,5 +1,3 @@
-"""Integrator gate timeline projections — delegates to ``nimbusware_projections``."""
-
 from __future__ import annotations
 
 from nimbusware_projections.builders.integrator_gate import (

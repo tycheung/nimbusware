@@ -1,5 +1,3 @@
-"""Security scan on verify projections — delegates to ``nimbusware_projections``."""
-
 from __future__ import annotations
 
 from nimbusware_projections.builders.security_scan import (

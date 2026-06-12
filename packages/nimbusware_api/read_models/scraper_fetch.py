@@ -1,5 +1,3 @@
-"""Scraper fetch timeline projections — delegates to ``nimbusware_projections``."""
-
 from __future__ import annotations
 
 from nimbusware_projections.builders.scraper_fetch import scraper_fetch_timeline_summary
