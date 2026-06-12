@@ -4,7 +4,8 @@ from typing import Any
 
 from fastapi import APIRouter, Query
 
-from nimbusware_api.deps import OrchDep, StoreDep
+from nimbusware_api.deps import ChatStoreDep, OrchDep, StoreDep
+from nimbusware_projections.builders.chat_turn_analytics import build_chat_turn_summary
 from nimbusware_console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
@@ -56,6 +57,17 @@ def get_platform_pressure_history(
     rows = store.list_all_event_rows()
     history = pressure_history_from_event_rows(rows, limit=limit)
     return {"limit": limit, "count": len(history), "entries": history}
+
+
+@router.get("/platform/analytics/chat-turns")
+def get_platform_chat_turn_analytics(
+    chat_store: ChatStoreDep,
+    limit_sessions: int = Query(default=500, ge=1, le=5000),
+) -> dict[str, Any]:
+    if not hasattr(chat_store, "list_recent_analytics_turn_rows"):
+        return build_chat_turn_summary([], limit_sessions=limit_sessions)
+    rows = chat_store.list_recent_analytics_turn_rows(limit_sessions=limit_sessions)
+    return build_chat_turn_summary(rows, limit_sessions=limit_sessions)
 
 
 @router.get("/platform/analytics/bundle-outcomes")
