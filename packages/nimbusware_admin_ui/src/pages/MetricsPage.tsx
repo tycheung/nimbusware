@@ -33,6 +33,11 @@ export function MetricsPage() {
   const classifier = (m.classifier_acceptance_rate || {}) as Record<string, unknown>;
   const stitch = (m.stitch_transplant || {}) as Record<string, unknown>;
   const research = (m.research_brief_utilization || {}) as Record<string, unknown>;
+  const patchBench = m.intent_to_patch_benchmark as Record<string, unknown> | null | undefined;
+  const classifierBench = m.classifier_acceptance_benchmark as
+    | Record<string, unknown>
+    | null
+    | undefined;
   const swe = m.swe_bench as Record<string, unknown> | null | undefined;
   const factory = m.factory_weekly as Record<string, unknown> | null | undefined;
   const criticRel = m.critic_reliability as Record<string, unknown> | null | undefined;
@@ -131,6 +136,42 @@ export function MetricsPage() {
                 <td>
                   {fmtRate(research.rate)} ({String(research.plan_with_approved_brief ?? 0)}/
                   {String(research.plan_stage_count ?? 0)})
+                </td>
+              </tr>
+              <tr>
+                <td>Intent→patch benchmark (committed snapshot)</td>
+                <td>
+                  {patchBench
+                    ? `${String(patchBench.path ?? "direct")} median ${
+                        typeof patchBench.median_ms === "number"
+                          ? Math.round(patchBench.median_ms).toLocaleString()
+                          : "—"
+                      } ms${
+                        patchBench.meets_target === true
+                          ? " ✓"
+                          : patchBench.meets_target === false
+                            ? " (over target)"
+                            : ""
+                      }${
+                        typeof patchBench.chat_median_ms === "number"
+                          ? ` · chat ${Math.round(patchBench.chat_median_ms).toLocaleString()} ms`
+                          : ""
+                      }`
+                    : "No benchmarks/latest_intent_to_patch.json"}
+                </td>
+              </tr>
+              <tr>
+                <td>Classifier acceptance benchmark (committed snapshot)</td>
+                <td>
+                  {classifierBench
+                    ? `rate ${fmtRate(classifierBench.rate)}${
+                        classifierBench.meets_target === true
+                          ? " ✓"
+                          : classifierBench.meets_target === false
+                            ? " (below target)"
+                            : ""
+                      } (${String(classifierBench.sample_size ?? 0)} samples)`
+                    : "No benchmarks/latest_classifier_acceptance.json"}
                 </td>
               </tr>
               <tr>

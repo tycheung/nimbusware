@@ -227,6 +227,28 @@ def test_competitive_summary_patch_intent_and_classifier_rate() -> None:
     assert rate["rate"] == 0.5
 
 
+def test_competitive_summary_includes_benchmark_snapshots(tmp_path: Path) -> None:
+    bench_dir = tmp_path / "benchmarks"
+    bench_dir.mkdir()
+    patch_snap = {
+        "ok": True,
+        "median_ms": 120_000,
+        "meets_target": True,
+        "path": "direct",
+        "chat_median_ms": 130_000,
+    }
+    classifier_snap = {"ok": True, "rate": 0.75, "meets_target": True, "sample_size": 4}
+    (bench_dir / "latest_intent_to_patch.json").write_text(json.dumps(patch_snap), encoding="utf-8")
+    (bench_dir / "latest_classifier_acceptance.json").write_text(
+        json.dumps(classifier_snap),
+        encoding="utf-8",
+    )
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
+    assert body["metrics"]["intent_to_patch_benchmark"] == patch_snap
+    assert body["metrics"]["classifier_acceptance_benchmark"] == classifier_snap
+
+
 def test_competitive_summary_includes_factory_weekly_json(tmp_path: Path) -> None:
     bench_dir = tmp_path / "benchmarks"
     bench_dir.mkdir()

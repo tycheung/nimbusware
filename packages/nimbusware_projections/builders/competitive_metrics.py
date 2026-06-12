@@ -309,6 +309,10 @@ def build_competitive_summary(
                 repo_root,
                 "latest_intent_to_patch.json",
             ),
+            "classifier_acceptance_benchmark": _load_benchmark_snapshot(
+                repo_root,
+                "latest_classifier_acceptance.json",
+            ),
         },
         "sources": {
             "event_store": "recent_run_events",
@@ -317,5 +321,8 @@ def build_competitive_summary(
             "factory_weekly": "benchmarks/latest_factory_weekly.json (optional, local)",
             "critic_reliability": "benchmarks/latest_critic_reliability.json (optional, local)",
             "intent_to_patch_benchmark": "benchmarks/latest_intent_to_patch.json (optional, local)",
+            "classifier_acceptance_benchmark": (
+                "benchmarks/latest_classifier_acceptance.json (optional, local)"
+            ),
         },
     }
