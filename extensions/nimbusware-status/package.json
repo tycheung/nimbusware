@@ -1,0 +1,45 @@
+{
+  "name": "nimbusware-status",
+  "displayName": "Nimbusware Run Status",
+  "description": "Read-only status bar chip for active Nimbusware runs",
+  "version": "0.1.0",
+  "publisher": "nimbusware",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nimbusware.openMakerProgress",
+        "title": "Nimbusware: Open Maker Progress"
+      }
+    ],
+    "configuration": {
+      "title": "Nimbusware",
+      "properties": {
+        "nimbusware.apiBase": {
+          "type": "string",
+          "default": "http://127.0.0.1:8765/v1",
+          "description": "Nimbusware API base URL"
+        },
+        "nimbusware.activeRunId": {
+          "type": "string",
+          "default": "",
+          "description": "Active run id shown in the status bar"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
