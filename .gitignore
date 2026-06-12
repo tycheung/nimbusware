@@ -49,6 +49,7 @@ node_modules/
 *.tsbuildinfo
 # Playwright (tests/e2e/web)
 tests/e2e/web/test-results/
+packages/nimbusware_maker_web/test-results/
 tests/e2e/web/playwright-report/
 tests/e2e/web/blob-report/
 # Maven build output from local JVM patch fixture verification
