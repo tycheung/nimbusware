@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-# Path used for JVM test selector parsing
-
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.patch_context import (
     patch_context_from_run_rows,
