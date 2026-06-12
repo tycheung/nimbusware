@@ -19,6 +19,49 @@ def run_pytest(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int,
     return proc.returncode, out
 
 
+def run_go_test(
+    workspace: Path,
+    *,
+    timeout_seconds: float = 120.0,
+    package: str = "./...",
+) -> tuple[int, str]:
+    exe = shutil.which("go")
+    if not exe:
+        return 0, "go not on PATH; skipped\n"
+    proc = subprocess.run(
+        [exe, "test", package],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode, out
+
+
+def run_mvn_test(
+    workspace: Path,
+    *,
+    timeout_seconds: float = 180.0,
+    test_selector: str | None = None,
+) -> tuple[int, str]:
+    exe = shutil.which("mvn")
+    if not exe:
+        return 0, "mvn not on PATH; skipped\n"
+    args = [exe, "-q", "test"]
+    if test_selector:
+        args.extend(["-Dtest", test_selector])
+    proc = subprocess.run(
+        args,
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode, out
+
+
 def run_pytest_targets(
     workspace: Path,
     targets: list[str],

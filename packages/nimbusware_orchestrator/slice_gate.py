@@ -128,11 +128,23 @@ def run_slice_gate_chain(
 
 
 def map_paths_to_test_targets(paths: tuple[str, ...]) -> list[str]:
-    """Heuristic: map implementation paths to pytest node ids (v1)."""
+    """Heuristic: map implementation paths to stack test files (v1)."""
     targets: list[str] = []
     for path in paths:
         p = path.replace("\\", "/")
-        if p.endswith(".py") and not p.startswith("tests/"):
+        if p.endswith(".go") and not p.endswith("_test.go"):
+            stem = p.removesuffix(".go").split("/")[-1]
+            parent = "/".join(p.split("/")[:-1])
+            candidate = f"{parent}/{stem}_test.go" if parent else f"{stem}_test.go"
+            targets.append(candidate)
+        elif p.endswith("_test.go"):
+            targets.append(p)
+        elif p.endswith(".java") and "src/main/java/" in p:
+            test_path = p.replace("src/main/java/", "src/test/java/").removesuffix(".java")
+            targets.append(f"{test_path}Test.java")
+        elif p.endswith("Test.java"):
+            targets.append(p)
+        elif p.endswith(".py") and not p.startswith("tests/"):
             module = p.removesuffix(".py").replace("/", ".")
             targets.append(f"tests/test_{module.split('.')[-1]}.py")
         elif p.startswith("tests/"):
