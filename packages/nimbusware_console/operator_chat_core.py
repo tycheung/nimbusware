@@ -24,6 +24,7 @@ class ChatState:
     messages: list[dict[str, str]] = field(default_factory=list)
     suggested_profile: str = ""
     last_intent_text: str = ""
+    last_classification: dict[str, Any] | None = None
 
 
 def process_user_message(text: str, state: ChatState) -> str:
@@ -36,6 +37,7 @@ def process_user_message(text: str, state: ChatState) -> str:
         profile = WORK_TYPE_PROFILES.get(work_type, "micro_slice")
         state.suggested_profile = profile
         state.last_intent_text = text
+        state.last_classification = classification
         confidence = float(classification.get("confidence") or 0)
         rationale = str(classification.get("rationale") or "").strip()
         hint = f"{rationale} " if rationale else ""

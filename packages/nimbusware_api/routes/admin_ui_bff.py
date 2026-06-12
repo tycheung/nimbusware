@@ -54,6 +54,7 @@ class OperatorChatMessageBody(BaseModel):
 class OperatorChatMessageResponse(BaseModel):
     reply: str
     last_run_id: str = ""
+    classification: dict[str, Any] | None = None
 
 
 @router.post("/operator-chat/message", response_model=OperatorChatMessageResponse)
@@ -65,7 +66,11 @@ def operator_chat_message(
     key = (x_nimbusware_chat_session or "default").strip()[:128] or "default"
     state = _chat_sessions.setdefault(key, ChatState())
     reply = process_user_message(body.text, state)
-    return OperatorChatMessageResponse(reply=reply, last_run_id=state.last_run_id)
+    return OperatorChatMessageResponse(
+        reply=reply,
+        last_run_id=state.last_run_id,
+        classification=state.last_classification,
+    )
 
 
 @router.get(
