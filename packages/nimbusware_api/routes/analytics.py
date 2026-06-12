@@ -5,13 +5,13 @@ from typing import Any
 from fastapi import APIRouter, Query
 
 from nimbusware_api.deps import ChatStoreDep, OrchDep, StoreDep
-from nimbusware_projections.builders.chat_turn_analytics import build_chat_turn_summary
 from nimbusware_console.bundle_memory_display import (
     bundle_memory_analytics_from_store,
     bundle_memory_caption,
 )
 from nimbusware_env.dotenv import find_repo_root
 from nimbusware_hw.pressure_history import pressure_history_from_event_rows
+from nimbusware_projections.builders.chat_turn_analytics import build_chat_turn_summary
 from nimbusware_projections.builders.competitive_metrics import build_competitive_summary
 from nimbusware_research.stitch_outcome_stats import (
     compute_stitch_transplant_stats,

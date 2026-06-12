@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from nimbusware_api.app import app
 from nimbusware_maker.chat_store import InMemoryChatStore
 
+
 @pytest.fixture
 def client() -> Iterator[TestClient]:
     chat = InMemoryChatStore()

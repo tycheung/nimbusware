@@ -702,6 +702,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — maker runtime",
         ),
         SettingDef(
+            "NIMBUSWARE_MOUSE_FIDELITY",
+            _USER,
+            _BOOL,
+            "0",
+            "Mouse wheel/hover in human-fidelity suite",
+            "Run optional Playwright wheel and hover smoke during human-fidelity checks.",
+            "User — maker runtime",
+        ),
+        SettingDef(
             "NIMBUSWARE_SWE_BENCH_ENABLED",
             _USER,
             _BOOL,

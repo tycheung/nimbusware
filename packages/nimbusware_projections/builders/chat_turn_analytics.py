@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime, timezone
 from typing import Any
-
 from uuid import UUID
 
 from nimbusware_maker.chat_models import ChatTurnRecord
@@ -41,6 +40,8 @@ def _row_to_turn(row: dict[str, Any]) -> ChatTurnRecord | None:
         return None
     parent = row.get("parent_turn_id")
     posted = _parse_ts(row.get("posted_at"))
+    raw_payload = row.get("payload")
+    payload: dict[str, Any] = dict(raw_payload) if isinstance(raw_payload, dict) else {}
     return ChatTurnRecord(
         turn_id=UUID(str(tid)),
         session_id=UUID(str(sid)),
@@ -48,7 +49,7 @@ def _row_to_turn(row: dict[str, Any]) -> ChatTurnRecord | None:
         ordinal=int(row.get("ordinal") or 0),
         role=str(row.get("role") or ""),
         text=str(row.get("text") or ""),
-        payload=row.get("payload") if isinstance(row.get("payload"), dict) else {},
+        payload=payload,
         work_type=str(row["work_type"]) if row.get("work_type") else None,
         work_type_source=(str(row["work_type_source"]) if row.get("work_type_source") else None),
         run_id=UUID(str(row["run_id"])) if row.get("run_id") else None,
@@ -88,7 +89,7 @@ def build_chat_turn_summary(
     sessions_with_run = 0
     branch_depths: list[int] = []
 
-    for sid, session_rows in by_session.items():
+    for _sid, session_rows in by_session.items():
         has_run = any(r.get("run_id") for r in session_rows)
         if has_run:
             sessions_with_run += 1
