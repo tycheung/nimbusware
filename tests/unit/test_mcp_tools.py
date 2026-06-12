@@ -144,8 +144,10 @@ def test_nimbusware_run_tests(mock_post: Any) -> None:
     assert "tests_passed" in out["content"][0]["text"]
 
 
+@patch("nimbusware_mcp.tools.get_json")
 @patch("nimbusware_mcp.tools.post_json")
-def test_nimbusware_patch(mock_post: Any) -> None:
+def test_nimbusware_patch(mock_post: Any, mock_get: Any) -> None:
+    mock_get.return_value = {"workspace_path": "/tmp/proj"}
     mock_post.side_effect = [
         {"run_id": "run-patch-1"},
         {"status": "started"},
@@ -156,11 +158,15 @@ def test_nimbusware_patch(mock_post: Any) -> None:
         {"project_id": "proj-1", "message": "fix login", "failing_test": "tests/test_x.py"},
     )
     assert mock_post.call_count == 3
+    create_body = mock_post.call_args_list[0][0][1]
+    assert create_body["workflow_profile"] == "patch"
     assert "run-patch-1" in out["content"][0]["text"]
 
 
+@patch("nimbusware_mcp.tools.get_json")
 @patch("nimbusware_mcp.tools.post_json")
-def test_nimbusware_patch_from_selection_alias(mock_post: Any) -> None:
+def test_nimbusware_patch_from_selection_alias(mock_post: Any, mock_get: Any) -> None:
+    mock_get.return_value = {"workspace_path": "/tmp/proj"}
     mock_post.side_effect = [
         {"run_id": "run-sel-1"},
         {"status": "started"},
@@ -179,6 +185,23 @@ def test_nimbusware_patch_from_selection_alias(mock_post: Any) -> None:
     create_body = mock_post.call_args_list[0][0][1]
     assert create_body["patch_context"]["target_paths"] == ["src/a.py"]
     assert "run-sel-1" in out["content"][0]["text"]
+
+
+@patch("nimbusware_mcp.tools.get_json")
+@patch("nimbusware_mcp.tools.post_json")
+def test_nimbusware_patch_selects_go_profile(mock_post: Any, mock_get: Any, tmp_path: Any) -> None:
+    ws = tmp_path / "go-proj"
+    ws.mkdir()
+    (ws / "go.mod").write_text("module example.com/x\n\ngo 1.21\n", encoding="utf-8")
+    mock_get.return_value = {"workspace_path": str(ws)}
+    mock_post.side_effect = [
+        {"run_id": "run-go-1"},
+        {"status": "started"},
+        {"status": "micro_slice_recorded"},
+    ]
+    call_tool("nimbusware_patch", {"project_id": "proj-go", "message": "fix go test"})
+    create_body = mock_post.call_args_list[0][0][1]
+    assert create_body["workflow_profile"] == "patch_go"
 
 
 @patch("nimbusware_mcp.tools.get_json")
