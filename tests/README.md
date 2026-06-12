@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers **3,560+** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~2,760** tests at **≥75%** coverage (82% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
+Pytest discovers **3,560+** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~2,770** tests at **≥75%** coverage (82% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`).
 
 | Directory | Purpose |
 |-----------|---------|
@@ -47,7 +47,9 @@ Pytest discovers **3,560+** items under `tests/` with `pythonpath = ["packages",
 - **E2E flake monitor (weekly):** [`.github/workflows/e2e_flake_monitor.yml`](../.github/workflows/e2e_flake_monitor.yml) — Postgres e2e with `--reruns 1`; log artifact + `e2e-flake-failure` issue on failure.
 - **Local integration opt-in:** `ci_check.ps1 -WithIntegration` or `ci_check.sh --with-integration` (delegates to `run_integration_like_ci.*`; requires Postgres).
 - **Weekly slow:** [`.github/workflows/slow_tests.yml`](../.github/workflows/slow_tests.yml) — `-m slow`, **stack-soak**, **fullstack-weekly-soak** (`scripts/run_fullstack_weekly_soak.py`), **dev-env-weekly-soak**, and **redis-fleet-soak** (dual Redis via `NIMBUSWARE_REDIS_FLEET_URLS`; see runbooks above).
-- **Framework pack PR gate:** `scripts/run_framework_pack_ci_gate.py` in default PR **unit** job (unit smoke + detect journeys + react/vue PUT-preview launch cycle).
+- **Framework pack PR gate:** `scripts/run_framework_pack_ci_gate.py` in default PR **unit** job (unit smoke + detect journeys + PUT-preview plan/write/critique for all seven SPA packs with keyboard/mouse fidelity; installs Chromium via `playwright` dev dependency).
+- **Bootstrap wheel PR gate:** `scripts/run_bootstrap_ci_gate.py` (wheel build + isolated `pip install --target` smoke).
+- **Publish bootstrap workflow gate:** `scripts/run_publish_bootstrap_ci_gate.py` (guards `.github/workflows/publish_bootstrap.yml` required TestPyPI/PyPI steps).
 - **Redis fleet soak (ops):** [`scripts/e2e_redis_fleet_soak_runbook.md`](../scripts/e2e_redis_fleet_soak_runbook.md) — integration Redis dispatch stack (`test_redis_dispatch_worker_stack.py`, `-m integration`).
 - **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `scripts/launch_eval.py --matrix` on catalog default workspaces; unit coverage in `tests/unit/test_launch_eval_attach_context.py`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.

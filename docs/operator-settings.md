@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**229** keys; UC gate-fail global consolidation Jun 2026)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**230** keys; UC gate-fail global consolidation Jun 2026)
 
 ### Context budget (`*_MAX_CHARS`)
 
