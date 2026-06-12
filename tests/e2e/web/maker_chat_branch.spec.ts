@@ -64,6 +64,17 @@ test("chat fork restores from user turn and shows branch panel", async ({ page }
       });
       return;
     }
+    if (route.request().method() === "PUT" && url.includes("/active-leaf")) {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          session_id: SESSION_ID,
+          active_leaf_turn_id: TURN_B,
+          messages: [{ role: "user", text: "alternate path", turn_id: TURN_B }],
+        }),
+      });
+      return;
+    }
     return route.continue();
   });
 
@@ -89,4 +100,6 @@ test("chat fork restores from user turn and shows branch panel", async ({ page }
   await page.getByTestId(`maker-chat-fork-${TURN_A}`).click();
 
   await expect(page.getByTestId("maker-chat-branch-panel")).toBeVisible();
+  await page.getByTestId(`maker-chat-branch-${TURN_B}`).click();
+  await expect(page.getByText("alternate path")).toBeVisible();
 });

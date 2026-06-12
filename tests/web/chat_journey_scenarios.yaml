@@ -17,7 +17,10 @@ scenarios:
     notes: Theater lines on Chat tab for active run
   branch_fork_nav:
     spec: tests/e2e/web/maker_chat_branch.spec.ts
-    notes: Fork from user turn and branch panel
+    notes: Fork from user turn, branch panel, and active-leaf switch
+  mid_thread_patch_to_slice:
+    spec: tests/e2e/journeys/test_chat_mid_thread_patch_journey.py
+    notes: Chat session patch then switch-mode to slice without leaving chat
   classifier_override:
     spec: tests/e2e/web/maker_chat_override.spec.ts
     notes: Work-type override chips on classifier card
