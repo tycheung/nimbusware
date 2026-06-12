@@ -65,6 +65,22 @@ def resolve_critic_pack_for_workflow(
     }
 
 
+def list_workflows_using_critic_pack(repo_root: Path, pack_id: str) -> list[str]:
+    root = repo_root / "configs" / "workflows"
+    if not root.is_dir():
+        return []
+    matched: list[str] = []
+    for path in sorted(root.glob("*.yaml")):
+        from nimbusware_orchestrator.merge import load_yaml
+
+        raw = load_yaml(path)
+        if not isinstance(raw, dict):
+            continue
+        if critic_pack_id_from_workflow(raw) == pack_id:
+            matched.append(path.stem)
+    return matched
+
+
 def list_critic_pack_ids(
     repo_root: Path,
     *,

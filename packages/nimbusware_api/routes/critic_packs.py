@@ -9,7 +9,11 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
 from nimbusware_config.keys import NS_CRITIC_PACKS
-from nimbusware_orchestrator.critic_pack_resolve import list_critic_pack_ids, load_critic_pack
+from nimbusware_orchestrator.critic_pack_resolve import (
+    list_critic_pack_ids,
+    list_workflows_using_critic_pack,
+    load_critic_pack,
+)
 
 router = APIRouter(prefix="/config/critic-packs", tags=["config"])
 
@@ -22,6 +26,22 @@ def _materializer(orch: Any) -> Any | None:
 def list_critic_packs(_admin: AdminDep, orch: OrchDep) -> dict[str, Any]:
     ids = list_critic_pack_ids(orch.repo_root, config_materializer=_materializer(orch))
     return {"pack_ids": ids, "count": len(ids)}
+
+
+@router.get("/{pack_id}/workflows")
+def critic_pack_workflows(
+    _admin: AdminDep,
+    orch: OrchDep,
+    pack_id: Annotated[str, Path(min_length=1, max_length=128)],
+) -> dict[str, Any]:
+    pack = load_critic_pack(orch.repo_root, pack_id, config_materializer=_materializer(orch))
+    if pack is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("critic_pack_not_found", f"unknown critic pack: {pack_id}"),
+        )
+    profiles = list_workflows_using_critic_pack(orch.repo_root, pack_id)
+    return {"pack_id": pack_id, "workflow_profiles": profiles, "count": len(profiles)}
 
 
 @router.get("/{pack_id}")

@@ -20,4 +20,11 @@ test("admin config critic packs tab lists packs from API", async ({ page, reques
   await expect(page.getByRole("textbox", { name: "Content (JSON)" })).toHaveValue(/domain/, {
     timeout: 15_000,
   });
+
+  const workflows = await request.get(`/v1/config/critic-packs/${packIds[0]}/workflows`, {
+    headers,
+  });
+  expect(workflows.ok()).toBeTruthy();
+  const body = await workflows.json();
+  expect(Array.isArray(body.workflow_profiles)).toBeTruthy();
 });

@@ -33,6 +33,20 @@ def test_get_default_security_pack(client: TestClient) -> None:
     assert body["content"].get("domain") == "security"
 
 
+def test_critic_pack_workflows_endpoint(client: TestClient) -> None:
+    listed = client.get("/v1/config/critic-packs", headers=_ADMIN).json()
+    ids = listed.get("pack_ids") or []
+    if not ids:
+        return
+    pack_id = ids[0]
+    r = client.get(f"/v1/config/critic-packs/{pack_id}/workflows", headers=_ADMIN)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["pack_id"] == pack_id
+    assert "workflow_profiles" in body
+    assert isinstance(body["workflow_profiles"], list)
+
+
 def test_put_critic_pack_without_postgres(client: TestClient) -> None:
     r = client.put(
         "/v1/config/critic-packs/test-pack",
