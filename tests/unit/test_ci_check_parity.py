@@ -52,6 +52,14 @@ def test_ci_yml_has_web_job_with_vitest_and_playwright() -> None:
     assert "playwright install chromium" in web_block
 
 
+def test_ci_check_scripts_compile_vscode_extension() -> None:
+    ps1 = _PS1.read_text(encoding="utf-8")
+    sh = _SH.read_text(encoding="utf-8")
+    for text in (ps1, sh):
+        assert "extensions/nimbusware-status" in text or "extensions\\nimbusware-status" in text
+        assert "npm run compile" in text
+
+
 def test_ci_check_scripts_document_optional_integration_flags() -> None:
     ps1 = _PS1.read_text(encoding="utf-8")
     sh = _SH.read_text(encoding="utf-8")
