@@ -36,6 +36,8 @@ rm -f "${COV_JSON}"
 export NIMBUSWARE_SLICE_E2E_COMMAND="${NIMBUSWARE_SLICE_E2E_COMMAND:-python -c \"print('ok')\"}"
 poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
 poetry run python scripts/run_framework_pack_ci_gate.py
+poetry run python scripts/run_bootstrap_ci_gate.py
+poetry run python scripts/run_publish_bootstrap_ci_gate.py
 poetry run python scripts/run_intent_to_patch_ci_gate.py
 poetry run python scripts/run_classifier_acceptance_ci_gate.py
 
