@@ -25,6 +25,16 @@ def _free_port() -> int:
         return int(sock.getsockname()[1])
 
 
+def _playwright_required() -> bool:
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
+            pytest.fail("playwright required for framework pack fidelity gate")
+        return False
+    return True
+
+
 @pytest.mark.e2e
 def test_static_html_launch_test_plan_write_critique_and_fidelity() -> None:
     if not _FIXTURE.is_dir():
@@ -44,10 +54,8 @@ def test_static_html_launch_test_plan_write_critique_and_fidelity() -> None:
         critique = run_launch_test_critique(_FIXTURE, flow_id="launch_draft")
         assert critique.passed is True
 
-        try:
-            import playwright  # noqa: F401
-        except ImportError:
-            pytest.skip("playwright not installed")
+        if not _playwright_required():
+            return
 
         ui_flow = load_workspace_ui_flow(_FIXTURE, "launch_draft")
         if ui_flow is not None:

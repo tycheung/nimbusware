@@ -30,6 +30,7 @@ def main() -> int:
         "tests/unit/test_framework_pack_smoke.py",
         "tests/e2e/journeys/test_launch_framework_detect_journey.py",
         "tests/e2e/journeys/test_launch_framework_put_preview_journey.py",
+        "tests/e2e/journeys/test_launch_test_static_html_journey.py",
         "-q",
         "--tb=short",
     ]
