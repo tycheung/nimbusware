@@ -9,7 +9,7 @@
 | [deploy/headless-patch-ci.md](deploy/headless-patch-ci.md) | CI / platform | Headless patch from GitHub Actions (`work_type_source=ci`) |
 | [deploy/external-ci-bridge.md](deploy/external-ci-bridge.md) | Ops | GitHub Checks / GitLab status on integrator, slice.gate, factory.gate |
 | [adr/020-unified-chat-work-type-routing.md](adr/020-unified-chat-work-type-routing.md) | Maintainers | Unified Maker chat, work-type routing, patch lane |
-| [adr/021-conversation-dag-branching.md](adr/021-conversation-dag-branching.md) | Maintainers | Chat session DAG, fork/branch navigation, congruent thread |
+| [adr/021-conversation-dag-branching.md](adr/021-conversation-dag-branching.md) | Maintainers | Chat session DAG, fork/branch navigation, congruent thread (`parity_chat_wiring.yaml`, Postgres persistence journey) |
 | [adr/006-prompt-tiers.md](adr/006-prompt-tiers.md) | Maintainers | Stable / context / volatile LLM prompt tiers |
 | [adr/007-context-compaction.md](adr/007-context-compaction.md) | Maintainers | Campaign handoff compaction and merge-on-recompact |
 | [adr/008-context-artifacts-file-cache.md](adr/008-context-artifacts-file-cache.md) | Maintainers | Context artifact JSON file cache (Individual ship) |
