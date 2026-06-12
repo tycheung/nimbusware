@@ -5,7 +5,8 @@
 | [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI |
 | [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
 | [operator-settings.md](operator-settings.md) | Operators | Settings catalog and `NIMBUSWARE_*` keys (incl. context-efficiency group) |
-| [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge (classify, patch, interject, theater, approve) |
+| [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge (classify, patch, interject, theater, approve); VS Code status extension compiles in `ci_check` |
+| [../releasev1features.md](../releasev1features.md) | Maintainers | Release v1 epic catalog (fo1300–fo1399) until merged into ARCHITECTURE §20.29 |
 | [deploy/headless-patch-ci.md](deploy/headless-patch-ci.md) | CI / platform | Headless patch from GitHub Actions (`work_type_source=ci`) |
 | [deploy/external-ci-bridge.md](deploy/external-ci-bridge.md) | Ops | GitHub Checks / GitLab status on integrator, slice.gate, factory.gate |
 | [adr/020-unified-chat-work-type-routing.md](adr/020-unified-chat-work-type-routing.md) | Maintainers | Unified Maker chat, work-type routing, patch lane |
@@ -30,6 +31,8 @@
 | [operator-interjection-slo.md](operator-interjection-slo.md) | Operators | Interjection drain SLO + Admin timeline explain |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [adr/](adr/) | Maintainers | Architecture decision records |
+
+**P14–P15 operator surfaces (see [../README.md](../README.md)):** TestPyPI bootstrap publish (`.github/workflows/publish_bootstrap.yml`); live theater SSE (`tests/api/test_api_theater_stream.py`); industry critic packs with `review_rules` and `GET /v1/config/critic-packs/{id}/workflows`; Admin parity wiring (`tests/web/parity_admin_wiring.yaml`, 100% of admin `web: true` rows); PUT-preview launch-test journeys for seven SPA framework packs; `ci_check.sh` extension compile parity with PowerShell.
 
 Context-efficiency APIs (see [../README.md](../README.md) § Context efficiency): `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact` (scopes: `all`, `last_n`, `source_refs`), `POST /v1/runs/{id}/compactions/{compaction_id}/revert`, `POST /v1/runs/{id}/replay-from` (re-enqueues campaign tick when applicable), `POST /v1/runs/{id}/context-artifacts/from-compaction`, `POST /v1/runs/{id}/memory-chunks/{chunk_id}/insert`, `GET/POST /v1/projects/{id}/context-artifacts`, `POST .../context-artifacts/{artifact_id}/bridge-memory` (optional `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD=1`).
 
