@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.builders.maker_progress import _slice_gate_rows, _stage_name
 from nimbusware_projections.builders.run_research import run_research_briefs_from_events
@@ -118,8 +119,8 @@ def _is_patch_run(run_rows: list[dict[str, Any]]) -> bool:
     row = _run_created_row(run_rows)
     if not row:
         return False
-    meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
-    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    meta: dict[str, Any] = mapping_or_empty(row.get("metadata"))
+    payload: dict[str, Any] = mapping_or_empty(row.get("payload"))
     work_type = str(meta.get("work_type") or "").strip().lower()
     profile = str(payload.get("workflow_profile") or "").strip().lower()
     return work_type == "patch" or profile.startswith("patch")
@@ -191,7 +192,7 @@ def _classifier_acceptance_rate(by_run: dict[str, list[dict[str, Any]]]) -> dict
         row = _run_created_row(run_rows)
         if not row:
             continue
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        meta: dict[str, Any] = mapping_or_empty(row.get("metadata"))
         source = str(meta.get("work_type_source") or "").strip().lower()
         if source == "classifier":
             classifier += 1
