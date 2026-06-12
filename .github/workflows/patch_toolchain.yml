@@ -1,0 +1,39 @@
+name: Patch toolchain
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  patch_go_jvm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install Maven
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq maven
+      - name: Install Poetry deps
+        run: pip install poetry && poetry install
+      - name: Go/JVM patch gate journeys
+        run: |
+          poetry run pytest \
+            tests/e2e/journeys/test_patch_go_jvm_gate_journey.py \
+            tests/e2e/journeys/test_patch_stack_fixture_journey.py \
+            -q
+        env:
+          NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
+          NIMBUSWARE_SLICE_IMPLEMENT: stub
+          NIMBUSWARE_SLICE_AUTO_ADVANCE: "0"
