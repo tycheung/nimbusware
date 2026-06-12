@@ -2,10 +2,26 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Iterator
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+_SKIP_SCAN_DIRS = frozenset(
+    {
+        ".git",
+        "__pycache__",
+        ".venv",
+        "venv",
+        "node_modules",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+        "dist",
+        "build",
+    }
+)
 
 _sql_query_count_var: ContextVar[int] = ContextVar("nimbusware_sql_query_count", default=0)
 
@@ -53,6 +69,16 @@ class SqlProfilerSnapshot:
         }
 
 
+def _iter_package_py_files(root: Path) -> Iterator[Path]:
+    for dirpath, dirnames, filenames in os.walk(root, topdown=True):
+        dirnames[:] = [
+            name for name in dirnames if name not in _SKIP_SCAN_DIRS and not name.startswith(".")
+        ]
+        for name in filenames:
+            if name.endswith(".py"):
+                yield Path(dirpath) / name
+
+
 def scan_sql_query_hotspots(
     workspace: Path,
     *,
@@ -63,7 +89,7 @@ def scan_sql_query_hotspots(
     if not root.is_dir():
         return 0, "sql profiler static: skipped (no packages/)\n", []
     findings: list[str] = []
-    for path in root.rglob("*.py"):
+    for path in _iter_package_py_files(root):
         if "test" in path.parts:
             continue
         try:
