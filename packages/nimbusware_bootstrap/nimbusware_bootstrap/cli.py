@@ -1,0 +1,53 @@
+from __future__ import annotations
+
+import argparse
+import subprocess
+import sys
+from pathlib import Path
+
+_DEFAULT_REPO = "https://github.com/nimbusware/nimbusware.git"
+
+
+def curl_bootstrap_line(repo_url: str) -> str:
+    return (
+        f"curl -fsSL {repo_url}/raw/main/scripts/install_nimbusware.py "
+        f"| python - --clone {repo_url} --target-dir ./Nimbusware "
+        "--non-interactive --skip-postgres"
+    )
+
+
+def pip_hint() -> str:
+    return "pip install nimbusware-bootstrap  # prints install hints via nimbusware-bootstrap"
+
+
+def run(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Nimbusware consumer bootstrap helper")
+    parser.add_argument("--repo-url", default=_DEFAULT_REPO)
+    parser.add_argument("--print-only", action="store_true", help="Print bootstrap lines and exit")
+    parser.add_argument("--run", action="store_true", help="Run non-interactive in-repo install")
+    args = parser.parse_args(argv)
+    repo_root = Path(__file__).resolve().parents[3]
+    install = repo_root / "scripts" / "install_nimbusware.py"
+    lines = [
+        curl_bootstrap_line(args.repo_url),
+        f"python {install} --non-interactive --skip-postgres --no-poetry-install",
+        pip_hint(),
+    ]
+    if args.print_only or not args.run:
+        print("Nimbusware consumer bootstrap options:")
+        for idx, line in enumerate(lines, start=1):
+            print(f"  {idx}. {line}")
+        return 0
+    if not install.is_file():
+        print(f"install script missing: {install}", file=sys.stderr)
+        return 1
+    return subprocess.call(
+        [
+            sys.executable,
+            str(install),
+            "--non-interactive",
+            "--skip-postgres",
+            "--no-poetry-install",
+        ],
+        cwd=repo_root,
+    )
