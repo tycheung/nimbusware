@@ -259,6 +259,25 @@ def _load_critic_reliability_snapshot(repo_root: Path | None) -> dict[str, Any] 
     return _load_benchmark_snapshot(repo_root, "latest_critic_reliability.json")
 
 
+def _classifier_acceptance_drift(
+    live: dict[str, Any],
+    benchmark: dict[str, Any] | None,
+) -> dict[str, Any]:
+    live_rate = live.get("rate")
+    bench_rate = benchmark.get("rate") if benchmark else None
+    delta = None
+    if isinstance(live_rate, (int, float)) and isinstance(bench_rate, (int, float)):
+        delta = float(live_rate) - float(bench_rate)
+    return {
+        "live_rate": live_rate,
+        "benchmark_rate": bench_rate,
+        "delta": delta,
+        "live_meets_target": live.get("meets_target"),
+        "benchmark_meets_target": benchmark.get("meets_target") if benchmark else None,
+        "drift_ok": delta is None or abs(delta) <= 0.15,
+    }
+
+
 def _policy_outcome_summary(
     slice_gate: dict[str, Any],
     critic_snap: dict[str, Any] | None,
@@ -287,6 +306,8 @@ def build_competitive_summary(
     stitch_stats = compute_stitch_transplant_stats(stitch_rows)
     slice_gate = _slice_gate_pass_rate(rows)
     critic_snap = _load_critic_reliability_snapshot(repo_root)
+    classifier_live = _classifier_acceptance_rate(by_run)
+    classifier_bench = _load_benchmark_snapshot(repo_root, "latest_classifier_acceptance.json")
     generated = datetime.now(timezone.utc).isoformat()
     return {
         "generated_at": generated,
@@ -299,7 +320,11 @@ def build_competitive_summary(
             "slices_per_completed_run": _slices_per_completed_run(by_run),
             "intent_to_first_slice_ms": _intent_to_first_slice_ms(by_run),
             "intent_to_first_patch_ms": _intent_to_first_patch_ms(by_run),
-            "classifier_acceptance_rate": _classifier_acceptance_rate(by_run),
+            "classifier_acceptance_rate": classifier_live,
+            "classifier_acceptance_drift": _classifier_acceptance_drift(
+                classifier_live,
+                classifier_bench,
+            ),
             "stitch_transplant": stitch_stats,
             "research_brief_utilization": _research_brief_utilization(by_run),
             "swe_bench": _load_swe_bench_snapshot(repo_root),

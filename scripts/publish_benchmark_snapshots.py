@@ -62,6 +62,27 @@ def _write_factory_weekly_snapshot() -> Path | None:
     return out
 
 
+def _write_classifier_acceptance_snapshot() -> Path:
+    from datetime import datetime, timezone
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "scripts" / "measure_classifier_acceptance.py"),
+            "--json",
+            str(_BENCH_DIR / "latest_classifier_acceptance.json"),
+        ],
+        cwd=_ROOT,
+        check=False,
+    )
+    out = _BENCH_DIR / "latest_classifier_acceptance.json"
+    if proc.returncode != 0 and out.is_file():
+        body = json.loads(out.read_text(encoding="utf-8"))
+        body["published_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        out.write_text(json.dumps(body, indent=2, sort_keys=True), encoding="utf-8")
+    return out
+
+
 def main() -> int:
     env = {
         **os.environ,
@@ -84,6 +105,9 @@ def main() -> int:
         print(f"Wrote {factory_out.relative_to(_ROOT)}")
     critic_out = _write_critic_reliability_snapshot()
     print(f"Wrote {critic_out.relative_to(_ROOT)}")
+    classifier_out = _write_classifier_acceptance_snapshot()
+    if classifier_out.is_file():
+        print(f"Wrote {classifier_out.relative_to(_ROOT)}")
     return proc.returncode
 
 

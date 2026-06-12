@@ -227,6 +227,20 @@ def test_competitive_summary_patch_intent_and_classifier_rate() -> None:
     assert rate["rate"] == 0.5
 
 
+def test_competitive_summary_classifier_drift(tmp_path: Path) -> None:
+    bench_dir = tmp_path / "benchmarks"
+    bench_dir.mkdir()
+    (bench_dir / "latest_classifier_acceptance.json").write_text(
+        json.dumps({"ok": True, "rate": 0.8, "meets_target": True}),
+        encoding="utf-8",
+    )
+    store = InMemoryEventStore()
+    body = build_competitive_summary(store, limit_runs=5, repo_root=tmp_path)
+    drift = body["metrics"]["classifier_acceptance_drift"]
+    assert "live_rate" in drift
+    assert drift["benchmark_rate"] == 0.8
+
+
 def test_competitive_summary_includes_benchmark_snapshots(tmp_path: Path) -> None:
     bench_dir = tmp_path / "benchmarks"
     bench_dir.mkdir()
