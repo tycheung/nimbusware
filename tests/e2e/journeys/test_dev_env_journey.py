@@ -22,10 +22,14 @@ def test_dev_env_session_start_status_stop(tmp_path: Path) -> None:
     ws = tmp_path / "tiny"
     ws.mkdir()
     (ws / "index.html").write_text(
-        "<html><body><h1>Welcome</h1><a href='contact.html'>Contact</a></body></html>",
+        '<html lang="en"><head><title>Welcome</title></head>'
+        "<body><h1>Welcome</h1><a href='contact.html'>Contact</a></body></html>",
         encoding="utf-8",
     )
-    (ws / "contact.html").write_text("<html><body><form></form></body></html>", encoding="utf-8")
+    (ws / "contact.html").write_text(
+        '<html lang="en"><head><title>Contact</title></head><body><form></form></body></html>',
+        encoding="utf-8",
+    )
     store = InMemoryEventStore()
     run_id = uuid4()
     port = _free_port()

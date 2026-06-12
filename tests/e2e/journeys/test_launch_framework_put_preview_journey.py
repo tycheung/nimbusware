@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.browser_controller import run_ui_flow
+from nimbusware_orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
 from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
 from nimbusware_orchestrator.launch_flow_resolver import load_workspace_ui_flow
 from nimbusware_orchestrator.launch_test_stage import (
@@ -44,6 +44,16 @@ def _free_port() -> int:
         return int(sock.getsockname()[1])
 
 
+def _playwright_available() -> bool:
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
+            pytest.fail("playwright required for framework pack fidelity gate")
+        return False
+    return True
+
+
 def _seed_spa_workspace(tmp_path: Path, deps: dict) -> None:
     (tmp_path / "package.json").write_text(json.dumps({"dependencies": deps}), encoding="utf-8")
     (tmp_path / "index.html").write_text(_SPA_HTML, encoding="utf-8")
@@ -71,9 +81,7 @@ def test_framework_pack_put_preview_launch_cycle(
         critique = run_launch_test_critique(tmp_path, flow_id="launch_draft")
         assert critique.passed is True
 
-        try:
-            import playwright  # noqa: F401
-        except ImportError:
+        if not _playwright_available():
             return
 
         ui_flow = load_workspace_ui_flow(tmp_path, "launch_draft")
@@ -81,6 +89,7 @@ def test_framework_pack_put_preview_launch_cycle(
             ui = run_ui_flow(base_url, ui_flow)
             assert ui.passed is True, ui.detail
 
+        close_persistent_browser_url(base_url)
         os.environ["NIMBUSWARE_MOUSE_FIDELITY"] = "1"
         fidelity = run_human_fidelity_suite(base_url)
         assert fidelity.passed is True, fidelity.detail

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_orchestrator.browser_controller import run_ui_flow
+from nimbusware_orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
 from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
 from nimbusware_orchestrator.launch_flow_resolver import load_workspace_ui_flow
 from nimbusware_orchestrator.launch_test_stage import (
@@ -54,6 +54,7 @@ def test_static_html_launch_test_plan_write_critique_and_fidelity() -> None:
             ui = run_ui_flow(base_url, ui_flow)
             assert ui.passed is True, ui.detail
 
+        close_persistent_browser_url(base_url)
         os.environ["NIMBUSWARE_MOUSE_FIDELITY"] = "1"
         fidelity = run_human_fidelity_suite(base_url)
         assert fidelity.passed is True, fidelity.detail

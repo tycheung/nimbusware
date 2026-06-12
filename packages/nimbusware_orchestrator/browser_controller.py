@@ -8,7 +8,34 @@ from uuid import UUID
 from nimbusware_orchestrator.dev_env_events import emit_dev_env_ui_regression
 from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, UiLocator
 
-_PERSISTENT: dict[str, Any] = {}
+_PERSISTENT: dict[str, dict[str, Any]] = {}
+
+
+def _page_alive(page: Any) -> bool:
+    try:
+        page.title()
+        return True
+    except Exception:
+        return False
+
+
+def _close_bundle_key(key: str) -> None:
+    bundle = _PERSISTENT.pop(key, None)
+    if not bundle:
+        return
+    for obj in ("page", "context", "browser"):
+        target = bundle.get(obj)
+        if target is not None:
+            try:
+                target.close()
+            except Exception:
+                pass
+    mgr = bundle.get("mgr")
+    if mgr is not None:
+        try:
+            mgr.stop()
+        except Exception:
+            pass
 
 
 @dataclass
@@ -96,17 +123,31 @@ def run_ui_flow(
     findings: list[dict[str, Any]] = []
     steps_run = 0
     key = workspace_key or base_url
+    page: Any | None = None
+    ephemeral_mgr: Any | None = None
+    ephemeral_browser: Any | None = None
+    ephemeral_context: Any | None = None
 
-    with sync_playwright() as playwright:
-        if reuse_context and key in _PERSISTENT:
-            bundle = _PERSISTENT[key]
-            page = bundle["page"]
-        else:
-            browser = playwright.chromium.launch(headless=True)
-            context = browser.new_context()
-            page = context.new_page()
-            _PERSISTENT[key] = {"browser": browser, "context": context, "page": page}
+    if reuse_context and key in _PERSISTENT and _page_alive(_PERSISTENT[key]["page"]):
+        page = _PERSISTENT[key]["page"]
+    elif reuse_context and key in _PERSISTENT:
+        _close_bundle_key(key)
 
+    if page is None:
+        ephemeral_mgr = sync_playwright().start()
+        ephemeral_browser = ephemeral_mgr.chromium.launch(headless=True)
+        ephemeral_context = ephemeral_browser.new_context()
+        page = ephemeral_context.new_page()
+        if reuse_context:
+            _PERSISTENT[key] = {
+                "mgr": ephemeral_mgr,
+                "browser": ephemeral_browser,
+                "context": ephemeral_context,
+                "page": page,
+            }
+            ephemeral_mgr = ephemeral_browser = ephemeral_context = None
+
+    try:
         for step in flow.steps:
             ok, detail = _execute_step(page, base_url, step)
             steps_run += 1
@@ -129,13 +170,22 @@ def run_ui_flow(
                     failed_locator=_locator_label(loc),
                     findings=findings,
                 )
-    return UiFlowRunResult(
-        passed=True,
-        steps_run=steps_run,
-        detail="pass",
-        flow_id=flow.flow_id,
-        findings=findings,
-    )
+        return UiFlowRunResult(
+            passed=True,
+            steps_run=steps_run,
+            detail="pass",
+            flow_id=flow.flow_id,
+            findings=findings,
+        )
+    finally:
+        if ephemeral_mgr is not None:
+            for obj in (ephemeral_context, ephemeral_browser):
+                if obj is not None:
+                    try:
+                        obj.close()
+                    except Exception:
+                        pass
+            ephemeral_mgr.stop()
 
 
 def run_dev_env_ui_regression(
@@ -168,12 +218,13 @@ def run_dev_env_ui_regression(
 
 
 def close_persistent_browser(workspace: Path) -> None:
-    key = str(workspace.resolve())
-    bundle = _PERSISTENT.pop(key, None)
-    if not bundle:
-        return
-    for obj in ("context", "browser"):
-        try:
-            bundle[obj].close()
-        except Exception:
-            pass
+    _close_bundle_key(str(workspace.resolve()))
+
+
+def close_persistent_browser_url(base_url: str) -> None:
+    _close_bundle_key(base_url.rstrip("/"))
+
+
+def close_all_persistent_browsers() -> None:
+    for key in list(_PERSISTENT):
+        _close_bundle_key(key)

@@ -25,3 +25,11 @@ def _unit_tests_use_file_config(
     if request.node.get_closest_marker("integration") is not None:
         return
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _reset_playwright_sessions() -> None:
+    yield
+    from nimbusware_orchestrator.browser_controller import close_all_persistent_browsers
+
+    close_all_persistent_browsers()

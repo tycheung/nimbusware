@@ -6,7 +6,7 @@ from uuid import uuid4
 
 import pytest
 
-from nimbusware_orchestrator.browser_controller import run_ui_flow
+from nimbusware_orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
 from nimbusware_orchestrator.dev_env_supervisor import (
     frontend_base_url,
     start_dev_environment,
@@ -56,6 +56,7 @@ def test_todo_fullstack_http_and_ui_launch() -> None:
         ui = run_ui_flow(fe_url, ui_flow)
         assert ui.passed is True, ui.detail
 
+        close_persistent_browser_url(fe_url)
         fidelity = run_human_fidelity_suite(fe_url)
         assert fidelity.passed is True, fidelity.detail
     finally:
