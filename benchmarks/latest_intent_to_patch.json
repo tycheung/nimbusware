@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "sample_size": 1,
+  "median_ms": 120000,
+  "target_median_ms": 180000,
+  "meets_target": true,
+  "published_at": "2026-06-01T00:00:00Z",
+  "fixture": "tests/fixtures/repos/tiny_python_app"
+}
