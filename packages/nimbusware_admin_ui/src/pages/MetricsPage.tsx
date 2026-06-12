@@ -29,6 +29,8 @@ export function MetricsPage() {
   const gate = (m.slice_gate_pass_rate || {}) as Record<string, unknown>;
   const slices = (m.slices_per_completed_run || {}) as Record<string, unknown>;
   const intent = (m.intent_to_first_slice_ms || {}) as Record<string, unknown>;
+  const patchIntent = (m.intent_to_first_patch_ms || {}) as Record<string, unknown>;
+  const classifier = (m.classifier_acceptance_rate || {}) as Record<string, unknown>;
   const stitch = (m.stitch_transplant || {}) as Record<string, unknown>;
   const research = (m.research_brief_utilization || {}) as Record<string, unknown>;
   const swe = m.swe_bench as Record<string, unknown> | null | undefined;
@@ -90,6 +92,28 @@ export function MetricsPage() {
                   {typeof intent.median_ms === "number"
                     ? Math.round(intent.median_ms).toLocaleString()
                     : "—"}
+                </td>
+              </tr>
+              <tr>
+                <td>Intent → first patch (median ms, target &lt; 3 min)</td>
+                <td>
+                  {typeof patchIntent.median_ms === "number"
+                    ? `${Math.round(patchIntent.median_ms).toLocaleString()} ms${
+                        patchIntent.meets_target === true
+                          ? " ✓"
+                          : patchIntent.meets_target === false
+                            ? " (over target)"
+                            : ""
+                      }`
+                    : "—"}{" "}
+                  ({String(patchIntent.sample_size ?? 0)} patch runs)
+                </td>
+              </tr>
+              <tr>
+                <td>Classifier acceptance (target ≥ 70%)</td>
+                <td>
+                  {fmtRate(classifier.rate)} ({String(classifier.classifier_count ?? 0)} accept /{" "}
+                  {String(classifier.override_count ?? 0)} override)
                 </td>
               </tr>
               <tr>

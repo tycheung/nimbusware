@@ -107,33 +107,105 @@ def _slices_per_completed_run(by_run: dict[str, list[dict[str, Any]]]) -> dict[s
     }
 
 
-def _intent_to_first_slice_ms(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
-    deltas: list[float] = []
-    for run_rows in by_run.values():
-        created_at: datetime | None = None
-        first_applied: datetime | None = None
-        for row in run_rows:
-            et = str(row.get("event_type") or "")
-            ts = _parse_ts(row.get("occurred_at"))
-            if et == EventType.RUN_CREATED.value and created_at is None:
-                created_at = ts
-            if (
-                et == EventType.STAGE_PASSED.value
-                and _stage_name(row) == _SLICE_APPLIED
-                and first_applied is None
-            ):
-                first_applied = ts
-        if created_at and first_applied:
-            deltas.append((first_applied - created_at).total_seconds() * 1000.0)
+def _run_created_row(run_rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    for row in run_rows:
+        if str(row.get("event_type") or "") == EventType.RUN_CREATED.value:
+            return row
+    return None
+
+
+def _is_patch_run(run_rows: list[dict[str, Any]]) -> bool:
+    row = _run_created_row(run_rows)
+    if not row:
+        return False
+    meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    work_type = str(meta.get("work_type") or "").strip().lower()
+    profile = str(payload.get("workflow_profile") or "").strip().lower()
+    return work_type == "patch" or profile.startswith("patch")
+
+
+def _first_slice_delta_ms(run_rows: list[dict[str, Any]]) -> float | None:
+    created_at: datetime | None = None
+    first_applied: datetime | None = None
+    for row in run_rows:
+        et = str(row.get("event_type") or "")
+        ts = _parse_ts(row.get("occurred_at"))
+        if et == EventType.RUN_CREATED.value and created_at is None:
+            created_at = ts
+        if (
+            et == EventType.STAGE_PASSED.value
+            and _stage_name(row) == _SLICE_APPLIED
+            and first_applied is None
+        ):
+            first_applied = ts
+    if created_at and first_applied:
+        return (first_applied - created_at).total_seconds() * 1000.0
+    return None
+
+
+def _timing_summary(deltas: list[float], *, target_median_ms: int | None = None) -> dict[str, Any]:
     if not deltas:
-        return {"sample_size": 0, "mean_ms": None, "median_ms": None}
+        out: dict[str, Any] = {"sample_size": 0, "mean_ms": None, "median_ms": None}
+        if target_median_ms is not None:
+            out["target_median_ms"] = target_median_ms
+        return out
     ordered = sorted(deltas)
     mid = len(ordered) // 2
     median = ordered[mid] if len(ordered) % 2 else (ordered[mid - 1] + ordered[mid]) / 2.0
-    return {
+    out = {
         "sample_size": len(deltas),
         "mean_ms": sum(deltas) / len(deltas),
         "median_ms": median,
+    }
+    if target_median_ms is not None:
+        out["target_median_ms"] = target_median_ms
+        out["meets_target"] = median <= float(target_median_ms)
+    return out
+
+
+def _intent_to_first_slice_ms(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    deltas: list[float] = []
+    for run_rows in by_run.values():
+        delta = _first_slice_delta_ms(run_rows)
+        if delta is not None:
+            deltas.append(delta)
+    return _timing_summary(deltas)
+
+
+def _intent_to_first_patch_ms(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    deltas: list[float] = []
+    for run_rows in by_run.values():
+        if not _is_patch_run(run_rows):
+            continue
+        delta = _first_slice_delta_ms(run_rows)
+        if delta is not None:
+            deltas.append(delta)
+    return _timing_summary(deltas, target_median_ms=180_000)
+
+
+def _classifier_acceptance_rate(by_run: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
+    classifier = 0
+    override = 0
+    for run_rows in by_run.values():
+        row = _run_created_row(run_rows)
+        if not row:
+            continue
+        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        source = str(meta.get("work_type_source") or "").strip().lower()
+        if source == "classifier":
+            classifier += 1
+        elif source == "operator_override":
+            override += 1
+    total = classifier + override
+    rate = classifier / total if total else None
+    return {
+        "classifier_count": classifier,
+        "override_count": override,
+        "sample_size": total,
+        "rate": rate,
+        "target_rate": 0.70,
+        "meets_target": rate is not None and rate >= 0.70,
     }
 
 
@@ -225,11 +297,17 @@ def build_competitive_summary(
             "policy_outcome": _policy_outcome_summary(slice_gate, critic_snap),
             "slices_per_completed_run": _slices_per_completed_run(by_run),
             "intent_to_first_slice_ms": _intent_to_first_slice_ms(by_run),
+            "intent_to_first_patch_ms": _intent_to_first_patch_ms(by_run),
+            "classifier_acceptance_rate": _classifier_acceptance_rate(by_run),
             "stitch_transplant": stitch_stats,
             "research_brief_utilization": _research_brief_utilization(by_run),
             "swe_bench": _load_swe_bench_snapshot(repo_root),
             "factory_weekly": _load_factory_weekly_snapshot(repo_root),
             "critic_reliability": _load_critic_reliability_snapshot(repo_root),
+            "intent_to_patch_benchmark": _load_benchmark_snapshot(
+                repo_root,
+                "latest_intent_to_patch.json",
+            ),
         },
         "sources": {
             "event_store": "recent_run_events",
@@ -237,5 +315,6 @@ def build_competitive_summary(
             "swe_bench": "benchmarks/latest_swe_bench.json (optional, local)",
             "factory_weekly": "benchmarks/latest_factory_weekly.json (optional, local)",
             "critic_reliability": "benchmarks/latest_critic_reliability.json (optional, local)",
+            "intent_to_patch_benchmark": "benchmarks/latest_intent_to_patch.json (optional, local)",
         },
     }

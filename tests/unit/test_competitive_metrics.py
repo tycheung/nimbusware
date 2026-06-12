@@ -172,6 +172,61 @@ def test_competitive_summary_policy_outcome_links_gate_and_critic() -> None:
     assert outcome["slice_gate_sample"] == 0
 
 
+def test_competitive_summary_patch_intent_and_classifier_rate() -> None:
+    store = InMemoryEventStore()
+    patch_id = uuid4()
+    slice_id = uuid4()
+    t0 = datetime(2026, 2, 1, 10, 0, 0, tzinfo=timezone.utc)
+    t1 = datetime(2026, 2, 1, 10, 2, 0, tzinfo=timezone.utc)
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=patch_id,
+            occurred_at=t0,
+            payload=RunCreatedPayload(
+                workflow_profile="patch",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+            metadata={"work_type": "patch", "work_type_source": "classifier"},
+        ),
+    )
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=patch_id,
+            occurred_at=t1,
+            payload=StagePassedPayload(stage_name="slice.applied", duration_ms=1),
+            metadata={"slice_id": "s1"},
+        ),
+    )
+    store.append(
+        RunCreatedEvent(
+            event_type=EventType.RUN_CREATED,
+            event_id=uuid4(),
+            run_id=slice_id,
+            occurred_at=t0,
+            payload=RunCreatedPayload(
+                workflow_profile="micro_slice",
+                policy_version="1",
+                config_snapshot_id="x",
+            ),
+            metadata={"work_type": "slice", "work_type_source": "operator_override"},
+        ),
+    )
+    body = build_competitive_summary(store, limit_runs=10)
+    patch_metric = body["metrics"]["intent_to_first_patch_ms"]
+    assert patch_metric["sample_size"] == 1
+    assert patch_metric["median_ms"] == 120_000.0
+    assert patch_metric["meets_target"] is True
+    rate = body["metrics"]["classifier_acceptance_rate"]
+    assert rate["classifier_count"] == 1
+    assert rate["override_count"] == 1
+    assert rate["rate"] == 0.5
+
+
 def test_competitive_summary_includes_factory_weekly_json(tmp_path: Path) -> None:
     bench_dir = tmp_path / "benchmarks"
     bench_dir.mkdir()
