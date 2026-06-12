@@ -10,4 +10,4 @@ pip install packages/nimbusware_bootstrap/dist/nimbusware_bootstrap-*.whl
 nimbusware-bootstrap --print-only
 ```
 
-Live PyPI publish is manual via `.github/workflows/publish_bootstrap.yml` (`workflow_dispatch`).
+Publish: GitHub Actions `.github/workflows/publish_bootstrap.yml` (`workflow_dispatch`, set `publish_pypi=true` and configure `PYPI_API_TOKEN`).
