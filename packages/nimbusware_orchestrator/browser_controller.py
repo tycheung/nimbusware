@@ -6,6 +6,7 @@ from typing import Any
 from uuid import UUID
 
 from nimbusware_orchestrator.dev_env_events import emit_dev_env_ui_regression
+from nimbusware_orchestrator.playwright_sync import run_without_asyncio_loop
 from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, UiLocator
 
 _PERSISTENT: dict[str, dict[str, Any]] = {}
@@ -106,19 +107,14 @@ def _execute_step(page: Any, base_url: str, step: UiFlowStep) -> tuple[bool, str
     return False, f"unknown_step:{step.kind}"
 
 
-def run_ui_flow(
+def _run_ui_flow_sync(
     base_url: str,
     flow: UiFlowDefinition,
     *,
-    workspace_key: str | None = None,
-    reuse_context: bool = True,
+    workspace_key: str | None,
+    reuse_context: bool,
 ) -> UiFlowRunResult:
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        return UiFlowRunResult(
-            passed=False, detail="playwright_not_installed", flow_id=flow.flow_id
-        )
+    from playwright.sync_api import sync_playwright
 
     findings: list[dict[str, Any]] = []
     steps_run = 0
@@ -188,6 +184,29 @@ def run_ui_flow(
             ephemeral_mgr.stop()
 
 
+def run_ui_flow(
+    base_url: str,
+    flow: UiFlowDefinition,
+    *,
+    workspace_key: str | None = None,
+    reuse_context: bool = True,
+) -> UiFlowRunResult:
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        return UiFlowRunResult(
+            passed=False, detail="playwright_not_installed", flow_id=flow.flow_id
+        )
+    return run_without_asyncio_loop(
+        lambda: _run_ui_flow_sync(
+            base_url,
+            flow,
+            workspace_key=workspace_key,
+            reuse_context=reuse_context,
+        )
+    )
+
+
 def run_dev_env_ui_regression(
     store: Any,
     run_id: UUID | str,
@@ -218,13 +237,17 @@ def run_dev_env_ui_regression(
 
 
 def close_persistent_browser(workspace: Path) -> None:
-    _close_bundle_key(str(workspace.resolve()))
+    run_without_asyncio_loop(lambda: _close_bundle_key(str(workspace.resolve())))
 
 
 def close_persistent_browser_url(base_url: str) -> None:
-    _close_bundle_key(base_url.rstrip("/"))
+    run_without_asyncio_loop(lambda: _close_bundle_key(base_url.rstrip("/")))
 
 
 def close_all_persistent_browsers() -> None:
+    run_without_asyncio_loop(_close_all_persistent_browsers_sync)
+
+
+def _close_all_persistent_browsers_sync() -> None:
     for key in list(_PERSISTENT):
         _close_bundle_key(key)
