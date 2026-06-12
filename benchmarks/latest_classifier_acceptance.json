@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "rate": 0.75,
+  "target_rate": 0.7,
+  "meets_target": true,
+  "classifier_count": 3,
+  "override_count": 1,
+  "sample_size": 4,
+  "published_at": "2026-06-01T00:00:00Z"
+}

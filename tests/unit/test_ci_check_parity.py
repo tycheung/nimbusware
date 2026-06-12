@@ -19,6 +19,8 @@ _CRITICAL_STEPS = (
     "coverage_package_floors.py",
     "test_slice_e2e_workflow.py",
     "run_framework_pack_ci_gate.py",
+    "run_intent_to_patch_ci_gate.py",
+    "run_classifier_acceptance_ci_gate.py",
 )
 
 
