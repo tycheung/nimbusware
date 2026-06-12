@@ -20,6 +20,9 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 | **pip-audit** | `poetry run pip-audit` | Locked `poetry.lock` |
 | **ruff** | format + lint on `packages` and `tests` | `[tool.ruff]` |
 | **mypy** | tranches via `scripts/mypy_ci_targets.py` | strict islands |
+| **Intent→patch SLO** | `scripts/run_intent_to_patch_ci_gate.py` | `benchmarks/latest_intent_to_patch.json` median ≤ 180s |
+| **Classifier acceptance SLO** | `scripts/run_classifier_acceptance_ci_gate.py` | `benchmarks/latest_classifier_acceptance.json` rate ≥ 70% |
+| **Framework pack** | `scripts/run_framework_pack_ci_gate.py` | launch-test framework YAML smoke |
 
 Failures in bandit or pip-audit block merge the same way as pytest coverage floors.
 

@@ -17,7 +17,7 @@ After install, open **Maker Home** (`/v1/maker/app/#/home`):
 3. **Quick demo** — `poetry run nimbusware-run --quick` for in-memory store + stub critics without Postgres.
 4. **Factory hero demos** — catalog cards (todo API, basic CRM, contacts API) deep-link **Chat** with `campaign_factory_zero_touch`.
 
-Target: documented path from install → first gate pass **&lt; 15 min**; intent → first applied patch on a fixture **&lt; 3 min** median (tracked in Admin **Metrics** and `benchmarks/latest_intent_to_patch.json`; harness: `python scripts/measure_intent_to_patch.py --json benchmarks/latest_intent_to_patch.json`).
+Target: documented path from install → first gate pass **&lt; 15 min**; intent → first applied patch on a fixture **&lt; 3 min** median (tracked in Admin **Metrics**, committed snapshots `benchmarks/latest_intent_to_patch.json` and `benchmarks/latest_classifier_acceptance.json`; harness: `python scripts/measure_intent_to_patch.py --json benchmarks/latest_intent_to_patch.json`, chat path: add `--via-chat`). PR CI enforces both SLO snapshots via `scripts/run_intent_to_patch_ci_gate.py` and `scripts/run_classifier_acceptance_ci_gate.py`.
 
 ## Product editions
 
@@ -225,8 +225,9 @@ python scripts/install_nimbusware.py
 python scripts/install_nimbusware.py --edition enterprise
 # Print documented one-liners only:
 python scripts/install_nimbusware.py --print-one-command
-# Consumer curl bootstrap lines:
+# Consumer curl bootstrap lines (or thin wheel: pip install nimbusware-bootstrap):
 python scripts/bootstrap_consumer.py --print-only
+python -m nimbusware_bootstrap --print-only  # from packages/nimbusware_bootstrap
 ```
 
 The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/nimbusware_store/schema/postgres.sql`](packages/nimbusware_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`. On completion it prints **Maker Chat** at `http://127.0.0.1:8765/v1/maker/app/#/chat`, a documented **happy path** (`nimbusware-run --quick` → attach `tests/fixtures/repos/tiny_python_app` → patch gate), and full-stack steps when Postgres is configured.
