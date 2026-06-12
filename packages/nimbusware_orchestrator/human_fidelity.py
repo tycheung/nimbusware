@@ -118,6 +118,26 @@ def _page_has_login_form(base_url: str) -> bool:
     return bool(has_form)
 
 
+def run_mouse_smoke(base_url: str) -> dict[str, Any]:
+    if not env_bool("NIMBUSWARE_MOUSE_FIDELITY", default=False):
+        return {"ok": True, "detail": "mouse_disabled"}
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return {"ok": False, "detail": "playwright_not_installed"}
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(base_url.rstrip("/") + "/", wait_until="domcontentloaded")
+        page.mouse.move(40, 40)
+        page.mouse.wheel(0, 240)
+        hovered = page.locator("a, button").first
+        if hovered.count() > 0:
+            hovered.hover(timeout=2000)
+        browser.close()
+    return {"ok": True, "detail": "mouse_wheel_hover_ok"}
+
+
 def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     checks: list[dict[str, Any]] = []
     axe = run_axe_smoke(base_url)
@@ -136,6 +156,14 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
         reuse_context=False,
     )
     checks.append({"kind": "keyboard_nav", "passed": nav.passed, "detail": nav.detail})
+    mouse = run_mouse_smoke(base_url)
+    checks.append(
+        {
+            "kind": "mouse_smoke",
+            "passed": mouse.get("ok") is True,
+            "detail": str(mouse.get("detail") or ""),
+        },
+    )
     if _page_has_login_form(base_url):
         negative = run_ui_flow(base_url, NEGATIVE_LOGIN_FAIL_FLOW, reuse_context=False)
         checks.append(
@@ -144,6 +172,7 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     else:
         checks.append({"kind": "negative_login", "passed": True, "detail": "skipped_no_login_form"})
     negative_passed = checks[-1]["passed"] is True
+    mouse_passed = checks[-2]["passed"] is True
     axe_ok = axe.get("ok") is True and rules.get("ok") is not False
-    passed = axe_ok and nav.passed and negative_passed
+    passed = axe_ok and nav.passed and mouse_passed and negative_passed
     return HumanFidelityResult(passed=passed, checks=checks, detail="pass" if passed else "fail")

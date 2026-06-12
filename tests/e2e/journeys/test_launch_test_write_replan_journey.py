@@ -50,6 +50,9 @@ def test_launch_test_write_replan_then_ui_and_keyboard() -> None:
         ui = run_ui_flow(base_url, ui_flow)
         assert ui.passed is True, ui.detail
 
+        import os
+
+        os.environ["NIMBUSWARE_MOUSE_FIDELITY"] = "1"
         fidelity = run_human_fidelity_suite(base_url)
         assert fidelity.passed is True, fidelity.detail
     finally:

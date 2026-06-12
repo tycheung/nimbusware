@@ -15,14 +15,24 @@ function fmtRate(v: unknown): string {
   return `${(v * 100).toFixed(1)}%`;
 }
 
+type ChatTurnSummary = {
+  turn_count?: number;
+  sessions_scanned?: number;
+  classifier_acceptance_rate?: number;
+};
+
 export function MetricsPage() {
   const [body, setBody] = useState<Summary | null>(null);
+  const [chatTurns, setChatTurns] = useState<ChatTurnSummary | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     apiJson<Summary>("/platform/analytics/competitive-summary?limit_runs=500")
       .then(setBody)
       .catch((e) => setError(String((e as Error).message || e)));
+    apiJson<ChatTurnSummary>("/platform/analytics/chat-turns?limit_sessions=500")
+      .then(setChatTurns)
+      .catch(() => setChatTurns(null));
   }, []);
 
   const m = body?.metrics || {};
@@ -31,6 +41,7 @@ export function MetricsPage() {
   const intent = (m.intent_to_first_slice_ms || {}) as Record<string, unknown>;
   const patchIntent = (m.intent_to_first_patch_ms || {}) as Record<string, unknown>;
   const classifier = (m.classifier_acceptance_rate || {}) as Record<string, unknown>;
+  const classifierDrift = (m.classifier_acceptance_drift || {}) as Record<string, unknown>;
   const stitch = (m.stitch_transplant || {}) as Record<string, unknown>;
   const research = (m.research_brief_utilization || {}) as Record<string, unknown>;
   const patchBench = m.intent_to_patch_benchmark as Record<string, unknown> | null | undefined;
@@ -119,6 +130,19 @@ export function MetricsPage() {
                 <td>
                   {fmtRate(classifier.rate)} ({String(classifier.classifier_count ?? 0)} accept /{" "}
                   {String(classifier.override_count ?? 0)} override)
+                  {typeof classifierDrift.delta === "number"
+                    ? ` · drift ${(classifierDrift.delta * 100).toFixed(1)}pp vs snapshot`
+                    : ""}
+                </td>
+              </tr>
+              <tr>
+                <td>Chat-turn analytics (store snapshot)</td>
+                <td>
+                  {typeof chatTurns.turn_count === "number"
+                    ? `${String(chatTurns.turn_count)} turns / ${String(
+                        chatTurns.sessions_scanned ?? 0,
+                      )} sessions · chat rate ${fmtRate(chatTurns.classifier_acceptance_rate)}`
+                    : "Load /v1/platform/analytics/chat-turns for store-backed metrics"}
                 </td>
               </tr>
               <tr>

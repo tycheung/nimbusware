@@ -38,6 +38,26 @@ def test_detect_only_framework_packs(tmp_path: Path, deps: dict, pack_id: str) -
     assert str(pack.get("writer_instructions") or "").strip()
 
 
+@pytest.mark.parametrize(
+    "pack_id",
+    [
+        "react_vite",
+        "vue_vite",
+        "angular_cli",
+        "svelte_vite",
+        "static_html",
+        "spa_generic",
+        "next_js",
+        "nuxt",
+        "remix",
+    ],
+)
+def test_framework_pack_yaml_smoke(pack_id: str) -> None:
+    pack = load_framework_pack(pack_id)
+    assert pack.get("id") == pack_id
+    assert str(pack.get("writer_instructions") or "").strip()
+
+
 def test_vue_vite_pack_smoke(tmp_path: Path) -> None:
     (tmp_path / "package.json").write_text(
         json.dumps({"dependencies": {"vue": "3"}, "devDependencies": {"vite": "5"}}),
