@@ -1,5 +1,3 @@
-"""Map verifier logs / stack traces to Role Registry ``owner_role`` hints."""
-
 from __future__ import annotations
 
 import re

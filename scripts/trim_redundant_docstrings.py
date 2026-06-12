@@ -44,6 +44,11 @@ _REDUNDANT_PREFIXES = (
     "re-export facade",
     "Internal pipeline mixins",
     "delegates to ",
+    "composed facade",
+    "Read-only ",
+    "Load launch eval ",
+    "Minimal Ollama ",
+    "Map verifier logs",
 )
 
 

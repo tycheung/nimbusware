@@ -1,5 +1,3 @@
-"""Minimal Ollama ``/api/chat`` JSON helper for orchestration."""
-
 from __future__ import annotations
 
 import json

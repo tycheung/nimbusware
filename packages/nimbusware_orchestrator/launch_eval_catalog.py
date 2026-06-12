@@ -1,5 +1,3 @@
-"""Load launch eval prompt catalog from configs/launch_eval/catalog.yaml."""
-
 from __future__ import annotations
 
 from pathlib import Path
