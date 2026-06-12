@@ -91,4 +91,7 @@ def test_mcp_classify_patch_and_chat_graph_round_trip(
         "nimbusware_interject",
         {"run_id": run_id, "message": "[steer] smaller diff"},
     )
-    assert "count" in interject["content"][0]["text"].lower() or "queue" in interject["content"][0]["text"].lower()
+    assert (
+        "count" in interject["content"][0]["text"].lower()
+        or "queue" in interject["content"][0]["text"].lower()
+    )

@@ -19,7 +19,9 @@ def _load(path: Path) -> dict:
 def test_parity_ide_wiring_targets_exist() -> None:
     wiring = _load(_WIRING).get("ide") or {}
     matrix = _load(_MATRIX)
-    ide_rows = {r["id"]: r for r in matrix.get("maker", []) if str(r.get("id", "")).startswith("ide_mcp")}
+    ide_rows = {
+        r["id"]: r for r in matrix.get("maker", []) if str(r.get("id", "")).startswith("ide_mcp")
+    }
     assert ide_rows
     for row_id, rel in wiring.items():
         assert row_id in ide_rows, f"wiring row {row_id} missing from parity_matrix"
