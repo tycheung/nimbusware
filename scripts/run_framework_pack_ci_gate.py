@@ -15,6 +15,15 @@ def main() -> int:
         "pytest",
         "tests/unit/test_js_framework_detect.py",
         "tests/unit/test_framework_pack_smoke.py",
+        "tests/e2e/journeys/test_launch_framework_detect_journey.py",
+        (
+            "tests/e2e/journeys/test_launch_framework_put_preview_journey.py"
+            "::test_framework_pack_put_preview_launch_cycle[react_vite-deps0]"
+        ),
+        (
+            "tests/e2e/journeys/test_launch_framework_put_preview_journey.py"
+            "::test_framework_pack_put_preview_launch_cycle[vue_vite-deps1]"
+        ),
         "-q",
         "--tb=short",
     ]
