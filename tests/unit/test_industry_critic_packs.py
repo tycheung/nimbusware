@@ -22,3 +22,6 @@ def test_industry_critic_packs_load(pack_id: str, domain: str) -> None:
     assert pack.get("id") == pack_id
     assert pack.get("domain") == domain
     assert pack.get("blocking_authority") == "advisory"
+    rules = pack.get("review_rules")
+    assert isinstance(rules, list)
+    assert len(rules) >= 3

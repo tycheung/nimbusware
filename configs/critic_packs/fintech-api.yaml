@@ -2,3 +2,8 @@ id: fintech-api
 domain: fintech
 blocking_authority: advisory
 description: Fintech API critic pack — PCI-aware defaults, idempotency keys, audit logging hints
+review_rules:
+  - Require idempotency keys on payment and transfer mutations.
+  - Reject logging of PAN, CVV, or full account numbers in application logs.
+  - Flag missing audit trail fields (actor, correlation_id, timestamp) on money movement APIs.
+  - Prefer least-privilege scopes on third-party financial integrations.

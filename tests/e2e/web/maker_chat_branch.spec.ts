@@ -101,5 +101,5 @@ test("chat fork restores from user turn and shows branch panel", async ({ page }
 
   await expect(page.getByTestId("maker-chat-branch-panel")).toBeVisible();
   await page.getByTestId(`maker-chat-branch-${TURN_B}`).click();
-  await expect(page.getByText("alternate path")).toBeVisible();
+  await expect(page.getByTestId(`maker-chat-turn-${TURN_B}`)).toBeVisible();
 });

@@ -2,3 +2,8 @@ id: healthcare-api
 domain: healthcare
 blocking_authority: advisory
 description: Healthcare API critic pack — PHI handling, access logging, minimum-necessary data exposure
+review_rules:
+  - Reject responses that include PHI beyond minimum necessary for the caller role.
+  - Require access logging with purpose-of-use on patient record reads.
+  - Flag unencrypted PHI in URLs, query strings, or client-side storage hints.
+  - Prefer break-glass and consent metadata on elevated clinical data exports.

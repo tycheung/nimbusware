@@ -1,0 +1,6 @@
+# Maps Admin parity rows to Playwright specs exercised in CI web job.
+admin:
+  run_list: tests/e2e/web/admin_run_list.spec.ts
+  launch_eval_scorecard_admin: tests/e2e/web/admin_launch_scorecard.spec.ts
+  operator_chat: tests/e2e/web/admin_operator_chat.spec.ts
+  critic_pack_crud: tests/e2e/web/admin_critic_packs.spec.ts

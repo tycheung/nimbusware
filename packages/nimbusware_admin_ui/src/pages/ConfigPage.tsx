@@ -382,6 +382,9 @@ export function ConfigPage() {
         <button type="button" class={tab === "blast" ? "active" : ""} onClick={() => setTab("blast")}>
           Blast radius
         </button>
+        <button type="button" class={tab === "critics" ? "active" : ""} onClick={() => setTab("critics")}>
+          Critic packs
+        </button>
         <button type="button" class={tab === "personas" ? "active" : ""} onClick={() => setTab("personas")}>
           Personas
         </button>
