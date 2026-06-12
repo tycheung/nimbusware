@@ -5,6 +5,7 @@ from typing import Any
 
 from nimbusware_env.env_flags import env_bool
 from nimbusware_orchestrator.browser_controller import run_ui_flow
+from nimbusware_orchestrator.playwright_sync import run_without_asyncio_loop
 from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep
 
 PERF_BUDGET_MS = 8000
@@ -30,11 +31,9 @@ NEGATIVE_LOGIN_FAIL_FLOW = UiFlowDefinition(
 )
 
 
-def run_axe_smoke(base_url: str) -> dict[str, Any]:
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        return {"ok": False, "detail": "playwright_not_installed"}
+def _run_axe_smoke_sync(base_url: str) -> dict[str, Any]:
+    from playwright.sync_api import sync_playwright
+
     issues: list[str] = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
@@ -61,14 +60,17 @@ def run_axe_smoke(base_url: str) -> dict[str, Any]:
     return {"ok": ok, "detail": detail, "title": title, "dcl_ms": dcl}
 
 
-def run_axe_rules_check(base_url: str) -> dict[str, Any]:
-    """Run axe-core rule packs when ``NIMBUSWARE_AXE_ENABLED=1``."""
-    if not env_bool("NIMBUSWARE_AXE_ENABLED", default=False):
-        return {"ok": True, "detail": "axe_disabled", "violations": []}
+def run_axe_smoke(base_url: str) -> dict[str, Any]:
     try:
-        from playwright.sync_api import sync_playwright
+        import playwright  # noqa: F401
     except ImportError:
-        return {"ok": False, "detail": "playwright_not_installed", "violations": []}
+        return {"ok": False, "detail": "playwright_not_installed"}
+    return run_without_asyncio_loop(lambda: _run_axe_smoke_sync(base_url))
+
+
+def _run_axe_rules_check_sync(base_url: str) -> dict[str, Any]:
+    from playwright.sync_api import sync_playwright
+
     violations: list[str] = []
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
@@ -95,6 +97,16 @@ def run_axe_rules_check(base_url: str) -> dict[str, Any]:
     return {"ok": ok, "detail": detail, "violations": violations}
 
 
+def run_axe_rules_check(base_url: str) -> dict[str, Any]:
+    if not env_bool("NIMBUSWARE_AXE_ENABLED", default=False):
+        return {"ok": True, "detail": "axe_disabled", "violations": []}
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        return {"ok": False, "detail": "playwright_not_installed", "violations": []}
+    return run_without_asyncio_loop(lambda: _run_axe_rules_check_sync(base_url))
+
+
 def run_perf_budget_check(base_url: str) -> dict[str, Any]:
     axe = run_axe_smoke(base_url)
     return {
@@ -104,11 +116,9 @@ def run_perf_budget_check(base_url: str) -> dict[str, Any]:
     }
 
 
-def _page_has_login_form(base_url: str) -> bool:
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        return False
+def _page_has_login_form_sync(base_url: str) -> bool:
+    from playwright.sync_api import sync_playwright
+
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page()
@@ -118,13 +128,17 @@ def _page_has_login_form(base_url: str) -> bool:
     return bool(has_form)
 
 
-def run_mouse_smoke(base_url: str) -> dict[str, Any]:
-    if not env_bool("NIMBUSWARE_MOUSE_FIDELITY", default=False):
-        return {"ok": True, "detail": "mouse_disabled"}
+def _page_has_login_form(base_url: str) -> bool:
     try:
-        from playwright.sync_api import sync_playwright
+        import playwright  # noqa: F401
     except ImportError:
-        return {"ok": False, "detail": "playwright_not_installed"}
+        return False
+    return run_without_asyncio_loop(lambda: _page_has_login_form_sync(base_url))
+
+
+def _run_mouse_smoke_sync(base_url: str) -> dict[str, Any]:
+    from playwright.sync_api import sync_playwright
+
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page()
@@ -138,7 +152,17 @@ def run_mouse_smoke(base_url: str) -> dict[str, Any]:
     return {"ok": True, "detail": "mouse_wheel_hover_ok"}
 
 
-def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
+def run_mouse_smoke(base_url: str) -> dict[str, Any]:
+    if not env_bool("NIMBUSWARE_MOUSE_FIDELITY", default=False):
+        return {"ok": True, "detail": "mouse_disabled"}
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        return {"ok": False, "detail": "playwright_not_installed"}
+    return run_without_asyncio_loop(lambda: _run_mouse_smoke_sync(base_url))
+
+
+def _run_human_fidelity_suite_sync(base_url: str) -> HumanFidelityResult:
     checks: list[dict[str, Any]] = []
     axe = run_axe_smoke(base_url)
     checks.append({"kind": "a11y_smoke", **axe})
@@ -176,3 +200,11 @@ def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
     axe_ok = axe.get("ok") is True and rules.get("ok") is not False
     passed = axe_ok and nav.passed and mouse_passed and negative_passed
     return HumanFidelityResult(passed=passed, checks=checks, detail="pass" if passed else "fail")
+
+
+def run_human_fidelity_suite(base_url: str) -> HumanFidelityResult:
+    try:
+        import playwright  # noqa: F401
+    except ImportError:
+        return HumanFidelityResult(passed=False, detail="playwright_not_installed")
+    return run_without_asyncio_loop(lambda: _run_human_fidelity_suite_sync(base_url))
