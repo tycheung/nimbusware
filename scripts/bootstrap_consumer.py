@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Print or run documented consumer bootstrap paths (clone-first or in-repo)."""
 
 from __future__ import annotations
 

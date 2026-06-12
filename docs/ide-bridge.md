@@ -90,7 +90,7 @@ Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies p
 ## Verified by
 
 - MCP journey: `tests/e2e/journeys/test_mcp_ide_parity_journey.py`
-- Wiring gate: `tests/web/test_parity_ide_wiring.py`
+- Wiring gate: `tests/web/test_parity_ide_wiring.py` (Playwright Chat specs; matrix rows `web: true`)
 - Extension manifest: `tests/unit/test_vscode_extension_manifest.py`
 
 Related read APIs (HTTP only today): `GET /v1/runs/{run_id}/context_budget` for advisory context utilization. See [operator-settings.md](operator-settings.md) and [adr/007-context-compaction.md](adr/007-context-compaction.md).

@@ -50,6 +50,8 @@ node_modules/
 # Playwright (tests/e2e/web)
 tests/e2e/web/test-results/
 packages/nimbusware_maker_web/test-results/
+extensions/**/node_modules/
+extensions/**/package-lock.json
 tests/e2e/web/playwright-report/
 tests/e2e/web/blob-report/
 # Maven build output from local JVM patch fixture verification
