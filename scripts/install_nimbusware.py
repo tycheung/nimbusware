@@ -873,6 +873,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Print documented one-command install lines and exit",
     )
     parser.add_argument(
+        "--consumer-plan",
+        action="store_true",
+        help="Print clone-first consumer install plan (no repo side effects)",
+    )
+    parser.add_argument(
         "--prefer-psql",
         action="store_true",
         help="Use psql for schema apply when available (default: psycopg)",
@@ -978,6 +983,19 @@ def main(argv: list[str] | None = None) -> int:
         help="Run poetry run nimbusware-preflight after Ollama setup (slow; needs models)",
     )
     args = parser.parse_args(argv)
+
+    if args.consumer_plan:
+        clone_url = "https://github.com/nimbusware/nimbusware.git"
+        curl_line = (
+            f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
+            f"| python - --clone {clone_url} --target-dir ./Nimbusware "
+            "--non-interactive --skip-postgres"
+        )
+        _log("Consumer install plan (clean VM — no monorepo checkout required):")
+        _log(f"  1. {curl_line}")
+        _log("  2. pip install nimbusware-bootstrap && nimbusware-bootstrap --print-only")
+        _log("  3. cd Nimbusware && poetry run nimbusware-run --quick")
+        return 0
 
     repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
     if args.print_one_command:

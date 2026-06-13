@@ -26,6 +26,7 @@ export default defineConfig({
       NIMBUSWARE_ADMIN_TOKEN:
         process.env.NIMBUSWARE_ADMIN_TOKEN ||
         "nimbusware-dev-admin-token-SEARCH_AND_REPLACE_BEFORE_PROD",
+      NIMBUSWARE_DATABASE_URL: "",
     },
   },
 });

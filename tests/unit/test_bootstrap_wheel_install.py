@@ -100,3 +100,19 @@ def test_bootstrap_wheel_venv_install_subprocess(tmp_path: Path) -> None:
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "Nimbusware consumer bootstrap" in proc.stdout
+    assert "curl -fsSL" in proc.stdout
+
+
+def test_install_consumer_plan_without_repo_checkout() -> None:
+    script = _REPO / "scripts" / "install_nimbusware.py"
+    proc = subprocess.run(
+        [sys.executable, str(script), "--consumer-plan"],
+        cwd=_REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "curl -fsSL" in proc.stdout
+    assert "nimbusware-bootstrap" in proc.stdout
+    assert "nimbusware-run --quick" in proc.stdout

@@ -31,6 +31,15 @@ jobs:
           name: nimbusware-bootstrap-wheel
           path: packages/nimbusware_bootstrap/dist/*.whl
           if-no-files-found: error
+      - name: Require TestPyPI token
+        if: inputs.publish_testpypi == true
+        env:
+          TESTPYPI_API_TOKEN: ${{ secrets.TESTPYPI_API_TOKEN }}
+        run: |
+          if [ -z "$TESTPYPI_API_TOKEN" ]; then
+            echo "TESTPYPI_API_TOKEN secret is required when publish_testpypi=true"
+            exit 1
+          fi
       - name: Publish to TestPyPI
         if: inputs.publish_testpypi == true
         env:
@@ -42,6 +51,15 @@ jobs:
         run: |
           pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ nimbusware-bootstrap
           nimbusware-bootstrap --print-only
+      - name: Require PyPI token
+        if: inputs.publish_pypi == true
+        env:
+          PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          if [ -z "$PYPI_API_TOKEN" ]; then
+            echo "PYPI_API_TOKEN secret is required when publish_pypi=true"
+            exit 1
+          fi
       - name: Publish to PyPI
         if: inputs.publish_pypi == true
         env:
