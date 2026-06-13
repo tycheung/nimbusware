@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -68,13 +69,31 @@ def emit_refactor_stage_and_critique(
     block: RefactorWorkflowBlock,
     unanimous_gate_enforce: bool = False,
     force_fail: bool = False,
+    workspace: Path | None = None,
 ) -> bool:
-    """Rules-first refactor pass: stub proposal + paired critics + gate. Returns gate FAIL."""
     tax_keys = critique_router.pairing_for("refactorer")
     if len(tax_keys) < 2:
         return False
     owner = registry.resolve("refactorer")
     now = datetime.now(timezone.utc)
+    refactor_meta: dict[str, Any] = {
+        "stub_only": block.stub_only,
+        "max_iterations": block.max_iterations,
+    }
+    if workspace is not None and workspace.is_dir():
+        from nimbusware_orchestrator.resolution_council import loc_accord_for_findings
+        from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
+
+        cx = ComplexityIndex.from_workspace(workspace)
+        loc_delta = max(0, cx.loc - block.max_iterations * 40)
+        refactor_meta.update(
+            {
+                "loc_total": cx.loc,
+                "file_count": cx.file_count,
+                "loc_delta_estimate": loc_delta,
+                "loc_accord": loc_accord_for_findings([{"loc_delta": loc_delta}]),
+            },
+        )
 
     store.append(
         StageStartedEvent(
@@ -82,12 +101,7 @@ def emit_refactor_stage_and_critique(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=now,
-            metadata={
-                "refactor": {
-                    "stub_only": block.stub_only,
-                    "max_iterations": block.max_iterations,
-                },
-            },
+            metadata={"refactor": refactor_meta},
             payload=StageStartedPayload(stage_name=REFACTOR_STAGE, attempt=1),
         ),
     )

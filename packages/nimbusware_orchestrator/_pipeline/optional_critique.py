@@ -231,4 +231,5 @@ class OptionalCritiqueMixin:
             block=block,
             unanimous_gate_enforce=eff.unanimous_gate_enforce,
             force_fail=force_fail,
+            workspace=Path(self._repo_root),
         )

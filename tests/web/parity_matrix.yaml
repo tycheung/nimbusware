@@ -144,6 +144,12 @@ maker:
     notes: Settings tab Run launch check via POST /maker/launch-eval
   - id: settings_catalog_keys
     web: true
+  - id: variant_arena_detail
+    web: true
+    notes: Progress variant ribbon lists candidate fitness rows
+  - id: slice_e2e_web_profile
+    web: true
+    notes: micro_slice_web workflow enables slice.e2e stage (journey gate)
 admin:
   - id: admin_gate
     web: true

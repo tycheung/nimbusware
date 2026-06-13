@@ -160,6 +160,7 @@ export async function mountProgress(root) {
       <section id="variant-ribbon" class="panel" data-testid="maker-variant-ribbon">
         <h4>Variant arena</h4>
         <p id="variant-body" class="muted" data-testid="maker-variant-body">No variant experiments yet</p>
+        <ul id="variant-list" class="variant-list" data-testid="maker-variant-list"></ul>
       </section>
       <section id="council-ribbon" class="panel" data-testid="maker-council-ribbon" hidden>
         <h4>Improvement council</h4>
@@ -698,7 +699,9 @@ export async function mountProgress(root) {
 
   async function refreshVariantRibbon(runId) {
     const body = document.getElementById("variant-body");
+    const list = document.getElementById("variant-list");
     if (!body || !runId) return;
+    if (list) list.innerHTML = "";
     try {
       const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`);
       for (const ev of [...(timeline.events || [])].reverse()) {
@@ -710,6 +713,16 @@ export async function mountProgress(root) {
         if (winner?.label) bits.push(`winner: ${winner.label} (${winner.fitness ?? "?"})`);
         if (arena.promoted_to_workspace) bits.push("promoted");
         body.textContent = bits.join(" · ");
+        if (list) {
+          for (const c of candidates) {
+            const li = document.createElement("li");
+            const label = c.label || c.id || "candidate";
+            const fitness = c.fitness ?? "?";
+            li.textContent = `${label}: fitness ${fitness}`;
+            li.dataset.testid = "maker-variant-candidate";
+            list.appendChild(li);
+          }
+        }
         return;
       }
       body.textContent = "No variant experiments yet";
