@@ -8,7 +8,7 @@ Append-only event store for Nimbusware agent runs (via Nimbusware): Postgres whe
 |--------|------|
 | `postgres.py` | SQL-backed append + replay |
 | `memory.py` | `InMemoryEventStore` for tests and offline use |
-| `schema/postgres.sql` | Canonical DDL + `event_store_type_allowed` (incl. `research.brief.*`) |
+| `schema/postgres.sql` | Canonical DDL + `event_store_type_allowed` (incl. `research.brief.*`); append-only triggers reject UPDATE/DELETE |
 | `migrations/README.md` | Greenfield apply; notes for extending the event CHECK on live DBs |
 
 ## Consumers

@@ -20,7 +20,6 @@ from nimbusware_orchestrator.preflight_histogram import (
     empty_histogram,
 )
 
-# Aliases for tests and internal callers.
 _BUCKET_EDGES_MS = BUCKET_EDGES_MS
 _build_histogram = build_histogram
 _empty_histogram = empty_histogram

@@ -191,7 +191,6 @@ class ProbationReliabilityResponse(BaseModel):
     max_below_ratio: float
 
 
-# Typing re-export.
 __all__ = (
     "PersonaEntry",
     "PersonaShelvesResponse",
