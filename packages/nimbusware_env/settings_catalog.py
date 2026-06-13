@@ -561,6 +561,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — theater",
         ),
         SettingDef(
+            "NIMBUSWARE_THEATER_LLM_MODEL",
+            system,
+            b,
+            "",
+            "Theater LLM model",
+            "Ollama model id for theater summary when LLM summary is enabled.",
+            "System — theater",
+        ),
+        SettingDef(
             "NIMBUSWARE_LAUNCH_EVAL_LLM",
             system,
             b,

@@ -12,6 +12,14 @@ from nimbusware_projections.builders.theater_paraphrase import (
 )
 
 
+def test_theater_llm_summary_uses_injected_summary() -> None:
+    msgs = [{"headline": "Planner", "message_kind": "stage", "store_seq": 1}]
+    out = apply_theater_paraphrase(msgs, enabled=True, llm_summary="Run is progressing smoothly.")
+    assert len(out) == 2
+    assert out[-1]["headline"] == "Theater summary"
+    assert out[-1]["body_md"] == "Run is progressing smoothly."
+
+
 def test_theater_llm_summary_disabled_by_default() -> None:
     run_id = uuid4()
     row = RunCreatedEvent(
