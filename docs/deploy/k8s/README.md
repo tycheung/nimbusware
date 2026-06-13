@@ -22,6 +22,8 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 5. `api-deployment.yaml`
 6. Optional `worker-deployment.yaml`
 7. Optional `ingress.yaml` (edit host/TLS, then apply after API Service is ready)
+8. Optional `networkpolicy.yaml`, `hpa.yaml`, `pdb.yaml` for minimal prod hardening
+9. Optional suspended `event-store-purge-cronjob.yaml` (retention dry-run sketch)
 
 ## Files
 
@@ -36,6 +38,10 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 | `console-deployment.yaml` | Legacy note only — Admin UI ships with API (`/v1/admin/app/`) |
 | `campaign-soak-cronjob.yaml` | Optional monthly campaign soak CronJob (production) |
 | `ingress.yaml` | Optional Ingress routing `/` to `nimbusware-api` Service (port 80) |
+| `networkpolicy.yaml` | Optional NetworkPolicy for API + Redis |
+| `hpa.yaml` | Optional API HorizontalPodAutoscaler (CPU 70%) |
+| `pdb.yaml` | Optional PodDisruptionBudget for API + worker |
+| `event-store-purge-cronjob.yaml` | Suspended CronJob for retention dry-run reporting |
 
 ## Environment matrix
 

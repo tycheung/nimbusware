@@ -16,6 +16,9 @@ _MANIFESTS = (
     "console-deployment.yaml",
     "campaign-soak-cronjob.yaml",
     "ingress.yaml",
+    "networkpolicy.yaml",
+    "hpa.yaml",
+    "pdb.yaml",
 )
 
 
@@ -66,3 +69,16 @@ def test_ingress_routes_to_api_service() -> None:
     assert backend["name"] == "nimbusware-api"
     assert backend["port"]["number"] == 80
     assert path["path"] == "/"
+
+
+def test_hpa_targets_api_deployment() -> None:
+    hpa = next(d for d in _load_docs("hpa.yaml") if d.get("kind") == "HorizontalPodAutoscaler")
+    ref = hpa["spec"]["scaleTargetRef"]
+    assert ref["kind"] == "Deployment"
+    assert ref["name"] == "nimbusware-api"
+
+
+def test_pdb_selects_api_and_worker() -> None:
+    docs = _load_docs("pdb.yaml")
+    names = {d["metadata"]["name"] for d in docs if d.get("kind") == "PodDisruptionBudget"}
+    assert names == {"nimbusware-api", "nimbusware-worker"}

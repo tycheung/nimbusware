@@ -1,0 +1,46 @@
+{{- if .Values.hardening.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nimbusware-api
+spec:
+  podSelector:
+    matchLabels:
+      app: nimbusware-api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: {{ .Values.api.servicePort }}
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 6379
+    - ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nimbusware-redis
+spec:
+  podSelector:
+    matchLabels:
+      app: nimbusware-redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: nimbusware-api
+        - podSelector:
+            matchLabels:
+              app: nimbusware-worker
+      ports:
+        - protocol: TCP
+          port: 6379
+{{- end }}

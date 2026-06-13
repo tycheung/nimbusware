@@ -1,0 +1,19 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nimbusware-api
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: nimbusware-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nimbusware-worker
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: nimbusware-worker

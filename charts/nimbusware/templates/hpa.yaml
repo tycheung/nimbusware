@@ -1,0 +1,20 @@
+{{- if and .Values.hardening.enabled .Values.hardening.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nimbusware-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nimbusware-api
+  minReplicas: {{ .Values.hardening.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hardening.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.hardening.hpa.targetCPUUtilization }}
+{{- end }}

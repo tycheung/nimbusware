@@ -1,0 +1,21 @@
+{{- if and .Values.hardening.enabled .Values.hardening.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nimbusware-api
+spec:
+  minAvailable: {{ .Values.hardening.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app: nimbusware-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nimbusware-worker
+spec:
+  minAvailable: {{ .Values.hardening.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app: nimbusware-worker
+{{- end }}

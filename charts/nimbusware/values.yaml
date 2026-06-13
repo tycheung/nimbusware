@@ -48,6 +48,17 @@ ingress:
   tls: false
   tlsSecretName: nimbusware-api-tls
 
+hardening:
+  enabled: false
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilization: 70
+  pdb:
+    enabled: true
+    minAvailable: 1
+
 podSecurityContext:
   fsGroup: 1000
 
