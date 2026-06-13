@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-_DEFAULT_REPO = "https://github.com/nimbusware/nimbusware.git"
+_DEFAULT_REPO = "https://github.com/tycheung/nimbusware.git"
 
 
 def curl_bootstrap_line(repo_url: str) -> str:

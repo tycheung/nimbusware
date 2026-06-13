@@ -21,6 +21,22 @@ The helper prints a curl-based clone install and documents the in-repo path when
 
 ## Publish (operator)
 
+Preflight (build + twine check, no upload):
+
+```bash
+poetry run python scripts/publish_bootstrap_release.py
+```
+
+TestPyPI or production upload (requires API token in env):
+
+```bash
+export TESTPYPI_API_TOKEN=...   # or PYPI_API_TOKEN for production
+poetry run python scripts/publish_bootstrap_release.py --testpypi
+poetry run python scripts/publish_bootstrap_release.py --pypi
+```
+
+GitHub Actions (preferred for production):
+
 1. In GitHub → **Settings → Secrets → Actions**, add `PYPI_API_TOKEN` (PyPI account → API token).
 2. Optional: `TESTPYPI_API_TOKEN` for TestPyPI dry runs.
 3. Run **Publish bootstrap wheel** workflow (`workflow_dispatch`).

@@ -25,31 +25,39 @@ Contract gate (no upload):
 
 ```bash
 poetry run python scripts/run_publish_bootstrap_ci_gate.py
+poetry run python scripts/publish_bootstrap_release.py
 ```
 
 ## Publish with twine (manual)
 
 1. Create a PyPI API token (account → **API tokens**). Store as `PYPI_API_TOKEN` in GitHub Actions secrets for CI, or export locally for manual upload only.
 2. Bump version in `packages/nimbusware_bootstrap/pyproject.toml` when releasing.
-3. Build artifacts:
+3. Build and validate:
 
 ```bash
-python -m build packages/nimbusware_bootstrap
+poetry run python scripts/publish_bootstrap_release.py
 ```
 
-4. Dry-run upload to TestPyPI (optional):
+4. TestPyPI upload (optional):
 
 ```bash
-python -m twine upload --repository testpypi packages/nimbusware_bootstrap/dist/*
+export TESTPYPI_API_TOKEN=...
+poetry run python scripts/publish_bootstrap_release.py --testpypi
 ```
 
 5. Production upload (operator only — **do not run in CI without approval**):
 
 ```bash
-python -m twine upload packages/nimbusware_bootstrap/dist/*
+export PYPI_API_TOKEN=...
+poetry run python scripts/publish_bootstrap_release.py --pypi
 ```
 
-Use `TWINE_USERNAME=__token__` and `TWINE_PASSWORD=<pypi-api-token>` when prompted.
+Or use twine directly after build:
+
+```bash
+python -m build packages/nimbusware_bootstrap
+TWINE_USERNAME=__token__ TWINE_PASSWORD=<pypi-api-token> python -m twine upload packages/nimbusware_bootstrap/dist/*
+```
 
 ## GitHub Actions (preferred)
 
