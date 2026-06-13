@@ -8,7 +8,8 @@ const repoRoot = path.resolve(process.cwd(), "../../..");
 export default defineConfig({
   testDir: ".",
   timeout: 120_000,
-  retries: process.env.CI ? 1 : 0,
+  retries: 1,
+  workers: 4,
   use: {
     baseURL,
     viewport: { width: 1280, height: 800 },

@@ -95,8 +95,15 @@ if ($node) {
         if ($LASTEXITCODE -eq 0) {
             npx playwright install chromium 2>$null
             if ($LASTEXITCODE -eq 0) {
-                npm test --silent
-                if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
+                $prevEap = $ErrorActionPreference
+                $ErrorActionPreference = "Continue"
+                $env:CI = "1"
+                try {
+                    npm test --silent
+                    if ($LASTEXITCODE -ne 0) { Pop-Location; exit $LASTEXITCODE }
+                } finally {
+                    $ErrorActionPreference = $prevEap
+                }
             }
         }
         Pop-Location

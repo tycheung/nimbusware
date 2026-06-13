@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Event store retention purge reporting and optional execute."""
 
 from __future__ import annotations
 
