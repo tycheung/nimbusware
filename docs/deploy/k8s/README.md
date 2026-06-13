@@ -21,6 +21,7 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 4. `schema-job.yaml` (wait for completion)
 5. `api-deployment.yaml`
 6. Optional `worker-deployment.yaml`
+7. Optional `ingress.yaml` (edit host/TLS, then apply after API Service is ready)
 
 ## Files
 
@@ -34,6 +35,7 @@ Not production-hardened — starting point for Enterprise ops. CI verifies manif
 | `schema-job.yaml` | One-shot schema apply via `scripts/apply_event_store.sh` |
 | `console-deployment.yaml` | Legacy note only — Admin UI ships with API (`/v1/admin/app/`) |
 | `campaign-soak-cronjob.yaml` | Optional monthly campaign soak CronJob (production) |
+| `ingress.yaml` | Optional Ingress routing `/` to `nimbusware-api` Service (port 80) |
 
 ## Environment matrix
 
@@ -50,7 +52,7 @@ Worker / Redis fleet dispatch is also documented in `scripts/run_dispatch_fleet_
 
 | Concern | Reference |
 |---------|-----------|
-| Ingress + TLS | [helm.md](../helm.md) — prefer Helm chart over raw manifests for TLS termination |
+| Ingress + TLS | `ingress.yaml` (raw) or [helm.md](../helm.md) (preferred for production) |
 | Fleet Redis secrets | [production-fleet-redis-secrets.md](../production-fleet-redis-secrets.md) |
 | Remote Playwright pool | [fleet-playwright-pool.md](../fleet-playwright-pool.md) — set `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT` on API **and** worker Deployments when factory T3 runs concurrent browser checks |
 | Campaign soak cadence | [campaign-soak-runbook.md](../campaign-soak-runbook.md) |
