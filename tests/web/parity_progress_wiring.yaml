@@ -1,2 +1,4 @@
 maker:
   memory_influence: tests/e2e/web/maker_memory_influence.spec.ts
+  council_ribbon_gaps: tests/e2e/web/maker_council_ribbon.spec.ts
+  variant_arena_detail: tests/e2e/web/maker_variant_arena_fitness.spec.ts
