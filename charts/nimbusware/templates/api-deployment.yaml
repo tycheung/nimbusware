@@ -20,6 +20,17 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.hardening.multiAz.enabled }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: nimbusware-api
+                topologyKey: topology.kubernetes.io/zone
+      {{- end }}
       containers:
         - name: api
           image: {{ .Values.image.api }}

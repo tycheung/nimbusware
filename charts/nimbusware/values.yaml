@@ -50,6 +50,15 @@ ingress:
 
 hardening:
   enabled: false
+  certManager:
+    enabled: false
+    clusterIssuer: false
+    issuerName: letsencrypt-prod
+    issuerKind: ClusterIssuer
+    acmeServer: https://acme-v02.api.letsencrypt.org/directory
+    email: ops@example.com
+  multiAz:
+    enabled: false
   hpa:
     enabled: true
     minReplicas: 1

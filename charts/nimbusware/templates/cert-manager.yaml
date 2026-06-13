@@ -1,0 +1,30 @@
+{{- if and .Values.ingress.enabled .Values.ingress.tls .Values.hardening.certManager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nimbusware-api-tls
+spec:
+  secretName: {{ .Values.ingress.tlsSecretName }}
+  issuerRef:
+    name: {{ .Values.hardening.certManager.issuerName }}
+    kind: {{ .Values.hardening.certManager.issuerKind }}
+  dnsNames:
+    - {{ .Values.ingress.host | quote }}
+{{- if .Values.hardening.certManager.clusterIssuer }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.hardening.certManager.issuerName }}
+spec:
+  acme:
+    server: {{ .Values.hardening.certManager.acmeServer | quote }}
+    email: {{ .Values.hardening.certManager.email | quote }}
+    privateKeySecretRef:
+      name: {{ .Values.hardening.certManager.issuerName }}-account-key
+    solvers:
+      - http01:
+          ingress:
+            class: {{ .Values.ingress.className | default "nginx" | quote }}
+{{- end }}
+{{- end }}

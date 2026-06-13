@@ -85,7 +85,17 @@ Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies p
 
 ## Status bar extension (optional)
 
-[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**. Build with `npm ci && npm run compile` inside the extension folder.
+[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**.
+
+### Install from source
+
+```bash
+cd extensions/nimbusware-status
+npm ci
+npm run compile
+```
+
+In VS Code or Cursor: **Extensions** → **…** → **Install from VSIX…** (after `npx vsce package` if you need a VSIX), or **Install from Location…** and select the `extensions/nimbusware-status` folder. Set `nimbusware.apiBase` and `nimbusware.activeRunId` in settings.
 
 ## Verified by
 
