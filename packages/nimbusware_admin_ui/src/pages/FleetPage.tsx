@@ -239,7 +239,7 @@ export function FleetPage() {
             </thead>
             <tbody>
               {(dashboard.hardware_rows || []).map((row, i) => (
-                <tr key={i}>
+                <tr key={i} data-testid="admin-fleet-hardware-row">
                   <td>{String(row.host ?? "—")}</td>
                   <td>{String(row.tier ?? "—")}</td>
                   <td>
