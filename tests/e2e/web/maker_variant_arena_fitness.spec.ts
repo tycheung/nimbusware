@@ -32,7 +32,9 @@ test("progress variant ribbon lists candidate fitness rows", async ({ page }) =>
                   { id: "a", label: "baseline", fitness: 0.72 },
                   { id: "b", label: "refactor", fitness: 0.81 },
                 ],
-                winner: { label: "refactor", fitness: 0.81 },
+                winner: { label: "crossover_baseline+refactor", fitness: 0.95 },
+                crossover_merged: true,
+                crossover_paths: ["a.py", "b.py"],
               },
             },
           },
@@ -56,7 +58,8 @@ test("progress variant ribbon lists candidate fitness rows", async ({ page }) =>
 
   await expect(page.getByTestId("maker-variant-ribbon")).toBeVisible({ timeout: 10_000 });
   await expect(page.getByTestId("maker-variant-body")).toContainText("2 candidate(s)");
-  await expect(page.getByTestId("maker-variant-body")).toContainText("winner: refactor");
+  await expect(page.getByTestId("maker-variant-body")).toContainText("crossover_baseline+refactor");
+  await expect(page.getByTestId("maker-variant-body")).toContainText("crossover merged");
   const rows = page.getByTestId("maker-variant-candidate");
   await expect(rows).toHaveCount(2);
   await expect(rows.first()).toContainText("baseline: fitness 0.72");

@@ -712,6 +712,7 @@ export async function mountProgress(root) {
         const bits = [`${candidates.length} candidate(s)`];
         if (winner?.label) bits.push(`winner: ${winner.label} (${winner.fitness ?? "?"})`);
         if (arena.promoted_to_workspace) bits.push("promoted");
+        if (arena.crossover_merged) bits.push("crossover merged");
         body.textContent = bits.join(" · ");
         if (list) {
           for (const c of candidates) {

@@ -482,19 +482,34 @@ def execute_improvement_track(
         from nimbusware_orchestrator.variant_arena import (
             promote_variant_to_workspace,
             run_variant_arena,
+            select_promotion_candidate,
         )
 
         tmp = workspace.resolve() / ".nimbusware" / "variants"
         profile = autopilot_profile_from_rows(store.list_run_events(str(run_id)))
         max_candidates = 4 if profile.level >= 6 else 1
         arena = run_variant_arena(workspace, tmp, max_candidates=max_candidates)
-        winner = arena.winner
+        promotion, crossover_merged, crossover_paths = select_promotion_candidate(
+            workspace.resolve(),
+            arena.candidates,
+            tmp,
+        )
+        winner = promotion or arena.winner
         tests_passed = winner is not None and winner.fitness >= 0.9
         promoted = False
         if winner and tests_passed and profile.level >= 6:
             promoted = promote_variant_to_workspace(winner, workspace)
         rid = UUID(str(run_id)) if not isinstance(run_id, UUID) else run_id
         meta = arena.to_dict()
+        if winner:
+            meta["winner"] = {
+                "variant_id": winner.variant_id,
+                "label": winner.label,
+                "fitness": winner.fitness,
+            }
+        if crossover_merged:
+            meta["crossover_merged"] = True
+            meta["crossover_paths"] = crossover_paths
         if promoted:
             meta["promoted_to_workspace"] = True
         store.append(

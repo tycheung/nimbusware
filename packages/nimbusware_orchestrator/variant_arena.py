@@ -181,6 +181,33 @@ def merge_variant_crossover(
     return merged_root
 
 
+def select_promotion_candidate(
+    base_workspace: Path,
+    candidates: list[VariantCandidate],
+    tmp_root: Path,
+) -> tuple[VariantCandidate | None, bool, list[str]]:
+    """Pick arena winner or a crossover merge when it improves fitness."""
+    if not candidates:
+        return None, False, []
+    ranked = sorted(candidates, key=lambda c: c.fitness, reverse=True)
+    top = ranked[0]
+    if len(ranked) < 2:
+        return top, False, []
+    second = ranked[1]
+    merged_root = merge_variant_crossover(base_workspace, top, second, tmp_root)
+    crossover = VariantCandidate(
+        variant_id=f"crossover_{uuid4().hex[:8]}",
+        label=f"crossover_{top.label}+{second.label}",
+        workspace=merged_root,
+    )
+    tests_passed, loc_delta = measure_variant_fitness(crossover, base_workspace)
+    score_variant(crossover, tests_passed=tests_passed, loc_delta=loc_delta)
+    if crossover.fitness > top.fitness:
+        paths = sorted(str(p) for p in _paths_differing_from_base(base_workspace, merged_root))
+        return crossover, True, paths
+    return top, False, []
+
+
 def promote_variant_to_workspace(winner: VariantCandidate, target_workspace: Path) -> bool:
     if not winner.workspace.is_dir() or not target_workspace.is_dir():
         return False

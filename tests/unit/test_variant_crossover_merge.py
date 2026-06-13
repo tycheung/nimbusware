@@ -6,6 +6,7 @@ from pathlib import Path
 from nimbusware_orchestrator.variant_arena import (
     VariantCandidate,
     merge_variant_crossover,
+    select_promotion_candidate,
 )
 
 
@@ -53,3 +54,28 @@ def test_merge_variant_crossover_prefers_higher_fitness_on_conflict(tmp_path: Pa
     merged = merge_variant_crossover(base, candidate_a, candidate_b, tmp_path / "out")
 
     assert (merged / "conflict.py").read_text(encoding="utf-8") == "from_a\n"
+
+
+def test_select_promotion_candidate_picks_crossover_when_fitter(tmp_path: Path) -> None:
+    base = tmp_path / "base"
+    base.mkdir()
+    _write(base / "a.py", "base\n")
+
+    var_a = tmp_path / "a"
+    var_b = tmp_path / "b"
+    shutil.copytree(base, var_a, dirs_exist_ok=True)
+    shutil.copytree(base, var_b, dirs_exist_ok=True)
+    _write(var_a / "a.py", "a_only\n")
+    _write(var_b / "b.py", "b_only\n")
+
+    candidate_a = VariantCandidate(variant_id="a", label="a", workspace=var_a, fitness=0.91)
+    candidate_b = VariantCandidate(variant_id="b", label="b", workspace=var_b, fitness=0.9)
+    picked, merged, paths = select_promotion_candidate(
+        base,
+        [candidate_a, candidate_b],
+        tmp_path / "out",
+    )
+    assert picked is not None
+    assert merged is True
+    assert paths
+    assert picked.label.startswith("crossover_")
