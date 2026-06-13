@@ -14,7 +14,9 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
     streamHits += 1;
     await route.fulfill({
       contentType: "text/event-stream",
-      body: 'data: {"message":"Planner reviewing scope"}\n\ndata: {"message":"Writer applying patch"}\n\n',
+      body:
+        'event: theater\ndata: {"headline":"Planner reviewing scope","body_md":"Scope check"}\n\n' +
+        'event: theater\ndata: {"headline":"Writer applying patch","body_md":"Patch diff"}\n\n',
     });
   });
 

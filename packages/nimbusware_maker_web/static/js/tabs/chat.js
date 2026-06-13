@@ -1,5 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
-import { openSseStream, parseSseJson } from "../sse-client.js";
+import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
@@ -232,6 +232,7 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
   toast(`${workTypeLabel(workType)} run started`, "success");
   root.querySelector("#chat-classifier-mount")?.replaceChildren();
   root.querySelector("#chat-message").value = "";
+  return runId;
 }
 
 async function switchWorkType(root, sessionId, turnId, workType) {
@@ -270,20 +271,40 @@ function appendTheaterLine(root, text) {
   list.scrollTop = list.scrollHeight;
 }
 
-function attachChatTheaterStream(root, runId) {
+function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   if (!runId) return null;
   const mount = root.querySelector("#chat-theater-mount");
   if (mount) {
     mount.removeAttribute("hidden");
     mount.open = true;
   }
+  let escalationQueued = false;
+
+  const onGateBlock = () => {
+    if (escalationQueued) return;
+    escalationQueued = true;
+    maybeOfferPatchEscalation(root, runId, sessionId).catch(() => {});
+    maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun).catch(() => {});
+  };
+
+  const handleTheaterPayload = (data) => {
+    const text = theaterLineText(data);
+    if (text) appendTheaterLine(root, text);
+    if (data?.message_kind === "gate" && data?.severity === "block") {
+      onGateBlock();
+    }
+  };
+
   return openSseStream(`/runs/${encodeURIComponent(runId)}/theater/stream`, {
+    onEvent: {
+      theater: (ev) => {
+        const data = parseSseJson(ev);
+        if (data) handleTheaterPayload(data);
+      },
+    },
     onMessage: (ev) => {
       const data = parseSseJson(ev);
-      if (data?.message) appendTheaterLine(root, data.message);
-      else if (Array.isArray(data?.messages)) {
-        for (const msg of data.messages) appendTheaterLine(root, msg);
-      }
+      if (data) handleTheaterPayload(data);
     },
   });
 }
@@ -531,7 +552,10 @@ export async function mountChat(root) {
     if (startBtn) startBtn.disabled = true;
     try {
       const projectId = String(root.querySelector("#chat-project-select")?.value || "");
-      await startRunFromSession(sessionId, workType, root, projectId);
+      const runId = await startRunFromSession(sessionId, workType, root, projectId);
+      theaterHandle?.close();
+      theaterHandle = bindChatTheaterForRun(root, runId, sessionId, (wt) => runStart(wt));
+      await offerRunEscalations(runId);
     } catch (e) {
       toast(String(e.message || e), "error");
     } finally {
@@ -567,7 +591,7 @@ export async function mountChat(root) {
 
   if (activeRunId) {
     theaterHandle?.close();
-    theaterHandle = attachChatTheaterStream(root, activeRunId);
+    theaterHandle = bindChatTheaterForRun(root, activeRunId, sessionId, (wt) => runStart(wt));
   }
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {

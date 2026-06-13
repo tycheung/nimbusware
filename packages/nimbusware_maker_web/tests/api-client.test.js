@@ -26,3 +26,27 @@ describe("sse-client parse", () => {
     expect(parseSseJson({ data: "not-json" })).toBeNull();
   });
 });
+
+describe("sse-client theaterLineText", () => {
+  it("prefers legacy message field", async () => {
+    const { theaterLineText } = await import("../static/js/sse-client.js");
+    expect(theaterLineText({ message: "  hello  " })).toBe("hello");
+  });
+
+  it("formats headline and body_md from API theater payloads", async () => {
+    const { theaterLineText } = await import("../static/js/sse-client.js");
+    expect(
+      theaterLineText({ headline: "Planner", body_md: "Reviewing scope" }),
+    ).toBe("Planner — Reviewing scope");
+    expect(theaterLineText({ headline: "Done" })).toBe("Done");
+  });
+
+  it("joins nested messages array", async () => {
+    const { theaterLineText } = await import("../static/js/sse-client.js");
+    expect(
+      theaterLineText({
+        messages: [{ headline: "A" }, { message: "B" }],
+      }),
+    ).toBe("A · B");
+  });
+});

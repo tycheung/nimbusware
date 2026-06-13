@@ -2,7 +2,7 @@ import { apiJson, toast } from "../api-client.js";
 import { renderCriticReliabilityPanel, loadRunCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
-import { openSseStream, parseSseJson } from "../sse-client.js";
+import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
 
 const BLOCKING_SEVERITIES = new Set(["BLOCKER", "HIGH"]);
 
@@ -199,7 +199,7 @@ export async function mountProgress(root) {
       <h4>Context artifacts</h4>
       <ul id="context-artifacts-list" class="context-artifacts-list"></ul>
       <h4>Memory influence</h4>
-      <table id="memory-influence-table"><thead><tr><th>Stage</th><th>Hits</th><th>Digest</th></tr></thead><tbody></tbody></table>`;
+      <table id="memory-influence-table" data-testid="maker-memory-influence-table"><thead><tr><th>Stage</th><th>Hits</th><th>Digest</th></tr></thead><tbody></tbody></table>`;
   }
 
   function stopStreams() {
@@ -744,6 +744,10 @@ export async function mountProgress(root) {
         const imp = meta.improvement_council;
         if (imp?.selected) {
           parts.push(`Improvement: ${imp.selected}`);
+          const gaps = imp.feature_gap_matrix?.gaps;
+          if (Array.isArray(gaps) && gaps.length) {
+            parts.push(`Gaps: ${gaps.join(", ")}`);
+          }
           break;
         }
       }
@@ -983,10 +987,18 @@ export async function mountProgress(root) {
   wireOperatorRibbons(id);
 
   theaterHandle = openSseStream(`/runs/${id}/theater/stream`, {
+    onEvent: {
+      theater: (ev) => {
+        const data = parseSseJson(ev);
+        const text = theaterLineText(data);
+        if (text) appendTheater(text);
+      },
+    },
     onMessage: (ev) => {
       const data = parseSseJson(ev);
-      if (data?.message) appendTheater(data.message);
-      else if (data?.messages) data.messages.forEach(appendTheater);
+      const text = theaterLineText(data);
+      if (text) appendTheater(text);
+      else if (data?.messages) data.messages.forEach((m) => appendTheater(theaterLineText(m)));
     },
   });
 
@@ -1170,6 +1182,7 @@ export async function mountProgress(root) {
       tbody.replaceChildren();
       for (const row of mem.rows || []) {
         const tr = document.createElement("tr");
+        tr.dataset.testid = "maker-memory-influence-row";
         tr.innerHTML = `<td>${row.stage || ""}</td><td>${row.hits || ""}</td><td>${row.query_digest || ""}</td>`;
         tbody.appendChild(tr);
       }
