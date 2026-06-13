@@ -1,23 +1,11 @@
 from __future__ import annotations
 
 import json
-from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from nimbusware_projections.builders.maker_progress import _slice_gate_rows
-
-
-def _rows_by_run(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    by_run: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for row in rows:
-        rid = row.get("run_id")
-        if rid is not None:
-            by_run[str(rid)].append(row)
-    for run_rows in by_run.values():
-        run_rows.sort(key=lambda r: int(r.get("store_seq") or 0))
-    return by_run
 
 
 def _gate_pass_rate_for_run_rows(run_rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -82,37 +70,3 @@ def load_policy_compare_outcome(repo_root: Path | None) -> dict[str, Any] | None
     except (OSError, json.JSONDecodeError):
         return None
     return raw if isinstance(raw, dict) else None
-
-
-def gate_rates_for_recent_runs(store: Any, *, limit_runs: int = 500) -> dict[str, Any]:
-    if not hasattr(store, "list_all_event_rows"):
-        return {"runs": []}
-    from agent_core.models import EventType
-
-    all_rows = store.list_all_event_rows()
-    created: list[tuple[int, str]] = []
-    for row in all_rows:
-        if str(row.get("event_type") or "") != EventType.RUN_CREATED.value:
-            continue
-        created.append((int(row.get("store_seq") or 0), str(row.get("run_id"))))
-    created.sort(reverse=True)
-    run_ids: list[str] = []
-    seen: set[str] = set()
-    for _seq, rid in created:
-        if rid in seen:
-            continue
-        seen.add(rid)
-        run_ids.append(rid)
-        if len(run_ids) >= limit_runs:
-            break
-    if not run_ids:
-        return {"runs": []}
-    grouped = store.list_run_events_many(run_ids)
-    by_run = _rows_by_run([r for rows in grouped.values() for r in rows])
-    out: list[dict[str, Any]] = []
-    for rid in run_ids:
-        gate = _gate_pass_rate_for_run_rows(by_run.get(rid, []))
-        out.append(
-            {"run_id": rid, "gate_pass_rate": gate.get("rate"), "gate_sample": gate.get("total")}
-        )
-    return {"runs": out}
