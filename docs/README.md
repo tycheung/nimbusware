@@ -7,6 +7,7 @@
 | [operator-settings.md](operator-settings.md) | Operators | Settings catalog and `NIMBUSWARE_*` keys (incl. context-efficiency group) |
 | [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge (classify, patch, interject, theater, approve); VS Code status extension compiles in `ci_check` |
 | [../releasev1features.md](../releasev1features.md) | Maintainers | Release v1 shipped ledger (pointer to local plan §20.29) |
+| [deploy/first-install-timing.md](deploy/first-install-timing.md) | Operators | Reference install → first gate pass timing |
 | [deploy/pypi-publish.md](deploy/pypi-publish.md) | Ops | PyPI wheel/sdist publish runbook |
 | [deploy/k8s/tls-cert-manager.md](deploy/k8s/tls-cert-manager.md) | Ops | cert-manager TLS + multi-AZ Helm values |
 | [deploy/event-store-retention.md](deploy/event-store-retention.md) | Ops | Retention policy, legal hold, purge execute |
