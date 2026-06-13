@@ -229,6 +229,5 @@ class InMemoryConfigStore:
         return self._docs.pop((namespace, document_key), None) is not None
 
 
-# Satisfy structural typing for tests that annotate ConfigStore
 def _as_config_store(store: PostgresConfigStore | InMemoryConfigStore) -> ConfigStore:
     return store

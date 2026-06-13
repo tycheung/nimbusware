@@ -81,7 +81,7 @@ Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate cont
 
 ## Kubernetes
 
-Production Helm chart: [helm.md](helm.md) (`charts/nimbusware`). Raw reference manifests: [k8s/](k8s/README.md).
+Production Helm chart: [helm.md](helm.md) (`charts/nimbusware`). Raw reference manifests: [k8s/](k8s/README.md) (includes optional `ingress.yaml`). Event store retention policy: [event-store-retention.md](event-store-retention.md).
 
 ## OIDC (Enterprise console)
 
