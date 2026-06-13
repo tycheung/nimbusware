@@ -13,6 +13,7 @@ def test_compare_run_policies(client: TestClient) -> None:
     assert body["run_b"] == b
     assert "identical" in body
     assert "changed" in body
+    assert "gate_outcome" in body
 
 
 def test_compare_run_policies_404_missing_run(client: TestClient) -> None:

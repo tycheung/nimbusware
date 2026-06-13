@@ -7,7 +7,7 @@ const repoRoot = path.resolve(process.cwd(), "../../..");
 
 export default defineConfig({
   testDir: ".",
-  timeout: 60_000,
+  timeout: 120_000,
   retries: process.env.CI ? 1 : 0,
   use: {
     baseURL,

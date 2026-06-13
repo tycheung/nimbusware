@@ -379,9 +379,7 @@ async function maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartR
     });
     li.appendChild(btn);
     thread.appendChild(li);
-  } catch {
-    /* advisory */
-  }
+  } catch {}
 }
 
 async function maybeOfferPatchEscalation(root, runId, sessionId) {
@@ -422,9 +420,7 @@ async function maybeOfferPatchEscalation(root, runId, sessionId) {
     });
     li.appendChild(btn);
     thread.appendChild(li);
-  } catch {
-    /* advisory */
-  }
+  } catch {}
 }
 
 async function steerActiveRun(root, runId, message) {

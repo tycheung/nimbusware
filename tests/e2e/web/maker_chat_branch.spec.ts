@@ -45,8 +45,8 @@ test("chat fork restores from user turn and shows branch panel", async ({ page }
           session_id: SESSION_ID,
           branches: [{ parent_turn_id: TURN_A, child_turn_ids: [TURN_A, TURN_B] }],
           nodes: [
-            { turn_id: TURN_A, text: "first path", parent_turn_id: null },
-            { turn_id: TURN_B, text: "alternate path", parent_turn_id: TURN_A },
+            { turn_id: TURN_A, text: "first path", parent_turn_id: null, sibling_count: 1 },
+            { turn_id: TURN_B, text: "alternate path", parent_turn_id: TURN_A, sibling_count: 1 },
           ],
           edges: [{ from_turn_id: TURN_A, to_turn_id: TURN_B }],
         }),
@@ -102,4 +102,5 @@ test("chat fork restores from user turn and shows branch panel", async ({ page }
   await expect(page.getByTestId("maker-chat-branch-panel")).toBeVisible();
   await page.getByTestId(`maker-chat-branch-${TURN_B}`).click();
   await expect(page.getByTestId(`maker-chat-turn-${TURN_B}`)).toBeVisible();
+  await expect(page.getByTestId(`maker-chat-sibling-badge-${TURN_B}`)).toBeVisible();
 });
