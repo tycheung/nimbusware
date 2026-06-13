@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from nimbusware_env.settings_resolve import resolve_int
+from nimbusware_env.settings_resolve import resolve_bool, resolve_int
 
 
 def event_store_retention_days() -> int | None:
@@ -21,3 +21,13 @@ def purge_eligible_before(*, now: datetime | None = None) -> datetime | None:
         return None
     anchor = now or datetime.now(timezone.utc)
     return anchor - timedelta(days=days)
+
+
+def legal_hold_enabled() -> bool:
+    """Truthy ``NIMBUSWARE_EVENT_STORE_LEGAL_HOLD`` blocks purge."""
+    return resolve_bool("NIMBUSWARE_EVENT_STORE_LEGAL_HOLD", default=False)
+
+
+def purge_execute_enabled() -> bool:
+    """Requires ``NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1`` before DELETE runs."""
+    return resolve_bool("NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE", default=False)

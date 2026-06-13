@@ -350,8 +350,25 @@ def run_research_transplant_track(
             f"(manifest {manifest.manifest_id})."
         )
     else:
+        from nimbusware_projections.builders.run_research import run_research_briefs_from_events
+
+        event_rows = store.list_run_events(str(rid))
+        approved = [
+            b
+            for b in (run_research_briefs_from_events(event_rows).get("briefs") or [])
+            if b.get("status") == "approved"
+        ]
+        if approved:
+            entry = approved[0]
+            brief_summary = str(entry.get("summary") or brief_summary)
+            sources = entry.get("sources") or []
+            if sources and isinstance(sources[0], dict):
+                url = sources[0].get("url")
+                if url:
+                    brief_url = str(url)
+            wiring_summary = wiring_summary or "Approved research brief from run events."
         pattern_path = pattern_index_path(catalog_root)
-        if pattern_path.is_file():
+        if not approved and pattern_path.is_file():
             try:
                 loaded = json.loads(pattern_path.read_text(encoding="utf-8"))
                 entries = (

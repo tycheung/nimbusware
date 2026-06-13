@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dry-run event_store retention purge reporting (append-only schema blocks DELETE)."""
+"""Event store retention purge reporting and optional execute."""
 
 from __future__ import annotations
 
@@ -22,11 +22,19 @@ def main() -> int:
     parser.add_argument(
         "--execute",
         action="store_true",
-        help="Attempt DELETE (blocked by append-only triggers unless operator overrides schema)",
+        help="DELETE eligible rows when NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1",
     )
     args = parser.parse_args()
 
-    from nimbusware_store.retention_policy import purge_eligible_before
+    from nimbusware_store.retention_policy import (
+        legal_hold_enabled,
+        purge_eligible_before,
+        purge_execute_enabled,
+    )
+
+    if legal_hold_enabled():
+        print("Legal hold active (NIMBUSWARE_EVENT_STORE_LEGAL_HOLD); purge skipped")
+        return 0
 
     cutoff = purge_eligible_before()
     if cutoff is None:
@@ -40,12 +48,18 @@ def main() -> int:
                 (cutoff,),
             )
             count = int(cur.fetchone()[0])
-    print(f"Eligible rows before {cutoff.isoformat()}: {count}")
-    if not args.execute:
-        print("Dry-run only; pass --execute to attempt purge (requires schema override)")
-        return 0
-    print("Execute purge is not enabled while append-only triggers are active.")
-    return 1
+        print(f"Eligible rows before {cutoff.isoformat()}: {count}")
+        if not args.execute:
+            print("Dry-run only; pass --execute to purge (requires NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1)")
+            return 0
+        if not purge_execute_enabled():
+            print("Execute blocked: set NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1")
+            return 1
+        from nimbusware_store.purge import purge_events_before
+
+        deleted = purge_events_before(conn, cutoff)
+    print(f"Purged {deleted} row(s) before {cutoff.isoformat()}")
+    return 0
 
 
 if __name__ == "__main__":
