@@ -1,4 +1,3 @@
-# Suspended by default — dry-run purge helper only until legal-hold + trigger override exist.
 apiVersion: batch/v1
 kind: CronJob
 metadata:

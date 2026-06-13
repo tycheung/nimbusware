@@ -1,4 +1,4 @@
-"""Event store retention policy helpers (document-only until purge job ships)."""
+"""Event store retention policy helpers."""
 
 from __future__ import annotations
 

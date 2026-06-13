@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Report (and optionally execute) event_store retention purges.
-
-Append-only triggers block DELETE on production schema; default mode is dry-run only.
-"""
+"""Dry-run event_store retention purge reporting (append-only schema blocks DELETE)."""
 
 from __future__ import annotations
 
