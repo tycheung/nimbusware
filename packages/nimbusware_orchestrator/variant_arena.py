@@ -113,6 +113,74 @@ def run_variant_arena(
     return promote_winner(candidates)
 
 
+def _iter_workspace_files(workspace: Path) -> list[Path]:
+    files: list[Path] = []
+    for path in workspace.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(workspace)
+        if ".nimbusware" in rel.parts or "node_modules" in rel.parts:
+            continue
+        files.append(path)
+    return files
+
+
+def _file_digest(path: Path) -> bytes | None:
+    try:
+        return path.read_bytes()
+    except OSError:
+        return None
+
+
+def _paths_differing_from_base(base: Path, workspace: Path) -> set[Path]:
+    changed: set[Path] = set()
+    for path in _iter_workspace_files(workspace):
+        rel = path.relative_to(workspace)
+        base_path = base / rel
+        digest = _file_digest(path)
+        base_digest = _file_digest(base_path) if base_path.is_file() else None
+        if digest != base_digest:
+            changed.add(rel)
+    return changed
+
+
+def merge_variant_crossover(
+    base_workspace: Path,
+    candidate_a: VariantCandidate,
+    candidate_b: VariantCandidate,
+    tmp_root: Path,
+) -> Path:
+    """Merge non-conflicting file wins from two variants onto a base worktree copy."""
+    if candidate_a.fitness >= candidate_b.fitness:
+        primary, secondary = candidate_a, candidate_b
+    else:
+        primary, secondary = candidate_b, candidate_a
+    primary_diff = _paths_differing_from_base(base_workspace, primary.workspace)
+    secondary_diff = _paths_differing_from_base(base_workspace, secondary.workspace)
+    merged_root = tmp_root / f"crossover_{uuid4().hex[:8]}"
+    shutil.copytree(base_workspace, merged_root, dirs_exist_ok=True)
+    for rel in primary_diff | secondary_diff:
+        primary_path = primary.workspace / rel
+        secondary_path = secondary.workspace / rel
+        dest = merged_root / rel
+        if rel in primary_diff and rel in secondary_diff:
+            primary_bytes = _file_digest(primary_path)
+            secondary_bytes = _file_digest(secondary_path)
+            if primary_bytes == secondary_bytes:
+                chosen = primary_path
+            else:
+                chosen = primary_path if primary.fitness >= secondary.fitness else secondary_path
+        elif rel in primary_diff:
+            chosen = primary_path
+        else:
+            chosen = secondary_path
+        if not chosen.is_file():
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(chosen, dest)
+    return merged_root
+
+
 def promote_variant_to_workspace(winner: VariantCandidate, target_workspace: Path) -> bool:
     if not winner.workspace.is_dir() or not target_workspace.is_dir():
         return False
