@@ -15,9 +15,17 @@ type PressureEntry = {
   hardware_tier?: string | null;
 };
 
+type CatalogInfo = {
+  version?: number;
+  model_count?: number;
+  updated_at?: string;
+  source?: string;
+};
+
 export function HardwarePage() {
   const [hw, setHw] = useState<HardwareBody | null>(null);
   const [history, setHistory] = useState<PressureEntry[]>([]);
+  const [catalog, setCatalog] = useState<CatalogInfo | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -26,10 +34,12 @@ export function HardwarePage() {
     Promise.all([
       apiJson<HardwareBody>("/platform/hardware"),
       apiJson<{ entries?: PressureEntry[] }>("/platform/analytics/pressure-history?limit=20"),
+      apiJson<CatalogInfo>("/platform/models/catalog-info"),
     ])
-      .then(([body, hist]) => {
+      .then(([body, hist, cat]) => {
         setHw(body);
         setHistory(hist.entries || []);
+        setCatalog(cat);
       })
       .catch((e) => setError(String((e as Error).message || e)));
   }, []);
@@ -51,6 +61,8 @@ export function HardwarePage() {
         "/platform/analytics/pressure-history?limit=20",
       );
       setHistory(hist.entries || []);
+      const cat = await apiJson<CatalogInfo>("/platform/models/catalog-info");
+      setCatalog(cat);
     } catch (e) {
       setError(String((e as Error).message || e));
     } finally {
@@ -110,6 +122,16 @@ export function HardwarePage() {
         </table>
       ) : (
         !error && <p>Loading…</p>
+      )}
+      <h3>Model catalog</h3>
+      {catalog ? (
+        <p data-testid="admin-catalog-info" class="muted">
+          v{catalog.version ?? "—"} · {catalog.model_count ?? 0} models · source{" "}
+          {catalog.source ?? "—"}
+          {catalog.updated_at ? ` · updated ${catalog.updated_at}` : ""}
+        </p>
+      ) : (
+        !error && <p class="muted">Loading catalog…</p>
       )}
       <h3>Pressure history</h3>
       {history.length ? (
