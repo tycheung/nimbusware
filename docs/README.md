@@ -2,7 +2,7 @@
 
 | Document | Audience | Summary |
 |----------|----------|---------|
-| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI |
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI (~2,803 unit pytest / 3,663 collected) |
 | [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
 | [operator-settings.md](operator-settings.md) | Operators | Settings catalog and `NIMBUSWARE_*` keys (incl. context-efficiency group) |
 | [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge (classify, patch, interject, theater, approve); VS Code status extension compiles in `ci_check` |
@@ -34,6 +34,7 @@
 | [integrations-external-chat.md](integrations-external-chat.md) | Ops | External chat webhook boundary (§20.5) |
 | [operator-interjection-slo.md](operator-interjection-slo.md) | Operators | Interjection drain SLO + Admin timeline explain |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
+| [../tests/README.md](../tests/README.md) | Developers | Test layout, CI subsets, Playwright 120s timeout |
 | [adr/](adr/) | Maintainers | Architecture decision records |
 
 **P14–P17 operator surfaces (see [../README.md](../README.md)):** TestPyPI bootstrap publish; live theater SSE with optional LLM summary (`NIMBUSWARE_THEATER_LLM_SUMMARY`); Progress parity wiring (`parity_progress_wiring.yaml`); Admin hardware catalog strip; append-only event store integration test; industry critic packs; Admin parity wiring; PUT-preview launch-test journeys with keyboard/mouse fidelity; asyncio-safe sync Playwright; bootstrap wheel install smoke; publish workflow CI guard.
