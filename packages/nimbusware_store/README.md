@@ -18,3 +18,5 @@ Append-only event store for Nimbusware agent runs (via Nimbusware): Postgres whe
 Ships PEP 561 marker (`py.typed`). Per-package coverage floor: ≥85% in CI.
 
 Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.
+
+Retention policy (append-only invariant, future purge): [docs/deploy/event-store-retention.md](../../docs/deploy/event-store-retention.md).

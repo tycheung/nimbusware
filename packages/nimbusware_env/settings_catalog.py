@@ -183,6 +183,17 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
+            "NIMBUSWARE_EVENT_STORE_RETENTION_DAYS",
+            install,
+            i,
+            "0",
+            "Event store retention days",
+            "Future purge window for event_store rows; 0 disables automated purge.",
+            "Install — event store",
+            admin_editable=False,
+            user_editable=False,
+        ),
+        SettingDef(
             "NIMBUSWARE_OIDC_REDIRECT_URI",
             install,
             s,
