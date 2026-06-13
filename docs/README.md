@@ -6,7 +6,10 @@
 | [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
 | [operator-settings.md](operator-settings.md) | Operators | Settings catalog and `NIMBUSWARE_*` keys (incl. context-efficiency group) |
 | [ide-bridge.md](ide-bridge.md) | Developers | Cursor/IDE MCP bridge (classify, patch, interject, theater, approve); VS Code status extension compiles in `ci_check` |
-| [../releasev1features.md](../releasev1features.md) | Maintainers | Release v1 epic catalog (fo1300–fo1399) until merged into ARCHITECTURE §20.29 |
+| [../releasev1features.md](../releasev1features.md) | Maintainers | Release v1 shipped ledger (pointer to local plan §20.29) |
+| [deploy/pypi-publish.md](deploy/pypi-publish.md) | Ops | PyPI wheel/sdist publish runbook |
+| [deploy/k8s/tls-cert-manager.md](deploy/k8s/tls-cert-manager.md) | Ops | cert-manager TLS + multi-AZ Helm values |
+| [deploy/event-store-retention.md](deploy/event-store-retention.md) | Ops | Retention policy, legal hold, purge execute |
 | [deploy/headless-patch-ci.md](deploy/headless-patch-ci.md) | CI / platform | Headless patch from GitHub Actions (`work_type_source=ci`) |
 | [deploy/external-ci-bridge.md](deploy/external-ci-bridge.md) | Ops | GitHub Checks / GitLab status on integrator, slice.gate, factory.gate |
 | [adr/020-unified-chat-work-type-routing.md](adr/020-unified-chat-work-type-routing.md) | Maintainers | Unified Maker chat, work-type routing, patch lane |

@@ -69,7 +69,8 @@ packages/nimbusware_maker/ui/
 packages/nimbusware_console/pages/
 .streamlit/
 
-# Logs and local scratch
+/var/
+
 *.log
 logs/
 .cache/
