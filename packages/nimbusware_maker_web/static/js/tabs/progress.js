@@ -703,7 +703,10 @@ export async function mountProgress(root) {
     if (!body || !runId) return;
     if (list) list.innerHTML = "";
     try {
-      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`);
+      const [timeline, progress] = await Promise.all([
+        apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=80`),
+        apiJson(`/runs/${encodeURIComponent(runId)}/maker-progress?simple=true`).catch(() => null),
+      ]);
       for (const ev of [...(timeline.events || [])].reverse()) {
         const arena = ev.metadata?.variant_arena;
         if (!arena) continue;
@@ -713,6 +716,21 @@ export async function mountProgress(root) {
         if (winner?.label) bits.push(`winner: ${winner.label} (${winner.fitness ?? "?"})`);
         if (arena.promoted_to_workspace) bits.push("promoted");
         if (arena.crossover_merged) bits.push("crossover merged");
+        let explore = progress?.repo_explore;
+        if (!explore) {
+          for (const row of timeline.events || []) {
+            if (row.metadata?.repo_explore) {
+              explore = row.metadata.repo_explore;
+              break;
+            }
+          }
+        }
+        if (explore) {
+          const findings = Array.isArray(explore.findings) ? explore.findings.length : 0;
+          const nodes = explore.graph?.nodes?.length;
+          if (findings) bits.push(`${findings} exploration finding(s)`);
+          else if (nodes) bits.push(`${nodes} graph node(s)`);
+        }
         body.textContent = bits.join(" · ");
         if (list) {
           for (const c of candidates) {
