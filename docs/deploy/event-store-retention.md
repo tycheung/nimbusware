@@ -30,9 +30,9 @@ Legal hold and IAM-scoped retention deferrals remain Enterprise Lane D work.
 When implemented, a scheduled job will:
 
 1. Read `event_store_retention_days()`; skip when `None`
-2. Delete rows older than the window **only** when legal hold is absent
-3. Emit `event_store.retention.purged` metrics for Admin fleet monitoring
+2. Run `python scripts/purge_event_store_retention.py` (dry-run by default)
+3. Emit metrics when execute mode is enabled after legal-hold design
 
-Until then, size Postgres with standard volume management and rely on audit export for compliance extracts.
+Reference manifest: `docs/deploy/k8s/event-store-purge-cronjob.yaml` (suspended). Helm: enable when `hardening.eventStorePurge` ships.
 
 See also: [packages/nimbusware_store/README.md](../../packages/nimbusware_store/README.md), [enterprise-buyer.md](../enterprise-buyer.md).

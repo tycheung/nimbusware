@@ -1,0 +1,24 @@
+# Suspended by default — dry-run purge helper only until legal-hold + trigger override exist.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nimbusware-event-store-purge
+spec:
+  suspend: true
+  schedule: "0 3 1 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: purge
+              image: nimbusware-api:latest
+              imagePullPolicy: IfNotPresent
+              command: ["python", "scripts/purge_event_store_retention.py"]
+              envFrom:
+                - secretRef:
+                    name: nimbusware-api-secrets
+              env:
+                - name: NIMBUSWARE_EVENT_STORE_RETENTION_DAYS
+                  value: "0"

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
+
 from nimbusware_env.settings_resolve import resolve_int
 
 
@@ -11,3 +13,11 @@ def event_store_retention_days() -> int | None:
     if raw <= 0:
         return None
     return max(1, min(3650, raw))
+
+
+def purge_eligible_before(*, now: datetime | None = None) -> datetime | None:
+    days = event_store_retention_days()
+    if days is None:
+        return None
+    anchor = now or datetime.now(timezone.utc)
+    return anchor - timedelta(days=days)
