@@ -139,6 +139,7 @@ async function refreshBranchPanel(root, sessionId) {
     const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`);
     panel.replaceChildren();
     if (!graph.branches?.length) {
+      applySiblingBadges(root, graph);
       panel.classList.add("hidden");
       return;
     }
@@ -188,6 +189,7 @@ async function refreshBranchPanel(root, sessionId) {
       }
     }
     panel.appendChild(list);
+    applySiblingBadges(root, graph);
   } catch {
     panel.classList.add("hidden");
   }
@@ -250,25 +252,44 @@ async function switchWorkType(root, sessionId, turnId, workType) {
   toast(`Mode: ${workTypeLabel(workType)}`, "success");
 }
 
-function appendTheaterLine(root, text) {
-  const mount = root.querySelector("#chat-theater-mount");
-  if (!mount || !text) return;
-  mount.hidden = false;
-  const list = mount.querySelector(".chat-theater-lines") || (() => {
-    const ul = document.createElement("ul");
-    ul.className = "chat-theater-lines";
-    mount.appendChild(ul);
-    return ul;
-  })();
+function applySiblingBadges(root, graph) {
+  const thread = root.querySelector("#chat-thread");
+  if (!thread || !graph?.nodes) return;
+  for (const node of graph.nodes) {
+    const siblings = Number(node.sibling_count || 0);
+    if (siblings < 1) continue;
+    const line = thread.querySelector(`[data-turn-id="${node.turn_id}"]`);
+    if (!line || line.querySelector(".chat-sibling-badge")) continue;
+    const badge = document.createElement("span");
+    badge.className = "chat-sibling-badge muted";
+    badge.dataset.testid = `maker-chat-sibling-badge-${node.turn_id}`;
+    badge.textContent = `${siblings + 1} branches`;
+    line.appendChild(badge);
+  }
+}
+
+function appendThreadRunLine(root, text, { gateBlock = false } = {}) {
+  const thread = root.querySelector("#chat-thread");
+  if (!thread || !text) return;
   const li = document.createElement("li");
   li.className = "chat-thread-line chat-thread-line--theater";
-  li.dataset.testid = "maker-chat-theater-line";
+  if (gateBlock) li.classList.add("chat-thread-line--gate-block");
+  li.dataset.testid = gateBlock ? "maker-chat-gate-line" : "maker-chat-theater-line";
   li.textContent = String(text).slice(0, 500);
-  list.appendChild(li);
-  while (list.children.length > THEATER_CAP) {
-    list.removeChild(list.firstChild);
+  thread.appendChild(li);
+  const theaterLines = thread.querySelectorAll(".chat-thread-line--theater");
+  while (theaterLines.length > THEATER_CAP) {
+    theaterLines[0].remove();
   }
-  list.scrollTop = list.scrollHeight;
+  thread.scrollTop = thread.scrollHeight;
+  const archive = root.querySelector("#chat-theater-mount .chat-theater-lines");
+  if (archive) {
+    const copy = li.cloneNode(true);
+    archive.appendChild(copy);
+    while (archive.children.length > THEATER_CAP) {
+      archive.removeChild(archive.firstChild);
+    }
+  }
 }
 
 function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
@@ -276,7 +297,11 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   const mount = root.querySelector("#chat-theater-mount");
   if (mount) {
     mount.removeAttribute("hidden");
-    mount.open = true;
+    if (!mount.querySelector(".chat-theater-lines")) {
+      const ul = document.createElement("ul");
+      ul.className = "chat-theater-lines";
+      mount.appendChild(ul);
+    }
   }
   let escalationQueued = false;
 
@@ -289,10 +314,9 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
 
   const handleTheaterPayload = (data) => {
     const text = theaterLineText(data);
-    if (text) appendTheaterLine(root, text);
-    if (data?.message_kind === "gate" && data?.severity === "block") {
-      onGateBlock();
-    }
+    const gateBlock = data?.message_kind === "gate" && data?.severity === "block";
+    if (text) appendThreadRunLine(root, text, { gateBlock });
+    if (gateBlock) onGateBlock();
   };
 
   return openSseStream(`/runs/${encodeURIComponent(runId)}/theater/stream`, {
@@ -474,8 +498,8 @@ export async function mountChat(root) {
       <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
     </form>
     <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
-    <details id="chat-theater-mount" class="chat-theater-mount" hidden data-testid="maker-chat-theater-mount">
-      <summary>Run theater (live)</summary>
+    <details id="chat-theater-mount" class="chat-theater-mount hidden" data-testid="maker-chat-theater-mount">
+      <summary>Full run log (archive)</summary>
     </details>
     <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
     <div id="chat-classifier-mount"></div>`;

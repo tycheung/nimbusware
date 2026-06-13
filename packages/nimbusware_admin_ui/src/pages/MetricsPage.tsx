@@ -58,10 +58,8 @@ export function MetricsPage() {
     <section>
       <h2>Competitive metrics</h2>
       <p class="muted">
-        Snapshot over recent runs (not a historical time series). Regenerated on each load. After
-        Admin run detail <strong>Policy compare</strong>, use slice gate pass rate here as an outcome
-        diff proxy before/after critic pack or workflow changes. Blocking CI: bandit and pip-audit
-        (see docs/security-quality-gates.md).
+        Snapshot over recent runs. After Admin run detail Policy compare, gate pass rate delta appears
+        below when both runs have slice gates.
       </p>
       {error ? <p class="error">{error}</p> : null}
       {body ? (
@@ -214,6 +212,25 @@ export function MetricsPage() {
                         factory.entry_count ?? 0,
                       )} entries)`
                     : "No benchmarks/latest_factory_weekly.json"}
+                </td>
+              </tr>
+              <tr>
+                <td>Policy compare gate delta</td>
+                <td>
+                  {typeof policyOutcome.gate_pass_rate_delta === "number"
+                    ? `${(policyOutcome.gate_pass_rate_delta * 100).toFixed(1)} pp (run B − run A)${
+                        policyOutcome.last_policy_compare &&
+                        typeof policyOutcome.last_policy_compare === "object"
+                          ? ` · ${String(
+                              (policyOutcome.last_policy_compare as Record<string, string>).run_a ||
+                                "",
+                            ).slice(0, 8)}… vs ${String(
+                              (policyOutcome.last_policy_compare as Record<string, string>).run_b ||
+                                "",
+                            ).slice(0, 8)}…`
+                          : ""
+                      }`
+                    : String(policyOutcome.hint ?? "—")}
                 </td>
               </tr>
               <tr>

@@ -13,10 +13,15 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from nimbusware_env.dotenv import find_repo_root
 from nimbusware_maker.workspace import run_created_metadata_from_rows
 from nimbusware_orchestrator.policy_snapshot_diff import (
     diff_policy_snapshots,
     policy_snapshot_from_run_created_metadata,
+)
+from nimbusware_projections.builders.policy_compare_outcome import (
+    build_policy_compare_outcome,
+    save_policy_compare_outcome,
 )
 
 router = APIRouter(tags=["policy"])
@@ -30,6 +35,14 @@ class PolicyDiffResponse(BaseModel):
     identical: bool
     changed_count: int
     changed: list[dict[str, Any]]
+    gate_outcome: dict[str, Any] | None = None
+
+
+class PolicyCompareRecordBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    run_a: UUID
+    run_b: UUID
 
 
 @router.get(
@@ -58,10 +71,31 @@ def compare_run_policies(
     snap_a = policy_snapshot_from_run_created_metadata(run_created_metadata_from_rows(rows_a))
     snap_b = policy_snapshot_from_run_created_metadata(run_created_metadata_from_rows(rows_b))
     diff = diff_policy_snapshots(snap_a, snap_b)
+    outcome = build_policy_compare_outcome(
+        store,
+        run_a=ra,
+        run_b=rb,
+        policy_identical=bool(diff["identical"]),
+        changed_count=int(diff["changed_count"]),
+    )
+    save_policy_compare_outcome(find_repo_root(), outcome)
     return PolicyDiffResponse(
         run_a=ra,
         run_b=rb,
         identical=bool(diff["identical"]),
         changed_count=int(diff["changed_count"]),
         changed=list(diff["changed"]),
+        gate_outcome=outcome,
     )
+
+
+@router.post(
+    "/policy/compare/record",
+    response_model=PolicyDiffResponse,
+    responses={404: PROBLEM_RESPONSE_404, 422: PROBLEM_RESPONSE_422, 500: PROBLEM_RESPONSE_500},
+)
+def record_policy_compare(
+    store: StoreDep,
+    body: PolicyCompareRecordBody,
+) -> PolicyDiffResponse:
+    return compare_run_policies(store, run_a=body.run_a, run_b=body.run_b)

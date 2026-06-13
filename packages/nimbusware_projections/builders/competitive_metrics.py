@@ -9,6 +9,7 @@ from typing import Any
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from nimbusware_projections.builders.maker_progress import _slice_gate_rows, _stage_name
+from nimbusware_projections.builders.policy_compare_outcome import load_policy_compare_outcome
 from nimbusware_projections.builders.run_research import run_research_briefs_from_events
 from nimbusware_research.stitch_outcome_stats import (
     compute_stitch_transplant_stats,
@@ -281,17 +282,33 @@ def _classifier_acceptance_drift(
 def _policy_outcome_summary(
     slice_gate: dict[str, Any],
     critic_snap: dict[str, Any] | None,
+    *,
+    repo_root: Path | None = None,
 ) -> dict[str, Any]:
     critic_fail = critic_snap.get("critic_fail_rate") if critic_snap else None
-    return {
+    last_compare = load_policy_compare_outcome(repo_root)
+    out: dict[str, Any] = {
         "slice_gate_pass_rate": slice_gate.get("rate"),
         "slice_gate_sample": slice_gate.get("total"),
         "critic_fail_rate_snapshot": critic_fail,
-        "hint": (
-            "After a policy or critic-pack change in Admin Config, refresh Metrics "
-            "and compare slice_gate_pass_rate with critic_fail_rate_snapshot."
-        ),
     }
+    if last_compare:
+        out["last_policy_compare"] = last_compare
+        delta = last_compare.get("gate_pass_rate_delta")
+        if isinstance(delta, (int, float)):
+            out["gate_pass_rate_delta"] = delta
+            out["hint"] = (
+                f"Last Admin policy compare ({last_compare.get('run_a', '?')} vs "
+                f"{last_compare.get('run_b', '?')}): gate pass rate delta "
+                f"{delta * 100:+.1f} pp (run_b minus run_a)."
+            )
+        else:
+            out["hint"] = "Last policy compare recorded; gate samples too small for delta."
+    else:
+        out["hint"] = (
+            "Run Admin run detail Policy compare to record a before/after gate-rate delta."
+        )
+    return out
 
 
 def build_competitive_summary(
@@ -316,7 +333,7 @@ def build_competitive_summary(
         "snapshot": True,
         "metrics": {
             "slice_gate_pass_rate": slice_gate,
-            "policy_outcome": _policy_outcome_summary(slice_gate, critic_snap),
+            "policy_outcome": _policy_outcome_summary(slice_gate, critic_snap, repo_root=repo_root),
             "slices_per_completed_run": _slices_per_completed_run(by_run),
             "intent_to_first_slice_ms": _intent_to_first_slice_ms(by_run),
             "intent_to_first_patch_ms": _intent_to_first_patch_ms(by_run),

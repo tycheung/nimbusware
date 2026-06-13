@@ -549,6 +549,20 @@ body.mobile-mode #rev-stitch {
   color: var(--muted-fg, #666);
 }
 
+.chat-thread-line--gate-block {
+  border-left: 3px solid var(--color-danger, #c0392b);
+  padding-left: 0.5rem;
+}
+
+.chat-sibling-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
 .chat-attachments {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);

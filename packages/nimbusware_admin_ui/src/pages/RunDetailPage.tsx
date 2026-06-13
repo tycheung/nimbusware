@@ -135,12 +135,23 @@ export function RunDetailPage({ id }: { id?: string }) {
         identical?: boolean;
         changed_count?: number;
         changed?: { key?: string; run_a?: unknown; run_b?: unknown }[];
+        gate_outcome?: {
+          gate_pass_rate_delta?: number | null;
+          run_a_gate?: { rate?: number | null };
+          run_b_gate?: { rate?: number | null };
+        };
       }>(`/policy/compare?run_a=${encodeURIComponent(id)}&run_b=${encodeURIComponent(other)}`);
+      let caption = body.identical
+        ? "Policy snapshots are identical."
+        : `${body.changed_count ?? 0} key(s) differ between runs.`;
+      const delta = body.gate_outcome?.gate_pass_rate_delta;
+      if (typeof delta === "number") {
+        caption += ` Gate pass rate delta (run B − run A): ${(delta * 100).toFixed(1)} pp — see Metrics.`;
+      }
+      setPolicyDiffCaption(caption);
       if (body.identical) {
-        setPolicyDiffCaption("Policy snapshots are identical.");
         setPolicyDiffRows([]);
       } else {
-        setPolicyDiffCaption(`${body.changed_count ?? 0} key(s) differ between runs.`);
         setPolicyDiffRows(
           (body.changed || []).map((row) => ({
             key: row.key || "",

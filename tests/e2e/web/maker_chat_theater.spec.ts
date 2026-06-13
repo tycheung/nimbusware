@@ -39,5 +39,6 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
   await expect(page.getByTestId("maker-chat-theater-line").first()).toContainText("Planner", {
     timeout: 10_000,
   });
+  await expect(page.locator("#chat-thread .chat-thread-line--theater").first()).toBeVisible();
   expect(streamHits).toBeGreaterThan(0);
 });
