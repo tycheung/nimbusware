@@ -37,6 +37,10 @@ def probe_fleet_hardware_hosts() -> dict[str, Any]:
     return {"host_count": len(rows), "hosts": rows}
 
 
+def rescan_fleet_hardware_hosts() -> dict[str, Any]:
+    return probe_fleet_hardware_hosts()
+
+
 def resolve_probe_hosts() -> list[str]:
     hosts = parse_fleet_hosts_env()
     if hosts:

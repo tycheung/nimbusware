@@ -79,6 +79,11 @@ def test_platform_hardware_fleet_individual_404(client: TestClient) -> None:
     assert r.status_code == 404
 
 
+def test_platform_hardware_fleet_rescan_individual_404(client: TestClient) -> None:
+    r = client.post("/v1/platform/hardware/fleet/rescan")
+    assert r.status_code == 404
+
+
 def test_platform_pressure_history(client: TestClient) -> None:
     store = client.app.state.store
     run_id = _seed_run(store)

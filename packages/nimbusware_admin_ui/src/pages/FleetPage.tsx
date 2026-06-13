@@ -47,6 +47,7 @@ export function FleetPage() {
   >([]);
   const [compareCaption, setCompareCaption] = useState("");
   const [compareCsv, setCompareCsv] = useState("");
+  const [rescanBusy, setRescanBusy] = useState(false);
   const [policyLevel, setPolicyLevel] = useState(10);
   const [policyCheckpoints, setPolicyCheckpoints] = useState("");
   const [policyCatalog, setPolicyCatalog] = useState<string[]>([]);
@@ -177,6 +178,36 @@ export function FleetPage() {
     URL.revokeObjectURL(url);
   };
 
+  const rescanFleetHardware = async () => {
+    if (!enterpriseApiKey()) return;
+    setRescanBusy(true);
+    try {
+      const key = resolveEnterpriseApiKeyForTenant(
+        tenants.find((t) => t.id === tenantId)?.slug || tenantId || null,
+      );
+      const body = await apiJson<{ hosts?: Record<string, unknown>[] }>(
+        "/platform/hardware/fleet/rescan",
+        {
+          method: "POST",
+          headers: { "X-Nimbusware-Api-Key": key },
+        },
+      );
+      setDashboard((prev) =>
+        prev
+          ? {
+              ...prev,
+              hardware_rows: body.hosts || prev.hardware_rows,
+            }
+          : prev,
+      );
+      setError("");
+    } catch (e) {
+      setError(String((e as Error).message || e));
+    } finally {
+      setRescanBusy(false);
+    }
+  };
+
   return (
     <section>
       <h2>Enterprise fleet</h2>
@@ -226,6 +257,17 @@ export function FleetPage() {
             </tbody>
           </table>
           <h3>Hardware fleet</h3>
+          <p>
+            <button
+              type="button"
+              class="secondary"
+              data-testid="admin-fleet-rescan-btn"
+              disabled={rescanBusy}
+              onClick={rescanFleetHardware}
+            >
+              {rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}
+            </button>
+          </p>
           <table class="data-table">
             <thead>
               <tr>

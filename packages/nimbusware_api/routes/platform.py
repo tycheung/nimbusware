@@ -145,6 +145,21 @@ def get_platform_hardware_fleet() -> dict[str, Any]:
     return probe_fleet_hardware_hosts()
 
 
+@router.post("/platform/hardware/fleet/rescan")
+def post_platform_hardware_fleet_rescan() -> dict[str, Any]:
+    if not is_enterprise():
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "enterprise_only",
+                "Fleet hardware rescan requires Enterprise edition.",
+            ),
+        )
+    from nimbusware_hw.fleet_hardware import rescan_fleet_hardware_hosts
+
+    return rescan_fleet_hardware_hosts()
+
+
 @router.get("/platform/onboarding")
 def get_platform_onboarding() -> dict[str, Any]:
     return {"onboarded": is_onboarded_server()}
