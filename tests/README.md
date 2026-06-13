@@ -50,6 +50,7 @@ Pytest discovers **3,663** items under `tests/` with `pythonpath = ["packages", 
 - **Framework pack PR gate:** `scripts/run_framework_pack_ci_gate.py` in default PR **unit** job (unit smoke + detect journeys + PUT-preview plan/write/critique for all seven SPA packs + static HTML with keyboard/mouse fidelity; installs Chromium via `playwright` dev dependency).
 - **Bootstrap wheel PR gate:** `scripts/run_bootstrap_ci_gate.py` (wheel build + isolated `pip install --target` smoke + fresh-venv subprocess install).
 - **Publish bootstrap workflow gate:** `scripts/run_publish_bootstrap_ci_gate.py` (guards `.github/workflows/publish_bootstrap.yml` required TestPyPI/PyPI steps).
+- **Publish VS Code extension workflow gate:** `scripts/run_publish_vscode_ci_gate.py` (guards `.github/workflows/publish_vscode_extension.yml` required VSCE steps).
 - **Redis fleet soak (ops):** [`scripts/e2e_redis_fleet_soak_runbook.md`](../scripts/e2e_redis_fleet_soak_runbook.md) — integration Redis dispatch stack (`test_redis_dispatch_worker_stack.py`, `-m integration`).
 - **Launch eval (weekly):** `.github/workflows/launch_eval.yml` — `scripts/launch_eval.py --matrix` on catalog default workspaces; unit coverage in `tests/unit/test_launch_eval_attach_context.py`.
 - **SSH hardware (optional):** `.github/workflows/ssh_hardware_probe.yml` — weekly schedule + `workflow_dispatch`; fleet matrix via `NIMBUSWARE_HW_FLEET_HOSTS` ([`docs/deploy/ssh-hardware-probe.md`](../docs/deploy/ssh-hardware-probe.md)); PR unit CI uses `NIMBUSWARE_HW_SSH_MOCK=1`.

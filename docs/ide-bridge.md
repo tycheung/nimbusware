@@ -95,7 +95,9 @@ npm ci
 npm run compile
 ```
 
-In VS Code or Cursor: **Extensions** → **…** → **Install from VSIX…** (after `npx vsce package` if you need a VSIX), or **Install from Location…** and select the `extensions/nimbusware-status` folder. Set `nimbusware.apiBase` and `nimbusware.activeRunId` in settings.
+In VS Code or Cursor: **Extensions** → **…** → **Install from VSIX…** (after `npm run package` in `extensions/nimbusware-status/`), or **Install from Location…** and select the `extensions/nimbusware-status` folder. Set `nimbusware.apiBase` and `nimbusware.activeRunId` in settings.
+
+Marketplace publish (operator): [deploy/vscode-marketplace.md](deploy/vscode-marketplace.md).
 
 ## Verified by
 

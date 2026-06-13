@@ -1,0 +1,46 @@
+name: Publish VS Code extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_marketplace:
+        description: Publish to Visual Studio Marketplace (requires VSCE_PAT secret)
+        type: boolean
+        default: false
+
+jobs:
+  package-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+      - name: Compile and package extension
+        run: |
+          cd extensions/nimbusware-status
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run compile
+          npx vsce package --no-dependencies
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimbusware-status-vsix
+          path: extensions/nimbusware-status/*.vsix
+          if-no-files-found: error
+      - name: Require VSCE token
+        if: inputs.publish_marketplace == true
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "VSCE_PAT secret is required when publish_marketplace=true"
+            exit 1
+          fi
+      - name: Publish to Visual Studio Marketplace
+        if: inputs.publish_marketplace == true
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          cd extensions/nimbusware-status
+          npx vsce publish --no-dependencies -p "$VSCE_PAT"

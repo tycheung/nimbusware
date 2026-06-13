@@ -4,10 +4,20 @@
   "description": "Read-only status bar chip for active Nimbusware runs",
   "version": "0.1.0",
   "publisher": "nimbusware",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tycheung/nimbusware.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tycheung/nimbusware/issues"
+  },
+  "homepage": "https://github.com/tycheung/nimbusware#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": ["Other"],
+  "keywords": ["nimbusware", "agent", "run", "status"],
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
@@ -35,11 +45,14 @@
   },
   "scripts": {
     "compile": "tsc -p .",
-    "watch": "tsc -watch -p ."
+    "watch": "tsc -watch -p .",
+    "package": "vsce package --no-dependencies",
+    "publish:marketplace": "vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.2.1",
     "typescript": "^5.4.0"
   }
 }
