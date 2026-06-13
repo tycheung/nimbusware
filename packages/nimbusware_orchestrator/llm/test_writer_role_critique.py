@@ -42,7 +42,7 @@ def emit_stub_test_writer_critique_panel(
     *,
     run_id: UUID,
 ) -> None:
-    """PASS critic + gate events for ``test_writer`` (┬º14 #16).
+    """PASS critic + gate events for ``test_writer``.
 
     Paired critics come from ``critique_pairings.yaml``. Caller must gate on
     ``NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE`` and ``NIMBUSWARE_STUB_TEST_WRITER_CRITICS``
@@ -104,7 +104,7 @@ def execute_test_writer_critique_llm(
     log_snippet: str,
     timeout_seconds: float = 120.0,
 ) -> bool:
-    """LLM-backed **test_writer.critique** panel (┬º14 #16).
+    """LLM-backed **test_writer.critique** panel.
 
     Returns ``True`` if critic + gate events were appended; ``False`` on any
     failure (caller may fall back to :func:`emit_stub_test_writer_critique_panel`).

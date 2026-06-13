@@ -961,7 +961,6 @@ export async function mountProgress(root) {
         const body = await apiJson("/platform/autopilot/user-profiles");
         applyAutopilotProfile(pid, body.profiles || []);
       } catch {
-        /* ignore */
       }
     });
     void refreshDevEnvStatus(runId);
