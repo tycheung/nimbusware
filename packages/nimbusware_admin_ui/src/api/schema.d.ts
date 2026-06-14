@@ -13761,7 +13761,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry now carries the fo127 optional fields (``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``) plus a monotonic per-entry ``version`` used for optimistic-concurrency on the write API. Legacy entries that lack any of these fields keep loading; the wire payload omits absent optional keys. */
+            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry may include ``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``, and a monotonic ``version`` for optimistic-concurrency on the write API. Legacy entries that lack optional fields keep loading; absent keys are omitted on the wire. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -13870,7 +13870,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry now carries the fo127 optional fields (``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``) plus a monotonic per-entry ``version`` used for optimistic-concurrency on the write API. Legacy entries that lack any of these fields keep loading; the wire payload omits absent optional keys. */
+            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry may include ``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``, and a monotonic ``version`` for optimistic-concurrency on the write API. Legacy entries that lack optional fields keep loading; absent keys are omitted on the wire. */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -14015,7 +14015,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry now carries the fo127 optional fields (``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``) plus a monotonic per-entry ``version`` used for optimistic-concurrency on the write API. Legacy entries that lack any of these fields keep loading; the wire payload omits absent optional keys. */
+            /** @description Persona shelves from ``configs/personas/shelves.yaml`` (``business_area`` and ``development_role`` lists). Each entry may include ``instructions``, ``capability_profile``, ``boundary_statement``, ``allowed_tools``, ``success_metrics``, ``probation_status``, and a monotonic ``version`` for optimistic-concurrency on the write API. Legacy entries that lack optional fields keep loading; absent keys are omitted on the wire. */
             200: {
                 headers: {
                     [name: string]: unknown;
