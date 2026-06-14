@@ -31,6 +31,8 @@ def main() -> int:
         "tests/e2e/journeys/test_launch_framework_detect_journey.py",
         "tests/e2e/journeys/test_launch_framework_put_preview_journey.py",
         "tests/e2e/journeys/test_launch_test_static_html_journey.py",
+        "tests/e2e/journeys/test_launch_test_write_replan_journey.py",
+        "tests/e2e/journeys/test_launch_test_unknown_spa.py",
         "-q",
         "--tb=short",
     ]

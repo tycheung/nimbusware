@@ -25,6 +25,7 @@ def _free_port() -> int:
 
 
 @pytest.mark.e2e
+@pytest.mark.e2e_journey
 def test_launch_test_write_replan_then_ui_and_keyboard() -> None:
     if not _FIXTURE.is_dir():
         pytest.skip("fixture missing")

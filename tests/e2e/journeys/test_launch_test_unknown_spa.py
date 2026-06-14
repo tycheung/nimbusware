@@ -27,6 +27,7 @@ def _free_port() -> int:
 
 
 @pytest.mark.e2e
+@pytest.mark.e2e_journey
 def test_unknown_spa_launch_test_synthesis_critique_and_ui() -> None:
     if not _FIXTURE.is_dir():
         pytest.skip("fixture missing")
