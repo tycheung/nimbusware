@@ -134,7 +134,7 @@ app = FastAPI(
         },
         {
             "name": "actions",
-            "description": "Run-scoped actions (retry, escalate) and admin role execute stub.",
+            "description": "Run-scoped actions (retry, escalate) and admin role execute.",
         },
         {
             "name": "bundles",

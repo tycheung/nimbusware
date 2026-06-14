@@ -32,11 +32,11 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**230** keys; UC gate-fail global consolidation Jun 2026)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**256** keys; UC gate-fail global consolidation Jun 2026; 15 per-panel gate-fail keys cataloged as deprecated)
 
 ### Context budget (`*_MAX_CHARS`)
 
-Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`) unless a per-key `*_MAX_CHARS` env is explicitly set. Read/shell output caps stay independent overrides. **26** universal-critique env keys override workflow YAML only when explicitly set (3 global gate-fail keys + panel enable/llm/stub knobs; see `effective_universal_critique`).
+Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`) unless a per-key `*_MAX_CHARS` env is explicitly set. Read/shell output caps stay independent overrides. **41** universal-critique env keys override workflow YAML only when explicitly set (3 global + 15 deprecated per-panel gate-fail + panel enable/llm/stub knobs; see `effective_universal_critique`).
 
 ### Redundant / alias keys (prefer one)
 
@@ -46,6 +46,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
+| `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |
 | `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | Per-panel `*_CRITIQUE_*_ON_GATE_FAIL` (15 legacy) | Global UC gate-fail env applies all panels; per-panel still wins when explicitly set |
 | `NIMBUSWARE_SLICE_BUDGET_PRESET` | `NIMBUSWARE_SLICE_*_MAX_CHARS` (6 keys) | Preset drives packet/repo_map/symbol_sketch/history/handoff/memory excerpt caps |
 
@@ -93,6 +94,6 @@ Patch and micro-slice runs do not set `open_pr_on_complete` by default. Global f
 
 **Fleet / scraper (system):** `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH` (100), `NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT` (20), `NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE` (0).
 
-**Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC; legacy `AUDIT_EXPORT_SIGNING_KEY` still read).
+**Install secrets:** `NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY` (audit bundle HMAC).
 
 Helpers: `agent_core.context_budget`, `nimbusware_orchestrator.prompt_tiers`, `nimbusware_orchestrator.context_compaction`.
