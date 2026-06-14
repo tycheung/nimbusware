@@ -11,6 +11,7 @@ _CRITICAL_STEPS = (
     "rebuild_bundle_faiss_if_stale.py --dry-run",
     "ruff check packages tests",
     "audit_operator_env.py",
+    "run_openapi_ts_ci_gate.py",
     "ruff format --check packages tests",
     "mypy_ci_targets.py",
     "bandit",
@@ -21,6 +22,7 @@ _CRITICAL_STEPS = (
     "run_framework_pack_ci_gate.py",
     "run_bootstrap_ci_gate.py",
     "run_publish_bootstrap_ci_gate.py",
+    "run_publish_vscode_ci_gate.py",
     "run_intent_to_patch_ci_gate.py",
     "run_classifier_acceptance_ci_gate.py",
 )
