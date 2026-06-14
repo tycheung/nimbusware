@@ -43,7 +43,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 | Prefer | Legacy alias | Notes |
 |--------|--------------|-------|
 | `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` (internal) | Prefer **DEFAULT**; legacy alias read from `os.environ` only |
-| `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
+| `NIMBUSWARE_API_PORT` | `PORT` (internal legacy) | API bind port |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` (internal legacy) | Canonical Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
 | `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |

@@ -9,7 +9,7 @@ def main() -> None:
     load_dotenv()
     import uvicorn
 
-    from nimbusware_env.env_flags import nimbusware_api_host
+    from nimbusware_env.env_flags import nimbusware_api_host, nimbusware_api_port
 
     host = nimbusware_api_host()
     from nimbusware_env.admin_token import require_non_default_admin_token_for_host
@@ -18,7 +18,7 @@ def main() -> None:
     uvicorn.run(
         "nimbusware_api.app:app",
         host=host,
-        port=int(__import__("os").environ.get("PORT", "8000")),
+        port=nimbusware_api_port(),
         factory=False,
     )
 

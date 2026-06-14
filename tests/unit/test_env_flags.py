@@ -132,6 +132,20 @@ def test_nimbusware_ollama_base_url(monkeypatch) -> None:
         assert nimbusware_ollama_base_url() == "http://legacy:11434"
 
 
+def test_nimbusware_api_port(monkeypatch) -> None:
+    from nimbusware_env.env_flags import nimbusware_api_port
+
+    monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)
+    monkeypatch.delenv("PORT", raising=False)
+    assert nimbusware_api_port() == 8000
+    monkeypatch.setenv("NIMBUSWARE_API_PORT", "9001")
+    assert nimbusware_api_port() == 9001
+    monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)
+    monkeypatch.setenv("PORT", "9002")
+    with pytest.warns(DeprecationWarning, match="PORT"):
+        assert nimbusware_api_port() == 9002
+
+
 def test_nimbusware_workflow_profile(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_WORKFLOW_PROFILE", raising=False)
     monkeypatch.delenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", raising=False)

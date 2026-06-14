@@ -83,7 +83,11 @@ def emit_refactor_stage_and_critique(
         if block.llm_enabled:
             refactor_mode = "llm_proposal"
             try:
-                from nimbusware_env.env_flags import env_str, nimbusware_ollama_base_url, nimbusware_use_llm_enabled
+                from nimbusware_env.env_flags import (
+                    env_str,
+                    nimbusware_ollama_base_url,
+                    nimbusware_use_llm_enabled,
+                )
                 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 
                 if nimbusware_use_llm_enabled():

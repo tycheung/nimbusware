@@ -249,17 +249,6 @@ def _defs() -> tuple[SettingDef, ...]:
             user_editable=False,
         ),
         SettingDef(
-            "PORT",
-            install,
-            s,
-            "8000",
-            "API port",
-            "Legacy API port alias (prefer NIMBUSWARE_API_PORT).",
-            "Install — infrastructure",
-            admin_editable=False,
-            user_editable=False,
-        ),
-        SettingDef(
             "NIMBUSWARE_SKIP_PREFLIGHT",
             system,
             b,

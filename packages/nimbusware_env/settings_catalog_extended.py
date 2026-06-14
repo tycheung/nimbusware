@@ -736,6 +736,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "Legacy Ollama URL alias (prefer NIMBUSWARE_OLLAMA_BASE_URL)",
             default="http://127.0.0.1:11434",
         ),
+        _internal("PORT", "Legacy API port alias (prefer NIMBUSWARE_API_PORT)", default="8000"),
         _internal("NIMBUSWARE_REFACTOR_FORCE_FAIL", "Force refactor stage fail", kind=_BOOL),
         _internal("NIMBUSWARE_REFACTOR_STAGE", "Refactor stage override"),
         _internal(

@@ -147,6 +147,26 @@ def nimbusware_ollama_base_url(
     return default.rstrip("/")
 
 
+def nimbusware_api_port(default: int = 8000) -> int:
+    port_raw = env_str("NIMBUSWARE_API_PORT")
+    if port_raw:
+        try:
+            return int(port_raw.strip())
+        except ValueError:
+            pass
+    legacy = os.environ.get("PORT", "").strip()
+    if legacy:
+        try:
+            _warn_legacy_env_once(
+                "PORT",
+                "PORT is deprecated for Nimbusware API bind; use NIMBUSWARE_API_PORT",
+            )
+            return int(legacy)
+        except ValueError:
+            pass
+    return default
+
+
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
