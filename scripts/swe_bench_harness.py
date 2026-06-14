@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Optional SWE-bench-style harness for Nimbusware micro_slice profile.
-
-Dry-run (default): validate manifest + fixture layout, emit JSON summary.
-``--run``: in-memory orchestrator against fixture workspace; score slice.gate outcomes.
-"""
+"""SWE-bench-style harness for micro_slice — dry-run validates fixtures; ``--run`` scores gates."""
 
 from __future__ import annotations
 
