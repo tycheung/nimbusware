@@ -28,7 +28,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## CI guard
 
-`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers.
+`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers. `scripts/run_openapi_ts_ci_gate.py` regenerates Admin `schema.d.ts` (and snapshots `openapi.json`) from the FastAPI OpenAPI export.
 
 ## Implementation
 
@@ -42,7 +42,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 
 | Prefer | Legacy alias | Notes |
 |--------|--------------|-------|
-| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | `env_flags.nimbusware_workflow_profile()` checks both |
+| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | `env_flags.nimbusware_workflow_profile()` prefers **DEFAULT**; legacy alias is fallback only |
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |

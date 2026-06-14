@@ -1,4 +1,4 @@
-"""Backward-compatible re-export; prefer nimbusware_projections.builders.preflight."""
+"""Re-export from nimbusware_projections.builders.preflight."""
 
 from nimbusware_projections.builders.preflight import preflight_timeline_summary
 

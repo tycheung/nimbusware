@@ -578,7 +578,7 @@ The `micro_slice_web` workflow profile enables `slice.e2e` during Maker apply wh
 Layout and CI subsets: [`tests/README.md`](tests/README.md). Pytest collects **3,663** items repo-wide; the default PR **unit** job runs **~2,803** tests at **≥75%** coverage (82% total line coverage as of Jun 2026). Playwright: **55** tests across **40** specs in [`tests/e2e/web`](tests/e2e/web) (120s per-spec timeout under parallel load).
 
 ```bash
-# Matches GitHub CI unit + web jobs (ruff, audit_operator_env, format, mypy, bandit, pip-audit, floors, pytest @ 75%; optional vitest + Playwright when node is installed):
+# Matches GitHub CI unit + web jobs (ruff, audit_operator_env, openapi TS gate, format, mypy, bandit, pip-audit, floors, pytest @ 75%; optional vitest + Playwright when node is installed):
 ./scripts/ci_check.ps1   # Windows
 ./scripts/ci_check.sh    # Linux/macOS (--skip-web to skip vitest/Playwright)
 
@@ -618,6 +618,7 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_AUDIT_RETENTION_DAYS` | install | Enterprise audit export retention window |
 | `NIMBUSWARE_EVENT_STORE_RETENTION_DAYS` | install | Future event_store purge horizon (0 = disabled; see [event-store-retention.md](docs/deploy/event-store-retention.md)) |
 | `NIMBUSWARE_SKIP_PREFLIGHT` | system | Skip Ollama preflight (Admin / CI) |
+| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | user | Default workflow profile (prefer over legacy `NIMBUSWARE_WORKFLOW_PROFILE`) |
 | `NIMBUSWARE_RUN_DISPATCH` / `NIMBUSWARE_REDIS_URL` | install | Fleet worker dispatch |
 
 Full catalog: `poetry run python scripts/audit_operator_env.py` (256 keys).
