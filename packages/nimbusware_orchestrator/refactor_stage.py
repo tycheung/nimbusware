@@ -76,10 +76,47 @@ def emit_refactor_stage_and_critique(
         return False
     owner = registry.resolve("refactorer")
     now = datetime.now(timezone.utc)
+    refactor_mode = "stub_proposal"
+    llm_summary: str | None = None
+    if not block.stub_only and workspace is not None and workspace.is_dir():
+        refactor_mode = "workspace_scan"
+        if block.llm_enabled:
+            refactor_mode = "llm_proposal"
+            try:
+                from nimbusware_env.env_flags import env_str, nimbusware_use_llm_enabled
+                from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+
+                if nimbusware_use_llm_enabled():
+                    model = env_str("NIMBUSWARE_DEFAULT_MODEL") or "llama3.2"
+                    base = env_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434"
+                    payload = ollama_chat_json(
+                        base_url=base,
+                        model=model,
+                        timeout_seconds=60.0,
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": (
+                                    "Summarize one low-risk refactor for this workspace "
+                                    "(JSON: summary, target_paths)."
+                                ),
+                            },
+                        ],
+                    )
+                    if payload.get("summary"):
+                        llm_summary = str(payload.get("summary"))[:500]
+                    else:
+                        refactor_mode = "workspace_scan"
+            except Exception:
+                refactor_mode = "workspace_scan"
     refactor_meta: dict[str, Any] = {
         "stub_only": block.stub_only,
+        "llm_enabled": block.llm_enabled,
         "max_iterations": block.max_iterations,
+        "mode": refactor_mode,
     }
+    if llm_summary:
+        refactor_meta["llm_summary"] = llm_summary
     if workspace is not None and workspace.is_dir():
         from nimbusware_orchestrator.resolution_council import loc_accord_for_findings
         from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
@@ -111,7 +148,7 @@ def emit_refactor_stage_and_critique(
             event_id=uuid4(),
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
-            metadata={"refactor": {"mode": "stub_proposal"}},
+            metadata={"refactor": {"mode": refactor_mode}},
             payload=StagePassedPayload(stage_name=REFACTOR_STAGE, duration_ms=0),
         ),
     )
