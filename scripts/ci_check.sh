@@ -48,6 +48,7 @@ if [[ "${SKIP_WEB}" -eq 0 ]] && command -v node >/dev/null 2>&1; then
     (cd packages/nimbusware_maker_web && npm ci --silent && npm test --silent)
   fi
   if [[ -f packages/nimbusware_admin_ui/package.json ]]; then
+    NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL=1 poetry run python scripts/openapi_to_ts.py
     (cd packages/nimbusware_admin_ui && npm ci --silent && npm run build --silent && npm test --silent)
   fi
   if [[ -f extensions/nimbusware-status/package.json ]]; then

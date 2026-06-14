@@ -72,6 +72,9 @@ if ($node) {
     Pop-Location
     $adminUi = Join-Path $Root "packages\nimbusware_admin_ui"
     if (Test-Path (Join-Path $adminUi "package.json")) {
+        $env:NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL = "1"
+        poetry run python scripts/openapi_to_ts.py
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         Push-Location $adminUi
         npm ci --silent 2>$null
         if ($LASTEXITCODE -eq 0) {
