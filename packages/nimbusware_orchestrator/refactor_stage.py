@@ -118,17 +118,18 @@ def emit_refactor_stage_and_critique(
     if llm_summary:
         refactor_meta["llm_summary"] = llm_summary
     if workspace is not None and workspace.is_dir():
-        from nimbusware_orchestrator.resolution_council import loc_accord_for_findings
+        from nimbusware_orchestrator.loc_accord_stage import emit_refactor_loc_accord_stage
         from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
 
         cx = ComplexityIndex.from_workspace(workspace)
         loc_delta = max(0, cx.loc - block.max_iterations * 40)
+        loc_accord_ok = emit_refactor_loc_accord_stage(store, run_id, loc_delta=loc_delta)
         refactor_meta.update(
             {
                 "loc_total": cx.loc,
                 "file_count": cx.file_count,
                 "loc_delta_estimate": loc_delta,
-                "loc_accord": loc_accord_for_findings([{"loc_delta": loc_delta}]),
+                "loc_accord": loc_accord_ok,
             },
         )
 

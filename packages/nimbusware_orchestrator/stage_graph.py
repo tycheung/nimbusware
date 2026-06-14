@@ -37,6 +37,7 @@ KNOWN_STAGE_GRAPH_STAGES: frozenset[str] = frozenset(
         "launch_test.write",
         "launch_test.critique",
         "dev_env.human_fidelity",
+        "refactor.loc_accord",
     },
 )
 
