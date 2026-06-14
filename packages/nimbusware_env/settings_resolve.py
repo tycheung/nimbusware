@@ -1,5 +1,3 @@
-"""Resolve operator settings: run → user → system → env → catalog default."""
-
 from __future__ import annotations
 
 import contextvars

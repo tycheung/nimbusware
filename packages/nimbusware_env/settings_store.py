@@ -1,5 +1,3 @@
-"""Persist operator settings in ``nimbusware_config_document``."""
-
 from __future__ import annotations
 
 import os

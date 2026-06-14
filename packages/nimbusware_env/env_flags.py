@@ -1,5 +1,3 @@
-"""Env flag helpers — prefer these over direct ``os.environ`` reads."""
-
 from __future__ import annotations
 
 import os
