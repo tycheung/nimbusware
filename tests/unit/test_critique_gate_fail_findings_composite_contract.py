@@ -23,7 +23,9 @@ from nimbusware_orchestrator.llm_plan import (
     TEST_WRITER_CRITIQUE_STAGE,
 )
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_universal_critique import effective_universal_critique
+from nimbusware_orchestrator.workflow_universal_critique import (
+    effective_universal_critique,
+)
 
 if TYPE_CHECKING:
     from nimbusware_store.memory import InMemoryEventStore
@@ -97,9 +99,7 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
         IMPLEMENTATION_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
-    ], (
-        "A2: eff=None + global emit env on -> 3 findings; global UC env applies all panels"
-    )
+    ], "A2: eff=None + global emit env on -> 3 findings; global UC env applies all panels"
 
     orch_a3, mem_a3 = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("default")

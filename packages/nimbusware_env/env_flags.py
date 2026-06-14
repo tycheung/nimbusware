@@ -417,4 +417,3 @@ def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
     return env_over_yaml_resolved(key, yaml_value)
-
