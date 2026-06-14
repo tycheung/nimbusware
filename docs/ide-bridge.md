@@ -1,6 +1,6 @@
 # IDE bridge (MCP)
 
-The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, trigger campaign compaction, and mirror Maker **Chat** intent routing (classify, patch lane, interjection steering, conversation fork/branch) against a running Nimbusware API. See [ADR 020](adr/020-unified-chat-work-type-routing.md) and [ADR 021](adr/021-conversation-dag-branching.md).
+The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, trigger campaign compaction, and mirror Maker **Chat** intent routing (classify, patch lane, interjection steering, conversation fork/branch) against a running Nimbusware API. **Release v1 ships the MCP bridge** (tools below + `tests/e2e/journeys/test_mcp_ide_parity_journey.py`). What is **not** in v1: inline in-editor agent completion parity with Cursor — use MCP tools for governed runs. See [ADR 020](adr/020-unified-chat-work-type-routing.md) and [ADR 021](adr/021-conversation-dag-branching.md).
 
 ## Requirements
 
@@ -83,9 +83,9 @@ Example MCP args:
 
 Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies plain-language intent via the same `/chat/classify` rules, returns structured `classification` for classifier cards in the Admin SPA, and suggests `/run auto` with the mapped workflow profile.
 
-## Status bar extension (optional)
+## Status bar extension (optional add-on)
 
-[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**.
+[`extensions/nimbusware-status/`](../extensions/nimbusware-status/) is a minimal VS Code / Cursor extension that polls `GET /v1/runs/{id}` when `nimbusware.activeRunId` is set and exposes **Nimbusware: Open Maker Progress**. It complements MCP; it does **not** replace MCP tools for patch/classify/interject flows.
 
 ### Install from source
 
