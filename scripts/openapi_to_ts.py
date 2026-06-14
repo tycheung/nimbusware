@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
+import platform
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,27 +68,39 @@ def _export_openapi() -> dict | None:
     return app.openapi()
 
 
+def _npx_executable() -> str | None:
+    return shutil.which("npx") or shutil.which("npx.cmd")
+
+
 def _try_openapi_typescript(openapi_path: Path) -> bool:
-    if shutil.which("npx") is None:
+    npx = _npx_executable()
+    if npx is None:
         return False
+    args = [npx, "--yes", "openapi-typescript", str(openapi_path), "-o", str(OUT)]
     try:
-        proc = subprocess.run(
-            [
-                "npx",
-                "--yes",
-                "openapi-typescript",
-                str(openapi_path),
-                "-o",
-                str(OUT),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=180,
-            check=False,
-        )
+        if platform.system() == "Windows" and npx.lower().endswith(".cmd"):
+            proc = subprocess.run(
+                subprocess.list2cmdline(args),
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
+        else:
+            proc = subprocess.run(
+                args,
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
     except (OSError, subprocess.TimeoutExpired):
         return False
-    return proc.returncode == 0
+    if proc.returncode != 0:
+        sys.stderr.write(proc.stderr or proc.stdout or "openapi-typescript failed\n")
+        return False
+    return OUT.is_file() and OUT.stat().st_size > len(_manual_stub())
 
 
 def main() -> int:
@@ -100,6 +115,15 @@ def main() -> int:
             OUT.write_text(_manual_stub(), encoding="utf-8")
     else:
         OUT.write_text(_manual_stub(), encoding="utf-8")
+
+    require_full = os.environ.get("NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    if require_full and source != "openapi-typescript":
+        sys.stderr.write("NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL set but openapi-typescript unavailable\n")
+        return 1
 
     print(json.dumps({"ok": True, "path": str(OUT), "openapi": str(OPENAPI_JSON), "source": source}))
     return 0
