@@ -130,7 +130,7 @@ def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     default_raw = resolve_explicit_raw("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE")
     if default_raw:
         return default_raw
-    legacy_raw = resolve_explicit_raw("NIMBUSWARE_WORKFLOW_PROFILE")
+    legacy_raw = os.environ.get("NIMBUSWARE_WORKFLOW_PROFILE", "").strip()
     if legacy_raw:
         _warn_legacy_env_once(
             "NIMBUSWARE_WORKFLOW_PROFILE",
@@ -418,17 +418,3 @@ def env_over_yaml(key: str, yaml_value: bool) -> bool:
 
     return env_over_yaml_resolved(key, yaml_value)
 
-
-def env_over_yaml_with_global_fallback(
-    panel_key: str,
-    global_key: str,
-    yaml_value: bool,
-) -> bool:
-    """Per-panel explicit env overrides global; both defer to workflow YAML when unset."""
-    from nimbusware_env.settings_resolve import env_over_yaml_resolved, resolve_explicit_raw
-
-    if resolve_explicit_raw(panel_key) is not None:
-        return env_over_yaml_resolved(panel_key, yaml_value)
-    if resolve_explicit_raw(global_key) is not None:
-        return env_over_yaml_resolved(global_key, yaml_value)
-    return yaml_value

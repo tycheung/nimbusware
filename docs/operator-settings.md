@@ -32,22 +32,22 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**250** keys; UC gate-fail global consolidation Jun 2026; 15 per-panel gate-fail keys cataloged as deprecated)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**235** keys; per-panel UC gate-fail keys removed Jun 2026 — use 3 global `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` keys)
 
 ### Context budget (`*_MAX_CHARS`)
 
-Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`). Per-key `*_MAX_CHARS` env overrides are no longer honored. Read/shell output caps stay independent overrides. **41** universal-critique env keys override workflow YAML only when explicitly set (3 global + 15 deprecated per-panel gate-fail + panel enable/llm/stub knobs; see `effective_universal_critique`).
+Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`). Per-key `*_MAX_CHARS` env overrides are no longer honored. Read/shell output caps stay independent overrides. **26** universal-critique env keys override workflow YAML when explicitly set (panel enable/llm/stub + 3 global gate-fail knobs; see `effective_universal_critique`).
 
 ### Redundant / alias keys (prefer one)
 
 | Prefer | Legacy alias | Notes |
 |--------|--------------|-------|
-| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | Prefer **DEFAULT**; legacy alias emits `DeprecationWarning` when explicitly set |
+| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` (internal) | Prefer **DEFAULT**; legacy alias read from `os.environ` only |
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
 | `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |
-| `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | Per-panel `*_CRITIQUE_*_ON_GATE_FAIL` (15 legacy) | Global UC gate-fail env applies all panels; per-panel still wins when explicitly set |
+| `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | — | Global UC gate-fail env applies all critique panels |
 | `NIMBUSWARE_SLICE_BUDGET_PRESET` | `NIMBUSWARE_SLICE_*_MAX_CHARS` (6 removed keys) | Preset drives packet/repo_map/symbol_sketch/history/handoff/memory excerpt caps |
 
 **Tri-state system keys** (empty = follow workflow YAML): optional stages and universal-critique panel overrides. Prefer workflow profile YAML in `configs/workflows/` for defaults; use env only for operator overrides.

@@ -34,12 +34,10 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _FINDING_CREATED = "finding.created"
 
 _ENV_ALL_ON = {
-    "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
+    "NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
 }
 
-_ENV_IMPL_ONLY = {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
+_ENV_IMPL_ONLY = {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
 
 
 def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:
@@ -95,9 +93,12 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
     with patch.dict(os.environ, _ENV_IMPL_ONLY, clear=False):
         orch_a2._maybe_emit_critique_gate_fail_findings(rid_a2)  # noqa: SLF001
     findings_a2 = _findings(mem_a2, rid_a2)
-    assert _stage_names(findings_a2) == [IMPLEMENTATION_CRITIQUE_STAGE], (
-        "A2: eff=None + impl env on -> 1 finding (impl only); pins env "
-        "propagation through fallback resolver _effective_universal_critique_for_run"
+    assert _stage_names(findings_a2) == [
+        IMPLEMENTATION_CRITIQUE_STAGE,
+        TEST_WRITER_CRITIQUE_STAGE,
+        PLANNER_CRITIQUE_STAGE,
+    ], (
+        "A2: eff=None + global emit env on -> 3 findings; global UC env applies all panels"
     )
 
     orch_a3, mem_a3 = make_dev_orchestrator()
@@ -448,7 +449,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
     ):
         orch_d4._maybe_emit_critique_gate_fail_findings(rid_d4)  # noqa: SLF001
 
-    assert already_spy_d4.call_count == 3, "D4 setup: spy called once per stage iter"
+    assert already_spy_d4.call_count == 5, "D4 setup: spy called once per enabled stage iter"
 
     def _critique_finding_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [

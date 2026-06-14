@@ -28,18 +28,6 @@ def _uc(key: str, label: str) -> SettingDef:
     )
 
 
-def _uc_gate_fail_legacy(key: str, label: str) -> SettingDef:
-    return SettingDef(
-        key,
-        _SYSTEM,
-        _BOOL,
-        "",
-        label,
-        "Deprecated: prefer NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL globals; per-panel wins when set.",
-        "System — universal critique overrides (legacy)",
-    )
-
-
 def _internal(
     key: str,
     label: str,
@@ -113,69 +101,6 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
     )
     uc = tuple(_uc(k, label) for k, label in uc_keys)
-    uc_gate_fail_legacy: tuple[tuple[str, str], ...] = (
-        (
-            "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
-            "Impl UC stage failed on gate fail",
-        ),
-        (
-            "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
-            "Impl UC emit finding on gate fail",
-        ),
-        (
-            "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
-            "Impl UC hard block on gate fail",
-        ),
-        (
-            "NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
-            "TW UC stage failed on gate fail",
-        ),
-        (
-            "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
-            "TW UC emit finding on gate fail",
-        ),
-        (
-            "NIMBUSWARE_TEST_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
-            "TW UC hard block on gate fail",
-        ),
-        (
-            "NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
-            "Planner UC stage failed on gate fail",
-        ),
-        (
-            "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
-            "Planner UC emit finding on gate fail",
-        ),
-        (
-            "NIMBUSWARE_PLANNER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
-            "Planner UC hard block on gate fail",
-        ),
-        (
-            "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
-            "FW UC stage failed on gate fail",
-        ),
-        (
-            "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
-            "FW UC emit finding on gate fail",
-        ),
-        (
-            "NIMBUSWARE_FRONTEND_WRITER_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
-            "FW UC hard block on gate fail",
-        ),
-        (
-            "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL",
-            "MI UC stage failed on gate fail",
-        ),
-        (
-            "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL",
-            "MI UC emit finding on gate fail",
-        ),
-        (
-            "NIMBUSWARE_MODULE_INTEGRATOR_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL",
-            "MI UC hard block on gate fail",
-        ),
-    )
-    uc += tuple(_uc_gate_fail_legacy(k, label) for k, label in uc_gate_fail_legacy)
 
     install = (
         _install("NIMBUSWARE_API_HOST", "API bind host", default="0.0.0.0"),
@@ -782,15 +707,6 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — hardware governor",
         ),
         SettingDef(
-            "NIMBUSWARE_WORKFLOW_PROFILE",
-            _USER,
-            _STR,
-            "",
-            "Workflow profile (legacy alias)",
-            "Deprecated alias; prefer NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE (checked second).",
-            "User — maker runtime",
-        ),
-        SettingDef(
             "NIMBUSWARE_SLICE_REPLAN_MAX",
             _USER,
             _INT,
@@ -812,6 +728,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
 
     internal = (
         _internal("NIMBUSWARE_WORKSPACE", "Dev workspace path override"),
+        _internal(
+            "NIMBUSWARE_WORKFLOW_PROFILE",
+            "Legacy workflow profile alias (deprecated)",
+            kind=_STR,
+        ),
         _internal("NIMBUSWARE_REFACTOR_FORCE_FAIL", "Force refactor stage fail", kind=_BOOL),
         _internal("NIMBUSWARE_REFACTOR_STAGE", "Refactor stage override"),
         _internal(

@@ -255,7 +255,7 @@ def test_test_writer_skips_stub_when_llm_path_succeeds(
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_impl_critique_gate_is_fail() -> None:
@@ -287,7 +287,7 @@ def test_stage_failed_emitted_when_last_impl_critique_gate_is_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_dedupes_second_call() -> None:
@@ -340,7 +340,7 @@ def test_stage_failed_not_emitted_without_env_on_gate_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_test_writer_critique_gate_is_fail() -> None:
@@ -372,7 +372,7 @@ def test_stage_failed_emitted_when_last_test_writer_critique_gate_is_fail() -> N
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_test_writer_stage_failed_dedupes_second_call() -> None:
@@ -451,7 +451,7 @@ def test_impl_stage_failed_emitted_from_workflow_profile_without_env() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "0"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "0"},
     clear=False,
 )
 def test_impl_stage_failed_env_overrides_workflow_true() -> None:
@@ -610,7 +610,7 @@ def test_planner_skips_stub_when_llm_path_succeeds(
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_stage_failed_emitted_when_last_planner_critique_gate_is_fail() -> None:
@@ -642,7 +642,7 @@ def test_stage_failed_emitted_when_last_planner_critique_gate_is_fail() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_planner_stage_failed_dedupes_second_call() -> None:
@@ -886,7 +886,7 @@ def test_critique_gate_fail_finding_not_emitted_by_default() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_once_when_enabled() -> None:
@@ -918,7 +918,7 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
     _append_impl_gate_fail(orch, rid)
     with patch.dict(
         os.environ,
-        {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "0"},
+        {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "0"},
         clear=False,
     ):
         eff = effective_universal_critique(
@@ -933,7 +933,7 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
     os.environ,
     {
         "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
-        "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL": "false",
+        "NIMBUSWARE_UNIVERSAL_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL": "false",
     },
     clear=False,
 )
@@ -1124,7 +1124,7 @@ def test_taxonomy_keys_for_run_lifecycle_is_sorted_and_unique() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_impl_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1142,7 +1142,7 @@ def test_impl_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_test_writer_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1160,7 +1160,7 @@ def test_test_writer_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_planner_stage_failed_not_emitted_when_last_gate_passes() -> None:
@@ -1178,7 +1178,7 @@ def test_planner_stage_failed_not_emitted_when_last_gate_passes() -> None:
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_for_test_writer_stage_when_enabled() -> None:
@@ -1205,7 +1205,7 @@ def test_critique_gate_fail_finding_emitted_for_test_writer_stage_when_enabled()
 
 @patch.dict(
     os.environ,
-    {"NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
     clear=False,
 )
 def test_critique_gate_fail_finding_emitted_for_planner_stage_when_enabled() -> None:

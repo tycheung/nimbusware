@@ -144,7 +144,10 @@ def campaign_driver_tick(
 
     policy = campaign_policy_from_rows(rows)
     ce = campaign_effective_from_rows(rows) or {}
-    max_slices = int((ce.get("policy") or {}).get("max_slices", 500) if ce else 500)
+    policy_max = int((ce.get("policy") or {}).get("max_slices", 500) if ce else 500)
+    from nimbusware_env.settings_resolve import resolve_int
+
+    max_slices = resolve_int("NIMBUSWARE_BACKLOG_MAX_SLICES", default=policy_max)
     generator_mode, _ = effective_backlog_generator_mode(
         str((ce.get("policy") or {}).get("backlog_generator", "stub")),
     )

@@ -35,9 +35,7 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _FINDING_CREATED = "finding.created"
 
 _ENV_ALL_ON = {
-    "NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "NIMBUSWARE_TEST_WRITER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
-    "NIMBUSWARE_PLANNER_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
+    "NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
 }
 
 _BACKEND_WRITER_PLACEHOLDER = UUID("44444444-4444-4444-8444-444444444404")
@@ -212,7 +210,7 @@ def test_maybe_emit_critique_gate_fail_findings_skip_branches_4_axis() -> None:
 
     with patch.dict(
         os.environ,
-        {"NIMBUSWARE_IMPLEMENTATION_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
+        {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"},
         clear=False,
     ):
         orch_b2, mem_b2 = make_dev_orchestrator()
