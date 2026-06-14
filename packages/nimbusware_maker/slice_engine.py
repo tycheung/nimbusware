@@ -1,8 +1,4 @@
-"""Orchestrator slice execution boundary for Maker.
-
-``slice_workflow`` imports this module only — not ``nimbusware_orchestrator`` directly.
-Lazy helpers wrap optional LLM / scan imports used during approve/apply paths.
-"""
+"""Maker slice execution boundary — isolates orchestrator imports from slice_workflow."""
 
 from __future__ import annotations
 

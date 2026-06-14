@@ -1,7 +1,4 @@
-"""Keep Postgres ``event_store.event_type`` CHECK list in lockstep with ``EventType``.
-The allowlist is defined in ``packages/nimbusware_store/schema/postgres.sql`` (constraint
-``event_store_type_allowed``). ``tests/test_allowed_event_types.py`` asserts parity.
-"""
+"""Postgres event_type CHECK allowlist — must match ``EventType`` and ``postgres.sql``."""
 
 from __future__ import annotations
 

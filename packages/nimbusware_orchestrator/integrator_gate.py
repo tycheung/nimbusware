@@ -1,12 +1,4 @@
-"""Integrator gate: YAML ``enabled``, bundle id from catalog map, optional ``project_tags``.
-
-Catalog bundle tags feed tag-recall scoring in ``ModuleIntegrator`` when the pipeline
-passes ``bundle_tags`` in the project profile (see ``load_bundle_tags_for_bundle_id``).
-
-Optional ``integrator_gate.min_score_to_pass`` overrides
-``configs/integrator/thresholds.yaml`` when present; non-empty
-``NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS`` overrides both (float, clamped ``0..1``).
-"""
+"""Integrator gate — bundle catalog scoring and optional min-score override."""
 
 from __future__ import annotations
 

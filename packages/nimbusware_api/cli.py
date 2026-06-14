@@ -1,4 +1,4 @@
-"""Nimbusware control-plane API — ``poetry run nimbusware-api`` (uvicorn)."""
+"""Nimbusware API CLI entrypoint."""
 
 from __future__ import annotations
 

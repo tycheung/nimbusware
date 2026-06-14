@@ -1,11 +1,4 @@
-"""Nimbusware product edition gate.
-
-**Individual** (default): local-first single-operator install; repo-scoped memory only.
-**Enterprise**: enables IAM, fleet memory, NOTIFY, and related modules.
-
-Select at install: ``scripts/install_nimbusware.py --edition enterprise`` or
-``NIMBUSWARE_EDITION`` in ``.env``.
-"""
+"""Product edition gate — Individual (default) vs Enterprise."""
 
 from __future__ import annotations
 

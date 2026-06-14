@@ -43,30 +43,7 @@ class LifecycleVerifyMixin:
         *,
         workspace: Path | None = None,
     ) -> None:
-        """Append implementation stage + optional pytest finding on failure.
-
-        When ``micro_slice_effective.enabled`` on ``run.created``, runs the per-slice
-        chain instead of the default writer/verifier pass.
-
-        After the verifier, optional **implementation.critique** panel: try LLM when
-        workflow ``universal_critique.implementation.llm`` or ``NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM``
-        (env overrides YAML when non-empty); same for stub critics. Optionally
-        **test_writer.critique** / **planner.critique** via workflow ``universal_critique`` or
-        the existing ``NIMBUSWARE_*`` switches.
-        Optional **planner.critique** after that via env or workflow
-        ``universal_critique.planner`` (same env-over-YAML pattern). Optional ``stage.failed``
-        for gate FAIL mirrors implementation / test_writer / planner knobs (env overrides
-        workflow when set). Optional **finding.created** (LOW) on last critique gate FAIL
-        is off by default; enable via ``emit_finding_on_gate_fail`` or ``NIMBUSWARE_*``
-        env (see ``_maybe_emit_critique_gate_fail_findings``).
-        Optional **hard_block_on_gate_fail** (per stage; env
-        ``NIMBUSWARE_*_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL``) skips integrator gate,
-        agent-evaluator stage marker, and self-refinement marker when
-        that stage's last critique gate is FAIL; anti-deadlock / cumulative escalations still run.
-        When **hard_block_on_gate_fail** and the last gate for that stage is FAIL, later
-        optional critique panels are **not** run (implementation FAIL skips test_writer and
-        planner; test_writer FAIL skips planner only).
-        """
+        """Implementation writer/verifier pass with optional universal critique panels."""
         if self._micro_slice_enabled_for_run(run_id):
             self.execute_micro_slice_pass(run_id, workspace=workspace)
             return
