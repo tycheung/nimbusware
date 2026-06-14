@@ -158,6 +158,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
             default="",
             choices=("", "weak", "standard", "strong"),
         ),
+        _install(
+            "NIMBUSWARE_REDIS_FLEET_URLS",
+            "Redis fleet broker URLs",
+            default="",
+        ),
         _install("NIMBUSWARE_TENANT_ID", "Enterprise tenant id"),
         _install("NIMBUSWARE_MAKER_STATE_DIR", "Maker session state directory"),
         _install("NIMBUSWARE_OLLAMA_BASE_URL", "Ollama base URL override"),
@@ -909,6 +914,37 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _internal("NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT", "Fleet Playwright WS endpoint"),
         _internal("NIMBUSWARE_MAKER_VAPID_PUBLIC_KEY", "Maker Web Push VAPID public key"),
         _internal("NIMBUSWARE_DATA_DIR", "Nimbusware data directory root"),
+        _internal(
+            "NIMBUSWARE_SWE_BENCH_WRITE_JSON",
+            "Write SWE-bench harness JSON snapshot",
+            kind=_BOOL,
+            default="0",
+        ),
+        _internal(
+            "NIMBUSWARE_E2E_FLAKE_RETRIES",
+            "E2E pytest reruns for flake budget",
+            kind=_INT,
+            default="0",
+        ),
+        _internal(
+            "NIMBUSWARE_E2E_FLAKE_DELAY",
+            "Delay seconds between E2E reruns",
+            kind=_INT,
+            default="2",
+        ),
+        _internal("NIMBUSWARE_CAMPAIGN_SOAK_JOURNEYS", "Campaign soak journey module list"),
+        _internal(
+            "NIMBUSWARE_CAMPAIGN_SOAK_PASSES",
+            "Campaign soak pass count",
+            kind=_INT,
+            default="2",
+        ),
+        _internal(
+            "NIMBUSWARE_FRAMEWORK_PACK_FIDELITY",
+            "Enable keyboard/mouse fidelity in framework pack CI gate",
+            kind=_BOOL,
+            default="0",
+        ),
     )
 
     return uc + install + system_extra + user_extra + internal

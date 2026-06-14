@@ -4,7 +4,6 @@ import hashlib
 import hmac
 import io
 import json
-import os
 import tarfile
 from typing import Any
 
@@ -12,10 +11,7 @@ from typing import Any
 def _signing_key() -> bytes | None:
     from nimbusware_env.env_flags import env_str
 
-    raw = (
-        env_str("NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY")
-        or os.environ.get("AUDIT_EXPORT_SIGNING_KEY", "").strip()
-    )
+    raw = env_str("NIMBUSWARE_AUDIT_EXPORT_SIGNING_KEY")
     return raw.encode("utf-8") if raw else None
 
 
