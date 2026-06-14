@@ -5,6 +5,13 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.read.campaign import campaign_effective_from_rows
+from nimbusware_orchestrator.micro_slice_run_context import run_created_metadata
+
+
+def _dev_env_effective(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
+    if not rows:
+        return {}
+    return mapping_or_empty(run_created_metadata(rows).get("dev_env_effective"))
 
 
 def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
@@ -16,6 +23,8 @@ def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool
         return True
     if not rows:
         return False
+    if bool(_dev_env_effective(rows).get("enabled")):
+        return True
     ce = campaign_effective_from_rows(rows)
     if not ce:
         return False
@@ -23,6 +32,7 @@ def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool
     if isinstance(profile, str) and profile in {
         "campaign_factory_zero_touch",
         "micro_slice_web",
+        "micro_slice_fullstack",
         "factory_t3",
     }:
         return True
@@ -38,6 +48,9 @@ def ui_controller_profile_enabled(rows: list[dict[str, Any]] | None = None) -> b
         return True
     if not rows:
         return False
+    de = _dev_env_effective(rows)
+    if bool(de.get("ui_controller_enabled")):
+        return True
     ce = campaign_effective_from_rows(rows)
     if not ce:
         return False
@@ -50,6 +63,16 @@ def ui_controller_profile_enabled(rows: list[dict[str, Any]] | None = None) -> b
 
 def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
     return ui_controller_profile_enabled(rows)
+
+
+def human_fidelity_profile_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
+    if os.environ.get("NIMBUSWARE_HUMAN_FIDELITY_ENABLED", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        return True
+    return bool(_dev_env_effective(rows).get("human_fidelity_enabled"))
 
 
 def launch_test_enabled(rows: list[dict[str, Any]] | None = None) -> bool:

@@ -232,6 +232,16 @@ class CreateRunMixin:
             workflow_profile,
             config_materializer=mat,
         )
+        from nimbusware_orchestrator.workflow_dev_env import (
+            dev_env_effective_metadata,
+            parse_dev_env_workflow_block,
+        )
+
+        dev_env_block = parse_dev_env_workflow_block(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+        )
         memory_meta = memory_effective_metadata(
             mem_block,
             run_policy_overrides=run_policy_overrides,
@@ -464,6 +474,7 @@ class CreateRunMixin:
                 "research": research_effective_metadata(research_block),
                 "stitch": stitch_effective_metadata(stitch_block),
                 "theater": theater_effective_metadata(theater_block),
+                "dev_env_effective": dev_env_effective_metadata(dev_env_block),
                 **({"custom_agent": custom_agent_meta} if custom_agent_meta else {}),
                 **({"project": project_meta} if project_meta else {}),
                 **({"git": git_meta} if git_meta else {}),

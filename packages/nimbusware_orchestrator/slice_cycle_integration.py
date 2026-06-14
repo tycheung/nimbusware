@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,7 +13,10 @@ from nimbusware_orchestrator.autopilot_profiles import (
     AutopilotProfile,
     autopilot_profile_from_rows,
 )
-from nimbusware_orchestrator.dev_env_policy import ui_controller_enabled
+from nimbusware_orchestrator.dev_env_policy import (
+    human_fidelity_profile_enabled,
+    ui_controller_enabled,
+)
 from nimbusware_orchestrator.dev_env_regression import run_dev_env_regression
 from nimbusware_orchestrator.dev_env_supervisor import (
     DevEnvStartResult,
@@ -68,11 +70,7 @@ def ensure_dev_environment_for_slice(
 
 
 def human_fidelity_pre_gate_enabled(rows: list[dict[str, Any]]) -> bool:
-    if os.environ.get("NIMBUSWARE_HUMAN_FIDELITY_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if human_fidelity_profile_enabled(rows):
         return True
     profile = autopilot_profile_from_rows(rows)
     if profile.level <= 5:
@@ -102,7 +100,7 @@ def maybe_run_human_fidelity_pre_gate(
             run_id=rid,
             occurred_at=datetime.now(timezone.utc),
             metadata={"human_fidelity": {"passed": result.passed, "detail": result.detail}},
-            payload=StagePassedPayload(stage_name="human_fidelity", duration_ms=0),
+            payload=StagePassedPayload(stage_name="dev_env.human_fidelity", duration_ms=0),
         ),
     )
     return result.passed, result.detail
@@ -477,6 +475,12 @@ def execute_improvement_track(
     *,
     repo_root: Path | None = None,
 ) -> None:
+    if track == ImprovementTrack.SIMPLIFY:
+        from nimbusware_orchestrator.simplification_rubric_critique import (
+            emit_simplification_rubric_stage,
+        )
+
+        emit_simplification_rubric_stage(store, run_id, workspace)
     if track in {ImprovementTrack.DISCOVER_FEATURES, ImprovementTrack.SIMPLIFY}:
         explore = run_repo_explore(workspace)
         emit_repo_explore(store, run_id, explore)

@@ -13,6 +13,8 @@ slice:
 
 dev_env:
   enabled: true
+  human_fidelity:
+    enabled: true
   ui_controller:
     enabled: true
     required: true
@@ -40,8 +42,10 @@ stage_graph:
     depends_on: [launch_test.write]
   - stage_name: slice.e2e
     depends_on: [launch_test.critique]
-  - stage_name: slice.gate
+  - stage_name: dev_env.human_fidelity
     depends_on: [slice.e2e]
+  - stage_name: slice.gate
+    depends_on: [dev_env.human_fidelity]
 
 universal_critique:
   default_enabled: true
