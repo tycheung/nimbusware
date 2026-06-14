@@ -580,7 +580,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "Slice packet max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — maker runtime",
         ),
         SettingDef(
@@ -598,7 +598,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "Slice repo map max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — maker runtime",
         ),
         SettingDef(
@@ -634,7 +634,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "Symbol sketch max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — maker runtime",
         ),
         SettingDef(
@@ -643,7 +643,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "LLM history max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — context efficiency",
         ),
         SettingDef(
@@ -697,7 +697,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "Handoff summary max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — context efficiency",
         ),
         SettingDef(
@@ -760,7 +760,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _INT,
             "",
             "Memory excerpt max chars",
-            "Legacy override; prefer NIMBUSWARE_SLICE_BUDGET_PRESET. Applies only when explicitly set.",
+            "Legacy override (removed); use NIMBUSWARE_SLICE_BUDGET_PRESET.",
             "User — context efficiency",
         ),
         SettingDef(

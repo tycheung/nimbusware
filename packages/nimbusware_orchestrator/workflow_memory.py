@@ -118,8 +118,7 @@ def memory_settings_from_run_metadata(metadata: object) -> MemoryWorkflowBlock:
         retrieval_k=_env_or_metadata_int(
             "NIMBUSWARE_MEMORY_RETRIEVAL_K", mem.get("retrieval_k"), default=5, max_val=20
         ),
-        excerpt_max_chars=_env_or_metadata_int(
-            "NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS",
+        excerpt_max_chars=_metadata_int(
             mem.get("excerpt_max_chars"),
             default=nimbusware_memory_excerpt_max_chars(),
             max_val=20000,
@@ -192,6 +191,20 @@ def _parse_embedding_mode(raw: object) -> EmbeddingMode:
     if str(raw or "").strip().lower() == "ollama":
         return "ollama"
     return "deterministic"
+
+
+def _metadata_int(
+    raw: object,
+    *,
+    default: int,
+    max_val: int,
+) -> int:
+    if isinstance(raw, (int, float, str)):
+        try:
+            return max(0, min(max_val, int(raw)))
+        except (TypeError, ValueError):
+            pass
+    return max(0, min(max_val, default))
 
 
 def _env_or_metadata_int(
