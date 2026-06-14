@@ -1,24 +1,5 @@
 #!/usr/bin/env python3
-"""Bootstrap a Nimbusware developer environment (Poetry, Postgres, schema, optional seed).
-
-Run from an existing clone::
-
-    python scripts/install_nimbusware.py
-
-Or clone first (requires git)::
-
-    python scripts/install_nimbusware.py --clone <repo-url> --target-dir D:\\Nimbusware
-
-If PostgreSQL is not running, the script shows an interactive menu (Docker,
-Windows ``.exe``, winget, manual, custom URL, or skip). Ollama can be installed
-via winget/brew/curl (see ``--ollama-choice``). ``poetry install`` includes Pyright
-langserver (dev dependency); the installer enables ``NIMBUSWARE_SLICE_LSP_ENABLED=1`` in
-``.env`` by default. Use ``--non-interactive`` for CI.
-Use ``--install-postgres-native`` or ``--postgres-choice native`` to skip the Postgres menu.
-
-Windows wrapper: ``.\\scripts\\install-nimbusware.ps1``
-Unix wrapper: ``bash scripts/install-nimbusware.sh``
-"""
+"""Bootstrap Nimbusware dev environment (Poetry, Postgres, schema, optional Ollama)."""
 
 from __future__ import annotations
 

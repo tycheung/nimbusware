@@ -1,8 +1,4 @@
-"""Convert `from module import *` lines to explicit symbol imports (Lane C).
-
-Safe targets: display package __init__.py files and root *_display.py facades.
-Do not run repo-wide `ruff check --fix`; use this script instead for re-exports.
-"""
+"""Convert star imports to explicit symbol imports in display package facades."""
 
 from __future__ import annotations
 

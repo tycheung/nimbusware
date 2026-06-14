@@ -55,7 +55,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
 | `nimbusware_console` | Admin display helpers + enterprise fleet formatters; BFF tables via `routes/admin_ui_bff.py` |
-| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **235-key** settings catalog + `env_flags`, admin token guards |
+| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **234-key** settings catalog + `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 
 ## Editions

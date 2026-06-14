@@ -188,7 +188,7 @@ def run_desktop(
     if hasattr(signal, "SIGTERM"):
         signal.signal(signal.SIGTERM, _handle_signal)
 
-    from nimbusware_env.env_flags import env_str, nimbusware_api_port
+    from nimbusware_env.env_flags import nimbusware_api_port
 
     api_port_display = api_port or str(nimbusware_api_port())
     _log(f"Nimbusware repo: {repo}")

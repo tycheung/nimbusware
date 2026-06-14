@@ -4,7 +4,7 @@
 |----------|----------|---------|
 | [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI (~2,803 unit pytest / 3,663 collected) |
 | [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
-| [operator-settings.md](operator-settings.md) | Operators | Settings catalog (**235** keys; UC gate-fail consolidated to 3 globals) |
+| [operator-settings.md](operator-settings.md) | Operators | Settings catalog (**234** keys; Ollama URL + API port consolidated) |
 | [ide-bridge.md](ide-bridge.md) | Developers | MCP IDE bridge (`nimbusware-mcp`) v1-shipped; optional VS Code status extension |
 | [../releasev1features.md](../releasev1features.md) | Maintainers | Release v1 shipped ledger (pointer to local plan §20.29) |
 | [deploy/first-install-timing.md](deploy/first-install-timing.md) | Operators | Reference install → first gate pass timing |

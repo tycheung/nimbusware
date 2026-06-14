@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Build optional FAISS index for repo-scoped Nimbusware memory chunks.
-
-Requires: ``poetry install --with faiss`` when building the vector index.
-
-Reads chunk rows from Postgres (``NIMBUSWARE_DATABASE_URL``) or rebuilds from the
-in-memory event store path used in tests. Writes under ``configs/memory/index/`` by default.
-"""
+"""Build optional FAISS index for repo-scoped memory chunks (requires ``poetry install --with faiss``)."""
 
 from __future__ import annotations
 

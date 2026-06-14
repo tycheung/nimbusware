@@ -123,7 +123,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _install("NIMBUSWARE_FLEET_MEMORY_STORE_URI", "Fleet memory store URI"),
         _install("NIMBUSWARE_FLEET_MEMORY_STORE_DIR", "Fleet memory store directory"),
-        _install("NIMBUSWARE_OLLAMA_BASE_URL", "Canonical Ollama base URL", default="http://127.0.0.1:11434"),
+        _install(
+            "NIMBUSWARE_OLLAMA_BASE_URL",
+            "Canonical Ollama base URL",
+            default="http://127.0.0.1:11434",
+        ),
         _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL", "Scraper object store URL"),
         _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "Scraper object store bucket"),
         _install(
