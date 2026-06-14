@@ -36,13 +36,13 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ### Context budget (`*_MAX_CHARS`)
 
-Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`) unless a per-key `*_MAX_CHARS` env is explicitly set. Read/shell output caps stay independent overrides. **41** universal-critique env keys override workflow YAML only when explicitly set (3 global + 15 deprecated per-panel gate-fail + panel enable/llm/stub knobs; see `effective_universal_critique`).
+Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt limits resolve from `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`) unless a per-key `*_MAX_CHARS` env is explicitly set (deprecated — runtime `DeprecationWarning`). Read/shell output caps stay independent overrides. **41** universal-critique env keys override workflow YAML only when explicitly set (3 global + 15 deprecated per-panel gate-fail + panel enable/llm/stub knobs; see `effective_universal_critique`).
 
 ### Redundant / alias keys (prefer one)
 
 | Prefer | Legacy alias | Notes |
 |--------|--------------|-------|
-| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | `env_flags.nimbusware_workflow_profile()` prefers **DEFAULT**; legacy alias is fallback only |
+| `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` | Prefer **DEFAULT**; legacy alias emits `DeprecationWarning` when explicitly set |
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |

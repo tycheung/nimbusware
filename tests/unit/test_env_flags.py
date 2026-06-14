@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from nimbusware_env.env_flags import (
     env_bool,
     env_falsy,
@@ -121,6 +123,7 @@ def test_nimbusware_workflow_profile(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", raising=False)
     assert nimbusware_workflow_profile() == "nimbusware_production"
     monkeypatch.setenv("NIMBUSWARE_WORKFLOW_PROFILE", "micro_slice")
-    assert nimbusware_workflow_profile() == "micro_slice"
+    with pytest.warns(DeprecationWarning, match="NIMBUSWARE_WORKFLOW_PROFILE"):
+        assert nimbusware_workflow_profile() == "micro_slice"
     monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "patch")
     assert nimbusware_workflow_profile() == "patch"

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from nimbusware_env.env_flags import (
     nimbusware_handoff_max_chars,
     nimbusware_slice_packet_max_chars,
@@ -52,7 +54,8 @@ def test_context_max_chars_explicit_env_overrides_preset(
 ) -> None:
     monkeypatch.setenv("NIMBUSWARE_SLICE_BUDGET_PRESET", "tiny")
     monkeypatch.setenv("NIMBUSWARE_SLICE_PACKET_MAX_CHARS", "9999")
-    assert nimbusware_slice_packet_max_chars() == 9999
+    with pytest.warns(DeprecationWarning, match="NIMBUSWARE_SLICE_PACKET_MAX_CHARS"):
+        assert nimbusware_slice_packet_max_chars() == 9999
 
 
 def test_slice_replan_max_for_run_uses_frozen_metadata() -> None:

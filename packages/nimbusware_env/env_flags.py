@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 
 from nimbusware_env.settings_catalog import CATALOG, SettingScope
 from nimbusware_env.settings_resolve import (
@@ -12,6 +13,25 @@ from nimbusware_env.settings_resolve import (
 
 TRUTHY_VALUES = frozenset({"1", "true", "yes"})
 FALSY_VALUES = frozenset({"0", "false", "no"})
+_LEGACY_ENV_WARNED: set[str] = set()
+
+_LEGACY_CONTEXT_MAX_CHARS_KEYS = frozenset(
+    {
+        "NIMBUSWARE_SLICE_PACKET_MAX_CHARS",
+        "NIMBUSWARE_SLICE_REPO_MAP_MAX_CHARS",
+        "NIMBUSWARE_SLICE_SYMBOL_SKETCH_MAX_CHARS",
+        "NIMBUSWARE_LLM_HISTORY_MAX_CHARS",
+        "NIMBUSWARE_HANDOFF_MAX_CHARS",
+        "NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS",
+    }
+)
+
+
+def _warn_legacy_env_once(name: str, message: str) -> None:
+    if name in _LEGACY_ENV_WARNED:
+        return
+    _LEGACY_ENV_WARNED.add(name)
+    warnings.warn(message, DeprecationWarning, stacklevel=3)
 
 
 def _managed_key(name: str) -> bool:
@@ -118,10 +138,16 @@ def nimbusware_api_host(default: str = "0.0.0.0") -> str:
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
-    for name in ("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "NIMBUSWARE_WORKFLOW_PROFILE"):
-        raw = resolve_explicit_raw(name)
-        if raw:
-            return raw
+    default_raw = resolve_explicit_raw("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE")
+    if default_raw:
+        return default_raw
+    legacy_raw = resolve_explicit_raw("NIMBUSWARE_WORKFLOW_PROFILE")
+    if legacy_raw:
+        _warn_legacy_env_once(
+            "NIMBUSWARE_WORKFLOW_PROFILE",
+            "NIMBUSWARE_WORKFLOW_PROFILE is deprecated; use NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE",
+        )
+        return legacy_raw
     return default
 
 
@@ -220,6 +246,11 @@ def _context_max_chars_from_preset(env_key: str, preset_attr: str, fallback: int
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
     if resolve_explicit_raw(env_key) is not None:
+        if env_key in _LEGACY_CONTEXT_MAX_CHARS_KEYS:
+            _warn_legacy_env_once(
+                env_key,
+                f"{env_key} is deprecated; use NIMBUSWARE_SLICE_BUDGET_PRESET instead",
+            )
         return resolve_int(env_key, default=fallback)
     from nimbusware_orchestrator.slice_budget_presets import resolve_slice_budget_preset
 
