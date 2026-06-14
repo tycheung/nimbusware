@@ -28,9 +28,9 @@ class StitchOptionalStagesMixin:
             return
         meta = self._run_created_metadata(run_id)
         stitch_meta = optional_meta_section(self, run_id, "stitch")
-        from nimbusware_research.stages_stitch import emit_stitch_stages_stub
+        from nimbusware_research.stages_stitch import emit_stitch_stages
 
-        applied = emit_stitch_stages_stub(
+        applied = emit_stitch_stages(
             self._store,
             self._registry,
             self._critique_router,
@@ -39,6 +39,7 @@ class StitchOptionalStagesMixin:
             run_created_metadata=meta,
             stitch_meta=stitch_meta,
             prior_events=rows,
+            live=bool(block.enabled and block.live),
         )
         if not applied:
             return

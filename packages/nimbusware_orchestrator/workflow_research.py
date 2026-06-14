@@ -14,6 +14,7 @@ class ResearchWorkflowBlock:
     code_enabled: bool = True
     max_brief_sources: int = 20
     pattern_index_contribution: bool = True
+    live: bool = True
 
 
 _DEFAULT_LICENSE_ALLOWLIST = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause")
@@ -27,6 +28,7 @@ class StitchWorkflowBlock:
     max_new_dependencies: int = 10
     license_allowlist: tuple[str, ...] = _DEFAULT_LICENSE_ALLOWLIST
     require_refactor_pass: bool = True
+    live: bool = True
 
 
 def _coerce_bool(value: object, *, default: bool) -> bool:
@@ -60,6 +62,7 @@ def parse_research_workflow_block(
             raw.get("pattern_index_contribution"),
             default=True,
         ),
+        live=_coerce_bool(raw.get("live"), default=True),
     )
 
 
@@ -86,6 +89,7 @@ def parse_stitch_workflow_block(
         max_new_dependencies=max(0, int(raw.get("max_new_dependencies", 10) or 10)),
         license_allowlist=licenses,
         require_refactor_pass=_coerce_bool(raw.get("require_refactor_pass"), default=True),
+        live=_coerce_bool(raw.get("live"), default=True),
     )
 
 
@@ -96,6 +100,7 @@ def research_effective_metadata(block: ResearchWorkflowBlock) -> dict[str, Any]:
         "code_enabled": block.code_enabled,
         "max_brief_sources": block.max_brief_sources,
         "pattern_index_contribution": block.pattern_index_contribution,
+        "live": block.live,
     }
 
 
@@ -107,4 +112,5 @@ def stitch_effective_metadata(block: StitchWorkflowBlock) -> dict[str, Any]:
         "max_new_dependencies": block.max_new_dependencies,
         "license_allowlist": list(block.license_allowlist),
         "require_refactor_pass": block.require_refactor_pass,
+        "live": block.live,
     }

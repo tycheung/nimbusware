@@ -38,4 +38,5 @@ class ResearchOptionalStagesMixin:
             repo_root=self._repo_root,
             requirements=req_dict,
             research_meta=research_meta,
+            live=bool(block.enabled and block.live),
         )

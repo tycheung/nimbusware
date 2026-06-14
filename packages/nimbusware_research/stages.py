@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -103,15 +104,21 @@ def emit_research_stages_stub(
     repo_root: Any,
     requirements: dict[str, Any] | None,
     research_meta: dict[str, Any],
+    live: bool = False,
 ) -> None:
     domain_tag = _domain_tag_from_requirements(requirements)
     domain_enabled = bool(research_meta.get("domain_enabled", True))
     code_enabled = bool(research_meta.get("code_enabled", True))
+    live = live or bool(research_meta.get("live", False))
 
     if domain_enabled:
         raw_domain_summary = (
             f"Domain brief for {domain_tag}: user journeys, constraints, and glossary "
-            "derived from requirements (stub; no live crawl in CI)."
+            + (
+                "derived from run requirements."
+                if live
+                else "derived from requirements (stub; no live crawl in CI)."
+            )
         )
         if isinstance(requirements, dict):
             prompt_bit = str(requirements.get("business_prompt") or "")
@@ -127,7 +134,11 @@ def emit_research_stages_stub(
             artifact_id=str(uuid4()),
             sources=(
                 ResearchBriefSource(
-                    url=f"stub://domain/{domain_tag}",
+                    url=(
+                        f"requirements://domain/{domain_tag}"
+                        if live
+                        else f"stub://domain/{domain_tag}"
+                    ),
                     license="MIT",
                     trust_tier="medium",
                 ),
@@ -182,9 +193,18 @@ def emit_research_stages_stub(
         )
 
     if code_enabled:
-        raw_summary = (
-            "Code research brief: candidate OSS patterns and libraries for the "
-            "requested capability (stub; indexed for planner context)."
+        code_source_url = "stub://oss/pattern-index"
+        if live:
+            from nimbusware_research.pattern_index import pattern_index_path
+
+            idx = pattern_index_path(Path(repo_root) if repo_root else Path("."))
+            code_source_url = (
+                f"pattern-index://{idx.name}" if idx.is_file() else "requirements://code"
+            )
+        raw_summary = "Code research brief: candidate OSS patterns and libraries for the " + (
+            "requested capability (from requirements and pattern index)."
+            if live
+            else "requested capability (stub; indexed for planner context)."
         )
         if isinstance(requirements, dict):
             prompt_bit = str(requirements.get("business_prompt") or "")
@@ -197,7 +217,7 @@ def emit_research_stages_stub(
             artifact_id=str(uuid4()),
             sources=(
                 ResearchBriefSource(
-                    url="stub://oss/pattern-index",
+                    url=code_source_url,
                     license="MIT",
                     trust_tier="high",
                 ),

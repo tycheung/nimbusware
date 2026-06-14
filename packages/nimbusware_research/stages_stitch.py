@@ -134,6 +134,102 @@ def manifest_from_catalog_candidate(
     return _stub_manifest(manifest_id or str(uuid4()))
 
 
+def resolve_stitch_manifest(
+    repo_root: Path,
+    prior_events: list[dict[str, Any]],
+) -> tuple[TransplantManifest | None, str | None, bool]:
+    """Resolve catalog candidate or pattern-index manifest; None → caller uses stub."""
+    import json
+
+    from nimbusware_research.bundle_promotion import list_pending_stitch_catalog_candidates
+    from nimbusware_research.pattern_index import pattern_index_path
+
+    pending = list_pending_stitch_catalog_candidates(repo_root, limit=1)
+    if pending:
+        candidate = pending[0]
+        manifest = manifest_from_catalog_candidate(repo_root, candidate)
+        candidate_id = str(candidate.get("candidate_id") or "unknown")
+        summary = (
+            f"Integrate pending stitch catalog candidate {candidate_id} "
+            f"(manifest {manifest.manifest_id})."
+        )
+        return manifest, summary, False
+
+    pattern_path = pattern_index_path(repo_root)
+    if not pattern_path.is_file():
+        return None, None, True
+    try:
+        loaded = json.loads(pattern_path.read_text(encoding="utf-8"))
+        entries = [e for e in loaded if isinstance(e, dict)] if isinstance(loaded, list) else []
+    except (OSError, json.JSONDecodeError):
+        entries = []
+    if not entries:
+        return None, None, True
+    entry = entries[-1]
+    pattern_id = str(entry.get("pattern_id") or "pattern")
+    paths_raw = entry.get("paths") or []
+    paths = tuple(str(p) for p in paths_raw if p is not None) if isinstance(paths_raw, list) else ()
+    if not paths:
+        return None, None, True
+    license_name = str(entry.get("license") or "MIT")
+    manifest = TransplantManifest(
+        manifest_id=f"pattern-{pattern_id[:24]}",
+        source_kind="oss",
+        source_tree_hash=f"pattern:{pattern_id[:16]}",
+        file_paths=paths,
+        license_paths=("LICENSE",),
+        required_env_vars=(),
+    )
+    summary = f"Transplant paths from pattern index ({license_name})."
+    return manifest, summary, True
+
+
+def emit_stitch_stages(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    repo_root: Path,
+    run_created_metadata: dict[str, Any],
+    stitch_meta: dict[str, Any],
+    prior_events: list[dict[str, Any]],
+    live: bool = True,
+) -> bool:
+    """Emit stitch stages using live manifest resolution when enabled."""
+    manifest: TransplantManifest | None = None
+    wiring: str | None = None
+    write_catalog = True
+    if live:
+        manifest, wiring, write_catalog = resolve_stitch_manifest(repo_root, prior_events)
+    if manifest is not None:
+        applied = emit_stitch_stages_for_manifest(
+            store,
+            registry,
+            critique_router,
+            run_id=run_id,
+            repo_root=repo_root,
+            run_created_metadata=run_created_metadata,
+            stitch_meta=stitch_meta,
+            prior_events=prior_events,
+            manifest=manifest,
+            wiring_delta_summary=wiring,
+            write_catalog_on_apply=write_catalog,
+        )
+        if applied:
+            return True
+    return emit_stitch_stages_stub(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        repo_root=repo_root,
+        run_created_metadata=run_created_metadata,
+        stitch_meta=stitch_meta,
+        prior_events=prior_events,
+    )
+
+
 def emit_stitch_stages_for_manifest(
     store: EventStore,
     registry: RoleRegistry,
