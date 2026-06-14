@@ -841,7 +841,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
             _STR,
             "",
             "Workflow profile (legacy alias)",
-            "Legacy alias for NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE.",
+            "Deprecated alias; prefer NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE (checked second).",
             "User — maker runtime",
         ),
         SettingDef(

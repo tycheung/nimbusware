@@ -122,3 +122,5 @@ def test_nimbusware_workflow_profile(monkeypatch) -> None:
     assert nimbusware_workflow_profile() == "nimbusware_production"
     monkeypatch.setenv("NIMBUSWARE_WORKFLOW_PROFILE", "micro_slice")
     assert nimbusware_workflow_profile() == "micro_slice"
+    monkeypatch.setenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "patch")
+    assert nimbusware_workflow_profile() == "patch"

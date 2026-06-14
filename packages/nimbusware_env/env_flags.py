@@ -118,7 +118,7 @@ def nimbusware_api_host(default: str = "0.0.0.0") -> str:
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
-    for name in ("NIMBUSWARE_WORKFLOW_PROFILE", "NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE"):
+    for name in ("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", "NIMBUSWARE_WORKFLOW_PROFILE"):
         raw = resolve_explicit_raw(name)
         if raw:
             return raw
