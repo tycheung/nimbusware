@@ -1,5 +1,3 @@
-"""LLM plan/critique stages — composed facade."""
-
 from nimbusware_orchestrator.llm.agent_evaluator import *  # noqa: F403
 from nimbusware_orchestrator.llm.common import *  # noqa: F403
 from nimbusware_orchestrator.llm.frontend_writer_critique import *  # noqa: F403

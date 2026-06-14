@@ -26,12 +26,7 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Optional: emit ``stage.failed`` when last ``implementation.critique`` gate is FAIL.
-
-        Default off: set ``NIMBUSWARE_IMPLEMENTATION_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL`` to
-        a truthy value so downstream consumers (escalation, timeline) can react without
-        changing default CI behavior. When unset, follows workflow ``universal_critique``.
-        """
+        """Emit ``stage.failed`` when implementation critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.impl_stage_failed_on_gate_fail:
             return
@@ -75,12 +70,7 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Optional: emit ``stage.failed`` when last ``test_writer.critique`` gate is FAIL.
-
-        Default off: set ``NIMBUSWARE_TEST_WRITER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL`` to a
-        truthy value (requires a ``test_writer.critique`` gate event from the optional
-        test-writer critique pass). When unset, follows workflow ``universal_critique``.
-        """
+        """Emit ``stage.failed`` when test_writer critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.tw_stage_failed_on_gate_fail:
             return
@@ -124,12 +114,7 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Optional: emit ``stage.failed`` when last ``planner.critique`` gate is FAIL.
-
-        Default off: set ``NIMBUSWARE_PLANNER_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL`` to a truthy
-        value (requires a ``planner.critique`` gate from the optional post-verify panel).
-        When unset, follows workflow ``universal_critique``.
-        """
+        """Emit ``stage.failed`` when planner critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.pll_stage_failed_on_gate_fail:
             return

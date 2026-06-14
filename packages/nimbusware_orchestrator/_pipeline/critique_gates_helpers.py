@@ -79,12 +79,7 @@ class CritiqueGateHelpersMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Optional: emit a LOW ``finding.created`` when last critique gate verdict is FAIL.
-
-        Default off: set ``NIMBUSWARE_*_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL`` (per stage) or
-        workflow ``emit_finding_on_gate_fail``. Scoped to **implementation** / **test_writer**
-        / **planner** critique stages only.
-        """
+        """Emit LOW ``finding.created`` on critique gate FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         stages: list[tuple[bool, str, str]] = [
             (u.impl_emit_finding_on_gate_fail, IMPLEMENTATION_CRITIQUE_STAGE, "backend_writer"),
@@ -144,7 +139,7 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when implementation critique ran and last gate is FAIL with hard-block on."""
+        """True when implementation critique gate FAIL with hard-block enabled."""
         if not (eff.impl_hard_block_on_gate_fail and (eff.impl_llm or eff.impl_stub)):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, IMPLEMENTATION_CRITIQUE_STAGE)
@@ -155,7 +150,7 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when test_writer critique ran and last gate is FAIL with hard-block on."""
+        """True when test_writer critique gate FAIL with hard-block enabled."""
         if not (eff.tw_hard_block_on_gate_fail and eff.tw_enabled and (eff.tw_llm or eff.tw_stub)):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, TEST_WRITER_CRITIQUE_STAGE)
@@ -166,7 +161,7 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when planner critique ran and last gate is FAIL with hard-block on."""
+        """True when planner critique gate FAIL with hard-block enabled."""
         if not (
             eff.pll_hard_block_on_gate_fail and eff.pll_enabled and (eff.pll_llm or eff.pll_stub)
         ):
@@ -199,11 +194,7 @@ class CritiqueGateHelpersMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """Skip integrator / agent-evaluator / self-refinement when hard-block + gate FAIL.
-
-        Anti-deadlock and cumulative stage/gate escalations still run afterward (see
-        :meth:`execute_writer_verifier_pass` tail ordering).
-        """
+        """Skip downstream optional stages when UC hard-block + critique gate FAIL."""
         rows = self._store.list_run_events(str(run_id))
         return bool(
             self._critique_impl_hard_block_gate_fail(rows, eff)

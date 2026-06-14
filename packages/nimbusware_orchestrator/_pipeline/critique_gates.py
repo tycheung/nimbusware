@@ -14,4 +14,4 @@ class CritiqueGatesMixin(
     CritiqueGateHelpersMixin,
     CritiqueGateOptionalEmitMixin,
 ):
-    """Composed critique gate mixin."""
+    pass

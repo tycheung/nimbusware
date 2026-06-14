@@ -1,5 +1,3 @@
-"""Lightweight read models from replayed events — orchestrator re-export shim."""
-
 from __future__ import annotations
 
 from agent_core.timeline_metadata import persona_assignment_from_run_created_metadata

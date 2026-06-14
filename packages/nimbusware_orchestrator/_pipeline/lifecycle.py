@@ -6,4 +6,4 @@ from nimbusware_orchestrator._pipeline.lifecycle_verify import LifecycleVerifyMi
 
 
 class LifecycleMixin(LifecycleStartMixin, LifecyclePlanMixin, LifecycleVerifyMixin):
-    """Composed run lifecycle mixin (preflight → plan → verify)."""
+    pass
