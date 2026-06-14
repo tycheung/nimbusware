@@ -1,5 +1,3 @@
-"""HTTP API v1 router facade — single entry for mounting under ``/v1``."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter

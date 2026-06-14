@@ -38,10 +38,7 @@ def parse_security_scan_metadata_on_verify_workflow(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """Read ``security_scan_metadata_on_verify`` from workflow YAML; default ``False``.
-
-    Mirrors other workflow-block parsers: missing profile/file/YAML errors → ``False``.
-    """
+    """Read ``security_scan_metadata_on_verify`` from workflow YAML; default ``False``."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return False
     key = str(workflow_profile).strip()

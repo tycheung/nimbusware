@@ -1,10 +1,3 @@
-"""Shared truncation policy for LLM prompts and summarized projections.
-
-Call sites that feed secondary LLM stages or tool history should use
-``truncate_for_llm_history``. Active read tool results use
-``truncate_for_active_read``. Shell output uses ``truncate_shell_output``.
-"""
-
 from __future__ import annotations
 
 import re

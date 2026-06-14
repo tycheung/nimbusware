@@ -77,7 +77,6 @@ def assert_workflow_bundle_map_ids_resolve_content(raw: dict[str, Any]) -> None:
 
 
 def assert_workflow_bundle_map_ids_resolve(catalog_path: Path) -> None:
-    """Raise if ``workflow_bundle_map`` references unknown bundle ids."""
     if not catalog_path.is_file():
         raise FileNotFoundError(f"missing bundle catalog: {catalog_path}")
     raw = load_yaml(catalog_path)

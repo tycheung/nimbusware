@@ -1,5 +1,3 @@
-"""Admin Console UI is served at ``/v1/admin/app/`` (Preact SPA)."""
-
 from __future__ import annotations
 
 WEB_ENTRY = "/v1/admin/app/"

@@ -139,7 +139,6 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when implementation critique gate FAIL with hard-block enabled."""
         if not (eff.impl_hard_block_on_gate_fail and (eff.impl_llm or eff.impl_stub)):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, IMPLEMENTATION_CRITIQUE_STAGE)
@@ -150,7 +149,6 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when test_writer critique gate FAIL with hard-block enabled."""
         if not (eff.tw_hard_block_on_gate_fail and eff.tw_enabled and (eff.tw_llm or eff.tw_stub)):
             return False
         pl = self._last_critique_gate_payload_for_stage(rows, TEST_WRITER_CRITIQUE_STAGE)
@@ -161,7 +159,6 @@ class CritiqueGateHelpersMixin:
         rows: list[dict[str, Any]],
         eff: EffectiveUniversalCritique,
     ) -> bool:
-        """True when planner critique gate FAIL with hard-block enabled."""
         if not (
             eff.pll_hard_block_on_gate_fail and eff.pll_enabled and (eff.pll_llm or eff.pll_stub)
         ):

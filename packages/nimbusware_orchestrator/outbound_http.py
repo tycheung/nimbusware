@@ -45,7 +45,6 @@ def egress_checked_get_for_run(
     client: httpx.Client | None = None,
     max_response_bytes: int | None = None,
 ) -> httpx.Response:
-    """``GET`` ``url`` after resolving egress policy from the run's first ``run.created``."""
     scrapers, domains = network_egress_from_run_created(store, run_id)
     return egress_checked_httpx_get(
         url,

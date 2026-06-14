@@ -50,7 +50,6 @@ def _merge_uuid_allowlist(layers: list[dict[str, Any] | None], key: str) -> list
         if isinstance(raw, list):
             for item in raw:
                 acc.append(UUID(str(item)))
-            # dedupe preserving order
             seen: set[UUID] = set()
             deduped: list[UUID] = []
             for u in acc:

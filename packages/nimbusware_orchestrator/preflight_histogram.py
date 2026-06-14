@@ -22,7 +22,6 @@ def nearest_rank_p95(samples_ms: list[int]) -> int:
 
 
 def empty_histogram() -> dict[str, Any]:
-    """Zeroed histogram payload (8 named buckets + overflow, all counts 0)."""
     return {
         "samples_ms": [],
         "count": 0,

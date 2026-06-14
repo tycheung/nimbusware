@@ -1,5 +1,3 @@
-"""Concurrent writer-group dispatch via ``asyncio.gather``."""
-
 from __future__ import annotations
 
 import asyncio
