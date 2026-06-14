@@ -24,7 +24,7 @@ def _canonical_ipv4_dotted_quad(text: str) -> str | None:
 
 
 def normalize_domain_allowlist_entry(entry: str) -> str:
-    """Lowercase hostnames; IDN → punycode; canonicalize IPv4; compress IPv6; reject ``%``.
+    """Lowercase hostnames; IDN → punycode; canonicalize IPv4; compress IPv6 (strip zone id).
 
     ASCII or punycode hostnames may use suffix form with a leading dot (e.g. ``.pypi.org``).
     Scheme, port, path, and userinfo are rejected for v1 hostname entries.
@@ -33,7 +33,11 @@ def normalize_domain_allowlist_entry(entry: str) -> str:
     if not raw:
         raise ValueError("empty allowlist entry")
     if "%" in raw:
-        raise ValueError("IPv6 zone/scope-id (%) not supported in v1")
+        host_part, _, _zone = raw.partition("%")
+        try:
+            return IPv6Address(host_part.strip()).compressed
+        except AddressValueError:
+            raise ValueError("invalid IPv6 address with zone/scope-id") from None
     loose_v4 = _canonical_ipv4_dotted_quad(raw)
     if loose_v4 is not None:
         return str(IPv4Address(loose_v4))

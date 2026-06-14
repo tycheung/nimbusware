@@ -1,4 +1,4 @@
-"""§6.3A domain allowlist normalization (IDN / punycode, IPs, suffix form)."""
+"""Domain allowlist normalization tests."""
 
 from __future__ import annotations
 
@@ -15,9 +15,8 @@ def test_ipv6_compressed_no_zone() -> None:
     assert normalize_domain_allowlist_entry("2001:db8::1") == "2001:db8::1"
 
 
-def test_rejects_percent_zone() -> None:
-    with pytest.raises(ValueError, match="%"):
-        normalize_domain_allowlist_entry("fe80::1%eth0")
+def test_ipv6_zone_stripped() -> None:
+    assert normalize_domain_allowlist_entry("fe80::1%eth0") == "fe80::1"
 
 
 def test_ascii_lowercase() -> None:
