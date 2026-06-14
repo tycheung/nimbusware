@@ -46,7 +46,9 @@ def theater_llm_summary_enabled(rows: list[dict[str, Any]]) -> bool:
 
 
 def _ollama_base_url() -> str:
-    return (env_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434").strip()
+    from nimbusware_env.env_flags import nimbusware_ollama_base_url
+
+    return nimbusware_ollama_base_url()
 
 
 def _theater_llm_model() -> str:

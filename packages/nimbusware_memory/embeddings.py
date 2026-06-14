@@ -33,10 +33,9 @@ def _default_ollama_embedding_model() -> str:
 
 
 def _ollama_runtime_from_env() -> tuple[str, str]:
-    base = os.environ.get("NIMBUSWARE_OLLAMA_BASE_URL", "").strip()
-    if not base:
-        base = os.environ.get("OLLAMA_HOST", "http://localhost:11434").strip()
-    return base.rstrip("/"), _default_ollama_embedding_model()
+    from nimbusware_env.env_flags import nimbusware_ollama_base_url
+
+    return nimbusware_ollama_base_url(), _default_ollama_embedding_model()
 
 
 def deterministic_embed(text: str, *, dim: int = _DETERMINISTIC_DIM) -> list[float]:

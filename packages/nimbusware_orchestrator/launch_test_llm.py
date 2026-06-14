@@ -31,7 +31,9 @@ def launch_test_writer_model() -> str:
 
 
 def launch_test_ollama_base_url() -> str:
-    return (env_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434").strip()
+    from nimbusware_env.env_flags import nimbusware_ollama_base_url
+
+    return nimbusware_ollama_base_url()
 
 
 def generate_llm_ui_flow_dict(

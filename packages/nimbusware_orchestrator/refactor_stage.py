@@ -83,12 +83,12 @@ def emit_refactor_stage_and_critique(
         if block.llm_enabled:
             refactor_mode = "llm_proposal"
             try:
-                from nimbusware_env.env_flags import env_str, nimbusware_use_llm_enabled
+                from nimbusware_env.env_flags import env_str, nimbusware_ollama_base_url, nimbusware_use_llm_enabled
                 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 
                 if nimbusware_use_llm_enabled():
                     model = env_str("NIMBUSWARE_DEFAULT_MODEL") or "llama3.2"
-                    base = env_str("NIMBUSWARE_OLLAMA_BASE_URL") or "http://127.0.0.1:11434"
+                    base = nimbusware_ollama_base_url()
                     payload = ollama_chat_json(
                         base_url=base,
                         model=model,

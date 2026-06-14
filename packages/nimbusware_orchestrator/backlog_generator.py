@@ -184,10 +184,11 @@ def _generate_backlog_for_run(
         from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 
         if nimbusware_use_llm_enabled():
+            from nimbusware_env.env_flags import nimbusware_ollama_base_url
             from nimbusware_env.settings_resolve import resolve_str
 
             model = resolve_str("NIMBUSWARE_BACKLOG_GENERATOR_MODEL", default="")
-            base_url = resolve_str("NIMBUSWARE_OLLAMA_BASE_URL", default="http://localhost:11434")
+            base_url = nimbusware_ollama_base_url()
             if model.strip():
                 from nimbusware_orchestrator.llm.backlog_generator import generate_llm_backlog
 

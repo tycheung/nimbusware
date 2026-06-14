@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**235** keys; per-panel UC gate-fail keys removed Jun 2026 — use 3 global `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` keys)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**234** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
 
 ### Context budget (`*_MAX_CHARS`)
 
@@ -44,7 +44,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 |--------|--------------|-------|
 | `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` (internal) | Prefer **DEFAULT**; legacy alias read from `os.environ` only |
 | `NIMBUSWARE_API_PORT` / `PORT` | — | Bind port; use one in `.env` |
-| `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` | Ollama endpoint |
+| `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` (internal legacy) | Canonical Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
 | `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |
 | `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | — | Global UC gate-fail env applies all critique panels |

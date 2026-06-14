@@ -123,8 +123,7 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _install("NIMBUSWARE_FLEET_MEMORY_STORE_URI", "Fleet memory store URI"),
         _install("NIMBUSWARE_FLEET_MEMORY_STORE_DIR", "Fleet memory store directory"),
-        _install("OLLAMA_HOST", "Ollama API URL", default="http://127.0.0.1:11434"),
-        _install("NIMBUSWARE_POSTGRES_SUPERPASSWORD", "Postgres superuser password"),
+        _install("NIMBUSWARE_OLLAMA_BASE_URL", "Canonical Ollama base URL", default="http://127.0.0.1:11434"),
         _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL", "Scraper object store URL"),
         _install("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "Scraper object store bucket"),
         _install(
@@ -165,7 +164,6 @@ def extended_defs() -> tuple[SettingDef, ...]:
         ),
         _install("NIMBUSWARE_TENANT_ID", "Enterprise tenant id"),
         _install("NIMBUSWARE_MAKER_STATE_DIR", "Maker session state directory"),
-        _install("NIMBUSWARE_OLLAMA_BASE_URL", "Ollama base URL override"),
         _install("NIMBUSWARE_HW_SSH_HOST", "Enterprise SSH hardware probe host"),
         _install("NIMBUSWARE_HW_SSH_IDENTITY", "SSH private key path for hardware probe"),
         _install(
@@ -732,6 +730,11 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_WORKFLOW_PROFILE",
             "Legacy workflow profile alias (deprecated)",
             kind=_STR,
+        ),
+        _internal(
+            "OLLAMA_HOST",
+            "Legacy Ollama URL alias (prefer NIMBUSWARE_OLLAMA_BASE_URL)",
+            default="http://127.0.0.1:11434",
         ),
         _internal("NIMBUSWARE_REFACTOR_FORCE_FAIL", "Force refactor stage fail", kind=_BOOL),
         _internal("NIMBUSWARE_REFACTOR_STAGE", "Refactor stage override"),

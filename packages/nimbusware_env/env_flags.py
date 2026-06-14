@@ -124,6 +124,29 @@ def nimbusware_api_host(default: str = "0.0.0.0") -> str:
     return raw or default
 
 
+_DEFAULT_OLLAMA_BASE = "http://127.0.0.1:11434"
+
+
+def nimbusware_ollama_base_url(
+    host: str | None = None,
+    *,
+    default: str = _DEFAULT_OLLAMA_BASE,
+) -> str:
+    if host:
+        return host.rstrip("/")
+    canonical = env_str("NIMBUSWARE_OLLAMA_BASE_URL")
+    if canonical:
+        return canonical.rstrip("/")
+    legacy = os.environ.get("OLLAMA_HOST", "").strip()
+    if legacy:
+        _warn_legacy_env_once(
+            "OLLAMA_HOST",
+            "OLLAMA_HOST is deprecated; use NIMBUSWARE_OLLAMA_BASE_URL",
+        )
+        return legacy.rstrip("/")
+    return default.rstrip("/")
+
+
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 

@@ -254,7 +254,7 @@ def _defs() -> tuple[SettingDef, ...]:
             s,
             "8000",
             "API port",
-            "Uvicorn listen port for nimbusware-api.",
+            "Legacy API port alias (prefer NIMBUSWARE_API_PORT).",
             "Install — infrastructure",
             admin_editable=False,
             user_editable=False,

@@ -32,8 +32,9 @@ class OllamaModelRow:
 
 
 def ollama_base_url(host: str | None = None) -> str:
-    default = "http://127.0.0.1:11434"
-    return (host or os.environ.get("OLLAMA_HOST") or default).rstrip("/")
+    from nimbusware_env.env_flags import nimbusware_ollama_base_url
+
+    return nimbusware_ollama_base_url(host)
 
 
 def ollama_reachable(host: str | None = None, *, timeout_s: float = 2.0) -> bool:
