@@ -18,6 +18,8 @@ poetry run ruff check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/audit_operator_env.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/run_openapi_ts_ci_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run ruff format --check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/mypy_ci_targets.py).Split(" ")

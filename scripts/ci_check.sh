@@ -20,6 +20,7 @@ done
 poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
 poetry run ruff check packages tests
 poetry run python scripts/audit_operator_env.py
+poetry run python scripts/run_openapi_ts_ci_gate.py
 poetry run ruff format --check packages tests
 mapfile -t _mypy_targets < <(poetry run python scripts/mypy_ci_targets.py)
 poetry run mypy "${_mypy_targets[@]}"
