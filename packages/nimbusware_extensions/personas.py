@@ -274,8 +274,8 @@ class PersonaShelf:
 
         Legacy invariants: root mapping, ``business_area`` and
         ``development_role`` non-empty lists, each entry a mapping with
-        non-empty string ``id``. fo127 additionally type-checks the seven new
-        OPTIONAL fields when present (length caps + literal enum + version >= 1).
+        non-empty string ``id``. Optional persona fields are type-checked when
+        present (length caps + literal enum + version >= 1).
         """
         if not isinstance(self._raw, dict):
             raise ValueError("persona shelves: root must be a mapping")

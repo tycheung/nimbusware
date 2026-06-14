@@ -61,22 +61,22 @@ Add new tunables to the catalog first, then read via `env_flags` / `settings_res
 
 ## Context efficiency (group: User — context efficiency)
 
+Preset `NIMBUSWARE_SLICE_BUDGET_PRESET` (`tiny` / `standard` / `careful`) drives packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt caps. Legacy per-key `*_MAX_CHARS` env overrides are no longer read.
+
 | Key | Default | Notes |
 |-----|---------|-------|
-| `NIMBUSWARE_LLM_HISTORY_MAX_CHARS` | 2000 | Critique logs, tool history |
+| `NIMBUSWARE_SLICE_BUDGET_PRESET` | standard | Context cap bundle for micro-slice prompts |
 | `NIMBUSWARE_READ_MAX_CHARS` | 16000 | Agent read tool |
 | `NIMBUSWARE_SHELL_OUTPUT_MAX_CHARS` | 4000 | Agent shell output |
 | `NIMBUSWARE_AGENT_JIT_LOOP` | 1 | Multi-turn agent implement |
 | `NIMBUSWARE_AGENT_TOOLS` | read,write,edit,grep,shell | Tool allowlist (`find`, `ls` optional) |
 | `NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS` | 1 | Theater/timeline agent tool pruning |
 | `NIMBUSWARE_AGENT_COMPACT` | 1 | Manual compaction API/MCP gate |
-| `NIMBUSWARE_HANDOFF_MAX_CHARS` | 4000 | Cross-slice handoff cap |
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff merge |
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Campaign compaction |
 | `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS` | 12000 | Recent verbatim window (HW override when unset) |
 | `NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS` | 8000 | Output reservation |
 | `NIMBUSWARE_MEMORY_RETRIEVAL_K` | 5 | Memory chunks per slice (YAML may override) |
-| `NIMBUSWARE_MEMORY_EXCERPT_MAX_CHARS` | 4000 | Injected memory excerpt cap |
 | `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD` | 0 | Rebuild FAISS after context-artifact bridge |
 | `NIMBUSWARE_AXE_ENABLED` | 0 | axe-core in human-fidelity suite |
 | `NIMBUSWARE_DEFAULT_MODEL` | (empty) | Fallback Ollama model when stage model unset |
