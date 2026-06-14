@@ -288,6 +288,28 @@ def maybe_run_improvement_council_tick(
     return True
 
 
+RESEARCH_TRANSPLANT_SKIP_STAGE = "research.transplant.skipped"
+
+
+def _emit_research_transplant_skipped(
+    store: Any,
+    run_id: UUID,
+    *,
+    reason: str,
+) -> bool:
+    store.append(
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            metadata={"research_transplant": {"skipped": True, "reason": reason}},
+            payload=StagePassedPayload(stage_name=RESEARCH_TRANSPLANT_SKIP_STAGE, duration_ms=0),
+        ),
+    )
+    return False
+
+
 def run_research_transplant_track(
     store: Any,
     run_id: UUID | str,
@@ -311,7 +333,6 @@ def run_research_transplant_track(
     from nimbusware_research.pattern_index import pattern_index_path
     from nimbusware_research.stages_stitch import (
         emit_stitch_stages_for_manifest,
-        emit_stitch_stages_stub,
         manifest_from_catalog_candidate,
     )
     from nimbusware_research.stitch_models import TransplantManifest
@@ -323,15 +344,11 @@ def run_research_transplant_track(
         else (repo_root or find_repo_root(start=workspace)).resolve()
     )
     config_root = (repo_root or find_repo_root(start=workspace)).resolve()
-    reg = RoleRegistry.from_yaml(config_root / "configs" / "roles.yaml")
-    router = UniversalCritiqueRouter.from_yaml(
-        config_root / "configs" / "personas" / "critique_pairings.yaml"
-    )
     pending = list_pending_stitch_catalog_candidates(catalog_root, limit=1)
     candidate = pending[0] if pending else None
     manifest: TransplantManifest | None = None
-    brief_url = "stub://council/research_transplant"
-    brief_summary = "Council-selected research transplant brief (fallback stub)."
+    brief_url: str | None = None
+    brief_summary: str | None = None
     write_catalog_on_apply = True
     wiring_summary: str | None = None
     if candidate is not None:
@@ -395,6 +412,14 @@ def run_research_transplant_track(
                     required_env_vars=(),
                 )
                 wiring_summary = f"Transplant paths from pattern index ({license_name})."
+    if brief_url is None or not str(brief_url).strip():
+        return _emit_research_transplant_skipped(store, rid, reason="no_transplant_source")
+    if manifest is None:
+        return _emit_research_transplant_skipped(store, rid, reason="no_transplant_manifest")
+    reg = RoleRegistry.from_yaml(config_root / "configs" / "roles.yaml")
+    router = UniversalCritiqueRouter.from_yaml(
+        config_root / "configs" / "personas" / "critique_pairings.yaml",
+    )
     brief = ResearchBrief(
         brief_kind="code",
         domain_tag="transplant",
@@ -441,21 +466,7 @@ def run_research_transplant_track(
                 meta = block
             break
     stitch_meta = mapping_or_empty(meta.get("stitch"))
-    if manifest is not None:
-        return emit_stitch_stages_for_manifest(
-            store,
-            reg,
-            router,
-            run_id=rid,
-            repo_root=catalog_root,
-            run_created_metadata=meta,
-            stitch_meta=stitch_meta,
-            prior_events=rows,
-            manifest=manifest,
-            wiring_delta_summary=wiring_summary,
-            write_catalog_on_apply=write_catalog_on_apply,
-        )
-    return emit_stitch_stages_stub(
+    return emit_stitch_stages_for_manifest(
         store,
         reg,
         router,
@@ -464,6 +475,9 @@ def run_research_transplant_track(
         run_created_metadata=meta,
         stitch_meta=stitch_meta,
         prior_events=rows,
+        manifest=manifest,
+        wiring_delta_summary=wiring_summary,
+        write_catalog_on_apply=write_catalog_on_apply,
     )
 
 

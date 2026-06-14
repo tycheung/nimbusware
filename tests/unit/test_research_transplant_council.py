@@ -60,6 +60,56 @@ def test_council_votes_research_transplant_for_pattern_index(tmp_path: Path) -> 
     assert ImprovementTrack.RESEARCH_TRANSPLANT in tracks
 
 
+def test_run_research_transplant_skips_without_source(tmp_path: Path) -> None:
+    from nimbusware_env import find_repo_root
+    from nimbusware_orchestrator.slice_cycle_integration import run_research_transplant_track
+
+    ws = tmp_path / "proj"
+    _healthy_repo(ws)
+    (ws / ".nimbusware" / "research").mkdir(parents=True)
+    run_id = uuid4()
+
+    class _Store:
+        repo_root = ws
+        _rows: list[dict] = []
+
+        def list_run_events(self, _rid: str) -> list[dict]:
+            return list(self._rows)
+
+        def append(self, event) -> None:
+            self._rows.append(
+                {
+                    "event_type": event.event_type.value,
+                    "metadata": getattr(event, "metadata", None),
+                    "payload": event.payload.model_dump(mode="json")
+                    if hasattr(event.payload, "model_dump")
+                    else {},
+                },
+            )
+
+    store = _Store()
+    store._rows.append(
+        {
+            "event_type": "run.created",
+            "metadata": {"project": {"workspace_path": str(ws)}},
+        },
+    )
+    applied = run_research_transplant_track(
+        store,
+        run_id,
+        ws,
+        repo_root=find_repo_root(),
+    )
+    assert applied is False
+    skipped = [
+        r
+        for r in store._rows
+        if (r.get("payload") or {}).get("stage_name") == "research.transplant.skipped"
+    ]
+    assert skipped
+    assert not any(r["event_type"] == "research.brief.emitted" for r in store._rows)
+
+
 def test_run_research_transplant_uses_catalog_url(tmp_path: Path) -> None:
     from nimbusware_env import find_repo_root
     from nimbusware_orchestrator.slice_cycle_integration import run_research_transplant_track
