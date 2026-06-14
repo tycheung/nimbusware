@@ -268,10 +268,19 @@ class WritersHost(Protocol):
         ws: Path,
         **kwargs: Any,
     ) -> Any: ...
-    def _parallel_run_frontend_writer_stub(
+    def _complete_frontend_writer(
+        self,
+        run_id: UUID,
+        ws: Path,
+        fw_meta: dict[str, Any] | None,
+        *,
+        dispatch_mode: str,
+    ) -> tuple[int, str]: ...
+    def _parallel_run_frontend_writer(
         self,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
+        ws: Path,
     ) -> Any: ...
 
 

@@ -78,6 +78,7 @@ from nimbusware_orchestrator.fast_slice_critique import (
     fast_slice_skips_optional_critique_matrix,
     max_open_finding_severity,
 )
+from nimbusware_orchestrator.frontend_writer_stage import run_frontend_writer_stage
 from nimbusware_orchestrator.ingress import (
     assert_agent_evaluator_persona_in_shelves,
     assert_bundle_catalog_maps_resolve,
@@ -539,6 +540,7 @@ __all__ = (
     "run_security_scan",
     "run_security_scan_summary",
     "run_test_writer_stage",
+    "run_frontend_writer_stage",
     "run_writer_verifier_bundle",
     "security_critique_effective",
     "security_critique_llm_branch_effective",

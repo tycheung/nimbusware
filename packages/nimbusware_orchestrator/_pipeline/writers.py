@@ -17,6 +17,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     datetime,
     event_metadata_for_stage,
     os,
+    run_frontend_writer_stage,
     run_parallel_writer_group,
     run_test_writer_stage,
     run_writer_verifier_bundle,
@@ -48,6 +49,7 @@ class WritersMixin:
         *,
         workspace: Path | None = None,
     ) -> tuple[int, str]:
+        ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
         impl_meta = self._writer_stage_started_metadata(
             sg_snapshot,
             "implementation",
@@ -97,16 +99,11 @@ class WritersMixin:
                         payload=StageStartedPayload(stage_name="frontend_writer", attempt=1),
                     ),
                 )
-                self._store.append(
-                    StagePassedEvent(
-                        event_type=EventType.STAGE_PASSED,
-                        event_id=uuid4(),
-                        run_id=run_id,
-                        occurred_at=datetime.now(timezone.utc),
-                        payload=StagePassedPayload(stage_name="frontend_writer", duration_ms=0),
-                    ),
+                code, log = self._complete_frontend_writer(
+                    run_id, ws, fw_meta, dispatch_mode="sequential"
                 )
-        ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
+                if code != 0:
+                    return code, log
         return run_writer_verifier_bundle(ws)
 
     def _parallel_run_implementation(
@@ -287,7 +284,7 @@ class WritersMixin:
             runners.append(
                 (
                     "frontend_writer",
-                    lambda: self._parallel_run_frontend_writer_stub(run_id, sg_snapshot),
+                    lambda: self._parallel_run_frontend_writer(run_id, sg_snapshot, ws),
                 ),
             )
         if not runners:
@@ -324,12 +321,59 @@ class WritersMixin:
         )
         return int(impl.verifier_exit_code), str(impl.verifier_log)
 
-    def _parallel_run_frontend_writer_stub(
+    def _complete_frontend_writer(
+        self: WritersHost,
+        run_id: UUID,
+        ws: Path,
+        fw_meta: dict[str, Any] | None,
+        *,
+        dispatch_mode: str,
+    ) -> tuple[int, str]:
+        started = time.perf_counter()
+        code, log, body_mode = run_frontend_writer_stage(ws)
+        duration_ms = int((time.perf_counter() - started) * 1000)
+        meta = dict(fw_meta or {})
+        meta["body_mode"] = body_mode
+        if code == 0:
+            self._store.append(
+                StagePassedEvent(
+                    event_type=EventType.STAGE_PASSED,
+                    event_id=uuid4(),
+                    run_id=run_id,
+                    occurred_at=datetime.now(timezone.utc),
+                    metadata=meta,
+                    payload=StagePassedPayload(
+                        stage_name="frontend_writer", duration_ms=duration_ms
+                    ),
+                ),
+            )
+            return 0, log
+        self._store.append(
+            StageFailedEvent(
+                event_type=EventType.STAGE_FAILED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                metadata={
+                    **meta,
+                    "exit_code": code,
+                    "failure_reason": "frontend_writer_stage_failed",
+                },
+                payload=StageFailedPayload(
+                    stage_name="frontend_writer",
+                    reason_code="frontend_writer_stage_failed",
+                    message=(log.strip() or "frontend_writer stage failed")[:500],
+                ),
+            ),
+        )
+        return code, log
+
+    def _parallel_run_frontend_writer(
         self: WritersHost,
         run_id: UUID,
         sg_snapshot: dict[str, Any] | None,
+        ws: Path,
     ) -> WriterStageResult:
-        started = time.perf_counter()
         fw_meta = self._writer_stage_started_metadata(
             sg_snapshot,
             "frontend_writer",
@@ -345,14 +389,9 @@ class WritersMixin:
                 payload=StageStartedPayload(stage_name="frontend_writer", attempt=1),
             ),
         )
-        duration_ms = int((time.perf_counter() - started) * 1000)
-        self._store.append(
-            StagePassedEvent(
-                event_type=EventType.STAGE_PASSED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                payload=StagePassedPayload(stage_name="frontend_writer", duration_ms=duration_ms),
-            ),
+        code, log = self._complete_frontend_writer(run_id, ws, fw_meta, dispatch_mode="parallel")
+        return WriterStageResult(
+            stage_name="frontend_writer",
+            verifier_exit_code=code,
+            verifier_log=log,
         )
-        return WriterStageResult(stage_name="frontend_writer")
