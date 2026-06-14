@@ -99,9 +99,21 @@ def test_nimbusware_slice_implement_mode(monkeypatch) -> None:
 def test_nimbusware_config_from_db_enabled(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
     monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_DB", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
     assert nimbusware_config_from_db_enabled() is False
     monkeypatch.setenv("NIMBUSWARE_DATABASE_URL", "postgresql://localhost/nimbusware")
     assert nimbusware_config_from_db_enabled() is True
+    monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_FILES", "1")
+    assert nimbusware_config_from_db_enabled() is False
+
+
+def test_nimbusware_config_from_files_enabled(monkeypatch) -> None:
+    from nimbusware_env.env_flags import nimbusware_config_from_files_enabled
+
+    monkeypatch.delenv("NIMBUSWARE_CONFIG_FROM_FILES", raising=False)
+    assert nimbusware_config_from_files_enabled() is False
+    monkeypatch.setenv("NIMBUSWARE_CONFIG_FROM_FILES", "yes")
+    assert nimbusware_config_from_files_enabled() is True
 
 
 def test_nimbusware_use_llm_explicitly_off(monkeypatch) -> None:

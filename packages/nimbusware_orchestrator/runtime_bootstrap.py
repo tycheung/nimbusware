@@ -47,17 +47,11 @@ def roles_from_db_enabled() -> bool:
 
 def api_config_from_db_enabled() -> bool:
     """API lifespan: materializer only when ``NIMBUSWARE_CONFIG_FROM_DB`` is explicitly on."""
-    if os.environ.get("NIMBUSWARE_CONFIG_FROM_FILES", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    ):
+    from nimbusware_env.env_flags import env_truthy, nimbusware_config_from_files_enabled
+
+    if nimbusware_config_from_files_enabled():
         return False
-    return os.environ.get("NIMBUSWARE_CONFIG_FROM_DB", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    )
+    return env_truthy("NIMBUSWARE_CONFIG_FROM_DB")
 
 
 def _config_from_db_active(config_from_db: bool | None) -> bool:

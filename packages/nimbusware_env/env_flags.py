@@ -167,6 +167,10 @@ def nimbusware_api_port(default: int = 8000) -> int:
     return default
 
 
+def nimbusware_config_from_files_enabled() -> bool:
+    return env_truthy("NIMBUSWARE_CONFIG_FROM_FILES")
+
+
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
@@ -418,7 +422,7 @@ def nimbusware_max_parallel_writers(default: int | None = None) -> int | None:
 
 
 def nimbusware_config_from_db_enabled() -> bool:
-    if env_truthy("NIMBUSWARE_CONFIG_FROM_FILES"):
+    if nimbusware_config_from_files_enabled():
         return False
     if env_str("NIMBUSWARE_CONFIG_FROM_DB").lower() in FALSY_VALUES:
         return False
