@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+
 
 def security_scan_metadata_workflow_yaml_version_caption(
     payload: Mapping[str, Any] | None,
@@ -35,41 +37,22 @@ def security_scan_metadata_workflow_yaml_string_key_count_caption(
 def security_scan_metadata_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
-        return None
-    env = payload.get("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("forces_off"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
-            f"kill-switch active{detail}."
-        )
-    if env.get("forces_on"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
-            f"force-on{detail}."
-        )
-    if env.get("unset_follows_yaml"):
-        return (
-            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** unset — "
+    return env_tri_state_gate_caption(
+        payload,
+        "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",
+        label="Security scan metadata",
+        forces_off_text=("Security scan metadata env: **{env_key}** kill-switch active{detail}."),
+        forces_on_text="Security scan metadata env: **{env_key}** force-on{detail}.",
+        unset_text=(
+            "Security scan metadata env: **{env_key}** unset — "
             "workflow YAML controls **effective_enabled**."
-        )
-    if env.get("unrecognised_value"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Security scan metadata env: **NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA** "
-            f"unrecognised value{detail} — treated like unset."
-        )
-    return None
+        ),
+        unrecognised_text=(
+            "Security scan metadata env: **{env_key}** unrecognised value"
+            "{detail} — treated like unset."
+        ),
+        unset_key="unset_follows_yaml",
+    )
 
 
 def security_scan_metadata_workflow_yaml_relpath_caption(

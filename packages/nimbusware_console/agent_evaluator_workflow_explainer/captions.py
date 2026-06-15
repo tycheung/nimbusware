@@ -3,79 +3,52 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.env_captions import (
+    env_disable_flag_gate_caption,
+    env_tri_state_gate_caption,
+)
+
 
 def agent_evaluator_env_gate_caption(payload: Mapping[str, Any] | None) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
-        return None
-    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("forces_off"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** kill-switch active"
-            f"{detail} — stage.started will not emit from env alone."
-        )
-    if env.get("forces_on"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** force-on"
-            f"{detail} — stage.started may emit when workflow gate allows."
-        )
-    if env.get("unset"):
-        return (
-            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** unset — "
+    return env_tri_state_gate_caption(
+        payload,
+        "NIMBUSWARE_AGENT_EVALUATOR",
+        label="Agent evaluator",
+        forces_off_text=(
+            "Agent evaluator env: **{env_key}** kill-switch active"
+            "{detail} — stage.started will not emit from env alone."
+        ),
+        forces_on_text=(
+            "Agent evaluator env: **{env_key}** force-on"
+            "{detail} — stage.started may emit when workflow gate allows."
+        ),
+        unset_text=(
+            "Agent evaluator env: **{env_key}** unset — "
             "workflow YAML ``agent_evaluator.enabled`` controls emission."
-        )
-    if env.get("unrecognised_value"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator env: **NIMBUSWARE_AGENT_EVALUATOR** unrecognised value"
-            f"{detail} — treated like unset; workflow YAML gate applies."
-        )
-    return None
+        ),
+        unrecognised_text=(
+            "Agent evaluator env: **{env_key}** unrecognised value"
+            "{detail} — treated like unset; workflow YAML gate applies."
+        ),
+    )
 
 
 def agent_evaluator_auto_promote_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
-        return None
-    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("disables_auto_promote"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator auto-promote env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** kill-switch active"
-            f"{detail}."
-        )
-    if env.get("unset"):
-        return (
-            "Agent evaluator auto-promote env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** unset — "
+    return env_disable_flag_gate_caption(
+        payload,
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
+        active_text=("Agent evaluator auto-promote env: **{env_key}** kill-switch active{detail}."),
+        unset_text=(
+            "Agent evaluator auto-promote env: **{env_key}** unset — "
             "workflow ``agent_evaluator.auto_promote_probation`` controls promotion."
-        )
-    if env.get("unrecognised_value"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator auto-promote env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE** unrecognised value"
-            f"{detail} — treated like unset."
-        )
-    return None
+        ),
+        unrecognised_text=(
+            "Agent evaluator auto-promote env: **{env_key}** unrecognised value"
+            "{detail} — treated like unset."
+        ),
+    )
 
 
 def agent_evaluator_workflow_yaml_version_caption(
@@ -95,37 +68,19 @@ def agent_evaluator_workflow_yaml_version_caption(
 def agent_evaluator_auto_create_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
-        return None
-    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("disables_auto_create"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator auto-create env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** kill-switch active"
-            f"{detail}."
-        )
-    if env.get("unset"):
-        return (
-            "Agent evaluator auto-create env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** unset — "
+    return env_disable_flag_gate_caption(
+        payload,
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
+        active_text=("Agent evaluator auto-create env: **{env_key}** kill-switch active{detail}."),
+        unset_text=(
+            "Agent evaluator auto-create env: **{env_key}** unset — "
             "workflow ``agent_evaluator.auto_create_persona`` controls creation."
-        )
-    if env.get("unrecognised_value"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Agent evaluator auto-create env: "
-            "**NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE** unrecognised value"
-            f"{detail} — treated like unset."
-        )
-    return None
+        ),
+        unrecognised_text=(
+            "Agent evaluator auto-create env: **{env_key}** unrecognised value"
+            "{detail} — treated like unset."
+        ),
+    )
 
 
 def agent_evaluator_yaml_true_bool_count_caption(
