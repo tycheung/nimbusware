@@ -182,7 +182,8 @@ def nimbusware_config_from_files_enabled() -> bool:
 
 
 def nimbusware_roles_from_db_enabled() -> bool:
-    return env_truthy("NIMBUSWARE_ROLES_FROM_DB")
+    """Fail-closed: no strip (whitespace-padded values stay off)."""
+    return env_truthy_raw("NIMBUSWARE_ROLES_FROM_DB")
 
 
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
