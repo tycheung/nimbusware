@@ -1,4 +1,4 @@
-"""Fleet sustained Ollama p95 export: ``poetry run nimbusware-fleet-ollama-sli``."""
+"""Fleet Ollama sustained p95 SLI export CLI."""
 
 from __future__ import annotations
 

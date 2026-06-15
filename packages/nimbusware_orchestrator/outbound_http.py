@@ -1,4 +1,4 @@
-"""Policy-checked outbound HTTP using frozen ``run.created`` ``policy_snapshot``."""
+"""Outbound HTTP gated by frozen ``run.created`` policy snapshot."""
 
 from __future__ import annotations
 

@@ -56,7 +56,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 **Parallelism:** `NIMBUSWARE_PARALLEL_WRITERS` (system), `NIMBUSWARE_MAX_PARALLEL_WRITERS` (user governor) — different layers; not duplicates.
 - Store: `packages/nimbusware_env/settings_store.py`
 - Resolver: `packages/nimbusware_env/settings_resolve.py`
-- Helpers: `packages/nimbusware_env/env_flags.py`
+- Helpers: `packages/nimbusware_env/env_flags.py` (`nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, `env_truthy`, `env_force_on` / `env_force_off`, …)
 
 Add new tunables to the catalog first, then read via `env_flags` / `settings_resolve`.
 

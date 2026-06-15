@@ -57,7 +57,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Research / stitch** | `nimbusware_research` | Research briefs (live mode: requirements/pattern-index sources), stitch stages with catalog/pattern manifest resolution, outcome analytics |
 | **Projections** | `nimbusware_projections` | Pure event → timeline read models (no API import from orchestrator) |
 | **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
-| **Desktop / env** | `nimbusware_env` | Edition gate, `env_flags`, admin token guards, desktop launchers |
+| **Desktop / env** | `nimbusware_env` | Edition gate, **234-key** catalog + `env_flags` helpers, admin token guards, desktop launchers |
 
 Optional: **Ollama** for LLM stages (`NIMBUSWARE_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`). **Pyright LSP** for slice symbol sketch ships with default `poetry install` (dev dependency); installer sets `NIMBUSWARE_SLICE_LSP_ENABLED=1` in `.env`.
 
