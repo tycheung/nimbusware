@@ -73,8 +73,13 @@ packages/nimbusware_console/pages/
 /var/
 
 *.log
+ci_check*.log
+playwright_*.log
 logs/
 .cache/
+# Legacy / test workspace snapshot trees (recreated under .cache/ during runs)
+.cache/hermes_workspace_snapshots/
+.cache/nimbusware_workspace_snapshots/
 
 # Python linter / test tool caches (local only)
 .mypy_cache/
