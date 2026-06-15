@@ -1,5 +1,3 @@
-"""Postgres event_type CHECK allowlist — must match ``EventType`` and ``postgres.sql``."""
-
 from __future__ import annotations
 
 from agent_core.models import EventType

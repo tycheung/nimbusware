@@ -1,5 +1,3 @@
-"""Convert star imports to explicit symbol imports in display package facades."""
-
 from __future__ import annotations
 
 import ast

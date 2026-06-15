@@ -1,5 +1,3 @@
-"""External chat webhook integrations."""
-
 from __future__ import annotations
 
 import secrets

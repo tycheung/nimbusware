@@ -1,5 +1,3 @@
-"""Fleet Ollama sustained p95 SLI export CLI."""
-
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Bootstrap Nimbusware dev environment (Poetry, Postgres, schema, optional Ollama)."""
 
 from __future__ import annotations
 
