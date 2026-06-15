@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
@@ -9,30 +8,17 @@ from urllib.parse import quote, unquote, urlparse
 
 import httpx
 
+from nimbusware_env.env_flags import env_int_min, env_str, env_truthy_on
+
 _S3_NS = "{http://s3.amazonaws.com/doc/2006-03-01/}"
 
 
-def _truthy_env(name: str) -> bool:
-    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
-
-
-def _int_env(name: str, default: int, *, minimum: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        parsed = int(raw)
-    except ValueError:
-        return default
-    return max(parsed, minimum)
-
-
 def object_store_url() -> str:
-    return os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL", "").strip()
+    return env_str("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_URL")
 
 
 def object_store_bucket() -> str:
-    return os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET", "").strip()
+    return env_str("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_BUCKET")
 
 
 def object_store_configured() -> bool:
@@ -44,21 +30,25 @@ def object_store_ready() -> bool:
 
 
 def object_store_timeout_seconds() -> int:
-    return _int_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS", 30, minimum=1)
+    return env_int_min(
+        "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_TIMEOUT_SECONDS", default=30, minimum=1
+    )
 
 
 def object_store_delete_max_attempts() -> int:
-    return _int_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS", 1, minimum=1)
+    return env_int_min(
+        "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_DELETE_MAX_ATTEMPTS", default=1, minimum=1
+    )
 
 
 def object_store_primary_requested() -> bool:
-    return _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY")
+    return env_truthy_on("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRIMARY")
 
 
 def object_store_local_mirror_enabled(*, primary: bool) -> bool:
     if not primary:
         return True
-    return _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_LOCAL_MIRROR")
+    return env_truthy_on("NIMBUSWARE_SCRAPER_ARTIFACT_LOCAL_MIRROR")
 
 
 def object_store_primary_enabled() -> bool:

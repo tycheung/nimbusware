@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
+from nimbusware_env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
 from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.role_telemetry import aggregate_recent_run_telemetry
@@ -40,7 +40,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
-    repo = (args.repo_root or Path(os.environ.get("NIMBUSWARE_REPO_ROOT", "."))).resolve()
+    repo = args.repo_root or nimbusware_repo_root_path()
     routing_path = (args.routing or repo / "configs" / "model-routing.yaml").resolve()
     routing = load_yaml(routing_path)
     registry = RoleRegistry.from_yaml(repo / "configs" / "roles.yaml")
@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.aggregate is not None:
         aggregate = json.loads(args.aggregate.read_text(encoding="utf-8"))
     else:
-        conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+        conninfo = nimbusware_database_url() or ""
         if not conninfo:
             print("NIMBUSWARE_DATABASE_URL or --aggregate is required", file=sys.stderr)
             return 1

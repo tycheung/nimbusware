@@ -7,12 +7,11 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID
 
+from nimbusware_env.env_flags import env_truthy_on
 from nimbusware_orchestrator.scraper_artifacts_retention import (
     RetentionAlertLevel,
     RetentionExecutionMode,
     StorageBackend,
-    _int_env,
-    _truthy_env,
     object_store_prune_enabled,
     retention_alert_level,
     retention_execution_mode,
@@ -49,12 +48,12 @@ def scraper_artifact_storage_backend_signals() -> dict[str, Any]:
         "object_store_local_mirror": object_store_local_mirror_enabled(primary=primary),
         "object_store_timeout_seconds": object_store_timeout_seconds(),
         "object_store_delete_max_attempts": object_store_delete_max_attempts(),
-        "object_store_prune_requested": _truthy_env(
+        "object_store_prune_requested": env_truthy_on(
             "NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE"
         )
         or primary,
         "object_store_prune_effective": (
-            ready and _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")
+            ready and env_truthy_on("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE")
         )
         or primary,
     }

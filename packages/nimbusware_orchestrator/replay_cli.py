@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 from uuid import UUID
 
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_orchestrator.replay_harness import (
     build_replay_snapshot,
     diff_replay_snapshots,
@@ -65,7 +65,7 @@ def _load_rows(args: argparse.Namespace) -> tuple[str | None, list[dict]]:
     except ValueError:
         print(f"invalid run_id UUID: {run_id}", file=sys.stderr)
         raise SystemExit(2) from None
-    conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+    conninfo = nimbusware_database_url() or ""
     if not conninfo:
         print("NIMBUSWARE_DATABASE_URL is required without --fixture", file=sys.stderr)
         raise SystemExit(1)
@@ -103,7 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         print("replay snapshot matches golden")
         return 0
     if args.diff_run:
-        conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+        conninfo = nimbusware_database_url() or ""
         if not conninfo:
             print("NIMBUSWARE_DATABASE_URL is required for --diff-run", file=sys.stderr)
             return 1

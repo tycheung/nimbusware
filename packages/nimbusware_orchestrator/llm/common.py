@@ -20,6 +20,7 @@ from agent_core.models import (
     StageStartedPayload,
     Verdict,
 )
+from nimbusware_env.env_flags import nimbusware_repo_root_path
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
@@ -123,7 +124,7 @@ def _unanimous_gate_enforce_for_run(store: EventStore, run_id: UUID) -> bool:
             if isinstance(val, bool):
                 return val
         break
-    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    repo = nimbusware_repo_root_path()
     wf = workflow_profile_from_run_created_rows(rows)
     return effective_universal_critique(repo, wf).unanimous_gate_enforce
 

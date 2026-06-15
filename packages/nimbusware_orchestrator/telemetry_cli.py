@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
+from nimbusware_env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.role_telemetry import aggregate_recent_run_telemetry
 
@@ -33,13 +33,13 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
-    repo = (args.repo_root or Path(os.environ.get("NIMBUSWARE_REPO_ROOT", "."))).resolve()
+    repo = args.repo_root or nimbusware_repo_root_path()
     registry = RoleRegistry.from_yaml(repo / "configs" / "roles.yaml")
 
     if args.aggregate_in is not None:
         doc = json.loads(args.aggregate_in.read_text(encoding="utf-8"))
     else:
-        conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+        conninfo = nimbusware_database_url() or ""
         if not conninfo:
             print("NIMBUSWARE_DATABASE_URL is required without --aggregate-in", file=sys.stderr)
             return 1
@@ -60,7 +60,7 @@ def main(argv: list[str] | None = None) -> int:
         print(payload)
 
     if args.persist:
-        conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+        conninfo = nimbusware_database_url() or ""
         if not conninfo:
             print("NIMBUSWARE_DATABASE_URL is required for --persist", file=sys.stderr)
             return 1

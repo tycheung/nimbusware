@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import fnmatch
-import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal
 from uuid import UUID
+
+from nimbusware_env.env_flags import env_int_min, env_truthy_on
 
 StorageBackend = Literal[
     "local",
@@ -24,28 +25,13 @@ _STALE_HIGH_BYTES = 10 * 1024 * 1024
 _STALE_HIGH_FILE_COUNT = 100
 
 
-def _truthy_env(name: str) -> bool:
-    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
-
-
-def _int_env(name: str, default: int, *, minimum: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        parsed = int(raw)
-    except ValueError:
-        return default
-    return max(parsed, minimum)
-
-
 def object_store_prune_enabled() -> bool:
     """Mirror local deletes to object store when store is ready and env is on."""
     from nimbusware_orchestrator.scraper_object_store import object_store_primary_enabled
 
     if object_store_primary_enabled():
         return True
-    if not _truthy_env("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE"):
+    if not env_truthy_on("NIMBUSWARE_SCRAPER_ARTIFACT_OBJECT_STORE_PRUNE"):
         return False
     from nimbusware_orchestrator.scraper_artifacts_inventory import (
         scraper_artifact_storage_backend_signals,

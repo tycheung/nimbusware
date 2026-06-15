@@ -589,3 +589,12 @@ def nimbusware_repo_root_path(*, default: str = ".") -> Path:
 def nimbusware_database_url() -> str | None:
     url = env_str("NIMBUSWARE_DATABASE_URL")
     return url if url else None
+
+
+def env_truthy_on(name: str) -> bool:
+    """Truthy check including ``on`` (scraper / legacy env contract)."""
+    return env_str(name).lower() in (*TRUTHY_VALUES, "on")
+
+
+def env_int_min(name: str, *, default: int, minimum: int = 1) -> int:
+    return max(minimum, resolve_int(name, default=default))

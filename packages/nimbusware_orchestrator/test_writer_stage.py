@@ -1,24 +1,20 @@
 from __future__ import annotations
 
-import os
 import shlex
 import subprocess
 from pathlib import Path
 from typing import Literal
 
+from nimbusware_env.env_flags import env_str, env_truthy
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
-
-
-def _truthy_env(name: str) -> bool:
-    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
 
 
 def _run_test_writer_stage_subprocess(workspace: Path) -> tuple[int, str]:
     """Run legacy subprocess-backed test-writer command."""
-    cmd_raw = os.environ.get(
+    cmd_raw = env_str(
         "NIMBUSWARE_TEST_WRITER_STAGE_CMD",
-        "python -m pytest -q -k test_writer --maxfail=1",
-    ).strip()
+        default="python -m pytest -q -k test_writer --maxfail=1",
+    )
     cmd = shlex.split(cmd_raw) if cmd_raw else []
     if not cmd:
         return 0, "test_writer stage command omitted"
@@ -79,8 +75,8 @@ def run_test_writer_stage(
     Defaults to a lightweight pytest invocation so this can be enabled without
     introducing a second full verifier bundle execution.
     """
-    if llm_body_enabled and _truthy_env("NIMBUSWARE_USE_LLM"):
-        if _truthy_env("NIMBUSWARE_TEST_WRITER_LLM_STUB"):
+    if llm_body_enabled and env_truthy("NIMBUSWARE_USE_LLM"):
+        if env_truthy("NIMBUSWARE_TEST_WRITER_LLM_STUB"):
             return 0, "stub test-writer llm body", "stub"
         if llm_model_id:
             code, out = _run_test_writer_stage_llm(
