@@ -46,7 +46,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 | `NIMBUSWARE_API_PORT` | `PORT` (internal legacy) | API bind port |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` (internal legacy) | Canonical Ollama endpoint |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
-| `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |
+| `NIMBUSWARE_API_BASE` | host + `NIMBUSWARE_API_PORT` | Explicit wins; else derived from bind host/port |
 | `NIMBUSWARE_UNIVERSAL_CRITIQUE_*_ON_GATE_FAIL` (3 keys) | — | Global UC gate-fail env applies all critique panels |
 | `NIMBUSWARE_SLICE_BUDGET_PRESET` | `NIMBUSWARE_SLICE_*_MAX_CHARS` (6 removed keys) | Preset drives packet/repo_map/symbol_sketch/history/handoff/memory excerpt caps |
 

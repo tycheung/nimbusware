@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import webbrowser
 
-from nimbusware_env.env_flags import env_str
+from nimbusware_env.env_flags import nimbusware_api_base_url
 
 
 def open_admin_web() -> None:
-    base = env_str("NIMBUSWARE_API_BASE", default="http://127.0.0.1:8000/v1").rstrip("/")
+    base = nimbusware_api_base_url()
     url = base.replace("/v1", "") + "/v1/admin/app/"
     webbrowser.open(url)

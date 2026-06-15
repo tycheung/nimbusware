@@ -13,7 +13,9 @@ ADMIN_TOKEN_HEADER = "X-Nimbusware-Admin-Token"
 
 
 def api_base() -> str:
-    return os.environ.get("NIMBUSWARE_API_BASE", "http://127.0.0.1:8000/v1").rstrip("/")
+    from nimbusware_env.env_flags import nimbusware_api_base_url
+
+    return nimbusware_api_base_url()
 
 
 def user_headers() -> dict[str, str]:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import env_str
+from nimbusware_env.env_flags import nimbusware_api_base_url
 
 SESSION_ADMIN_UNLOCKED = "maker_admin_unlocked"
 
@@ -20,7 +20,7 @@ def clear_admin_unlock(session_state: object | None = None) -> None:
 
 
 def admin_console_url() -> str:
-    base = env_str("NIMBUSWARE_API_BASE", default="http://127.0.0.1:8000/v1").rstrip("/")
+    base = nimbusware_api_base_url()
     return base.replace("/v1", "") + "/v1/admin/app/"
 
 

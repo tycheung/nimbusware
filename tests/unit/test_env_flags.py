@@ -144,6 +144,21 @@ def test_nimbusware_ollama_base_url(monkeypatch) -> None:
         assert nimbusware_ollama_base_url() == "http://legacy:11434"
 
 
+def test_nimbusware_api_base_url(monkeypatch) -> None:
+    from nimbusware_env.env_flags import nimbusware_api_base_url
+
+    monkeypatch.delenv("NIMBUSWARE_API_BASE", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_API_HOST", raising=False)
+    monkeypatch.delenv("NIMBUSWARE_API_PORT", raising=False)
+    monkeypatch.delenv("PORT", raising=False)
+    assert nimbusware_api_base_url() == "http://127.0.0.1:8000/v1"
+    monkeypatch.setenv("NIMBUSWARE_API_BASE", "http://custom:9000/v1")
+    assert nimbusware_api_base_url() == "http://custom:9000/v1"
+    monkeypatch.delenv("NIMBUSWARE_API_BASE", raising=False)
+    monkeypatch.setenv("NIMBUSWARE_API_PORT", "9001")
+    assert nimbusware_api_base_url() == "http://127.0.0.1:9001/v1"
+
+
 def test_nimbusware_api_port(monkeypatch) -> None:
     from nimbusware_env.env_flags import nimbusware_api_port
 

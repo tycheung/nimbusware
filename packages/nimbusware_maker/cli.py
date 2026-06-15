@@ -7,7 +7,7 @@ import sys
 import webbrowser
 from pathlib import Path
 
-from nimbusware_env.env_flags import env_str
+from nimbusware_env.env_flags import nimbusware_api_base_url
 from nimbusware_maker.quick_mode import apply_quick_mode_env
 
 
@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.quick:
         apply_quick_mode_env()
 
-    base = env_str("NIMBUSWARE_API_BASE", default="http://127.0.0.1:8000/v1").rstrip("/")
+    base = nimbusware_api_base_url()
     url = f"{base.replace('/v1', '')}/v1/maker/app/"
     if args.web_only:
         print(url)

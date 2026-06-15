@@ -167,8 +167,22 @@ def nimbusware_api_port(default: int = 8000) -> int:
     return default
 
 
+def nimbusware_api_base_url(*, default: str = "http://127.0.0.1:8000/v1") -> str:
+    explicit = env_str("NIMBUSWARE_API_BASE")
+    if explicit:
+        return explicit.rstrip("/")
+    host = nimbusware_api_host(default="127.0.0.1")
+    if host in ("0.0.0.0", "::"):
+        host = "127.0.0.1"
+    return f"http://{host}:{nimbusware_api_port()}/v1"
+
+
 def nimbusware_config_from_files_enabled() -> bool:
     return env_truthy("NIMBUSWARE_CONFIG_FROM_FILES")
+
+
+def nimbusware_roles_from_db_enabled() -> bool:
+    return env_truthy("NIMBUSWARE_ROLES_FROM_DB")
 
 
 def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
