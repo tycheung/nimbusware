@@ -52,11 +52,10 @@ def integration_adapter_writer_effective(
     block: IntegrationAdapterWriterWorkflowBlock,
 ) -> bool:
     """Env ``NIMBUSWARE_INTEGRATION_ADAPTER_WRITER=0`` kill-switch overrides workflow YAML."""
-    import os
+    from nimbusware_env.env_flags import env_force_off, env_force_on
 
-    env_raw = os.environ.get("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER"):
         return True
     return block.enabled

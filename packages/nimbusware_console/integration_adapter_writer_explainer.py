@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
-import os
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
+
+from nimbusware_env.env_flags import env_str
 
 from nimbusware_console.config_materializer import console_config_materializer
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
@@ -36,7 +37,7 @@ def _json_safe_yaml_fragment(raw: object) -> object:
 
 
 def _nimbusware_integration_adapter_writer_env_summary() -> dict[str, Any]:
-    raw = os.environ.get("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER", "")
+    raw = env_str("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER")
     low = raw.strip().lower()
     if not low:
         return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}

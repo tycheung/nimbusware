@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
+
+from nimbusware_env.env_flags import env_str
 
 from nimbusware_console.integrator_preview.parse import (
     parse_integrator_gate_yaml_fragment,
@@ -24,7 +25,7 @@ def preview_effective_min_score_to_pass(
     workflow_profile: str | None,
     pasted_block: dict[str, Any] | None,
 ) -> float:
-    env_raw = os.environ.get("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
+    env_raw = env_str("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS")
     if env_raw:
         try:
             return max(0.0, min(1.0, float(env_raw)))
