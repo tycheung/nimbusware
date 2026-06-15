@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import env_str, env_truthy
+from nimbusware_env.env_flags import env_truthy
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     Any,
-    EventType,
     Path,
     emit_refactor_stage_and_critique,
     emit_stub_network_resilience_critique_panel,
@@ -52,50 +51,29 @@ class OptionalCritiqueMixin:
         workflow_profile: str | None,
         sg_snapshot: dict[str, Any] | None,
     ) -> bool:
-        block = parse_security_critique_workflow_block(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=self._config_materializer,
+        from nimbusware_orchestrator._pipeline.scan_critique_emit import (
+            ScanCritiqueEmitSpec,
+            emit_scan_critique_optional,
         )
-        if not security_critique_effective(block):
-            return False
-        ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
-        scan_summary = run_security_scan_summary(ws)
-        producer = self._security_critique_producer_for_run(sg_snapshot)
-        eff = self._effective_universal_critique_for_run(run_id)
-        enforce = eff.unanimous_gate_enforce
-        emitted_llm = False
-        if security_critique_llm_branch_effective(block):
-            model = self._selected_model_for_run(run_id)
-            if model:
-                base_url, timeout = ollama_runtime_from_host(self)
-                emitted_llm = execute_security_critique_llm(
-                    self._store,
-                    self._registry,
-                    self._critique_router,
-                    run_id=run_id,
-                    producer_tax_key=producer,
-                    scan_summary=scan_summary,
-                    base_url=base_url,
-                    model_id=model,
-                    block=block,
-                    timeout_seconds=timeout,
-                    unanimous_gate_enforce=enforce,
-                )
-        if not emitted_llm and block.stub:
-            emit_stub_security_critique_panel(
-                self._store,
-                self._registry,
-                self._critique_router,
-                run_id=run_id,
-                producer_tax_key=producer,
-                scan_summary=scan_summary,
-                block=block,
-                unanimous_gate_enforce=enforce,
-            )
-        return gate_fail_for_stage(
-            self._store.list_run_events(str(run_id)),
-            "implementation.security_critique",
+
+        spec = ScanCritiqueEmitSpec(
+            parse_block=parse_security_critique_workflow_block,
+            effective=security_critique_effective,
+            llm_effective=security_critique_llm_branch_effective,
+            stage_id="implementation.security_critique",
+            run_scan=run_security_scan_summary,
+            execute_llm=execute_security_critique_llm,
+            emit_stub=emit_stub_security_critique_panel,
+        )
+        return emit_scan_critique_optional(
+            self,
+            run_id,
+            workspace=workspace,
+            workflow_profile=workflow_profile,
+            sg_snapshot=sg_snapshot,
+            spec=spec,
+            gate_fail_for_stage=gate_fail_for_stage,
+            ollama_runtime_from_host=ollama_runtime_from_host,
         )
 
     def _emit_performance_critique_optional(
@@ -106,50 +84,29 @@ class OptionalCritiqueMixin:
         workflow_profile: str | None,
         sg_snapshot: dict[str, Any] | None,
     ) -> bool:
-        block = parse_performance_critique_workflow_block(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=self._config_materializer,
+        from nimbusware_orchestrator._pipeline.scan_critique_emit import (
+            ScanCritiqueEmitSpec,
+            emit_scan_critique_optional,
         )
-        if not performance_critique_effective(block):
-            return False
-        ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
-        scan_summary = run_security_scan_summary(ws)
-        producer = self._security_critique_producer_for_run(sg_snapshot)
-        eff = self._effective_universal_critique_for_run(run_id)
-        enforce = eff.unanimous_gate_enforce
-        emitted_llm = False
-        if performance_critique_llm_branch_effective(block):
-            model = self._selected_model_for_run(run_id)
-            if model:
-                base_url, timeout = ollama_runtime_from_host(self)
-                emitted_llm = execute_performance_critique_llm(
-                    self._store,
-                    self._registry,
-                    self._critique_router,
-                    run_id=run_id,
-                    producer_tax_key=producer,
-                    scan_summary=scan_summary,
-                    base_url=base_url,
-                    model_id=model,
-                    block=block,
-                    timeout_seconds=timeout,
-                    unanimous_gate_enforce=enforce,
-                )
-        if not emitted_llm and block.stub:
-            emit_stub_performance_critique_panel(
-                self._store,
-                self._registry,
-                self._critique_router,
-                run_id=run_id,
-                producer_tax_key=producer,
-                scan_summary=scan_summary,
-                block=block,
-                unanimous_gate_enforce=enforce,
-            )
-        return gate_fail_for_stage(
-            self._store.list_run_events(str(run_id)),
-            "implementation.performance_critique",
+
+        spec = ScanCritiqueEmitSpec(
+            parse_block=parse_performance_critique_workflow_block,
+            effective=performance_critique_effective,
+            llm_effective=performance_critique_llm_branch_effective,
+            stage_id="implementation.performance_critique",
+            run_scan=run_security_scan_summary,
+            execute_llm=execute_performance_critique_llm,
+            emit_stub=emit_stub_performance_critique_panel,
+        )
+        return emit_scan_critique_optional(
+            self,
+            run_id,
+            workspace=workspace,
+            workflow_profile=workflow_profile,
+            sg_snapshot=sg_snapshot,
+            spec=spec,
+            gate_fail_for_stage=gate_fail_for_stage,
+            ollama_runtime_from_host=ollama_runtime_from_host,
         )
 
     def _emit_network_resilience_critique_optional(
@@ -160,52 +117,32 @@ class OptionalCritiqueMixin:
         workflow_profile: str | None,
         sg_snapshot: dict[str, Any] | None,
     ) -> bool:
-        block = parse_network_resilience_critique_workflow_block(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=self._config_materializer,
+        from nimbusware_orchestrator._pipeline.scan_critique_emit import (
+            ScanCritiqueEmitSpec,
+            emit_scan_critique_optional,
+            network_resilience_pre_emit,
         )
-        if not network_resilience_critique_effective(block):
-            return False
-        if (
-            block.backend_only
-            and "backend_writer" not in self._critique_router.known_producer_keys()
-        ):
-            return False
-        ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
-        scan_summary = run_network_resilience_scan_summary(ws)
-        eff = self._effective_universal_critique_for_run(run_id)
-        enforce = eff.unanimous_gate_enforce
-        emitted_llm = False
-        if network_resilience_critique_llm_branch_effective(block):
-            model = self._selected_model_for_run(run_id)
-            if model:
-                base_url, timeout = ollama_runtime_from_host(self)
-                emitted_llm = execute_network_resilience_critique_llm(
-                    self._store,
-                    self._registry,
-                    self._critique_router,
-                    run_id=run_id,
-                    scan_summary=scan_summary,
-                    base_url=base_url,
-                    model_id=model,
-                    block=block,
-                    timeout_seconds=timeout,
-                    unanimous_gate_enforce=enforce,
-                )
-        if not emitted_llm and block.stub:
-            emit_stub_network_resilience_critique_panel(
-                self._store,
-                self._registry,
-                self._critique_router,
-                run_id=run_id,
-                scan_summary=scan_summary,
-                block=block,
-                unanimous_gate_enforce=enforce,
-            )
-        return gate_fail_for_stage(
-            self._store.list_run_events(str(run_id)),
-            "implementation.network_resilience_critique",
+
+        spec = ScanCritiqueEmitSpec(
+            parse_block=parse_network_resilience_critique_workflow_block,
+            effective=network_resilience_critique_effective,
+            llm_effective=network_resilience_critique_llm_branch_effective,
+            stage_id="implementation.network_resilience_critique",
+            run_scan=run_network_resilience_scan_summary,
+            execute_llm=execute_network_resilience_critique_llm,
+            emit_stub=emit_stub_network_resilience_critique_panel,
+            pre_emit=network_resilience_pre_emit,
+            with_producer=False,
+        )
+        return emit_scan_critique_optional(
+            self,
+            run_id,
+            workspace=workspace,
+            workflow_profile=workflow_profile,
+            sg_snapshot=sg_snapshot,
+            spec=spec,
+            gate_fail_for_stage=gate_fail_for_stage,
+            ollama_runtime_from_host=ollama_runtime_from_host,
         )
 
     def _emit_refactor_stage_optional(
