@@ -4,12 +4,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from nimbusware_env.env_flags import env_str
-
 from nimbusware_console.integrator_preview.parse import (
     parse_integrator_gate_yaml_fragment,
     validate_integrator_gate_block,
 )
+from nimbusware_env.env_flags import env_str
 from nimbusware_extensions.phase2 import ModuleIntegrator
 from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,

@@ -5,9 +5,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from nimbusware_env.env_flags import env_str
-
 from nimbusware_console.config_materializer import console_config_materializer
+from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )

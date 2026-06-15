@@ -6,7 +6,12 @@ from typing import Any
 import httpx
 
 from agent_core.models import EventType
-from nimbusware_env.env_flags import env_str, env_truthy, nimbusware_ollama_base_url, nimbusware_use_llm_enabled
+from nimbusware_env.env_flags import (
+    env_str,
+    env_truthy,
+    nimbusware_ollama_base_url,
+    nimbusware_use_llm_enabled,
+)
 
 
 def _theater_config_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:

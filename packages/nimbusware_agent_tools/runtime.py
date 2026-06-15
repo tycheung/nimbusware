@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -11,7 +10,6 @@ from nimbusware_agent_tools.risk_caps import (
     resolve_agent_risk_caps,
 )
 from nimbusware_agent_tools.tool_registry import is_agent_tool_enabled
-from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 from nimbusware_agent_tools.tools import (
     ToolResult,
     tool_edit_file,
@@ -22,6 +20,7 @@ from nimbusware_agent_tools.tools import (
     tool_run_shell,
     tool_write_file,
 )
+from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.slice_implement import SliceImplementResult
 from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
@@ -220,11 +219,7 @@ def execute_slice_implement_agent(
     write_bytes = 0
 
     steps: list[AgentStep] = []
-    use_llm = (
-        llm_base_url is not None
-        and llm_model_id is not None
-        and nimbusware_use_llm_enabled()
-    )
+    use_llm = llm_base_url is not None and llm_model_id is not None and nimbusware_use_llm_enabled()
     if use_llm and llm_base_url is not None and llm_model_id is not None:
         base_url = llm_base_url
         model_id = llm_model_id

@@ -4,12 +4,11 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from nimbusware_env.env_flags import env_falsy, env_str
-
 from nimbusware_config.workflow_read import (
     SelfRefinementWorkflowBlock,
     load_yaml,
 )
+from nimbusware_env.env_flags import env_falsy, env_str
 from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
     load_self_refinement_policy,
@@ -216,6 +215,9 @@ def _marker_preview(
         "merged_max_iterations": max_iterations,
         "merged_auto_promote_probation": auto_promote,
         "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": _nimbusware_self_refinement_stage_marker_env_summary(),
-        "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE": env_str("NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE") or None,
+        "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE": env_str(
+            "NIMBUSWARE_SELF_REFINEMENT_AUTO_PROMOTE"
+        )
+        or None,
         "auto_promote_after_env": auto_promote and not auto_promote_env_off,
     }
