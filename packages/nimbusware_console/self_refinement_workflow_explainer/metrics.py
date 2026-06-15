@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-)
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
 def self_refinement_workflow_explainer_operator_metrics(
@@ -101,18 +98,6 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows(
     return rows
 
 
-def self_refinement_workflow_explainer_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def self_refinement_workflow_explainer_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
-
-
 def self_refinement_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
@@ -134,11 +119,17 @@ def self_refinement_workflow_explainer_operator_metrics_caption(
         parts.append(f"max iterations **{merged_max}**")
     elif metrics.get("yaml_present") is True:
         parts.append("YAML block present")
-    merged_max = metrics.get("merged_max_iterations")
-    if isinstance(merged_max, int) and not isinstance(merged_max, bool):
-        parts.append(f"max iterations **{merged_max}**")
     if metrics.get("load_error_present") is True:
         parts.append("load error")
     if not parts:
         return None
     return "Self-refinement explainer metrics: " + ", ".join(parts) + "."
+
+
+(
+    self_refinement_workflow_explainer_operator_metrics_export_json,
+    self_refinement_workflow_explainer_operator_metrics_table_rows_csv,
+    self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(
+    export_slug="self_refinement_workflow_explainer_operator_metrics",
+)

@@ -15,9 +15,7 @@ from nimbusware_console.components.workflow_explainer_helpers import (
     mtime_iso_utc,
     relative_under,
 )
-from nimbusware_console.escalation_suppress_workflow_explainer.helpers import (
-    _age_seconds_utc,
-)
+from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
 from nimbusware_console.explainer_core.workflow_profile import (
     load_workflow_disk_snapshot,
     yaml_section,

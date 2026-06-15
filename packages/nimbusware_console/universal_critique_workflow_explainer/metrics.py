@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-)
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
 def universal_critique_workflow_explainer_operator_metrics(
@@ -101,18 +98,6 @@ def universal_critique_workflow_explainer_operator_metrics_table_rows(
     ]
 
 
-def universal_critique_workflow_explainer_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def universal_critique_workflow_explainer_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
-
-
 def universal_critique_workflow_explainer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
@@ -144,11 +129,13 @@ def universal_critique_workflow_explainer_operator_metrics_caption(
     scalar = metrics.get("scalar_leaf_count", 0)
     if isinstance(scalar, int) and not isinstance(scalar, bool) and scalar > 0:
         parts.append(f"**{scalar}** scalar leaf(es)")
-    lists = metrics.get("list_child_count", 0)
-    if isinstance(lists, int) and not isinstance(lists, bool) and lists > 0:
-        parts.append(f"**{lists}** list child(ren)")
     return "Universal critique explainer metrics: " + ", ".join(parts) + "."
 
 
-def universal_critique_workflow_explainer_operator_metrics_export_filename_slug() -> str:
-    return "universal_critique_workflow_explainer_operator_metrics"
+(
+    universal_critique_workflow_explainer_operator_metrics_export_json,
+    universal_critique_workflow_explainer_operator_metrics_table_rows_csv,
+    universal_critique_workflow_explainer_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(
+    export_slug="universal_critique_workflow_explainer_operator_metrics",
+)

@@ -55,22 +55,3 @@ def test_explainer_package_allowlist_frozen() -> None:
         "New *_workflow_explainer packages require allowlist update (fo714): "
         f"extra={found - _ALLOWED_EXPLAINER_PACKAGES} missing={_ALLOWED_EXPLAINER_PACKAGES - found}"
     )
-
-
-def test_escalation_helpers_reexport_age() -> None:
-    from nimbusware_console.escalation_suppress_workflow_explainer.helpers import (
-        _age_seconds_utc,
-    )
-
-    assert _age_seconds_utc is age_seconds_utc
-
-
-def test_universal_critique_helpers_reexport_counts() -> None:
-    from nimbusware_console.universal_critique_workflow_explainer.helpers import (
-        _universal_critique_top_level_enabled_true_count,
-    )
-
-    assert (
-        _universal_critique_top_level_enabled_true_count
-        is universal_critique_top_level_enabled_true_count
-    )

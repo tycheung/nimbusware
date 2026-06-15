@@ -23,9 +23,6 @@ from nimbusware_console.escalation_suppress_workflow_explainer.exports import (
     escalation_suppress_explainer_table_rows_csv,
     escalation_suppress_export_filename_slug,
 )
-from nimbusware_console.escalation_suppress_workflow_explainer.helpers import (
-    _age_seconds_utc,
-)
 from nimbusware_console.escalation_suppress_workflow_explainer.metrics import (
     escalation_suppress_workflow_explainer_operator_metrics,
     escalation_suppress_workflow_explainer_operator_metrics_caption,
@@ -46,3 +43,4 @@ from nimbusware_console.escalation_suppress_workflow_explainer.policy_tables imp
     escalation_policy_yaml_top_level_kinds_table_rows,
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
 )
+from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc

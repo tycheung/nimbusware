@@ -8,18 +8,30 @@ from nimbusware_config.workflow_read import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
 )
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_enabled_false_count as _universal_critique_top_level_enabled_false_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_enabled_true_count as _universal_critique_top_level_enabled_true_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_enabled_unset_mapping_count as _universal_critique_top_level_enabled_unset_mapping_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_list_child_count as _universal_critique_top_level_list_child_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_mapping_child_count as _universal_critique_top_level_mapping_child_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_nonempty_count as _universal_critique_top_level_nonempty_count,
+)
+from nimbusware_console.explainer_core.universal_critique_counts import (
+    universal_critique_top_level_scalar_leaf_count as _universal_critique_top_level_scalar_leaf_count,
+)
 from nimbusware_console.explainer_core.workflow_profile import (
     load_workflow_disk_snapshot,
     yaml_section,
-)
-from nimbusware_console.universal_critique_workflow_explainer.helpers import (
-    _universal_critique_top_level_enabled_false_count,
-    _universal_critique_top_level_enabled_true_count,
-    _universal_critique_top_level_enabled_unset_mapping_count,
-    _universal_critique_top_level_list_child_count,
-    _universal_critique_top_level_mapping_child_count,
-    _universal_critique_top_level_nonempty_count,
-    _universal_critique_top_level_scalar_leaf_count,
 )
 
 
