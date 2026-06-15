@@ -11,6 +11,7 @@ from nimbusware_agent_tools.risk_caps import (
     resolve_agent_risk_caps,
 )
 from nimbusware_agent_tools.tool_registry import is_agent_tool_enabled
+from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 from nimbusware_agent_tools.tools import (
     ToolResult,
     tool_edit_file,
@@ -222,7 +223,7 @@ def execute_slice_implement_agent(
     use_llm = (
         llm_base_url is not None
         and llm_model_id is not None
-        and os.environ.get("NIMBUSWARE_USE_LLM", "").lower() in ("1", "true", "yes")
+        and nimbusware_use_llm_enabled()
     )
     if use_llm and llm_base_url is not None and llm_model_id is not None:
         base_url = llm_base_url

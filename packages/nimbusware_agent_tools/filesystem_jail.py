@@ -55,9 +55,9 @@ class FilesystemJailPolicy:
 
 
 def default_jail_policy() -> FilesystemJailPolicy:
-    import os
+    from nimbusware_env.env_flags import env_falsy
 
-    if os.environ.get("NIMBUSWARE_FILESYSTEM_JAIL", "1").lower() in ("0", "false", "no"):
+    if env_falsy("NIMBUSWARE_FILESYSTEM_JAIL"):
         return FilesystemJailPolicy(enabled=False)
     return FilesystemJailPolicy()
 

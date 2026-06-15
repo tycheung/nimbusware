@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Any
 
 import httpx
 
 from agent_core.models import EventType
-from nimbusware_env.env_flags import env_str, nimbusware_use_llm_enabled
+from nimbusware_env.env_flags import env_str, env_truthy, nimbusware_ollama_base_url, nimbusware_use_llm_enabled
 
 
 def _theater_config_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -39,16 +38,10 @@ def theater_max_message_chars(rows: list[dict[str, Any]], *, default: int = 1200
 
 
 def theater_llm_summary_enabled(rows: list[dict[str, Any]]) -> bool:
-    if os.environ.get("NIMBUSWARE_THEATER_LLM_SUMMARY", "").strip() == "1":
+    if env_truthy("NIMBUSWARE_THEATER_LLM_SUMMARY"):
         return True
     cfg = _theater_config_from_rows(rows)
     return bool(cfg.get("llm_summary")) if cfg else False
-
-
-def _ollama_base_url() -> str:
-    from nimbusware_env.env_flags import nimbusware_ollama_base_url
-
-    return nimbusware_ollama_base_url()
 
 
 def _theater_llm_model() -> str:
@@ -75,7 +68,7 @@ def try_llm_theater_summary(messages: list[dict[str, Any]]) -> str | None:
     transcript = _theater_lines_for_prompt(messages)
     if not transcript.strip():
         return None
-    url = _ollama_base_url().rstrip("/") + "/api/chat"
+    url = nimbusware_ollama_base_url().rstrip("/") + "/api/chat"
     body = {
         "model": _theater_llm_model(),
         "messages": [
