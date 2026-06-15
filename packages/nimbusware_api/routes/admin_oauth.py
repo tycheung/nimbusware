@@ -1,4 +1,4 @@
-"""Admin Console OIDC login (Enterprise) — authorization code + PKCE."""
+"""Admin Console OIDC login (Enterprise)."""
 
 from __future__ import annotations
 

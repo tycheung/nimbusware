@@ -1,4 +1,4 @@
-"""Shared OpenAPI Problem+JSON response fragments for route ``responses=`` kwargs."""
+"""Shared OpenAPI Problem+JSON response fragments."""
 
 from __future__ import annotations
 

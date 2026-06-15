@@ -1,4 +1,4 @@
-"""RFC7807-style problem body for OpenAPI (matches ``nimbusware_api.errors.problem``)."""
+"""RFC7807 problem body for OpenAPI."""
 
 from __future__ import annotations
 

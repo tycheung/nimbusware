@@ -1,4 +1,4 @@
-"""Enterprise route package — aggregates sub-routers under ``/v1/enterprise/*``."""
+"""Enterprise routes under ``/v1/enterprise/*``."""
 
 from __future__ import annotations
 

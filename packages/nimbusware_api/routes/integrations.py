@@ -1,4 +1,4 @@
-"""Optional external chat integrations (webhook boundary — not in-product workspace)."""
+"""External chat webhook integrations."""
 
 from __future__ import annotations
 
