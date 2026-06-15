@@ -42,7 +42,9 @@ def resolve_database_url() -> str | None:
 
 
 def roles_from_db_enabled() -> bool:
-    return os.environ.get("NIMBUSWARE_ROLES_FROM_DB", "").lower() in ("1", "true", "yes")
+    from nimbusware_env.env_flags import nimbusware_roles_from_db_enabled
+
+    return nimbusware_roles_from_db_enabled()
 
 
 def api_config_from_db_enabled() -> bool:

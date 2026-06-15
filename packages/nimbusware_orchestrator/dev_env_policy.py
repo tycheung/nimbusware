@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.read.campaign import campaign_effective_from_rows
+from nimbusware_env.env_flags import env_truthy
 from nimbusware_orchestrator.micro_slice_run_context import run_created_metadata
 
 
@@ -15,11 +15,7 @@ def _dev_env_effective(rows: list[dict[str, Any]] | None) -> dict[str, Any]:
 
 
 def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
-    if os.environ.get("NIMBUSWARE_DEV_ENV_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_DEV_ENV_ENABLED"):
         return True
     if not rows:
         return False
@@ -40,11 +36,7 @@ def persistent_dev_env_enabled(rows: list[dict[str, Any]] | None = None) -> bool
 
 
 def ui_controller_profile_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
-    if os.environ.get("NIMBUSWARE_UI_CONTROLLER_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_UI_CONTROLLER_ENABLED"):
         return True
     if not rows:
         return False
@@ -66,21 +58,13 @@ def ui_controller_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
 
 
 def human_fidelity_profile_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
-    if os.environ.get("NIMBUSWARE_HUMAN_FIDELITY_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_HUMAN_FIDELITY_ENABLED"):
         return True
     return bool(_dev_env_effective(rows).get("human_fidelity_enabled"))
 
 
 def launch_test_enabled(rows: list[dict[str, Any]] | None = None) -> bool:
-    if os.environ.get("NIMBUSWARE_LAUNCH_TEST_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_LAUNCH_TEST_ENABLED"):
         return True
     if not rows:
         return False

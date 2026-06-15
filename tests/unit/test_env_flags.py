@@ -116,6 +116,15 @@ def test_nimbusware_config_from_files_enabled(monkeypatch) -> None:
     assert nimbusware_config_from_files_enabled() is True
 
 
+def test_nimbusware_roles_from_db_enabled(monkeypatch) -> None:
+    from nimbusware_env.env_flags import nimbusware_roles_from_db_enabled
+
+    monkeypatch.delenv("NIMBUSWARE_ROLES_FROM_DB", raising=False)
+    assert nimbusware_roles_from_db_enabled() is False
+    monkeypatch.setenv("NIMBUSWARE_ROLES_FROM_DB", "1")
+    assert nimbusware_roles_from_db_enabled() is True
+
+
 def test_nimbusware_use_llm_explicitly_off(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
     assert nimbusware_use_llm_explicitly_off() is False
