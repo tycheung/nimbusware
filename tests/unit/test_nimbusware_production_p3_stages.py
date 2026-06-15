@@ -12,16 +12,12 @@ from nimbusware_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_ST
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
 from nimbusware_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
-from nimbusware_orchestrator.workflow_network_resilience_critique import (
+from nimbusware_orchestrator.workflow_scan_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
-)
-from nimbusware_orchestrator.workflow_performance_critique import (
     parse_performance_critique_workflow_block,
-    performance_critique_effective,
-)
-from nimbusware_orchestrator.workflow_security_critique import (
     parse_security_critique_workflow_block,
+    performance_critique_effective,
     security_critique_effective,
 )
 

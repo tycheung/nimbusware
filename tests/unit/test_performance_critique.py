@@ -10,7 +10,7 @@ from nimbusware_orchestrator.performance_critique import (
     performance_scan_tools_failed,
 )
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_performance_critique import (
+from nimbusware_orchestrator.workflow_scan_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
 )

@@ -195,22 +195,12 @@ from nimbusware_orchestrator.workflow_escalation import parse_escalation_workflo
 from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     parse_integration_adapter_writer_workflow_block,
 )
-from nimbusware_orchestrator.workflow_network_resilience_critique import (
-    network_resilience_critique_effective,
-    network_resilience_critique_llm_branch_effective,
-    parse_network_resilience_critique_workflow_block,
-)
 from nimbusware_orchestrator.workflow_parallel_critics import parallel_critics_enabled
 from nimbusware_orchestrator.workflow_parallel_writers import (
     parallel_writers_enabled,
     test_writer_llm_body_enabled,
     test_writer_llm_stub_fallback,
     test_writer_stage_enabled,
-)
-from nimbusware_orchestrator.workflow_performance_critique import (
-    parse_performance_critique_workflow_block,
-    performance_critique_effective,
-    performance_critique_llm_branch_effective,
 )
 from nimbusware_orchestrator.workflow_probation_automation import (
     parse_probation_automation_workflow_block,
@@ -224,12 +214,18 @@ from nimbusware_orchestrator.workflow_research import (
     parse_research_workflow_block,
     parse_stitch_workflow_block,
 )
-from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
-from nimbusware_orchestrator.workflow_security_critique import (
+from nimbusware_orchestrator.workflow_scan_critique import (
+    network_resilience_critique_effective,
+    network_resilience_critique_llm_branch_effective,
+    parse_network_resilience_critique_workflow_block,
+    parse_performance_critique_workflow_block,
     parse_security_critique_workflow_block,
+    performance_critique_effective,
+    performance_critique_llm_branch_effective,
     security_critique_effective,
     security_critique_llm_branch_effective,
 )
+from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
 from nimbusware_orchestrator.workflow_self_refinement import (
     parse_self_refinement_workflow_block,
     self_refinement_llm_critique_branch_effective,

@@ -23,7 +23,7 @@ from nimbusware_orchestrator.llm.common import append_gate_decision_event
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from nimbusware_orchestrator.workflow_performance_critique import PerformanceCritiqueBlock
+from nimbusware_orchestrator.workflow_scan_critique import PerformanceCritiqueBlock
 from nimbusware_store.protocol import EventStore
 
 PERFORMANCE_CRITIQUE_STAGE = "implementation.performance_critique"

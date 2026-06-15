@@ -10,7 +10,7 @@ from nimbusware_orchestrator.network_resilience_critique import (
     scan_summary_failed,
 )
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.workflow_network_resilience_critique import (
+from nimbusware_orchestrator.workflow_scan_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
 )

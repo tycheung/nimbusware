@@ -25,7 +25,7 @@ from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.security_scan import run_security_scan, security_scan_tool_summary
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from nimbusware_orchestrator.workflow_security_critique import SecurityCritiqueBlock
+from nimbusware_orchestrator.workflow_scan_critique import SecurityCritiqueBlock
 from nimbusware_store.protocol import EventStore
 
 SECURITY_CRITIQUE_STAGE = "implementation.security_critique"

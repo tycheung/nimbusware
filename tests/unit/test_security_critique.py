@@ -14,7 +14,7 @@ from nimbusware_orchestrator.security_critique import (
     security_critique_timeline_summary,
     security_scan_tools_failed,
 )
-from nimbusware_orchestrator.workflow_security_critique import (
+from nimbusware_orchestrator.workflow_scan_critique import (
     SecurityCritiqueBlock,
     parse_security_critique_workflow_block,
     security_critique_effective,

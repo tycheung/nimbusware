@@ -67,3 +67,113 @@ def scan_critique_llm_effective(block: ScanCritiqueBlock, env_llm_key: str) -> b
     if nimbusware_use_llm_explicitly_off():
         return False
     return block.llm_enabled
+
+
+@dataclass(frozen=True)
+class ScanCritiqueKind:
+    yaml_key: str
+    env_key: str
+    env_llm_key: str
+    extra_bool_defaults: dict[str, bool] | None = None
+
+
+_SECURITY = ScanCritiqueKind(
+    "security_critique", "NIMBUSWARE_SECURITY_CRITIQUE", "NIMBUSWARE_SECURITY_CRITIQUE_LLM"
+)
+_PERFORMANCE = ScanCritiqueKind(
+    "performance_critique", "NIMBUSWARE_PERFORMANCE_CRITIQUE", "NIMBUSWARE_PERFORMANCE_CRITIQUE_LLM"
+)
+_NETWORK = ScanCritiqueKind(
+    "network_resilience_critique",
+    "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE",
+    "NIMBUSWARE_NETWORK_RESILIENCE_CRITIQUE_LLM",
+    extra_bool_defaults={"backend_only": True},
+)
+
+
+def _parse_kind(
+    kind: ScanCritiqueKind,
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> ScanCritiqueBlock:
+    return parse_scan_critique_workflow_block(
+        repo_root,
+        workflow_profile,
+        kind.yaml_key,
+        config_materializer=config_materializer,
+        extra_bool_defaults=kind.extra_bool_defaults,
+    )
+
+
+def _effective_kind(block: ScanCritiqueBlock, kind: ScanCritiqueKind) -> bool:
+    return scan_critique_effective(block, kind.env_key)
+
+
+def _llm_effective_kind(block: ScanCritiqueBlock, kind: ScanCritiqueKind) -> bool:
+    return scan_critique_llm_effective(block, kind.env_llm_key)
+
+
+SecurityCritiqueBlock = ScanCritiqueBlock
+PerformanceCritiqueBlock = ScanCritiqueBlock
+NetworkResilienceCritiqueBlock = ScanCritiqueBlock
+
+
+def parse_security_critique_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> SecurityCritiqueBlock:
+    return _parse_kind(
+        _SECURITY, repo_root, workflow_profile, config_materializer=config_materializer
+    )
+
+
+def security_critique_effective(block: SecurityCritiqueBlock) -> bool:
+    return _effective_kind(block, _SECURITY)
+
+
+def security_critique_llm_branch_effective(block: SecurityCritiqueBlock) -> bool:
+    return _llm_effective_kind(block, _SECURITY)
+
+
+def parse_performance_critique_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> PerformanceCritiqueBlock:
+    return _parse_kind(
+        _PERFORMANCE, repo_root, workflow_profile, config_materializer=config_materializer
+    )
+
+
+def performance_critique_effective(block: PerformanceCritiqueBlock) -> bool:
+    return _effective_kind(block, _PERFORMANCE)
+
+
+def performance_critique_llm_branch_effective(block: PerformanceCritiqueBlock) -> bool:
+    return _llm_effective_kind(block, _PERFORMANCE)
+
+
+def parse_network_resilience_critique_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> NetworkResilienceCritiqueBlock:
+    return _parse_kind(
+        _NETWORK, repo_root, workflow_profile, config_materializer=config_materializer
+    )
+
+
+def network_resilience_critique_effective(block: NetworkResilienceCritiqueBlock) -> bool:
+    return _effective_kind(block, _NETWORK)
+
+
+def network_resilience_critique_llm_branch_effective(
+    block: NetworkResilienceCritiqueBlock,
+) -> bool:
+    return _llm_effective_kind(block, _NETWORK)
