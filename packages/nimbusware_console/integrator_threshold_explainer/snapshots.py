@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
 from nimbusware_config.workflow_read import (
     load_yaml,
 )
+from nimbusware_env.env_flags import env_var_tri_state_summary
 from nimbusware_orchestrator.integrator_gate import (
     integrator_gate_workflow_enabled,
     load_integrator_gate_emit_enabled,
@@ -90,7 +90,9 @@ def _thresholds_disk_snapshot(repo_root: Path) -> dict[str, Any]:
 
 
 def _env_min_score_to_pass_breakdown() -> dict[str, Any]:
-    raw = os.environ.get("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS", "").strip()
+    from nimbusware_env.settings_resolve import resolve_explicit_raw
+
+    raw = resolve_explicit_raw("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS") or ""
     if not raw:
         return {
             "raw": "",
@@ -118,10 +120,9 @@ def _emit_integrator_gate_breakdown(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any]:
-    env_raw = os.environ.get("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "")
-    env = env_raw.strip().lower()
-    forces_off = env in ("0", "false", "no")
-    forces_on = env in ("1", "true", "yes")
+    env_summary = env_var_tri_state_summary("NIMBUSWARE_EMIT_INTEGRATOR_GATE")
+    forces_off = bool(env_summary.get("forces_off"))
+    forces_on = bool(env_summary.get("forces_on"))
     yaml_on = load_integrator_gate_emit_enabled(
         repo_root,
         config_materializer=config_materializer,
@@ -160,7 +161,7 @@ def _emit_integrator_gate_breakdown(
             "workflow integrator_gate.enabled false"
         )
     return {
-        "NIMBUSWARE_EMIT_INTEGRATOR_GATE": env_raw,
+        "NIMBUSWARE_EMIT_INTEGRATOR_GATE": env_summary.get("raw", ""),
         "forces_off": forces_off,
         "forces_on": forces_on,
         "catalog_thresholds_yaml_enabled": yaml_on,

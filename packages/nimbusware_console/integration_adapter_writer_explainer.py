@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_console.config_materializer import console_config_materializer
-from nimbusware_env.env_flags import env_str
+from nimbusware_env.env_flags import env_var_tri_state_summary
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
@@ -36,21 +36,7 @@ def _json_safe_yaml_fragment(raw: object) -> object:
 
 
 def _nimbusware_integration_adapter_writer_env_summary() -> dict[str, Any]:
-    raw = env_str("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER")
-    low = raw.strip().lower()
-    if not low:
-        return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}
-    if low in ("0", "false", "no"):
-        return {"raw": raw, "forces_off": True, "forces_on": False, "unset": False}
-    if low in ("1", "true", "yes"):
-        return {"raw": raw, "forces_off": False, "forces_on": True, "unset": False}
-    return {
-        "raw": raw,
-        "forces_off": False,
-        "forces_on": False,
-        "unset": True,
-        "unrecognised_value": True,
-    }
+    return dict(env_var_tri_state_summary("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER"))
 
 
 def integration_adapter_writer_env_gate_caption(

@@ -8,7 +8,12 @@ from nimbusware_config.workflow_read import (
     SelfRefinementWorkflowBlock,
     load_yaml,
 )
-from nimbusware_env.env_flags import env_falsy, env_str
+from nimbusware_env.env_flags import (
+    env_falsy,
+    env_str,
+    env_var_disable_flag_summary,
+    env_var_tri_state_summary,
+)
 from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
     load_self_refinement_policy,
@@ -92,36 +97,7 @@ def _self_refinement_stage_marker_env_disabled() -> bool:
 
 
 def _nimbusware_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
-    raw = env_str("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
-    low = raw.strip().lower()
-    if not low:
-        return {
-            "raw": raw,
-            "forces_on": False,
-            "forces_off": False,
-            "unset": True,
-        }
-    if low in ("1", "true", "yes"):
-        return {
-            "raw": raw,
-            "forces_on": True,
-            "forces_off": False,
-            "unset": False,
-        }
-    if low in ("0", "false", "no"):
-        return {
-            "raw": raw,
-            "forces_on": False,
-            "forces_off": True,
-            "unset": False,
-        }
-    return {
-        "raw": raw,
-        "forces_on": False,
-        "forces_off": False,
-        "unset": True,
-        "unrecognised_value": True,
-    }
+    return dict(env_var_tri_state_summary("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP"))
 
 
 def self_refinement_ungated_loop_env_gate_caption(
@@ -165,26 +141,12 @@ def self_refinement_ungated_loop_env_gate_caption(
 
 
 def _nimbusware_self_refinement_stage_marker_env_summary() -> dict[str, Any]:
-    raw = env_str("NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER")
-    low = raw.strip().lower()
-    if not low:
-        return {
-            "raw": raw,
-            "disables_marker": False,
-            "unset": True,
-        }
-    if low in ("0", "false", "no"):
-        return {
-            "raw": raw,
-            "disables_marker": True,
-            "unset": False,
-        }
-    return {
-        "raw": raw,
-        "disables_marker": False,
-        "unset": False,
-        "unrecognised_value": True,
-    }
+    return dict(
+        env_var_disable_flag_summary(
+            "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER",
+            disable_key="disables_marker",
+        )
+    )
 
 
 def _marker_preview(

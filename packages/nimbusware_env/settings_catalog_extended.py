@@ -454,6 +454,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "System — fleet",
         ),
         SettingDef(
+            "NIMBUSWARE_FLEET_OLLAMA_SLI_TIMEOUT_SEC",
+            _SYSTEM,
+            _INT,
+            "30",
+            "Fleet Ollama SLI probe timeout sec",
+            "HTTP timeout per fleet Ollama SLI health probe.",
+            "System — fleet",
+        ),
+        SettingDef(
             "NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH",
             _SYSTEM,
             _INT,
@@ -756,6 +765,8 @@ def extended_defs() -> tuple[SettingDef, ...]:
         _internal(
             "NIMBUSWARE_PRESSURE_DEGRADE_STUB", "Degrade LLM to stub under RAM block", kind=_BOOL
         ),
+        _internal("GITHUB_TOKEN", "GitHub Actions token for external CI check-runs"),
+        _internal("GITLAB_TOKEN", "Legacy GitLab token alias (prefer NIMBUSWARE_GITLAB_TOKEN)"),
         _internal("NIMBUSWARE_CI_GITHUB_REPO", "CI GitHub repo slug"),
         _internal("NIMBUSWARE_CI_HEAD_SHA", "CI head SHA"),
         _internal("NIMBUSWARE_GITLAB_TOKEN", "GitLab API token for external CI"),

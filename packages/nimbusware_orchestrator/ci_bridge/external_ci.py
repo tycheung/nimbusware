@@ -1,49 +1,27 @@
 from __future__ import annotations
 
 import json
-import os
 import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Any, cast
 from uuid import UUID
 
+from nimbusware_env.env_flags import (
+    nimbusware_ci_github_repo,
+    nimbusware_ci_gitlab_project,
+    nimbusware_ci_head_sha,
+    nimbusware_github_token,
+    nimbusware_gitlab_api_base,
+    nimbusware_gitlab_token,
+    nimbusware_timeline_base_url,
+)
 
-def _github_token() -> str | None:
-    raw = os.environ.get("GITHUB_TOKEN", "").strip()
-    return raw or None
-
-
-def _github_repo() -> tuple[str, str] | None:
-    raw = os.environ.get("NIMBUSWARE_CI_GITHUB_REPO", "").strip()
-    if "/" not in raw:
-        return None
-    owner, repo = raw.split("/", 1)
-    if not owner or not repo:
-        return None
-    return owner, repo
-
-
-def _gitlab_token() -> str | None:
-    for key in ("NIMBUSWARE_GITLAB_TOKEN", "GITLAB_TOKEN"):
-        raw = os.environ.get(key, "").strip()
-        if raw:
-            return raw
-    return None
-
-
-def _gitlab_project_ref() -> str | None:
-    raw = os.environ.get("NIMBUSWARE_CI_GITLAB_PROJECT", "").strip()
-    return raw or None
-
-
-def _gitlab_api_base() -> str:
-    raw = os.environ.get("NIMBUSWARE_GITLAB_API_BASE", "https://gitlab.com/api/v4").strip()
-    return raw.rstrip("/")
+_GITHUB_SHA_PLACEHOLDER = "0000000000000000000000000000000000000000"
 
 
 def _timeline_link(run_id: UUID, timeline_base_url: str | None) -> str:
-    base = (timeline_base_url or os.environ.get("NIMBUSWARE_TIMELINE_BASE_URL", "")).strip()
+    base = nimbusware_timeline_base_url(fallback=timeline_base_url or "")
     if not base:
         return ""
     return f"{base.rstrip('/')}/v1/runs/{run_id}/timeline"
@@ -82,14 +60,14 @@ def _notify_github(
     stage_name: str,
     timeline_base_url: str | None,
 ) -> dict[str, Any]:
-    token = _github_token()
-    repo = _github_repo()
+    token = nimbusware_github_token()
+    repo = nimbusware_ci_github_repo()
     if not token or not repo:
         return {"status": "skipped", "reason": "github_not_configured", "provider": "github"}
     owner, name = repo
     link = _timeline_link(run_id, timeline_base_url)
     conclusion = "success" if str(verdict).upper() == "PASS" else "failure"
-    sha = os.environ.get("NIMBUSWARE_CI_HEAD_SHA", "0000000000000000000000000000000000000000")
+    sha = nimbusware_ci_head_sha(default=_GITHUB_SHA_PLACEHOLDER)
     check_name = f"nimbusware/{stage_name}"
     url = f"https://api.github.com/repos/{owner}/{name}/check-runs"
     body: dict[str, Any] = {
@@ -118,17 +96,17 @@ def _notify_gitlab(
     stage_name: str,
     timeline_base_url: str | None,
 ) -> dict[str, Any]:
-    token = _gitlab_token()
-    project = _gitlab_project_ref()
+    token = nimbusware_gitlab_token()
+    project = nimbusware_ci_gitlab_project()
     if not token or not project:
         return {"status": "skipped", "reason": "gitlab_not_configured", "provider": "gitlab"}
     encoded = urllib.parse.quote(project, safe="")
     link = _timeline_link(run_id, timeline_base_url)
     state = "success" if str(verdict).upper() == "PASS" else "failed"
-    sha = os.environ.get("NIMBUSWARE_CI_HEAD_SHA", "").strip()
+    sha = nimbusware_ci_head_sha()
     if not sha:
         return {"status": "skipped", "reason": "gitlab_missing_head_sha", "provider": "gitlab"}
-    url = f"{_gitlab_api_base()}/projects/{encoded}/statuses"
+    url = f"{nimbusware_gitlab_api_base()}/projects/{encoded}/statuses"
     body: dict[str, Any] = {
         "state": state,
         "name": f"nimbusware/{stage_name}",

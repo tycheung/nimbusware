@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -10,6 +9,8 @@ from urllib.parse import urljoin
 
 import httpx
 
+from nimbusware_env.env_flags import env_str
+from nimbusware_env.settings_resolve import resolve_int, resolve_raw
 from nimbusware_orchestrator.preflight_histogram import build_histogram, nearest_rank_p95
 
 SCHEMA_VERSION = 1
@@ -25,35 +26,34 @@ def fleet_ollama_sli_enabled() -> bool:
         return False
 
 
-def _int_env(name: str, default: int, *, minimum: int, maximum: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return min(maximum, max(minimum, int(raw)))
-    except ValueError:
-        return default
+def _bounded_int(key: str, default: int, *, minimum: int, maximum: int) -> int:
+    return min(maximum, max(minimum, resolve_int(key, default=default)))
 
 
-def _float_env(name: str, default: float, *, minimum: float) -> float:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
+def _bounded_float(key: str, default: float, *, minimum: float) -> float:
+    raw = resolve_raw(key)
+    if raw is None or not str(raw).strip():
         return default
     try:
-        return max(minimum, float(raw))
+        return max(minimum, float(str(raw).strip()))
     except ValueError:
         return default
 
 
 def sustained_probe_config() -> dict[str, Any]:
     return {
-        "samples": _int_env("NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES", 60, minimum=1, maximum=500),
-        "interval_seconds": _float_env(
+        "samples": _bounded_int(
+            "NIMBUSWARE_FLEET_OLLAMA_SLI_SAMPLES",
+            60,
+            minimum=1,
+            maximum=500,
+        ),
+        "interval_seconds": _bounded_float(
             "NIMBUSWARE_FLEET_OLLAMA_SLI_INTERVAL_SEC",
             5.0,
             minimum=0.0,
         ),
-        "timeout_seconds": _float_env(
+        "timeout_seconds": _bounded_float(
             "NIMBUSWARE_FLEET_OLLAMA_SLI_TIMEOUT_SEC",
             30.0,
             minimum=1.0,
@@ -62,21 +62,21 @@ def sustained_probe_config() -> dict[str, Any]:
 
 
 def export_path() -> Path:
-    raw = os.environ.get("NIMBUSWARE_FLEET_OLLAMA_SLI_EXPORT_PATH", "").strip()
+    raw = env_str("NIMBUSWARE_FLEET_OLLAMA_SLI_EXPORT_PATH")
     return Path(raw) if raw else DEFAULT_EXPORT_PATH
 
 
 def resolve_runtime_url(*, base_url: str | None = None) -> str:
     if base_url and base_url.strip():
         return base_url.strip().rstrip("/")
-    env_url = os.environ.get("NIMBUSWARE_FLEET_OLLAMA_SLI_BASE_URL", "").strip()
+    env_url = env_str("NIMBUSWARE_FLEET_OLLAMA_SLI_BASE_URL")
     if env_url:
         return env_url.rstrip("/")
     return "http://localhost:11434"
 
 
 def resolve_health_path() -> str:
-    raw = os.environ.get("NIMBUSWARE_FLEET_OLLAMA_SLI_HEALTH_PATH", "").strip()
+    raw = env_str("NIMBUSWARE_FLEET_OLLAMA_SLI_HEALTH_PATH")
     return raw or "/api/tags"
 
 

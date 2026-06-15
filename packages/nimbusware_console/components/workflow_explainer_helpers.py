@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,24 +43,6 @@ def mtime_iso_utc(path: Path) -> str | None:
     return datetime.fromtimestamp(mtime_ns / 1e9, tz=timezone.utc).strftime(
         "%Y-%m-%dT%H:%M:%SZ",
     )
-
-
-def env_var_tri_state_summary(name: str) -> dict[str, Any]:
-    raw = os.environ.get(name, "")
-    low = raw.strip().lower()
-    if not low:
-        return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}
-    if low in ("0", "false", "no"):
-        return {"raw": raw, "forces_off": True, "forces_on": False, "unset": False}
-    if low in ("1", "true", "yes"):
-        return {"raw": raw, "forces_off": False, "forces_on": True, "unset": False}
-    return {
-        "raw": raw,
-        "forces_off": False,
-        "forces_on": False,
-        "unset": True,
-        "unrecognised_value": True,
-    }
 
 
 def workflow_explainer_export_json(metrics: Mapping[str, Any] | None) -> str:

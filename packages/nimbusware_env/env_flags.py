@@ -475,6 +475,85 @@ def nimbusware_integrator_probe_retry_delay(default: float = 0.25) -> float:
         return default
 
 
+def nimbusware_github_token() -> str | None:
+    raw = env_str("GITHUB_TOKEN")
+    return raw or None
+
+
+def nimbusware_ci_github_repo() -> tuple[str, str] | None:
+    raw = env_str("NIMBUSWARE_CI_GITHUB_REPO")
+    if "/" not in raw:
+        return None
+    owner, repo = raw.split("/", 1)
+    if not owner or not repo:
+        return None
+    return owner, repo
+
+
+def nimbusware_gitlab_token() -> str | None:
+    raw = env_str("NIMBUSWARE_GITLAB_TOKEN")
+    if raw:
+        return raw
+    legacy = env_str("GITLAB_TOKEN")
+    return legacy or None
+
+
+def nimbusware_ci_gitlab_project() -> str | None:
+    raw = env_str("NIMBUSWARE_CI_GITLAB_PROJECT")
+    return raw or None
+
+
+def nimbusware_gitlab_api_base() -> str:
+    raw = env_str("NIMBUSWARE_GITLAB_API_BASE")
+    return (raw or "https://gitlab.com/api/v4").rstrip("/")
+
+
+def nimbusware_timeline_base_url(*, fallback: str = "") -> str:
+    raw = env_str("NIMBUSWARE_TIMELINE_BASE_URL")
+    return (raw or fallback).strip()
+
+
+def nimbusware_ci_head_sha(*, default: str = "") -> str:
+    return env_str("NIMBUSWARE_CI_HEAD_SHA") or default
+
+
+def env_var_tri_state_summary(name: str) -> dict[str, object]:
+    from nimbusware_env.settings_resolve import resolve_explicit_raw
+
+    raw = resolve_explicit_raw(name) or ""
+    low = raw.strip().lower()
+    if not low:
+        return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}
+    if low in FALSY_VALUES:
+        return {"raw": raw, "forces_off": True, "forces_on": False, "unset": False}
+    if low in TRUTHY_VALUES:
+        return {"raw": raw, "forces_off": False, "forces_on": True, "unset": False}
+    return {
+        "raw": raw,
+        "forces_off": False,
+        "forces_on": False,
+        "unset": True,
+        "unrecognised_value": True,
+    }
+
+
+def env_var_disable_flag_summary(name: str, *, disable_key: str) -> dict[str, object]:
+    from nimbusware_env.settings_resolve import resolve_explicit_raw
+
+    raw = resolve_explicit_raw(name) or ""
+    low = raw.strip().lower()
+    if not low:
+        return {"raw": raw, disable_key: False, "unset": True}
+    if low in FALSY_VALUES:
+        return {"raw": raw, disable_key: True, "unset": False}
+    return {
+        "raw": raw,
+        disable_key: False,
+        "unset": False,
+        "unrecognised_value": True,
+    }
+
+
 def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
