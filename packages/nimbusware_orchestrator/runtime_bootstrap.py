@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from nimbusware_config import ConfigMaterializer, config_from_db_enabled
+from nimbusware_env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
 from nimbusware_extensions.bundle_memory_factory import build_bundle_outcome_store
 from nimbusware_memory.factory import build_memory_chunk_store
 from nimbusware_orchestrator.pipeline import RunOrchestrator, default_paths
@@ -34,11 +34,11 @@ class RuntimeBootstrapResult:
 def resolve_repo_root(repo_root: Path | None = None) -> Path:
     if repo_root is not None:
         return repo_root.resolve()
-    return Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    return nimbusware_repo_root_path()
 
 
 def resolve_database_url() -> str | None:
-    return os.environ.get("NIMBUSWARE_DATABASE_URL")
+    return nimbusware_database_url()
 
 
 def roles_from_db_enabled() -> bool:

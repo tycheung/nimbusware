@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any, Literal, cast
 
 from agent_core.mapping import mapping_or_empty
+from nimbusware_env.env_flags import nimbusware_redis_url, nimbusware_repo_root_path
+from nimbusware_env.settings_resolve import resolve_int
 from nimbusware_orchestrator.run_dispatch import RunQueuePort, run_dispatch_mode
 
 BackpressureLevel = Literal["ok", "warn", "critical", "unknown"]
@@ -15,7 +16,7 @@ def fleet_redis_worker_enabled() -> bool:
     """True when Enterprise fleet Redis worker profile is active."""
     if run_dispatch_mode() != "redis":
         return False
-    if not os.environ.get("NIMBUSWARE_REDIS_URL", "").strip():
+    if not nimbusware_redis_url():
         return False
     try:
         from nimbusware_env.edition import enterprise_feature_enabled
@@ -26,19 +27,9 @@ def fleet_redis_worker_enabled() -> bool:
 
 
 def fleet_queue_backpressure_limits() -> tuple[int, int]:
-    pending_max = _int_env("NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH", 100, minimum=1)
-    inflight_max = _int_env("NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT", 20, minimum=1)
+    pending_max = max(1, resolve_int("NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_DEPTH", default=100))
+    inflight_max = max(1, resolve_int("NIMBUSWARE_FLEET_QUEUE_BACKPRESSURE_IN_FLIGHT", default=20))
     return pending_max, inflight_max
-
-
-def _int_env(name: str, default: int, *, minimum: int) -> int:
-    raw = os.environ.get(name, "").strip()
-    if not raw:
-        return default
-    try:
-        return max(minimum, int(raw))
-    except ValueError:
-        return default
 
 
 def queue_stats(queue: RunQueuePort) -> dict[str, int]:
@@ -87,7 +78,7 @@ def collect_fleet_worker_metrics(queue: RunQueuePort | None = None) -> dict[str,
 
 def read_worker_heartbeat(path: Path | str | None = None) -> dict[str, Any] | None:
     if path is None:
-        repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+        repo = nimbusware_repo_root_path()
         path = repo / ".cache" / "run_dispatch_worker_heartbeat.json"
     hb_path = Path(path)
     if not hb_path.is_file():
@@ -103,7 +94,7 @@ def fleet_worker_health_snapshot(*, heartbeat_path: Path | str | None = None) ->
     metrics: dict[str, Any] = {
         "fleet_profile_enabled": fleet_redis_worker_enabled(),
         "dispatch_mode": run_dispatch_mode(),
-        "redis_url_configured": bool(os.environ.get("NIMBUSWARE_REDIS_URL", "").strip()),
+        "redis_url_configured": bool(nimbusware_redis_url()),
     }
     if fleet_redis_worker_enabled():
         try:

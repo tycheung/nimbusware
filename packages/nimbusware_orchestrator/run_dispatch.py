@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
-import os
 import threading
 from collections import deque
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 from uuid import uuid4
+
+from nimbusware_env.env_flags import nimbusware_redis_url, nimbusware_run_dispatch_mode
 
 
 @dataclass(frozen=True)
@@ -145,17 +146,7 @@ _GLOBAL_QUEUE_LOCK = threading.Lock()
 
 
 def run_dispatch_mode() -> str | None:
-    """Return ``memory``, ``redis``, or ``None`` when dispatch is disabled."""
-    raw = os.environ.get("NIMBUSWARE_RUN_DISPATCH", "").strip().lower()
-    if not raw:
-        return None
-    if raw in ("0", "false", "no", "off", "sync"):
-        return None
-    if raw in ("memory", "1", "true", "yes", "on"):
-        return "memory"
-    if raw == "redis":
-        return "redis"
-    return None
+    return nimbusware_run_dispatch_mode()
 
 
 def run_dispatch_enabled() -> bool:
@@ -169,7 +160,7 @@ def get_run_queue() -> RunQueuePort:
             return _GLOBAL_QUEUE
     mode = run_dispatch_mode()
     if mode == "redis":
-        url = os.environ.get("NIMBUSWARE_REDIS_URL", "").strip()
+        url = nimbusware_redis_url()
         if not url:
             msg = "NIMBUSWARE_REDIS_URL required when NIMBUSWARE_RUN_DISPATCH=redis"
             raise ValueError(msg)

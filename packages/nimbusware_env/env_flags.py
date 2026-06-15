@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from pathlib import Path
 
 from nimbusware_env.settings_catalog import CATALOG, SettingScope
 from nimbusware_env.settings_resolve import (
@@ -558,3 +559,33 @@ def env_over_yaml(key: str, yaml_value: bool) -> bool:
     from nimbusware_env.settings_resolve import env_over_yaml_resolved
 
     return env_over_yaml_resolved(key, yaml_value)
+
+
+_DISPATCH_OFF = frozenset({"0", "false", "no", "off", "sync"})
+_DISPATCH_MEMORY = frozenset({"memory", "1", "true", "yes", "on"})
+
+
+def nimbusware_run_dispatch_mode() -> str | None:
+    """Return ``memory``, ``redis``, or ``None`` when dispatch is disabled."""
+    raw = env_str("NIMBUSWARE_RUN_DISPATCH").lower()
+    if not raw or raw in _DISPATCH_OFF:
+        return None
+    if raw in _DISPATCH_MEMORY:
+        return "memory"
+    if raw == "redis":
+        return "redis"
+    return None
+
+
+def nimbusware_redis_url() -> str:
+    return env_str("NIMBUSWARE_REDIS_URL")
+
+
+def nimbusware_repo_root_path(*, default: str = ".") -> Path:
+    raw = env_str("NIMBUSWARE_REPO_ROOT", default=default) or default
+    return Path(raw).resolve()
+
+
+def nimbusware_database_url() -> str | None:
+    url = env_str("NIMBUSWARE_DATABASE_URL")
+    return url if url else None
