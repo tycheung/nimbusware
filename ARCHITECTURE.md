@@ -100,9 +100,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 | Local CI | `./scripts/ci_check.ps1` or `scripts/ci_check.sh` |
 | After display package splits | `poetry run python scripts/explicit_star_imports.py` |
 | After package `__init__` export changes | `poetry run python scripts/sync_display_facade.py` |
-| Run detail import barrels | `poetry run python scripts/explicit_run_detail_imports.py` |
 | Facade contract | `tests/unit/test_display_facade_exports.py` |
-| Module splits (orchestrator/API/events) | `scripts/split_oversized_modules.py` (one-off; prefer manual follow-up) |
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
