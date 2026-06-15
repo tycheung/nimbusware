@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def config_notify_listener_enabled() -> bool:
-    from nimbusware_config.flags import config_from_db_enabled, config_notify_enabled
+    from nimbusware_config import config_from_db_enabled, config_notify_enabled
 
     return config_from_db_enabled() and config_notify_enabled()
 

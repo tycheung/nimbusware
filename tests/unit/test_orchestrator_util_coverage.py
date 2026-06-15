@@ -79,8 +79,8 @@ def test_semgrep_scan_branches(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_config_listener_status_and_enabled(monkeypatch) -> None:
-    monkeypatch.setattr("nimbusware_config.flags.config_from_db_enabled", lambda: True)
-    monkeypatch.setattr("nimbusware_config.flags.config_notify_enabled", lambda: True)
+    monkeypatch.setattr("nimbusware_config.config_from_db_enabled", lambda: True)
+    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: True)
     assert config_notify_listener_enabled() is True
     hub = ConfigNotifyHub()
     hub.handle_payload(

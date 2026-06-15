@@ -87,7 +87,7 @@ def test_openapi_access_ollama_routes() -> None:
 
 
 def test_config_flags_and_listener_status() -> None:
-    from nimbusware_config.flags import config_from_db_enabled, config_notify_enabled
+    from nimbusware_config import config_from_db_enabled, config_notify_enabled
     from nimbusware_config.listener import config_notify_listener_enabled, listener_status
     from nimbusware_config.notify import ConfigNotifyHub
 

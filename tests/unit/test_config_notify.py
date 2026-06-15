@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_config.flags import config_notify_enabled
+from nimbusware_config import config_notify_enabled
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.notify import (
     NOTIFY_EVENT_TYPE,

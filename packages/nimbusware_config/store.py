@@ -14,7 +14,7 @@ from nimbusware_config.protocol import ConfigDocumentRow, ConfigStore
 
 def _maybe_publish_config_notify(namespace: str, document_key: str, version: int) -> None:
     try:
-        from nimbusware_config.flags import config_notify_enabled
+        from nimbusware_config import config_notify_enabled
         from nimbusware_config.notify import get_config_notify_hub
 
         if config_notify_enabled():

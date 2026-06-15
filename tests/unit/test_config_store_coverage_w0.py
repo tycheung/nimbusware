@@ -6,8 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_config import keys
-from nimbusware_config.flags import config_from_db_enabled, config_notify_enabled
+from nimbusware_config import config_from_db_enabled, config_notify_enabled, keys
 from nimbusware_config.store import (
     InMemoryConfigStore,
     PostgresConfigStore,
@@ -65,13 +64,13 @@ def test_row_from_record_rejects_non_object_content() -> None:
 
 
 def test_maybe_publish_config_notify_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("nimbusware_config.flags.config_notify_enabled", lambda: False)
+    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: False)
     _maybe_publish_config_notify("ns", "key", 1)
 
 
 def test_maybe_publish_config_notify_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     hub = MagicMock()
-    monkeypatch.setattr("nimbusware_config.flags.config_notify_enabled", lambda: True)
+    monkeypatch.setattr("nimbusware_config.config_notify_enabled", lambda: True)
     monkeypatch.setattr("nimbusware_config.notify.get_config_notify_hub", lambda: hub)
     _maybe_publish_config_notify("roles", "registry", 3)
     hub.publish_local.assert_called_once_with(namespace="roles", document_key="registry", version=3)

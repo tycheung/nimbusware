@@ -1,4 +1,3 @@
-from nimbusware_config.flags import config_from_db_enabled, config_notify_enabled
 from nimbusware_config.listener import (
     config_notify_listener_enabled,
     listener_status,
@@ -13,6 +12,12 @@ from nimbusware_config.notify import (
 )
 from nimbusware_config.seed import seed_config_from_repo, seed_t2_policy_documents_from_repo
 from nimbusware_config.store import InMemoryConfigStore, PostgresConfigStore
+from nimbusware_env.env_flags import (
+    nimbusware_config_from_db_enabled as config_from_db_enabled,
+)
+from nimbusware_env.env_flags import (
+    nimbusware_config_notify_enabled as config_notify_enabled,
+)
 
 __all__ = [
     "ConfigDocumentUpdated",

@@ -68,7 +68,7 @@ def _load_routing(orch: OrchDep) -> dict[str, Any]:
 
 def _publish_routing_notify() -> None:
     try:
-        from nimbusware_config.flags import config_notify_enabled
+        from nimbusware_config import config_notify_enabled
         from nimbusware_config.notify import get_config_notify_hub
 
         if config_notify_enabled():
