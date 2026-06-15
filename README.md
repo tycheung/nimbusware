@@ -57,11 +57,11 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Research / stitch** | `nimbusware_research` | Research briefs (live mode: requirements/pattern-index sources), stitch stages with catalog/pattern manifest resolution, outcome analytics |
 | **Projections** | `nimbusware_projections` | Pure event → timeline read models (no API import from orchestrator) |
 | **UI HTTP client** | `nimbusware_client` | Shared Maker + Admin `/v1` client (Problem+JSON, auth headers) |
-| **Desktop / env** | `nimbusware_env` | Edition gate, **234-key** catalog + `env_flags` helpers, admin token guards, desktop launchers |
+| **Desktop / env** | `nimbusware_env` | Edition gate, **237-key** catalog + `env_flags` helpers, admin token guards, desktop launchers |
 
 Optional: **Ollama** for LLM stages (`NIMBUSWARE_USE_LLM=1`), **Redis** for multi-worker dispatch, **FAISS** for bundle/memory vector search (`poetry install --with faiss`). **Pyright LSP** for slice symbol sketch ships with default `poetry install` (dev dependency); installer sets `NIMBUSWARE_SLICE_LSP_ENABLED=1` in `.env`.
 
-Environment toggles use the **`NIMBUSWARE_*`** prefix (**234** catalog keys). Resolve via [`env_flags.py`](packages/nimbusware_env/env_flags.py) helpers (`nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, …) and [`docs/operator-settings.md`](docs/operator-settings.md) — not raw `os.environ` in feature code (`scripts/audit_operator_env.py` enforces catalog coverage). See [`.env.example`](.env.example).
+Environment toggles use the **`NIMBUSWARE_*`** prefix (**237** catalog keys). Resolve via [`env_flags.py`](packages/nimbusware_env/env_flags.py) helpers (`nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, `nimbusware_github_token`, …) and [`docs/operator-settings.md`](docs/operator-settings.md) — not raw `os.environ` in feature code (`scripts/audit_operator_env.py` enforces catalog coverage). See [`.env.example`](.env.example).
 
 Developer docs: [ARCHITECTURE.md](ARCHITECTURE.md) (canonical package map), [docs/README.md](docs/README.md) (doc index), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [tests/README.md](tests/README.md). Operators: [bundle catalog promotion](docs/operator-bundle-catalog-promotion.md), [enterprise buyer checklist](docs/enterprise-buyer.md), [security CI gates](docs/security-quality-gates.md). Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python display helpers use `packages/*/services/` (no direct HTTP in `*_display.py`).
 
@@ -620,7 +620,7 @@ Install-only variables stay in [`.env.example`](.env.example). Admin and Maker t
 | `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | user | Default workflow profile (prefer over legacy `NIMBUSWARE_WORKFLOW_PROFILE`) |
 | `NIMBUSWARE_RUN_DISPATCH` / `NIMBUSWARE_REDIS_URL` | install | Fleet worker dispatch |
 
-Full catalog: `poetry run python scripts/audit_operator_env.py` (234 keys).
+Full catalog: `poetry run python scripts/audit_operator_env.py` (237 keys).
 
 ## License
 

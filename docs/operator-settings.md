@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**234** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**237** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
 
 ### Context budget (`*_MAX_CHARS`)
 
@@ -45,6 +45,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 | `NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE` | `NIMBUSWARE_WORKFLOW_PROFILE` (internal) | Prefer **DEFAULT**; legacy alias read from `os.environ` only |
 | `NIMBUSWARE_API_PORT` | `PORT` (internal legacy) | API bind port |
 | `NIMBUSWARE_OLLAMA_BASE_URL` | `OLLAMA_HOST` (internal legacy) | Canonical Ollama endpoint |
+| `NIMBUSWARE_GITLAB_TOKEN` | `GITLAB_TOKEN` (internal legacy) | External CI bridge GitLab auth |
 | `NIMBUSWARE_CONFIG_FROM_DB=1` | `NIMBUSWARE_CONFIG_FROM_FILES=0` | Mutually exclusive config authority |
 | `NIMBUSWARE_API_BASE` | host + `NIMBUSWARE_API_PORT` | Explicit wins; else derived from bind host/port |
 | `NIMBUSWARE_RUN_DISPATCH` | — | `memory` or `redis` for campaign worker dispatch |
@@ -56,7 +57,7 @@ Slice packet, repo map, symbol sketch, LLM history, handoff, and memory excerpt 
 **Parallelism:** `NIMBUSWARE_PARALLEL_WRITERS` (system), `NIMBUSWARE_MAX_PARALLEL_WRITERS` (user governor) — different layers; not duplicates.
 - Store: `packages/nimbusware_env/settings_store.py`
 - Resolver: `packages/nimbusware_env/settings_resolve.py`
-- Helpers: `packages/nimbusware_env/env_flags.py` (`nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, `env_truthy`, `env_force_on` / `env_force_off`, …)
+- Helpers: `packages/nimbusware_env/env_flags.py` (`nimbusware_api_base_url`, `nimbusware_ollama_base_url`, `nimbusware_api_port`, `nimbusware_github_token`, `nimbusware_gitlab_token`, `env_var_tri_state_summary`, `env_truthy`, `env_force_on` / `env_force_off`, …)
 
 Add new tunables to the catalog first, then read via `env_flags` / `settings_resolve`.
 
