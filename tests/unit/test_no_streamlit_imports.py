@@ -9,7 +9,6 @@ _SCAN_ROOTS = (
     _REPO / "tests",
     _REPO / "scripts",
 )
-_SKIP_PREFIXES = ("scripts/_archive/",)
 
 
 def _is_forbidden(module: str) -> bool:
@@ -18,8 +17,6 @@ def _is_forbidden(module: str) -> bool:
 
 def _scan_file(path: Path) -> list[str]:
     rel = path.relative_to(_REPO).as_posix()
-    if any(rel.startswith(p) for p in _SKIP_PREFIXES):
-        return []
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     hits: list[str] = []
     for node in ast.walk(tree):
@@ -33,7 +30,7 @@ def _scan_file(path: Path) -> list[str]:
     return hits
 
 
-def test_no_streamlit_imports_outside_archive() -> None:
+def test_no_streamlit_imports() -> None:
     offenders: list[str] = []
     for root in _SCAN_ROOTS:
         if not root.is_dir():
