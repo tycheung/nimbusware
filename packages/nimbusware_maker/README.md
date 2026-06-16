@@ -12,12 +12,14 @@ Server-side **maker approval** state machine and slice workflow helpers. The ope
 
 | Tab | Role |
 |-----|------|
-| Home | Projects, readiness, project create (delete via Admin console) |
-| Build | Intent → `POST /runs` |
+| Home | Projects, readiness, intents, factory hero demos |
+| **Chat** | Default entry — classify intent, start runs, session DAG fork/branch, inline theater digest (`chat.js`) |
+| Build | Redirect banner to Chat; legacy `POST /runs` flow via API |
 | Review | Pending slices, diff preview, research approve/reject, stitch summary, git commit status |
-| Progress | Theater SSE, maker-progress SSE, theater transcript export |
+| Progress | Full run theater SSE, maker-progress SSE, operator ribbons, theater transcript export |
+| Plan | Campaign backlog tree |
 | Models | Ranked models, presets, Ollama pull, catalog-info strip |
-| Settings | Operator settings with catalog labels, hardware profile |
+| Settings | Operator settings, chat session resume toggle, hardware profile |
 
 First-run onboarding uses `GET /v1/platform/onboarding` (wizard tab in maker web).
 

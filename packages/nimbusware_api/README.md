@@ -16,7 +16,8 @@ FastAPI route injection uses typed providers in `deps.py` (`EventStore`, `RunOrc
 
 | Area | Path |
 |------|------|
-| User routes | `routes/runs/`, `routes/bundles.py`, `routes/ollama.py`, … |
+| User routes | `routes/runs/`, `routes/chat.py`, `routes/bundles.py`, `routes/ollama.py`, … |
+| Integrations | `routes/integrations.py` — external chat webhook (complements Maker Chat; see `docs/integrations-external-chat.md`) |
 | Admin / Enterprise | `routes/enterprise/`, `routes/admin_ui_bff.py` (Preact BFF, incl. `/admin/ui/enterprise/fleet-dashboard`) |
 | Schemas + OpenAPI | `schemas/` |
 | Timeline read models | `read_models/` (thin wrappers over `nimbusware_projections`) |

@@ -1,6 +1,6 @@
 # nimbusware_mcp
 
-Stdio MCP server (`nimbusware-mcp`) for IDE integration with a running Nimbusware API.
+Stdio MCP server (`nimbusware-mcp`) for IDE integration with a running Nimbusware API. Complements Maker **Chat** (`#/chat`); see [docs/ide-bridge.md](../../docs/ide-bridge.md).
 
 ## Configuration
 

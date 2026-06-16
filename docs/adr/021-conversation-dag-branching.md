@@ -21,5 +21,12 @@ Accepted.
 ## Consequences
 
 - Chat sessions survive API restart when Postgres is configured.
-- Progress tab remains optional drill-down; `#/chat?run_id=` deep links retained.
+- Progress tab remains the drill-down for full multi-agent theater; `#/chat?run_id=` deep links retain a live digest in the main thread.
 - Flat `messages[]` on session GET is a projection of the active path for backward compatibility.
+
+## Current UI (verified)
+
+| Shipped | Not yet in Chat UI |
+|---------|-------------------|
+| Active-path thread, fork, sibling branch list + badges | Visual tree of turns; session history browser (`GET /chat/sessions` is API-only) |
+| Inline theater SSE (last 12 lines, text digest) | Per-`actor_display` labels and full `body_md` (see Progress theater) |

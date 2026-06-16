@@ -25,5 +25,6 @@ Operators need a single Maker entry point that classifies intent (patch, slice, 
 ## Consequences
 
 - Campaign and factory profiles are unchanged; patch is additive.
-- Chat composes into Plan/Progress/Review rather than replacing the adversarial pipeline.
+- **Maker Chat** is the primary in-product operator workspace (sessions, classify, start run, fork/branch, mid-run steering). It does not replace the adversarial pipeline — runs still flow through orchestrator stages.
+- **Progress** remains the drill-down for full run theater (`actor_display`, evidence bodies, ribbons, export). Chat shows an inline theater **digest** (SSE, capped) when `?run_id=` is set.
 - Theater and maker-progress expose work type and classifier rationale on chat-routed runs.

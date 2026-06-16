@@ -32,7 +32,7 @@
 | [enterprise-research-index.md](enterprise-research-index.md) | Enterprise ops | Tenant research index + egress audit |
 | [enterprise-buyer.md](enterprise-buyer.md) | Buyers / security | Enterprise compliance checklist |
 | [security-quality-gates.md](security-quality-gates.md) | Maintainers | bandit, pip-audit, CI gates |
-| [integrations-external-chat.md](integrations-external-chat.md) | Ops | External chat webhook boundary (§20.5) |
+| [integrations-external-chat.md](integrations-external-chat.md) | Ops | Maker Chat workspace + external webhook steering (§20.5) |
 | [operator-interjection-slo.md](operator-interjection-slo.md) | Operators | Interjection drain SLO + Admin timeline explain |
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Enterprise ops | Reference Kubernetes manifests |
 | [../tests/README.md](../tests/README.md) | Developers | Test layout, CI subsets, Playwright 120s timeout |

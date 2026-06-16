@@ -25,8 +25,8 @@ class ExternalChatWebhookResponse(BaseModel):
     last_run_id: str = ""
     source: str = "generic"
     note: str = (
-        "Nimbusware is a coding factory, not a general chat workspace. "
-        "Use this webhook to steer runs via operator chat commands only."
+        "External webhook for run steering from Slack/Teams/etc. "
+        "In-product operator chat: Maker Chat (#/chat) and Admin operator chat."
     )
 
 
@@ -39,8 +39,9 @@ def _webhook_secret() -> str:
 @router.get("/external-chat")
 def external_chat_capabilities(_admin: AdminDep) -> dict[str, str]:
     return {
-        "scope": "operator_commands_only",
+        "scope": "external_run_steering",
         "docs": "docs/integrations-external-chat.md",
+        "in_product_chat": "Maker #/chat, Admin operator chat, MCP nimbusware-mcp",
         "supported_commands": "/run, /timeline, /status, /agent, /help",
         "steering_prefixes": "[patch], [steer], [skip], [build]",
     }

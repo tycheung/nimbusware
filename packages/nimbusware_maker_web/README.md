@@ -7,7 +7,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Tab | Module | APIs |
 |-----|--------|------|
 | Home | `static/js/tabs/home.js` | `/platform/readiness`, `/projects` |
-| Chat | `static/js/tabs/chat.js` | `/chat/sessions`, classify/start, branch graph, inline theater SSE (`onEvent.theater`) |
+| Chat | `static/js/tabs/chat.js` | `/chat/sessions` (create, list, graph, fork, active-leaf), classify/start, inline theater SSE digest (`THEATER_CAP=12`; full theater on Progress) |
 | Build | `static/js/tabs/build.js` | `POST /runs` (redirect banner to Chat) |
 | Review | `static/js/tabs/review.js` | maker pending, research, stitch, slice diff, Run launch check + structured scorecard |
 | Progress | `static/js/tabs/progress.js` | theater + maker-progress SSE (`campaign_progress`), campaign pause/resume/cancel, memory-influence table, council ribbon |

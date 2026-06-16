@@ -1,6 +1,6 @@
 # IDE bridge (MCP)
 
-The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, trigger campaign compaction, and mirror Maker **Chat** intent routing (classify, patch lane, interjection steering, conversation fork/branch) against a running Nimbusware API. **Release v1 ships the MCP bridge** (tools below + `tests/e2e/journeys/test_mcp_ide_parity_journey.py`). What is **not** in v1: inline in-editor agent completion parity with Cursor — use MCP tools for governed runs. See [ADR 020](adr/020-unified-chat-work-type-routing.md) and [ADR 021](adr/021-conversation-dag-branching.md).
+The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, trigger campaign compaction, and mirror Maker **Chat** intent routing (classify, patch lane, interjection steering, conversation fork/branch) against a running Nimbusware API. **Release v1 ships the MCP bridge** (tools below + `tests/e2e/journeys/test_mcp_ide_parity_journey.py`). Maker **Chat** (`#/chat`) is the in-product operator workspace; MCP complements it for IDE-driven flows. What is **not** in v1: inline in-editor agent completion parity with Cursor — use MCP tools for governed runs. See [ADR 020](adr/020-unified-chat-work-type-routing.md) and [ADR 021](adr/021-conversation-dag-branching.md).
 
 ## Requirements
 

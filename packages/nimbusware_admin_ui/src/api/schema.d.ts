@@ -3669,7 +3669,7 @@ export interface components {
             source: string;
             /**
              * Note
-             * @default Nimbusware is a coding factory, not a general chat workspace. Use this webhook to steer runs via operator chat commands only.
+             * @default External webhook for run steering from Slack/Teams/etc. In-product operator chat: Maker Chat (#/chat) and Admin operator chat.
              */
             note: string;
         };

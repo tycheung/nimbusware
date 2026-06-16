@@ -334,7 +334,8 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - Rules-first classifier (`nimbusware_maker.intent_classifier`) with optional LLM when `NIMBUSWARE_INTENT_CLASSIFIER_MODEL` is set; rules hard-override unsafe LLM routes
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` — mapped to workflow profiles (`quick_local`, `patch`, `micro_slice` or project default, `campaign_micro_slice`, `campaign_factory_zero_touch`); `work_type` + `work_type_source` (`classifier`, `operator_override`, `ide`) frozen on `run.created`
 - Patch attachments: target paths, failing test, stack trace → `patch_context` on start; mid-run steering via `[steer]` interjection (chat) or Progress interjection ribbon
-- Congruent thread: classifier, run status, steering, and live **run theater** (SSE) stay on `#/chat` when `?run_id=` is set; fork from any user turn; branch picker retains sibling paths ([ADR 021](docs/adr/021-conversation-dag-branching.md))
+- Congruent thread: classifier, run status, steering, and live **run theater** (SSE digest) stay on `#/chat` when `?run_id=` is set; fork from any user turn; branch picker retains sibling paths ([ADR 021](docs/adr/021-conversation-dag-branching.md))
+- **Chat workspace limits:** inline theater shows a capped digest (last 12 lines, truncated text, no per-role `actor_display`); full multi-agent theater with evidence bodies is on **Progress**; `GET /v1/chat/sessions` lists sessions per project but there is no session browser UI yet (resume one session via Settings)
 - First-visit **autonomy ladder** hint (patch → micro-slice → factory) aligned with Nimble autopilot preset (~level 8); dismissible via localStorage
 - Escalation: patch gate fail → offer slice widen; repeated slice replan / gate fail → offer campaign promotion; mid-thread `switch-mode` without losing session context
 - Settings → **Chat** → resume last session toggle (`localStorage` `maker_chat_resume_session`)
@@ -348,7 +349,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 **Progress**
 
-- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream` with named `event: theater` payloads carrying `headline` / `body_md`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata; Chat inline theater uses the same stream via `sse-client.js` (`theaterLineText`, `onEvent.theater`)
+- **Run theater** group chat on Progress tab (`GET /v1/runs/{id}/theater`, SSE `/theater/stream` with named `event: theater` payloads carrying `headline` / `body_md` and `actor_display`, markdown export `/theater/export`); workflow `theater:` block frozen on `run.created` metadata; Chat inline theater uses the same stream via `sse-client.js` (`theaterLineText`, `onEvent.theater`) as a capped digest
 - Plain-language summaries (`GET /v1/runs/{id}/maker-progress`, SSE `/maker-progress/stream?simple=true`); `gate_summary` one-liner when blocked (learnings ribbon highlighted); `role_cost_summary` token/latency chip when cloud or telemetry present; `resource_pressure` banner when governor throttles RAM
 - **Memory influence** table (`GET /v1/runs/{id}/memory-influence`) — stage, hit count, and query digest per retrieval injection
 - Optional theater LLM one-liners: `NIMBUSWARE_THEATER_LLM_SUMMARY=1` or `theater.llm_summary` on `run.created` (uses Ollama when `NIMBUSWARE_USE_LLM=1`, otherwise rules digest; off by default)
@@ -518,7 +519,7 @@ Configure fleet memory canonical store: `NIMBUSWARE_FLEET_MEMORY_STORE_URI` or `
 
 Enterprise APIs (read-only / ops): `GET /v1/enterprise/fleet/analytics/compare`, `GET /v1/enterprise/fleet-learnings/search` (org-wide learnings across tenant projects), `GET /v1/config/blast-radius`, `GET /v1/enterprise/audit-export` (includes IAM, events, research index, egress audit), `GET /v1/enterprise/research-index`, `GET /v1/enterprise/egress-audit`. Buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md).
 
-External chat (§20.5 boundary — not in-product workspace): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token — `/run`, `/status`, and `[patch]`/`[steer]`/`[skip]`/`[build]` steering on `last_run_id` ([docs/integrations-external-chat.md](docs/integrations-external-chat.md), [docs/operator-interjection-slo.md](docs/operator-interjection-slo.md)).
+External chat webhook (§20.5 — complements Maker Chat, not a replacement): `POST /v1/integrations/external-chat/webhook` with `NIMBUSWARE_WEBHOOK_SECRET` or admin token — `/run`, `/status`, and `[patch]`/`[steer]`/`[skip]`/`[build]` steering on `last_run_id` ([docs/integrations-external-chat.md](docs/integrations-external-chat.md), [docs/operator-interjection-slo.md](docs/operator-interjection-slo.md)).
 
 ## Linux desktop (GTK / pywebview)
 

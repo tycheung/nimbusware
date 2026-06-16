@@ -38,6 +38,7 @@ Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dua
 |-----|---------|
 | [operator-settings.md](operator-settings.md) | Settings catalog and env resolution |
 | [ide-bridge.md](ide-bridge.md) | MCP IDE bridge (`nimbusware-mcp`) |
+| [integrations-external-chat.md](integrations-external-chat.md) | Maker Chat workspace + external webhook steering |
 | [deploy/README.md](deploy/README.md) | Docker, CI jobs, production checklist |
 | [deploy/oidc.md](deploy/oidc.md) | Enterprise Admin OIDC SSO |
 | [operator-bundle-catalog-promotion.md](operator-bundle-catalog-promotion.md) | Code Researcher → catalog candidate flow |
