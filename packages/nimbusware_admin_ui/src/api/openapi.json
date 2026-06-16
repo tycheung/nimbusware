@@ -25190,6 +25190,24 @@
         ],
         "summary": "List Projects",
         "operationId": "list_projects_v1_projects_get",
+        "parameters": [
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -25206,14 +25224,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25228,26 +25248,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25262,14 +25282,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -25279,14 +25297,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25301,26 +25321,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25335,14 +25355,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -25356,15 +25374,33 @@
         ],
         "summary": "Create Project",
         "operationId": "create_project_v1_projects_post",
+        "parameters": [
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProjectCreateRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -25382,14 +25418,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25404,26 +25442,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25438,14 +25476,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -25455,14 +25491,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25477,26 +25515,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -25511,14 +25549,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -25794,6 +25830,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Project Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -26319,6 +26371,22 @@
               "format": "uuid",
               "title": "Session Id"
             }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
           }
         ],
         "requestBody": {
@@ -26572,6 +26640,24 @@
         ],
         "summary": "Create Chat Session",
         "operationId": "create_chat_session_v1_chat_sessions_post",
+        "parameters": [
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -26757,6 +26843,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Project Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -26951,6 +27053,22 @@
               "type": "boolean",
               "default": false,
               "title": "Include Turns"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -27205,6 +27323,22 @@
               "format": "uuid",
               "title": "Session Id"
             }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
           }
         ],
         "responses": {
@@ -27457,6 +27591,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -27721,6 +27871,22 @@
               "format": "uuid",
               "title": "Session Id"
             }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
           }
         ],
         "requestBody": {
@@ -27984,6 +28150,22 @@
               "format": "uuid",
               "title": "Session Id"
             }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
           }
         ],
         "requestBody": {
@@ -28246,6 +28428,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Session Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -28520,6 +28718,22 @@
               "format": "uuid",
               "title": "Turn Id"
             }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
           }
         ],
         "requestBody": {
@@ -28773,15 +28987,33 @@
         ],
         "summary": "Classify Chat Intent",
         "operationId": "classify_chat_intent_v1_chat_classify_post",
+        "parameters": [
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ClassifyIntentBody"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -28799,14 +29031,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -28821,26 +29055,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -28855,14 +29089,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -28872,14 +29104,16 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -28894,26 +29128,26 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               },
               "application/problem+json": {
                 "schema": {
+                  "additionalProperties": false,
+                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``).",
                   "properties": {
                     "code": {
-                      "type": "string",
-                      "title": "Code"
+                      "title": "Code",
+                      "type": "string"
                     },
                     "message": {
-                      "type": "string",
-                      "title": "Message"
+                      "title": "Message",
+                      "type": "string"
                     },
                     "details": {
                       "anyOf": [
@@ -28928,14 +29162,12 @@
                       "title": "Details"
                     }
                   },
-                  "additionalProperties": false,
-                  "type": "object",
                   "required": [
                     "code",
                     "message"
                   ],
                   "title": "Problem",
-                  "description": "Flat JSON error envelope for ``/v1`` (``code`` + ``message`` + optional ``details``)."
+                  "type": "object"
                 }
               }
             }
@@ -28960,6 +29192,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Project Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -29211,6 +29459,22 @@
               "type": "string",
               "format": "uuid",
               "title": "Project Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -29483,6 +29747,22 @@
             "schema": {
               "type": "string",
               "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],
@@ -33607,6 +33887,22 @@
               "minimum": 1,
               "default": 100,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "X-Nimbusware-Admin-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Nimbusware-Admin-Token"
             }
           }
         ],

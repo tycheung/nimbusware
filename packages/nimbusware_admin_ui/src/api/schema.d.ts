@@ -15467,7 +15467,9 @@ export interface operations {
     list_projects_v1_projects_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -15543,7 +15545,9 @@ export interface operations {
     create_project_v1_projects_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -15835,7 +15839,9 @@ export interface operations {
     update_project_v1_projects__project_id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 project_id: string;
             };
@@ -15945,7 +15951,9 @@ export interface operations {
     start_chat_session_v1_chat_sessions__session_id__start_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16057,7 +16065,9 @@ export interface operations {
             query: {
                 project_id: string;
             };
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -16133,7 +16143,9 @@ export interface operations {
     create_chat_session_v1_chat_sessions_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -16215,7 +16227,9 @@ export interface operations {
             query?: {
                 include_turns?: boolean;
             };
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16321,7 +16335,9 @@ export interface operations {
     get_chat_graph_v1_chat_sessions__session_id__graph_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16427,7 +16443,9 @@ export interface operations {
     fork_chat_session_v1_chat_sessions__session_id__fork_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16537,7 +16555,9 @@ export interface operations {
     set_chat_active_leaf_v1_chat_sessions__session_id__active_leaf_put: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16647,7 +16667,9 @@ export interface operations {
     append_chat_turn_v1_chat_sessions__session_id__turns_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16757,7 +16779,9 @@ export interface operations {
     post_chat_message_v1_chat_sessions__session_id__messages_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
             };
@@ -16867,7 +16891,9 @@ export interface operations {
     switch_chat_mode_v1_chat_sessions__session_id__turns__turn_id__switch_mode_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 session_id: string;
                 turn_id: string;
@@ -16978,7 +17004,9 @@ export interface operations {
     classify_chat_intent_v1_chat_classify_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -17058,7 +17086,9 @@ export interface operations {
     get_project_context_artifacts_v1_projects__project_id__context_artifacts_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 project_id: string;
             };
@@ -17164,7 +17194,9 @@ export interface operations {
     post_project_context_artifact_v1_projects__project_id__context_artifacts_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 project_id: string;
             };
@@ -17274,7 +17306,9 @@ export interface operations {
     bridge_context_artifact_to_memory_v1_projects__project_id__context_artifacts__artifact_id__bridge_memory_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path: {
                 project_id: string;
                 artifact_id: string;
@@ -18971,7 +19005,9 @@ export interface operations {
                 project_id: string;
                 limit?: number;
             };
-            header?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
