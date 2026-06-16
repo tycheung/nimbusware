@@ -36,3 +36,7 @@ def test_chat_turn_analytics_endpoint(client: TestClient) -> None:
     body = resp.json()
     assert body["turn_count"] >= 2
     assert body["classifier_start_count"] == 1
+    journey = body.get("chat_journey_coverage") or {}
+    assert journey.get("scenario_count", 0) >= 1
+    assert "coverage_rate" in journey
+    assert "meets_target" in journey

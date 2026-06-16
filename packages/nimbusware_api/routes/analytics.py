@@ -67,7 +67,11 @@ def get_platform_chat_turn_analytics(
     if not hasattr(chat_store, "list_recent_analytics_turn_rows"):
         return build_chat_turn_summary([], limit_sessions=limit_sessions)
     rows = chat_store.list_recent_analytics_turn_rows(limit_sessions=limit_sessions)
-    return build_chat_turn_summary(rows, limit_sessions=limit_sessions)
+    summary = build_chat_turn_summary(rows, limit_sessions=limit_sessions)
+    from nimbusware_projections.builders.chat_journey_coverage import build_chat_journey_coverage
+
+    summary["chat_journey_coverage"] = build_chat_journey_coverage(find_repo_root())
+    return summary
 
 
 @router.get("/platform/analytics/bundle-outcomes")

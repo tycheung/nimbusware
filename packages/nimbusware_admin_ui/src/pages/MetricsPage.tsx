@@ -15,10 +15,19 @@ function fmtRate(v: unknown): string {
   return `${(v * 100).toFixed(1)}%`;
 }
 
+type ChatJourneyCoverage = {
+  scenario_count?: number;
+  wired_count?: number;
+  coverage_rate?: number | null;
+  target_rate?: number;
+  meets_target?: boolean;
+};
+
 type ChatTurnSummary = {
   turn_count?: number;
   sessions_scanned?: number;
   classifier_acceptance_rate?: number;
+  chat_journey_coverage?: ChatJourneyCoverage;
 };
 
 export function MetricsPage() {
@@ -141,6 +150,23 @@ export function MetricsPage() {
                         chatTurns.sessions_scanned ?? 0,
                       )} sessions · chat rate ${fmtRate(chatTurns.classifier_acceptance_rate)}`
                     : "Load /v1/platform/analytics/chat-turns for store-backed metrics"}
+                </td>
+              </tr>
+              <tr>
+                <td>Chat journey coverage (target ≥ 80%)</td>
+                <td>
+                  {chatTurns.chat_journey_coverage &&
+                  typeof chatTurns.chat_journey_coverage.scenario_count === "number"
+                    ? `${fmtRate(chatTurns.chat_journey_coverage.coverage_rate)} (${String(
+                        chatTurns.chat_journey_coverage.wired_count ?? 0,
+                      )}/${String(chatTurns.chat_journey_coverage.scenario_count ?? 0)} scenarios${
+                        chatTurns.chat_journey_coverage.meets_target === true
+                          ? " ✓"
+                          : chatTurns.chat_journey_coverage.meets_target === false
+                            ? " (below target)"
+                            : ""
+                      })`
+                    : "—"}
                 </td>
               </tr>
               <tr>
