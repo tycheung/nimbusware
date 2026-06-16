@@ -18,13 +18,13 @@ Operators need a single Maker entry point that classifies intent (patch, slice, 
    - `[steer]` — inject into agent JIT volatile prompt
    - `[skip]` — defer current backlog slice
    - `[build]` — spawn campaign (existing)
-5. **Autopilot level 8 “Nimble”** in `configs/autopilot/presets.yaml` is the default posture for patch runs (`stop_on_slice_test_fail`, `stop_at_terminal_review`).
+5. **Autopilot defaults by work type** — patch → level **8 Nimble**; factory → level **10 Continuous improve** (`autopilot_effective` on `run.created`); operator may override per run via trust slider or saved profile.
 6. **MCP parity** — `nimbusware_classify_intent`, `nimbusware_patch`, `nimbusware_interject`, `nimbusware_run_tests` mirror chat routing and steering for IDE agents.
 7. **Optional LLM classifier** when `NIMBUSWARE_INTENT_CLASSIFIER_MODEL` is set; rules hard-override unsafe LLM routes; fallback to rules v0.
 
 ## Consequences
 
 - Campaign and factory profiles are unchanged; patch is additive.
-- **Maker Chat** is the primary in-product operator workspace (sessions, classify, start run, fork/branch, mid-run steering). It does not replace the adversarial pipeline — runs still flow through orchestrator stages.
-- **Progress** remains the drill-down for full run theater (`actor_display`, evidence bodies, ribbons, export). Chat shows an inline theater **digest** (SSE, capped) when `?run_id=` is set.
+- **Maker Chat** is the primary in-product operator workspace (sessions, classify, start run, fork/branch, mid-run steering, run cards, trust ribbon). It does not replace the adversarial pipeline — runs still flow through orchestrator stages.
+- **Progress** remains the drill-down for compaction, dev-env, and export; Chat shares the same theater renderer (`actor_display`, evidence bodies) in run cards when `?run_id=` is set.
 - Theater and maker-progress expose work type and classifier rationale on chat-routed runs.

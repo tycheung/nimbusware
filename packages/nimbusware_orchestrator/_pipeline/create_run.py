@@ -35,7 +35,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_dict,
     workflow_profile_path,
 )
-from nimbusware_orchestrator.autopilot_profiles import autopilot_effective_metadata
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
@@ -413,6 +412,8 @@ class CreateRunMixin:
             wt = "patch"
         wts = str(work_type_source or "").strip().lower() or None
         is_patch_run = patch_block.enabled or wt == "patch"
+        from nimbusware_orchestrator.autopilot_profiles import autopilot_effective_metadata
+
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
             event_id=uuid4(),
