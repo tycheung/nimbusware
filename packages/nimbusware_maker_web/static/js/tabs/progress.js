@@ -1,6 +1,6 @@
 import { apiJson, toast } from "../api-client.js";
-import { renderCriticReliabilityPanel, loadRunCriticReliability } from "../critic-reliability-panel.js";
-import { renderLaunchScorecard } from "../launch-scorecard.js";
+import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
+import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
 
@@ -325,6 +325,12 @@ export async function mountProgress(root) {
     if (!list || !msg) return;
     const li = document.createElement("li");
     li.className = `theater-line severity-${msg.severity || "info"}`;
+    if (
+      msg.data_testid?.includes("compaction") ||
+      (msg.message_kind === "context" && /compact/i.test(String(msg.headline || "")))
+    ) {
+      li.classList.add("theater-line--compaction");
+    }
     if (msg.store_seq != null) {
       const pick = document.createElement("input");
       pick.type = "checkbox";
@@ -496,25 +502,40 @@ export async function mountProgress(root) {
     }
   }
 
-  function renderCompletion(completionPayload, cp) {
+  function renderCompletion(completionPayload, cp, body = {}) {
     const panel = document.getElementById("completion-cockpit");
     if (!panel) return;
-    const show = Boolean(cp?.state) || Boolean(completionPayload);
+    const runStatus = String(body.run_status || "").toLowerCase();
+    const gateSummary = body.gate_summary;
+    const cpState = String(cp?.state || "").toLowerCase();
+    const isTerminal =
+      runStatus === "completed" ||
+      runStatus === "failed" ||
+      cpState === "completed" ||
+      cpState === "failed";
+    const show =
+      Boolean(cp?.state) || Boolean(completionPayload) || isTerminal || Boolean(gateSummary);
     panel.hidden = !show;
     if (!show) return;
 
-    const terminal = document.getElementById("completion-terminal");
+    const terminalEl = document.getElementById("completion-terminal");
     const rationale = document.getElementById("completion-rationale");
     const blocking = document.getElementById("completion-blocking");
-    const state = String(cp?.state || bodyRunStatus(completionPayload) || "executing");
-    if (terminal) {
-      terminal.textContent = `Campaign: ${state}`;
-      terminal.dataset.state = state;
+    const state = String(cp?.state || bodyRunStatus(completionPayload) || runStatus || "executing");
+    if (terminalEl) {
+      const slices =
+        cp?.slices_total != null
+          ? ` · ${cp.slices_completed || 0}/${cp.slices_total} slices`
+          : "";
+      terminalEl.textContent = `Campaign: ${state}${slices}`;
+      terminalEl.dataset.state = state;
     }
     const latest = completionPayload || {};
     if (rationale) {
-      rationale.textContent = latest.rationale || "";
-      rationale.hidden = !latest.rationale;
+      const gateText = formatGateSummary(gateSummary);
+      const rationaleText = latest.rationale || (gateText ? `Gate: ${gateText}` : "");
+      rationale.textContent = rationaleText;
+      rationale.hidden = !rationaleText;
     }
     if (blocking) {
       blocking.replaceChildren();
@@ -522,7 +543,14 @@ export async function mountProgress(root) {
       if (!findings.length) {
         const li = document.createElement("li");
         li.className = "muted";
-        li.textContent = latest.verdict ? `Verdict: ${latest.verdict}` : "No blocking findings recorded.";
+        if (latest.verdict) {
+          li.textContent = `Verdict: ${latest.verdict}`;
+        } else if (isTerminal && gateSummary) {
+          li.textContent = `Launch readiness: ${formatGateSummary(gateSummary) || "see gate summary above"}`;
+          li.dataset.testid = "maker-completion-launch-hint";
+        } else {
+          li.textContent = "No blocking findings recorded.";
+        }
         blocking.appendChild(li);
       } else {
         for (const item of findings) {
@@ -677,8 +705,8 @@ export async function mountProgress(root) {
         handoffMount.textContent = "";
       }
     }
-    if (body._completion_eval != null || body.campaign_progress) {
-      renderCompletion(body._completion_eval, body.campaign_progress);
+    if (body._completion_eval != null || body.campaign_progress || body.gate_summary) {
+      renderCompletion(body._completion_eval, body.campaign_progress, body);
     }
   }
 
@@ -1111,7 +1139,19 @@ export async function mountProgress(root) {
     if (body?.campaign_progress) {
       body._completion_eval = await loadCompletionEval(id);
     }
+    const runStatus = String(body?.run_status || "").toLowerCase();
+    if (!body._completion_eval && (runStatus === "completed" || runStatus === "failed")) {
+      body._completion_eval = await loadCompletionEval(id);
+    }
     renderProgress(body);
+    const terminal = runStatus === "completed" || runStatus === "failed";
+    if (terminal) {
+      const mount = document.getElementById("completion-launch-scorecard");
+      if (mount && !mount.querySelector("table")) {
+        const scorecard = await scorecardFromTimeline(apiJson, id);
+        if (scorecard) renderLaunchScorecard(mount, scorecard, { testIdPrefix: "maker-completion" });
+      }
+    }
   }
 
   progressHandle = openSseStream(`/runs/${id}/maker-progress/stream?simple=true`, {
@@ -1149,7 +1189,7 @@ export async function mountProgress(root) {
   });
 
   try {
-    const criticBody = await loadRunCriticReliability(apiJson, id);
+    const criticBody = await loadRunOrFleetCriticReliability(apiJson, id);
     const criticPanel = document.getElementById("critic-reliability-panel");
     const criticMount = document.getElementById("critic-reliability-mount");
     if (criticPanel && criticMount && (criticBody.rows || []).length) {

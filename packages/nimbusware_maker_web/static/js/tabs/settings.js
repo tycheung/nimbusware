@@ -1,5 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
-import { renderCriticReliabilityPanel, loadRunCriticReliability } from "../critic-reliability-panel.js";
+import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard } from "../launch-scorecard.js";
 import { getActiveProjectId, hydrateActiveRun, resolveRunId } from "../session-hub.js";
 
@@ -455,7 +455,7 @@ export async function mountSettings(root) {
 
   if (presetRunId) {
     try {
-      const criticBody = await loadRunCriticReliability(apiJson, presetRunId);
+      const criticBody = await loadRunOrFleetCriticReliability(apiJson, presetRunId);
       renderCriticReliabilityPanel(root.querySelector("#settings-critic-mount"), criticBody, {
         testIdPrefix: "maker-settings-critic",
       });

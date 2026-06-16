@@ -2,6 +2,12 @@ export function appendTheaterLine(container, msg, { testid, lineClass = "theater
   if (!container || !msg) return null;
   const li = document.createElement("li");
   li.className = `${lineClass} severity-${msg.severity || "info"}`;
+  if (
+    msg.data_testid?.includes("compaction") ||
+    (msg.message_kind === "context" && /compact/i.test(String(msg.headline || "")))
+  ) {
+    li.classList.add("theater-line--compaction");
+  }
   if (msg.store_seq != null) {
     const pick = document.createElement("input");
     pick.type = "checkbox";

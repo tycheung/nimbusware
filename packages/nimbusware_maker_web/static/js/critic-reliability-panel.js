@@ -29,3 +29,44 @@ export function renderCriticReliabilityPanel(container, body, { testIdPrefix = "
 export async function loadRunCriticReliability(apiJson, runId) {
   return apiJson(`/runs/${encodeURIComponent(runId)}/critic-reliability`);
 }
+
+export async function loadFleetCriticReliability(apiJson) {
+  try {
+    const body = await apiJson("/platform/analytics/competitive-summary?limit_runs=200");
+    const snap = body?.metrics?.critic_reliability;
+    if (!snap || typeof snap !== "object") {
+      return { caption: "No fleet critic snapshot.", rows: [] };
+    }
+    const rows = [];
+    if (snap.critic_fail_rate != null) {
+      const rate = Number(snap.critic_fail_rate);
+      rows.push({
+        metric: "Critic FAIL rate (fleet)",
+        value: Number.isFinite(rate) ? `${(rate * 100).toFixed(1)}%` : String(snap.critic_fail_rate),
+      });
+    }
+    if (snap.runs_scanned != null) {
+      rows.push({ metric: "Runs scanned", value: String(snap.runs_scanned) });
+    }
+    if (snap.runs_with_critics != null) {
+      rows.push({ metric: "Runs with critics", value: String(snap.runs_with_critics) });
+    }
+    return {
+      caption: snap.note || "Fleet critic reliability snapshot.",
+      rows,
+    };
+  } catch {
+    return { caption: "Critic reliability unavailable.", rows: [] };
+  }
+}
+
+export async function loadRunOrFleetCriticReliability(apiJson, runId) {
+  const runBody = await loadRunCriticReliability(apiJson, runId);
+  if ((runBody.rows || []).length) return runBody;
+  const fleet = await loadFleetCriticReliability(apiJson);
+  if (!(fleet.rows || []).length) return runBody;
+  return {
+    ...fleet,
+    caption: `This run has no critic events. ${fleet.caption}`,
+  };
+}
