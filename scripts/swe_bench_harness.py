@@ -70,7 +70,7 @@ def _fixture_slice_plan_factory(target_paths: list[str]):
         return parse_slice_plan(
             {
                 "slice_id": f"slice-{slice_index}",
-                "rationale": "SWE-bench fixture micro-slice",
+                "rationale": "micro_slice regression fixture",
                 "target_paths": target_paths,
                 "acceptance_criteria": "Scoped fixture tests pass",
             },
@@ -223,7 +223,7 @@ def run_harness(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Nimbusware SWE-bench harness")
+    parser = argparse.ArgumentParser(description="Nimbusware micro_slice regression harness")
     parser.add_argument(
         "--manifest",
         type=Path,
