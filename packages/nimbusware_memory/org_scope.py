@@ -14,7 +14,6 @@ def fleet_scope_hash(
     *,
     org_slug: str = "default",
 ) -> str:
-    """Stable org/fleet scope id for cross-repo retrieval within a tenant."""
     slug = org_slug.strip().lower() or "default"
     raw = f"{_FLEET_SCOPE_PREFIX}:{tenant_id}:{slug}".encode()
     return hashlib.sha256(raw).hexdigest()[:16]

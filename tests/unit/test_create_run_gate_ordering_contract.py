@@ -38,7 +38,6 @@ _GATE_EXCEPTIONS: list[tuple[str, type[Exception], str]] = [
 
 
 def _make_recorder(gate_name: str, calls: list[str]) -> Callable[..., None]:
-    """Build a no-op recorder closure for ``gate_name`` (factory avoids late-binding)."""
 
     def _recorder(*_args: object, **_kwargs: object) -> None:
         calls.append(gate_name)
@@ -47,7 +46,6 @@ def _make_recorder(gate_name: str, calls: list[str]) -> Callable[..., None]:
 
 
 def _make_raiser(exc_class: type[Exception], message: str) -> Callable[..., None]:
-    """Build a closure that raises ``exc_class(message)`` (factory avoids late-binding)."""
 
     def _raiser(*_args: object, **_kwargs: object) -> None:
         raise exc_class(message)
@@ -60,7 +58,6 @@ def _make_recorder_raiser(
     message: str,
     calls: list[str],
 ) -> Callable[..., None]:
-    """Build a closure that records its call AND raises (used in Part C for the N+1 gate)."""
 
     def _fn(*_args: object, **_kwargs: object) -> None:
         calls.append(gate_name)
@@ -73,7 +70,6 @@ def _install_recorder_for_all_gates(
     monkeypatch: pytest.MonkeyPatch,
     calls: list[str],
 ) -> None:
-    """Replace each of the 5 gates in the pipeline namespace with a recorder."""
     for name in _GATE_NAMES:
         monkeypatch.setattr(f"{_GATE_MODULE}.{name}", _make_recorder(name, calls))
 
@@ -84,7 +80,6 @@ def _install_raiser_for_gate(
     exc_class: type[Exception],
     message: str,
 ) -> None:
-    """Replace a single gate in the pipeline namespace with a raiser."""
     monkeypatch.setattr(f"{_GATE_MODULE}.{gate_name}", _make_raiser(exc_class, message))
 
 

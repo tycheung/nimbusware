@@ -143,7 +143,6 @@ def policy_snapshot_from_materializer(
     workflow_profile: str,
     run_overrides: dict[str, Any] | None = None,
 ) -> PolicySnapshotV1:
-    """Build policy snapshot from materialized config."""
     base = materializer.get_model_routing_base()
     wf = materializer.get_workflow_profile_dict(workflow_profile)
     return merge_policy_snapshot(base, wf, run_overrides)

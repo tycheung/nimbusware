@@ -19,7 +19,6 @@ _VALUE_ERROR_PREFIX = "YAML root must be a mapping: "
 
 
 def _write_yaml(tmp_path: Path, body: str, name: str = "root.yaml") -> Path:
-    """Write ``body`` to ``tmp_path/name`` and return the path."""
     path = tmp_path / name
     path.write_text(body, encoding="utf-8")
     return path

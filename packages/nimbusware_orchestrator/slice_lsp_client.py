@@ -81,7 +81,6 @@ def _venv_langserver_candidates() -> Sequence[Path]:
 
 
 def resolve_lsp_command_argv() -> list[str] | None:
-    """Resolve langserver argv: env override, venv scripts, PATH, or npx."""
     override = nimbusware_slice_lsp_command()
     if override:
         return shlex.split(override, posix=os.name != "nt")
@@ -168,7 +167,6 @@ def fetch_document_symbols(
     command_argv: list[str] | None = None,
     timeout_sec: float | None = None,
 ) -> tuple[list[dict[str, Any]], str]:
-    """Run pyright-langserver for one file; return (symbols, reason_on_failure)."""
     root = repo_root.resolve()
     path = (root / rel_path).resolve()
     if not path.is_file() or path.suffix != ".py":

@@ -82,7 +82,6 @@ def select_bundle_id_for_workflow(
     *,
     config_materializer: Any | None = None,
 ) -> str:
-    """Resolve bundle id: ``workflow_bundle_map`` in catalog, else first bundle, else default."""
     raw = load_bundle_catalog_content(repo_root, config_materializer=config_materializer)
     if raw is None:
         return "auth-rbac-starter"
@@ -206,7 +205,6 @@ def effective_integrator_min_score_to_pass(
     *,
     config_materializer: Any | None = None,
 ) -> float:
-    """Resolve min score: env (non-empty) beats workflow, then ``thresholds.yaml``."""
     env_raw = env_str("NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS")
     if env_raw:
         try:

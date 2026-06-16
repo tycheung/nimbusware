@@ -25,7 +25,6 @@ def _metadata(row: dict[str, Any]) -> dict[str, Any]:
 
 
 def window_tokens_from_events(events: list[dict[str, Any]]) -> int:
-    """Resolve model context window from preflight or cached hardware tier."""
     from nimbusware_projections.builders.preflight import preflight_timeline_summary
 
     pf = preflight_timeline_summary(events)

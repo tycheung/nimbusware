@@ -226,7 +226,6 @@ def emit_refactor_post_stitch_stage_and_critique(
     unanimous_gate_enforce: bool = False,
     force_fail: bool = False,
 ) -> bool:
-    """Mandatory normalization after stitch.applied. Returns True if gate FAIL."""
     tax_keys = critique_router.pairing_for("refactorer")
     if len(tax_keys) < 2:
         return False

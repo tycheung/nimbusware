@@ -15,7 +15,6 @@ class WriterStageResult:
 async def run_parallel_writer_group(
     stage_runners: list[tuple[str, Callable[[], WriterStageResult]]],
 ) -> list[WriterStageResult]:
-    """Run each writer stage callable concurrently (sync work in ``asyncio.to_thread``)."""
 
     async def _run_one(
         stage_name: str,

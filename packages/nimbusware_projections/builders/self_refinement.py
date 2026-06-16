@@ -11,7 +11,6 @@ _SELF_REFINEMENT_POLICY_STAGE = "self_refinement:policy"
 
 
 def self_refinement_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Latest ``stage.started`` with ``self_refinement:policy`` (self-refinement marker)."""
     out: dict[str, Any] | None = None
     marker_count = 0
     first_marker_occurred_at: Any = None

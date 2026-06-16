@@ -21,7 +21,6 @@ _OLLAMA_POST_RESPONSE: dict[str, Any] = {
 
 
 def _mock_response(json_data: dict[str, Any]) -> MagicMock:
-    """Build a ``httpx.Response``-shaped MagicMock returning ``json_data``."""
     resp = MagicMock(spec=httpx.Response)
     resp.raise_for_status.return_value = None
     resp.json.return_value = json_data

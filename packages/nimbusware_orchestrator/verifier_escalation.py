@@ -6,7 +6,6 @@ from nimbusware_orchestrator.merge import load_yaml
 
 
 def load_escalate_on_first_verifier_failure(repo_root: Path) -> bool:
-    """When true, emit one ``run.escalated`` after the first verifier ``finding.created``."""
     path = repo_root / "configs" / "escalation" / "policy.yaml"
     if not path.is_file():
         return False

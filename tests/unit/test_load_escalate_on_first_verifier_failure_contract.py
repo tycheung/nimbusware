@@ -10,7 +10,6 @@ from nimbusware_orchestrator.verifier_escalation import (
 
 
 def _write_policy(tmp_path: Path, body: str) -> Path:
-    """Write ``configs/escalation/policy.yaml`` under tmp_path; return repo root."""
     policy_dir = tmp_path / "configs" / "escalation"
     policy_dir.mkdir(parents=True, exist_ok=True)
     (policy_dir / "policy.yaml").write_text(body, encoding="utf-8")

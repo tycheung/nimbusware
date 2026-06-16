@@ -12,7 +12,6 @@ from nimbusware_orchestrator.registry_db import load_registry_from_postgres
 
 
 def _write_yaml(tmp_path: Path, content: str, *, name: str = "roles.yaml") -> Path:
-    """Write a YAML file under tmp_path; allow per-axis unique filename."""
     p = tmp_path / name
     p.write_text(content, encoding="utf-8")
     return p

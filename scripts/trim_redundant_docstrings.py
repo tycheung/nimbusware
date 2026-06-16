@@ -74,6 +74,8 @@ _REDUNDANT_PREFIXES = (
     "NIMBUSWARE_SELF_REFINEMENT",
     "yaml.YAMLError``",
     "Orchestrator outbound HTTP",
+    "Materialized configuration for",
+    "Nimbusware platform edition",
 )
 
 
@@ -185,6 +187,35 @@ _ONELINE_FUNCTION_DOC_PREFIXES = (
     "Reconstruct dict for ",
     "Hash-based unit vector",
     "Call Ollama ``/api/embeddings``",
+    "Latest ``",
+    "Structured ",
+    "Write ",
+    "Run ",
+    "Hook ",
+    "Static ",
+    "Mandatory ",
+    "Build ",
+    "Admin-only ",
+    "Stable ",
+    "Parsed ``",
+    "Default ",
+    "Data-driven ",
+    "When true,",
+    "Map ",
+    "Normalize ",
+    "Combined ",
+    "Keep ",
+    "Replace ",
+    "Extract ",
+    "Prune ",
+    "List ",
+    "Compare ",
+    "Scan ",
+    "Resolve ",
+    "Identical ",
+    "Nimbusware repo root",
+    "Directory used when",
+    "Named export/",
 )
 
 
@@ -203,6 +234,36 @@ def _should_strip_verbose_multiline(doc: str) -> bool:
     if "\n" not in stripped:
         return False
     return any(m in stripped for m in _VERBOSE_MULTILINE_MARKERS)
+
+
+def _strip_oneline_class_docstrings(path: Path) -> bool:
+    text = path.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    lines = text.splitlines(keepends=True)
+    removals: list[tuple[int, int]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        if not node.body or len(node.body) != 1:
+            continue
+        first = node.body[0]
+        if not isinstance(first, ast.Expr) or not isinstance(first.value, ast.Constant):
+            continue
+        if not isinstance(first.value.value, str):
+            continue
+        doc = first.value.value
+        if not _should_strip_oneline_function_doc(doc):
+            continue
+        removals.append((first.lineno - 1, first.end_lineno))
+    if not removals:
+        return False
+    for start, end in sorted(removals, reverse=True):
+        lines = lines[:start] + lines[end:]
+    path.write_text("".join(lines), encoding="utf-8")
+    return True
 
 
 def _strip_oneline_function_docstrings(path: Path) -> bool:
@@ -354,6 +415,8 @@ def main() -> int:
             if _process(path):
                 file_changed = True
             if _strip_contract_test_docstrings(path):
+                file_changed = True
+            if _strip_oneline_class_docstrings(path):
                 file_changed = True
             if _strip_oneline_function_docstrings(path):
                 file_changed = True

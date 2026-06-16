@@ -88,7 +88,6 @@ def preview_seed_from_repo(
     *,
     namespaces: set[str] | None = None,
 ) -> list[dict[str, str]]:
-    """List repo YAML paths that ``seed_config_from_repo`` would load (no store writes)."""
     repo = repo_root.resolve()
     out: list[dict[str, str]] = []
 

@@ -28,7 +28,6 @@ def _persona_slot_public(raw: object) -> dict[str, str] | None:
 def persona_assignment_from_run_created_metadata(
     metadata: Mapping[str, Any] | dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Stable persona assignment dict from ``run.created`` metadata."""
     if not isinstance(metadata, Mapping):
         return None
     pa = metadata.get("persona_assignment")

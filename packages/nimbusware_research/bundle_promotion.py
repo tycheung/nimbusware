@@ -113,7 +113,6 @@ def write_stitch_catalog_candidate(
     files_added: list[str],
     bundle_hints: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Write a catalog candidate after successful stitch apply for integrator review."""
     hints = dict(bundle_hints or {})
     candidate_id = str(
         hints.pop("candidate_id", None) or f"stitch-{manifest_id.replace('-', '')[:12]}"

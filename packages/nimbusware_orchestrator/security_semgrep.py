@@ -16,7 +16,6 @@ def run_semgrep_scan(
     *,
     timeout_seconds: float = 180.0,
 ) -> tuple[int, str]:
-    """Run semgrep on ``packages/`` when enabled and on PATH."""
     if not semgrep_enabled():
         return 0, "semgrep skipped (NIMBUSWARE_RUN_SEMGREP=0)\n"
     exe = shutil.which("semgrep")

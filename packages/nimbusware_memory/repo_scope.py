@@ -7,7 +7,6 @@ from nimbusware_env.env_flags import env_str
 
 
 def repo_scope_hash(repo_root: Path) -> str:
-    """Stable scope id for ``NIMBUSWARE_REPO_ROOT`` (16 hex chars)."""
     root = repo_root.resolve()
     raw = str(root).encode("utf-8")
     return hashlib.sha256(raw).hexdigest()[:16]

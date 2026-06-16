@@ -97,7 +97,6 @@ class PipelineScraperMixin:
         content: bytes,
         persist_cap: int,
     ) -> dict[str, Any]:
-        """Write truncated response bytes; object-store primary when Enterprise edition."""
         from nimbusware_orchestrator.scraper_artifacts import (
             persist_scraper_artifact,
         )

@@ -34,7 +34,6 @@ def bootstrap_iam(
     _gate: EnterpriseDep,
     iam: IamStoreDep,
 ) -> dict[str, Any]:
-    """Admin-only first tenant + API key for Enterprise installs."""
     iam.ensure_default_tenant()
     tenants = iam.list_tenants()
     ops = next((t for t in tenants if t.tenant_id != DEFAULT_TENANT_ID), None)

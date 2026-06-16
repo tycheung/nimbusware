@@ -15,7 +15,6 @@ def assemble_prompt(
     context: str = "",
     volatile: str = "",
 ) -> list[dict[str, str]]:
-    """Build chat messages with stable system block and split user tiers."""
     system_parts = [stable.strip()]
     if context.strip():
         system_parts.append(context.strip())

@@ -61,7 +61,6 @@ def security_scan_tool_summary(
     semgrep_exit: int = 0,
     sql_profiler_exit: int = 0,
 ) -> dict[str, Any]:
-    """Structured per-tool exits for timeline / finding metadata."""
     return {
         "security_scan_categories": list(SECURITY_SCAN_CATEGORIES),
         "security_scan_tools": {

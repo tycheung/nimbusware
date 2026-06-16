@@ -237,7 +237,6 @@ def test_freshness_caption_seconds_minutes_hours() -> None:
 
 
 def test_freshness_caption_marks_stale_after_24h() -> None:
-    """Default threshold is 24h; older than that ⇒ caption gets a stale suffix."""
     fresh_24h = prune_status_freshness_caption(
         _FRESH,
         now=_WROTE_AT + timedelta(hours=23, minutes=59),

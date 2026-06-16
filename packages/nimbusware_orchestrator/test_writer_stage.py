@@ -10,7 +10,6 @@ from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 
 
 def _run_test_writer_stage_subprocess(workspace: Path) -> tuple[int, str]:
-    """Run legacy subprocess-backed test-writer command."""
     cmd_raw = env_str(
         "NIMBUSWARE_TEST_WRITER_STAGE_CMD",
         default="python -m pytest -q -k test_writer --maxfail=1",

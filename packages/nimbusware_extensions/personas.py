@@ -253,7 +253,6 @@ class PersonaShelf:
 
     @classmethod
     def from_content(cls, raw: dict[str, Any]) -> PersonaShelf:
-        """Build shelf from an in-memory mapping (Postgres materialization)."""
         if not isinstance(raw, dict):
             msg = "persona shelves content must be a mapping"
             raise ValueError(msg)

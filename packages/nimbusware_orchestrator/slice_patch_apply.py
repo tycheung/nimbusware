@@ -16,7 +16,6 @@ def apply_slice_file_edits(
     plan: SlicePlan,
     edits: list[dict[str, str]],
 ) -> tuple[list[str], list[str]]:
-    """Write ``edits`` when ``path`` is in ``plan.target_paths``. Returns touched, errors."""
     allowed = {_normalise_rel(p) for p in plan.target_paths}
     touched: list[str] = []
     errors: list[str] = []

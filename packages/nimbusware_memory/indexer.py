@@ -26,7 +26,6 @@ def deterministic_chunk_id(
     source_store_seq: int | None,
     excerpt: str,
 ) -> UUID:
-    """Stable chunk id for identical source rows (replay / CI fixtures)."""
     key = f"{repo_scope_hash}|{run_id}|{source_event_type}|{source_store_seq}|{excerpt.strip()}"
     return uuid5(NAMESPACE_URL, key)
 
@@ -94,7 +93,6 @@ def rebuild_memory_index(
     audit_store: Any | None = None,
     audit_run_id: UUID | None = None,
 ) -> RebuildIndexResult:
-    """Scan events, persist chunks, write on-disk manifest (+ optional FAISS)."""
     root = resolve_repo_root(repo_root)
     scope = repo_scope_hash(root)
     model_id = embedding_model_id_for_mode(embedding_mode)

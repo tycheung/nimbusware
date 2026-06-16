@@ -54,7 +54,6 @@ class RoleRegistry:
         yaml_version: int = 0,
         content_digest_sha256_16: str | None = None,
     ) -> RoleRegistry:
-        """Build from preloaded rows (e.g. future DB adapter). Keys are normalized lowercase."""
         low = {k.strip().lower(): v for k, v in roles_by_taxonomy.items()}
         return cls(
             low,

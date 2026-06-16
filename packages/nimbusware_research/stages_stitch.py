@@ -138,7 +138,6 @@ def resolve_stitch_manifest(
     repo_root: Path,
     prior_events: list[dict[str, Any]],
 ) -> tuple[TransplantManifest | None, str | None, bool]:
-    """Resolve catalog candidate or pattern-index manifest; None → caller uses stub."""
     import json
 
     from nimbusware_research.bundle_promotion import list_pending_stitch_catalog_candidates

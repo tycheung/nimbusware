@@ -2322,10 +2322,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Bootstrap Iam
-         * @description Admin-only first tenant + API key for Enterprise installs.
-         */
+        /** Bootstrap Iam */
         post: operations["bootstrap_iam_v1_enterprise_iam_bootstrap_post"];
         delete?: never;
         options?: never;

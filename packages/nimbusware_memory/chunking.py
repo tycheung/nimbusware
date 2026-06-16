@@ -11,7 +11,6 @@ _MAX_EXCERPT_CHARS = 2000
 
 
 def run_index_contribution_enabled(metadata: object) -> bool:
-    """Default True unless ``metadata.memory.index_contribution`` is explicitly false."""
     if not isinstance(metadata, dict):
         return True
     mem = metadata.get("memory")
@@ -62,7 +61,6 @@ def _gate_fail_excerpt(payload: dict[str, Any]) -> str:
 
 
 def chunks_from_event_rows(rows: list[dict[str, Any]]) -> list[MemoryChunkDraft]:
-    """Scan ordered event rows and emit chunk drafts for memory indexing."""
     skip_run_index: dict[UUID, bool] = {}
     for row in rows:
         if row.get("event_type") != EventType.RUN_CREATED.value:

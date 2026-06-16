@@ -7,7 +7,6 @@ from agent_core.models import EventType
 
 
 def preflight_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Latest ``model.preflight.passed`` projection for timeline / fleet history."""
     out: dict[str, Any] | None = None
     want = EventType.MODEL_PREFLIGHT_PASSED.value
     for ev in events:

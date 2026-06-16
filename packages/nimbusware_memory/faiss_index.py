@@ -19,7 +19,6 @@ def build_memory_faiss_index(
     chunks: list[MemoryChunkRecord],
     index_dir: Path,
 ) -> int:
-    """Write ``faiss.index`` + ``chunk_order.json`` from chunk embeddings. Returns exit code."""
     if not chunks:
         return 1
     try:

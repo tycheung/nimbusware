@@ -30,7 +30,6 @@ def _run_on_playwright_thread(fn: Callable[[], T]) -> T:
 
 
 def run_without_asyncio_loop(fn: Callable[[], T]) -> T:
-    """Run sync Playwright on a dedicated worker thread; inline when already on that thread."""
     if getattr(_ON_PLAYWRIGHT_THREAD, "active", False):
         return fn()
     return _playwright_executor().submit(_run_on_playwright_thread, fn).result()

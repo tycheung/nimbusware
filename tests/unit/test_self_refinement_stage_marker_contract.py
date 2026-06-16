@@ -28,7 +28,6 @@ def _sr_markers(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
 
 
 def _sr_marker_metadata(row: dict[str, Any]) -> dict[str, Any]:
-    """Extract ``metadata.self_refinement`` sub-dict (or empty dict) from a marker row."""
     meta = row.get("metadata") or {}
     inner = meta.get("self_refinement") or {}
     return inner if isinstance(inner, dict) else {}

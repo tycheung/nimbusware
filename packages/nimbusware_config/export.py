@@ -63,7 +63,6 @@ def export_config_to_repo(
     *,
     namespaces: set[str] | None = None,
 ) -> dict[str, int]:
-    """Write store documents to canonical YAML paths; return export counts per namespace."""
     repo = repo_root.resolve()
     counts: dict[str, int] = {}
 

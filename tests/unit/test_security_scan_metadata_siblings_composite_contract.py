@@ -38,7 +38,6 @@ def _finding_event(
     payload: Any = None,
     event_type: str = "finding.created",
 ) -> dict[str, Any]:
-    """Build a minimal ``finding.created`` event dict for the summary helper."""
     return {
         "event_type": event_type,
         "event_id": event_id,

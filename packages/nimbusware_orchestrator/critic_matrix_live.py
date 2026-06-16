@@ -157,7 +157,6 @@ def enrich_gate_metadata_with_critic_matrix_live(
     stage_name: str,
     base_metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Build ``metadata.critic_matrix_live`` snapshot for ``gate.decision.emitted`` append."""
     meta = dict(base_metadata or {})
     sg = _run_created_stage_graph(events)
     rows = build_live_critic_matrix_rows(events, sg)

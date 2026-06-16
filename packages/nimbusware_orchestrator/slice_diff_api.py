@@ -39,7 +39,6 @@ def build_slice_diff_response(
     events: list[dict[str, Any]],
     slice_index: int,
 ) -> dict[str, Any] | None:
-    """Build diff payload for 1-based ``slice_index``; None if out of range."""
     if slice_index < 1:
         return None
     plans = slice_plans_from_events(events)

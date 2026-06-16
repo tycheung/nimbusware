@@ -46,7 +46,6 @@ def _critique_row_from_gate_event(ev: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def universal_critique_timeline_entries(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Latest ``gate.decision.emitted`` per universal-critique stage (chronological scan)."""
     want = EventType.GATE_DECISION_EMITTED.value
     by_stage: dict[str, dict[str, Any]] = {}
     for ev in events:

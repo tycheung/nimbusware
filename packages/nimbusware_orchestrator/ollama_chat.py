@@ -37,7 +37,6 @@ def ollama_chat_json(
 
 
 def extract_ollama_usage(response: dict[str, Any]) -> dict[str, int]:
-    """Extract token/latency hints from a raw Ollama ``/api/chat`` response."""
     out: dict[str, int] = {}
     prompt = response.get("prompt_eval_count")
     completion = response.get("eval_count")

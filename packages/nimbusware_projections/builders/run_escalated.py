@@ -32,7 +32,6 @@ def run_escalated_timeline_entries(events: list[dict[str, Any]]) -> list[dict[st
 
 
 def run_escalated_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Latest ``run.escalated`` event summary (human / system escalation checkpoint)."""
     hist = run_escalated_timeline_entries(events)
     return hist[-1] if hist else None
 

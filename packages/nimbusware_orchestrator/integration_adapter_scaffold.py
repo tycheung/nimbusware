@@ -174,7 +174,6 @@ def execute_target_adapter_integration(
     kind: str,
     run_id: str,
 ) -> dict[str, Any]:
-    """Write ``target_state.json`` and run in-process adapter sync (real local I/O)."""
     manifest_path = abs_dir / "manifest.json"
     if manifest_path.is_file():
         try:
@@ -271,7 +270,6 @@ def write_integration_adapter_scaffold(
     run_id: UUID,
     block: IntegrationAdapterWriterWorkflowBlock,
 ) -> dict[str, Any]:
-    """Write manifest + adapter module + README; run target integration I/O."""
     kind = block.target_adapter_kind or DEFAULT_ADAPTER_KIND
     rel_dir = Path(".nimbusware") / "integration_adapter_writer" / str(run_id)
     abs_dir = repo_root / rel_dir

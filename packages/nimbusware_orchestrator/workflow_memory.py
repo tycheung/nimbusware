@@ -49,7 +49,6 @@ def memory_effective_metadata(
     *,
     run_policy_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Build ``run.created`` ``metadata.memory`` from workflow defaults + overrides."""
     mem: dict[str, Any] = {
         "retrieval_enabled": block.retrieval_enabled,
         "index_contribution": block.index_contribution,
@@ -93,7 +92,6 @@ def resolve_memory_index_version(
 
 
 def run_memory_retrieval_enabled(metadata: object) -> bool:
-    """Default True unless ``metadata.memory.retrieval_enabled`` is explicitly false."""
     if not isinstance(metadata, dict):
         return True
     mem = metadata.get("memory")
@@ -134,7 +132,6 @@ def memory_query_from_slice_plan(plan: SlicePlan) -> str:
 
 
 def memory_query_from_stage_context(stage_context: dict[str, Any] | None) -> str:
-    """Build a short retrieval query from slice/stage context."""
     if not stage_context:
         return "failure fix gate security"
     parts: list[str] = []

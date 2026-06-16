@@ -280,7 +280,6 @@ def aggregate_role_telemetry_rows(
     registry: RoleRegistry | None = None,
     run_ids: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Build role telemetry summary document from ordered event rows (one or many runs)."""
     buckets: dict[str, _RoleBucket] = {}
     preflight = _PreflightAccumulator()
     for row in rows:

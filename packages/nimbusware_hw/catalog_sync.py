@@ -32,7 +32,6 @@ def _coerce_int(value: Any, default: int) -> int:
 
 
 def normalize_model_row(raw: dict[str, Any]) -> dict[str, Any] | None:
-    """Map Odysseus/hf_models-style rows to catalog schema."""
     if not isinstance(raw, dict):
         return None
     model_id = str(
@@ -167,7 +166,6 @@ def build_catalog_from_source(
     existing: dict[str, Any] | None = None,
     merge: bool = False,
 ) -> dict[str, Any]:
-    """Normalize source document (models array or top-level list) into catalog."""
     rows_raw: list[Any] = []
     if isinstance(raw_doc.get("models"), list):
         rows_raw = raw_doc["models"]

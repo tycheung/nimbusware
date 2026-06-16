@@ -35,7 +35,6 @@ def run_ruff_perf(workspace: Path, *, timeout_seconds: float = 60.0) -> tuple[in
 
 
 def scan_n_plus_one_heuristic(workspace: Path, *, max_findings: int = 20) -> tuple[int, str]:
-    """Static heuristic for query-in-loop patterns (not a runtime profiler)."""
     root = workspace / "packages"
     if not root.is_dir():
         return 0, "n+1 heuristic skipped (no packages/)\n"

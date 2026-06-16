@@ -52,7 +52,6 @@ def security_scan_on_verify_timeline_entries(
 def security_scan_on_verify_timeline_summary(
     events: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
-    """Latest ``finding.created`` whose metadata carries verifier security scan fields."""
     hist = security_scan_on_verify_timeline_entries(events)
     return hist[-1] if hist else None
 

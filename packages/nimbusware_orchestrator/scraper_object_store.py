@@ -96,7 +96,6 @@ def _file_object_path(relpath: str) -> Path | None:
 
 
 def object_store_put_artifact(relpath: str, content: bytes) -> dict[str, Any]:
-    """Write artifact bytes to object store (file:// or HTTP PUT)."""
     if not object_store_ready():
         return {"attempted": False, "stored": False, "error": "not_ready"}
     file_path = _file_object_path(relpath)
@@ -183,7 +182,6 @@ def _parse_s3_list_xml(body: bytes, *, cap: int) -> list[dict[str, Any]]:
 
 
 def object_store_list_artifacts(*, max_entries: int = 1000) -> list[dict[str, Any]]:
-    """List artifact keys from object store (file:// walk or S3 ListObjectsV2)."""
     cap = max(1, int(max_entries))
     root = _file_backend_root()
     if root is not None:

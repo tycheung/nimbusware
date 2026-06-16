@@ -17,7 +17,6 @@ DEFAULT_CLONE_URL = "https://github.com/tycheung/nimbusware.git"
 
 
 def repo_root(*, start: Path | None = None) -> Path:
-    """Nimbusware repo root; when frozen, resolve from the executable directory."""
     if getattr(sys, "frozen", False):
         exe_dir = Path(sys.executable).resolve().parent
         for candidate in (exe_dir, exe_dir / "Nimbusware"):
@@ -40,7 +39,6 @@ def default_clone_url() -> str:
 
 
 def default_clone_target(base: Path) -> Path:
-    """Directory used when the launcher clones Nimbusware next to itself."""
     if is_nimbusware_checkout(base):
         return base
     return base / "Nimbusware"
@@ -151,7 +149,6 @@ def python_in_venv(venv_root: Path) -> Path | None:
 
 
 def poetry_venv_python(root: Path) -> Path | None:
-    """Resolve ``poetry env info -p`` when Poetry manages the project venv."""
     poetry = shutil.which("poetry")
     if not poetry:
         return None

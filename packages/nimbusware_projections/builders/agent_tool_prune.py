@@ -16,7 +16,6 @@ def _prune_placeholder(tool: str, payload: str) -> str:
 
 
 def prune_agent_tool_log_text(text: str) -> str:
-    """Keep tool lines after the last ``agent:`` turn; prune earlier tool lines."""
     if not text.strip():
         return text
     lines = text.splitlines()
@@ -39,7 +38,6 @@ def prune_agent_tool_log_text(text: str) -> str:
 
 
 def prune_all_agent_tool_lines(text: str) -> str:
-    """Replace every agent tool line with a pruned placeholder."""
     if not text.strip():
         return text
     out: list[str] = []
@@ -53,7 +51,6 @@ def prune_all_agent_tool_lines(text: str) -> str:
 
 
 def prune_theater_agent_tool_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Prune ``agent_tool`` theater bodies; keep the latest implement batch verbatim."""
     agent_msgs = [m for m in messages if m.get("message_kind") == "agent_tool"]
     if not agent_msgs:
         return messages
@@ -78,7 +75,6 @@ def prune_theater_agent_tool_messages(messages: list[dict[str, Any]]) -> list[di
 
 
 def agent_tool_logs_from_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Extract slice implement agent tool logs for timeline summaries."""
     from agent_core.models import EventType
 
     logs: list[dict[str, Any]] = []

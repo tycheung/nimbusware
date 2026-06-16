@@ -64,7 +64,6 @@ def _write_workflow(
     enabled: bool,
     persona_id: str | None,
 ) -> None:
-    """Write ``configs/workflows/{name}.yaml`` under tmp repo with an agent_evaluator block."""
     wf_dir = repo / "configs" / "workflows"
     wf_dir.mkdir(parents=True, exist_ok=True)
     persona_line = f"  persona_id: {persona_id}\n" if persona_id is not None else ""

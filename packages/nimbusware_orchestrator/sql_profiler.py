@@ -43,7 +43,6 @@ def reset_sql_query_counter() -> None:
 
 
 def record_sql_query(*, count: int = 1) -> int:
-    """Hook for tests or instrumented DB layers; returns new total."""
     total = _sql_query_count_var.get() + max(0, count)
     _sql_query_count_var.set(total)
     return total
@@ -86,7 +85,6 @@ def scan_sql_query_hotspots(
     *,
     max_findings: int = 25,
 ) -> tuple[int, str, list[str]]:
-    """Static scan for query-in-loop and dense execute lines under ``packages/``."""
     root = workspace / "packages"
     if not root.is_dir():
         return 0, "sql profiler static: skipped (no packages/)\n", []
@@ -121,7 +119,6 @@ def scan_sql_query_hotspots(
 
 
 def check_runtime_sql_budget() -> tuple[int, str, dict[str, Any]]:
-    """Compare session counter and/or ``NIMBUSWARE_TEST_SQL_QUERY_COUNT`` to limit."""
     max_raw = env_str("NIMBUSWARE_SQL_QUERY_COUNT_MAX")
     if not max_raw:
         return 0, "sql profiler runtime: skipped (NIMBUSWARE_SQL_QUERY_COUNT_MAX unset)\n", {}
@@ -161,7 +158,6 @@ def check_runtime_sql_budget() -> tuple[int, str, dict[str, Any]]:
 
 
 def run_sql_profiler_summary(workspace: Path) -> dict[str, Any]:
-    """Combined static + runtime SQL profiler snapshot for P3 stages."""
     static_code, static_log, static_findings = scan_sql_query_hotspots(workspace)
     runtime_code, runtime_log, runtime_meta = check_runtime_sql_budget()
     worst = max(static_code, runtime_code)

@@ -9,7 +9,6 @@ from nimbusware_memory.manifest import default_memory_index_dir, read_manifest
 
 
 def memory_index_sync_state(repo_root: Path) -> dict[str, Any]:
-    """Compare on-disk manifest/FAISS mtimes for operator hints (mirrors bundle sync)."""
     index_dir = default_memory_index_dir(repo_root)
     manifest_path = index_dir / "manifest.json"
     faiss_path = index_dir / "faiss.index"

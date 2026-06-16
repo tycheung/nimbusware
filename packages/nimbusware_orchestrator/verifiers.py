@@ -68,7 +68,6 @@ def run_pytest_targets(
     *,
     timeout_seconds: float = 120.0,
 ) -> tuple[int, str]:
-    """Run pytest against explicit paths (micro-slice scoped tests)."""
     if not targets:
         return run_pytest(workspace, timeout_seconds=timeout_seconds)
     args = ["pytest", "-q", "--maxfail=1", *targets]
@@ -156,7 +155,6 @@ def run_bandit(workspace: Path, *, timeout_seconds: float = 120.0) -> tuple[int,
 
 
 def run_writer_verifier_bundle(workspace: Path) -> tuple[int, str]:
-    """Run pytest then ruff then bandit; return worst exit code and merged log."""
     sections: list[str] = []
     worst = 0
     for name, fn in (
