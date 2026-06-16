@@ -1,5 +1,3 @@
-"""yaml.YAMLError`` propagation divergence at ``load_yaml``."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -56,7 +56,6 @@ def emit_stub_plan_stage(
     *,
     run_id: UUID,
 ) -> None:
-    """Deterministic PASS plan stage (same semantics as MVP stub in ``pipeline``)."""
     planner = registry.resolve("planner")
     critic_roles = [registry.resolve(tax_key) for tax_key in critique_router.pairing_for("planner")]
     store.append(

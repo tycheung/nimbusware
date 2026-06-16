@@ -68,11 +68,6 @@ def execute_self_refinement_critique_llm(
     description: str,
     timeout_seconds: float = 120.0,
 ) -> dict[str, str] | None:
-    """LLM-backed self-refinement critique panel + Phase D branch metadata.
-
-    Appends ``self_refinement.critique`` stage/critic/gate events when Ollama returns
-    valid JSON. Returns branch dict for loop signal enrichment; ``None`` on failure.
-    """
     owner = registry.resolve("planner")
     tax_keys = critique_router.pairing_for("planner")
     if len(tax_keys) < 1:

@@ -38,7 +38,6 @@ def get_scraper_artifact_inventory(
         Query(ge=1, le=INVENTORY_MAX_ENTRIES, description="Cap listed file rows"),
     ] = 100,
 ) -> ScraperArtifactInventoryResponse:
-    """On-disk scraper artifact inventory under the configured cache directory."""
     base = resolve_scraper_artifact_base_dir(orch.repo_root)
     env_days = nimbusware_scraper_artifact_max_age_days_raw()
     retention_days: int | None = None

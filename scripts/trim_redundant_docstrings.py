@@ -66,6 +66,14 @@ _REDUNDANT_PREFIXES = (
     "Campaign driver state machine",
     "MVP run lifecycle:",
     "Legacy Enterprise fleet UI",
+    "On-disk scraper artifact",
+    "Deterministic PASS plan stage",
+    "Unified diff or scope",
+    "Hash-based unit vector",
+    "Call Ollama ``/api/embeddings``",
+    "NIMBUSWARE_SELF_REFINEMENT",
+    "yaml.YAMLError``",
+    "Orchestrator outbound HTTP",
 )
 
 
@@ -141,7 +149,8 @@ _VERBOSE_MULTILINE_MARKERS = (
     "Returns a structured result with ``local_removed``",
     "When ``dry_run`` is true, counts stale files",
     "Missing file or invalid profile returns",
-    "``None`` means callers should align project tags",
+    "Appends ``self_refinement.critique``",
+    "Delegate to cloud routing",
 )
 
 
