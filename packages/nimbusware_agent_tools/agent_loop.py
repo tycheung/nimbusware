@@ -11,8 +11,8 @@ from nimbusware_agent_tools.prompts import build_agent_stable_prompt
 from nimbusware_agent_tools.risk_caps import AgentRiskCaps
 from nimbusware_agent_tools.runtime import AgentStep, _allowed_paths, _execute_step
 from nimbusware_agent_tools.tool_registry import agent_tool_list_prompt, is_agent_tool_enabled
-from nimbusware_orchestrator.micro_slice import SlicePlan
-from nimbusware_orchestrator.prompt_tiers import assemble_prompt
+from agent_core.prompt_tiers import assemble_prompt
+from agent_core.slice_plan import SlicePlan
 
 ChatFn = Callable[..., dict[str, Any]]
 

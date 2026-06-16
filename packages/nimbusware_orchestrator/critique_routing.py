@@ -3,18 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
-
-CRITIQUE_STAGE_TO_PRODUCER: dict[str, str] = {
-    "planner.critique": "planner",
-    "implementation.critique": "backend_writer",
-    "test_writer.critique": "test_writer",
-    "frontend_writer.critique": "frontend_writer",
-    "module_integrator.critique": "module_integrator",
-    "agent_evaluator.critique": "agent_evaluator",
-    "self_refinement.critique": "planner",
-}
 
 # Keep lifecycle producer accounting stable for coverage contracts.
 _EXCLUDED_PRODUCER_KEYS: frozenset[str] = frozenset({"agent_evaluator"})

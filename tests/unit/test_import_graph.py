@@ -175,12 +175,7 @@ _WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST = frozenset(
 )
 
 
-_PROJECTIONS_ORCHESTRATOR_ALLOWLIST = frozenset(
-    {
-        "builders/stage_timeline.py",
-        "builders/universal_critique.py",
-    },
-)
+_PROJECTIONS_ORCHESTRATOR_ALLOWLIST = frozenset()
 
 
 def test_projections_has_no_module_level_orchestrator_imports() -> None:

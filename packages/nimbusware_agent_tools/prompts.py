@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.prompt_tiers import stable_slice_agent_block
+from agent_core.prompt_tiers import stable_slice_agent_block
 
 _DEFAULT_STABLE_REL = Path("configs") / "prompts" / "agent_implement_stable.txt"
 

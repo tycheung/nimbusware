@@ -21,9 +21,8 @@ from nimbusware_agent_tools.tools import (
     tool_write_file,
 )
 from nimbusware_env.env_flags import nimbusware_use_llm_enabled
-from nimbusware_orchestrator.micro_slice import SlicePlan
+from agent_core.slice_plan import SlicePlan
 from nimbusware_orchestrator.slice_implement import SliceImplementResult
-from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
 
 
 @dataclass(frozen=True)
@@ -326,6 +325,8 @@ def execute_slice_implement_agent(
                 exit_code = max(exit_code, 1)
                 break
             edits = [{"path": rel, "content": content}]
+            from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
+
             applied, errors = apply_slice_file_edits(ws, plan, edits)
             touched.extend(applied)
             if errors:

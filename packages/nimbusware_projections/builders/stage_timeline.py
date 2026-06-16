@@ -4,15 +4,12 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from nimbusware_orchestrator.critic_matrix_live import (
+from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE, TEST_WRITER_CRITIQUE_STAGE
+from agent_core.read.critic_matrix import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
 )
-from nimbusware_orchestrator.llm.common import (
-    IMPLEMENTATION_CRITIQUE_STAGE,
-    TEST_WRITER_CRITIQUE_STAGE,
-)
-from nimbusware_orchestrator.stage_graph import stage_graph_timeline_summary_from_metadata
+from agent_core.stage_graph import stage_graph_timeline_summary_from_metadata
 
 _WRITER_GATE_STAGE: dict[str, str] = {
     "implementation": IMPLEMENTATION_CRITIQUE_STAGE,

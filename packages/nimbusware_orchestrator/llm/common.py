@@ -52,10 +52,12 @@ class LlmPlanResponse(BaseModel):
     gate: LlmGateLine
 
 
-IMPLEMENTATION_CRITIQUE_STAGE = "implementation.critique"
-TEST_WRITER_CRITIQUE_STAGE = "test_writer.critique"
-PLANNER_CRITIQUE_STAGE = "planner.critique"
-FRONTEND_WRITER_CRITIQUE_STAGE = "frontend_writer.critique"
+from agent_core.critique_stages import (
+    FRONTEND_WRITER_CRITIQUE_STAGE,
+    IMPLEMENTATION_CRITIQUE_STAGE,
+    PLANNER_CRITIQUE_STAGE,
+    TEST_WRITER_CRITIQUE_STAGE,
+)
 MODULE_INTEGRATOR_CRITIQUE_STAGE = "module_integrator.critique"
 SELF_REFINEMENT_CRITIQUE_STAGE = "self_refinement.critique"
 
@@ -68,10 +70,8 @@ def append_gate_decision_event(
     extra_metadata: dict[str, Any] | None = None,
 ) -> None:
     """Append gate decision with stage-graph + live critic-matrix metadata when available."""
-    from nimbusware_orchestrator.critic_matrix_live import (
-        enrich_gate_metadata_with_critic_matrix_live,
-    )
-    from nimbusware_orchestrator.stage_graph import (
+    from agent_core.read.critic_matrix import enrich_gate_metadata_with_critic_matrix_live
+    from agent_core.stage_graph import (
         event_metadata_for_stage,
         stage_graph_from_run_created_metadata,
     )
