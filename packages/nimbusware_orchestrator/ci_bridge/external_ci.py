@@ -130,7 +130,6 @@ def attach_external_ci_metadata(
     stage_name: str,
     timeline_base_url: str | None = None,
 ) -> dict[str, Any]:
-    """Merge ``external_ci`` into gate metadata when a provider posts successfully."""
     ci_status = notify_gate_decision_external(
         run_id=run_id,
         verdict=verdict,
@@ -149,7 +148,6 @@ def notify_gate_decision_external(
     stage_name: str,
     timeline_base_url: str | None = None,
 ) -> dict[str, Any]:
-    """Best-effort external CI notification; returns status dict (never raises)."""
     github = _notify_github(
         run_id=run_id,
         verdict=verdict,

@@ -65,12 +65,10 @@ def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:
 
 
 def _findings(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    """Return ``finding.created`` rows for the run in store order."""
     return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _FINDING_CREATED]
 
 
 def _stage_names(findings: list[dict[str, Any]]) -> list[str | None]:
-    """Return ``metadata.stage_name`` for each finding row in order."""
     return [(f.get("metadata") or {}).get("stage_name") for f in findings]
 
 

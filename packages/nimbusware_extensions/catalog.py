@@ -48,7 +48,6 @@ def apply_bundle_memory_ranking(
 
 
 def assert_workflow_bundle_map_ids_resolve_content(raw: dict[str, Any]) -> None:
-    """Raise if ``workflow_bundle_map`` references bundle ids missing from ``bundles``."""
     bundles = raw.get("bundles")
     if not isinstance(bundles, list):
         known: set[str] = set()
@@ -205,7 +204,6 @@ def load_bundle_catalog_content(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any] | None:
-    """Load bundle catalog from DB-backed materializer or on-disk YAML."""
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
         try:
             raw = config_materializer.get_bundle_catalog()

@@ -79,7 +79,6 @@ def finding_severity_requires_fixes(
     severity: Severity,
     settings: FindingFixStrictnessSettings,
 ) -> bool:
-    """Return True if policy requires at least one RequiredFixArtifact for this severity."""
     if _severity_rank(severity) >= _severity_rank(settings.minimum_severity_requiring_fixes):
         return True
     if settings.also_require_fixes_for_low_severity and severity == Severity.LOW:

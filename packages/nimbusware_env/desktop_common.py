@@ -27,7 +27,6 @@ def repo_root(*, start: Path | None = None) -> Path:
 
 
 def is_nimbusware_checkout(root: Path) -> bool:
-    """True when ``root`` looks like an installed Nimbusware tree."""
     return (root / "pyproject.toml").is_file() and (root / NIMBUSWARE_SCHEMA_REL).is_file()
 
 
@@ -47,7 +46,6 @@ def default_clone_target(base: Path) -> Path:
 
 
 def resolve_git_executable() -> str | None:
-    """Return a Git executable path that works from GUI apps on Windows."""
     for env_key in ("NIMBUSWARE_GIT_EXECUTABLE", "GIT_EXECUTABLE"):
         configured = os.environ.get(env_key, "").strip()
         if configured and Path(configured).is_file():
@@ -135,7 +133,6 @@ def venv_python_candidates(root: Path) -> tuple[Path, ...]:
 
 
 def python_in_venv(venv_root: Path) -> Path | None:
-    """Return the interpreter inside a Poetry/virtualenv root directory."""
     if sys.platform == "win32":
         candidates = (
             venv_root / "Scripts" / "python.exe",
@@ -310,7 +307,6 @@ def git_remote_branch(root: Path) -> str | None:
 
 
 def check_for_updates(root: Path, *, fetch: bool = True) -> tuple[str, bool, str]:
-    """Return ``(status_label, updates_available, detail_message)``."""
     if not is_git_checkout(root):
         return ("not a git repo", False, "Updates require a git checkout with a remote.")
     if resolve_git_executable() is None:

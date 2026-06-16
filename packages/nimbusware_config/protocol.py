@@ -17,8 +17,7 @@ class ConfigDocumentRow:
 
 @runtime_checkable
 class ConfigStore(Protocol):
-    def get(self, namespace: str, document_key: str) -> ConfigDocumentRow | None:
-        """Return the document or ``None`` when missing."""
+    def get(self, namespace: str, document_key: str) -> ConfigDocumentRow | None: ...
 
     def upsert(
         self,

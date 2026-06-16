@@ -28,7 +28,6 @@ _BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
 
 
 def _run_escalated_reasons(mem: InMemoryEventStore, run_id: UUID) -> list[str]:
-    """Return ``reason_code`` values for RUN_ESCALATED rows for the run, in order."""
     return [
         (r.get("payload") or {}).get("reason_code")
         for r in mem.list_run_events(str(run_id))

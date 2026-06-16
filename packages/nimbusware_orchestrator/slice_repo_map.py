@@ -241,7 +241,6 @@ def expand_target_paths(
     max_neighbors: int = 3,
     max_hops: int = 1,
 ) -> tuple[str, ...]:
-    """Return target paths plus capped import neighbors (BFS up to max_hops)."""
     if max_neighbors <= 0:
         return tuple(str(p).replace("\\", "/") for p in target_paths)
     root = repo_root.resolve()

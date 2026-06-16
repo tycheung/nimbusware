@@ -25,7 +25,6 @@ from nimbusware_orchestrator.merge import load_yaml
 
 
 def seed_t2_policy_documents_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]:
-    """Load T2 policy YAML into ``nimbusware_config_document``."""
     repo = repo_root.resolve()
     counts: dict[str, int] = {}
     t2_paths: list[tuple[str, str, Path]] = [
@@ -47,7 +46,6 @@ def seed_t2_policy_documents_from_repo(repo_root: Path, store: ConfigStore) -> d
 
 
 def seed_config_from_repo(repo_root: Path, store: ConfigStore) -> dict[str, int]:
-    """Load YAML files into ``nimbusware_config_document``; return upserted counts per namespace."""
     repo = repo_root.resolve()
     counts: dict[str, int] = {}
     personas_path = repo / "configs" / "personas" / "shelves.yaml"

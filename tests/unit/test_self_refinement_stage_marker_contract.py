@@ -19,7 +19,6 @@ _SR_STAGE = "self_refinement:policy"
 
 
 def _sr_markers(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    """Return ``stage.started`` rows whose ``stage_name`` equals ``self_refinement:policy``."""
     return [
         r
         for r in mem.list_run_events(str(rid))

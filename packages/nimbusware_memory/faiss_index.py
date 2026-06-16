@@ -11,7 +11,6 @@ from nimbusware_memory.models import MemoryChunkRecord
 
 
 def memory_faiss_index_ready(index_dir: Path) -> bool:
-    """Return True when both FAISS index files exist under ``index_dir``."""
     return (index_dir / "faiss.index").is_file() and (index_dir / "chunk_order.json").is_file()
 
 
@@ -49,7 +48,6 @@ def build_memory_faiss_index(
 def try_load_memory_faiss(
     index_dir: Path,
 ) -> tuple[Any, list[str]] | None:
-    """Load FAISS index and chunk id order when files exist and ``faiss`` is installed."""
     if not memory_faiss_index_ready(index_dir):
         return None
     try:
@@ -67,7 +65,6 @@ def faiss_search_chunk_ids(
     *,
     k: int,
 ) -> list[UUID]:
-    """Return top-k chunk ids via FAISS inner product (vectors must be normalized)."""
     loaded = try_load_memory_faiss(index_dir)
     if loaded is None:
         return []

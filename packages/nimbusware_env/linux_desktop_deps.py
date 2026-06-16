@@ -15,7 +15,6 @@ def _noop_log(_msg: str) -> None:
 
 
 def gtk_import_ok(python_cmd: list[str], *, cwd: Path | None = None) -> bool:
-    """Return True when the given interpreter can ``import gi`` (PyGObject)."""
     proc = subprocess.run(
         [*python_cmd, "-c", "import gi; gi.require_version('Gtk', '3.0')"],
         cwd=str(cwd) if cwd else None,
@@ -40,7 +39,6 @@ def _read_os_release() -> dict[str, str]:
 
 
 def linux_package_manager() -> str | None:
-    """Best-effort package manager id: ``apt``, ``dnf``, ``pacman``, ``zypper``."""
     if shutil.which("apt-get"):
         return "apt"
     if shutil.which("dnf"):

@@ -50,7 +50,6 @@ def scan_http_resilience_heuristic(
 
 
 def check_sql_query_count_budget() -> tuple[int, str, dict[str, Any]]:
-    """Optional runtime hook (delegates to ``sql_profiler``)."""
     from nimbusware_orchestrator.sql_profiler import check_runtime_sql_budget
 
     return check_runtime_sql_budget()

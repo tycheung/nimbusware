@@ -72,7 +72,6 @@ def validate_diff_budget(
 
 
 def micro_slice_stage_graph_nodes() -> tuple[dict[str, Any], ...]:
-    """Optional stage_graph extension when ``slice.enabled`` is true."""
     return (
         {"stage_name": "slice.plan", "depends_on": ("plan",)},
         {"stage_name": "slice.implement", "depends_on": ("slice.plan",)},

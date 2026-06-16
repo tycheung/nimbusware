@@ -1292,10 +1292,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List persona shelves
-         * @description Return read-only persona catalog from ``configs/personas/shelves.yaml``.
-         */
+        /** List persona shelves */
         get: operations["get_persona_shelves_v1_personas_get"];
         put?: never;
         post?: never;
@@ -1685,10 +1682,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Scraper Artifact Inventory
-         * @description On-disk scraper artifact inventory under the configured cache directory.
-         */
+        /** Get Scraper Artifact Inventory */
         get: operations["get_scraper_artifact_inventory_v1_scraper_artifacts_inventory_get"];
         put?: never;
         post?: never;

@@ -26,7 +26,6 @@ def run_maintenance_refactor(
     slices_completed: int,
     insert_fix_slices: bool = True,
 ) -> bool:
-    """Emit maintenance refactor markers; return True when gate passed."""
     store = orch._store
     store.append(
         MaintenanceRefactorStartedEvent(

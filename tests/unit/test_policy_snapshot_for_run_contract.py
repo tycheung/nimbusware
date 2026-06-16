@@ -23,7 +23,6 @@ _RUN_CREATED = "run.created"
 
 
 def _stored_policy_snapshot_dict(mem: InMemoryEventStore, run_id: UUID) -> Any:
-    """Return the raw ``payload.policy_snapshot`` dict from the first matching row."""
     for r in mem._rows:  # noqa: SLF001
         if r["event_type"] == _RUN_CREATED and r["run_id"] == run_id:
             return r["payload"]["policy_snapshot"]

@@ -92,7 +92,6 @@ def diff_replay_snapshots(
 
 
 def load_fixture_rows(path: Path) -> tuple[str | None, list[dict[str, Any]]]:
-    """Load anonymized event rows from ``tests/fixtures/memory/*.json``."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     if isinstance(raw, list):
         return None, raw

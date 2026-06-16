@@ -27,7 +27,6 @@ def gate_decision_from_critic_verdicts(
     llm_fallback_verdict: Verdict | None = None,
     failure_reason_code: str | None = None,
 ) -> GateDecisionEmittedPayload:
-    """Derive gate verdict from mandatory in-domain critic rows when ``enforce`` is true."""
     if not enforce:
         return GateDecisionEmittedPayload(
             stage_name=stage_name,

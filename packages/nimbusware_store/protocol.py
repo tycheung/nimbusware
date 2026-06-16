@@ -8,7 +8,6 @@ from agent_core.models import NimbuswareEventUnion
 
 
 def event_row_from_serialized(full: dict[str, Any]) -> dict[str, Any]:
-    """Split `serialize_event_persistent` output into DB column dict."""
     return {
         "event_id": full["event_id"],
         "run_id": full["run_id"],
@@ -27,7 +26,6 @@ def event_row_from_serialized(full: dict[str, Any]) -> dict[str, Any]:
 
 
 def serialized_event_from_row(row: dict[str, Any]) -> dict[str, Any]:
-    """Reconstruct dict for `validate_event_dict` from a SELECT row."""
     occurred = row["occurred_at"]
     if isinstance(occurred, datetime):
         occurred = occurred.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
@@ -69,8 +67,7 @@ class EventStore(Protocol):
     def get_run_head(self, run_id: str) -> dict[str, Any] | None:
         """Latest row for run or None."""
 
-    def find_run_id_for_run_created_correlation(self, correlation_id: UUID) -> UUID | None:
-        """Return ``run_id`` if a ``run.created`` row exists with this ``correlation_id``."""
+    def find_run_id_for_run_created_correlation(self, correlation_id: UUID) -> UUID | None: ...
 
     def max_store_seq_for_run(self, run_id: str) -> int | None:
         """Maximum ``store_seq`` for ``run_id``, or ``None`` if the run has no rows."""

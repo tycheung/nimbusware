@@ -93,7 +93,6 @@ def diagnose_from_failure(
 
 
 def latest_learning_excerpt_from_rows(rows: list[dict[str, Any]]) -> str:
-    """Return the most recent diagnose.learn excerpt for agent volatile context."""
     for row in reversed(rows):
         payload = row.get("payload")
         if not isinstance(payload, dict):

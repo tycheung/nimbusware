@@ -16,7 +16,6 @@ _SCHEMA_SQL = (
 
 
 def _event_type_check_list_from_schema() -> set[str] | None:
-    """Parse the single ``CHECK (event_type IN (...))`` from ``postgres.sql``."""
     text = _SCHEMA_SQL.read_text(encoding="utf-8")
     pattern = re.compile(
         r"CONSTRAINT event_store_type_allowed CHECK \(event_type IN \(([^)]+)\)\)",

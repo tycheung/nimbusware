@@ -21164,7 +21164,6 @@
           "personas"
         ],
         "summary": "List persona shelves",
-        "description": "Return read-only persona catalog from ``configs/personas/shelves.yaml``.",
         "operationId": "get_persona_shelves_v1_personas_get",
         "responses": {
           "200": {
@@ -30274,7 +30273,6 @@
           "scraper-artifacts"
         ],
         "summary": "Get Scraper Artifact Inventory",
-        "description": "On-disk scraper artifact inventory under the configured cache directory.",
         "operationId": "get_scraper_artifact_inventory_v1_scraper_artifacts_inventory_get",
         "parameters": [
           {

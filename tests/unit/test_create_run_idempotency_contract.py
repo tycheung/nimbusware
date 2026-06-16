@@ -17,7 +17,6 @@ def _count_run_created(mem: InMemoryEventStore) -> int:
 
 
 def _correlation_ids_in_store(mem: InMemoryEventStore) -> list[UUID | None]:
-    """Return ``correlation_id`` values (in append order) for all RUN_CREATED rows."""
     return [
         r.get("correlation_id")
         for r in mem._rows  # noqa: SLF001

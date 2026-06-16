@@ -13,7 +13,6 @@ def network_egress_from_run_created(
     store: EventStore,
     run_id: UUID,
 ) -> tuple[list[UUID], list[str]]:
-    """Return ``(scraper_role_allowlist, domain_allowlist)`` from the first ``run.created`` row."""
     for row in store.list_run_events(str(run_id)):
         if row["event_type"] != EventType.RUN_CREATED.value:
             continue

@@ -43,7 +43,6 @@ def build_live_critic_matrix_rows(
     events: list[dict[str, Any]],
     stage_graph_meta: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Merge ``gate.decision.emitted`` with stage graph context for in-progress matrix rows."""
     sg = stage_graph_meta if stage_graph_meta is not None else _run_created_stage_graph(events)
     gate_by_stage: dict[str, dict[str, Any]] = {}
     for ev in events:

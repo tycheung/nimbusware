@@ -43,7 +43,6 @@ __all__ = [
 
 
 def effective_backlog_generator_mode(policy_mode: str) -> tuple[str, str | None]:
-    """Return effective generator mode and optional stub fallback reason for UX."""
     mode = str(policy_mode or "stub").strip().lower()
     if mode not in ("stub", "llm"):
         mode = "stub"

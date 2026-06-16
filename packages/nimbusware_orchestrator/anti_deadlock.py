@@ -38,7 +38,6 @@ def count_progress_events(rows: list[dict[str, Any]]) -> int:
 
 
 def load_anti_deadlock_settings(repo_root: Path) -> tuple[bool, int, int]:
-    """Return ``(enabled, stall_minutes, min_progress_events)``."""
     breadth = escalation_policy_breadth(repo_root)
     if breadth.get("policy_load_error"):
         return False, 0, 0

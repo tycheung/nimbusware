@@ -67,7 +67,6 @@ def emit_stub_persona_coverage_critique_panel(
     rules_eval: dict[str, Any] | None,
     unanimous_gate_enforce: bool = False,
 ) -> None:
-    """Emit paired critics + gate for ``agent_evaluator`` producer after rules evaluation."""
     tax_keys = critique_router.pairing_for("agent_evaluator")
     if len(tax_keys) < 2:
         return

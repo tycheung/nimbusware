@@ -38,7 +38,6 @@ def _ollama_context_length(
     model: str,
     timeout_seconds: float,
 ) -> tuple[int | None, int]:
-    """Return ``(context_length_or_none, latency_ms)`` from ``/api/show``."""
     url = base_url.rstrip("/") + "/api/show"
     t0 = time.monotonic()
     try:
@@ -68,7 +67,6 @@ def _optional_json_probe(
     model: str,
     timeout_seconds: float,
 ) -> tuple[bool, int, str | None]:
-    """Return ``(ok, latency_ms, error_or_none)`` for a tiny ``format: json`` chat."""
     url = base_url.rstrip("/") + "/api/chat"
     body: dict[str, Any] = {
         "model": model,

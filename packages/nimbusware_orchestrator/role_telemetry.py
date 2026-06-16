@@ -31,7 +31,6 @@ def merge_role_telemetry_metadata(
     latency_ms: int | None = None,
     model_id: str | None = None,
 ) -> dict[str, Any]:
-    """Merge conventional ``metadata.role_telemetry`` hints (for LLM call sites)."""
     base: dict[str, Any] = dict(metadata or {})
     hint: dict[str, Any] = dict(mapping_or_empty(base.get(ROLE_TELEMETRY_METADATA_KEY)))
     if prompt_tokens is not None:

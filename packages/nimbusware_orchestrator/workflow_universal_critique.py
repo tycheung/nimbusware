@@ -188,7 +188,6 @@ def universal_critique_production_default_on(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when workflow ``default_enabled`` and no panel master kill-switch is explicitly off."""
     wf = parse_universal_critique_workflow_block(
         repo_root,
         workflow_profile,

@@ -80,7 +80,6 @@ def normalize_model_row(raw: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def validate_catalog(doc: dict[str, Any]) -> list[str]:
-    """Return validation errors; empty list means valid."""
     errors: list[str] = []
     if not isinstance(doc, dict):
         return ["catalog must be a JSON object"]
@@ -118,7 +117,6 @@ def merge_catalog(
     existing: dict[str, Any] | None,
     incoming: dict[str, Any],
 ) -> dict[str, Any]:
-    """Merge by model id; incoming rows override existing with same id."""
     base_models: list[dict[str, Any]] = []
     if isinstance(existing, dict):
         raw = existing.get("models")

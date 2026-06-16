@@ -23,7 +23,6 @@ def build_slice_handoff_summary(
     diff_stat: str = "",
     campaign_goal: str = "",
 ) -> SliceHandoffSummary:
-    """Merge prior handoff with this slice's gate outcome (deterministic)."""
     goal = campaign_goal.strip() or (prior.goal if prior else plan.rationale)
     progress = list(prior.progress) if prior else []
     decisions = list(prior.key_decisions) if prior else []

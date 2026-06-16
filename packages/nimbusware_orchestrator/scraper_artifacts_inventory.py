@@ -60,7 +60,6 @@ def scraper_artifact_storage_backend_signals() -> dict[str, Any]:
 
 
 def object_store_delete_artifact(relpath: str) -> dict[str, Any]:
-    """Best-effort DELETE for one artifact key (no-op when store not ready)."""
     from nimbusware_orchestrator.scraper_object_store import object_store_delete_artifact as _delete
 
     return _delete(relpath)

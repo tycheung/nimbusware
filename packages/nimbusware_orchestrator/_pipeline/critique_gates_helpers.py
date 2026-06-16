@@ -79,7 +79,6 @@ class CritiqueGateHelpersMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Emit LOW ``finding.created`` on critique gate FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         stages: list[tuple[bool, str, str]] = [
             (u.impl_emit_finding_on_gate_fail, IMPLEMENTATION_CRITIQUE_STAGE, "backend_writer"),

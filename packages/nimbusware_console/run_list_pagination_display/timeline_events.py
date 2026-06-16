@@ -50,7 +50,6 @@ def timeline_events_near_store_seq(
     *,
     window: int = 5,
 ) -> list[Any]:
-    """Return events within ``window`` store_seq of ``focus_seq`` (inclusive)."""
     if focus_seq <= 0:
         return list(events)
     lo = focus_seq - window

@@ -66,7 +66,6 @@ def is_individual() -> bool:
 
 
 def enterprise_feature_enabled(feature: str) -> bool:
-    """True when Enterprise edition is active and ``feature`` is a known enterprise flag."""
     return is_enterprise() and feature in ENTERPRISE_FEATURES
 
 

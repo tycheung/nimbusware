@@ -126,7 +126,6 @@ def execute_slice_plan_llm(
     memory_excerpt: str = "",
     handoff_summary: str = "",
 ) -> SlicePlan | None:
-    """Return a slice plan from Ollama JSON, or None to fall back to stub."""
     agent_prompt = system_prompt or _custom_agent_prompt_from_rows(rows)
     schema = (
         '{"slice_id":"string","rationale":"string","target_paths":["path"],'
@@ -190,7 +189,6 @@ def execute_slice_implement_llm(
     system_prompt: str | None = None,
     learning_excerpt: str = "",
 ) -> list[dict[str, str]] | None:
-    """Return file edits for slice.implement, or None to fall back to scoped ruff."""
     from pathlib import Path as _Path
 
     agent_prompt = system_prompt or "You are a Nimbusware implementation agent for one micro-slice."

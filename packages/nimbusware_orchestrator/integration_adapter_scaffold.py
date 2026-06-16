@@ -132,7 +132,6 @@ def probe_http_endpoint(
 
 
 def validate_integration_manifest(manifest: dict[str, Any]) -> list[str]:
-    """Return validation errors; empty when manifest is acceptable."""
     errors: list[str] = []
     if not str(manifest.get("run_id", "")).strip():
         errors.append("run_id required")

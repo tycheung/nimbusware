@@ -26,7 +26,6 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Emit ``stage.failed`` when implementation critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.impl_stage_failed_on_gate_fail:
             return
@@ -70,7 +69,6 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Emit ``stage.failed`` when test_writer critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.tw_stage_failed_on_gate_fail:
             return
@@ -114,7 +112,6 @@ class CritiqueGateStageFailedMixin:
         run_id: UUID,
         eff: EffectiveUniversalCritique | None = None,
     ) -> None:
-        """Emit ``stage.failed`` when planner critique gate is FAIL (opt-in via UC env)."""
         u = eff if eff is not None else self._effective_universal_critique_for_run(run_id)
         if not u.pll_stage_failed_on_gate_fail:
             return

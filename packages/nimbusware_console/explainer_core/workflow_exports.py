@@ -61,7 +61,6 @@ def install_named_workflow_explainer_exports(
     *,
     cell_alias: str | None = None,
 ) -> WorkflowExplainerExports:
-    """Bind ``{slug}_*`` helpers into *namespace* for backward-compatible imports."""
     exports = WorkflowExplainerExports(slug)
     prefix = slug
     namespace[cell_alias or f"_{prefix}_explainer_cell"] = exports.cell

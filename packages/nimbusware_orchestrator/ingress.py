@@ -14,7 +14,6 @@ def assert_bundle_catalog_maps_resolve(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    """Raise if catalog ``workflow_bundle_map`` targets unknown ``bundles[].id`` values."""
     from nimbusware_extensions.catalog import (
         assert_workflow_bundle_map_ids_resolve,
         assert_workflow_bundle_map_ids_resolve_content,
@@ -32,7 +31,6 @@ def assert_persona_shelves_valid(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    """Raise if persona shelves are missing or structurally invalid."""
     if config_materializer is not None and getattr(config_materializer, "use_db", False):
         config_materializer.get_persona_shelf()
         return
@@ -104,7 +102,6 @@ def assert_stage_graph_valid(
     *,
     config_materializer: Any | None = None,
 ) -> None:
-    """When workflow defines ``stage_graph``, validate DAG (cycles, unknown stages)."""
     from nimbusware_orchestrator.stage_graph import (
         KNOWN_STAGE_GRAPH_STAGES,
         stage_graph_from_workflow_profile,
@@ -129,7 +126,6 @@ def assert_persona_assignment_valid(
     business_area_persona_id: str | None = None,
     development_role_persona_id: str | None = None,
 ) -> None:
-    """Validate optional composite persona ids exist on the correct shelves (§3B.3)."""
     if business_area_persona_id is not None:
         bid = str(business_area_persona_id).strip()
         if bid and shelf.find_entry("business_area", bid) is None:

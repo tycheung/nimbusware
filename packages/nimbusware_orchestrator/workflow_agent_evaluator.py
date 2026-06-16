@@ -51,7 +51,6 @@ def parse_agent_evaluator_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> AgentEvaluatorWorkflowBlock:
-    """Return workflow agent_evaluator overrides; missing block → ``enabled=False``, ``default``."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return AgentEvaluatorWorkflowBlock()
     key = str(workflow_profile).strip()
@@ -148,7 +147,6 @@ def agent_evaluator_production_default_on(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when YAML enables evaluator + LLM branch and no production kill-switch is set."""
     block = parse_agent_evaluator_workflow_block(
         repo_root,
         workflow_profile,

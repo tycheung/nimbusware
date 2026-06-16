@@ -110,7 +110,6 @@ def run_probation_automation(
     owner_role: str | None = None,
     strictness_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Return metadata for agent_evaluator / self_refinement stage envelopes."""
     out: dict[str, Any] = {}
     if not block.enabled or not persona_id.strip() or persona_id.strip() == "default":
         return out

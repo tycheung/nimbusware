@@ -24,7 +24,6 @@ def integration_adapter_writer_stage_would_emit(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when pipeline would emit ``stage.started`` (effective; stub or live)."""
     block = parse_integration_adapter_writer_workflow_block(
         repo_root,
         workflow_profile,

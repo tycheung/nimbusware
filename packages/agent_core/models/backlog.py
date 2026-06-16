@@ -101,7 +101,6 @@ def count_backlog_slices(backlog: DeliveryBacklog) -> int:
 
 
 def sync_backlog_metadata(backlog: DeliveryBacklog) -> DeliveryBacklog:
-    """Return backlog with metadata.total_slices_planned aligned to epic tree."""
     total = count_backlog_slices(backlog)
     if backlog.metadata.total_slices_planned == total:
         return backlog
@@ -133,7 +132,6 @@ def backlog_dependency_graph(backlog: DeliveryBacklog) -> dict[str, tuple[str, .
 
 
 def validate_backlog_dag(backlog: DeliveryBacklog) -> list[str]:
-    """Return human-readable errors; empty list means the dependency DAG is acyclic."""
     graph = backlog_dependency_graph(backlog)
     known = set(graph.keys())
     errors: list[str] = []

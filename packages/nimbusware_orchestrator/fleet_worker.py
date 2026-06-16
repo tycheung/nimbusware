@@ -13,7 +13,6 @@ BackpressureLevel = Literal["ok", "warn", "critical", "unknown"]
 
 
 def fleet_redis_worker_enabled() -> bool:
-    """True when Enterprise fleet Redis worker profile is active."""
     if run_dispatch_mode() != "redis":
         return False
     if not nimbusware_redis_url():

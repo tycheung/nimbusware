@@ -20,7 +20,6 @@ def parse_escalation_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> EscalationWorkflowBlock:
-    """Return workflow escalation overrides; missing block → do not suppress."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return EscalationWorkflowBlock()
     key = str(workflow_profile).strip()

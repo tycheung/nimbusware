@@ -21,7 +21,6 @@ def fetch_event_rows_for_memory_index(
     in_memory_rows: list[dict[str, Any]] | None = None,
     tenant_scoped: bool = False,
 ) -> list[dict[str, Any]]:
-    """Return event rows needed for chunk extraction, ordered by ``store_seq``."""
     if in_memory_rows is not None:
         types = frozenset(_MEMORY_EVENT_TYPES)
         rows = [r for r in in_memory_rows if str(r.get("event_type")) in types]

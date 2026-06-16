@@ -196,7 +196,6 @@ def emit_stitch_stages(
     prior_events: list[dict[str, Any]],
     live: bool = True,
 ) -> bool:
-    """Emit stitch stages using live manifest resolution when enabled."""
     manifest: TransplantManifest | None = None
     wiring: str | None = None
     write_catalog = True
@@ -244,7 +243,6 @@ def emit_stitch_stages_for_manifest(
     wiring_delta_summary: str | None = None,
     write_catalog_on_apply: bool = True,
 ) -> bool:
-    """Emit stitch plan/apply (or failed) for a concrete manifest."""
     if not has_code_research_brief(prior_events):
         return False
 
@@ -411,7 +409,6 @@ def emit_stitch_stages_stub(
     stitch_meta: dict[str, Any],
     prior_events: list[dict[str, Any]],
 ) -> bool:
-    """Emit stitch plan/apply (or failed). Returns True if stitch.applied was emitted."""
     manifest_id = str(uuid4())
     manifest = _stub_manifest(manifest_id)
     return emit_stitch_stages_for_manifest(

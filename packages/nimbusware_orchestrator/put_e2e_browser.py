@@ -139,7 +139,6 @@ def capture_failure_browser_trace(
     capture_console: bool = False,
     capture_network: bool = False,
 ) -> dict[str, Any]:
-    """Best-effort Playwright trace and optional console/network capture on failure."""
     return _run_browser_session(
         _goto_url(base_url, path),
         evidence_dir=evidence_dir,

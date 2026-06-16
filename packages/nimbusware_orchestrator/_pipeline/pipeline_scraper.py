@@ -174,7 +174,6 @@ class PipelineScraperMixin:
         *,
         client: httpx.Client | None = None,
     ) -> None:
-        """Optional ``scraper:fetch`` stage from workflow YAML (requires env for HTTP)."""
         wf = workflow_profile_from_run_created_rows(self._store.list_run_events(str(run_id)))
         if not wf:
             return

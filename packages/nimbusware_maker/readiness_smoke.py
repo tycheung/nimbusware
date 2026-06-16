@@ -4,7 +4,6 @@ from typing import Any
 
 
 def readiness_smoke_ok(payload: dict[str, Any]) -> tuple[bool, str]:
-    """Return whether first-run wizard may proceed past readiness step."""
     status = str(payload.get("status") or "").strip().lower()
     if status in ("ready", "degraded"):
         return True, ""

@@ -42,7 +42,6 @@ def _ollama_runtime_from_env() -> tuple[str, str]:
 
 
 def deterministic_embed(text: str, *, dim: int = _DETERMINISTIC_DIM) -> list[float]:
-    """Hash-based unit vector (aligned with bundle catalog pseudo-embeddings)."""
     digest = hashlib.sha256(text.encode("utf-8")).digest()
     need = dim * 4
     buf = (digest * ((need // len(digest)) + 1))[:need]
@@ -60,7 +59,6 @@ def ollama_embed(
     model: str | None = None,
     timeout_seconds: float = 60.0,
 ) -> list[float]:
-    """Call Ollama ``/api/embeddings`` and return a normalized vector."""
     url_base, default_model = _ollama_runtime_from_env()
     endpoint = (base_url or url_base).rstrip("/") + "/api/embeddings"
     embed_model = (model or default_model).strip()

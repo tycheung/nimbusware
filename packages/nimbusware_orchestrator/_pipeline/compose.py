@@ -117,6 +117,5 @@ def _finalize_run_orchestrator_class(cls: type) -> type:
 
 
 def build_run_orchestrator_class(_pipeline_globals: dict[str, object]) -> type[object]:
-    """Return ``RunOrchestrator``; mixin methods resolve helpers via ``pipeline``."""
     del _pipeline_globals
     return _finalize_run_orchestrator_class(RunOrchestrator)

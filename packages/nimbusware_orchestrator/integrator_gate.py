@@ -17,7 +17,6 @@ def load_integrator_gate_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any] | None:
-    """Return workflow ``integrator_gate`` mapping, or ``None`` if missing/unusable."""
     return _integrator_gate_workflow_dict(
         repo_root,
         workflow_profile,
@@ -31,7 +30,6 @@ def _integrator_gate_workflow_dict(
     *,
     config_materializer: Any | None = None,
 ) -> dict[str, Any] | None:
-    """Return workflow ``integrator_gate`` mapping, or ``None`` if missing/unusable."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return None
     key = str(workflow_profile).strip()
@@ -134,7 +132,6 @@ def load_bundle_tags_for_bundle_id(
     *,
     config_materializer: Any | None = None,
 ) -> list[str]:
-    """Return ``tags`` from ``configs/bundles/catalog.yaml`` for ``bundle_id``, or []."""
     b = _bundle_entry_for_id(repo_root, bundle_id, config_materializer=config_materializer)
     if b is None:
         return []
@@ -150,7 +147,6 @@ def load_bundle_title_for_bundle_id(
     *,
     config_materializer: Any | None = None,
 ) -> str:
-    """Return bundle ``title`` from catalog for ``bundle_id``, or empty string."""
     b = _bundle_entry_for_id(repo_root, bundle_id, config_materializer=config_materializer)
     if b is None:
         return ""

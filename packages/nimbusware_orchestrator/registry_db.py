@@ -8,7 +8,6 @@ from nimbusware_orchestrator.registry import RoleRegistry
 
 
 def load_registry_from_postgres(conninfo: str) -> RoleRegistry:
-    """Load taxonomy keys from ``nimbusware_roles_registry`` (see ``schema/postgres.sql``)."""
     with psycopg.connect(conninfo) as conn:
         with conn.cursor() as cur:
             cur.execute(

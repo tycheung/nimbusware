@@ -54,7 +54,6 @@ def pressure_history_from_event_rows(
     *,
     limit: int = 20,
 ) -> list[dict[str, Any]]:
-    """Return newest hardware profile and mid-run pressure warn rows."""
     cap = max(1, min(int(limit), 200))
     hits: list[dict[str, Any]] = []
     for row in reversed(rows):

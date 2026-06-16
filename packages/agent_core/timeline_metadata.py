@@ -47,7 +47,6 @@ def persona_assignment_from_run_created_metadata(
 def critique_coverage_from_run_created_metadata(
     metadata: Mapping[str, Any] | dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Freeze-safe critique coverage from ``run.created`` metadata."""
     if not isinstance(metadata, Mapping):
         return None
     raw = metadata.get("critique_coverage")

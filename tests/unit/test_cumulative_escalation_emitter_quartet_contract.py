@@ -127,7 +127,6 @@ def _append_escalation(mem: InMemoryEventStore, run_id: UUID, reason_code: str) 
 
 
 def _escalation_rows(mem: InMemoryEventStore, run_id: UUID) -> list[dict[str, Any]]:
-    """Return RUN_ESCALATED rows for the run in order."""
     return [
         r
         for r in mem.list_run_events(str(run_id))

@@ -25,7 +25,6 @@ _VERIFIER_NOTES_LITERAL = "escalate_on_first_verifier_failure policy"
 
 
 def _escalation_rows(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    """Return ``run.escalated`` rows for the run, in store order."""
     return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _RUN_ESCALATED]
 
 

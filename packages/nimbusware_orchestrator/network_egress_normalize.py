@@ -8,7 +8,6 @@ import idna
 
 
 def _canonical_ipv4_dotted_quad(text: str) -> str | None:
-    """Parse dotted-quad IPv4 with loose octets (leading zeros) into canonical form."""
     parts = text.split(".")
     if len(parts) != 4:
         return None

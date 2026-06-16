@@ -18,7 +18,6 @@ def append_gate_overridden(
     stage_name: str,
     policy_snapshot_id: str | None = None,
 ) -> None:
-    """Record human gate override on the event store (does not bypass gate machinery)."""
     store.append(
         GateOverriddenEvent(
             event_type=EventType.GATE_OVERRIDDEN,

@@ -57,7 +57,6 @@ class StageGraph:
 
 
 def default_stage_graph() -> StageGraph:
-    """Sequential plan → writers (parallel-ready) → critique hooks → integrator gate."""
     return StageGraph(
         nodes=(
             StageNode("plan"),
@@ -85,7 +84,6 @@ def default_stage_graph() -> StageGraph:
 
 
 def stage_graph_from_workflow_profile(profile: Mapping[str, Any] | dict[str, Any]) -> StageGraph:
-    """Parse optional top-level ``stage_graph`` list; absent key → :func:`default_stage_graph`."""
     raw = profile.get("stage_graph")
     if raw is None:
         return default_stage_graph()
@@ -148,7 +146,6 @@ def validate_stage_graph(graph: StageGraph, known_stages: frozenset[str]) -> Non
 
 
 def topological_order(graph: StageGraph) -> list[str]:
-    """Return stage names in dependency order; raise on cycle."""
     indegree: dict[str, int] = {n.stage_name: 0 for n in graph.nodes}
     adj: dict[str, list[str]] = {n.stage_name: [] for n in graph.nodes}
     for node in graph.nodes:
@@ -171,7 +168,6 @@ def topological_order(graph: StageGraph) -> list[str]:
 
 
 def stage_graph_metadata_snapshot(graph: StageGraph) -> dict[str, Any]:
-    """Freeze-safe ``run.created`` metadata payload for ``metadata.stage_graph``."""
     ordered = topological_order(graph)
     order_index = {name: idx for idx, name in enumerate(ordered)}
     parallel_groups: dict[str, list[str]] = {}
@@ -219,7 +215,6 @@ def event_metadata_for_stage(
     snapshot: Mapping[str, Any] | None,
     stage_name: str,
 ) -> dict[str, Any]:
-    """Optional ``parallel_group`` / ``stage_graph_order_index`` for orchestration events."""
     if snapshot is None:
         return {}
     node = stage_graph_node_lookup(snapshot).get(stage_name)
@@ -239,7 +234,6 @@ def parallel_group_members(
     snapshot: Mapping[str, Any],
     group_id: str,
 ) -> list[str]:
-    """Stage names belonging to ``parallel_groups[group_id]`` (stable order)."""
     pg = snapshot.get("parallel_groups")
     if not isinstance(pg, dict):
         return []
@@ -254,7 +248,6 @@ def stages_ready_for_parallel_group(
     completed_stages: set[str] | frozenset[str],
     group_id: str,
 ) -> bool:
-    """True when every stage in the group has all ``depends_on`` satisfied."""
     lookup = stage_graph_node_lookup(snapshot)
     for stage_name in parallel_group_members(snapshot, group_id):
         node = lookup.get(stage_name)
@@ -273,7 +266,6 @@ def stages_ready_for_parallel_group(
 def stage_graph_timeline_summary_from_metadata(
     metadata: Mapping[str, Any] | dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Compact timeline rollup from frozen ``run.created`` ``metadata.stage_graph``."""
     sg = stage_graph_from_run_created_metadata(metadata)
     if sg is None:
         return None

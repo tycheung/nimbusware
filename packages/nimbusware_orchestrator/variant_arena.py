@@ -150,7 +150,6 @@ def merge_variant_crossover(
     candidate_b: VariantCandidate,
     tmp_root: Path,
 ) -> Path:
-    """Merge non-conflicting file wins from two variants onto a base worktree copy."""
     if candidate_a.fitness >= candidate_b.fitness:
         primary, secondary = candidate_a, candidate_b
     else:

@@ -33,7 +33,6 @@ def run_slice_e2e_verify(
     command: str | None = None,
     timeout_seconds: float = 300.0,
 ) -> SliceE2EResult:
-    """Optional browser verify after unit tests. Skips when runner unavailable."""
     cmd_line = (command or env_str("NIMBUSWARE_SLICE_E2E_COMMAND")).strip()
     if cmd_line:
         parts = cmd_line.split()

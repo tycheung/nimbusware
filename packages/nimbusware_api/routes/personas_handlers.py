@@ -53,7 +53,6 @@ router = APIRouter(prefix="/personas", tags=["personas"])
     summary="List persona shelves",
 )
 def get_persona_shelves(orch: OrchDep) -> PersonaShelvesResponse:
-    """Return read-only persona catalog from ``configs/personas/shelves.yaml``."""
     shelf = load_shelf(orch)
     return public_catalog(shelf)
 

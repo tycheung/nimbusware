@@ -8,7 +8,6 @@ from typing import Any
 
 
 def available_memory_gb() -> tuple[float | None, float | None]:
-    """Return (total_gb, available_gb) when detectable."""
     if sys.platform == "win32":
         try:
 

@@ -32,17 +32,14 @@ _EXPECTED_META_KEYS = {
 
 
 def _gate_rows(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    """Return all ``gate.decision.emitted`` rows for the run in store order."""
     return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _GATE_EMITTED]
 
 
 def _gate_meta(row: dict[str, Any]) -> dict[str, Any]:
-    """Return ``metadata`` dict for an integrator gate row (defaults to ``{}``)."""
     return dict(row.get("metadata") or {})
 
 
 def _gate_payload(row: dict[str, Any]) -> dict[str, Any]:
-    """Return ``payload`` dict for an integrator gate row (defaults to ``{}``)."""
     return dict(row.get("payload") or {})
 
 

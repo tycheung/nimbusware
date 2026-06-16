@@ -10,7 +10,6 @@ _LINE = re.compile(r"^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$")
 
 
 def find_repo_root(*, start: Path | None = None) -> Path:
-    """Directory containing ``pyproject.toml`` for this workspace, else ``cwd``."""
     cur = (start or Path.cwd()).resolve()
     for candidate in (cur, *cur.parents):
         if (candidate / "pyproject.toml").is_file():
@@ -70,7 +69,6 @@ def set_env_var(
     repo_root: Path | None = None,
     env_path: Path | None = None,
 ) -> Path:
-    """Set or add ``key=value`` in the repo ``.env`` file (creates file if missing)."""
     root = repo_root or find_repo_root()
     path = env_path or (root / ".env")
     formatted = f"{key}={_format_env_value(value)}"

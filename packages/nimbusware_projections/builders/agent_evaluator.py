@@ -34,7 +34,6 @@ def _apply_agent_evaluator_flat_auto_actions(
     ae_promote: dict[str, Any],
     ae_create: dict[str, Any],
 ) -> None:
-    """Add top-level scalar auto-promote / auto-create fields for operator tables."""
     if ae_promote:
         req = _agent_evaluator_bool_field(
             ae_promote,

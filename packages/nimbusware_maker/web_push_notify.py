@@ -34,7 +34,6 @@ def send_campaign_push(
     title: str,
     body: str,
 ) -> dict[str, Any]:
-    """Best-effort Web Push for campaign milestones; never raises."""
     if not push_send_enabled():
         return {"status": "skipped", "reason": "push_send_not_configured"}
 

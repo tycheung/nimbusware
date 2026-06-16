@@ -566,7 +566,6 @@ _DISPATCH_MEMORY = frozenset({"memory", "1", "true", "yes", "on"})
 
 
 def nimbusware_run_dispatch_mode() -> str | None:
-    """Return ``memory``, ``redis``, or ``None`` when dispatch is disabled."""
     raw = env_str("NIMBUSWARE_RUN_DISPATCH").lower()
     if not raw or raw in _DISPATCH_OFF:
         return None

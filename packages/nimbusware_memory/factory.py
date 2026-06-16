@@ -13,7 +13,6 @@ def build_memory_chunk_store(
     *,
     allow_in_memory: bool = False,
 ) -> MemoryChunkStore | None:
-    """Return Postgres store when ``NIMBUSWARE_DATABASE_URL`` is set; else optional in-memory."""
     url = (conninfo or nimbusware_database_url() or "").strip()
     if url:
         return PostgresMemoryChunkStore(url)

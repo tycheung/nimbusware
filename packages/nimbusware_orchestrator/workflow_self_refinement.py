@@ -27,7 +27,6 @@ def parse_self_refinement_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> SelfRefinementWorkflowBlock:
-    """Return workflow self_refinement overrides; missing block → ``enabled=False``."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return SelfRefinementWorkflowBlock()
     key = str(workflow_profile).strip()

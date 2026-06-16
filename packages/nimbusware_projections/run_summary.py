@@ -16,7 +16,6 @@ RUN_LIST_FILTER_STATUSES: frozenset[str] = frozenset({"created", "running", "ter
 
 
 def build_run_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Derive status summary from ``list_run_events`` rows (ordered by ``store_seq``)."""
     if not rows:
         return {
             "status": "unknown",

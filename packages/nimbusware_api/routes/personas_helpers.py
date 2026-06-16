@@ -20,7 +20,6 @@ def config_materializer(orch: Any) -> Any | None:
 
 
 def load_shelf(orch: Any) -> PersonaShelf:
-    """Load + structurally validate persona shelves; raise HTTPException on failure."""
     mat = config_materializer(orch)
     path = orch.repo_root / "configs" / "personas" / "shelves.yaml"
     try:
@@ -77,7 +76,6 @@ def validate_shelf_name(shelf: str) -> None:
 
 
 def entry_version(entry: dict[str, Any] | None) -> int:
-    """Treat missing or non-int ``version`` as 1 (matches ``to_public_catalog`` defaults)."""
     if not entry:
         return 0
     raw = entry.get("version")
@@ -92,7 +90,6 @@ def find_replayed_event(
     persona_id: str,
     idem_key: UUID,
 ) -> bool:
-    """Return ``True`` when an existing ``persona.shelf.updated`` row matches ``idem_key``."""
     rid = str(persona_catalog_run_id(shelf, persona_id))
     for r in store.list_run_events(rid):
         if r.get("event_type") == EventType.PERSONA_SHELF_UPDATED.value and str(

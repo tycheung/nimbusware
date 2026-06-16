@@ -30,7 +30,6 @@ RUN_DETAIL_LINK_HEADER: dict[str, Any] = {
 
 
 def format_run_detail_link_header(run_id: str) -> str:
-    """RFC 5988 ``Link`` for ``GET /v1/runs/{run_id}`` (see ``RUN_DETAIL_LINK_HEADER``)."""
     return (
         f'</v1/runs/{run_id}/timeline>; rel="timeline", '
         f'</v1/runs/{run_id}/findings>; rel="findings"'
@@ -52,7 +51,6 @@ RUN_TIMELINE_LINK_HEADER: dict[str, Any] = {
 
 
 def format_run_timeline_link_header(run_id: str) -> str:
-    """RFC 5988 ``Link`` for run timeline ``GET`` (see ``RUN_TIMELINE_LINK_HEADER``)."""
     return f'</v1/runs/{run_id}>; rel="run", </v1/runs/{run_id}/findings>; rel="findings"'
 
 
@@ -130,5 +128,4 @@ RUN_FINDINGS_LINK_HEADER: dict[str, Any] = {
 
 
 def format_run_findings_link_header(run_id: str) -> str:
-    """RFC 5988 ``Link`` for run findings ``GET`` (see ``RUN_FINDINGS_LINK_HEADER``)."""
     return f'</v1/runs/{run_id}>; rel="run", </v1/runs/{run_id}/timeline>; rel="timeline"'

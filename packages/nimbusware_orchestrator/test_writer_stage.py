@@ -35,7 +35,6 @@ def _run_test_writer_stage_llm(
     base_url: str,
     timeout_seconds: float,
 ) -> tuple[int, str]:
-    """Best-effort LLM-backed test-writer body generation summary."""
     try:
         payload = ollama_chat_json(
             base_url=base_url,

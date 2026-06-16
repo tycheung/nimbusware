@@ -43,7 +43,6 @@ def load_notice_escalate_at_cumulative_findings(
     *,
     config_materializer: Any | None = None,
 ) -> int | None:
-    """Optional softer signal: emit ``run.escalated`` once at this cumulative finding count."""
     raw = _escalation_policy_raw(repo_root, config_materializer)
     if raw is None:
         return None
@@ -61,7 +60,6 @@ def load_escalate_after_cumulative_stage_failures(
     *,
     config_materializer: Any | None = None,
 ) -> int | None:
-    """Emit one ``run.escalated`` when cumulative ``stage.failed`` reaches this count."""
     raw = _escalation_policy_raw(repo_root, config_materializer)
     if raw is None:
         return None
@@ -79,7 +77,6 @@ def load_escalate_after_cumulative_gate_failures(
     *,
     config_materializer: Any | None = None,
 ) -> int | None:
-    """Emit one ``run.escalated`` when cumulative FAIL ``gate.decision.emitted`` reaches this."""
     raw = _escalation_policy_raw(repo_root, config_materializer)
     if raw is None:
         return None
@@ -97,7 +94,6 @@ def load_escalate_after_cumulative_high_severity_findings(
     *,
     config_materializer: Any | None = None,
 ) -> int | None:
-    """Emit one ``run.escalated`` when cumulative HIGH/BLOCKER ``finding.created`` reaches this."""
     raw = _escalation_policy_raw(repo_root, config_materializer)
     if raw is None:
         return None

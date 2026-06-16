@@ -42,7 +42,6 @@ class CampaignDispatchMixin:
         workspace: Path | None = None,
         autonomous: bool | None = None,
     ) -> str:
-        """Emit ``campaign.created`` when missing and enqueue or run first tick."""
         from agent_core.models import EventType
         from nimbusware_orchestrator.campaign import (
             campaign_enabled_for_run,

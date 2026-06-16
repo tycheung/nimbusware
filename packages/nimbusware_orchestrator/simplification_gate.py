@@ -10,7 +10,6 @@ def delete_with_tests_allowed(
     *,
     timeout_seconds: float = 60.0,
 ) -> tuple[bool, str]:
-    """Return ``(allowed, detail)`` — deletions require ``tests/`` and green pytest."""
     ws = workspace.resolve()
     if not target_paths:
         return True, "no_targets"

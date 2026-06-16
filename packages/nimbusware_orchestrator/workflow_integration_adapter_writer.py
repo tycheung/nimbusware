@@ -24,7 +24,6 @@ def parse_integration_adapter_writer_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> IntegrationAdapterWriterWorkflowBlock:
-    """Return workflow block; missing subsection → disabled defaults."""
     if workflow_profile is None or not str(workflow_profile).strip():
         return IntegrationAdapterWriterWorkflowBlock()
     key = str(workflow_profile).strip()

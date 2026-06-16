@@ -262,7 +262,6 @@ def build_lsp_symbol_sketch(
     *,
     max_chars: int = 3000,
 ) -> tuple[str, str]:
-    """Return (sketch_text, empty) or ("", reason) when LSP cannot produce symbols."""
     blocks: list[str] = []
     last_reason = ""
     for rel in target_paths:

@@ -33,7 +33,6 @@ def _validate_optional_str(
     max_chars: int,
     where: str,
 ) -> str | None:
-    """Return NFC-normalized string when present; raise on type / length errors."""
     if value is None:
         return None
     if not isinstance(value, str):
@@ -54,7 +53,6 @@ def _validate_optional_str_list(
     per_entry_max_chars: int,
     where: str,
 ) -> list[str] | None:
-    """Return NFC-normalized list of strings when present; raise on shape errors."""
     if value is None:
         return None
     if not isinstance(value, list):
@@ -122,7 +120,6 @@ def collect_persona_entry_validation_errors(
     *,
     where: str = "entry",
 ) -> list[str]:
-    """Return human-readable validation messages (empty when the entry is valid)."""
     try:
         _validate_entry_optional_fields(entry, where=where)
     except ValueError as exc:
@@ -319,7 +316,6 @@ class PersonaShelf:
         return frozenset(out)
 
     def find_entry(self, shelf: str, persona_id: str) -> dict[str, Any] | None:
-        """Return a deep-enough copy of the entry, or ``None`` when missing."""
         for entry in self.list_personas(shelf):
             if str(entry.get("id", "")).strip() == persona_id:
                 return dict(entry)

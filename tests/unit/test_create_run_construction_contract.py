@@ -12,14 +12,12 @@ _RUN_CREATED = "run.created"
 
 
 def _only_run_created_row(mem: InMemoryEventStore) -> dict[str, Any]:
-    """Return the single RUN_CREATED row or fail with a clear diagnostic."""
     rows = [r for r in mem._rows if r["event_type"] == _RUN_CREATED]  # noqa: SLF001
     assert len(rows) == 1, f"expected exactly 1 run.created row, got {len(rows)}"
     return rows[0]
 
 
 def _all_run_created_rows(mem: InMemoryEventStore) -> list[dict[str, Any]]:
-    """Return all RUN_CREATED rows in append order."""
     return [r for r in mem._rows if r["event_type"] == _RUN_CREATED]  # noqa: SLF001
 
 

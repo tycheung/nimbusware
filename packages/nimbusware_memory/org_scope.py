@@ -25,7 +25,6 @@ def resolve_fleet_scope(
     tenant_id: UUID | None = None,
     org_slug: str = "default",
 ) -> tuple[UUID, str]:
-    """Return ``(tenant_id, org_scope_hash)`` for fleet memory operations."""
     require_fleet_memory_feature()
     tid = tenant_id or resolve_store_tenant_id()
     return tid, fleet_scope_hash(tid, org_slug=org_slug)
