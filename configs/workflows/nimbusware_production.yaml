@@ -42,7 +42,7 @@ universal_critique:
   planner: {}
 integration_adapter_writer:
   enabled: false
-  stub_only: true
+  stub_only: false
 escalation:
   suppress_automatic_escalation: false
 
@@ -68,7 +68,7 @@ network_resilience_critique:
 
 refactor:
   enabled: true
-  stub_only: true
+  stub_only: false
   max_iterations: 1
 
 # Phase 4 memory: default-on retrieval + index contribution for production runs.
