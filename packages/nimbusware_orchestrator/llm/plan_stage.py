@@ -18,7 +18,6 @@ from agent_core.models import (
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
-    IMPLEMENTATION_CRITIQUE_STAGE,
     LlmPlanResponse,
     _finalize_critique_gate,
     _fixes_from_llm,
@@ -95,57 +94,6 @@ def emit_stub_plan_stage(
         store,
         run_id=run_id,
         stage_name="plan",
-        critic_payloads=critic_payloads,
-    )
-
-
-def emit_stub_implementation_critique_panel(
-    store: EventStore,
-    registry: RoleRegistry,
-    critique_router: UniversalCritiqueRouter,
-    *,
-    run_id: UUID,
-) -> None:
-    owner = registry.resolve("backend_writer")
-    tax_keys = critique_router.pairing_for("backend_writer")
-    if len(tax_keys) < 2:
-        return
-    stage_name = IMPLEMENTATION_CRITIQUE_STAGE
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=StageStartedPayload(stage_name=stage_name, attempt=1),
-        ),
-    )
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    for tax_key in tax_keys:
-        critic_role = registry.resolve(tax_key)
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=Verdict.PASS,
-            severity=Severity.LOW,
-            owner_role=owner,
-            is_in_domain=True,
-            evidence_refs=["stub://implementation"],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
-        )
-    _finalize_critique_gate(
-        store,
-        run_id=run_id,
-        stage_name=stage_name,
         critic_payloads=critic_payloads,
     )
 

@@ -25,6 +25,7 @@ from nimbusware_orchestrator.llm.common import (
     _fixes_from_llm,
     _parse_severity,
     _parse_verdict,
+    emit_stub_role_critique_panel,
 )
 from nimbusware_orchestrator.llm.common import (
     ollama_chat_json_via_plan_patch as _ollama_chat_json,
@@ -40,47 +41,14 @@ def emit_stub_frontend_writer_critique_panel(
     *,
     run_id: UUID,
 ) -> None:
-    owner = registry.resolve("frontend_writer")
-    tax_keys = critique_router.pairing_for("frontend_writer")
-    if len(tax_keys) < 2:
-        return
-    stage_name = FRONTEND_WRITER_CRITIQUE_STAGE
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=StageStartedPayload(stage_name=stage_name, attempt=1),
-        ),
-    )
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    for tax_key in tax_keys:
-        critic_role = registry.resolve(tax_key)
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=Verdict.PASS,
-            severity=Severity.LOW,
-            owner_role=owner,
-            is_in_domain=True,
-            evidence_refs=["stub://frontend_writer"],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
-        )
-    _finalize_critique_gate(
+    emit_stub_role_critique_panel(
         store,
+        registry,
+        critique_router,
         run_id=run_id,
-        stage_name=stage_name,
-        critic_payloads=critic_payloads,
+        producer_tax_key="frontend_writer",
+        stage_name=FRONTEND_WRITER_CRITIQUE_STAGE,
+        evidence_ref="stub://frontend_writer",
     )
 
 

@@ -26,6 +26,7 @@ from nimbusware_orchestrator.llm.common import (
     _finalize_critique_gate,
     _parse_verdict,
     append_gate_decision_event,
+    emit_stub_role_critique_panel,
 )
 from nimbusware_orchestrator.llm.common import (
     ollama_chat_json_via_plan_patch as _ollama_chat_json,
@@ -41,48 +42,16 @@ def emit_stub_self_refinement_critique_panel(
     *,
     run_id: UUID,
 ) -> None:
-    """PASS critic + gate events for self-refinement Phase D (section 14 item 17)."""
-    owner = registry.resolve("planner")
-    tax_keys = critique_router.pairing_for("planner")
-    if len(tax_keys) < 1:
-        return
-    stage_name = SELF_REFINEMENT_CRITIQUE_STAGE
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=StageStartedPayload(stage_name=stage_name, attempt=1),
-        ),
-    )
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    for tax_key in tax_keys[:2]:
-        critic_role = registry.resolve(tax_key)
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=Verdict.PASS,
-            severity=Severity.LOW,
-            owner_role=owner,
-            is_in_domain=True,
-            evidence_refs=["stub://self_refinement"],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
-        )
-    _finalize_critique_gate(
+    emit_stub_role_critique_panel(
         store,
+        registry,
+        critique_router,
         run_id=run_id,
-        stage_name=stage_name,
-        critic_payloads=critic_payloads,
+        producer_tax_key="planner",
+        stage_name=SELF_REFINEMENT_CRITIQUE_STAGE,
+        evidence_ref="stub://self_refinement",
+        min_pairing_count=1,
+        max_critics=2,
     )
 
 

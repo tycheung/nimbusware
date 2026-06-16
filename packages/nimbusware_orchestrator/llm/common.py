@@ -152,6 +152,63 @@ def _finalize_critique_gate(
     append_gate_decision_event(store, run_id=run_id, payload=gate)
 
 
+def emit_stub_role_critique_panel(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    producer_tax_key: str,
+    stage_name: str,
+    evidence_ref: str,
+    min_pairing_count: int = 2,
+    max_critics: int | None = None,
+) -> None:
+    owner = registry.resolve(producer_tax_key)
+    tax_keys = critique_router.pairing_for(producer_tax_key)
+    if len(tax_keys) < min_pairing_count:
+        return
+    if max_critics is not None:
+        tax_keys = tax_keys[:max_critics]
+    store.append(
+        StageStartedEvent(
+            event_type=EventType.STAGE_STARTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StageStartedPayload(stage_name=stage_name, attempt=1),
+        ),
+    )
+    critic_payloads: list[CriticVerdictEmittedPayload] = []
+    for tax_key in tax_keys:
+        critic_role = registry.resolve(tax_key)
+        payload = CriticVerdictEmittedPayload(
+            critic_role=critic_role,
+            verdict=Verdict.PASS,
+            severity=Severity.LOW,
+            owner_role=owner,
+            is_in_domain=True,
+            evidence_refs=[evidence_ref],
+        )
+        critic_payloads.append(payload)
+        store.append(
+            CriticVerdictEmittedEvent(
+                event_type=EventType.CRITIC_VERDICT_EMITTED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                actor_role=critic_role,
+                payload=payload,
+            ),
+        )
+    _finalize_critique_gate(
+        store,
+        run_id=run_id,
+        stage_name=stage_name,
+        critic_payloads=critic_payloads,
+    )
+
+
 class LlmSelfRefinementCritiqueResponse(BaseModel):
     model_config = {"extra": "ignore"}
 
