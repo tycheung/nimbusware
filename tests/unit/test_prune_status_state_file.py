@@ -1,5 +1,3 @@
-"""Script-level tests for the fo126 ``--summary-path`` state-file output."""
-
 from __future__ import annotations
 
 import json

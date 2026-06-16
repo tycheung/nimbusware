@@ -1,5 +1,3 @@
-"""Campaign dispatch worker journey — memory queue drained by in-process worker."""
-
 from __future__ import annotations
 
 import time

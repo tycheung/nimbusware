@@ -1,5 +1,3 @@
-"""Orchestrator outbound HTTP uses ``run.created`` frozen egress policy."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

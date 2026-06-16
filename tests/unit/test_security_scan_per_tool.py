@@ -1,5 +1,3 @@
-"""per-tool exit codes from ``run_security_scan``."""
-
 from __future__ import annotations
 
 from pathlib import Path

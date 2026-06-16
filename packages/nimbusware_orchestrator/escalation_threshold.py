@@ -1,5 +1,3 @@
-"""Auto-escalation thresholds from ``configs/escalation/policy.yaml``."""
-
 from __future__ import annotations
 
 from pathlib import Path

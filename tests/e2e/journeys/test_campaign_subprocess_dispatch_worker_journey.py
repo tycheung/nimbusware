@@ -1,5 +1,3 @@
-"""Campaign dispatch worker journey — uvicorn subprocess with embedded worker thread."""
-
 from __future__ import annotations
 
 import time

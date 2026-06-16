@@ -1,5 +1,3 @@
-"""Maker slice execution boundary — isolates orchestrator imports from slice_workflow."""
-
 from __future__ import annotations
 
 from pathlib import Path

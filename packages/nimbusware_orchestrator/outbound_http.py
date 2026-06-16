@@ -1,5 +1,3 @@
-"""Outbound HTTP gated by frozen ``run.created`` policy snapshot."""
-
 from __future__ import annotations
 
 from uuid import UUID

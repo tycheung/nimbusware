@@ -1,5 +1,3 @@
-"""Enterprise routes under ``/v1/enterprise/*``."""
-
 from __future__ import annotations
 
 from fastapi import APIRouter

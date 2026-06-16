@@ -1,6 +1,3 @@
-"""Legacy Enterprise fleet UI entry points — use Admin SPA at ``/v1/admin/app/fleet``."""
-
-
 def render_enterprise_sidebar() -> bool:
     return False
 

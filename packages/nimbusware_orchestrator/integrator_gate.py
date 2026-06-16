@@ -1,5 +1,3 @@
-"""Integrator gate — bundle catalog scoring and optional min-score override."""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -51,10 +49,6 @@ def integrator_gate_workflow_enabled(
     *,
     config_materializer: Any | None = None,
 ) -> bool:
-    """True when workflow YAML ``integrator_gate.enabled`` is truthy.
-
-    Missing file or invalid profile returns ``False`` (caller falls back to env + catalog YAML).
-    """
     block = _integrator_gate_workflow_dict(
         repo_root,
         workflow_profile,
@@ -242,12 +236,6 @@ def parse_integrator_gate_project_tags(
     *,
     config_materializer: Any | None = None,
 ) -> list[str] | None:
-    """Explicit ``integrator_gate.project_tags`` from workflow YAML, or ``None``.
-
-    ``None`` means callers should align project tags with the selected bundle’s catalog
-    tags (neutral pass when the bundle lists tags). Malformed ``project_tags`` values
-    degrade to ``None``.
-    """
     block = _integrator_gate_workflow_dict(
         repo_root,
         workflow_profile,

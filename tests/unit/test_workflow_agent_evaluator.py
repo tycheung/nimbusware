@@ -1,5 +1,3 @@
-"""workflow ``agent_evaluator`` block parsing."""
-
 from __future__ import annotations
 
 from pathlib import Path

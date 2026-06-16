@@ -1,5 +1,3 @@
-"""Product edition gate — Individual (default) vs Enterprise."""
-
 from __future__ import annotations
 
 import os

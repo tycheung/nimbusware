@@ -49,6 +49,23 @@ _REDUNDANT_PREFIXES = (
     "Load launch eval ",
     "Minimal Ollama ",
     "Map verifier logs",
+    "Library-level tests for ",
+    "Script-level tests for ",
+    "Orchestrator outbound HTTP",
+    "per-tool exit codes",
+    "workflow ``",
+    "Egress allowlist",
+    "Campaign dispatch worker journey",
+    "Demo application module",
+    "Outbound HTTP gated by",
+    "Auto-escalation thresholds from",
+    "Enterprise routes under",
+    "Maker slice execution boundary",
+    "Product edition gate",
+    "Integrator gate —",
+    "Campaign driver state machine",
+    "MVP run lifecycle:",
+    "Legacy Enterprise fleet UI",
 )
 
 
@@ -94,6 +111,10 @@ def _should_drop(doc: str) -> bool:
         return True
     if head.startswith("Wrapper so ``pytest"):
         return True
+    if head.endswith(" trilogy."):
+        return True
+    if head.endswith(" propagation."):
+        return True
     if re.search(r"\(fo\d+[^)]*\)", head) and len(head) < 100:
         return True
     if "\n" in stripped:
@@ -119,7 +140,8 @@ _VERBOSE_MULTILINE_MARKERS = (
     "without juggling ``None`` checks",
     "Returns a structured result with ``local_removed``",
     "When ``dry_run`` is true, counts stale files",
-    "``include_patterns`` / ``exclude_patterns``:",
+    "Missing file or invalid profile returns",
+    "``None`` means callers should align project tags",
 )
 
 
