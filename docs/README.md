@@ -10,6 +10,9 @@
 | [deploy/first-install-timing.md](deploy/first-install-timing.md) | Operators | Reference install → first gate pass timing |
 | [deploy/pypi-publish.md](deploy/pypi-publish.md) | Ops | PyPI wheel/sdist publish runbook |
 | [deploy/vscode-marketplace.md](deploy/vscode-marketplace.md) | Ops | VS Code Marketplace extension publish runbook |
+| [deploy/v1.1-ship-checklist.md](deploy/v1.1-ship-checklist.md) | Ops | v1.1 finish-line gates + first publish checklist |
+| [deploy/pr-on-complete-soak.md](deploy/pr-on-complete-soak.md) | Ops | fo1320 git workspace → Open PR soak |
+| [deploy/live-writers-soak.md](deploy/live-writers-soak.md) | Ops | Production profile live-writer validation |
 | [deploy/k8s/tls-cert-manager.md](deploy/k8s/tls-cert-manager.md) | Ops | cert-manager TLS + multi-AZ Helm values |
 | [deploy/event-store-retention.md](deploy/event-store-retention.md) | Ops | Retention policy, legal hold, purge execute |
 | [deploy/headless-patch-ci.md](deploy/headless-patch-ci.md) | CI / platform | Headless patch from GitHub Actions (`work_type_source=ci`) |

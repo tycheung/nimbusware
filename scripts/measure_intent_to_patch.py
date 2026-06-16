@@ -24,6 +24,12 @@ os.environ.setdefault("NIMBUSWARE_SLICE_AUTO_ADVANCE", "0")
 os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(_REPO))
 
 
+def _bind_inmemory_chat(client) -> None:
+    from nimbusware_maker.chat_store import InMemoryChatStore
+
+    client.app.state.chat_store = InMemoryChatStore()
+
+
 def _prepare_workspace(tmp: Path) -> Path:
     from e2e.harness.workspace import copy_fixture_repo
 
@@ -55,6 +61,7 @@ def _run_once_direct(tmp: Path) -> float | None:
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()
     with TestClient(app) as client:
+        _bind_inmemory_chat(client)
         jc = JourneyClient(client=client)
         jc.attach_project(ws)
         run_resp = jc.client.post(
@@ -86,6 +93,7 @@ def _run_once_via_chat(tmp: Path) -> float | None:
     ws = _prepare_workspace(tmp)
     t0 = time.perf_counter()
     with TestClient(app) as client:
+        _bind_inmemory_chat(client)
         jc = JourneyClient(client=client)
         jc.attach_project(ws)
         session_resp = jc.client.post(
@@ -176,6 +184,7 @@ def main(argv: list[str] | None = None) -> int:
                     prior["chat_median_ms"] = median
                     prior["chat_sample_size"] = len(samples)
                     prior["chat_meets_target"] = body["meets_target"]
+                    prior["published_at"] = body["published_at"]
                 else:
                     prior.update(body)
                 body = prior

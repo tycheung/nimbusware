@@ -1,0 +1,20 @@
+{
+  "live_writer_flags_ok": true,
+  "note": "Config validates stub_only:false on production writers. Full Ollama live-writer soak requires NIMBUSWARE_USE_LLM=1 and a running Ollama server.",
+  "ollama_base_url": "http://127.0.0.1:11434",
+  "passed": true,
+  "pipeline_smoke": {
+    "duration_sec": 21.514,
+    "ok": true,
+    "pass_rate": 1.0,
+    "run_id": "2f63ab34-34d5-44e8-9ff8-b50d9a273b2d",
+    "workflow_profile": "micro_slice"
+  },
+  "profile_path": "configs/workflows/nimbusware_production.yaml",
+  "published_at": "2026-06-16T20:52:18.197240Z",
+  "use_llm_env": false,
+  "writer_flags": {
+    "integration_adapter_writer_stub_only": false,
+    "refactor_stub_only": false
+  }
+}
