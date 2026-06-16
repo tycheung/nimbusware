@@ -40,19 +40,15 @@ def run_kubernetes_sandbox(
         resolve_str("NIMBUSWARE_SANDBOX_K8S_WORKDIR", default="/workspace").strip() or "/workspace"
     )
     if not pod or not kubectl_available():
-        proc = subprocess.run(
-            argv,
-            cwd=workspace,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-        )
         return SandboxRunResult(
             backend="kubernetes",
-            returncode=proc.returncode,
-            stdout="[sandbox:k8s-unavailable] " + (proc.stdout or ""),
-            stderr=(proc.stderr or "")
-            + "Set NIMBUSWARE_SANDBOX_K8S_EXEC_POD and kubectl for fleet isolation.\n",
+            returncode=127,
+            stdout="",
+            stderr=(
+                "Kubernetes sandbox unavailable; refusing to run without pod isolation. "
+                "Set NIMBUSWARE_SANDBOX_K8S_EXEC_POD and ensure kubectl is on PATH, "
+                "or choose another NIMBUSWARE_SANDBOX_BACKEND.\n"
+            ),
         )
     cmd = [
         "kubectl",
@@ -79,26 +75,16 @@ def run_kubernetes_sandbox(
     )
 
 
-def _host_e2b_fallback(
-    workspace: Path,
-    argv: list[str],
+def _sandbox_unavailable(
     *,
-    timeout_seconds: float,
-    prefix: str,
+    backend: str,
     stderr_note: str,
 ) -> SandboxRunResult:
-    proc = subprocess.run(
-        argv,
-        cwd=workspace,
-        capture_output=True,
-        text=True,
-        timeout=timeout_seconds,
-    )
     return SandboxRunResult(
-        backend="e2b",
-        returncode=proc.returncode,
-        stdout=f"[sandbox:{prefix}] " + (proc.stdout or ""),
-        stderr=(proc.stderr or "") + stderr_note,
+        backend=backend,
+        returncode=127,
+        stdout="",
+        stderr=stderr_note,
     )
 
 
@@ -172,12 +158,11 @@ def run_e2b_sandbox(
 ) -> SandboxRunResult:
     api_key = resolve_str("NIMBUSWARE_E2B_API_KEY", default="").strip()
     if not api_key:
-        return _host_e2b_fallback(
-            workspace,
-            argv,
-            timeout_seconds=timeout_seconds,
-            prefix="e2b-unconfigured",
-            stderr_note="Fleet E2B sandbox requires NIMBUSWARE_E2B_API_KEY (enterprise fleet).\n",
+        return _sandbox_unavailable(
+            backend="e2b",
+            stderr_note=(
+                "Fleet E2B sandbox requires NIMBUSWARE_E2B_API_KEY (enterprise fleet).\n"
+            ),
         )
 
     try:
@@ -188,18 +173,14 @@ def run_e2b_sandbox(
             api_key=api_key,
         )
     except ImportError:
-        return _host_e2b_fallback(
-            workspace,
-            argv,
-            timeout_seconds=timeout_seconds,
-            prefix="e2b-local-fallback",
-            stderr_note="Install optional `e2b` package for remote fleet sandbox execution.\n",
+        return _sandbox_unavailable(
+            backend="e2b",
+            stderr_note=(
+                "Install optional `e2b` package for remote fleet sandbox execution.\n"
+            ),
         )
     except Exception as exc:
-        return _host_e2b_fallback(
-            workspace,
-            argv,
-            timeout_seconds=timeout_seconds,
-            prefix="e2b-local-fallback",
-            stderr_note=f"E2B remote sandbox failed ({exc}); ran on host with jail.\n",
+        return _sandbox_unavailable(
+            backend="e2b",
+            stderr_note=f"E2B remote sandbox failed ({exc}); refusing host fallback.\n",
         )

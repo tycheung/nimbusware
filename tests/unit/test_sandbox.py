@@ -40,21 +40,17 @@ def test_build_docker_run_argv(tmp_path: Path) -> None:
     assert argv[-3:] == ["python", "-c", "print(1)"]
 
 
-def test_docker_unavailable_falls_back_local(tmp_path: Path) -> None:
+def test_docker_unavailable_fails_closed(tmp_path: Path) -> None:
     with patch("nimbusware_agent_tools.sandbox.docker_cli_available", return_value=False):
-        with patch("nimbusware_agent_tools.sandbox.subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=0, stdout="ok\n", stderr="")
-            result = run_subprocess_in_sandbox(
-                tmp_path,
-                ["python", "-c", "print(1)"],
-                timeout_seconds=30.0,
-                backend="docker",
-            )
+        result = run_subprocess_in_sandbox(
+            tmp_path,
+            ["python", "-c", "print(1)"],
+            timeout_seconds=30.0,
+            backend="docker",
+        )
     assert result.backend == "docker"
-    assert "[sandbox:docker-unavailable]" in result.stdout
-    assert "Docker CLI unavailable" in result.stderr
-    mock_run.assert_called_once()
-    assert mock_run.call_args.kwargs.get("cwd") == tmp_path
+    assert result.returncode == 127
+    assert "refusing to run without container isolation" in result.stderr
 
 
 def test_docker_backend_invokes_container(tmp_path: Path) -> None:

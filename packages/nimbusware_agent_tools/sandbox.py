@@ -91,20 +91,14 @@ def run_subprocess_in_sandbox(
 
     if chosen == "docker":
         if not docker_cli_available():
-            proc = subprocess.run(
-                argv,
-                cwd=workspace,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-            )
-            note = "[sandbox:docker-unavailable] "
             return SandboxRunResult(
                 backend="docker",
-                returncode=proc.returncode,
-                stdout=note + (proc.stdout or ""),
-                stderr=(proc.stderr or "")
-                + "Docker CLI unavailable; ran without container isolation.\n",
+                returncode=127,
+                stdout="",
+                stderr=(
+                    "Docker CLI unavailable; refusing to run without container isolation. "
+                    "Install Docker or set NIMBUSWARE_SANDBOX_BACKEND=none.\n"
+                ),
             )
         image = resolve_sandbox_docker_image()
         docker_argv = build_docker_run_argv(workspace, argv, image=image)

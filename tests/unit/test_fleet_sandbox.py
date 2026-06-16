@@ -17,28 +17,26 @@ def test_resolve_sandbox_backend_accepts_fleet_backends(monkeypatch: pytest.Monk
     assert resolve_sandbox_backend() == "e2b"
 
 
-def test_kubernetes_sandbox_unconfigured_fallback(tmp_path: Path) -> None:
+def test_kubernetes_sandbox_unconfigured_fails_closed(tmp_path: Path) -> None:
     ws = tmp_path / "ws"
     ws.mkdir()
-    if (ws / "ok.txt").exists():
-        pass
-    else:
-        (ws / "ok.txt").write_text("1", encoding="utf-8")
     result = run_kubernetes_sandbox(
         ws,
         ["python", "-c", "print('hi')"],
         timeout_seconds=30.0,
     )
     assert result.backend == "kubernetes"
-    assert "k8s-unavailable" in result.stdout or result.returncode == 0
+    assert result.returncode == 127
+    assert "refusing to run without pod isolation" in result.stderr
 
 
-def test_e2b_sandbox_unconfigured_fallback(tmp_path: Path) -> None:
+def test_e2b_sandbox_unconfigured_fails_closed(tmp_path: Path) -> None:
     ws = tmp_path / "ws"
     ws.mkdir()
     result = run_e2b_sandbox(ws, ["python", "-c", "print(1)"], timeout_seconds=30.0)
     assert result.backend == "e2b"
-    assert "e2b-unconfigured" in result.stdout or "e2b-local-fallback" in result.stdout
+    assert result.returncode == 127
+    assert "NIMBUSWARE_E2B_API_KEY" in result.stderr
 
 
 def test_e2b_sandbox_remote_when_key_and_sdk_present(
@@ -91,7 +89,7 @@ def test_e2b_sandbox_remote_when_key_and_sdk_present(
     assert "e2b-local-fallback" not in result.stdout
 
 
-def test_e2b_sandbox_import_missing_falls_back_to_host(
+def test_e2b_sandbox_import_missing_fails_closed(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -102,7 +100,8 @@ def test_e2b_sandbox_import_missing_falls_back_to_host(
 
     result = run_e2b_sandbox(ws, ["python", "-c", "print(9)"], timeout_seconds=30.0)
     assert result.backend == "e2b"
-    assert "e2b-local-fallback" in result.stdout
+    assert result.returncode == 127
+    assert "e2b" in result.stderr.lower()
 
 
 def test_run_subprocess_routes_kubernetes_backend(
