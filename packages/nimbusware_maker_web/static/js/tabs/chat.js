@@ -911,8 +911,15 @@ export async function mountChat(root) {
     theaterHandle?.close();
     theaterHandle = bindChatTheaterForRun(root, activeRunId, sessionId, (wt) => runStart(wt));
     wireChatOperatorRibbons(root, activeRunId);
-    mountAutopilotLadderHint(root);
+  mountAutopilotLadderHint(root);
+
+  const steerDraft = sessionStorage.getItem("maker_plan_steer_draft");
+  if (steerDraft) {
+    const interjection = root.querySelector("#chat-interjection-message");
+    if (interjection && !interjection.value.trim()) interjection.value = steerDraft;
+    sessionStorage.removeItem("maker_plan_steer_draft");
   }
+}
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {
     ev.preventDefault();
@@ -1000,6 +1007,13 @@ export async function mountChat(root) {
 
   if (activeRunId) {
     await offerRunEscalations(activeRunId);
+  }
+
+  const steerDraft = sessionStorage.getItem("maker_plan_steer_draft");
+  if (steerDraft) {
+    const interjection = root.querySelector("#chat-interjection-message");
+    if (interjection && !interjection.value.trim()) interjection.value = steerDraft;
+    sessionStorage.removeItem("maker_plan_steer_draft");
   }
 
   chatUnmount = () => {

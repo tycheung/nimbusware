@@ -26,6 +26,20 @@ def test_autopilot_preset_levels() -> None:
     assert custom.custom is True
 
 
+def test_default_autopilot_level_for_work_type() -> None:
+    from nimbusware_orchestrator.autopilot_profiles import (
+        autopilot_effective_metadata,
+        default_autopilot_level_for_work_type,
+    )
+
+    assert default_autopilot_level_for_work_type("patch") == 8
+    assert default_autopilot_level_for_work_type("factory") == 10
+    assert default_autopilot_level_for_work_type("slice") == 5
+    meta = autopilot_effective_metadata("patch")
+    assert meta["level"] == 8
+    assert meta["source"] == "work_type_default"
+
+
 def test_resolution_council_hard_block() -> None:
     result = run_resolution_council(
         findings=[{"kind": "injection", "message": "sql injection", "severity": "security_p0"}],

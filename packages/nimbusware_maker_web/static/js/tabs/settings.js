@@ -97,6 +97,16 @@ export async function mountSettings(root) {
         Resume last chat session when opening the Chat tab
       </label>
     </section>
+    <section id="settings-trust-panel" class="panel" data-testid="maker-settings-trust-panel">
+      <h3>Trust / Autopilot defaults</h3>
+      <p class="muted">Patch runs default to Nimble (8); factory runs default to Continuous improve (10). Saved profile overrides at Chat start.</p>
+      <label>
+        Default saved profile
+        <select id="settings-default-autopilot-profile" data-testid="maker-settings-default-autopilot-profile">
+          <option value="">— none —</option>
+        </select>
+      </label>
+    </section>
     <section id="settings-memory-library" class="panel" data-testid="maker-settings-memory-library">
       <h3>Memory library</h3>
       <p class="muted" id="settings-memory-caption"></p>
@@ -184,6 +194,30 @@ export async function mountSettings(root) {
       localStorage.setItem("maker_chat_resume_session", chatResume.checked ? "1" : "0");
       if (!chatResume.checked) sessionStorage.removeItem("maker_chat_session_id");
       toast("Chat session preference saved", "success");
+    });
+  }
+
+  const DEFAULT_PROFILE_KEY = "maker_default_autopilot_profile_id";
+  const trustSelect = root.querySelector("#settings-default-autopilot-profile");
+  if (trustSelect) {
+    try {
+      const body = await apiJson("/platform/autopilot/user-profiles");
+      for (const p of body.profiles || []) {
+        const opt = document.createElement("option");
+        opt.value = p.profile_id;
+        opt.textContent = p.name || p.profile_id;
+        trustSelect.appendChild(opt);
+      }
+    } catch {
+      /* optional */
+    }
+    const savedProfile = localStorage.getItem(DEFAULT_PROFILE_KEY) || "";
+    if (savedProfile) trustSelect.value = savedProfile;
+    trustSelect.addEventListener("change", () => {
+      const val = trustSelect.value?.trim() || "";
+      if (val) localStorage.setItem(DEFAULT_PROFILE_KEY, val);
+      else localStorage.removeItem(DEFAULT_PROFILE_KEY);
+      toast("Default trust profile saved", "success");
     });
   }
 

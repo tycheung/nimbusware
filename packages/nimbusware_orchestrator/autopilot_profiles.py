@@ -68,6 +68,26 @@ def preset_for_level(level: int) -> AutopilotProfile:
     return AutopilotProfile(level=level, name=name, checkpoints=checkpoints)
 
 
+def default_autopilot_level_for_work_type(work_type: str | None) -> int:
+    wt = str(work_type or "").strip().lower()
+    if wt == "factory":
+        return 10
+    if wt == "patch":
+        return 8
+    return 5
+
+
+def autopilot_effective_metadata(work_type: str | None) -> dict[str, Any]:
+    level = default_autopilot_level_for_work_type(work_type)
+    profile = preset_for_level(level)
+    return {
+        "level": profile.level,
+        "name": profile.name,
+        "checkpoints": sorted(profile.checkpoints),
+        "source": "work_type_default",
+    }
+
+
 def presets_config_path(repo_root: Path | None = None) -> Path:
     root = repo_root or find_repo_root()
     return root / "configs" / "autopilot" / "presets.yaml"

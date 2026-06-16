@@ -49,10 +49,15 @@ function renderTree(root, tree) {
       );
       for (const slice of feature.slices || []) {
         const rationale = String(slice.rationale || "").slice(0, 120);
+        const steer =
+          slice.status === "pending" || slice.status === "PENDING"
+            ? `<button type="button" class="linkish plan-steer-btn" data-slice-id="${slice.slice_id}" data-testid="maker-plan-steer-${slice.slice_id}">Steer</button>`
+            : "";
         parts.push(
           `<li data-testid="maker-plan-slice">
             ${sliceBadge(slice.status)} <code>${slice.slice_id}</code>
             ${rationale ? `<span class="muted plan-rationale">${rationale}</span>` : ""}
+            ${steer}
           </li>`,
         );
       }
@@ -64,6 +69,19 @@ function renderTree(root, tree) {
   root.innerHTML = parts.join("");
   root.querySelector("#plan-refresh")?.addEventListener("click", () => {
     window.dispatchEvent(new CustomEvent("maker-plan-refresh"));
+  });
+  root.querySelectorAll(".plan-steer-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const runId = resolveRunId();
+      const sliceId = btn.getAttribute("data-slice-id") || "";
+      const msg = sliceId ? `[steer] Focus backlog slice ${sliceId}` : "[steer]";
+      if (runId) {
+        window.location.hash = `/chat?run_id=${encodeURIComponent(runId)}`;
+      } else {
+        window.location.hash = "/chat";
+      }
+      sessionStorage.setItem("maker_plan_steer_draft", msg);
+    });
   });
 }
 

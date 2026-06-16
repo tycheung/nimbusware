@@ -35,6 +35,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_dict,
     workflow_profile_path,
 )
+from nimbusware_orchestrator.autopilot_profiles import autopilot_effective_metadata
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.protocol import EventStore
 
@@ -461,6 +462,7 @@ class CreateRunMixin:
                 **({"patch_context": patch_ctx_norm} if patch_ctx_norm else {}),
                 **({"work_type": wt} if wt else {}),
                 **({"work_type_source": wts} if wts else {}),
+                **({"autopilot_effective": autopilot_effective_metadata(wt)} if wt else {}),
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],
