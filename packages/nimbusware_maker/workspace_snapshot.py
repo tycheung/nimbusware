@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import os
 import shutil
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import nimbusware_workspace_snapshot_dir
+
 
 def snapshot_root() -> Path:
-    raw = os.environ.get("NIMBUSWARE_WORKSPACE_SNAPSHOT_DIR", "").strip()
+    raw = nimbusware_workspace_snapshot_dir()
     if raw:
         return Path(raw).resolve()
     return Path(".cache/nimbusware_workspace_snapshots").resolve()

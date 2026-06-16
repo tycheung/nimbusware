@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
 from agent_core.models import EventType
+from nimbusware_env.env_flags import env_str
 
 
 def project_from_run_created_metadata(metadata: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -48,7 +48,7 @@ def resolve_run_workspace(
 ) -> Path:
     if override is not None:
         return override.resolve()
-    env_ws = os.environ.get("NIMBUSWARE_WORKSPACE", "").strip()
+    env_ws = env_str("NIMBUSWARE_WORKSPACE")
     if env_ws:
         return Path(env_ws).resolve()
     meta = run_created_metadata_from_rows(rows)

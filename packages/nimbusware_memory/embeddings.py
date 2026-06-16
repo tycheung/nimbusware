@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import hashlib
-import os
 
 import httpx
 import numpy as np
 from numpy.typing import NDArray
 
+from nimbusware_env.env_flags import (
+    nimbusware_memory_embedding_model,
+    nimbusware_use_llm_enabled,
+)
 from nimbusware_memory.models import EmbeddingMode
 
 _DETERMINISTIC_DIM = 32
@@ -26,7 +29,7 @@ def embedding_model_id_for_mode(
 
 
 def _default_ollama_embedding_model() -> str:
-    env = os.environ.get("NIMBUSWARE_MEMORY_EMBEDDING_MODEL", "").strip()
+    env = nimbusware_memory_embedding_model()
     if env:
         return env
     return _DEFAULT_OLLAMA_EMBED_MODEL
@@ -78,8 +81,7 @@ def ollama_embed(
 
 
 def ollama_embedding_available() -> bool:
-    use_llm = os.environ.get("NIMBUSWARE_USE_LLM", "").lower() in ("1", "true", "yes")
-    return use_llm
+    return nimbusware_use_llm_enabled()
 
 
 def embed_text(

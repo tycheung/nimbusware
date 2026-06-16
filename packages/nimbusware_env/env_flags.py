@@ -591,6 +591,46 @@ def nimbusware_database_url() -> str | None:
     return url if url else None
 
 
+def nimbusware_workspace_path(*, default: str = "") -> Path:
+    raw = env_str("NIMBUSWARE_WORKSPACE", default=default) or default
+    if not raw:
+        return Path(".").resolve()
+    return Path(raw).resolve()
+
+
+def nimbusware_api_key() -> str:
+    return env_str("NIMBUSWARE_API_KEY")
+
+
+def nimbusware_memory_index_dir() -> str:
+    return env_str("NIMBUSWARE_MEMORY_INDEX_DIR")
+
+
+def nimbusware_workspace_snapshot_dir() -> str:
+    return env_str("NIMBUSWARE_WORKSPACE_SNAPSHOT_DIR")
+
+
+def nimbusware_scraper_artifact_max_age_days_raw() -> str:
+    return env_str("NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS")
+
+
+def nimbusware_fleet_memory_store_uri() -> str:
+    return env_str("NIMBUSWARE_FLEET_MEMORY_STORE_URI")
+
+
+def nimbusware_fleet_memory_store_dir() -> str:
+    return env_str("NIMBUSWARE_FLEET_MEMORY_STORE_DIR")
+
+
+def nimbusware_hw_fixture() -> str | None:
+    raw = env_str("NIMBUSWARE_HW_FIXTURE")
+    return raw if raw else None
+
+
+def nimbusware_memory_embedding_model() -> str:
+    return env_str("NIMBUSWARE_MEMORY_EMBEDDING_MODEL")
+
+
 def env_truthy_on(name: str) -> bool:
     """Truthy check including ``on`` (scraper / legacy env contract)."""
     return env_str(name).lower() in (*TRUTHY_VALUES, "on")

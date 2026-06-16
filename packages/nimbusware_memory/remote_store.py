@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import (
+    nimbusware_fleet_memory_store_dir,
+    nimbusware_fleet_memory_store_uri,
+)
 from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord
 
 
@@ -28,12 +31,12 @@ class FleetMemoryBundle:
 def resolve_canonical_store_root(explicit: Path | str | None = None) -> Path:
     if explicit is not None:
         return Path(explicit).resolve()
-    env = os.environ.get("NIMBUSWARE_FLEET_MEMORY_STORE_URI", "").strip()
+    env = nimbusware_fleet_memory_store_uri()
     if env.startswith("file://"):
         return Path(env.removeprefix("file://")).resolve()
     if env:
         return Path(env).resolve()
-    fallback = os.environ.get("NIMBUSWARE_FLEET_MEMORY_STORE_DIR", "").strip()
+    fallback = nimbusware_fleet_memory_store_dir()
     if fallback:
         return Path(fallback).resolve()
     msg = (

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import Annotated
 
 from fastapi import APIRouter, Query
@@ -12,6 +11,7 @@ from nimbusware_api.schemas.openapi import (
     SCRAPER_ARTIFACT_INVENTORY_RESPONSE_200,
 )
 from nimbusware_api.schemas.scraper_artifacts import ScraperArtifactInventoryResponse
+from nimbusware_env.env_flags import nimbusware_scraper_artifact_max_age_days_raw
 from nimbusware_orchestrator.scraper_artifacts import (
     resolve_scraper_artifact_base_dir,
     scraper_artifact_inventory,
@@ -40,7 +40,7 @@ def get_scraper_artifact_inventory(
 ) -> ScraperArtifactInventoryResponse:
     """On-disk scraper artifact inventory under the configured cache directory."""
     base = resolve_scraper_artifact_base_dir(orch.repo_root)
-    env_days = os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_MAX_AGE_DAYS", "").strip()
+    env_days = nimbusware_scraper_artifact_max_age_days_raw()
     retention_days: int | None = None
     if env_days:
         try:

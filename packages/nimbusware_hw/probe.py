@@ -97,7 +97,9 @@ def probe_hardware_remote_ssh(host: str) -> dict[str, Any]:
 def probe_hardware(*, fixture: str | None = None, remote_host: str | None = None) -> dict[str, Any]:
     if remote_host and remote_host.strip():
         return probe_hardware_remote_ssh(remote_host.strip())
-    fix = fixture or os.environ.get("NIMBUSWARE_HW_FIXTURE", "").strip() or None
+    from nimbusware_env.env_flags import nimbusware_hw_fixture
+
+    fix = fixture or nimbusware_hw_fixture()
     if fix:
         from nimbusware_hw.fixtures import fixture_probe
 

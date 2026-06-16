@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import httpx
 from httpx import HTTPError, Response
 
 from nimbusware_env.admin_token import nimbusware_admin_token
+from nimbusware_env.env_flags import nimbusware_api_key
 from nimbusware_iam.constants import API_KEY_HEADER
 
 ADMIN_TOKEN_HEADER = "X-Nimbusware-Admin-Token"
@@ -20,7 +20,7 @@ def api_base() -> str:
 
 def user_headers() -> dict[str, str]:
     headers: dict[str, str] = {}
-    api_key = os.environ.get("NIMBUSWARE_API_KEY", "").strip()
+    api_key = nimbusware_api_key()
     if api_key:
         headers[API_KEY_HEADER] = api_key
     return headers

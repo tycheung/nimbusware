@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from nimbusware_env.env_flags import nimbusware_memory_index_dir
 from nimbusware_memory.models import EmbeddingMode
 
 
@@ -23,7 +23,7 @@ class MemoryIndexManifest(BaseModel):
 
 
 def default_memory_index_dir(repo_root: Path) -> Path:
-    env = os.environ.get("NIMBUSWARE_MEMORY_INDEX_DIR", "").strip()
+    env = nimbusware_memory_index_dir()
     if env:
         return Path(env).resolve()
     return (repo_root / "configs" / "memory" / "index").resolve()
