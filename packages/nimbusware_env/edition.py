@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 from typing import Any
+
+from nimbusware_env.env_flags import env_str
 
 ENV_EDITION = "NIMBUSWARE_EDITION"
 DEFAULT_EDITION = "individual"
@@ -52,7 +53,8 @@ def normalize_edition(raw: str | None, *, strict: bool = False) -> str:
 
 
 def edition() -> str:
-    return normalize_edition(os.environ.get(ENV_EDITION))
+    raw = env_str(ENV_EDITION)
+    return normalize_edition(raw if raw else None)
 
 
 def is_enterprise() -> bool:

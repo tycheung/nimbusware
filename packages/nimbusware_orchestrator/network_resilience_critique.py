@@ -26,6 +26,8 @@ from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_orchestrator.workflow_scan_critique import (
     NetworkResilienceCritiqueBlock,
+    scan_critique_gate_timeline_summary,
+    severity_for_critique_floor,
 )
 from nimbusware_store.protocol import EventStore
 
@@ -40,16 +42,6 @@ class NetworkResilienceLlmResponse(BaseModel):
     summary: str = ""
 
 
-def _severity_for_fail(floor: str) -> Severity:
-    mapping = {
-        "LOW": Severity.LOW,
-        "MEDIUM": Severity.MEDIUM,
-        "HIGH": Severity.HIGH,
-        "BLOCKER": Severity.BLOCKER,
-    }
-    return mapping.get(floor.upper(), Severity.MEDIUM)
-
-
 def scan_summary_failed(scan_summary: dict[str, Any]) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if int(scan_summary.get("http_resilience_exit", 0)) != 0:
@@ -62,20 +54,10 @@ def scan_summary_failed(scan_summary: dict[str, Any]) -> tuple[bool, list[str]]:
 def network_resilience_critique_timeline_summary(
     events: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
-    last_gate: dict[str, Any] | None = None
-    for row in events:
-        if row.get("event_type") != "gate.decision.emitted":
-            continue
-        payload = row.get("payload") or {}
-        if payload.get("stage_name") == NETWORK_RESILIENCE_CRITIQUE_STAGE:
-            last_gate = payload
-    if last_gate is None:
-        return None
-    return {
-        "stage_name": NETWORK_RESILIENCE_CRITIQUE_STAGE,
-        "verdict": last_gate.get("verdict"),
-        "failing_critics": last_gate.get("failing_critics") or [],
-    }
+    return scan_critique_gate_timeline_summary(
+        events,
+        stage_name=NETWORK_RESILIENCE_CRITIQUE_STAGE,
+    )
 
 
 def _required_fix(reasons: list[str]) -> RequiredFixArtifact:
@@ -106,7 +88,7 @@ def emit_stub_network_resilience_critique_panel(
         return
     owner = registry.resolve("backend_writer")
     failed, reasons = scan_summary_failed(scan_summary)
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
     fixes = [_required_fix(reasons)] if reasons else []
 
     store.append(
@@ -214,7 +196,7 @@ def execute_network_resilience_critique_llm(
 
     llm_fail = str(parsed.verdict).upper() == "FAIL"
     owner = registry.resolve("backend_writer")
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
     fail_any = llm_fail or failed
     fixes = [_required_fix(reasons or ["llm"])] if fail_any else []
 

@@ -4,8 +4,41 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agent_core.models import Severity
 from nimbusware_env.env_flags import env_tri_state, nimbusware_use_llm_explicitly_off
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+
+_SEVERITY_FLOOR = {
+    "LOW": Severity.LOW,
+    "MEDIUM": Severity.MEDIUM,
+    "HIGH": Severity.HIGH,
+    "BLOCKER": Severity.BLOCKER,
+}
+
+
+def severity_for_critique_floor(floor: str) -> Severity:
+    return _SEVERITY_FLOOR.get(floor.upper(), Severity.MEDIUM)
+
+
+def scan_critique_gate_timeline_summary(
+    events: list[dict[str, Any]],
+    *,
+    stage_name: str,
+) -> dict[str, Any] | None:
+    last_gate: dict[str, Any] | None = None
+    for row in events:
+        if row.get("event_type") != "gate.decision.emitted":
+            continue
+        payload = row.get("payload") or {}
+        if payload.get("stage_name") == stage_name:
+            last_gate = payload
+    if last_gate is None:
+        return None
+    return {
+        "stage_name": stage_name,
+        "verdict": last_gate.get("verdict"),
+        "failing_critics": last_gate.get("failing_critics") or [],
+    }
 
 
 @dataclass(frozen=True)

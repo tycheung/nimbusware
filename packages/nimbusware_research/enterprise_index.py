@@ -17,6 +17,27 @@ def tenant_namespace() -> str:
     return nimbusware_tenant_id(default="default")
 
 
+def _enterprise_jsonl_path(repo_root: Path, filename: str) -> Path:
+    return repo_root / ".nimbusware" / "enterprise" / tenant_namespace() / filename
+
+
+def _read_jsonl_rows(path: Path, *, limit: int | None = None) -> list[dict[str, Any]]:
+    if not path.is_file():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+        if limit is not None and len(rows) >= limit:
+            break
+    return rows
+
+
 def append_enterprise_research_index(
     repo_root: Path,
     *,
@@ -28,7 +49,7 @@ def append_enterprise_research_index(
         return None
     ns = tenant_namespace()
     rel = Path(".nimbusware") / "enterprise" / ns / "research_index.jsonl"
-    abs_path = repo_root / rel
+    abs_path = _enterprise_jsonl_path(repo_root, "research_index.jsonl")
     abs_path.parent.mkdir(parents=True, exist_ok=True)
     row = {
         "run_id": str(run_id),
@@ -44,40 +65,13 @@ def append_enterprise_research_index(
 def export_egress_audit_rows(repo_root: Path) -> list[dict[str, Any]]:
     if not enterprise_research_enabled():
         return []
-    ns = tenant_namespace()
-    rel = Path(".nimbusware") / "enterprise" / ns / "egress_audit.jsonl"
-    path = repo_root / rel
-    if not path.is_file():
-        return []
-    rows: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            rows.append(json.loads(line))
-        except json.JSONDecodeError:
-            continue
-    return rows
+    return _read_jsonl_rows(_enterprise_jsonl_path(repo_root, "egress_audit.jsonl"))
 
 
 def list_enterprise_research_index(repo_root: Path, *, limit: int = 500) -> list[dict[str, Any]]:
     if not enterprise_research_enabled():
         return []
-    ns = tenant_namespace()
-    rel = Path(".nimbusware") / "enterprise" / ns / "research_index.jsonl"
-    path = repo_root / rel
-    if not path.is_file():
-        return []
-    rows: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            rows.append(json.loads(line))
-        except json.JSONDecodeError:
-            continue
-        if len(rows) >= limit:
-            break
-    return rows
+    return _read_jsonl_rows(
+        _enterprise_jsonl_path(repo_root, "research_index.jsonl"),
+        limit=limit,
+    )

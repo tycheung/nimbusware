@@ -23,7 +23,11 @@ from nimbusware_orchestrator.llm.common import append_gate_decision_event
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from nimbusware_orchestrator.workflow_scan_critique import PerformanceCritiqueBlock
+from nimbusware_orchestrator.workflow_scan_critique import (
+    PerformanceCritiqueBlock,
+    scan_critique_gate_timeline_summary,
+    severity_for_critique_floor,
+)
 from nimbusware_store.protocol import EventStore
 
 PERFORMANCE_CRITIQUE_STAGE = "implementation.performance_critique"
@@ -54,30 +58,10 @@ def performance_scan_tools_failed(tool_summary: dict[str, Any]) -> tuple[bool, l
 
 
 def performance_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    last_gate: dict[str, Any] | None = None
-    for row in events:
-        if row.get("event_type") != "gate.decision.emitted":
-            continue
-        payload = row.get("payload") or {}
-        if payload.get("stage_name") == PERFORMANCE_CRITIQUE_STAGE:
-            last_gate = payload
-    if last_gate is None:
-        return None
-    return {
-        "stage_name": PERFORMANCE_CRITIQUE_STAGE,
-        "verdict": last_gate.get("verdict"),
-        "failing_critics": last_gate.get("failing_critics") or [],
-    }
-
-
-def _severity_for_fail(floor: str) -> Severity:
-    mapping = {
-        "LOW": Severity.LOW,
-        "MEDIUM": Severity.MEDIUM,
-        "HIGH": Severity.HIGH,
-        "BLOCKER": Severity.BLOCKER,
-    }
-    return mapping.get(floor.upper(), Severity.MEDIUM)
+    return scan_critique_gate_timeline_summary(
+        events,
+        stage_name=PERFORMANCE_CRITIQUE_STAGE,
+    )
 
 
 def _required_fix_for_perf(failing: list[str]) -> RequiredFixArtifact:
@@ -109,7 +93,7 @@ def emit_stub_performance_critique_panel(
         return
     owner = registry.resolve(producer_tax_key)
     failed, failing = performance_scan_tools_failed(scan_summary)
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
 
     store.append(
         StageStartedEvent(
@@ -220,7 +204,7 @@ def execute_performance_critique_llm(
 
     llm_fail = str(parsed.verdict).upper() == "FAIL"
     owner = registry.resolve(producer_tax_key)
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,

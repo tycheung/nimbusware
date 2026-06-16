@@ -25,7 +25,11 @@ from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.security_scan import run_security_scan, security_scan_tool_summary
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
-from nimbusware_orchestrator.workflow_scan_critique import SecurityCritiqueBlock
+from nimbusware_orchestrator.workflow_scan_critique import (
+    SecurityCritiqueBlock,
+    scan_critique_gate_timeline_summary,
+    severity_for_critique_floor,
+)
 from nimbusware_store.protocol import EventStore
 
 SECURITY_CRITIQUE_STAGE = "implementation.security_critique"
@@ -41,14 +45,11 @@ class SecurityCritiqueLlmResponse(BaseModel):
     failing_tools: list[str] = Field(default_factory=list)
 
 
-def _severity_for_fail(floor: str) -> Severity:
-    mapping = {
-        "LOW": Severity.LOW,
-        "MEDIUM": Severity.MEDIUM,
-        "HIGH": Severity.HIGH,
-        "BLOCKER": Severity.BLOCKER,
-    }
-    return mapping.get(floor.upper(), Severity.MEDIUM)
+def security_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
+    return scan_critique_gate_timeline_summary(
+        events,
+        stage_name=SECURITY_CRITIQUE_STAGE,
+    )
 
 
 def security_scan_tools_failed(tool_summary: dict[str, Any]) -> tuple[bool, list[str]]:
@@ -104,23 +105,6 @@ def run_security_scan_summary(workspace: Path) -> dict[str, Any]:
     return summary
 
 
-def security_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    last_gate: dict[str, Any] | None = None
-    for row in events:
-        if row.get("event_type") != "gate.decision.emitted":
-            continue
-        payload = row.get("payload") or {}
-        if payload.get("stage_name") == SECURITY_CRITIQUE_STAGE:
-            last_gate = payload
-    if last_gate is None:
-        return None
-    return {
-        "stage_name": SECURITY_CRITIQUE_STAGE,
-        "verdict": last_gate.get("verdict"),
-        "failing_critics": last_gate.get("failing_critics") or [],
-    }
-
-
 def emit_stub_security_critique_panel(
     store: EventStore,
     registry: RoleRegistry,
@@ -137,7 +121,7 @@ def emit_stub_security_critique_panel(
         return
     owner = registry.resolve(producer_tax_key)
     failed, failing_tools = security_scan_tools_failed(scan_summary)
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
 
     store.append(
         StageStartedEvent(
@@ -258,7 +242,7 @@ def execute_security_critique_llm(
 
     llm_fail = str(parsed.verdict).upper() == "FAIL" or bool(parsed.failing_tools)
     owner = registry.resolve(producer_tax_key)
-    severity = _severity_for_fail(block.severity_floor)
+    severity = severity_for_critique_floor(block.severity_floor)
 
     store.append(
         StageStartedEvent(
