@@ -107,18 +107,22 @@ export async function mountReview(root) {
     <div class="actions">
       <button type="button" id="rev-load-pending" data-testid="maker-review-refresh">Refresh approval</button>
       <button type="button" id="rev-load-research">Research briefs</button>
-      <button type="button" id="rev-load-diff" class="mobile-advanced">Slice diff</button>
-      <button type="button" id="rev-revert" class="mobile-advanced">Revert workspace</button>
     </div>
     <div id="rev-summary" class="approval-cards"></div>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
-    <section id="rev-stitch" class="stitch-panel hidden mobile-advanced">
-      <h3>Stitch / transplant</h3>
-      <button type="button" id="rev-load-stitch" class="mobile-advanced">Load stitch summary</button>
-      <pre id="rev-stitch-body" class="json-pre"></pre>
-    </section>
-    <pre id="rev-diff" class="diff-pre"></pre>
+    <details class="review-advanced-panel" data-testid="maker-review-advanced">
+      <summary>Advanced: diff, stitch, revert</summary>
+      <div class="actions">
+        <button type="button" id="rev-load-diff" data-testid="maker-review-load-diff">Slice diff</button>
+        <button type="button" id="rev-revert" data-testid="maker-review-revert">Revert workspace</button>
+        <button type="button" id="rev-load-stitch" data-testid="maker-review-load-stitch">Load stitch summary</button>
+      </div>
+      <section id="rev-stitch" class="stitch-panel">
+        <pre id="rev-stitch-body" class="json-pre"></pre>
+      </section>
+      <pre id="rev-diff" class="diff-pre"></pre>
+    </details>
     <section id="rev-launch-eval" class="launch-panel hidden">
       <h3>Launch readiness</h3>
       <button type="button" id="rev-load-launch-eval" data-testid="maker-review-launch-scorecard">Load scorecard</button>

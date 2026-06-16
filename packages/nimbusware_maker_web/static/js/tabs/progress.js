@@ -3,6 +3,7 @@ import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from ".
 import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
+import { maybeRegisterPushSubscription } from "../app-shell.js";
 
 const BLOCKING_SEVERITIES = new Set(["BLOCKER", "HIGH"]);
 
@@ -148,6 +149,17 @@ export async function mountProgress(root) {
         <button type="button" id="compact-save-artifact-btn" data-testid="maker-compact-save-artifact">Save compaction as artifact</button>
         <button type="button" id="compact-revert-btn">Revert last compaction</button>
       </div>
+      <section id="compaction-preview" class="compaction-preview panel" data-testid="maker-compaction-preview" hidden>
+        <h4>Last compaction</h4>
+        <p id="compaction-preview-meta" class="muted" data-testid="maker-compaction-preview-meta"></p>
+        <pre id="compaction-preview-summary" class="compaction-summary-pre" hidden data-testid="maker-compaction-preview-summary"></pre>
+        <button type="button" id="compaction-preview-toggle" class="linkish" data-testid="maker-compaction-preview-toggle">Show summary</button>
+      </section>
+      <section id="mobile-push-panel" class="panel mobile-only-panel" data-testid="maker-mobile-push-panel" hidden>
+        <h4>Run notifications</h4>
+        <p id="mobile-push-status" class="muted" data-testid="maker-mobile-push-status"></p>
+        <button type="button" id="mobile-push-enable" data-testid="maker-mobile-push-enable">Enable push notifications</button>
+      </section>
       <section id="integrator-ribbon" class="panel integrator-ribbon" data-testid="maker-integrator-ribbon">
         <h4>Integrator &amp; stitch</h4>
         <p id="integrator-ribbon-body" class="muted"></p>
@@ -266,6 +278,30 @@ export async function mountProgress(root) {
     }
   }
 
+  function wireMobilePushPanel() {
+    const panel = document.getElementById("mobile-push-panel");
+    const status = document.getElementById("mobile-push-status");
+    const btn = document.getElementById("mobile-push-enable");
+    if (!panel || !document.body.classList.contains("mobile-mode")) return;
+    panel.hidden = false;
+    if (status) {
+      if (!("Notification" in window)) {
+        status.textContent = "Notifications not supported in this browser.";
+        btn?.setAttribute("disabled", "disabled");
+        return;
+      }
+      status.textContent =
+        Notification.permission === "granted"
+          ? "Push enabled for this device (tap to re-register for active run)."
+          : "Get notified when campaign milestones complete.";
+    }
+    btn?.addEventListener("click", async () => {
+      const ok = await maybeRegisterPushSubscription();
+      toast(ok ? "Push notifications enabled" : "Could not enable push", ok ? "success" : "error");
+      if (ok && status) status.textContent = "Push registered for active run.";
+    });
+  }
+
   function wireCompactToolbar() {
     const bar = document.getElementById("compact-toolbar");
     if (!bar) return;
@@ -290,15 +326,30 @@ export async function mountProgress(root) {
       if (!rid) return;
       try {
         const budget = await apiJson(`/runs/${encodeURIComponent(rid)}/maker-progress`);
-        const cid = budget?.context_budget?.last_compaction?.compaction_id;
+        const last = budget?.context_budget?.last_compaction;
+        const cid = last?.compaction_id;
         if (!cid) {
           toast("No compaction to revert", "error");
           return;
         }
+        const preview = String(last?.summary || "").slice(0, 400);
+        const tokens =
+          last?.tokens_before != null && last?.tokens_after != null
+            ? `${last.tokens_before}→${last.tokens_after} tok`
+            : "";
+        const msg = [
+          "Revert last compaction?",
+          tokens,
+          preview ? `\n\n${preview}${last.summary?.length > 400 ? "…" : ""}` : "",
+        ]
+          .filter(Boolean)
+          .join(" · ");
+        if (!window.confirm(msg)) return;
         await apiJson(`/runs/${encodeURIComponent(rid)}/compactions/${encodeURIComponent(cid)}/revert`, {
           method: "POST",
         });
         toast("Compaction reverted", "success");
+        renderCompactionPreview(null);
       } catch (e) {
         toast(String(e.message || e), "error");
       }
@@ -418,6 +469,44 @@ export async function mountProgress(root) {
     }
   }
 
+  function renderCompactionPreview(last) {
+    const panel = document.getElementById("compaction-preview");
+    const meta = document.getElementById("compaction-preview-meta");
+    const summary = document.getElementById("compaction-preview-summary");
+    const toggle = document.getElementById("compaction-preview-toggle");
+    if (!panel || !meta) return;
+    if (!last?.compaction_id) {
+      panel.hidden = true;
+      meta.textContent = "";
+      if (summary) {
+        summary.hidden = true;
+        summary.textContent = "";
+      }
+      return;
+    }
+    panel.hidden = false;
+    const parts = [
+      last.trigger ? `trigger: ${last.trigger}` : "",
+      last.tokens_before != null && last.tokens_after != null
+        ? `${last.tokens_before}→${last.tokens_after} tokens`
+        : "",
+      last.merged_handoff_count != null ? `${last.merged_handoff_count} handoffs merged` : "",
+      last.compaction_id ? `id ${String(last.compaction_id).slice(0, 8)}…` : "",
+    ].filter(Boolean);
+    meta.textContent = parts.join(" · ") || "Compaction recorded";
+    if (summary && toggle) {
+      const text = String(last.summary || "").trim();
+      summary.textContent = text;
+      summary.hidden = true;
+      toggle.hidden = !text;
+      toggle.textContent = "Show summary";
+      toggle.onclick = () => {
+        summary.hidden = !summary.hidden;
+        toggle.textContent = summary.hidden ? "Show summary" : "Hide summary";
+      };
+    }
+  }
+
   function renderContextBudget(body) {
     const chip = document.getElementById("context-budget-chip");
     if (!chip) return;
@@ -439,6 +528,7 @@ export async function mountProgress(root) {
     chip.textContent = `Context ${pct}% (${budget.estimated_tokens}/${budget.window_tokens} tok)${compactHint}`;
     chip.title = "Advisory estimate of planner-facing context vs model window";
     chip.dataset.testid = "maker-context-budget-chip";
+    renderCompactionPreview(last);
   }
 
   function renderPressure(body) {
@@ -729,6 +819,7 @@ export async function mountProgress(root) {
   exportBar.appendChild(exportLink);
 
   wireCompactToolbar();
+  wireMobilePushPanel();
   wireIntegratorRibbon();
   void renderIntegratorRibbon(id);
 

@@ -78,15 +78,15 @@ function urlBase64ToUint8Array(base64String) {
   return output;
 }
 
-async function maybeRegisterPushSubscription() {
+export async function maybeRegisterPushSubscription() {
   const push = getBootstrap().push;
-  if (!push?.enabled || !push?.vapid_public_key) return;
-  if (!detectMobileMode() || !("serviceWorker" in navigator) || !("PushManager" in window)) return;
+  if (!push?.enabled || !push?.vapid_public_key) return false;
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return false;
   const permission =
     Notification.permission === "default"
       ? await Notification.requestPermission()
       : Notification.permission;
-  if (permission !== "granted") return;
+  if (permission !== "granted") return false;
   try {
     const registration = await navigator.serviceWorker.ready;
     const subscription = await registration.pushManager.subscribe({
@@ -104,8 +104,9 @@ async function maybeRegisterPushSubscription() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    return true;
   } catch {
-    /* optional — VAPID or browser may block */
+    return false;
   }
 }
 

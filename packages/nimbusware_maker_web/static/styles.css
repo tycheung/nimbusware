@@ -262,9 +262,40 @@ body.mobile-mode .mobile-advanced {
   display: none !important;
 }
 
-body.mobile-mode .diff-pre,
-body.mobile-mode #rev-stitch {
-  display: none !important;
+body.mobile-mode .mobile-only-panel {
+  display: block;
+}
+
+body:not(.mobile-mode) .mobile-only-panel {
+  display: none;
+}
+
+.compaction-preview {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.compaction-summary-pre {
+  max-height: 12rem;
+  overflow: auto;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  margin: 0.5rem 0 0;
+}
+
+.review-advanced-panel {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.review-advanced-panel summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .models-hardware-strip {
