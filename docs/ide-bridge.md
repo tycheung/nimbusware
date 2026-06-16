@@ -2,6 +2,16 @@
 
 The `nimbusware-mcp` command exposes a stdio MCP server so editors (for example Cursor) can query run status, theater messages, slice diffs, approve plans, trigger campaign compaction, and mirror Maker **Chat** intent routing (classify, patch lane, interjection steering, conversation fork/branch) against a running Nimbusware API. **Release v1 ships the MCP bridge** (tools below + `tests/e2e/journeys/test_mcp_ide_parity_journey.py`). Maker **Chat** (`#/chat`) is the in-product operator workspace; MCP complements it for IDE-driven flows. What is **not** in v1: inline in-editor agent completion parity with Cursor — use MCP tools for governed runs. See [ADR 020](adr/020-unified-chat-work-type-routing.md) and [ADR 021](adr/021-conversation-dag-branching.md).
 
+## Five-minute IDE path (API already running)
+
+1. **Start API** — `poetry run nimbusware-run --quick` (or your usual stack on port 8765).
+2. **Wire MCP** — paste the JSON block below into Cursor **Settings → MCP** (or VS Code `mcp.json`).
+3. **Optional status bar** — install [Nimbusware Run Status](../../extensions/nimbusware-status/README.md) from folder or VSIX; set `nimbusware.activeRunId` after starting a patch run.
+4. **Patch from selection** — in Chat or via MCP, call `nimbusware_patch_from_selection` with `target_paths` + `failing_test` from the Problems panel (see example below).
+5. **Gate without tab hop** — status extension polls `GET /v1/runs/{id}` (status + `gate_summary`); MCP `nimbusware_run_theater` mirrors Progress theater.
+
+Marketplace publish runbook: [vscode-marketplace.md](deploy/vscode-marketplace.md). Bootstrap wheel: [pypi-publish.md](deploy/pypi-publish.md).
+
 ## Requirements
 
 - API reachable at `NIMBUSWARE_API_BASE` (default `http://127.0.0.1:8000/v1`)

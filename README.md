@@ -151,7 +151,7 @@ Shared helpers: `packages/agent_core/context_budget.py`. Context budget API: `GE
   - `--dry-run --json` — validate manifest + fixture layout
   - `--run --json` — score in-memory `micro_slice` pass against the fixture workspace (`slices_total`, `gates_passed`, `gates_failed`, `pass_rate`, `duration_sec`, `run_id`)
 - Fixture: [`tests/fixtures/swe_bench/`](tests/fixtures/swe_bench/) (`min_pass_rate` in `manifest.json`)
-- Published metrics: committed snapshots in [`benchmarks/latest_*.json`](benchmarks/) (`latest_swe_bench.json`, `latest_factory_weekly.json`, `latest_critic_reliability.json`; regenerate via `poetry run python scripts/publish_benchmark_snapshots.py`); other harness output stays gitignored under `benchmarks/`
+- Published metrics: committed snapshots in [`benchmarks/latest_*.json`](benchmarks/) (`latest_swe_bench.json` includes a real in-memory `run_id` and repo-relative paths; `latest_critic_reliability.json` is derived from that run when `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1`; also `latest_factory_weekly.json`; regenerate via `poetry run python scripts/publish_benchmark_snapshots.py` or `poetry run python scripts/swe_bench_harness.py --run --json` with `NIMBUSWARE_SWE_BENCH_WRITE_JSON=1`)
 - CI: weekly [`.github/workflows/swe_bench.yml`](.github/workflows/swe_bench.yml) dry-run + **required** scored `--run` (`min_pass_rate: 1.0`); artifact `latest_swe_bench.json` (copy into `benchmarks/` for Admin Metrics); factory weekly via [`scripts/run_factory_weekly_ci.py`](scripts/run_factory_weekly_ci.py) in [`.github/workflows/slow_tests.yml`](.github/workflows/slow_tests.yml)
 - Env: `NIMBUSWARE_SWE_BENCH_ENABLED`, `NIMBUSWARE_SWE_BENCH_MANIFEST`, `NIMBUSWARE_SWE_BENCH_WRITE_JSON`
 

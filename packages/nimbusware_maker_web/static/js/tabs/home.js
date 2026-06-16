@@ -172,6 +172,9 @@ export async function mountHome(root) {
       <p class="muted">Catalog zero-touch factory prompts — weekly pass rates appear in Admin Metrics.</p>
       <div class="intent-cards" id="factory-demo-cards"></div>
       <button type="button" id="home-start-factory" class="secondary" data-testid="maker-home-start-factory">Custom app prompt…</button>
+      <p class="actions">
+        <a href="#/wizard" data-testid="maker-home-guided-wizard-link">First campaign? Open guided wizard</a>
+      </p>
     </section>
     <h3>Projects</h3>
     <ul id="project-list"></ul>

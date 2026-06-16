@@ -236,6 +236,9 @@ export async function mountProgress(root) {
         <ul id="findings-list"></ul>
       </section>
       <h4>Context artifacts</h4>
+      <p class="actions">
+        <a href="#/settings" data-testid="maker-progress-memory-library-link">Memory library (Settings)</a>
+      </p>
       <ul id="context-artifacts-list" class="context-artifacts-list"></ul>
       <h4>Memory influence</h4>
       <table id="memory-influence-table" data-testid="maker-memory-influence-table"><thead><tr><th>Stage</th><th>Hits</th><th>Digest</th></tr></thead><tbody></tbody></table>`;
