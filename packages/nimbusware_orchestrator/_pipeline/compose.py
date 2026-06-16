@@ -80,7 +80,7 @@ def _rebind_descriptor(name: str, attr: object, cls: type[object]) -> None:
         setattr(cls, name, _bind_function(attr))
 
 
-class RunOrchestrator(*_MIXINS):
+class RunOrchestrator(*_MIXINS):  # type: ignore[misc]
     pass
 
 

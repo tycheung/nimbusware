@@ -100,7 +100,7 @@ export async function mountReview(root) {
     <div id="rev-summary" class="approval-cards"></div>
     <div id="rev-actions" class="actions"></div>
     <ul id="rev-research"></ul>
-    <details class="review-advanced-panel" data-testid="maker-review-advanced">
+    <details class="review-advanced-panel mobile-advanced" data-testid="maker-review-advanced">
       <summary>Advanced: diff, stitch, revert</summary>
       <div class="actions">
         <button type="button" id="rev-load-diff" data-testid="maker-review-load-diff">Slice diff</button>
@@ -112,13 +112,13 @@ export async function mountReview(root) {
       </section>
       <pre id="rev-diff" class="diff-pre"></pre>
     </details>
-    <section id="rev-launch-eval" class="launch-panel hidden">
+    <section id="rev-launch-eval" class="launch-panel hidden mobile-advanced">
       <h3>Launch readiness</h3>
       <button type="button" id="rev-load-launch-eval" data-testid="maker-review-launch-scorecard">Load scorecard</button>
       <button type="button" id="rev-run-launch-eval" data-testid="maker-review-run-launch-eval">Run launch check</button>
       <div id="rev-launch-eval-body" class="launch-scorecard" data-testid="maker-review-scorecard-body"></div>
     </section>
-    <section id="rev-git-panel" class="panel" data-testid="maker-review-git-panel">
+    <section id="rev-git-panel" class="panel mobile-advanced" data-testid="maker-review-git-panel">
       <h3>Git &amp; pull request</h3>
       <p id="rev-git-status" class="muted"></p>
       <div id="rev-git-actions" class="actions"></div>
@@ -128,7 +128,7 @@ export async function mountReview(root) {
         </a>
       </p>
     </section>
-    <section id="rev-factory-evidence" class="panel" data-testid="maker-review-factory-evidence">
+    <section id="rev-factory-evidence" class="panel mobile-advanced" data-testid="maker-review-factory-evidence">
       <h3>Factory evidence</h3>
       <button type="button" id="rev-load-factory-evidence" data-testid="maker-review-factory-evidence-load">
         Load scorecard

@@ -26,7 +26,8 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 ## Layering
 
 - Depends on: `agent_core`, `nimbusware_store`, `nimbusware_extensions`, `nimbusware_memory`, `nimbusware_executor`
-- Must **not** import `nimbusware_api` (use `nimbusware_projections` for read models)
+- Shared read types (`stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/critic_matrix`) live in `agent_core`; this package re-exports several for stable import paths.
+- Must **not** import `nimbusware_api` (use `nimbusware_projections` for HTTP read models)
 - Extensions must **not** import orchestrator at module level (see `tests/unit/test_import_graph.py`)
 - **Ollama inventory:** `ollama_manage.py` (list/pull/delete against runtime), `ollama_user_policy.py` (`ollama_user_policy` in `model-routing.yaml`)
 

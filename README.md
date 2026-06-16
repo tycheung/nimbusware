@@ -174,8 +174,8 @@ Example scored output:
 
 ```
 packages/
-  agent_core/           Event models, context_budget, slice handoff models
-  nimbusware_orchestrator/  Pipeline, critics, slice, handoff, compaction, prompt_tiers
+  agent_core/           Event models, stage_graph, slice_plan, prompt_tiers, read models
+  nimbusware_orchestrator/  Pipeline, critics, slice, handoff, compaction (re-exports agent_core slice types)
   nimbusware_store/         Postgres + in-memory event store
   nimbusware_memory/        Memory chunks, FAISS, fleet sync
   nimbusware_executor/      Role-gated outbound HTTP

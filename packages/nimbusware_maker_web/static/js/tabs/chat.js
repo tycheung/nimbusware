@@ -1040,13 +1040,6 @@ export async function mountChat(root) {
     await offerRunEscalations(activeRunId);
   }
 
-  const steerDraft = sessionStorage.getItem("maker_plan_steer_draft");
-  if (steerDraft) {
-    const interjection = root.querySelector("#chat-interjection-message");
-    if (interjection && !interjection.value.trim()) interjection.value = steerDraft;
-    sessionStorage.removeItem("maker_plan_steer_draft");
-  }
-
   chatUnmount = () => {
     theaterHandle?.close();
     theaterHandle = null;

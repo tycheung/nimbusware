@@ -1,27 +1,28 @@
 # agent_core
 
-Shared Pydantic models for Nimbusware agent orchestration events (Nimbusware wire format).
+Shared event models and cross-package read helpers for Nimbusware.
 
-Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.
+## Modules
 
-Sibling packages (same Poetry workspace): `nimbusware_store` (Postgres + in-memory append store),
-`nimbusware_orchestrator` (YAML merge, registry, preflight, MVP pipeline), `nimbusware_api` (FastAPI
-`/v1`), `nimbusware_executor` (subprocess + egress helpers), `nimbusware_console` (Admin display modules),
-`nimbusware_extensions` (personas, bundles, escalation), `nimbusware_projections` (shared timeline builders).
+| Path | Role |
+|------|------|
+| `models/` | Pydantic event envelopes and payloads |
+| `context_budget.py` | Shell output truncation for LLM history |
+| `stage_graph.py` | Stage DAG parse, validate, timeline metadata |
+| `slice_plan.py` | `SlicePlan` / `parse_slice_plan` |
+| `prompt_tiers.py` | `assemble_prompt`, `stable_slice_agent_block` |
+| `critique_stages.py` | Critique stage name constants + producer map |
+| `timeline_metadata.py` | `run.created` metadata helpers |
+| `read/campaign.py` | Campaign backlog row parsers |
+| `read/critic_matrix.py` | Live critic matrix rows from gate events |
+| `yaml_io.py` | YAML load/dump helpers |
+
+`nimbusware_orchestrator` re-exports `stage_graph`, `prompt_tiers`, and `critic_matrix_live` for backward compatibility.
 
 ## Wire format
 
-- **Role identifiers** (`owner_role`, `actor_role`, critic / routing role fields): **UUID** values
-  from the Role Registry. JSON uses **UUID strings** (`serialize_event_persistent` /
-  `model_dump(mode="json")`).
-- **Event envelope**: discriminated union on `event_type`; use `validate_event_dict` so
-  `event_type` and `payload` stay coupled.
-- **Hardware**: `hardware.profile.detected` (optional `run_id` on platform rescan) is in the foundation union (`events_foundation.py`).
-
-## Public API
-
-See `agent_core.models` exports in `packages/agent_core/models/__init__.py`.
-
-YAML helpers live in `agent_core.yaml_io` (`load_yaml`, `dump_yaml`, `atomic_write_yaml`).
+- Role identifiers on events are UUIDs (JSON strings on the wire).
+- Event envelope is discriminated on `event_type`; use `validate_event_dict`.
+- YAML helpers: `agent_core.yaml_io`.
 
 Ships PEP 561 marker (`py.typed`).

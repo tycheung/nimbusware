@@ -12,6 +12,13 @@ from uuid import UUID, uuid4
 
 import httpx
 
+from agent_core.critique_stages import (
+    FRONTEND_WRITER_CRITIQUE_STAGE,
+    IMPLEMENTATION_CRITIQUE_STAGE,
+    MODULE_INTEGRATOR_CRITIQUE_STAGE,
+    PLANNER_CRITIQUE_STAGE,
+    TEST_WRITER_CRITIQUE_STAGE,
+)
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import (
     EventType,
@@ -111,13 +118,6 @@ from nimbusware_orchestrator.integrator_gate import (
     rank_bundle_compatibility_candidates,
     select_bundle_id_for_workflow,
     workflow_profile_from_run_created_rows,
-)
-from nimbusware_orchestrator.llm.common import (
-    FRONTEND_WRITER_CRITIQUE_STAGE,
-    IMPLEMENTATION_CRITIQUE_STAGE,
-    MODULE_INTEGRATOR_CRITIQUE_STAGE,
-    PLANNER_CRITIQUE_STAGE,
-    TEST_WRITER_CRITIQUE_STAGE,
 )
 from nimbusware_orchestrator.llm_plan import (
     emit_stub_frontend_writer_critique_panel,

@@ -37,7 +37,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 | Package | Role |
 |---------|------|
-| `agent_core` | Event models, `context_budget`, slice handoff models |
+| `agent_core` | Event models, `context_budget`, slice handoff models, `stage_graph`, `slice_plan`, `prompt_tiers`, `critique_stages`, `read/campaign`, `read/critic_matrix` |
 | `nimbusware_store` | Event store (Postgres / memory) |
 | `nimbusware_orchestrator` | Pipeline, critics, gates, micro-slice (`slice.e2e`, budget presets, **`micro_slice_run_context`** for run-created row helpers), **campaign driver** (backlog → one slice/tick → completion), **factory scaffold** (`put_runtime`, `put_e2e_runner`, `factory_completion`, `factory.gate` composite stage, `interaction_surface_map` static + runtime crawl), **persistent dev env** (`dev_env_supervisor`, incremental regression, UI controller), **slice-cycle integration** + **`slice_cycle_emits`** + **`slice_interjection`**, **interjection queue**, **autopilot profiles**, **code graph / improvement / resolution councils**, context artifacts (file cache) + **`context_compaction`** revert + **replay-from** policy overlay + campaign tick re-enqueue, memory chunk insert into runs, memory-index bridge sidecars, maintenance refactor/architecture passes, `role_execute` dispatcher, fleet analytics, blast-radius preview, audit export, **`hybrid_routing`** (optional stage-level cloud fallback presets; Individual default Ollama-only) |
 | `nimbusware_memory` | Repo-scoped retrieval index (+ fleet on Enterprise) |
@@ -69,7 +69,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 1. **Create** — Maker `POST /v1/runs` (or Admin lifecycle) appends `run.created` via `RunOrchestrator` → `nimbusware_store`.
 2. **Pipeline** — Orchestrator mixins append stage events; projections rebuild timelines and maker-progress from the event log.
-3. **Read** — Campaign/backlog row parsers live in `agent_core.read.campaign` (shared by orchestrator and projections). HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
+3. **Read** — Shared row parsers and read-model helpers live in `agent_core.read` (`campaign`, `critic_matrix`) and `agent_core.stage_graph`. HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
 4. **Maker loop** — Pending slices, research approve/reject, stitch summary, and launch readiness scorecards are read models over the same event log (`nimbusware_maker` + maker web tabs). **Chat sessions** (`nimbusware_chat_session` / `nimbusware_chat_turn`, or in-memory `ChatStore`) persist operator turns and DAG branches; runs started from Chat append to the event store as usual.
 
 ## Auth (request path)
@@ -84,7 +84,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 - `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
 - `nimbusware_orchestrator` must not import `nimbusware_api` (Lane R-C — use `nimbusware_projections`).
-- `nimbusware_projections` must not import `nimbusware_orchestrator` at module level except legacy allowlist (`stage_timeline.py`, `universal_critique.py`).
+- `nimbusware_projections` must not import `nimbusware_orchestrator` at module level (`tests/unit/test_import_graph.py`).
 - Legacy `packages/nimbusware_{api,console,config,env}/` shims removed (Lane R-B).
 
 ## Architecture decision records
