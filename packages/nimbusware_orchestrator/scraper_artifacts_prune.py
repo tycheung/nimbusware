@@ -86,13 +86,6 @@ def resolve_scraper_artifact_base_dir(repo_root: Path) -> Path:
 
 
 def _matches_any(name: str, patterns: list[str] | None) -> bool:
-    """``True`` when ``name`` matches at least one glob in ``patterns``.
-
-    ``None`` and empty lists are treated as "no match" so callers can rely on
-    ``if patterns and _matches_any(...)`` for the "any-match" branch and
-    ``if patterns and not _matches_any(...)`` for the "must-match-one" branch
-    without juggling ``None`` checks.
-    """
     if not patterns:
         return False
     return any(fnmatch.fnmatch(name, p) for p in patterns)
@@ -108,19 +101,6 @@ def prune_scraper_artifacts(
     exclude_patterns: list[str] | None = None,
     force_local: bool = False,
 ) -> dict[str, Any]:
-    """Delete regular files under ``base_dir`` older than ``max_age_days`` (mtime, UTC).
-
-    Returns a structured result with ``local_removed``, object-store mirror counts,
-    and ``retention_execution_mode``. Missing ``base_dir`` is a no-op.
-
-    When ``dry_run`` is true, counts stale files but does not delete them and does not
-    remove empty directories (non-destructive preview).
-
-    ``include_patterns`` / ``exclude_patterns``: optional ``fnmatch`` glob
-    lists evaluated against each file's BASENAME after the mtime cutoff filter.
-
-    ``force_local`` skips object-store-primary dispatch (local mirror cleanup only).
-    """
     if max_age_days < 1:
         msg = "max_age_days must be >= 1"
         raise ValueError(msg)

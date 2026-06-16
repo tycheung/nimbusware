@@ -1,5 +1,3 @@
-"""assert_agent_evaluator_persona_in_shelves`` wrapper-level coverage closure."""
-
 from __future__ import annotations
 
 import re

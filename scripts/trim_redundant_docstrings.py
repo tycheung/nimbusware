@@ -88,6 +88,12 @@ def _should_drop(doc: str) -> bool:
         return True
     if head.endswith(" contract.") or head.endswith(" contracts."):
         return True
+    if head.endswith(" composite.") or head.endswith(" matrix."):
+        return True
+    if head.endswith(" closure."):
+        return True
+    if head.startswith("Wrapper so ``pytest"):
+        return True
     if re.search(r"\(fo\d+[^)]*\)", head) and len(head) < 100:
         return True
     if "\n" in stripped:
@@ -103,6 +109,55 @@ def _should_drop(doc: str) -> bool:
     ):
         return True
     return False
+
+
+_VERBOSE_MULTILINE_MARKERS = (
+    "Paired critics come from",
+    "Returns ``True`` if critic + gate events were appended",
+    "Gating (``NIMBUSWARE_",
+    "``None`` and empty lists are treated as",
+    "without juggling ``None`` checks",
+    "Returns a structured result with ``local_removed``",
+    "When ``dry_run`` is true, counts stale files",
+    "``include_patterns`` / ``exclude_patterns``:",
+)
+
+
+def _should_strip_verbose_multiline(doc: str) -> bool:
+    stripped = doc.strip()
+    if "\n" not in stripped:
+        return False
+    return any(m in stripped for m in _VERBOSE_MULTILINE_MARKERS)
+
+
+def _strip_verbose_multiline_docstrings(path: Path) -> bool:
+    text = path.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    lines = text.splitlines(keepends=True)
+    removals: list[tuple[int, int]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if not node.body:
+            continue
+        first = node.body[0]
+        if not isinstance(first, ast.Expr) or not isinstance(first.value, ast.Constant):
+            continue
+        if not isinstance(first.value.value, str):
+            continue
+        doc = first.value.value
+        if not _should_strip_verbose_multiline(doc):
+            continue
+        removals.append((first.lineno - 1, first.end_lineno))
+    if not removals:
+        return False
+    for start, end in sorted(removals, reverse=True):
+        lines = lines[:start] + lines[end:]
+    path.write_text("".join(lines), encoding="utf-8")
+    return True
 
 
 def _is_contract_test(path: Path) -> bool:
@@ -192,6 +247,8 @@ def main() -> int:
             if _process(path):
                 file_changed = True
             if _strip_contract_test_docstrings(path):
+                file_changed = True
+            if _strip_verbose_multiline_docstrings(path):
                 file_changed = True
             if file_changed:
                 changed += 1

@@ -1,5 +1,3 @@
-"""anti_deadlock.py`` pure-helpers composite."""
-
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone

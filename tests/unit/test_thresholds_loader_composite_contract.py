@@ -1,5 +1,3 @@
-"""configs/integrator/thresholds.yaml`` loader composite."""
-
 from __future__ import annotations
 
 from pathlib import Path

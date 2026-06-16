@@ -1,5 +1,3 @@
-"""Wrapper so ``pytest tests/e2e`` can invoke operator smoke (see ``scripts/e2e_smoke.py``)."""
-
 from __future__ import annotations
 
 import subprocess

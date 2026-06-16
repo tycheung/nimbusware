@@ -40,12 +40,6 @@ def emit_stub_implementation_critique_panel(
     *,
     run_id: UUID,
 ) -> None:
-    """PASS critic + gate events for ``backend_writer``.
-
-    Paired critics come from ``critique_pairings.yaml``. Caller must gate on
-    ``NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS`` (or equivalent) so default runs stay
-    unchanged.
-    """
     owner = registry.resolve("backend_writer")
     tax_keys = critique_router.pairing_for("backend_writer")
     if len(tax_keys) < 2:
@@ -102,14 +96,6 @@ def execute_implementation_critique_llm(
     log_snippet: str,
     timeout_seconds: float = 120.0,
 ) -> bool:
-    """LLM-backed **implementation.critique** panel for ``backend_writer``.
-
-    Returns ``True`` if critic + gate events were appended; ``False`` on any
-    failure (caller may fall back to :func:`emit_stub_implementation_critique_panel`).
-
-    Gating (``NIMBUSWARE_IMPLEMENTATION_CRITIQUE_LLM`` + stub fallback) lives in
-    :meth:`nimbusware_orchestrator.pipeline.RunOrchestrator.execute_writer_verifier_pass`.
-    """
     owner = registry.resolve("backend_writer")
     tax_keys = critique_router.pairing_for("backend_writer")
     if len(tax_keys) < 2:

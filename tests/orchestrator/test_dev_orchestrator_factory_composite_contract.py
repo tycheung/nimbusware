@@ -1,5 +1,3 @@
-"""default_paths`` + ``make_dev_orchestrator`` dev-factory composite."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""_maybe_emit_critique_gate_fail_findings`` per-stage axes matrix."""
-
 from __future__ import annotations
 
 import os

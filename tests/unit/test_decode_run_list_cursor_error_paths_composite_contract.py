@@ -1,5 +1,3 @@
-"""_decode_run_list_cursor`` error-paths + ``invalid_cursor`` 422 composite."""
-
 from __future__ import annotations
 
 import base64

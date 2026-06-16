@@ -106,12 +106,6 @@ def emit_stub_implementation_critique_panel(
     *,
     run_id: UUID,
 ) -> None:
-    """PASS critic + gate events for ``backend_writer``.
-
-    Paired critics come from ``critique_pairings.yaml``. Caller must gate on
-    ``NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS`` (or equivalent) so default runs stay
-    unchanged.
-    """
     owner = registry.resolve("backend_writer")
     tax_keys = critique_router.pairing_for("backend_writer")
     if len(tax_keys) < 2:

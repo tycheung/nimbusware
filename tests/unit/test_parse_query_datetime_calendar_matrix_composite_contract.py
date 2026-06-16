@@ -1,5 +1,3 @@
-"""_parse_query_datetime`` calendar / time / chain composite."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

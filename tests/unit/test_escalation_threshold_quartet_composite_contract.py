@@ -1,5 +1,3 @@
-"""configs/escalation/policy.yaml`` quartet loader composite."""
-
 from __future__ import annotations
 
 from pathlib import Path
