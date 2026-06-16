@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import os
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +16,7 @@ from nimbusware_console.integrator_workflow_preview import (
     validate_full_workflow_document,
     validate_integrator_gate_block,
 )
+from nimbusware_env.env_flags import env_str, nimbusware_database_url
 
 ALLOW_WORKFLOW_YAML_WRITE_ENV = "NIMBUSWARE_ALLOW_WORKFLOW_YAML_WRITE"
 
@@ -26,13 +26,13 @@ def _config_materializer(repo_root: Path) -> Any | None:
 
     if not config_from_db_enabled():
         return None
-    if not os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip():
+    if not nimbusware_database_url():
         return None
     return ConfigMaterializer(repo_root)
 
 
 def workflow_yaml_write_enabled() -> bool:
-    raw = os.environ.get(ALLOW_WORKFLOW_YAML_WRITE_ENV, "").strip().lower()
+    raw = env_str(ALLOW_WORKFLOW_YAML_WRITE_ENV).lower()
     return raw in ("1", "true", "yes", "on")
 
 

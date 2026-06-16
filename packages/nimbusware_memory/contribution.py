@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_memory.chunking import run_index_contribution_enabled
 from nimbusware_memory.indexer import RebuildIndexResult, rebuild_memory_index
 from nimbusware_memory.store import MemoryChunkStore
@@ -46,7 +46,7 @@ def maybe_rebuild_memory_index_for_run(
             return None
     except ImportError:
         pass
-    conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip() or None
+    conninfo = nimbusware_database_url()
     mem_meta = run_created_metadata.get("memory")
     embedding_mode = "deterministic"
     if isinstance(mem_meta, dict) and mem_meta.get("embedding_mode") in ("deterministic", "ollama"):

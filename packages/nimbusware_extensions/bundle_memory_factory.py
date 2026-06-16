@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import os
-
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_extensions.bundle_memory import (
     BundleOutcomeStore,
     InMemoryBundleOutcomeStore,
@@ -14,7 +13,7 @@ def build_bundle_outcome_store(
     *,
     allow_in_memory: bool = False,
 ) -> BundleOutcomeStore | None:
-    url = (conninfo or os.environ.get("NIMBUSWARE_DATABASE_URL", "")).strip()
+    url = (conninfo or nimbusware_database_url() or "").strip()
     if url:
         return PostgresBundleOutcomeStore(url)
     if allow_in_memory:

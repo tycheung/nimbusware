@@ -28,7 +28,12 @@ from nimbusware_config.store import (
     PostgresConfigStore,
     _maybe_publish_config_notify,
 )
-from nimbusware_env.env_flags import nimbusware_config_from_db_enabled as config_from_db_enabled
+from nimbusware_env.env_flags import (
+    nimbusware_config_from_db_enabled as config_from_db_enabled,
+)
+from nimbusware_env.env_flags import (
+    nimbusware_database_url,
+)
 from nimbusware_extensions.custom_agents import CustomAgentRegistry
 from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_orchestrator.merge import load_yaml
@@ -50,9 +55,7 @@ class ConfigMaterializer:
         if store is not None:
             self._store = store
         elif self._use_db:
-            import os
-
-            url = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+            url = nimbusware_database_url() or ""
             if not url:
                 msg = "NIMBUSWARE_DATABASE_URL required when config store uses Postgres"
                 raise ValueError(msg)

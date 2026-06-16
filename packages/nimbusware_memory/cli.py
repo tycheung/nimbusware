@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from pathlib import Path
 from uuid import UUID
+
+from nimbusware_env.env_flags import nimbusware_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -19,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Run UUID to attach memory.indexed audit event",
     )
     args = p.parse_args(argv)
-    conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+    conninfo = nimbusware_database_url() or ""
     if not conninfo:
         print("NIMBUSWARE_DATABASE_URL is required", file=sys.stderr)
         return 1

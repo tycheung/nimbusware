@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from nimbusware_env import load_dotenv
 from nimbusware_env.edition import edition, is_enterprise
-from nimbusware_env.env_flags import nimbusware_embed_dispatch_worker_enabled
+from nimbusware_env.env_flags import (
+    nimbusware_database_url,
+    nimbusware_embed_dispatch_worker_enabled,
+)
 
 load_dotenv()
 
 import logging
-import os
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from typing import Any
@@ -46,7 +48,7 @@ _OPENAPI_APP_DESCRIPTION = (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    url = os.environ.get("NIMBUSWARE_DATABASE_URL")
+    url = nimbusware_database_url()
     runtime = build_runtime_orchestrator(
         roles_from_db=None,
         use_materializer_registry=False,

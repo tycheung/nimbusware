@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING, Any
 
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_env.settings_catalog import (
     CATALOG,
     KEY_SYSTEM,
@@ -18,8 +19,7 @@ if TYPE_CHECKING:
 
 
 def _conninfo() -> str | None:
-    url = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
-    return url or None
+    return nimbusware_database_url()
 
 
 def _document_key(scope: SettingScope) -> str:

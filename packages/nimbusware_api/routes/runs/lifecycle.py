@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
 from typing import Any
 from uuid import UUID
 
@@ -15,6 +13,7 @@ from nimbusware_api.schemas.openapi import (
     PROBLEM_RESPONSE_422,
     PROBLEM_RESPONSE_500,
 )
+from nimbusware_env.env_flags import nimbusware_repo_root_path
 
 router = APIRouter()
 
@@ -92,7 +91,7 @@ def lifecycle_verify(run_id: UUID, orch: OrchDep, store: StoreDep) -> dict[str, 
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    repo = nimbusware_repo_root_path()
 
     host: Any = orch
     dispatch = host.dispatch_or_run_verify(run_id, workspace=repo)
@@ -140,7 +139,7 @@ def lifecycle_slice(
     if maker_approval_enabled_from_rows(rows) and mode != "auto":
         return prepare_next_pending_slice(orch, run_id)
 
-    repo = Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    repo = nimbusware_repo_root_path()
     from nimbusware_maker.workspace import resolve_run_workspace
 
     ws = resolve_run_workspace(rows, override=repo)

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -11,6 +10,7 @@ from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_env.edition import enterprise_feature_enabled
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_iam.context import get_auth_context
 from nimbusware_memory.factory import build_memory_chunk_store
 from nimbusware_memory.fleet_index import rebuild_fleet_memory_index
@@ -78,7 +78,7 @@ def fleet_memory_rebuild(
             detail=problem("memory_store_unavailable", "memory chunk store is not configured"),
         )
     audit_uuid = UUID(body.audit_run_id) if body.audit_run_id else None
-    conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip() or None
+    conninfo = nimbusware_database_url()
     in_memory_rows = None
     if conninfo is None and hasattr(store, "list_all_event_rows"):
         in_memory_rows = store.list_all_event_rows()

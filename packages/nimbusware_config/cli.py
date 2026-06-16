@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
 from nimbusware_config.export import export_config_to_repo
 from nimbusware_config.seed import preview_seed_from_repo, seed_config_from_repo
 from nimbusware_config.store import PostgresConfigStore
+from nimbusware_env.env_flags import nimbusware_database_url, nimbusware_repo_root_path
 
 _TOOL_NAME = "nimbusware-config"
 
@@ -16,11 +16,11 @@ _TOOL_NAME = "nimbusware-config"
 def _repo_root(arg: str | None) -> Path:
     if arg:
         return Path(arg).resolve()
-    return Path(os.environ.get("NIMBUSWARE_REPO_ROOT", ".")).resolve()
+    return nimbusware_repo_root_path()
 
 
 def _database_url() -> str:
-    url = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+    url = nimbusware_database_url() or ""
     if not url:
         msg = "NIMBUSWARE_DATABASE_URL is required for nimbusware-config"
         raise ValueError(msg)

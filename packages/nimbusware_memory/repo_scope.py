@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from pathlib import Path
+
+from nimbusware_env.env_flags import env_str
 
 
 def repo_scope_hash(repo_root: Path) -> str:
@@ -15,7 +16,7 @@ def repo_scope_hash(repo_root: Path) -> str:
 def resolve_repo_root(explicit: Path | None = None) -> Path:
     if explicit is not None:
         return explicit.resolve()
-    env = os.environ.get("NIMBUSWARE_REPO_ROOT", "").strip()
+    env = env_str("NIMBUSWARE_REPO_ROOT")
     if env:
         return Path(env).resolve()
     return Path(".").resolve()

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from pathlib import Path
+
+from nimbusware_env.env_flags import nimbusware_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -35,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     pull_p.add_argument("--canonical-root", type=Path, default=None)
 
     args = p.parse_args(argv)
-    conninfo = os.environ.get("NIMBUSWARE_DATABASE_URL", "").strip()
+    conninfo = nimbusware_database_url() or ""
     memory_store: PostgresMemoryChunkStore | InMemoryMemoryChunkStore
     if conninfo:
         memory_store = PostgresMemoryChunkStore(conninfo)

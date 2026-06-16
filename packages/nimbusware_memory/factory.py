@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import os
-
+from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_memory.store import (
     InMemoryMemoryChunkStore,
     MemoryChunkStore,
@@ -15,7 +14,7 @@ def build_memory_chunk_store(
     allow_in_memory: bool = False,
 ) -> MemoryChunkStore | None:
     """Return Postgres store when ``NIMBUSWARE_DATABASE_URL`` is set; else optional in-memory."""
-    url = (conninfo or os.environ.get("NIMBUSWARE_DATABASE_URL", "")).strip()
+    url = (conninfo or nimbusware_database_url() or "").strip()
     if url:
         return PostgresMemoryChunkStore(url)
     if allow_in_memory:

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import psycopg
 from psycopg.rows import dict_row
 
 from agent_core.models import EventType
+from nimbusware_env.env_flags import nimbusware_database_url
 
 _MEMORY_EVENT_TYPES = (
     EventType.RUN_CREATED.value,
@@ -27,7 +27,7 @@ def fetch_event_rows_for_memory_index(
         rows = [r for r in in_memory_rows if str(r.get("event_type")) in types]
         rows.sort(key=lambda r: int(r["store_seq"]))
         return rows
-    url = (conninfo or os.environ.get("NIMBUSWARE_DATABASE_URL", "")).strip()
+    url = (conninfo or nimbusware_database_url() or "").strip()
     if not url:
         msg = "NIMBUSWARE_DATABASE_URL is required to scan events for memory index"
         raise ValueError(msg)
