@@ -34,7 +34,7 @@ poetry run pytest tests -q -m "not integration and not slow and not benchmark" \
 poetry run python scripts/coverage_package_floors.py --report "${COV_JSON}"
 rm -f "${COV_JSON}"
 
-export NIMBUSWARE_SLICE_E2E_COMMAND="${NIMBUSWARE_SLICE_E2E_COMMAND:-python -c \"print('ok')\"}"
+export NIMBUSWARE_SLICE_E2E_COMMAND="${NIMBUSWARE_SLICE_E2E_COMMAND:-python -c \"import pathlib; assert pathlib.Path('index.html').is_file(); print('ok')\"}"
 poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
 poetry run python scripts/run_framework_pack_ci_gate.py
 poetry run python scripts/run_bootstrap_ci_gate.py

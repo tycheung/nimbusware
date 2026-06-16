@@ -46,7 +46,7 @@ Standalone integration (same as `-WithIntegration`):
 
 See [tests/README.md](tests/README.md) for test layout and markers.
 
-**Browser verify (`slice.e2e`)** is **on by default** in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml). Install Playwright locally or set `NIMBUSWARE_SLICE_E2E_COMMAND`; the stage **SKIP**s when no runner is available. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a stub command; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
+**Browser verify (`slice.e2e`)** is **on by default** in [`configs/workflows/micro_slice.yaml`](configs/workflows/micro_slice.yaml). Install Playwright locally or set `NIMBUSWARE_SLICE_E2E_COMMAND`; the stage **SKIP**s when no runner is available. PR unit CI runs [`tests/e2e/journeys/test_slice_e2e_workflow.py`](tests/e2e/journeys/test_slice_e2e_workflow.py) with a command that asserts `index.html` exists in the fixture workspace; [`tests/unit/test_slice_e2e.py`](tests/unit/test_slice_e2e.py) covers the orchestrator hook without browsers.
 
 PR **e2e** job (Postgres) retries flaky journeys once: `pytest tests/e2e -m e2e --reruns 1` via `pytest-rerunfailures` (`NIMBUSWARE_E2E_FLAKE_RETRIES=1`). Weekly [`.github/workflows/e2e_flake_monitor.yml`](.github/workflows/e2e_flake_monitor.yml) runs the same suite on a schedule and opens an issue when it fails. Local: `ci_check.ps1 -WithE2e` mirrors the same flags.
 

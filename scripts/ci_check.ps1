@@ -42,7 +42,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Remove-Item -Force $CovJson -ErrorAction SilentlyContinue
 
 if (-not $env:NIMBUSWARE_SLICE_E2E_COMMAND) {
-    $env:NIMBUSWARE_SLICE_E2E_COMMAND = 'python -c "print(''ok'')"'
+    $env:NIMBUSWARE_SLICE_E2E_COMMAND = 'python -c "import pathlib; assert pathlib.Path(''index.html'').is_file(); print(''ok'')"'
 }
 poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

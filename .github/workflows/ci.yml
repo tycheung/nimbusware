@@ -57,7 +57,7 @@ jobs:
       - name: slice.e2e CI gate
         run: poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slice_web_apply_emits_slice_e2e_stage -q
         env:
-          NIMBUSWARE_SLICE_E2E_COMMAND: 'python -c "print(''ok'')"'
+          NIMBUSWARE_SLICE_E2E_COMMAND: 'python -c "import pathlib; assert pathlib.Path(''index.html'').is_file(); print(''ok'')"'
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
       - name: Framework pack CI gate
         run: poetry run python scripts/run_framework_pack_ci_gate.py
