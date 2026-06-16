@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import os
 from typing import Any
 
 from agent_core.models import EventType
+from nimbusware_env.env_flags import env_truthy
 
 MILESTONE_HTTP_REGRESSION = "M1"
 MILESTONE_API_TESTS = "M2"
@@ -40,11 +40,7 @@ def _milestone_ids_from_rows(rows: list[dict[str, Any]]) -> set[str]:
 
 
 def dev_env_milestones_achieved(rows: list[dict[str, Any]]) -> set[str]:
-    if os.environ.get("NIMBUSWARE_DEV_ENV_MILESTONES_BYPASS", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_DEV_ENV_MILESTONES_BYPASS"):
         return {
             MILESTONE_HTTP_REGRESSION,
             MILESTONE_API_TESTS,
@@ -70,11 +66,7 @@ def dev_env_auto_start_enabled(rows: list[dict[str, Any]]) -> bool:
 
     if not persistent_dev_env_enabled(rows):
         return False
-    if os.environ.get("NIMBUSWARE_DEV_ENV_ENABLED", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }:
+    if env_truthy("NIMBUSWARE_DEV_ENV_ENABLED"):
         return True
     achieved = dev_env_milestones_achieved(rows)
     return (

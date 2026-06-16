@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_force_off, env_force_on
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 
@@ -45,10 +45,9 @@ def parse_refactor_workflow_block(
 
 
 def refactor_stage_effective(block: RefactorWorkflowBlock) -> bool:
-    env_raw = os.environ.get("NIMBUSWARE_REFACTOR_STAGE", "").strip().lower()
-    if env_raw in ("0", "false", "no"):
+    if env_force_off("NIMBUSWARE_REFACTOR_STAGE"):
         return False
-    if env_raw in ("1", "true", "yes"):
+    if env_force_on("NIMBUSWARE_REFACTOR_STAGE"):
         return True
     return block.enabled
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any, Literal
 
@@ -9,6 +8,7 @@ import httpx
 import yaml
 
 from agent_core.mapping import mapping_or_empty
+from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.role_telemetry import aggregate_role_telemetry_rows
 
 ProviderKind = Literal["local", "cloud"]
@@ -82,7 +82,7 @@ def cloud_chat_json(
     cloud = mapping_or_empty(routing.get("cloud_runtime"))
     base_url = str(cloud.get("base_url") or "").strip().rstrip("/")
     api_key_env = str(cloud.get("api_key_env") or "OPENAI_API_KEY")
-    api_key = os.environ.get(api_key_env, "").strip()
+    api_key = env_str(api_key_env)
     if not api_key:
         msg = f"missing API key env {api_key_env}"
         raise ValueError(msg)
@@ -161,7 +161,7 @@ def probe_cloud_runtime(
     base_url = str(cloud.get("base_url") or "").strip().rstrip("/")
     health_path = str(cloud.get("health_path") or "/models").lstrip("/")
     api_key_env = str(cloud.get("api_key_env") or "OPENAI_API_KEY")
-    api_key = os.environ.get(api_key_env, "").strip()
+    api_key = env_str(api_key_env)
     if not api_key:
         return {
             "enabled": True,

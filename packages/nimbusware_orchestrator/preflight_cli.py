@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.mapping import mapping_or_empty
+from nimbusware_env.settings_resolve import resolve_int
 from nimbusware_orchestrator.merge import load_yaml
 from nimbusware_orchestrator.pipeline import default_paths
 from nimbusware_orchestrator.preflight import PreflightError, run_model_preflight
@@ -226,14 +227,7 @@ def main(argv: list[str] | None = None) -> int:
     samples_requested = (
         args.samples
         if args.samples is not None
-        else (
-            int(os.environ.get("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", "1") or "1")
-            if (os.environ.get("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES") or "")
-            .strip()
-            .lstrip("-")
-            .isdigit()
-            else 1
-        )
+        else resolve_int("NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES", default=1)
     )
 
     result: dict[str, Any]

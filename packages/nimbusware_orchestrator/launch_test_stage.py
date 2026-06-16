@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -8,6 +7,7 @@ from typing import Any, Literal
 import yaml
 
 from nimbusware_env import find_repo_root
+from nimbusware_env.env_flags import env_truthy
 from nimbusware_orchestrator.js_framework_detect import detect_js_framework, load_framework_pack
 from nimbusware_orchestrator.ui_flow_synthesis import (
     synthesize_ui_flow_from_ism,
@@ -205,6 +205,6 @@ def run_launch_test_stage(
     if stage_name == "launch_test.critique":
         result = run_launch_test_critique(workspace)
         return (0 if result.passed else 1), result.detail, "critique"
-    if os.environ.get("NIMBUSWARE_LAUNCH_TEST_STUB", "").strip().lower() in ("1", "true", "yes"):
+    if env_truthy("NIMBUSWARE_LAUNCH_TEST_STUB"):
         return 0, "launch_test_stub", "unknown"
     return 1, f"unknown_launch_test_stage:{stage_name}", "unknown"

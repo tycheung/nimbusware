@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -9,6 +8,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import env_int_min, env_str
 from nimbusware_orchestrator.dev_env_adapters import (
     adapter_spawn_env,
     build_adapter_command,
@@ -49,14 +49,14 @@ class DevEnvStartResult:
 
 def _attach_base_url() -> str | None:
     for key in ("NIMBUSWARE_DEV_ENV_BASE_URL", "NIMBUSWARE_PUT_BASE_URL"):
-        raw = os.environ.get(key, "").strip()
+        raw = env_str(key)
         if raw:
             return raw.rstrip("/")
     return None
 
 
 def _default_port(workspace: Path) -> int:
-    base = int(os.environ.get("NIMBUSWARE_DEV_ENV_PORT_BASE", "19800") or 19800)
+    base = env_int_min("NIMBUSWARE_DEV_ENV_PORT_BASE", default=19800, minimum=1)
     return base + (hash(str(workspace.resolve())) % 500)
 
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import urllib.error
 import urllib.request
@@ -135,7 +134,9 @@ def _find_ollama_binary() -> str | None:
     if on_path:
         return on_path
     if sys.platform == "win32":
-        local = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
+        from nimbusware_env.env_flags import env_str
+
+        local = Path(env_str("LOCALAPPDATA")) / "Programs" / "Ollama" / "ollama.exe"
         if local.is_file():
             return str(local)
     return None

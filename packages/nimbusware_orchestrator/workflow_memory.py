@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -214,10 +213,12 @@ def _env_or_metadata_int(
     default: int,
     max_val: int,
 ) -> int:
-    env_raw = os.environ.get(env_key, "").strip()
-    if env_raw:
+    from nimbusware_env.settings_resolve import resolve_explicit_raw
+
+    explicit = resolve_explicit_raw(env_key)
+    if explicit:
         try:
-            return max(0, min(max_val, int(env_raw)))
+            return max(0, min(max_val, int(explicit)))
         except ValueError:
             pass
     if isinstance(raw, (int, float, str)):

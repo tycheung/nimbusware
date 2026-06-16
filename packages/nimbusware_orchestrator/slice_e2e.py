@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+from nimbusware_env.env_flags import env_str
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,7 @@ def run_slice_e2e_verify(
     timeout_seconds: float = 300.0,
 ) -> SliceE2EResult:
     """Optional browser verify after unit tests. Skips when runner unavailable."""
-    cmd_line = (command or os.environ.get("NIMBUSWARE_SLICE_E2E_COMMAND", "")).strip()
+    cmd_line = (command or env_str("NIMBUSWARE_SLICE_E2E_COMMAND")).strip()
     if cmd_line:
         parts = cmd_line.split()
         proc = subprocess.run(

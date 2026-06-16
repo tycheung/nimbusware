@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_env.env_flags import env_truthy
 from nimbusware_orchestrator._pipeline._helpers import (
     _SELF_REFINEMENT_MAX_ITER_REASON,
     _SELF_REFINEMENT_POLICY_STAGE,
@@ -216,10 +217,7 @@ class SelfRefinementOptionalStagesMixin:
                     summary_raw = llm_result.get("summary")
                     if isinstance(summary_raw, str) and summary_raw.strip():
                         llm_critique_summary = summary_raw.strip()[:500]
-                elif os.environ.get(
-                    "NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB",
-                    "",
-                ).strip().lower() in ("1", "true", "yes"):
+                elif env_truthy("NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB"):
                     emit_stub_self_refinement_critique_panel(
                         self._store,
                         self._registry,

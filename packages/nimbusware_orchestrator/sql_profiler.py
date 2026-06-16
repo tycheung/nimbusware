@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from nimbusware_env.env_flags import env_str
+
 _SKIP_SCAN_DIRS = frozenset(
     {
         ".git",
@@ -120,7 +122,7 @@ def scan_sql_query_hotspots(
 
 def check_runtime_sql_budget() -> tuple[int, str, dict[str, Any]]:
     """Compare session counter and/or ``NIMBUSWARE_TEST_SQL_QUERY_COUNT`` to limit."""
-    max_raw = os.environ.get("NIMBUSWARE_SQL_QUERY_COUNT_MAX", "").strip()
+    max_raw = env_str("NIMBUSWARE_SQL_QUERY_COUNT_MAX")
     if not max_raw:
         return 0, "sql profiler runtime: skipped (NIMBUSWARE_SQL_QUERY_COUNT_MAX unset)\n", {}
     try:
@@ -129,7 +131,7 @@ def check_runtime_sql_budget() -> tuple[int, str, dict[str, Any]]:
         return 0, "sql profiler runtime: invalid NIMBUSWARE_SQL_QUERY_COUNT_MAX\n", {}
 
     session_count = current_sql_query_count()
-    env_raw = os.environ.get("NIMBUSWARE_TEST_SQL_QUERY_COUNT", "").strip()
+    env_raw = env_str("NIMBUSWARE_TEST_SQL_QUERY_COUNT")
     count: int | None = session_count if session_count > 0 else None
     if env_raw:
         try:

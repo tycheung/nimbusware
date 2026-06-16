@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.scraper_artifacts_inventory import (
     object_store_delete_artifact,
     scraper_artifact_storage_backend_signals,
@@ -78,7 +79,7 @@ def persist_scraper_artifact(
 
 def resolve_scraper_artifact_base_dir(repo_root: Path) -> Path:
     """Match ``RunOrchestrator._persist_scraper_response_artifact`` base directory."""
-    raw = os.environ.get("NIMBUSWARE_SCRAPER_ARTIFACT_DIR", "").strip()
+    raw = env_str("NIMBUSWARE_SCRAPER_ARTIFACT_DIR")
     if raw:
         return Path(raw).expanduser().resolve()
     return (repo_root / ".cache" / "nimbusware_scraper").resolve()
