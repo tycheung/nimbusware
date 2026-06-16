@@ -101,7 +101,6 @@ def psql_bin_for_major(major: int) -> Path | None:
 
 
 def discover_installed_postgres_major(*, preferred: int = DEFAULT_MAJOR) -> int | None:
-    """Return major version if ``psql`` is on PATH or under Program Files\\PostgreSQL."""
     if psql_bin_for_major(preferred):
         return preferred
     program_files = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
@@ -466,7 +465,6 @@ def resolve_postgres_superpassword(
     cli_password: str | None,
     log,
 ) -> str:
-    """Return a working postgres superuser password; prompt and update ``.env`` if needed."""
     _load_nimbusware_dotenv(repo_root)
     tried: list[str] = []
     for candidate in (

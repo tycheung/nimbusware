@@ -264,7 +264,6 @@ def _resolve_postgres_choice(
     *,
     docker_available: bool,
 ) -> str | None:
-    """Return setup method key, or None if postgres was already reachable (caller handles)."""
     if args.install_postgres_native:
         return "native"
     if args.postgres_choice:
@@ -606,7 +605,6 @@ def _fixture_workspace(repo: Path, name: str) -> Path:
 
 
 def _one_command_install_lines(repo: Path) -> list[str]:
-    """Return documented one-command install variants (clone-first or in-repo)."""
     return [
         (
             "python scripts/install_nimbusware.py --clone <repo-url> "
