@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import httpx
+
 from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
@@ -8,6 +10,8 @@ from nimbusware_orchestrator._pipeline._helpers import (
     optional_meta_section,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import LifecyclePlanHost
+
+_PLAN_STAGE_LLM_ERRORS = (httpx.HTTPError, OSError, RuntimeError, TypeError, ValueError)
 
 
 class LifecyclePlanMixin:
@@ -37,7 +41,7 @@ class LifecyclePlanMixin:
                         model_id=model,
                         timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
                     )
-                except Exception:
+                except _PLAN_STAGE_LLM_ERRORS:
                     self._execute_plan_stage_stub(run_id)
             else:
                 self._execute_plan_stage_stub(run_id)
@@ -75,7 +79,7 @@ class LifecyclePlanMixin:
                                 runtime.get("request_timeout_seconds", 120),
                             ),
                         )
-                    except Exception:
+                    except _PLAN_STAGE_LLM_ERRORS:
                         self._execute_plan_stage_stub(run_id)
                 else:
                     self._execute_plan_stage_stub(run_id)

@@ -231,7 +231,7 @@ def emit_campaign_terminal(
             from nimbusware_maker.web_push_notify import notify_campaign_completed
 
             notify_campaign_completed(run_id, summary=result.rationale)
-        except Exception:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError):
             pass
         return
     if result.verdict == "FAIL":
@@ -264,7 +264,7 @@ def emit_campaign_terminal(
             from nimbusware_maker.web_push_notify import notify_campaign_failed
 
             notify_campaign_failed(run_id, summary=result.rationale)
-        except Exception:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError):
             pass
 
 

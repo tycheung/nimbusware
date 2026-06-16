@@ -11,12 +11,14 @@ from nimbusware_orchestrator.ui_flow_dsl import UiFlowDefinition, UiFlowStep, Ui
 
 _PERSISTENT: dict[str, dict[str, Any]] = {}
 
+_BROWSER_IO_ERRORS = (OSError, RuntimeError, AttributeError, ValueError)
+
 
 def _page_alive(page: Any) -> bool:
     try:
         page.title()
         return True
-    except Exception:
+    except _BROWSER_IO_ERRORS:
         return False
 
 
@@ -29,13 +31,13 @@ def _close_bundle_key(key: str) -> None:
         if target is not None:
             try:
                 target.close()
-            except Exception:
+            except _BROWSER_IO_ERRORS:
                 pass
     mgr = bundle.get("mgr")
     if mgr is not None:
         try:
             mgr.stop()
-        except Exception:
+        except _BROWSER_IO_ERRORS:
             pass
 
 
@@ -179,7 +181,7 @@ def _run_ui_flow_sync(
                 if obj is not None:
                     try:
                         obj.close()
-                    except Exception:
+                    except _BROWSER_IO_ERRORS:
                         pass
             ephemeral_mgr.stop()
 

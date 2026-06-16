@@ -4,6 +4,8 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 from uuid import UUID
 
+from pydantic import ValidationError
+
 from agent_core.models import CriticVerdictEmittedPayload, GateDecisionEmittedPayload, Verdict
 
 
@@ -97,7 +99,7 @@ def critic_verdict_payloads_for_stage(
             continue
         try:
             out.append(CriticVerdictEmittedPayload.model_validate(pl))
-        except Exception:
+        except ValidationError:
             continue
     return out
 
