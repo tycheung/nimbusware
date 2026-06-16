@@ -602,6 +602,29 @@ def nimbusware_api_key() -> str:
     return env_str("NIMBUSWARE_API_KEY")
 
 
+def nimbusware_sandbox_backend(default: str = "none") -> str:
+    return env_str("NIMBUSWARE_SANDBOX_BACKEND", default=default).strip().lower()
+
+
+def nimbusware_sandbox_docker_image(default: str = "python:3.11-slim") -> str:
+    raw = env_str("NIMBUSWARE_SANDBOX_DOCKER_IMAGE", default=default).strip()
+    return raw or default
+
+
+def nimbusware_tenant_id(default: str = "default") -> str:
+    raw = env_str("NIMBUSWARE_TENANT_ID", default=default).strip()
+    return raw or default
+
+
+def nimbusware_bundle_memory_rank_weight(default: float = 0.2) -> float:
+    raw = env_str("NIMBUSWARE_BUNDLE_MEMORY_RANK_WEIGHT", default=str(default)).strip()
+    try:
+        value = float(raw)
+    except ValueError:
+        return default
+    return max(0.0, min(1.0, value))
+
+
 def nimbusware_memory_index_dir() -> str:
     return env_str("NIMBUSWARE_MEMORY_INDEX_DIR")
 

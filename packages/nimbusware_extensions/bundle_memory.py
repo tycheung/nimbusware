@@ -164,14 +164,9 @@ def aggregate_bundle_success_stats(
 
 
 def bundle_memory_rank_weight() -> float:
-    import os
+    from nimbusware_env.env_flags import nimbusware_bundle_memory_rank_weight
 
-    raw = os.environ.get("NIMBUSWARE_BUNDLE_MEMORY_RANK_WEIGHT", "0.2").strip()
-    try:
-        w = float(raw)
-    except ValueError:
-        return 0.2
-    return max(0.0, min(1.0, w))
+    return nimbusware_bundle_memory_rank_weight(default=0.2)
 
 
 def blend_bundle_rank_score(

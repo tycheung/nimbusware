@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+
+from nimbusware_env.env_flags import (
+    nimbusware_sandbox_backend,
+    nimbusware_sandbox_docker_image,
+)
 
 VALID_BACKENDS = frozenset({"none", "stub", "docker", "kubernetes", "e2b"})
 DEFAULT_DOCKER_IMAGE = "python:3.11-slim"
@@ -22,14 +26,14 @@ class SandboxRunResult:
 
 
 def resolve_sandbox_backend() -> str:
-    raw = os.environ.get("NIMBUSWARE_SANDBOX_BACKEND", "none").strip().lower()
+    raw = nimbusware_sandbox_backend(default="none")
     if raw not in VALID_BACKENDS:
         return "none"
     return raw
 
 
 def resolve_sandbox_docker_image() -> str:
-    raw = os.environ.get("NIMBUSWARE_SANDBOX_DOCKER_IMAGE", DEFAULT_DOCKER_IMAGE).strip()
+    raw = nimbusware_sandbox_docker_image(default=DEFAULT_DOCKER_IMAGE)
     return raw or DEFAULT_DOCKER_IMAGE
 
 

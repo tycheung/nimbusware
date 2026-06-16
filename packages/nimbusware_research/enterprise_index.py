@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from nimbusware_env.edition import is_enterprise
+from nimbusware_env.env_flags import nimbusware_tenant_id
+
 
 def enterprise_research_enabled() -> bool:
-    return os.environ.get("NIMBUSWARE_EDITION", "").strip().lower() == "enterprise"
+    return is_enterprise()
 
 
 def tenant_namespace() -> str:
-    return os.environ.get("NIMBUSWARE_TENANT_ID", "default").strip() or "default"
+    return nimbusware_tenant_id(default="default")
 
 
 def append_enterprise_research_index(
