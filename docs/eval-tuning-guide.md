@@ -18,7 +18,7 @@ Raise `e2e_on_every_n_slices` on long campaigns to reduce PUT cost; lower it whe
 
 ## Launch rubric thresholds
 
-`evaluate_workspace_rubric` scores testability, security, and aggregate pass/fail. Campaign goldens under `tests/fixtures/launch_eval/` document minimum aggregates per fixture workspace.
+`evaluate_workspace_rubric` scores maturity/maintainability/testability from **workspace file presence** (README, pyproject, tests, etc.) plus a basic `.env` security check — not deep static analysis. Campaign goldens under `tests/fixtures/launch_eval/` document minimum aggregates per fixture workspace.
 
 - **Tighten ship bar:** increase `min_aggregate` in golden JSON or campaign completion policy.
 - **LLM dimensions:** set `NIMBUSWARE_LAUNCH_EVAL_LLM=1` for optional panel rows (Maker Review + Settings launch check).
