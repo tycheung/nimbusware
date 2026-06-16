@@ -1,5 +1,3 @@
-"""NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES`` Pattern B int fail-swallow-to-default."""
-
 from __future__ import annotations
 
 import pytest

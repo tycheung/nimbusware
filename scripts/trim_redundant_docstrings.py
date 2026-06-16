@@ -370,6 +370,39 @@ def _strip_contract_test_docstrings(path: Path) -> bool:
     return True
 
 
+def _strip_test_module_docstring(path: Path) -> bool:
+    rel = _rel(path)
+    if not rel.startswith("tests/") or rel.startswith("tests/fixtures/"):
+        return False
+    text = path.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    if not tree.body:
+        return False
+    first = tree.body[0]
+    if not isinstance(first, ast.Expr) or not isinstance(first.value, ast.Constant):
+        return False
+    if not isinstance(first.value.value, str):
+        return False
+    doc = first.value.value.strip()
+    if not doc:
+        return False
+    if "\n" in doc and len(doc.splitlines()) > 3:
+        return False
+    if len(doc) > 160:
+        return False
+    lines = text.splitlines(keepends=True)
+    start = first.lineno - 1
+    end = first.end_lineno
+    new_lines = lines[:start] + lines[end:]
+    while len(new_lines) > 1 and new_lines[0].strip() == "":
+        new_lines = new_lines[1:]
+    path.write_text("".join(new_lines), encoding="utf-8")
+    return True
+
+
 def _process(path: Path) -> bool:
     rel = _rel(path)
     if rel in _SKIP_REL:
@@ -415,6 +448,8 @@ def main() -> int:
             if _process(path):
                 file_changed = True
             if _strip_contract_test_docstrings(path):
+                file_changed = True
+            if _strip_test_module_docstring(path):
                 file_changed = True
             if _strip_oneline_class_docstrings(path):
                 file_changed = True

@@ -1,5 +1,3 @@
-"""RunOrchestrator.create_run`` cross-gate ordering meta-contract."""
-
 from __future__ import annotations
 
 import re

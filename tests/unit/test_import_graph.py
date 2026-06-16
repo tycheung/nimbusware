@@ -1,5 +1,3 @@
-"""Import graph — extensions must not import orchestrator at module level."""
-
 from __future__ import annotations
 
 import ast

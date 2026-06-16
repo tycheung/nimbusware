@@ -1,5 +1,3 @@
-"""cumulative HIGH/BLOCKER ``finding.created`` → one ``run.escalated``."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

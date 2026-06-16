@@ -1,5 +1,3 @@
-"""YAML threshold: cumulative ``stage.failed`` → one ``run.escalated``."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

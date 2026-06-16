@@ -1,5 +1,3 @@
-"""NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES`` env-layer Pattern B int + fail-RAISE."""
-
 from __future__ import annotations
 
 from pathlib import Path

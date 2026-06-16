@@ -1,5 +1,3 @@
-"""Pipeline facade — composed mixins and stable patch target."""
-
 from __future__ import annotations
 
 from pathlib import Path

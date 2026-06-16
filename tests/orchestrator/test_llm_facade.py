@@ -1,5 +1,3 @@
-"""LLM package facade — stable patch targets on ``nimbusware_orchestrator.llm_plan``."""
-
 from __future__ import annotations
 
 import nimbusware_orchestrator.llm_plan as llm_plan

@@ -1,5 +1,3 @@
-"""parse and merge ``universal_critique`` workflow knobs."""
-
 from __future__ import annotations
 
 from pathlib import Path

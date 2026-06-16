@@ -1,5 +1,3 @@
-"""NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS`` env-layer Pattern B + 3-layer precedence."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""parse ``security_scan_metadata_on_verify`` from workflow YAML."""
-
 from __future__ import annotations
 
 from pathlib import Path

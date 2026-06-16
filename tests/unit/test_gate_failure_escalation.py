@@ -1,5 +1,3 @@
-"""YAML threshold: cumulative FAIL ``gate.decision.emitted`` → one ``run.escalated``."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

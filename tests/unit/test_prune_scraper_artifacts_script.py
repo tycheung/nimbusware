@@ -1,5 +1,3 @@
-"""CLI tests for ``scripts/prune_scraper_artifacts.py``."""
-
 from __future__ import annotations
 
 import json

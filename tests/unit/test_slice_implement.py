@@ -1,5 +1,3 @@
-"""Scoped slice.implement (non-stub)."""
-
 from __future__ import annotations
 
 import os

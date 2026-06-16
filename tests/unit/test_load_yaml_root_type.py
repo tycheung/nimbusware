@@ -1,5 +1,3 @@
-"""load_yaml`` root-type contract + sibling-parser cascade."""
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""Redis dispatch worker stack — API + worker subprocesses share Redis queue."""
-
 from __future__ import annotations
 
 import os

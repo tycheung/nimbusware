@@ -1,5 +1,3 @@
-"""Integrator gate emission when YAML ``enabled`` (monkeypatch)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

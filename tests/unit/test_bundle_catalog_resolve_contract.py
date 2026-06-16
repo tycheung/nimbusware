@@ -1,5 +1,3 @@
-"""assert_bundle_catalog_maps_resolve`` wrapper-level + inner-helper coverage."""
-
 from __future__ import annotations
 
 import re

@@ -160,9 +160,7 @@ def run_e2b_sandbox(
     if not api_key:
         return _sandbox_unavailable(
             backend="e2b",
-            stderr_note=(
-                "Fleet E2B sandbox requires NIMBUSWARE_E2B_API_KEY (enterprise fleet).\n"
-            ),
+            stderr_note=("Fleet E2B sandbox requires NIMBUSWARE_E2B_API_KEY (enterprise fleet).\n"),
         )
 
     try:
@@ -175,9 +173,7 @@ def run_e2b_sandbox(
     except ImportError:
         return _sandbox_unavailable(
             backend="e2b",
-            stderr_note=(
-                "Install optional `e2b` package for remote fleet sandbox execution.\n"
-            ),
+            stderr_note=("Install optional `e2b` package for remote fleet sandbox execution.\n"),
         )
     except Exception as exc:
         return _sandbox_unavailable(

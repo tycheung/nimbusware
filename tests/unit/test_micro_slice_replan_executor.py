@@ -1,5 +1,3 @@
-"""Micro-slice executor emits slice.replan when budget exceeded."""
-
 from __future__ import annotations
 
 import os

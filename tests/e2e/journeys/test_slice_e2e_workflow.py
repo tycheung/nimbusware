@@ -44,7 +44,7 @@ def test_micro_slice_web_apply_emits_slice_e2e_stage(
 ) -> None:
     monkeypatch.setenv(
         "NIMBUSWARE_SLICE_E2E_COMMAND",
-        'python -c "import pathlib; assert pathlib.Path(\'index.html\').is_file(); print(\'ok\')"',
+        "python -c \"import pathlib; assert pathlib.Path('index.html').is_file(); print('ok')\"",
     )
     ws = copy_fixture_repo("tiny_web_app", tmp_path / "web-ws")
     _stub_orchestrator_modules(ws)

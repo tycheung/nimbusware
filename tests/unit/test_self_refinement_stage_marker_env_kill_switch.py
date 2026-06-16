@@ -1,5 +1,3 @@
-"""``NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER`` suppresses ``self_refinement:policy`` emit."""
-
 from __future__ import annotations
 
 from unittest.mock import patch

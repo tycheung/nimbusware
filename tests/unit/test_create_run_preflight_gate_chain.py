@@ -1,5 +1,3 @@
-"""RunOrchestrator.create_run`` pre-flight gate chain coverage."""
-
 from __future__ import annotations
 
 import os

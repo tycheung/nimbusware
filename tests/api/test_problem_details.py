@@ -1,5 +1,3 @@
-"""``problem()`` RFC 7807 ``type`` field and handler compatibility."""
-
 from __future__ import annotations
 
 import asyncio

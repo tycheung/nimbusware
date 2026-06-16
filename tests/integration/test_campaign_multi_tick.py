@@ -1,5 +1,3 @@
-"""Campaign driver multi-tick integration — stub backlog to completion."""
-
 from __future__ import annotations
 
 import json

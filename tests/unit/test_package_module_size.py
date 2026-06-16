@@ -1,5 +1,3 @@
-"""Module size guards outside nimbusware_console (see test_console_module_size.py)."""
-
 from __future__ import annotations
 
 from pathlib import Path

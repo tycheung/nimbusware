@@ -1,5 +1,3 @@
-"""Traceback / log taxonomy hints → registry ``role_id``."""
-
 from __future__ import annotations
 
 from pathlib import Path

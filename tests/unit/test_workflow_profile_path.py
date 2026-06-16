@@ -1,5 +1,3 @@
-"""workflow_profile_path`` 3-axis contract + cross-caller divergence."""
-
 from __future__ import annotations
 
 from collections.abc import Callable

@@ -1,5 +1,3 @@
-"""Fast in-process checks used by ``scripts/e2e_smoke.py`` (app profile)."""
-
 from __future__ import annotations
 
 import os

@@ -1,5 +1,3 @@
-"""Golden theater projection hash — update GOLDEN_THEATER_HASH when projection changes intentionally."""
-
 from __future__ import annotations
 
 import importlib.util
