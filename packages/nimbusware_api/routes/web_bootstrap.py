@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, Request
 
+from nimbusware_env.admin_token import is_loopback_host
 from nimbusware_env.edition import edition, is_enterprise
 from nimbusware_env.env_flags import env_str
 from nimbusware_env.oidc_config import load_oidc_config
@@ -21,11 +22,13 @@ def _api_base(request: Request) -> str:
 
 
 def maker_bootstrap_payload(request: Request) -> dict[str, Any]:
+    api_host = env_str("NIMBUSWARE_API_HOST").strip() or "127.0.0.1"
     return {
         "api_base": _api_base(request),
         "edition": edition(),
         "quick_mode": quick_mode_enabled(),
         "ui_backend": env_str("NIMBUSWARE_UI_BACKEND") or "web",
+        "user_token_required": not is_enterprise() and not is_loopback_host(api_host),
         "features": {
             "maker_web": True,
             "admin_web": True,

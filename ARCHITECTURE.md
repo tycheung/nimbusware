@@ -62,7 +62,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 | Edition | Auth |
 |---------|------|
-| **Individual** (default) | User routes open on localhost; admin routes need `X-Nimbusware-Admin-Token` |
+| **Individual** (default) | User routes open on loopback only; non-loopback bind requires `X-Nimbusware-Admin-Token` (same as admin routes). Admin routes always require the token. |
 | **Enterprise** | All routes need `X-Nimbusware-Api-Key`; scopes `maker_user` / `maker_admin` |
 
 ## Data flow
