@@ -1,5 +1,3 @@
-"""_emit_test_writer_critique_optional`` + ``_emit_planner_critique_optional``."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

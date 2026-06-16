@@ -35,12 +35,6 @@ def _env_overrides(
     samples: int | None,
     json_probe: bool,
 ) -> Generator[None, None, None]:
-    """Temporarily set ``NIMBUSWARE_PREFLIGHT_*`` env vars for the duration of one probe.
-
-    Restores prior values on exit so callers (and tests that invoke ``main``
-    in-process repeatedly) observe a clean ``os.environ``. ``samples=None``
-    leaves the env var untouched; ``json_probe=False`` likewise leaves it alone.
-    """
     saved: dict[str, str | None] = {}
     try:
         if samples is not None:
@@ -63,12 +57,6 @@ def _env_overrides(
 
 
 def _extract_routing(cfg: dict[str, Any]) -> dict[str, Any]:
-    """Mirror ``RunOrchestrator.start_run_after_preflight`` config extraction.
-
-    Returns a flat bundle with the keys ``run_model_preflight`` accepts; the
-    CLI keeps the same defaults so a successful CLI probe implies a future
-    ``run.start`` will succeed against the same Ollama host.
-    """
     runtime = cfg.get("runtime") or {}
     models = cfg.get("models") or {}
     primary = (models.get("primary") or {}).get("id", "llama3.1:8b")
@@ -91,13 +79,6 @@ def _extract_routing(cfg: dict[str, Any]) -> dict[str, Any]:
 
 
 def _samples_from_evidence(evidence: dict[str, Any] | None) -> list[int]:
-    """Pull integer-ms samples out of the preflight evidence dict.
-
-    Falls back to a singleton ``[health_latency_ms]`` when multisample data
-    is unavailable (``NIMBUSWARE_PREFLIGHT_LATENCY_SAMPLES`` unset or ``1``).
-    Non-int entries are filtered defensively so a corrupted upstream payload
-    cannot crash the histogram build.
-    """
     if not isinstance(evidence, dict):
         return []
     raw = evidence.get("health_latency_samples_ms")
@@ -186,14 +167,6 @@ def main(argv: list[str] | None = None) -> int:
     from nimbusware_env import load_dotenv
 
     load_dotenv()
-    """CLI entrypoint. Returns the process exit code.
-
-    Exposed as a function for both ``[tool.poetry.scripts]`` (which calls
-    ``main()`` with no args) and unit tests (which can pass an explicit
-    ``argv`` list). Mutations to ``os.environ`` from ``--samples`` /
-    ``--json-probe`` are restored before returning, so the function is safe
-    to invoke repeatedly in the same Python process.
-    """
     args = _build_parser().parse_args(argv)
 
     if args.samples is not None and args.samples < 1:
