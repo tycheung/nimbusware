@@ -45,8 +45,6 @@ def _pipeline_module_globals() -> dict[str, object]:
 
 
 def _bind_function(fn: types.FunctionType) -> types.FunctionType:
-    """Wrap mixin callables so names resolve via ``nimbusware_orchestrator.pipeline``."""
-
     @functools.wraps(fn)
     def wrapper(*args: object, **kwargs: object) -> object:
         fn_globals = fn.__globals__
@@ -82,23 +80,8 @@ def _rebind_descriptor(name: str, attr: object, cls: type[object]) -> None:
         setattr(cls, name, _bind_function(attr))
 
 
-class RunOrchestrator(
-    CreateRunMixin,
-    CampaignDispatchMixin,
-    MicroSliceMixin,
-    PipelineScraperMixin,
-    LifecycleMixin,
-    CritiqueGatesMixin,
-    WritersMixin,
-    OptionalCritiqueMixin,
-    EscalationMixin,
-    OptionalStagesMixin,
-    ResearchOptionalStagesMixin,
-    StitchOptionalStagesMixin,
-    RoleExecuteMixin,
-    RunOrchestratorBase,
-):
-    """MVP run lifecycle: create → preflight → plan stage → writer loop."""
+class RunOrchestrator(*_MIXINS):
+    pass
 
 
 def _finalize_run_orchestrator_class(cls: type) -> type:
