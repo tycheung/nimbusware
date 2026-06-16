@@ -7,5 +7,6 @@
   "repeat_finding_paths": 0,
   "runs_scanned": 0,
   "runs_with_critics": 0,
-  "snapshot": true
+  "snapshot": true,
+  "note": "Placeholder until publish_benchmark_snapshots.py runs against fleet critic data"
 }

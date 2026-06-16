@@ -3,8 +3,9 @@
   "rate": 0.75,
   "target_rate": 0.7,
   "meets_target": true,
-  "classifier_count": 3,
-  "override_count": 1,
-  "sample_size": 4,
-  "published_at": "2026-06-01T00:00:00Z"
+  "classifier_count": 6,
+  "override_count": 2,
+  "sample_size": 8,
+  "published_at": "2026-06-16T17:13:41Z",
+  "fixture": "scripts/measure_classifier_acceptance.py"
 }
