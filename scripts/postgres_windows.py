@@ -346,7 +346,6 @@ def _run_installer_elevated(
     interactive: bool,
     log,
 ) -> None:
-    """Run installer; use runas when the current process is not elevated."""
     if interactive:
         log(f"Launching PostgreSQL installer GUI: {exe}")
         log("Complete the setup wizard (use port 5432; note the postgres superuser password).")

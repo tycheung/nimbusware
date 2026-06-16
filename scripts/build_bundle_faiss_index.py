@@ -31,7 +31,6 @@ def _embed(text: str) -> np.ndarray:
 
 
 def build_bundle_faiss_index(*, catalog_path: Path, out_dir: Path) -> int:
-    """Build index files under ``out_dir`` from ``catalog_path``. Returns process exit code."""
     try:
         import faiss  # type: ignore[import-not-found]
     except ImportError:
