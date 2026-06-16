@@ -34,7 +34,7 @@ _FEATURE_EPICS: dict[str, str] = {
 
 
 class EnterpriseFeatureDisabledError(RuntimeError):
-    """Raised when code paths require Enterprise edition."""
+    pass
 
 
 FEATURE_EPICS: dict[str, str] = _FEATURE_EPICS

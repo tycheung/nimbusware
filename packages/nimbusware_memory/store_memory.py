@@ -6,8 +6,6 @@ from nimbusware_memory.store_protocol import IndexGenerationRow, _resolve_tenant
 
 
 class InMemoryMemoryChunkStore:
-    """Test double for memory chunk tables."""
-
     def __init__(self) -> None:
 
         self.generations: list[IndexGenerationRow] = []

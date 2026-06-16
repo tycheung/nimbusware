@@ -8,6 +8,7 @@ from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 
 __all__ = ["DiffBudgetResult", "SlicePlan", "parse_slice_plan", "validate_diff_budget"]
 
+
 def validate_diff_budget(
     *,
     changed_files: list[str],

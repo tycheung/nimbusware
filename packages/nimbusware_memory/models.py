@@ -10,8 +10,6 @@ EmbeddingMode = Literal["deterministic", "ollama"]
 
 
 class MemoryChunkRecord(BaseModel):
-    """Persisted memory chunk row."""
-
     model_config = {"frozen": True}
 
     chunk_id: UUID
@@ -30,8 +28,6 @@ class MemoryChunkRecord(BaseModel):
 
 
 class MemoryRetrievalHit(BaseModel):
-    """Single retrieval result for prompt assembly."""
-
     model_config = {"frozen": True}
 
     chunk_id: UUID
@@ -43,8 +39,6 @@ class MemoryRetrievalHit(BaseModel):
 
 @dataclass(frozen=True)
 class MemoryChunkDraft:
-    """Pre-persist chunk extracted from the event store."""
-
     run_id: UUID
     source_event_type: str
     source_store_seq: int | None

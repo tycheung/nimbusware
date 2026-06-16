@@ -9,8 +9,6 @@ from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
 @dataclass(frozen=True)
 class ScraperFetchConfig:
-    """Workflow ``scraper_fetch`` block (``configs/workflows/*.yaml``)."""
-
     enabled: bool
     fetch_urls: tuple[str, ...]
     actor_role_key: str

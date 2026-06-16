@@ -8,6 +8,12 @@ from uuid import UUID, uuid4
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
+from agent_core.critique_stages import (
+    FRONTEND_WRITER_CRITIQUE_STAGE,
+    IMPLEMENTATION_CRITIQUE_STAGE,
+    PLANNER_CRITIQUE_STAGE,
+    TEST_WRITER_CRITIQUE_STAGE,
+)
 from agent_core.models import (
     CriticVerdictEmittedEvent,
     CriticVerdictEmittedPayload,
@@ -52,12 +58,6 @@ class LlmPlanResponse(BaseModel):
     gate: LlmGateLine
 
 
-from agent_core.critique_stages import (
-    FRONTEND_WRITER_CRITIQUE_STAGE,
-    IMPLEMENTATION_CRITIQUE_STAGE,
-    PLANNER_CRITIQUE_STAGE,
-    TEST_WRITER_CRITIQUE_STAGE,
-)
 MODULE_INTEGRATOR_CRITIQUE_STAGE = "module_integrator.critique"
 SELF_REFINEMENT_CRITIQUE_STAGE = "self_refinement.critique"
 
@@ -69,7 +69,6 @@ def append_gate_decision_event(
     payload: GateDecisionEmittedPayload,
     extra_metadata: dict[str, Any] | None = None,
 ) -> None:
-    """Append gate decision with stage-graph + live critic-matrix metadata when available."""
     from agent_core.read.critic_matrix import enrich_gate_metadata_with_critic_matrix_live
     from agent_core.stage_graph import (
         event_metadata_for_stage,

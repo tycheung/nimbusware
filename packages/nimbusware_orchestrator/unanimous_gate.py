@@ -71,7 +71,6 @@ def critic_verdict_payloads_for_stage(
     events: list[dict[str, Any]],
     stage_name: str,
 ) -> list[CriticVerdictEmittedPayload]:
-    """Collect critic verdict payloads after the latest ``stage.started`` for a stage."""
     start_idx = -1
     for idx, ev in enumerate(events):
         if ev.get("event_type") != "stage.started":
@@ -111,7 +110,6 @@ def recompute_gate_for_stage(
     unanimous_pass_required: bool = True,
     enforce: bool = True,
 ) -> dict[str, Any]:
-    """Live matrix helper: recompute gate payload dict from stored critic rows."""
     payloads = critic_verdict_payloads_for_stage(events, stage_name)
     gate = gate_decision_from_critic_verdicts(
         payloads,

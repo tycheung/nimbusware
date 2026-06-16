@@ -16,8 +16,6 @@ from nimbusware_iam.scopes import DEFAULT_USER_SCOPES, normalize_scopes
 
 
 class InMemoryIamStore:
-    """IAM store for unit tests without Postgres."""
-
     def __init__(self) -> None:
         self.tenants: dict[UUID, TenantRecord] = {}
         self.keys: dict[UUID, dict[str, Any]] = {}

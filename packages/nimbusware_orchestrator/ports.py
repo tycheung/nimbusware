@@ -5,8 +5,6 @@ from typing import Any, Protocol, runtime_checkable
 
 @runtime_checkable
 class LlmJsonPort(Protocol):
-    """Call a chat model returning a JSON object."""
-
     def complete_json(
         self,
         *,

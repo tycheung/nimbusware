@@ -11,8 +11,6 @@ from nimbusware_store.protocol import EventStore
 
 @runtime_checkable
 class ModuleIntegratorPort(Protocol):
-    """Integration path + compatibility gate thresholds."""
-
     def score_fit(self, bundle_id: str, project_profile: dict[str, Any]) -> float: ...
 
 
@@ -63,8 +61,6 @@ class ModuleIntegrator:
 
 @runtime_checkable
 class AgentEvaluatorPort(Protocol):
-    """§3B.3 Agent Evaluator lifecycle."""
-
     def evaluate(self, persona_id: str) -> dict[str, Any]: ...
 
 
@@ -226,8 +222,6 @@ class AgentEvaluator:
 
 @runtime_checkable
 class UniversalCritiquePort(Protocol):
-    """§3B.5 universal critique pairings."""
-
     def pairing_for(self, producer_role: str) -> list[str]: ...
 
 
@@ -266,8 +260,6 @@ class UniversalCritiqueRouter:
 
 
 class SecurityScanner:
-    """Runs orchestrator static security scan (ruff + optional bandit)."""
-
     def run(self, workspace: str) -> dict[str, Any]:
         from pathlib import Path
 

@@ -65,8 +65,6 @@ def _implementation_panel_flags(
 
 @dataclass(frozen=True)
 class UniversalCritiqueWorkflowBlock:
-    """Subset of workflow ``universal_critique`` used after verify."""
-
     default_enabled: bool = False
     impl_llm: bool = False
     impl_stub: bool = False

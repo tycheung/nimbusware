@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE, TEST_WRITER_CRITIQUE_STAGE
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
-from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE, TEST_WRITER_CRITIQUE_STAGE
 from agent_core.read.critic_matrix import (
     build_live_critic_matrix_rows,
     critic_matrix_unanimous_summary,
@@ -19,7 +19,6 @@ _WRITER_GATE_STAGE: dict[str, str] = {
 
 
 def stage_graph_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Compact stage DAG rollup from frozen ``run.created`` ``metadata.stage_graph``."""
     for ev in events:
         if ev.get("event_type") != EventType.RUN_CREATED.value:
             continue
@@ -33,7 +32,6 @@ def stage_graph_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any]
 def parallel_writer_groups_timeline_summary(
     events: list[dict[str, Any]],
 ) -> list[dict[str, Any]] | None:
-    """Roll up parallel writer groups with gate pass/fail per mapped critique stage."""
     stage_graph_meta: dict[str, Any] | None = None
     for ev in events:
         if ev.get("event_type") != EventType.RUN_CREATED.value:
@@ -165,7 +163,6 @@ def parallel_writer_groups_timeline_summary(
 
 
 def critic_matrix_live_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Live orchestration critic matrix (gate decisions + pending critique stages)."""
     rows = build_live_critic_matrix_rows(events)
     if not rows:
         return None

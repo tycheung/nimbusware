@@ -51,8 +51,6 @@ def extract_ollama_usage(response: dict[str, Any]) -> dict[str, int]:
 
 
 class OllamaLlmJson:
-    """Concrete ``LlmJsonPort`` for Ollama."""
-
     def __init__(self, base_url: str) -> None:
         self._base = base_url.rstrip("/")
 

@@ -28,8 +28,6 @@ class RunQueuePort(Protocol):
 
 
 class InMemoryRunQueue:
-    """Thread-safe FIFO queue for dev/tests (default when dispatch enabled)."""
-
     def __init__(self) -> None:
         self._pending: deque[RunDispatchTask] = deque()
         self._in_flight: dict[str, RunDispatchTask] = {}
@@ -67,8 +65,6 @@ class InMemoryRunQueue:
 
 
 class RedisRunQueue:
-    """Redis-backed queue with in-flight task tracking."""
-
     def __init__(
         self,
         redis_url: str,

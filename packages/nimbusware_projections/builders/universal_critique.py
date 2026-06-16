@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER
 from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType
 from agent_core.timeline_metadata import critique_coverage_from_run_created_metadata
-from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER
 
 _CRITIQUE_STAGE_ORDER: tuple[str, ...] = (
     "planner.critique",
@@ -77,7 +77,6 @@ def universal_critique_effective_from_run_created_metadata(
 
 
 def universal_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    """Rollup of latest universal-critique gate decisions on the run."""
     stages = universal_critique_timeline_entries(events)
     if not stages:
         return None

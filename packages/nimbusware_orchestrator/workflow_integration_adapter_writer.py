@@ -11,8 +11,6 @@ DEFAULT_ADAPTER_KIND = "compatibility_shim"
 
 @dataclass(frozen=True)
 class IntegrationAdapterWriterWorkflowBlock:
-    """Parsed ``integration_adapter_writer`` subsection from workflow YAML."""
-
     enabled: bool = False
     target_adapter_kind: str = DEFAULT_ADAPTER_KIND
     stub_only: bool = True

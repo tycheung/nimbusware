@@ -61,8 +61,6 @@ def encode_notify_payload(
 
 
 class ConfigNotifyHub:
-    """Fan-out config.document.updated to registered materializers."""
-
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._materializers: list[ConfigMaterializer] = []

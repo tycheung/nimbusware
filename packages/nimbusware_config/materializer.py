@@ -41,8 +41,6 @@ from nimbusware_orchestrator.registry import RoleRegistry
 
 
 class ConfigMaterializer:
-    """Materialized configuration for orchestrator and API."""
-
     def __init__(
         self,
         repo_root: Path,

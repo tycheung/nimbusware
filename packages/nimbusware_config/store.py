@@ -57,8 +57,6 @@ def _row_from_record(rec: dict[str, Any]) -> ConfigDocumentRow:
 
 
 class PostgresConfigStore:
-    """Authoritative config in ``nimbusware_config_document``."""
-
     def __init__(self, conninfo: str) -> None:
         self._conninfo = conninfo
 
@@ -176,8 +174,6 @@ class PostgresConfigStore:
 
 
 class InMemoryConfigStore:
-    """Volatile store for unit tests without Postgres."""
-
     def __init__(self) -> None:
         self._docs: dict[tuple[str, str], ConfigDocumentRow] = {}
 

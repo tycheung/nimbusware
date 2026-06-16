@@ -19,8 +19,6 @@ class SelfRefinementPolicy:
 
 
 class SelfRefinementEvaluator:
-    """Deterministic self-refinement promotion checks (no new event types)."""
-
     def evaluate(
         self,
         *,

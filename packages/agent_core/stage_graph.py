@@ -122,7 +122,6 @@ def stage_graph_from_workflow_profile(profile: Mapping[str, Any] | dict[str, Any
 
 
 def validate_stage_graph(graph: StageGraph, known_stages: frozenset[str]) -> None:
-    """Raise ``ValueError`` on cycles, unknown stages, or duplicate stage names."""
     seen: set[str] = set()
     names: set[str] = set()
     for node in graph.nodes:

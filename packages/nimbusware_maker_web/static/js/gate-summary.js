@@ -1,4 +1,3 @@
-/** Format gate summary payloads for Progress and Review tabs. */
 export function formatGateSummary(raw) {
   if (raw == null) return "";
   if (typeof raw === "string") return raw.trim();

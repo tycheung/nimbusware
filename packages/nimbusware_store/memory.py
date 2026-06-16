@@ -18,8 +18,6 @@ def _json_safe(obj: Any) -> Any:
 
 
 class InMemoryEventStore:
-    """Append-only store for unit tests and local dev without Postgres."""
-
     def __init__(self) -> None:
         self._rows: list[dict[str, Any]] = []
         self._seq = 0

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agent_core.slice_plan import SlicePlan
 from nimbusware_agent_tools.risk_caps import (
     AgentRiskCaps,
     resolve_agent_risk_caps,
@@ -21,7 +22,6 @@ from nimbusware_agent_tools.tools import (
     tool_write_file,
 )
 from nimbusware_env.env_flags import nimbusware_use_llm_enabled
-from agent_core.slice_plan import SlicePlan
 from nimbusware_orchestrator.slice_implement import SliceImplementResult
 
 

@@ -246,8 +246,6 @@ def normalize_entry(entry: Mapping[str, Any]) -> dict[str, Any]:
 
 
 class PersonaShelf:
-    """Business-area vs development-role shelves from YAML."""
-
     def __init__(self, shelves_path: Path) -> None:
         self._raw = load_yaml(shelves_path)
 

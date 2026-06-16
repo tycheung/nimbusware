@@ -36,8 +36,6 @@ def workflow_explainer_payload_table_rows_csv(
 
 
 class WorkflowExplainerExports:
-    """Named export/table/json helpers for one workflow explainer slug."""
-
     def __init__(self, slug: str) -> None:
         self.slug = slug
         self.cell = explainer_json_cell

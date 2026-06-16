@@ -69,8 +69,6 @@ class NetworkEgressPolicySnapshot(BasePayload):
 
 
 class PolicySnapshotV1(BasePayload):
-    """Immutable policy snapshot at run start."""
-
     finding_fix_strictness: FindingFixStrictnessSettings
     network_egress: NetworkEgressPolicySnapshot
 
@@ -140,8 +138,6 @@ class RunCompletedPayload(BasePayload):
 
 
 class RunEscalatedPayload(BasePayload):
-    """Human escalation / arbiter checkpoint."""
-
     actor_id: str = Field(min_length=1, description="Human or system actor identifier.")
     reason_code: str = Field(min_length=1)
     policy_snapshot_id: str | None = None
@@ -149,8 +145,6 @@ class RunEscalatedPayload(BasePayload):
 
 
 class GateOverriddenPayload(BasePayload):
-    """Recorded human override of a gate outcome."""
-
     actor_id: str = Field(min_length=1)
     reason_code: str = Field(min_length=1)
     stage_name: str = Field(min_length=1)
@@ -433,8 +427,6 @@ class ResourcePressureWarnPayload(BasePayload):
 
 
 class MemoryIndexedPayload(BasePayload):
-    """Audit record after a repo-scoped memory index rebuild."""
-
     repo_scope_hash: str = Field(min_length=8, max_length=64)
     generation_id: str = Field(min_length=8, max_length=64)
     chunks_added: int = Field(ge=0)
@@ -445,8 +437,6 @@ class MemoryIndexedPayload(BasePayload):
 
 
 class MemoryRetrievalEmittedPayload(BasePayload):
-    """Audit record when memory hits are injected into a stage."""
-
     stage_name: str = Field(min_length=1, max_length=256)
     slice_id: str | None = Field(default=None, max_length=128)
     query_digest: str = Field(min_length=8, max_length=64)

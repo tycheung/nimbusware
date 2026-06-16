@@ -176,8 +176,6 @@ class PersonaShelfPatchRequest(BaseModel):
 
 
 class ProbationReliabilityResponse(BaseModel):
-    """Aggregated agent-evaluator scores for probation automation."""
-
     model_config = ConfigDict(extra="forbid")
 
     persona_id: str

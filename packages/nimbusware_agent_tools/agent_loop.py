@@ -7,12 +7,12 @@ from pathlib import Path
 from typing import Any
 
 from agent_core.context_budget import truncate_for_llm_history
+from agent_core.prompt_tiers import assemble_prompt
+from agent_core.slice_plan import SlicePlan
 from nimbusware_agent_tools.prompts import build_agent_stable_prompt
 from nimbusware_agent_tools.risk_caps import AgentRiskCaps
 from nimbusware_agent_tools.runtime import AgentStep, _allowed_paths, _execute_step
 from nimbusware_agent_tools.tool_registry import agent_tool_list_prompt, is_agent_tool_enabled
-from agent_core.prompt_tiers import assemble_prompt
-from agent_core.slice_plan import SlicePlan
 
 ChatFn = Callable[..., dict[str, Any]]
 

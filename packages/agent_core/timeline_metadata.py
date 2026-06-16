@@ -1,5 +1,3 @@
-"""Run.created metadata helpers shared by orchestrator, API, and projections."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping

@@ -15,8 +15,6 @@ class PreflightHistoryEntry(BaseModel):
 
 
 class PreflightMetricsExportFilters(BaseModel):
-    """Filters echoed in ``metrics_export`` for external consumers."""
-
     model_config = ConfigDict(extra="forbid")
 
     workflow_profile: str | None = None
@@ -28,8 +26,6 @@ class PreflightMetricsExportFilters(BaseModel):
 
 
 class PreflightMetricsExport(BaseModel):
-    """Stable export payload for fleet preflight SLIs."""
-
     model_config = ConfigDict(extra="forbid")
 
     generated_at: str
@@ -55,8 +51,6 @@ class PreflightMetricsExport(BaseModel):
 
 
 class PreflightHistoryResponse(BaseModel):
-    """``GET /v1/preflight-history`` — bounded fleet aggregation."""
-
     model_config = ConfigDict(extra="forbid")
 
     entries: list[PreflightHistoryEntry]

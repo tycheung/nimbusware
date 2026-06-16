@@ -280,10 +280,16 @@ def maybe_apply_chat_replay_alignment(
     align = body.align_run_replay
     if seq is None and session_turns:
         for turn in reversed(session_turns):
-            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else None)
+            role = getattr(turn, "role", None) or (
+                turn.get("role") if isinstance(turn, dict) else None
+            )
             if role != "work_type_switch":
                 continue
-            payload = getattr(turn, "payload", None) if not isinstance(turn, dict) else turn.get("payload")
+            payload = (
+                getattr(turn, "payload", None)
+                if not isinstance(turn, dict)
+                else turn.get("payload")
+            )
             block = dict(payload) if isinstance(payload, dict) else {}
             if block.get("align_run_replay") and block.get("replay_from_seq") is not None:
                 seq = int(block["replay_from_seq"])

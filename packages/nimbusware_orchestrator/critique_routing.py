@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER
+from agent_core.critique_stages import CRITIQUE_STAGE_TO_PRODUCER  # noqa: F401 — re-export
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 
@@ -38,7 +38,6 @@ def taxonomy_keys_for_run_lifecycle(
     registry: RoleRegistry,
     router: UniversalCritiqueRouter,
 ) -> list[str]:
-    """Registry producers plus each producer's paired critics (sorted, unique)."""
     keys: set[str] = set()
     producers = registry_producer_taxonomy_keys(registry)
     keys.update(producers)
@@ -51,7 +50,6 @@ def critique_coverage_snapshot(
     registry: RoleRegistry,
     router: UniversalCritiqueRouter,
 ) -> dict[str, Any]:
-    """Freeze pairing coverage for auditability on ``run.created`` metadata."""
     producers = sorted(registry_producer_taxonomy_keys(registry))
     paired: list[str] = []
     unpaired: list[str] = []
@@ -80,7 +78,6 @@ def critique_coverage_snapshot(
 
 
 def assert_critique_coverage_complete(snapshot: dict[str, Any]) -> None:
-    """Raise ``ValueError`` when registry producers lack pairings."""
     unpaired = snapshot.get("unpaired_producers")
     if isinstance(unpaired, list) and unpaired:
         msg = (

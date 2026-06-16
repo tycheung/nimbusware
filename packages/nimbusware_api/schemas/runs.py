@@ -6,8 +6,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class RunSummary(BaseModel):
-    """Shape returned by ``build_run_summary`` (replay of ``list_run_events``)."""
-
     model_config = ConfigDict(extra="forbid")
 
     status: str
@@ -22,8 +20,6 @@ class RunSummary(BaseModel):
 
 
 class RunDetailResponse(RunSummary):
-    """``GET /v1/runs/{run_id}`` — summary plus identifier."""
-
     run_id: str
 
 
@@ -65,8 +61,6 @@ class RunTimelineResponse(BaseModel):
 
 
 class RunListResponse(BaseModel):
-    """``GET /v1/runs`` paginated list."""
-
     model_config = ConfigDict(extra="forbid")
 
     run_ids: list[str]

@@ -13,8 +13,6 @@ _ADMIN_INDEX = ADMIN_STATIC_DIR / "index.html"
 
 
 class AdminSPAStaticFiles(StaticFiles):
-    """Serve built assets; fall back to index.html for client-side routes."""
-
     async def get_response(self, path: str, scope: Scope) -> Response:
         try:
             return await super().get_response(path, scope)
