@@ -23,6 +23,10 @@ from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import append_gate_decision_event
 from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.scan_stub_critique_emit import (
+    ScanStubCritiqueConfig,
+    emit_scan_stub_critique_panel,
+)
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_orchestrator.workflow_scan_critique import (
     NetworkResilienceCritiqueBlock,
@@ -33,6 +37,16 @@ from nimbusware_store.protocol import EventStore
 
 NETWORK_RESILIENCE_CRITIQUE_STAGE = "implementation.network_resilience_critique"
 _NETWORK_RESILIENCE_CRITIC = "network_resilience_critic"
+
+_NETWORK_STUB_CONFIG = ScanStubCritiqueConfig(
+    stage_name=NETWORK_RESILIENCE_CRITIQUE_STAGE,
+    metadata_key="network_resilience_critique",
+    specialist_tax_key=_NETWORK_RESILIENCE_CRITIC,
+    evidence_scheme="net",
+    evidence_ok="net://ok",
+    mirror_evidence="net://paired_mirror",
+    metadata_scan_field="scan",
+)
 
 
 class NetworkResilienceLlmResponse(BaseModel):
@@ -83,67 +97,22 @@ def emit_stub_network_resilience_critique_panel(
     block: NetworkResilienceCritiqueBlock,
     unanimous_gate_enforce: bool = False,
 ) -> None:
-    tax_keys = critique_router.pairing_for("backend_writer")
-    if _NETWORK_RESILIENCE_CRITIC not in tax_keys:
-        return
-    owner = registry.resolve("backend_writer")
     failed, reasons = scan_summary_failed(scan_summary)
-    severity = severity_for_critique_floor(block.severity_floor)
     fixes = [_required_fix(reasons)] if reasons else []
-
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={"network_resilience_critique": {"branch": "stub", "scan": scan_summary}},
-            payload=StageStartedPayload(
-                stage_name=NETWORK_RESILIENCE_CRITIQUE_STAGE,
-                attempt=1,
-            ),
-        ),
+    emit_scan_stub_critique_panel(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        producer_tax_key="backend_writer",
+        scan_summary=scan_summary,
+        block=block,
+        config=_NETWORK_STUB_CONFIG,
+        failed=failed,
+        failing_items=reasons,
+        fixes=fixes,
+        unanimous_gate_enforce=unanimous_gate_enforce,
     )
-
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    for tax_key in tax_keys:
-        critic_role = registry.resolve(tax_key)
-        if tax_key == _NETWORK_RESILIENCE_CRITIC:
-            verdict = Verdict.FAIL if failed else Verdict.PASS
-            evidence = [f"net://{r}" for r in reasons] if reasons else ["net://ok"]
-            in_domain = True
-        else:
-            verdict = Verdict.PASS if not failed else Verdict.FAIL
-            evidence = ["net://paired_mirror"]
-            in_domain = False
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=verdict,
-            severity=severity if verdict == Verdict.FAIL else Severity.LOW,
-            owner_role=owner,
-            is_in_domain=in_domain,
-            evidence_refs=evidence,
-            required_fixes=fixes if verdict == Verdict.FAIL else [],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
-        )
-
-    gate = gate_decision_from_critic_verdicts(
-        critic_payloads,
-        stage_name=NETWORK_RESILIENCE_CRITIQUE_STAGE,
-        unanimous_pass_required=True,
-        enforce=unanimous_gate_enforce or failed,
-    )
-    append_gate_decision_event(store, run_id=run_id, payload=gate)
 
 
 def execute_network_resilience_critique_llm(
