@@ -15,8 +15,8 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
     await route.fulfill({
       contentType: "text/event-stream",
       body:
-        'event: theater\ndata: {"headline":"Planner reviewing scope","body_md":"Scope check"}\n\n' +
-        'event: theater\ndata: {"headline":"Writer applying patch","body_md":"Patch diff"}\n\n',
+        'event: theater\ndata: {"actor_display":"Planner","headline":"Planner reviewing scope","body_md":"Scope check"}\n\n' +
+        'event: theater\ndata: {"actor_display":"Writer","headline":"Writer applying patch","body_md":"Patch diff"}\n\n',
     });
   });
 
@@ -39,6 +39,7 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
   await expect(page.getByTestId("maker-chat-theater-line").first()).toContainText("Planner", {
     timeout: 10_000,
   });
+  await expect(page.locator(".theater-headline").first()).toContainText("Planner:");
   await expect(page.locator("#chat-thread .chat-thread-line--theater").first()).toBeVisible();
   expect(streamHits).toBeGreaterThan(0);
 });

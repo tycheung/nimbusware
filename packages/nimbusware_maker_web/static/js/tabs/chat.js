@@ -1,12 +1,32 @@
 import { apiJson, toast } from "../api-client.js";
-import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
+import { autopilotRibbonHtml, wireAutopilotRibbon } from "../autopilot-ribbon.js";
+import { openSseStream, parseSseJson } from "../sse-client.js";
+import { appendTheaterLine, theaterPayloadFromSse } from "../theater-renderer.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
 const RESUME_KEY = "maker_chat_resume_session";
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
-const THEATER_CAP = 12;
+const FOLLOW_LIVE_KEY = "maker_chat_theater_follow_live";
+const DEFAULT_PROFILE_KEY = "maker_default_autopilot_profile_id";
+const THEATER_CAP_DIGEST = 12;
+const THEATER_CAP_LIVE = 96;
+
+const TURN_ROLE_LABELS = {
+  user: "You",
+  classifier: "Classifier",
+  work_type_switch: "Mode",
+  run_status: "Run",
+  theater: "Agent",
+  system: "System",
+};
+
+function theaterCap() {
+  const follow = localStorage.getItem(FOLLOW_LIVE_KEY);
+  if (follow == null || follow === "1" || follow === "true") return THEATER_CAP_LIVE;
+  return THEATER_CAP_DIGEST;
+}
 
 function chatResumeEnabled() {
   const raw = localStorage.getItem(RESUME_KEY);
@@ -44,19 +64,32 @@ const ESCALATION_SLICE_OFFER =
 const ESCALATION_CAMPAIGN_OFFER =
   "Slice keeps replanning or failing — promote to an autonomous campaign for broader delivery?";
 
+function turnRoleLabel(turn) {
+  const role = turn.role || turn.kind || "system";
+  return TURN_ROLE_LABELS[role] || "System";
+}
+
 function renderTurnLine(thread, turn) {
+  const role = turn.role || turn.kind || "system";
   const li = document.createElement("li");
-  const role = turn.role === "user" ? "user" : "system";
-  li.className = `chat-thread-line chat-thread-line--${role}`;
+  li.className = `chat-thread-line chat-thread-line--${role === "user" ? "user" : "system"}`;
+  if (role !== "user") li.classList.add(`chat-thread-line--${role}`);
   li.dataset.turnId = turn.turn_id || "";
   if (turn.turn_id) li.dataset.testid = `maker-chat-turn-${turn.turn_id}`;
 
   const label = document.createElement("strong");
-  label.textContent = role === "user" ? "You" : "System";
+  label.textContent = turnRoleLabel(turn);
   li.appendChild(label);
   li.appendChild(document.createTextNode(` ${turn.text || ""}`));
 
-  if (turn.role === "user" && turn.turn_id) {
+  if (role === "classifier" && turn.payload?.work_type) {
+    const meta = document.createElement("span");
+    meta.className = "muted";
+    meta.textContent = ` → ${workTypeLabel(turn.payload.work_type)}`;
+    li.appendChild(meta);
+  }
+
+  if (role === "user" && turn.turn_id) {
     const actions = document.createElement("span");
     actions.className = "chat-turn-actions";
     const forkBtn = document.createElement("button");
@@ -76,11 +109,20 @@ function renderMessagesFromSession(root, session) {
   const thread = root.querySelector("#chat-thread");
   if (!thread) return;
   thread.replaceChildren();
+  const turns = session.turns?.length ? session.turns : null;
+  if (turns) {
+    for (const turn of turns) {
+      renderTurnLine(thread, turn);
+    }
+    return;
+  }
   for (const msg of session.messages || []) {
     renderTurnLine(thread, {
       turn_id: msg.turn_id,
-      role: msg.role === "user" ? "user" : "system",
+      role: msg.role === "user" ? "user" : msg.kind || "system",
+      kind: msg.kind,
       text: msg.text,
+      payload: msg.payload,
     });
   }
 }
@@ -132,13 +174,25 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
   mount.appendChild(card);
 }
 
+function branchDepth(graph, turnId) {
+  let depth = 0;
+  let cur = turnId;
+  while (cur) {
+    const edge = graph.edges?.find((e) => e.to_turn_id === cur);
+    if (!edge) break;
+    depth += 1;
+    cur = edge.from_turn_id;
+  }
+  return depth;
+}
+
 async function refreshBranchPanel(root, sessionId) {
   const panel = root.querySelector("#chat-branch-panel");
   if (!panel || !sessionId) return;
   try {
     const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`);
     panel.replaceChildren();
-    if (!graph.branches?.length) {
+    if (!graph.nodes?.length) {
       applySiblingBadges(root, graph);
       panel.classList.add("hidden");
       return;
@@ -148,30 +202,30 @@ async function refreshBranchPanel(root, sessionId) {
     title.textContent = "Conversation branches";
     panel.appendChild(title);
     const list = document.createElement("ul");
-    list.className = "chat-branch-list";
-    for (const branch of graph.branches) {
-      for (const childId of branch.child_turn_ids || []) {
-        const node = (graph.nodes || []).find((n) => n.turn_id === childId);
+    list.className = "chat-branch-tree";
+    const leaves = (graph.nodes || []).filter(
+      (n) => !graph.edges?.some((e) => e.from_turn_id === n.turn_id),
+    );
+    for (const leaf of leaves) {
+      let cur = leaf.turn_id;
+      const path = [];
+      while (cur) {
+        const node = graph.nodes.find((n) => n.turn_id === cur);
+        if (node) path.unshift(node);
+        const edge = graph.edges?.find((e) => e.to_turn_id === cur);
+        cur = edge?.from_turn_id;
+      }
+      for (const node of path) {
+        const depth = branchDepth(graph, node.turn_id);
         const li = document.createElement("li");
+        li.className = "chat-branch-tree__node";
+        li.style.paddingLeft = `${depth * 1.25}rem`;
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "linkish";
-        btn.textContent = node?.text?.slice(0, 60) || childId;
-        btn.dataset.testid = `maker-chat-branch-${childId}`;
+        btn.className = leaf.turn_id === node.turn_id ? "linkish branch-active" : "linkish";
+        btn.textContent = (node.text || node.turn_id).slice(0, 72);
+        btn.dataset.testid = `maker-chat-branch-${node.turn_id}`;
         btn.addEventListener("click", async () => {
-          const leaves = (graph.nodes || []).filter(
-            (n) => !graph.edges?.some((e) => e.from_turn_id === n.turn_id),
-          );
-          const leaf = leaves.find((n) => {
-            let cur = n.turn_id;
-            while (cur) {
-              if (cur === childId) return true;
-              const edge = graph.edges?.find((e) => e.to_turn_id === cur);
-              cur = edge?.from_turn_id;
-            }
-            return false;
-          });
-          if (!leaf) return;
           const updated = await apiJson(
             `/chat/sessions/${encodeURIComponent(sessionId)}/active-leaf`,
             {
@@ -185,6 +239,12 @@ async function refreshBranchPanel(root, sessionId) {
           toast("Switched branch", "success");
         });
         li.appendChild(btn);
+        if (Number(node.sibling_count || 0) > 0) {
+          const badge = document.createElement("span");
+          badge.className = "chat-sibling-badge muted";
+          badge.textContent = `${Number(node.sibling_count) + 1} branches`;
+          li.appendChild(badge);
+        }
         list.appendChild(li);
       }
     }
@@ -193,6 +253,41 @@ async function refreshBranchPanel(root, sessionId) {
   } catch {
     panel.classList.add("hidden");
   }
+}
+
+async function refreshSessionSidebar(root, projectId, activeSessionId, onSelect) {
+  const list = root.querySelector("#chat-session-list");
+  if (!list || !projectId) return;
+  try {
+    const sessions = await apiJson(`/chat/sessions?project_id=${encodeURIComponent(projectId)}`);
+    list.replaceChildren();
+    const sorted = [...(sessions || [])].sort(
+      (a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")),
+    );
+    for (const session of sorted) {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = session.session_id === activeSessionId ? "chat-session-item chat-session-item--active" : "chat-session-item";
+      btn.dataset.testid = `maker-chat-session-${session.session_id}`;
+      const title = session.title || `Session ${String(session.session_id).slice(0, 8)}`;
+      btn.textContent = title;
+      btn.title = session.updated_at || "";
+      btn.addEventListener("click", () => onSelect(session.session_id));
+      li.appendChild(btn);
+      list.appendChild(li);
+    }
+  } catch {
+    list.replaceChildren();
+    const err = document.createElement("li");
+    err.className = "muted";
+    err.textContent = "Sessions unavailable";
+    list.appendChild(err);
+  }
+}
+
+function defaultAutopilotProfileId() {
+  return localStorage.getItem(DEFAULT_PROFILE_KEY)?.trim() || "";
 }
 
 async function startRunFromSession(sessionId, workType, root, projectId) {
@@ -205,6 +300,8 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
     work_type: workType,
     work_type_source: source,
   };
+  const profileId = defaultAutopilotProfileId();
+  if (profileId) startPayload.autopilot_profile_id = profileId;
   if (message) {
     startPayload.requirements = { business_prompt: message };
   }
@@ -228,8 +325,9 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
   syncRunIdToShell(runId);
   const thread = root.querySelector("#chat-thread");
   if (thread && body.turn) {
-    renderTurnLine(thread, { ...body.turn, role: "system" });
+    renderTurnLine(thread, body.turn);
   }
+  ensureRunCard(root, runId, { workType, status: "running" });
   window.location.hash = `/chat?run_id=${encodeURIComponent(runId)}`;
   toast(`${workTypeLabel(workType)} run started`, "success");
   root.querySelector("#chat-classifier-mount")?.replaceChildren();
@@ -237,13 +335,18 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
   return runId;
 }
 
-async function switchWorkType(root, sessionId, turnId, workType) {
+async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq } = {}) {
+  const payload = { work_type: workType };
+  if (replayFromSeq != null) {
+    payload.align_run_replay = true;
+    payload.replay_from_seq = replayFromSeq;
+  }
   const updated = await apiJson(
     `/chat/sessions/${encodeURIComponent(sessionId)}/turns/${encodeURIComponent(turnId)}/switch-mode`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ work_type: workType }),
+      body: JSON.stringify(payload),
     },
   );
   const select = root.querySelector("#chat-work-type");
@@ -268,27 +371,78 @@ function applySiblingBadges(root, graph) {
   }
 }
 
-function appendThreadRunLine(root, text, { gateBlock = false } = {}) {
+function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) {
   const thread = root.querySelector("#chat-thread");
-  if (!thread || !text) return;
-  const li = document.createElement("li");
-  li.className = "chat-thread-line chat-thread-line--theater";
-  if (gateBlock) li.classList.add("chat-thread-line--gate-block");
-  li.dataset.testid = gateBlock ? "maker-chat-gate-line" : "maker-chat-theater-line";
-  li.textContent = String(text).slice(0, 500);
-  thread.appendChild(li);
-  const theaterLines = thread.querySelectorAll(".chat-thread-line--theater");
-  while (theaterLines.length > THEATER_CAP) {
-    theaterLines[0].remove();
+  if (!thread || !runId) return null;
+  let card = thread.querySelector(`[data-run-id="${runId}"]`);
+  if (card) return card;
+  card = document.createElement("details");
+  card.className = "chat-run-card";
+  card.dataset.runId = runId;
+  card.dataset.testid = `maker-chat-run-card-${runId}`;
+  card.open = true;
+  const summary = document.createElement("summary");
+  summary.className = "chat-run-card__header";
+  summary.dataset.testid = "maker-chat-run-card-header";
+  const wt = document.createElement("span");
+  wt.className = "chat-run-card__work-type";
+  wt.textContent = workTypeLabel(workType) || "Run";
+  const st = document.createElement("span");
+  st.className = "chat-run-card__status muted";
+  st.dataset.runStatus = "1";
+  st.textContent = status;
+  const trust = document.createElement("span");
+  trust.className = "chat-run-card__trust muted";
+  trust.dataset.runTrust = "1";
+  trust.textContent = "Trust …";
+  summary.append(wt, st, trust);
+  card.appendChild(summary);
+  const theaterList = document.createElement("ul");
+  theaterList.className = "chat-run-card__theater";
+  theaterList.dataset.testid = "maker-chat-run-theater";
+  card.appendChild(theaterList);
+  thread.appendChild(card);
+  loadRunCardTrust(root, runId);
+  return card;
+}
+
+async function loadRunCardTrust(root, runId) {
+  const card = root.querySelector(`[data-run-id="${runId}"]`);
+  const trust = card?.querySelector("[data-run-trust]");
+  if (!trust) return;
+  try {
+    const ap = await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`);
+    trust.textContent = `Trust ${ap.level ?? "?"} · ${ap.name || "Custom"}`;
+  } catch {
+    trust.textContent = "Trust —";
   }
-  thread.scrollTop = thread.scrollHeight;
+}
+
+function trimTheaterLines(container, cap) {
+  if (!container) return;
+  const lines = container.querySelectorAll(".theater-line, .chat-thread-line--theater");
+  while (lines.length > cap) {
+    lines[0].remove();
+  }
+}
+
+function appendTheaterToThread(root, runId, msg) {
+  const card = ensureRunCard(root, runId, {});
+  const list = card?.querySelector(".chat-run-card__theater") || root.querySelector("#chat-thread");
+  const li = appendTheaterLine(list, msg, {
+    testid: msg.data_testid,
+    lineClass: "theater-line chat-thread-line--theater",
+  });
+  if (msg.message_kind === "gate" && msg.severity === "block") {
+    li?.classList.add("chat-thread-line--gate-block");
+  }
+  const cap = theaterCap();
+  trimTheaterLines(list, cap);
+  const thread = root.querySelector("#chat-thread");
+  if (thread) thread.scrollTop = thread.scrollHeight;
   const archive = root.querySelector("#chat-theater-mount .chat-theater-lines");
-  if (archive) {
-    const copy = li.cloneNode(true);
-    archive.appendChild(copy);
-    while (archive.children.length > THEATER_CAP) {
-      archive.removeChild(archive.firstChild);
-    }
+  if (archive && li) {
+    archive.appendChild(li.cloneNode(true));
   }
 }
 
@@ -302,6 +456,10 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
       ul.className = "chat-theater-lines";
       mount.appendChild(ul);
     }
+    const exportLink = mount.querySelector(".chat-theater-export");
+    if (exportLink) {
+      exportLink.href = `/v1/runs/${encodeURIComponent(runId)}/theater/export`;
+    }
   }
   let escalationQueued = false;
 
@@ -313,10 +471,10 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
   };
 
   const handleTheaterPayload = (data) => {
-    const text = theaterLineText(data);
-    const gateBlock = data?.message_kind === "gate" && data?.severity === "block";
-    if (text) appendThreadRunLine(root, text, { gateBlock });
-    if (gateBlock) onGateBlock();
+    const msg = theaterPayloadFromSse(data);
+    if (!msg || (!msg.headline && !msg.body_md)) return;
+    appendTheaterToThread(root, runId, msg);
+    if (msg.message_kind === "gate" && msg.severity === "block") onGateBlock();
   };
 
   return openSseStream(`/runs/${encodeURIComponent(runId)}/theater/stream`, {
@@ -412,8 +570,8 @@ async function maybeOfferPatchEscalation(root, runId, sessionId) {
     btn.textContent = "Switch to Slice";
     btn.dataset.testid = "maker-chat-escalate-slice";
     btn.addEventListener("click", async () => {
-      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast(
-        (el) => el.classList.contains("chat-thread-line--user"),
+      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast((el) =>
+        el.classList.contains("chat-thread-line--user"),
       );
       const turnId = userTurn?.dataset?.turnId;
       if (sessionId && turnId) await switchWorkType(root, sessionId, turnId, "slice");
@@ -437,16 +595,75 @@ async function steerActiveRun(root, runId, message) {
   toast("Steering queued", "success");
 }
 
+function wireChatOperatorRibbons(root, runId) {
+  const ribbons = root.querySelector("#chat-operator-ribbons");
+  if (!ribbons || !runId) return;
+  if (ribbons.dataset.wired === runId) return;
+  ribbons.dataset.wired = runId;
+  ribbons.classList.remove("hidden");
+
+  root.querySelector("#chat-interjection-next")?.addEventListener("click", async () => {
+    const msg = root.querySelector("#chat-interjection-message")?.value?.trim();
+    if (!msg) return toast("Enter a message", "error");
+    try {
+      await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, priority: "next" }),
+      });
+      toast("Queued", "success");
+      root.querySelector("#chat-interjection-message").value = "";
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+
+  root.querySelector("#chat-interjection-last")?.addEventListener("click", async () => {
+    const msg = root.querySelector("#chat-interjection-message")?.value?.trim();
+    if (!msg) return toast("Enter a message", "error");
+    try {
+      await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, priority: "last" }),
+      });
+      toast("Queued", "success");
+      root.querySelector("#chat-interjection-message").value = "";
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+
+  wireAutopilotRibbon(root, runId);
+  root.addEventListener(
+    "autopilot-updated",
+    () => loadRunCardTrust(root, runId),
+    { once: false },
+  );
+  root.addEventListener(
+    "autopilot-loaded",
+    (ev) => {
+      const card = root.querySelector(`[data-run-id="${runId}"] [data-run-trust]`);
+      if (card && ev.detail) {
+        card.textContent = `Trust ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
+      }
+    },
+    { once: true },
+  );
+}
+
 function mountAutopilotLadderHint(root) {
   if (localStorage.getItem(AUTOPILOT_LADDER_HINT_KEY) === "1") return;
   const hint = document.createElement("aside");
   hint.className = "panel chat-autopilot-hint";
   hint.dataset.testid = "maker-chat-autopilot-hint";
+  const slider = root.querySelector("[data-autopilot-slider]");
+  const level = slider?.value || "8";
   const p = document.createElement("p");
   p.innerHTML =
-    "<strong>Autonomy ladder (Nimble autopilot ~8):</strong> " +
+    `<strong>Autonomy ladder (trust ~${level}):</strong> ` +
     "Fix a bug (patch) → Build a feature (micro-slice) → Build an app (factory). " +
-    "Chat offers escalation when a gate fails.";
+    "Adjust trust in the ribbon when a run is active.";
   hint.appendChild(p);
   const dismiss = document.createElement("button");
   dismiss.type = "button";
@@ -461,46 +678,83 @@ function mountAutopilotLadderHint(root) {
   root.prepend(hint);
 }
 
+function wireFollowLiveToggle(root) {
+  const box = root.querySelector("#chat-theater-follow-live");
+  if (!box) return;
+  const stored = localStorage.getItem(FOLLOW_LIVE_KEY);
+  box.checked = stored == null || stored === "1" || stored === "true";
+  box.addEventListener("change", () => {
+    localStorage.setItem(FOLLOW_LIVE_KEY, box.checked ? "1" : "0");
+  });
+}
+
 export async function mountChat(root) {
   root.innerHTML = `
-    <form id="chat-form" class="chat-form">
-      <label>Project
-        <select name="project_id" id="chat-project-select" data-testid="maker-chat-project-select" required></select>
-      </label>
-      <label>Work type
-        <select name="work_type" id="chat-work-type" data-testid="maker-chat-work-type-select">
-          ${WORK_TYPES.map((wt) => `<option value="${wt}">${workTypeLabel(wt)}</option>`).join("")}
-        </select>
-      </label>
-      <label>Message
-        <textarea name="message" id="chat-message" rows="4" required
-          data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature…"></textarea>
-      </label>
-      <fieldset class="chat-attachments">
-        <legend>Attachments (optional)</legend>
-        <label>File paths
-          <textarea name="target_paths" id="chat-target-paths" rows="2"
-            data-testid="maker-chat-target-path" placeholder="src/foo.py"></textarea>
-        </label>
-        <label>Failing test
-          <input name="failing_test" id="chat-failing-test" type="text"
-            data-testid="maker-chat-failing-test" placeholder="tests/test_foo.py::test_bar" />
-        </label>
-        <label>Stack trace
-          <textarea name="stack_trace" id="chat-stack-trace" rows="3"
-            data-testid="maker-chat-stack-trace" placeholder="AssertionError: …"></textarea>
-        </label>
-      </fieldset>
-      <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
-    </form>
-    <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
-    <details id="chat-theater-mount" class="chat-theater-mount hidden" data-testid="maker-chat-theater-mount">
-      <summary>Full run log (archive)</summary>
-    </details>
-    <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
-    <div id="chat-classifier-mount"></div>`;
+    <div class="chat-layout">
+      <aside class="chat-session-sidebar panel" data-testid="maker-chat-session-sidebar">
+        <h4>Sessions</h4>
+        <ul id="chat-session-list" class="chat-session-list"></ul>
+        <button type="button" id="chat-new-session" class="linkish" data-testid="maker-chat-new-session">New session</button>
+      </aside>
+      <div class="chat-main">
+        <section id="chat-operator-ribbons" class="chat-operator-ribbons hidden" data-testid="maker-chat-operator-ribbons">
+          <div class="chat-interjection-ribbon panel" data-testid="maker-chat-interjection-ribbon">
+            <h4>Interjection</h4>
+            <textarea id="chat-interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-chat-interjection-input"></textarea>
+            <div class="actions">
+              <button type="button" id="chat-interjection-next" data-testid="maker-chat-interjection-next">Next</button>
+              <button type="button" id="chat-interjection-last" data-testid="maker-chat-interjection-last">Last</button>
+            </div>
+          </div>
+          ${autopilotRibbonHtml({ compact: true })}
+        </section>
+        <form id="chat-form" class="chat-form">
+          <label>Project
+            <select name="project_id" id="chat-project-select" data-testid="maker-chat-project-select" required></select>
+          </label>
+          <label>Work type
+            <select name="work_type" id="chat-work-type" data-testid="maker-chat-work-type-select">
+              ${WORK_TYPES.map((wt) => `<option value="${wt}">${workTypeLabel(wt)}</option>`).join("")}
+            </select>
+          </label>
+          <label>Message
+            <textarea name="message" id="chat-message" rows="4" required
+              data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature…"></textarea>
+          </label>
+          <fieldset class="chat-attachments">
+            <legend>Attachments (optional)</legend>
+            <label>File paths
+              <textarea name="target_paths" id="chat-target-paths" rows="2"
+                data-testid="maker-chat-target-path" placeholder="src/foo.py"></textarea>
+            </label>
+            <label>Failing test
+              <input name="failing_test" id="chat-failing-test" type="text"
+                data-testid="maker-chat-failing-test" placeholder="tests/test_foo.py::test_bar" />
+            </label>
+            <label>Stack trace
+              <textarea name="stack_trace" id="chat-stack-trace" rows="3"
+                data-testid="maker-chat-stack-trace" placeholder="AssertionError: …"></textarea>
+            </label>
+          </fieldset>
+          <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
+        </form>
+        <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
+        <details id="chat-theater-mount" class="chat-theater-mount hidden" data-testid="maker-chat-theater-mount">
+          <summary>
+            Full run log (archive)
+            <label class="chat-follow-live">
+              <input type="checkbox" id="chat-theater-follow-live" data-testid="maker-chat-theater-follow-live" checked />
+              Follow live
+            </label>
+            <a class="chat-theater-export linkish" href="#" download>Export transcript</a>
+          </summary>
+        </details>
+        <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
+        <div id="chat-classifier-mount"></div>
+      </div>
+    </div>`;
 
-  mountAutopilotLadderHint(root);
+  wireFollowLiveToggle(root);
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#chat-project-select");
@@ -535,9 +789,21 @@ export async function mountChat(root) {
   }
 
   let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";
-  let lastClassification = null;
   let startPending = false;
   let theaterHandle = null;
+  let forkReplaySeq = null;
+
+  async function loadSession(sid) {
+    sessionId = sid;
+    sessionStorage.setItem(SESSION_KEY, sessionId);
+    const existing = await apiJson(
+      `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+    );
+    renderMessagesFromSession(root, existing);
+    await refreshBranchPanel(root, sessionId);
+    const projectId = String(root.querySelector("#chat-project-select")?.value || "");
+    await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+  }
 
   async function ensureSession(projectId) {
     if (!chatResumeEnabled()) {
@@ -545,10 +811,13 @@ export async function mountChat(root) {
     }
     if (sessionId) {
       try {
-        const existing = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`);
+        const existing = await apiJson(
+          `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+        );
         if (existing.project_id === projectId) {
           renderMessagesFromSession(root, existing);
           await refreshBranchPanel(root, sessionId);
+          await refreshSessionSidebar(root, projectId, sessionId, loadSession);
           return sessionId;
         }
       } catch {
@@ -562,8 +831,26 @@ export async function mountChat(root) {
     });
     sessionId = String(session.session_id || "");
     sessionStorage.setItem(SESSION_KEY, sessionId);
+    await refreshSessionSidebar(root, projectId, sessionId, loadSession);
     return sessionId;
   }
+
+  root.querySelector("#chat-new-session")?.addEventListener("click", async () => {
+    const projectId = String(root.querySelector("#chat-project-select")?.value || "");
+    if (!projectId) return toast("Select a project", "error");
+    sessionId = "";
+    sessionStorage.removeItem(SESSION_KEY);
+    await ensureSession(projectId);
+    root.querySelector("#chat-thread")?.replaceChildren();
+    toast("New session", "success");
+  });
+
+  sel?.addEventListener("change", async () => {
+    const projectId = String(sel.value || "");
+    sessionId = "";
+    sessionStorage.removeItem(SESSION_KEY);
+    if (projectId) await refreshSessionSidebar(root, projectId, "", loadSession);
+  });
 
   async function runStart(workType) {
     if (startPending || !sessionId) return;
@@ -575,6 +862,8 @@ export async function mountChat(root) {
       const runId = await startRunFromSession(sessionId, workType, root, projectId);
       theaterHandle?.close();
       theaterHandle = bindChatTheaterForRun(root, runId, sessionId, (wt) => runStart(wt));
+      wireChatOperatorRibbons(root, runId);
+      mountAutopilotLadderHint(root);
       await offerRunEscalations(runId);
     } catch (e) {
       toast(String(e.message || e), "error");
@@ -585,14 +874,22 @@ export async function mountChat(root) {
   }
 
   root.querySelector("#chat-thread")?.addEventListener("chat-fork", async (ev) => {
-    const turnId = ev.target?.closest("[data-turn-id]")?.dataset?.turnId;
+    const turnEl = ev.target?.closest("[data-turn-id]");
+    const turnId = turnEl?.dataset?.turnId;
     if (!turnId || !sessionId) return;
+    const align = window.confirm("Fork from here? OK = new branch. Cancel = abort.");
+    if (!align) return;
+    const alignReplay = window.confirm("Align execution replay from this turn on next mode switch?");
     try {
       const updated = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/fork`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ turn_id: turnId }),
       });
+      if (alignReplay) {
+        const turn = (updated.turns || []).find((t) => t.turn_id === turnId);
+        forkReplaySeq = turn?.event_seq ?? null;
+      }
       renderMessagesFromSession(root, updated);
       await refreshBranchPanel(root, sessionId);
       toast("Forked — next message starts a new branch", "info");
@@ -610,8 +907,11 @@ export async function mountChat(root) {
   }
 
   if (activeRunId) {
+    ensureRunCard(root, activeRunId, { status: "active" });
     theaterHandle?.close();
     theaterHandle = bindChatTheaterForRun(root, activeRunId, sessionId, (wt) => runStart(wt));
+    wireChatOperatorRibbons(root, activeRunId);
+    mountAutopilotLadderHint(root);
   }
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {
@@ -655,12 +955,13 @@ export async function mountChat(root) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message, attachments }),
       });
-      const session = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`);
+      const session = await apiJson(
+        `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+      );
       renderMessagesFromSession(root, session);
       await refreshBranchPanel(root, sessionId);
 
       const classification = turnResp.classification || {};
-      lastClassification = classification;
 
       if (dropdownWt !== "auto") {
         startPending = false;
