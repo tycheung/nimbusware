@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from nimbusware_orchestrator._pipeline._helpers import EffectiveUniversalCritique
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 
 @dataclass(frozen=True)
@@ -55,3 +55,25 @@ def emit_role_critique_optional(
             host._critique_router,
             run_id=run_id,
         )
+
+
+def emit_role_critique_optional_for_host(
+    host: Any,
+    run_id: UUID,
+    *,
+    eff: EffectiveUniversalCritique,
+    spec: RoleCritiqueEmitSpec,
+    verifier_exit_code: int,
+    log_snippet: str,
+) -> None:
+    from nimbusware_orchestrator._pipeline._helpers import ollama_runtime_from_host
+
+    emit_role_critique_optional(
+        host,
+        run_id,
+        eff=eff,
+        spec=spec,
+        verifier_exit_code=verifier_exit_code,
+        log_snippet=log_snippet,
+        ollama_runtime_from_host=ollama_runtime_from_host,
+    )

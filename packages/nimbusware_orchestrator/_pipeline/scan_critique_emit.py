@@ -84,3 +84,29 @@ def emit_scan_critique_optional(
             **({"producer_tax_key": producer} if spec.with_producer and producer else {}),
         )
     return gate_fail_for_stage(host._store.list_run_events(str(run_id)), spec.stage_id)
+
+
+def emit_scan_critique_optional_for_host(
+    host: Any,
+    run_id: UUID,
+    *,
+    workspace: Path | None,
+    workflow_profile: str | None,
+    sg_snapshot: dict[str, Any] | None,
+    spec: ScanCritiqueEmitSpec,
+) -> bool:
+    from nimbusware_orchestrator._pipeline._helpers import (
+        gate_fail_for_stage,
+        ollama_runtime_from_host,
+    )
+
+    return emit_scan_critique_optional(
+        host,
+        run_id,
+        workspace=workspace,
+        workflow_profile=workflow_profile,
+        sg_snapshot=sg_snapshot,
+        spec=spec,
+        gate_fail_for_stage=gate_fail_for_stage,
+        ollama_runtime_from_host=ollama_runtime_from_host,
+    )

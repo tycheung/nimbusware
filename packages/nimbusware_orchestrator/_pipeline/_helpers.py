@@ -55,6 +55,15 @@ from nimbusware_executor.fetch import EgressResponseTooLarge
 from nimbusware_extensions import SelfRefinementPolicy, load_self_refinement_policy
 from nimbusware_extensions.phase2 import AgentEvaluator, agent_evaluator_score_band
 from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
+from nimbusware_orchestrator._pipeline.role_critique_emit import (
+    RoleCritiqueEmitSpec,
+    emit_role_critique_optional_for_host,
+)
+from nimbusware_orchestrator._pipeline.scan_critique_emit import (
+    ScanCritiqueEmitSpec,
+    emit_scan_critique_optional_for_host,
+    network_resilience_pre_emit,
+)
 from nimbusware_orchestrator.anti_deadlock import (
     load_anti_deadlock_settings,
     should_emit_anti_deadlock_escalation,
@@ -401,6 +410,7 @@ __all__ = (
     "PLANNER_CRITIQUE_STAGE",
     "Path",
     "RoleRegistry",
+    "RoleCritiqueEmitSpec",
     "RunCreatedEvent",
     "RunCreatedPayload",
     "RunDispatchTask",
@@ -408,6 +418,7 @@ __all__ = (
     "RunStartedPayload",
     "ScraperFetchConfig",
     "SelfRefinementEvaluator",
+    "ScanCritiqueEmitSpec",
     "SelfRefinementLoopSignalledEvent",
     "SelfRefinementLoopSignalledPayload",
     "SelfRefinementPolicy",
@@ -446,6 +457,8 @@ __all__ = (
     "emit_live_integration_adapter_writer_stage",
     "emit_refactor_post_stitch_stage_and_critique",
     "emit_refactor_stage_and_critique",
+    "emit_role_critique_optional_for_host",
+    "emit_scan_critique_optional_for_host",
     "emit_stub_frontend_writer_critique_panel",
     "emit_stub_implementation_critique_panel",
     "emit_stub_integration_adapter_writer_stage",
@@ -502,6 +515,7 @@ __all__ = (
     "max_open_finding_severity",
     "network_resilience_critique_effective",
     "network_resilience_critique_llm_branch_effective",
+    "network_resilience_pre_emit",
     "os",
     "parallel_group_members",
     "parallel_critics_enabled",
