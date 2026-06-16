@@ -2,17 +2,25 @@
   "checks": [
     "manifest_json_ok",
     "fixture_dir_ok",
+    "python_files=2",
     "benchmark_start",
     "run_created",
+    "slices_total=1",
+    "gates_passed=1",
+    "gates_failed=0",
     "min_pass_rate_ok"
   ],
+  "duration_sec": 21.747,
+  "fixture_root": "tests/fixtures/swe_bench/repo",
   "gates_failed": 0,
   "gates_passed": 1,
+  "manifest_path": "tests/fixtures/swe_bench/manifest.json",
   "message": "micro_slice benchmark completed",
   "mode": "run",
   "ok": true,
   "pass_rate": 1.0,
-  "published_at": "2026-06-01T00:00:00Z",
+  "published_at": "2026-06-16T20:38:05.469726Z",
+  "run_id": "b3f291bb-0c39-443a-a291-5e529e3b72a1",
   "slices_total": 1,
   "workflow_profile": "micro_slice"
 }

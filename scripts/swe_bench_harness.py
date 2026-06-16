@@ -16,6 +16,55 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_MANIFEST = REPO_ROOT / "tests" / "fixtures" / "swe_bench" / "manifest.json"
 
 
+def _repo_relative_path(path: str | Path, repo_root: Path) -> str:
+    if not path:
+        return ""
+    p = Path(path)
+    try:
+        return p.resolve().relative_to(repo_root.resolve()).as_posix()
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
+def _write_benchmark_snapshots(
+    *,
+    repo_root: Path,
+    summary: SweBenchSummary,
+    store: Any | None = None,
+) -> None:
+    from datetime import datetime, timezone
+
+    out_dir = repo_root / "benchmarks"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    published_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    payload = asdict(summary)
+    payload["manifest_path"] = _repo_relative_path(summary.manifest_path or "", repo_root)
+    payload["fixture_root"] = _repo_relative_path(summary.fixture_root or "", repo_root)
+    payload["published_at"] = published_at
+    swe_path = out_dir / "latest_swe_bench.json"
+    swe_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    summary.checks.append(f"wrote={swe_path.name}")
+
+    if store is None or not summary.run_id:
+        return
+    from nimbusware_orchestrator.fleet_critic_reliability import critic_reliability_summary_from_events
+
+    event_rows = store.list_run_events(str(summary.run_id))
+    critic = critic_reliability_summary_from_events(event_rows)
+    critic_path = out_dir / "latest_critic_reliability.json"
+    critic_payload = {
+        **critic,
+        "published_at": published_at,
+        "snapshot": True,
+        "source": "swe_bench_harness",
+        "source_run_id": str(summary.run_id),
+        "runs_scanned": 1,
+        "runs_with_critics": 1 if int(critic.get("critic_verdict_count") or 0) > 0 else 0,
+    }
+    critic_path.write_text(json.dumps(critic_payload, indent=2, sort_keys=True), encoding="utf-8")
+    summary.checks.append(f"wrote={critic_path.name}")
+
+
 @dataclass
 class SweBenchSummary:
     ok: bool
@@ -85,7 +134,7 @@ def _run_micro_slice_benchmark(
     fixture: Path,
     workflow_profile: str,
     manifest: dict[str, Any] | None = None,
-) -> SweBenchSummary:
+) -> tuple[SweBenchSummary, Any]:
     checks: list[str] = ["benchmark_start"]
     os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     os.environ.setdefault("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
@@ -125,7 +174,7 @@ def _run_micro_slice_benchmark(
     checks.append(f"gates_passed={gates_passed}")
     checks.append(f"gates_failed={gates_failed}")
 
-    return SweBenchSummary(
+    summary = SweBenchSummary(
         ok=True,
         mode="run",
         manifest_path="",
@@ -140,6 +189,7 @@ def _run_micro_slice_benchmark(
         duration_sec=round(duration_sec, 3),
         run_id=str(run_id),
     )
+    return summary, _store
 
 
 def run_harness(
@@ -188,7 +238,7 @@ def run_harness(
         )
 
     root = (repo_root or REPO_ROOT).resolve()
-    summary = _run_micro_slice_benchmark(
+    summary, bench_store = _run_micro_slice_benchmark(
         repo_root=root,
         fixture=fixture,
         workflow_profile=profile,
@@ -212,12 +262,8 @@ def run_harness(
         else:
             summary.checks.append("min_pass_rate_ok")
 
-    out_dir = root / "benchmarks"
     if os.environ.get("NIMBUSWARE_SWE_BENCH_WRITE_JSON", "").lower() in ("1", "true", "yes"):
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "latest_swe_bench.json"
-        out_path.write_text(json.dumps(asdict(summary), indent=2), encoding="utf-8")
-        summary.checks.append(f"wrote={out_path.name}")
+        _write_benchmark_snapshots(repo_root=root, summary=summary, store=bench_store)
 
     return summary
 

@@ -125,3 +125,14 @@ def test_swe_bench_writes_json_snapshot() -> None:
     # Harness writes under repo benchmarks/; verify flag recorded in summary.
     summary = json.loads(proc.stdout)
     assert any(str(c).startswith("wrote=") for c in summary.get("checks", []))
+    swe_path = ROOT / "benchmarks" / "latest_swe_bench.json"
+    assert swe_path.is_file()
+    body = json.loads(swe_path.read_text(encoding="utf-8"))
+    assert body["run_id"]
+    assert body["manifest_path"].startswith("tests/fixtures/swe_bench/")
+    assert "published_at" in body
+    critic_path = ROOT / "benchmarks" / "latest_critic_reliability.json"
+    assert critic_path.is_file()
+    critic = json.loads(critic_path.read_text(encoding="utf-8"))
+    assert critic.get("source") == "swe_bench_harness"
+    assert critic.get("source_run_id") == body["run_id"]

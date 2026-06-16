@@ -27,6 +27,20 @@ def _load_factory_weekly_runner():
 def _write_critic_reliability_snapshot() -> Path:
     from datetime import datetime, timezone
 
+    swe_path = _BENCH_DIR / "latest_swe_bench.json"
+    critic_path = _BENCH_DIR / "latest_critic_reliability.json"
+    if swe_path.is_file() and critic_path.is_file():
+        try:
+            swe = json.loads(swe_path.read_text(encoding="utf-8"))
+            critic = json.loads(critic_path.read_text(encoding="utf-8"))
+            if (
+                critic.get("source") == "swe_bench_harness"
+                and critic.get("source_run_id")
+                and critic.get("source_run_id") == swe.get("run_id")
+            ):
+                return critic_path
+        except json.JSONDecodeError:
+            pass
     from nimbusware_iam.constants import DEFAULT_TENANT_ID
     from nimbusware_orchestrator.fleet_critic_reliability import tenant_critic_reliability_metrics
     from nimbusware_store.memory import InMemoryEventStore
@@ -43,7 +57,10 @@ def _write_critic_reliability_snapshot() -> Path:
         **metrics,
         "published_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "snapshot": True,
+        "source": "fleet_empty_fallback",
     }
+    if int(metrics.get("runs_scanned") or 0) == 0:
+        payload["note"] = "No fleet runs in empty store; regenerate via swe_bench_harness --run with NIMBUSWARE_SWE_BENCH_WRITE_JSON=1"
     out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     return out
 
