@@ -290,7 +290,13 @@ function defaultAutopilotProfileId() {
   return localStorage.getItem(DEFAULT_PROFILE_KEY)?.trim() || "";
 }
 
-async function startRunFromSession(sessionId, workType, root, projectId) {
+async function startRunFromSession(
+  sessionId,
+  workType,
+  root,
+  projectId,
+  { replayFromSeq, alignRunReplay } = {},
+) {
   const message = root.querySelector("#chat-message")?.value?.trim() || "";
   const patchContext = attachmentFields(root);
   const dropdown = root.querySelector("#chat-work-type")?.value || "auto";
@@ -307,6 +313,10 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
   }
   if (workType === "patch" && Object.keys(patchContext).length) {
     startPayload.patch_context = patchContext;
+  }
+  if (alignRunReplay && replayFromSeq != null) {
+    startPayload.align_run_replay = true;
+    startPayload.replay_from_seq = replayFromSeq;
   }
 
   const body = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/start`, {
@@ -329,7 +339,14 @@ async function startRunFromSession(sessionId, workType, root, projectId) {
   }
   ensureRunCard(root, runId, { workType, status: "running" });
   window.location.hash = `/chat?run_id=${encodeURIComponent(runId)}`;
-  toast(`${workTypeLabel(workType)} run started`, "success");
+  if (body.replay_alignment?.replay_started) {
+    toast(
+      `${workTypeLabel(workType)} run started (replay from seq ${body.replay_alignment.from_store_seq})`,
+      "success",
+    );
+  } else {
+    toast(`${workTypeLabel(workType)} run started`, "success");
+  }
   root.querySelector("#chat-classifier-mount")?.replaceChildren();
   root.querySelector("#chat-message").value = "";
   return runId;
@@ -352,7 +369,12 @@ async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq
   const select = root.querySelector("#chat-work-type");
   if (select) select.value = workType;
   renderMessagesFromSession(root, updated);
-  toast(`Mode: ${workTypeLabel(workType)}`, "success");
+  if (replayFromSeq != null) {
+    toast(`Mode: ${workTypeLabel(workType)} (replay seq ${replayFromSeq} on next start)`, "success");
+  } else {
+    toast(`Mode: ${workTypeLabel(workType)}`, "success");
+  }
+  return updated;
 }
 
 function applySiblingBadges(root, graph) {
@@ -435,6 +457,12 @@ function appendTheaterToThread(root, runId, msg) {
   });
   if (msg.message_kind === "gate" && msg.severity === "block") {
     li?.classList.add("chat-thread-line--gate-block");
+  }
+  if (
+    msg.data_testid?.includes("compaction") ||
+    (msg.message_kind === "context" && /compact/i.test(String(msg.headline || "")))
+  ) {
+    li?.classList.add("theater-line--compaction");
   }
   const cap = theaterCap();
   trimTheaterLines(list, cap);
@@ -859,7 +887,10 @@ export async function mountChat(root) {
     if (startBtn) startBtn.disabled = true;
     try {
       const projectId = String(root.querySelector("#chat-project-select")?.value || "");
-      const runId = await startRunFromSession(sessionId, workType, root, projectId);
+      const replayOpts =
+        forkReplaySeq != null ? { replayFromSeq: forkReplaySeq, alignRunReplay: true } : {};
+      const runId = await startRunFromSession(sessionId, workType, root, projectId, replayOpts);
+      forkReplaySeq = null;
       theaterHandle?.close();
       theaterHandle = bindChatTheaterForRun(root, runId, sessionId, (wt) => runStart(wt));
       wireChatOperatorRibbons(root, runId);
@@ -911,7 +942,8 @@ export async function mountChat(root) {
     theaterHandle?.close();
     theaterHandle = bindChatTheaterForRun(root, activeRunId, sessionId, (wt) => runStart(wt));
     wireChatOperatorRibbons(root, activeRunId);
-  mountAutopilotLadderHint(root);
+    mountAutopilotLadderHint(root);
+  }
 
   const steerDraft = sessionStorage.getItem("maker_plan_steer_draft");
   if (steerDraft) {
@@ -919,7 +951,6 @@ export async function mountChat(root) {
     if (interjection && !interjection.value.trim()) interjection.value = steerDraft;
     sessionStorage.removeItem("maker_plan_steer_draft");
   }
-}
 
   root.querySelector("#chat-form")?.addEventListener("submit", async (ev) => {
     ev.preventDefault();

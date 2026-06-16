@@ -63,6 +63,8 @@ class StartChatSessionBody(BaseModel):
     patch_context: PatchContextBody | None = None
     autopilot_profile_id: str | None = Field(default=None, max_length=120)
     autonomous: bool = True
+    align_run_replay: bool = False
+    replay_from_seq: int | None = Field(default=None, ge=0)
 
 
 class ChatSessionResponse(BaseModel):
@@ -98,6 +100,7 @@ class StartChatSessionResponse(BaseModel):
     campaign_id: str | None = None
     dispatch_mode: str | None = None
     turn: dict[str, Any] | None = None
+    replay_alignment: dict[str, Any] | None = None
 
 
 class ChatGraphResponse(BaseModel):
@@ -265,6 +268,40 @@ def start_run(
                 ),
             )
     return {"run_id": str(run_id), "campaign_id": None, "dispatch_mode": None}
+
+
+def maybe_apply_chat_replay_alignment(
+    store: Any,
+    run_id: UUID,
+    body: StartChatSessionBody,
+    session_turns: list[Any] | None = None,
+) -> dict[str, Any] | None:
+    seq = body.replay_from_seq
+    align = body.align_run_replay
+    if seq is None and session_turns:
+        for turn in reversed(session_turns):
+            role = getattr(turn, "role", None) or (turn.get("role") if isinstance(turn, dict) else None)
+            if role != "work_type_switch":
+                continue
+            payload = getattr(turn, "payload", None) if not isinstance(turn, dict) else turn.get("payload")
+            block = dict(payload) if isinstance(payload, dict) else {}
+            if block.get("align_run_replay") and block.get("replay_from_seq") is not None:
+                seq = int(block["replay_from_seq"])
+                align = True
+            break
+    if not align or seq is None:
+        return None
+    from nimbusware_orchestrator.replay_from import ReplayPolicy, emit_replay_started_event
+
+    emit_replay_started_event(
+        store,
+        run_id=run_id,
+        from_store_seq=int(seq),
+        replay_policy=ReplayPolicy(),
+        operator_ack=True,
+        reason="chat_start_replay_alignment",
+    )
+    return {"from_store_seq": int(seq), "replay_started": True}
 
 
 def resolve_workflow_profile(

@@ -9,6 +9,7 @@ from nimbusware_api.errors import problem
 from nimbusware_api.routes.chat_common import (
     StartChatSessionBody,
     StartChatSessionResponse,
+    maybe_apply_chat_replay_alignment,
     patch_context_payload,
     requirements_payload,
     resolve_workflow_profile,
@@ -131,6 +132,14 @@ def start_chat_session(
 
     run_uuid = UUID(started["run_id"]) if started.get("run_id") else None
     campaign_uuid = UUID(started["campaign_id"]) if started.get("campaign_id") else None
+    replay_alignment = None
+    if run_uuid is not None:
+        replay_alignment = maybe_apply_chat_replay_alignment(
+            store,
+            run_uuid,
+            body,
+            session_turns=path,
+        )
     session = chat_store.update_session(
         session_id,
         run_id=run_uuid,
@@ -163,4 +172,5 @@ def start_chat_session(
         campaign_id=started.get("campaign_id"),
         dispatch_mode=started.get("dispatch_mode"),
         turn=run_turn.to_dict(),
+        replay_alignment=replay_alignment,
     )

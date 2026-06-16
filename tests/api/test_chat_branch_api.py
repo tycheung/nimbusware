@@ -144,6 +144,71 @@ def test_chat_mid_thread_patch_to_slice_journey(client: TestClient, tmp_path: Pa
     assert "work_type_switch" in kinds
 
 
+def test_chat_start_applies_replay_alignment(client: TestClient, tmp_path: Path) -> None:
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[
+        "session_id"
+    ]
+    client.post(
+        f"/v1/chat/sessions/{session_id}/turns",
+        json={"text": "align replay on start"},
+    )
+
+    started = client.post(
+        f"/v1/chat/sessions/{session_id}/start",
+        json={
+            "work_type": "patch",
+            "align_run_replay": True,
+            "replay_from_seq": 7,
+        },
+    )
+    assert started.status_code == 200
+    body = started.json()
+    assert body["replay_alignment"]["from_store_seq"] == 7
+    assert body["replay_alignment"]["replay_started"] is True
+    run_id = body["run_id"]
+    timeline = client.get(f"/v1/runs/{run_id}/timeline")
+    assert timeline.status_code == 200
+    replay_stages = [
+        ev
+        for ev in timeline.json().get("events") or []
+        if (ev.get("payload") or {}).get("stage_name") == "run.replay.started"
+    ]
+    assert replay_stages
+    assert replay_stages[-1]["metadata"]["from_store_seq"] == 7
+
+
+def test_chat_start_inherits_replay_from_switch_mode(client: TestClient, tmp_path: Path) -> None:
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[
+        "session_id"
+    ]
+    turn = client.post(
+        f"/v1/chat/sessions/{session_id}/turns",
+        json={"text": "widen with replay"},
+    ).json()
+    user_turn_id = turn["message"]["turn_id"]
+
+    switched = client.post(
+        f"/v1/chat/sessions/{session_id}/turns/{user_turn_id}/switch-mode",
+        json={
+            "work_type": "slice",
+            "align_run_replay": True,
+            "replay_from_seq": 11,
+        },
+    )
+    assert switched.status_code == 200
+
+    started = client.post(
+        f"/v1/chat/sessions/{session_id}/start",
+        json={"work_type": "slice"},
+    )
+    assert started.status_code == 200
+    body = started.json()
+    assert body["replay_alignment"]["from_store_seq"] == 11
+    assert body["replay_alignment"]["replay_started"] is True
+
+
 def test_list_chat_sessions(client: TestClient, tmp_path: Path) -> None:
     project_id = _create_project(client, tmp_path)
     client.post("/v1/chat/sessions", json={"project_id": project_id})
