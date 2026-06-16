@@ -1,11 +1,13 @@
 {
+  "autopilot_level": 10,
   "entry_count": 3,
-  "passed": true,
   "pass_rate": 1.0,
-  "published_at": "2026-06-01T00:00:00Z",
+  "passed": true,
   "prompt_ids": [
     "todo_api",
     "basic_crm",
     "contacts_api"
-  ]
+  ],
+  "published_at": "2026-06-16T00:00:00Z",
+  "trust_preset": "Continuous improve"
 }

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+FACTORY_WEEKLY_AUTOPILOT_LEVEL = 10
 GOLDEN_PATH = REPO_ROOT / "tests" / "fixtures" / "factory" / "golden_factory_replay.json"
 MANIFEST_PATH = REPO_ROOT / "tests" / "fixtures" / "factory" / "golden_factory_replay_manifest.json"
 REPOS_ROOT = REPO_ROOT / "tests" / "fixtures" / "repos"
@@ -141,9 +142,14 @@ def run_factory_weekly_ci(*, repo_root: Path | None = None) -> dict[str, Any]:
     entries = load_factory_golden_entries(repo)
     summary: dict[str, Any] = {
         "golden_manifest": MANIFEST_PATH.name if MANIFEST_PATH.is_file() else GOLDEN_PATH.name,
+        "autopilot_level": FACTORY_WEEKLY_AUTOPILOT_LEVEL,
+        "trust_preset": "Continuous improve",
         "skipped": False,
         "passed": False,
         "entry_count": len(entries),
+        "prompt_ids": [
+            str(e.get("id") or e.get("flow_id") or "default") for e in entries if isinstance(e, dict)
+        ],
     }
     if not entries:
         summary["error"] = "golden_fixture_missing"
