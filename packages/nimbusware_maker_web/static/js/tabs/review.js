@@ -2,6 +2,18 @@ import { apiJson, toast } from "../api-client.js";
 import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 
+function formatGateSummary(raw) {
+  if (raw == null) return "";
+  if (typeof raw === "string") return raw.trim();
+  if (typeof raw === "object") {
+    return Object.entries(raw)
+      .filter(([, v]) => v != null && v !== "")
+      .map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : String(v)}`)
+      .join(" · ");
+  }
+  return String(raw).trim();
+}
+
 function renderPendingCards(body, container) {
   container.replaceChildren();
 
@@ -45,6 +57,14 @@ function renderPendingCards(body, container) {
       rat.dataset.testid = "maker-review-pending-rationale";
       rat.textContent = p.rationale;
       card.appendChild(rat);
+    }
+
+    if (p.gate_verdict === "FAIL" || p.last_gate_fail) {
+      const gate = document.createElement("p");
+      gate.className = "approval-gate-fail gate-summary-banner";
+      gate.dataset.testid = "maker-review-pending-gate-fail";
+      gate.textContent = p.last_gate_fail || "Previous slice gate failed — review before apply.";
+      card.appendChild(gate);
     }
 
     if (Array.isArray(p.target_paths) && p.target_paths.length) {
@@ -221,6 +241,28 @@ export async function mountReview(root) {
     if (!id) return toast("Enter a run ID", "error");
     const body = await apiJson(`/runs/${id}/maker/pending`);
     renderPendingCards(body, root.querySelector("#rev-summary"));
+    try {
+      const progress = await apiJson(`/runs/${encodeURIComponent(id)}/maker-progress?simple=true`);
+      const gateText = formatGateSummary(progress.gate_summary);
+      if (gateText) {
+        const statusCard = root.querySelector('[data-testid="maker-review-status-card"]');
+        if (statusCard && !statusCard.querySelector('[data-testid="maker-review-gate-summary"]')) {
+          const gateLine = document.createElement("p");
+          gateLine.className = "gate-summary-banner";
+          gateLine.dataset.testid = "maker-review-gate-summary";
+          gateLine.textContent = gateText;
+          statusCard.appendChild(gateLine);
+          const link = document.createElement("a");
+          link.href = `#/progress?run_id=${encodeURIComponent(id)}`;
+          link.className = "linkish";
+          link.textContent = "Recover on Progress";
+          link.dataset.testid = "maker-review-gate-recover-link";
+          statusCard.appendChild(link);
+        }
+      }
+    } catch {
+      /* optional */
+    }
     const actions = root.querySelector("#rev-actions");
     actions.replaceChildren();
     if (!body.plan_approved) {

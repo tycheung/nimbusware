@@ -24,6 +24,20 @@ function reproSummary(steps) {
   return joined.length > 160 ? `${joined.slice(0, 157)}…` : joined;
 }
 
+function formatGateSummary(raw) {
+  if (raw == null) return "";
+  if (typeof raw === "string") return raw.trim();
+  if (typeof raw === "object") {
+    const parts = [];
+    for (const [key, val] of Object.entries(raw)) {
+      if (val == null || val === "") continue;
+      parts.push(`${key}: ${typeof val === "object" ? JSON.stringify(val) : String(val)}`);
+    }
+    return parts.join(" · ");
+  }
+  return String(raw).trim();
+}
+
 function renderFindings(findings) {
   const list = document.getElementById("findings-list");
   if (!list) return;
@@ -65,6 +79,30 @@ function renderFindings(findings) {
       steps.dataset.testid = "maker-finding-repro";
       steps.textContent = repro;
       li.appendChild(steps);
+    }
+    const summary = pl.summary || pl.message || pl.headline;
+    if (summary) {
+      const detail = document.createElement("p");
+      detail.className = "finding-summary";
+      detail.dataset.testid = "maker-finding-summary";
+      detail.textContent = String(summary);
+      li.appendChild(detail);
+    }
+    if (pl.evidence || pl.body_md) {
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "linkish";
+      toggle.textContent = "Evidence";
+      const pre = document.createElement("pre");
+      pre.className = "finding-evidence";
+      pre.hidden = true;
+      pre.textContent = String(pl.evidence || pl.body_md || "");
+      toggle.addEventListener("click", () => {
+        pre.hidden = !pre.hidden;
+        toggle.textContent = pre.hidden ? "Evidence" : "Hide";
+      });
+      li.appendChild(toggle);
+      li.appendChild(pre);
     }
     if (BLOCKING_SEVERITIES.has(sev)) {
       const actions = document.createElement("div");
@@ -193,7 +231,8 @@ export async function mountProgress(root) {
         <div id="critic-reliability-mount"></div>
       </section>
       <section id="findings-workspace" class="findings-workspace" data-testid="maker-findings-workspace">
-        <h4>Findings</h4>
+        <h4>Gate failures &amp; findings</h4>
+        <div id="gate-fail-steps" class="gate-fail-steps" hidden data-testid="maker-gate-fail-steps"></div>
         <ul id="findings-list"></ul>
       </section>
       <h4>Context artifacts</h4>
@@ -516,7 +555,7 @@ export async function mountProgress(root) {
   function renderGateSummary(body) {
     const mount = document.getElementById("gate-summary-banner");
     if (!mount) return;
-    const text = String(body.gate_summary || "").trim();
+    const text = formatGateSummary(body.gate_summary);
     if (!text) {
       mount.hidden = true;
       mount.textContent = "";
@@ -525,10 +564,54 @@ export async function mountProgress(root) {
     mount.hidden = false;
     mount.dataset.testid = "maker-gate-summary";
     mount.textContent = text;
+    const workspace = document.getElementById("findings-workspace");
+    if (workspace) workspace.dataset.gateFailed = "1";
     const ribbon = document.getElementById("learnings-ribbon");
     if (ribbon) {
       ribbon.classList.add("learnings-ribbon--prominent");
       ribbon.dataset.testid = "maker-learnings-ribbon-prominent";
+    }
+  }
+
+  async function renderGateFailSteps(runId) {
+    const mount = document.getElementById("gate-fail-steps");
+    if (!mount || !runId) return;
+    try {
+      const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
+      const failed = [];
+      for (const ev of timeline.events || []) {
+        const stage = String(ev.payload?.stage_name || "");
+        if (stage !== "slice.gate") continue;
+        const verdict = String(ev.metadata?.slice_gate_verdict || "").toUpperCase();
+        if (verdict === "FAIL") {
+          const steps = ev.metadata?.slice_gate_steps || ev.metadata?.gate_steps;
+          failed.push({ seq: ev.store_seq, steps, detail: ev.metadata?.slice_gate_detail });
+        }
+      }
+      mount.replaceChildren();
+      if (!failed.length) {
+        mount.hidden = true;
+        return;
+      }
+      mount.hidden = false;
+      const title = document.createElement("h4");
+      title.textContent = "Failed gate steps";
+      title.dataset.testid = "maker-gate-fail-steps-title";
+      mount.appendChild(title);
+      const ul = document.createElement("ul");
+      ul.dataset.testid = "maker-gate-fail-steps-list";
+      for (const item of failed.slice(-3)) {
+        const li = document.createElement("li");
+        li.className = "gate-fail-step";
+        const stepText = Array.isArray(item.steps)
+          ? item.steps.map((s) => (typeof s === "object" ? s.name || s.step : s)).join(" → ")
+          : item.detail || `seq ${item.seq}`;
+        li.textContent = stepText || "Gate FAIL";
+        ul.appendChild(li);
+      }
+      mount.appendChild(ul);
+    } catch {
+      mount.hidden = true;
     }
   }
 
@@ -560,6 +643,10 @@ export async function mountProgress(root) {
     renderContextBudget(body);
     renderGateSummary(body);
     renderRoleCost(body);
+    if (body.gate_summary) {
+      const rid = resolveRunId();
+      if (rid) void renderGateFailSteps(rid);
+    }
     if (summary) {
       const cp = body.campaign_progress;
       renderCampaignControls(cp);
@@ -1075,6 +1162,7 @@ export async function mountProgress(root) {
   try {
     const findingsBody = await apiJson(`/runs/${id}/findings`);
     renderFindings(findingsBody.findings || []);
+    await renderGateFailSteps(id);
   } catch {
     renderFindings([]);
   }
