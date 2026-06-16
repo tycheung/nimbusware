@@ -4,6 +4,7 @@ import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecar
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
 import { maybeRegisterPushSubscription } from "../app-shell.js";
+import { formatGateSummary } from "../gate-summary.js";
 
 const BLOCKING_SEVERITIES = new Set(["BLOCKER", "HIGH"]);
 
@@ -23,20 +24,6 @@ function reproSummary(steps) {
   if (!Array.isArray(steps) || !steps.length) return "";
   const joined = steps.map((s) => String(s).trim()).filter(Boolean).join(" → ");
   return joined.length > 160 ? `${joined.slice(0, 157)}…` : joined;
-}
-
-function formatGateSummary(raw) {
-  if (raw == null) return "";
-  if (typeof raw === "string") return raw.trim();
-  if (typeof raw === "object") {
-    const parts = [];
-    for (const [key, val] of Object.entries(raw)) {
-      if (val == null || val === "") continue;
-      parts.push(`${key}: ${typeof val === "object" ? JSON.stringify(val) : String(val)}`);
-    }
-    return parts.join(" · ");
-  }
-  return String(raw).trim();
 }
 
 function renderFindings(findings) {

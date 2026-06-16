@@ -1,18 +1,7 @@
 import { apiJson, toast } from "../api-client.js";
 import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
-
-function formatGateSummary(raw) {
-  if (raw == null) return "";
-  if (typeof raw === "string") return raw.trim();
-  if (typeof raw === "object") {
-    return Object.entries(raw)
-      .filter(([, v]) => v != null && v !== "")
-      .map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : String(v)}`)
-      .join(" · ");
-  }
-  return String(raw).trim();
-}
+import { formatGateSummary } from "../gate-summary.js";
 
 function renderPendingCards(body, container) {
   container.replaceChildren();
