@@ -601,6 +601,13 @@ def nimbusware_api_key() -> str:
     return env_str("NIMBUSWARE_API_KEY")
 
 
+def nimbusware_clone_url(
+    default: str = "https://github.com/tycheung/nimbusware.git",
+) -> str:
+    raw = env_str("NIMBUSWARE_CLONE_URL", default=default).strip()
+    return raw or default
+
+
 def nimbusware_sandbox_backend(default: str = "none") -> str:
     return env_str("NIMBUSWARE_SANDBOX_BACKEND", default=default).strip().lower()
 

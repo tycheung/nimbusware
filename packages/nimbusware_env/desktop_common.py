@@ -10,6 +10,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from nimbusware_env.dotenv import find_repo_root
+from nimbusware_env.env_flags import nimbusware_clone_url
 
 NIMBUSWARE_SCHEMA_REL = Path("packages/nimbusware_store/schema/postgres.sql")
 DEFAULT_CLONE_URL = "https://github.com/tycheung/nimbusware.git"
@@ -35,7 +36,7 @@ def is_git_checkout(root: Path) -> bool:
 
 
 def default_clone_url() -> str:
-    return os.environ.get("NIMBUSWARE_CLONE_URL", DEFAULT_CLONE_URL)
+    return nimbusware_clone_url(default=DEFAULT_CLONE_URL)
 
 
 def default_clone_target(base: Path) -> Path:
