@@ -19,7 +19,7 @@ After install, open **Maker Home** (`/v1/maker/app/#/home`):
 
 Install timing reference: [docs/deploy/first-install-timing.md](docs/deploy/first-install-timing.md).
 
-Target: documented path from install → first gate pass **&lt; 15 min**; intent → first applied patch on a fixture **&lt; 3 min** median (tracked in Admin **Metrics**, committed snapshots `benchmarks/latest_intent_to_patch.json` and `benchmarks/latest_classifier_acceptance.json`; harness: `python scripts/measure_intent_to_patch.py --json benchmarks/latest_intent_to_patch.json`, chat path: `--via-chat`; classifier harness: `python scripts/measure_classifier_acceptance.py --json benchmarks/latest_classifier_acceptance.json`). Chat-turn store analytics: `GET /v1/platform/analytics/chat-turns`. **Chat tab** interleaves live theater and gate outcomes in the main thread (fork/branch panel for sibling paths). **Admin Policy compare** records gate pass-rate delta on **Metrics**. PR CI enforces both SLO snapshots via `scripts/run_intent_to_patch_ci_gate.py` and `scripts/run_classifier_acceptance_ci_gate.py`.
+**Onboarding targets** (indicative on a mid-tier dev machine — see [docs/deploy/first-install-timing.md](docs/deploy/first-install-timing.md)): install → first gate pass **&lt; 15 min**; quick stub path → first gate pass **&lt; 3 min** after `poetry run nimbusware-run --quick`. **Intent→patch timing** is measured on the `tiny_python_app` fixture with stub implement (`scripts/measure_intent_to_patch.py`; chat path: `--via-chat`); results land in committed snapshots `benchmarks/latest_intent_to_patch.json` and `benchmarks/latest_classifier_acceptance.json` for Admin **Metrics**. Regenerate after local runs; PR CI validates snapshot targets via `scripts/run_intent_to_patch_ci_gate.py` and `scripts/run_classifier_acceptance_ci_gate.py`. Chat-turn store analytics: `GET /v1/platform/analytics/chat-turns`. **Chat tab** interleaves live theater and gate outcomes in the main thread (fork/branch panel for sibling paths). **Admin Policy compare** records gate pass-rate delta on **Metrics**.
 
 ## Product editions
 
@@ -145,7 +145,7 @@ Shared helpers: `packages/agent_core/context_budget.py`. Context budget API: `GE
 
 ## Benchmarks
 
-Optional **SWE-bench-style** regression harness for the `micro_slice` workflow profile:
+**Local micro_slice regression** (not the public [SWE-bench](https://www.swebench.com/) dataset) — a one-slice in-memory fixture with stub implement for pipeline smoke:
 
 - Script: [`scripts/swe_bench_harness.py`](scripts/swe_bench_harness.py)
   - `--dry-run --json` — validate manifest + fixture layout
@@ -625,4 +625,4 @@ Full catalog: `poetry run python scripts/audit_operator_env.py` (237 keys).
 
 ## License
 
-Nimbusware (including Nimbusware) is free software under the [GNU General Public License v3.0](LICENSE). Copyright © 2026 Nimbusware contributors.
+Nimbusware is free software under the [GNU General Public License v3.0](LICENSE). Copyright © 2026 Nimbusware contributors.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SWE-bench-style harness for micro_slice — dry-run validates fixtures; ``--run`` scores gates."""
+"""Local micro_slice regression harness — dry-run validates fixtures; ``--run`` scores gates (not public SWE-bench)."""
 
 from __future__ import annotations
 

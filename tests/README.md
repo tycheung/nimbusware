@@ -22,7 +22,7 @@ Pytest discovers **3,684** items under `tests/` with `pythonpath = ["packages", 
 | `tests/e2e/web/` | Playwright smoke, Chat patch/override/branch/escalation/theater, Admin operator chat classifier cards, Admin hardware catalog strip, Admin fleet hardware table + rescan, Admin run-detail panels + audit export, Admin config/fleet/nav smoke, Admin critic packs config tab, home intents + factory hero demos, Progress gate-fail action cards, Chat autopilot ladder hint, Settings hybrid routing presets, apply-slice, session hub, launch scorecard (dimension rows + dev-env merge), Settings launch check + chat resume, scoped compaction toolbar, operator ribbons (incl. variant arena fitness + crossover merged), memory influence table, council ribbon gaps, variant fitness, campaign progress + full replay, mobile theater parity (**55** tests / **41** spec files; **4** workers, **1** retry, **120s** timeout; sets `NIMBUSWARE_API_BASE` to test server port). Parity matrix rows: readiness CTAs, Review open-PR CTA, Progress gate_summary, memory influence + council + variant (`parity_progress_wiring.yaml`), IDE MCP classify/patch/interject/fork, hybrid routing API (`test_routing_presets_api.py`) |
 | `tests/fixtures/research/`, `tests/fixtures/stitch/` | Golden research/stitch data (enable with `NIMBUSWARE_RESEARCH=1`, `NIMBUSWARE_STITCH=1`) |
 | `tests/benchmark/` | `pytest-benchmark` fleet preflight |
-| `tests/fixtures/swe_bench/` | SWE-bench harness fixture; scored run via `scripts/swe_bench_harness.py --run --json` (see `tests/unit/test_swe_bench_harness.py`) |
+| `tests/fixtures/swe_bench/` | Local micro_slice regression fixture (stub implement; not public SWE-bench); scored run via `scripts/swe_bench_harness.py --run --json` |
 
 ## Conventions
 

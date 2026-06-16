@@ -1,4 +1,4 @@
-name: SWE-bench harness
+name: micro_slice regression harness
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
-      - name: SWE-bench harness dry-run
+      - name: micro_slice regression dry-run
         run: poetry run python scripts/swe_bench_harness.py --dry-run --json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
-      - name: SWE-bench scored micro_slice run
+      - name: micro_slice regression scored run
         id: scored
         run: |
           poetry run python scripts/swe_bench_harness.py --run --json | tee swe_bench_out.json
@@ -41,11 +41,11 @@ jobs:
           NIMBUSWARE_SWE_BENCH_ENABLED: "1"
           NIMBUSWARE_SWE_BENCH_WRITE_JSON: "1"
           NIMBUSWARE_MICRO_SLICE_COUNT: "1"
-      - name: Publish SWE-bench summary
+      - name: Publish micro_slice regression summary
         run: |
-          echo "## SWE-bench scored run" >> "$GITHUB_STEP_SUMMARY"
+          echo "## micro_slice regression scored run" >> "$GITHUB_STEP_SUMMARY"
           echo "pass_rate: **${{ steps.scored.outputs.pass_rate }}** (min 1.0 required)" >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload SWE-bench snapshot
+      - name: Upload micro_slice regression snapshot
         uses: actions/upload-artifact@v4
         with:
           name: latest_swe_bench.json

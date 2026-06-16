@@ -15,6 +15,12 @@ Reference path for the **&lt; 15 min** onboarding metric (fo1300). Times are ind
 
 **Full path with Postgres:** target **&lt; 15 min** from clone to first documented gate pass on a reference fixture.
 
-Record actual timings in Admin **Metrics** via `benchmarks/latest_intent_to_patch.json` (regenerate with `scripts/measure_intent_to_patch.py --json benchmarks/latest_intent_to_patch.json`).
+Record intent→patch timings in Admin **Metrics** via `benchmarks/latest_intent_to_patch.json`. The harness uses stub implement on `tests/fixtures/repos/tiny_python_app` (not a live LLM path). Regenerate with:
+
+```bash
+poetry run python scripts/measure_intent_to_patch.py --json benchmarks/latest_intent_to_patch.json
+```
+
+The **&lt; 3 min** quick-path target applies to stub critics with `poetry run nimbusware-run --quick`, not to LLM-backed runs.
 
 See [README.md](../../README.md) Maker onboarding and [operator-settings.md](../operator-settings.md).
