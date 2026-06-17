@@ -117,6 +117,12 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_ADMIN_CONSOLE_URL", "Admin console URL", default="http://127.0.0.1:8502"
         ),
         _install("NIMBUSWARE_CONFIG_FROM_FILES", "Config from files only", kind=_BOOL, default="0"),
+        _install(
+            "NIMBUSWARE_COLLAB_ENABLED",
+            "Collaborative chat (multi-user sessions)",
+            kind=_BOOL,
+            default="0",
+        ),
         _install("NIMBUSWARE_CONFIG_NOTIFY", "Config NOTIFY pub/sub", kind=_BOOL, default="0"),
         _install(
             "NIMBUSWARE_ROLES_FROM_DB", "Roles registry from Postgres", kind=_BOOL, default="0"

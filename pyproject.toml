@@ -20,6 +20,7 @@ packages = [
   { include = "nimbusware_config", from = "packages" },
   { include = "nimbusware_env", from = "packages" },
   { include = "nimbusware_iam", from = "packages" },
+  { include = "nimbusware_auth", from = "packages" },
   { include = "nimbusware_memory", from = "packages" },
   { include = "nimbusware_research", from = "packages" },
   { include = "nimbusware_projections", from = "packages" },
@@ -29,6 +30,7 @@ packages = [
   { include = "nimbusware_client", from = "packages" },
   { include = "nimbusware_agent_tools", from = "packages" },
   { include = "nimbusware_hw", from = "packages" },
+  { include = "nimbusware_compute", from = "packages" },
 ]
 
 [tool.poetry.dependencies]
@@ -93,6 +95,7 @@ nimbusware-maker = "nimbusware_maker.cli:main"
 nimbusware-mcp = "nimbusware_mcp.cli:main"
 nimbusware-git-pr = "nimbusware_env.git_pr_cli:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
+nimbusware-compute-worker = "nimbusware_compute.worker_cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

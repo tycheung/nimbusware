@@ -22,6 +22,7 @@ from starlette.responses import Response
 from nimbusware_api.errors import problem
 from nimbusware_api.facade import build_v1_router
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_422, PROBLEM_RESPONSE_500
+from nimbusware_auth.store import build_collab_store, build_user_store
 from nimbusware_iam.middleware import enterprise_iam_middleware
 from nimbusware_iam.store import PostgresIamStore, build_iam_store
 from nimbusware_maker.chat_store import build_chat_store
@@ -58,6 +59,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.iam_store = build_iam_store(url)
     app.state.project_store = build_project_store(url)
     app.state.chat_store = build_chat_store(url)
+    app.state.user_store = build_user_store(url)
+    app.state.collab_store = build_collab_store(url, app.state.user_store)
     if url and isinstance(app.state.iam_store, PostgresIamStore):
         app.state.iam_store.ensure_default_tenant()
     app.state.config_materializer = runtime.materializer

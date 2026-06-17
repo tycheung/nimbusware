@@ -4,6 +4,7 @@ from typing import Annotated, cast
 
 from fastapi import Depends, Request
 
+from nimbusware_auth.store import CollabStore, UserStore
 from nimbusware_iam.store import InMemoryIamStore, PostgresIamStore
 from nimbusware_maker.chat_store import InMemoryChatStore, PostgresChatStore
 from nimbusware_maker.store import InMemoryProjectStore, PostgresProjectStore
@@ -35,8 +36,18 @@ def get_chat_store(request: Request) -> ChatStore:
     return cast(ChatStore, request.app.state.chat_store)
 
 
+def get_user_store(request: Request) -> UserStore:
+    return cast(UserStore, request.app.state.user_store)
+
+
+def get_collab_store(request: Request) -> CollabStore:
+    return cast(CollabStore, request.app.state.collab_store)
+
+
 StoreDep = Annotated[EventStore, Depends(get_store)]
 OrchDep = Annotated[RunOrchestrator, Depends(get_orchestrator)]
 IamStoreDep = Annotated[IamStore, Depends(get_iam_store)]
 ProjectStoreDep = Annotated[ProjectStore, Depends(get_project_store)]
 ChatStoreDep = Annotated[ChatStore, Depends(get_chat_store)]
+UserStoreDep = Annotated[UserStore, Depends(get_user_store)]
+CollabStoreDep = Annotated[CollabStore, Depends(get_collab_store)]

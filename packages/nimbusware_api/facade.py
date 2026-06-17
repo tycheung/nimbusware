@@ -8,9 +8,12 @@ from nimbusware_api.routes import (
     admin_ui_bff,
     analytics,
     audit,
+    auth,
     bundles,
     campaigns,
     chat,
+    chat_participants,
+    chat_stream,
     config_ops,
     critic_packs,
     custom_agents,
@@ -28,6 +31,7 @@ from nimbusware_api.routes import (
     scraper_artifacts,
 )
 from nimbusware_api.routes import model_bindings, provider_connections
+from nimbusware_api.routes import compute
 from nimbusware_api.routes.enterprise import build_enterprise_router
 from nimbusware_api.routes.maker_push import router as maker_push_router
 from nimbusware_api.routes.web_bootstrap import router as web_bootstrap_router
@@ -47,13 +51,17 @@ def build_v1_router() -> APIRouter:
     router.include_router(personas.router)
     router.include_router(custom_agents.router)
     router.include_router(projects.router)
+    router.include_router(auth.router)
     router.include_router(chat.router)
+    router.include_router(chat_participants.router)
+    router.include_router(chat_stream.router)
     router.include_router(project_context_artifacts.router)
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)
     router.include_router(provider_connections.router)
     router.include_router(model_bindings.router)
+    router.include_router(compute.router)
     router.include_router(memory_chunks.router)
     router.include_router(analytics.router)
     router.include_router(operator_settings.router)

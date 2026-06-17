@@ -590,6 +590,10 @@ def nimbusware_database_url() -> str | None:
     return url if url else None
 
 
+def nimbusware_collab_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_COLLAB_ENABLED")
+
+
 def nimbusware_workspace_path(*, default: str = "") -> Path:
     raw = env_str("NIMBUSWARE_WORKSPACE", default=default) or default
     if not raw:
