@@ -44,3 +44,21 @@ def test_run_role_claim_and_release(client: TestClient) -> None:
     release = client.delete(f"/v1/runs/{run_id}/role-claims/backend_writer")
     assert release.status_code == 200, release.text
     assert release.json().get("event") == "workload.role_released"
+
+
+def test_run_model_binding_audit(client: TestClient) -> None:
+    run_id = _create_run(client)
+    client.post(
+        f"/v1/runs/{run_id}/model-bindings/swap",
+        json={
+            "agent_role": "planner",
+            "provider_id": "ollama",
+            "provider_kind": "local",
+            "model_id": "llama3.1:8b",
+        },
+    )
+    audit = client.get(f"/v1/runs/{run_id}/model-bindings/audit")
+    assert audit.status_code == 200, audit.text
+    body = audit.json()
+    assert body.get("count", 0) >= 1
+    assert body["events"][0]["event_type"] == "model.binding.overridden"

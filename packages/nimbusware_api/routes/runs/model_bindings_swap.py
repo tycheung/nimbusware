@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, HTTPException
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.user import UserDep
+from nimbusware_orchestrator.model_binding_audit import extract_model_binding_audit_rows
 from nimbusware_orchestrator.model_binding_swap import (
     append_model_binding_override,
     append_role_claim,
@@ -86,3 +87,19 @@ def delete_run_role_claim(
     _require_run(store, run_id)
     payload = append_role_release(store, run_id, agent_role=agent_role)
     return {"ok": True, "event": "workload.role_released", "payload": payload}
+
+
+@router.get("/runs/{run_id}/model-bindings/audit")
+def get_run_model_binding_audit(
+    run_id: UUID,
+    store: StoreDep,
+    _: UserDep,
+) -> dict[str, Any]:
+    rows = store.list_run_events(str(run_id))
+    if not rows:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
+        )
+    events = extract_model_binding_audit_rows(rows)
+    return {"run_id": str(run_id), "events": events, "count": len(events)}

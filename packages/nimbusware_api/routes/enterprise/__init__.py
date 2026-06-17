@@ -16,6 +16,7 @@ from nimbusware_api.routes.enterprise.fleet_memory import router as fleet_memory
 from nimbusware_api.routes.enterprise.fleet_ollama_sli import router as fleet_ollama_sli_router
 from nimbusware_api.routes.enterprise.fleet_worker import router as fleet_worker_router
 from nimbusware_api.routes.enterprise.iam import router as iam_router
+from nimbusware_api.routes.enterprise.model_policy import router as model_policy_router
 from nimbusware_api.routes.enterprise.object_store import router as object_store_router
 from nimbusware_api.routes.enterprise.research_ops import router as enterprise_research_ops_router
 
@@ -49,5 +50,6 @@ def build_enterprise_router() -> APIRouter:
     router.include_router(fleet_autopilot_router)
     router.include_router(fleet_critic_reliability_router)
     router.include_router(enterprise_audit_export_router)
+    router.include_router(model_policy_router)
     router.include_router(enterprise_research_ops_router)
     return router
