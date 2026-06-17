@@ -1,0 +1,46 @@
+# Provider presets for Model Hub and ModelBindingResolver (v1.2).
+# API keys are stored per-user in nimbusware_provider_connection — not in this file.
+
+providers:
+  - id: ollama
+    kind: local
+    label: Ollama
+    default_base_url: http://127.0.0.1:11434
+    connection_kind: api_key
+  - id: openai
+    kind: cloud
+    label: OpenAI API
+    connection_kind: api_key
+    default_base_url: https://api.openai.com/v1
+  - id: openai_subscription
+    kind: cloud
+    label: ChatGPT (Subscription)
+    connection_kind: subscription
+  - id: anthropic
+    kind: cloud
+    label: Anthropic API
+    connection_kind: api_key
+  - id: anthropic_subscription
+    kind: cloud
+    label: Claude (Subscription)
+    connection_kind: subscription
+  - id: google
+    kind: cloud
+    label: Google Gemini
+    connection_kind: api_key
+    default_base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    probe_health_path: /models
+  - id: xai
+    kind: cloud
+    label: Grok (xAI)
+    connection_kind: api_key
+    default_base_url: https://api.x.ai/v1
+  - id: openrouter
+    kind: cloud
+    label: OpenRouter
+    connection_kind: api_key
+    default_base_url: https://openrouter.ai/api/v1
+  - id: custom
+    kind: cloud
+    label: Custom OpenAI-compatible
+    connection_kind: api_key

@@ -46,6 +46,11 @@ def _cmd_export(args: argparse.Namespace) -> int:
     store = PostgresConfigStore(_database_url())
     ns = _namespace_filter(args.namespace)
     counts = export_config_to_repo(store, repo, namespaces=ns)
+    from nimbusware_config.export import export_provider_connections_metadata
+
+    pc = export_provider_connections_metadata(_database_url(), repo)
+    if pc:
+        counts["provider_connections"] = pc
     print(json.dumps({"action": "export", "counts": counts}, sort_keys=True))
     return 0
 

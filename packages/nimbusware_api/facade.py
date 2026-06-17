@@ -27,6 +27,7 @@ from nimbusware_api.routes import (
     runs,
     scraper_artifacts,
 )
+from nimbusware_api.routes import provider_connections
 from nimbusware_api.routes.enterprise import build_enterprise_router
 from nimbusware_api.routes.maker_push import router as maker_push_router
 from nimbusware_api.routes.web_bootstrap import router as web_bootstrap_router
@@ -51,6 +52,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(preflight.router)
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)
+    router.include_router(provider_connections.router)
     router.include_router(memory_chunks.router)
     router.include_router(analytics.router)
     router.include_router(operator_settings.router)

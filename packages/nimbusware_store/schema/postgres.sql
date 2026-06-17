@@ -384,6 +384,33 @@ CREATE INDEX IF NOT EXISTS idx_nimbusware_bundle_outcome_run
   ON nimbusware_bundle_outcome (run_id, created_at DESC);
 
 -- =============================================================================
+-- nimbusware_provider_connection (v1.2 Model Hub API vault — Track C2)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_provider_connection (
+  connection_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id TEXT,
+  user_id TEXT NOT NULL DEFAULT '',
+  provider_id TEXT NOT NULL,
+  label TEXT NOT NULL DEFAULT '',
+  connection_kind TEXT NOT NULL DEFAULT 'api_key'
+    CHECK (connection_kind IN ('api_key', 'subscription')),
+  base_url TEXT,
+  default_model_id TEXT,
+  secret_blob BYTEA,
+  last_probe_at TIMESTAMPTZ,
+  last_probe_ok BOOLEAN,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_provider_connection_user
+  ON nimbusware_provider_connection (user_id, provider_id);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_provider_connection_tenant
+  ON nimbusware_provider_connection (tenant_id)
+  WHERE tenant_id IS NOT NULL;
+
+-- =============================================================================
 -- run_list_status (GET /v1/runs ?status= read model)
 -- =============================================================================
 CREATE OR REPLACE VIEW run_list_status AS

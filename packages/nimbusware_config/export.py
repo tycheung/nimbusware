@@ -90,6 +90,24 @@ def export_config_to_repo(
     return counts
 
 
+def export_provider_connections_metadata(
+    conninfo: str,
+    repo_root: Path,
+    *,
+    user_id: str = "",
+) -> int:
+    """Write connection metadata (no secrets) for gitops review."""
+    from nimbusware_config.provider_connections import ProviderConnectionStore
+    from nimbusware_orchestrator.merge import atomic_write_yaml
+
+    store = ProviderConnectionStore(conninfo)
+    rows = store.export_metadata_for_user(user_id=user_id)
+    out_path = repo_root.resolve() / "configs" / "provider_connections" / "metadata.yaml"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_yaml(out_path, {"version": 1, "connections": rows})
+    return 1 if rows else 0
+
+
 def list_store_documents(
     store: ConfigStore,
     *,
