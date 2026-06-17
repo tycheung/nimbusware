@@ -39,7 +39,9 @@ export function detectMobileMode() {
 function parseRoute() {
   const hash = window.location.hash.replace(/^#/, "") || "/chat";
   const path = hash.split("?")[0] || "/chat";
-  return path.startsWith("/") ? path : `/${path}`;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (normalized.startsWith("/chat/join/")) return "/chat/join";
+  return normalized;
 }
 
 function setRunIdValue(value) {

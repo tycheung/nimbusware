@@ -1,4 +1,5 @@
 import { mountChat, unmountChat } from "./tabs/chat.js";
+import { mountChatJoin } from "./tabs/chat_join.js";
 import { mountHome } from "./tabs/home.js";
 import { mountBuild } from "./tabs/build.js";
 import { mountPlan, unmountPlan } from "./tabs/plan.js";
@@ -11,6 +12,7 @@ import { apiJson } from "./api-client.js";
 
 const MOUNTERS = {
   "/chat": { el: "chat-mount", fn: mountChat },
+  "/chat/join": { el: "chat-join-mount", fn: mountChatJoin },
   "/home": { el: "home-mount", fn: mountHome },
   "/build": { el: "build-mount", fn: mountBuild },
   "/plan": { el: "plan-mount", fn: mountPlan },

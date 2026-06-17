@@ -314,6 +314,32 @@ async function refreshBranchPanel(root, sessionId) {
   }
 }
 
+async function refreshComputeNodes(root, sessionId) {
+  const panel = root.querySelector("#chat-compute-nodes");
+  const list = root.querySelector("#chat-compute-nodes-list");
+  if (!panel || !list || !sessionId) return;
+  try {
+    const body = await apiJson(
+      `/compute/nodes?session_id=${encodeURIComponent(sessionId)}`,
+    );
+    const nodes = body.nodes || [];
+    if (!nodes.length) {
+      panel.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    list.replaceChildren();
+    for (const node of nodes) {
+      const li = document.createElement("li");
+      const label = node.display_name || node.host_label || node.node_id;
+      li.textContent = `${label} · ${node.status || "unknown"}`;
+      list.appendChild(li);
+    }
+  } catch {
+    panel.hidden = true;
+  }
+}
+
 async function refreshSessionSidebar(root, projectId, activeSessionId, onSelect) {
   const list = root.querySelector("#chat-session-list");
   if (!list || !projectId) return;
@@ -914,7 +940,7 @@ export async function mountChat(root) {
           hidden
         >
           <h4>Compute</h4>
-          <p class="chat-compute-nodes-caption">Connected nodes (mesh stub)</p>
+          <p class="chat-compute-nodes-caption">Session compute nodes</p>
           <ul id="chat-compute-nodes-list" class="chat-compute-nodes-list"></ul>
         </section>
         <section id="chat-operator-ribbons" class="chat-operator-ribbons hidden" data-testid="maker-chat-operator-ribbons">
@@ -1010,6 +1036,8 @@ export async function mountChat(root) {
   }
 
   let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";
+  const hashSessionId = hashParams.get("session_id") || "";
+  if (hashSessionId) sessionId = hashSessionId;
   let startPending = false;
   let theaterHandle = null;
   let forkReplaySeq = null;
@@ -1024,6 +1052,7 @@ export async function mountChat(root) {
     await refreshBranchPanel(root, sessionId);
     const projectId = String(root.querySelector("#chat-project-select")?.value || "");
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+    await refreshComputeNodes(root, sessionId);
   }
 
   async function ensureSession(projectId) {
@@ -1053,6 +1082,7 @@ export async function mountChat(root) {
     sessionId = String(session.session_id || "");
     sessionStorage.setItem(SESSION_KEY, sessionId);
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+    await refreshComputeNodes(root, sessionId);
     return sessionId;
   }
 
@@ -1226,6 +1256,15 @@ export async function mountChat(root) {
       await ensureSession(saved);
     } catch {
       /* fresh session on send */
+    }
+  }
+
+  if (hashSessionId) {
+    try {
+      await loadSession(hashSessionId);
+    } catch {
+      sessionId = "";
+      sessionStorage.removeItem(SESSION_KEY);
     }
   }
 
