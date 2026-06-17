@@ -1,5 +1,3 @@
-"""Compute mesh worker security policy."""
-
 from __future__ import annotations
 
 import json

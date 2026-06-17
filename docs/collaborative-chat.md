@@ -27,7 +27,7 @@ Set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loopback ho
 
 ## Individual deployment
 
-Expose the API with `NIMBUSWARE_PUBLIC_BASE_URL` and port-forward or reverse proxy. Share the join URL from the Chat **Invite** action (`#/chat/join/{token}`).
+Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{token}` in Maker — sign in or create an account, then the app redeems the token via `POST /v1/chat/join` and redirects to `#/chat?session_id=…`.
 
 ## Enterprise
 
@@ -36,6 +36,10 @@ Use `GET /v1/enterprise/users?q=` for directory search. Tenant policy: `GET/PUT 
 ## Conversation library (B8)
 
 Session `metadata.folder` and `metadata.tags` organize many sessions per project. Full folder CRUD is documented in [conversation-library.md](conversation-library.md).
+
+## Host transfer (MVP)
+
+Request/accept flow is implemented in-memory for development. **Not yet shipped:** session freeze, artifact bundle export/import, Postgres `nimbusware_host_transfer_request` table, delegate-control API.
 
 ## Related
 

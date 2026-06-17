@@ -378,8 +378,10 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - **Per-role model routing** — `ModelBindingResolver` for all agent LLM calls; Settings **Agent & Models** grid (`GET/PUT /v1/platform/model-bindings/defaults`); relaxed provider-aware preflight (`GET /v1/platform/model-bindings/preflight`)
 - **Mid-chat model swap** — Agents strip on Chat run cards; `POST /v1/runs/{id}/model-bindings/swap` and session-scoped swap; role claim/release; MCP `nimbusware_swap_role_model`
 - **Hybrid routing shim** — legacy `stage_providers` in [`configs/model-routing.yaml`](configs/model-routing.yaml) maps into resolver until Settings defaults fully replace presets ([`docs/hybrid-routing-migration.md`](docs/hybrid-routing-migration.md))
-- **Collaborative chat** (opt-in: `NIMBUSWARE_COLLAB_ENABLED=1`) — local auth, participants, invites, host transfer MVP ([`docs/collaborative-chat.md`](docs/collaborative-chat.md), [ADR 023](docs/adr/023-collaborative-chat-sessions.md))
-- **Compute mesh MVP** — node register/heartbeat (`POST /v1/compute/nodes/register`), work-unit queue stubs, `nimbusware-compute-worker` CLI, Chat compute nodes strip ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md))
+- **Collaborative chat** (opt-in: `NIMBUSWARE_COLLAB_ENABLED=1`) — local auth, participants, invites, **`#/chat/join/{token}` page**, host transfer request/accept MVP ([`docs/collaborative-chat.md`](docs/collaborative-chat.md), [ADR 023](docs/adr/023-collaborative-chat-sessions.md))
+- **Compute mesh MVP** — node register/heartbeat/list, work-unit queue stubs, `nimbusware-compute-worker` CLI, Chat compute nodes strip ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md))
+
+**v1.2 partial (documented, not full spec):** conversation folder/group ACL library (B8), full host-transfer artifact bundle (D8), `MeshScheduler` pipeline hook (D3). See [`alllms.md`](alllms.md) completion matrix (◐).
 - **Enterprise model policy** — `GET/PUT /v1/enterprise/model-policy`; per-run binding audit `GET /v1/runs/{id}/model-bindings/audit`
 
 **Review**

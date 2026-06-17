@@ -2414,6 +2414,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/compute/nodes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Compute Nodes */
+        get: operations["list_compute_nodes_v1_compute_nodes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/compute/nodes/register": {
         parameters: {
             query?: never;
@@ -3042,10 +3059,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Fleet Mesh Status
-         * @description Stub fleet mesh panel (D6) — session + fleet nodes, queue depth.
-         */
+        /** Fleet Mesh Status */
         get: operations["fleet_mesh_status_v1_enterprise_fleet_mesh_status_get"];
         put?: never;
         post?: never;
@@ -22566,6 +22580,88 @@ export interface operations {
             };
         };
     };
+    list_compute_nodes_v1_compute_nodes_get: {
+        parameters: {
+            query?: {
+                session_id?: string | null;
+            };
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     register_compute_node_v1_compute_nodes_register_post: {
         parameters: {
             query?: never;
@@ -25724,7 +25820,9 @@ export interface operations {
     };
     fleet_mesh_status_v1_enterprise_fleet_mesh_status_get: {
         parameters: {
-            query?: never;
+            query?: {
+                session_id?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;

@@ -1,5 +1,3 @@
-"""Model binding swap and role claim events."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

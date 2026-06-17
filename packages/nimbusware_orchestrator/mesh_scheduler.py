@@ -7,7 +7,7 @@ from uuid import UUID
 
 @dataclass
 class MeshScheduler:
-    """Stub scheduler hook for D3 — host_only until mesh integration ships."""
+    """Host-only scheduler until mesh pipeline assignment ships."""
 
     mode: str = "host_only"
     spread_policy: str = "spread"

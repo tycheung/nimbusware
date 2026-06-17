@@ -18,6 +18,7 @@ The worker registers once, then sends heartbeats until stopped.
 
 | Method | Path | Purpose |
 |--------|------|---------|
+| GET | `/v1/compute/nodes?session_id=` | List nodes registered for a chat session |
 | POST | `/v1/compute/nodes/register` | Register or refresh a compute node |
 | POST | `/v1/compute/nodes/{id}/heartbeat` | Liveness + capabilities update |
 | POST | `/v1/chat/sessions/{id}/compute/opt-in` | Session compute sharing toggle |
@@ -32,7 +33,7 @@ Not shipped in v1.2. A reduced-footprint agent would sync only: node registry cl
 
 ## Host transfer
 
-When canonical host moves to another machine, use the host-transfer protocol ([ADR 026](adr/026-host-transfer.md)): timed consent, session-scoped freeze, artifact bundle import on the new host.
+When canonical host moves to another machine, use the host-transfer protocol ([ADR 026](adr/026-host-transfer.md)). **v1.2 MVP:** timed consent request/accept only. Full freeze + artifact bundle import is deferred.
 
 | Method | Path | Purpose |
 |--------|------|---------|
