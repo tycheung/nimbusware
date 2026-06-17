@@ -320,6 +320,21 @@ TOOL_SPECS: list[dict[str, Any]] = [
             "required": ["session_id", "leaf_turn_id"],
         },
     },
+    {
+        "name": "nimbusware_swap_role_model",
+        "description": "Swap the model binding for an agent role on a run (mid-chat).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "run_id": {"type": "string"},
+                "agent_role": {"type": "string"},
+                "provider_id": {"type": "string"},
+                "provider_kind": {"type": "string", "enum": ["local", "cloud"]},
+                "model_id": {"type": "string"},
+            },
+            "required": ["run_id", "agent_role", "provider_id", "model_id"],
+        },
+    },
 ]
 
 
@@ -466,6 +481,24 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(post_json(f"/runs/{run_id}/interjection-queue", interject_body))
     if name == "nimbusware_run_tests":
         return _text_result(post_json(f"/runs/{run_id}/maker/run-tests", {}))
+    if name == "nimbusware_swap_role_model":
+        agent_role = str(arguments.get("agent_role") or "").strip()
+        provider_id = str(arguments.get("provider_id") or "").strip()
+        model_id = str(arguments.get("model_id") or "").strip()
+        provider_kind = str(arguments.get("provider_kind") or "local").strip()
+        if not agent_role or not provider_id or not model_id:
+            raise ValueError("agent_role, provider_id, and model_id are required")
+        return _text_result(
+            post_json(
+                f"/runs/{run_id}/model-bindings/swap",
+                {
+                    "agent_role": agent_role,
+                    "provider_id": provider_id,
+                    "provider_kind": provider_kind,
+                    "model_id": model_id,
+                },
+            ),
+        )
     raise ValueError(f"unknown tool: {name}")
 
 

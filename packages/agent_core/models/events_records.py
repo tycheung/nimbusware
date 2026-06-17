@@ -35,8 +35,11 @@ from agent_core.models.events_payloads import (
     ModelPreflightFailedPayload,
     ModelPreflightPassedPayload,
     ModelPreflightStartedPayload,
+    ModelBindingOverriddenPayload,
     ModelSelectedFallbackPayload,
     ModelSelectedPrimaryPayload,
+    WorkloadRoleClaimedPayload,
+    WorkloadRoleReleasedPayload,
     PersonaShelfUpdatedPayload,
     ResearchBriefEmittedPayload,
     ResearchBriefReviewPayload,
@@ -148,6 +151,21 @@ class ModelSelectedPrimaryEvent(BaseNimbuswareEvent):
 class ModelSelectedFallbackEvent(BaseNimbuswareEvent):
     event_type: Literal[EventType.MODEL_SELECTED_FALLBACK]
     payload: ModelSelectedFallbackPayload
+
+
+class ModelBindingOverriddenEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.MODEL_BINDING_OVERRIDDEN]
+    payload: ModelBindingOverriddenPayload
+
+
+class WorkloadRoleClaimedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.WORKLOAD_ROLE_CLAIMED]
+    payload: WorkloadRoleClaimedPayload
+
+
+class WorkloadRoleReleasedEvent(BaseNimbuswareEvent):
+    event_type: Literal[EventType.WORKLOAD_ROLE_RELEASED]
+    payload: WorkloadRoleReleasedPayload
 
 
 class StageStartedEvent(BaseNimbuswareEvent):
@@ -356,6 +374,9 @@ NimbuswareEventUnion: TypeAlias = (
     | ModelPreflightFailedEvent
     | ModelSelectedPrimaryEvent
     | ModelSelectedFallbackEvent
+    | ModelBindingOverriddenEvent
+    | WorkloadRoleClaimedEvent
+    | WorkloadRoleReleasedEvent
     | StageStartedEvent
     | StageBlockedEvent
     | StagePassedEvent

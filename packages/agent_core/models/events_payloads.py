@@ -218,6 +218,28 @@ class ModelSelectedFallbackPayload(BasePayload):
     original_model_id: str
 
 
+class ModelBindingOverriddenPayload(BasePayload):
+    agent_role: str
+    provider_id: str
+    provider_kind: str
+    model_id: str
+    binding_source: str = "model.swap"
+    previous_model_id: str | None = None
+
+
+class WorkloadRoleClaimedPayload(BasePayload):
+    agent_role: str
+    execute_on: str = "self"
+    provider_id: str
+    model_id: str
+    claimer_user_id: str = ""
+
+
+class WorkloadRoleReleasedPayload(BasePayload):
+    agent_role: str
+    claimer_user_id: str = ""
+
+
 class StageStartedPayload(BasePayload):
     stage_name: str
     attempt: int = Field(ge=1)

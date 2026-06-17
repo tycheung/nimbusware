@@ -819,6 +819,54 @@ button.intent-card:hover {
   font-size: 0.9rem;
 }
 
+.chat-run-card__agents {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  padding: 0.35rem 0.75rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.chat-agent-badge-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.chat-agent-badge,
+.chat-agent-info {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--border-muted, #444);
+  border-radius: 4px;
+  background: var(--surface-elevated, #2a2a2a);
+  padding: 0.1rem 0.4rem;
+}
+
+.chat-agent-info {
+  padding: 0.1rem 0.3rem;
+  opacity: 0.85;
+}
+
+.chat-agent-popover {
+  z-index: 1200;
+  min-width: 14rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-muted, #444);
+  border-radius: 6px;
+  background: var(--surface-elevated, #1e1e1e);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  font-size: 0.85rem;
+}
+
+.chat-agent-popover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
 .chat-run-card {
   margin: 0.5rem 0;
   border: 1px solid var(--color-border, #e5e7eb);

@@ -266,9 +266,9 @@ Single entrypoint: **`scripts/install_nimbusware.py`** (wrapper; implementation 
 | **Ollama step** | ✅ **Profile-driven** | `recommended` (default): bootstrap + model pull; `barebones` / `--skip-ollama`: skip |
 | **`enable_nimbusware_llm_in_env`** | ✅ | Only when Ollama bootstrap succeeds — barebones skips |
 | **Default profile** | ✅ C1 | **`recommended`** default; **`barebones`** via `--install-profile barebones` |
-| **Models tab (`#/models`)** | ✅ Partial | Ranked fit + preset wizard + `POST /platform/ollama/pull` — **no Ollama install UI, no installed-model list, no API keys** (C3) |
-| **Home readiness** | ⚠️ Drift | `start_ollama` / `pull_model` actions → **terminal toasts**, not Models tab deep links (C3 fo1614) |
-| **first-install-timing.md** | ⚠️ Drift | Assumes Ollama always in install path; missing barebones vs recommended rows (C0/C1) |
+| **Models tab (`#/models`)** | ✅ C3 | Model Hub local + API connections, Ollama install, pull/list |
+| **Home readiness** | ✅ C3 | Deep links to Model Hub; inference mode label (A3) |
+| **first-install-timing.md** | ✅ C0/C1 | Recommended vs barebones rows documented |
 | **Bootstrap `--run`** | ✅ C1 | Barebones uses `--install-profile barebones` |
 | **Tests** | ✅ C1 | `test_install_smoke.py`, `test_install_profile.py`, happy-path lines |
 
@@ -1708,7 +1708,7 @@ preflight:
 | A2 | fo1420–fo1424 | ☑ | — | ☑ | ☑ |
 | A3 | fo1430–fo1433 | ☑ | ☑ | ☑ | ☐ |
 | A4 | fo1440–fo1445 | ☑ | ☑ | ☑ | ☑ |
-| A5 | fo1450–fo1462 | ☐ | ☐ | ☐ | ☐ |
+| A5 | fo1450–fo1462 | ☑ | ☑ | ☑ | ☑ |
 | A6–A8 | fo1460–fo1483 | ☐ | ☐ | ☐ | ☐ |
 | B0 | fo1500–fo1501 | ☐ | — | ☐ | ☐ |
 | B1 | fo1510–fo1514 | ☐ | ☐ | ☐ | ☐ |

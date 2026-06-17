@@ -39,6 +39,7 @@ def test_tool_specs_include_required_tools() -> None:
         "nimbusware_factory_evidence",
         "nimbusware_replay_from",
         "nimbusware_launch_eval",
+        "nimbusware_swap_role_model",
     }
 
 

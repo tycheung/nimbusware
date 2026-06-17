@@ -21,6 +21,7 @@ from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
 from nimbusware_api.routes.runs.maker_approval import router as maker_approval_router
 from nimbusware_api.routes.runs.maker_progress import router as maker_progress_router
+from nimbusware_api.routes.runs.model_bindings_swap import router as model_bindings_swap_router
 from nimbusware_api.routes.runs.memory_insert import router as memory_insert_router
 from nimbusware_api.routes.runs.replay_from import router as replay_from_router
 from nimbusware_api.routes.runs.research import router as research_router
@@ -59,6 +60,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(create_router)
     composed.include_router(detail_router)
     composed.include_router(lifecycle_router)
+    composed.include_router(model_bindings_swap_router)
     composed.include_router(maker_progress_router)
     composed.include_router(factory_evidence_router)
     composed.include_router(dev_env_router)

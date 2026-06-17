@@ -419,6 +419,11 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   trust.textContent = "Trust …";
   summary.append(wt, st, trust);
   card.appendChild(summary);
+  const agents = document.createElement("div");
+  agents.className = "chat-run-card__agents muted";
+  agents.dataset.testid = "maker-chat-agents-strip";
+  card.appendChild(agents);
+  void loadRunCardAgents(card, runId);
   const theaterList = document.createElement("ul");
   theaterList.className = "chat-run-card__theater";
   theaterList.dataset.testid = "maker-chat-run-theater";
@@ -426,6 +431,123 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   thread.appendChild(card);
   loadRunCardTrust(root, runId);
   return card;
+}
+
+function showAgentBatteryPopover(anchor, detail) {
+  document.querySelectorAll(".chat-agent-popover").forEach((el) => el.remove());
+  const pop = document.createElement("div");
+  pop.className = "chat-agent-popover";
+  pop.dataset.testid = "maker-chat-agent-popover";
+  const kind =
+    detail.providerKind === "cloud" ? "cloud API" : "Ollama local";
+  pop.innerHTML = `
+    <strong>${detail.displayName}</strong>
+    <div>Model: ${detail.modelId}</div>
+    <div>Provider: ${detail.providerId} (${kind})</div>
+    <div class="chat-agent-popover__actions">
+      <button type="button" class="btn btn--sm" data-action="hub">Open Model Hub</button>
+      ${
+        detail.providerKind !== "cloud"
+          ? `<button type="button" class="btn btn--sm" data-action="pull">Pull ${detail.modelId}</button>`
+          : ""
+      }
+    </div>`;
+  pop.querySelector('[data-action="hub"]')?.addEventListener("click", () => {
+    const section = detail.providerKind === "cloud" ? "api-connections" : "local";
+    window.location.hash = `#/models?section=${section}`;
+    pop.remove();
+  });
+  pop.querySelector('[data-action="pull"]')?.addEventListener("click", async () => {
+    try {
+      await apiJson("/platform/ollama/pull", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: detail.modelId }),
+      });
+      toast(`Pull queued: ${detail.modelId}`, "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+    pop.remove();
+  });
+  const rect = anchor.getBoundingClientRect();
+  pop.style.position = "fixed";
+  pop.style.top = `${rect.bottom + 4}px`;
+  pop.style.left = `${rect.left}px`;
+  document.body.appendChild(pop);
+  const close = (ev) => {
+    if (!pop.contains(ev.target) && ev.target !== anchor) {
+      pop.remove();
+      document.removeEventListener("click", close);
+    }
+  };
+  setTimeout(() => document.addEventListener("click", close), 0);
+}
+
+async function loadRunCardAgents(card, runId) {
+  const strip = card?.querySelector(".chat-run-card__agents");
+  if (!strip) return;
+  try {
+    const body = await apiJson("/platform/model-bindings/defaults");
+    const roles = (body.roles || []).slice(0, 4);
+    strip.replaceChildren();
+    const label = document.createElement("span");
+    label.textContent = "Agents: ";
+    strip.appendChild(label);
+    for (const row of roles) {
+      const binding = row.binding || {};
+      const wrap = document.createElement("span");
+      wrap.className = "chat-agent-badge-wrap";
+      const badge = document.createElement("button");
+      badge.type = "button";
+      badge.className = "chat-agent-badge";
+      badge.dataset.testid = `maker-chat-agent-${row.agent_role}`;
+      const model = binding.model_id || "default";
+      const provider = binding.provider_id || "ollama";
+      badge.textContent = `${row.display_name || row.agent_role} · ${model}`;
+      badge.title = "Swap model";
+      badge.onclick = async () => {
+        const next = window.prompt(`Model id for ${row.agent_role}`, model);
+        if (!next || next === model) return;
+        try {
+          await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/swap`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              agent_role: row.agent_role,
+              provider_id: provider,
+              provider_kind: binding.provider_kind || "local",
+              model_id: next,
+            }),
+          });
+          toast(`Swapped ${row.agent_role} to ${next}`, "success");
+          await loadRunCardAgents(card, runId);
+        } catch (e) {
+          toast(String(e.message || e), "error");
+        }
+      };
+      const info = document.createElement("button");
+      info.type = "button";
+      info.className = "chat-agent-info";
+      info.textContent = "ⓘ";
+      info.title = "Battery details";
+      info.dataset.testid = `maker-chat-agent-info-${row.agent_role}`;
+      info.onclick = (ev) => {
+        ev.stopPropagation();
+        showAgentBatteryPopover(info, {
+          agentRole: row.agent_role,
+          displayName: row.display_name || row.agent_role,
+          modelId: model,
+          providerId: provider,
+          providerKind: binding.provider_kind || "local",
+        });
+      };
+      wrap.append(badge, info);
+      strip.appendChild(wrap);
+    }
+  } catch {
+    strip.textContent = "Agents: —";
+  }
 }
 
 async function loadRunCardTrust(root, runId) {

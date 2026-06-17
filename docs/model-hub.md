@@ -40,8 +40,14 @@ Readiness actions `start_ollama` / `pull_model` deep-link to Model Hub instead o
 | DELETE | `/v1/platform/provider-connections/{connection_id}` |
 | POST | `/v1/platform/provider-connections/{connection_id}/probe` |
 | POST | `/v1/platform/ollama/bootstrap` |
+| POST | `/v1/runs/{run_id}/model-bindings/swap` |
+| POST | `/v1/chat/sessions/{id}/model-bindings/swap` |
+| POST | `/v1/chat/sessions/{id}/role-claims` |
 
-Presets catalog: `configs/model_providers.yaml`.
+## Mid-chat model swap
+
+Run cards in Chat show an **Agents** strip with per-role model badges. Click a badge to swap; click **ⓘ** for battery details and Ollama pull CTA. Swaps emit `model.binding.overridden` on the run event stream and appear in theater as `model_swap` lines. IDE parity: MCP tool `nimbusware_swap_role_model`.
+
 
 ## Related
 

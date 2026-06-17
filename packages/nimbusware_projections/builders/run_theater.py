@@ -277,6 +277,21 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "body_md": body_md,
                 },
             )
+        elif et == EventType.MODEL_BINDING_OVERRIDDEN.value:
+            role = str(pl.get("agent_role") or "")
+            model = str(pl.get("model_id") or "")
+            provider = str(pl.get("provider_id") or "")
+            messages.append(
+                {
+                    **base,
+                    "actor_display": "System",
+                    "message_kind": "model_swap",
+                    "severity": "info",
+                    "headline": f"Model swap: {role}",
+                    "body_md": f"{provider} · {model}",
+                    "model_display": model,
+                },
+            )
         elif et == EventType.MODEL_PREFLIGHT_FAILED.value:
             model = str(pl.get("requested_model_id") or "")
             reason = str(pl.get("reason_code") or "failed")
