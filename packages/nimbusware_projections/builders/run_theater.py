@@ -255,6 +255,18 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
         elif et == EventType.MODEL_PREFLIGHT_PASSED.value:
             model = str(pl.get("validated_model_id") or "")
             latency = pl.get("p95_latency_ms")
+            checks = list(pl.get("checks_passed") or [])
+            inference_mode = None
+            for token in checks:
+                if isinstance(token, str) and token.startswith("inference_mode:"):
+                    inference_mode = token.split(":", 1)[-1].strip()
+                    break
+            body_md = f"p95 latency {latency}ms" if latency is not None else None
+            if inference_mode:
+                from nimbusware_orchestrator.binding_preflight import _inference_mode_label
+
+                label = _inference_mode_label(inference_mode)
+                body_md = label if body_md is None else f"{label} · {body_md}"
             messages.append(
                 {
                     **base,
@@ -262,7 +274,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "message_kind": "system",
                     "severity": "pass",
                     "headline": f"Model preflight passed: {model}",
-                    "body_md": (f"p95 latency {latency}ms" if latency is not None else None),
+                    "body_md": body_md,
                 },
             )
         elif et == EventType.MODEL_PREFLIGHT_FAILED.value:

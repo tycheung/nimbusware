@@ -115,6 +115,13 @@ function renderReadiness(mount, readiness) {
     list.appendChild(li);
   }
   head.appendChild(list);
+  if (readiness.inference_mode_label) {
+    const mode = document.createElement("p");
+    mode.className = "muted";
+    mode.dataset.testid = "maker-home-inference-mode";
+    mode.textContent = readiness.inference_mode_label;
+    head.appendChild(mode);
+  }
   if (readiness.install_profile) {
     const profile = document.createElement("p");
     profile.className = "muted";

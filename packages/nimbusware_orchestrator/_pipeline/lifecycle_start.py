@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     EventType,
@@ -21,6 +23,11 @@ from nimbusware_orchestrator._pipeline._helpers import (
     uuid4,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import LifecycleStartHost
+from nimbusware_orchestrator.binding_preflight import (
+    build_binding_preflight_report,
+    cloud_only_roles_satisfied,
+)
+from nimbusware_orchestrator.preflight import PreflightError
 
 
 class LifecycleStartMixin:
@@ -38,6 +45,23 @@ class LifecycleStartMixin:
         health = str(runtime.get("health_endpoint", "/api/tags"))
         preflight_cfg = mapping_or_empty(base.get("preflight"))
 
+        meta: dict[str, Any] = {}
+        if hasattr(self, "_run_created_metadata"):
+            raw = self._run_created_metadata(run_id)
+            if isinstance(raw, dict):
+                meta = raw
+        wf_profile = meta.get("workflow_profile")
+        work_type = meta.get("work_type")
+        repo_root = getattr(self, "_repo_root", None)
+        binding_report: dict[str, Any] = {}
+        if repo_root is not None:
+            binding_report = build_binding_preflight_report(
+                repo_root,
+                workflow_profile=wf_profile if isinstance(wf_profile, str) else None,
+                work_type=work_type if isinstance(work_type, str) else None,
+                materializer=getattr(self, "_config_materializer", None),
+            )
+
         self._store.append(
             ModelPreflightStartedEvent(
                 event_type=EventType.MODEL_PREFLIGHT_STARTED,
@@ -52,16 +76,46 @@ class LifecycleStartMixin:
             ),
         )
 
-        selected, evidence, used_primary = run_model_preflight(
-            base_url=base_url,
-            health_path=health,
-            primary_model_id=primary,
-            fallback_model_ids=fallbacks,
-            timeout_seconds=float(runtime.get("request_timeout_seconds", 60)),
-            preflight_cfg=preflight_cfg,
-        )
+        try:
+            selected, evidence, used_primary = run_model_preflight(
+                base_url=base_url,
+                health_path=health,
+                primary_model_id=primary,
+                fallback_model_ids=fallbacks,
+                timeout_seconds=float(runtime.get("request_timeout_seconds", 60)),
+                preflight_cfg=preflight_cfg,
+            )
+        except PreflightError:
+            if binding_report and cloud_only_roles_satisfied(binding_report):
+                role_rows = binding_report.get("roles") or []
+                cloud_model = primary
+                for row in role_rows:
+                    if isinstance(row, dict) and row.get("model_id"):
+                        cloud_model = str(row["model_id"])
+                        break
+                selected = cloud_model
+                used_primary = True
+                evidence = {
+                    "skipped": True,
+                    "reason": "ollama_unreachable_cloud_bindings_ok",
+                    "checks_passed": ["binding_preflight_cloud_only"],
+                    "context_tokens": 8192,
+                    "p95_latency_ms": 0,
+                    "health_latency_ms": 0,
+                    "inference_mode": binding_report.get("inference_mode"),
+                    "inference_mode_label": binding_report.get("inference_mode_label"),
+                }
+            else:
+                raise
+        else:
+            if binding_report:
+                evidence["inference_mode"] = binding_report.get("inference_mode")
+                evidence["inference_mode_label"] = binding_report.get("inference_mode_label")
 
         checks = list(evidence.get("checks_passed", []))
+        mode_label = evidence.get("inference_mode_label")
+        if isinstance(mode_label, str) and mode_label.strip():
+            checks.append(f"inference_mode:{evidence.get('inference_mode', 'unknown')}")
         self._store.append(
             ModelPreflightPassedEvent(
                 event_type=EventType.MODEL_PREFLIGHT_PASSED,

@@ -248,6 +248,41 @@ def _check_disk(repo_root: Path) -> dict[str, Any]:
     }
 
 
+def _check_model_bindings(repo_root: Path) -> dict[str, Any]:
+    from nimbusware_orchestrator.binding_preflight import (
+        build_binding_preflight_report,
+        cloud_only_roles_satisfied,
+    )
+
+    try:
+        report = build_binding_preflight_report(repo_root, work_type="patch", probe=True)
+    except OSError as exc:
+        return {
+            "status": "degraded",
+            "message": f"Binding preflight unavailable: {exc}",
+        }
+    missing = report.get("roles_without_provider") or []
+    mode = str(report.get("inference_mode") or "degraded")
+    label = str(report.get("inference_mode_label") or mode)
+    if missing:
+        status = "degraded" if cloud_only_roles_satisfied(report) else "fail"
+        msg = f"{len(missing)} role(s) lack reachable providers: {', '.join(missing[:6])}"
+    else:
+        status = "ok"
+        msg = label
+    return {
+        "status": status,
+        "message": msg,
+        "inference_mode": mode,
+        "inference_mode_label": label,
+        "roles_covered": report.get("roles_covered"),
+        "roles_total": report.get("roles_total"),
+        "roles_without_provider": missing,
+        "providers_reachable": report.get("providers_reachable"),
+        "ollama_required": report.get("ollama_required"),
+    }
+
+
 def _overall_status(checks: dict[str, dict[str, Any]]) -> str:
     statuses = {c.get("status") for c in checks.values()}
     if "fail" in statuses:
@@ -276,14 +311,30 @@ def _check_campaign_backlog(repo_root: Path) -> dict[str, Any]:
 
 
 def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
+    binding_check = _check_model_bindings(repo_root)
     checks = {
         "database": _check_database(store),
         "repo_root": _check_repo_root(repo_root),
         "memory": _check_memory(),
         "ollama": _check_ollama(repo_root),
+        "model_bindings": binding_check,
         "disk": _check_disk(repo_root),
         "campaign_backlog": _check_campaign_backlog(repo_root),
     }
+    ollama = checks.get("ollama") or {}
+    if (
+        ollama.get("status") == "fail"
+        and binding_check.get("status") in {"ok", "degraded"}
+        and not binding_check.get("ollama_required")
+        and not binding_check.get("roles_without_provider")
+    ):
+        checks["ollama"] = {
+            **ollama,
+            "status": "degraded",
+            "message": (ollama.get("message") or "Ollama down")
+            + " — cloud bindings cover active roles",
+            "skipped_for_cloud_only": True,
+        }
     manifest = edition_manifest()
     overall = _overall_status(checks)
     install_profile = env_str("NIMBUSWARE_INSTALL_PROFILE").strip() or "recommended"
@@ -292,6 +343,8 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
         "checks": checks,
         "edition": manifest.get("edition"),
         "install_profile": install_profile,
+        "inference_mode": binding_check.get("inference_mode"),
+        "inference_mode_label": binding_check.get("inference_mode_label"),
         "presets": {
             "fast": {
                 "label": "Fast prototype",
