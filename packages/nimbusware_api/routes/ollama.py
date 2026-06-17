@@ -5,9 +5,12 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, Query
 
 from nimbusware_api.admin import AdminDep
+from nimbusware_api.user import UserDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.ollama import (
+    OllamaBootstrapRequest,
+    OllamaBootstrapResponse,
     OllamaDeleteResponse,
     OllamaModelEntry,
     OllamaModelsResponse,
@@ -19,6 +22,7 @@ from nimbusware_api.schemas.ollama import (
 )
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
+from nimbusware_orchestrator.ollama_bootstrap import bootstrap_ollama_from_repo
 from nimbusware_orchestrator.ollama_manage import (
     OllamaManageError,
     delete_model,
@@ -123,6 +127,20 @@ def get_ollama_models(
     q: Annotated[str | None, Query(description="Filter installed model names")] = None,
 ) -> OllamaModelsResponse:
     return _models_response(orch, query=q)
+
+
+@router.post("/platform/ollama/bootstrap", response_model=OllamaBootstrapResponse)
+def post_ollama_bootstrap(
+    body: OllamaBootstrapRequest,
+    orch: OrchDep,
+    _: UserDep,
+) -> OllamaBootstrapResponse:
+    result = bootstrap_ollama_from_repo(orch.repo_root, choice=body.choice, skip_pull=True)
+    return OllamaBootstrapResponse(
+        ok=bool(result.get("ok")),
+        message=str(result.get("message") or ""),
+        base_url=result.get("base_url"),
+    )
 
 
 def _policy_forbidden(action: str) -> HTTPException:

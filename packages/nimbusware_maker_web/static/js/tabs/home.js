@@ -53,11 +53,24 @@ function readinessAction(check) {
         toast("Enable quick mode under Settings, or run: poetry run nimbusware-run --quick", "info");
       };
     case "start_ollama":
-      return () => toast("Start Ollama (ollama serve), then refresh Home", "info");
+      return () => {
+        window.location.hash = "/models?section=local";
+      };
     case "pull_model":
       return () => {
-        const cmd = check.pull_command || "ollama pull <model>";
-        toast(`Run in a terminal: ${cmd}`, "info");
+        window.location.hash = "/models?section=local";
+      };
+    case "model_hub_local":
+      return () => {
+        window.location.hash = "/models?section=local";
+      };
+    case "model_hub_api":
+      return () => {
+        window.location.hash = "/models?section=api-connections";
+      };
+    case "setup_llm":
+      return () => {
+        window.location.hash = "/models?section=local";
       };
     case "install_guide":
       return () => toast("See README Quick start and scripts/install_nimbusware.py", "info");
@@ -102,6 +115,26 @@ function renderReadiness(mount, readiness) {
     list.appendChild(li);
   }
   head.appendChild(list);
+  if (readiness.install_profile) {
+    const profile = document.createElement("p");
+    profile.className = "muted";
+    profile.dataset.testid = "maker-home-install-profile";
+    profile.textContent = `Install profile: ${readiness.install_profile}`;
+    head.appendChild(profile);
+  }
+  if (readiness.model_hub_cta) {
+    const cta = document.createElement("button");
+    cta.type = "button";
+    cta.className = "secondary";
+    cta.dataset.testid = "maker-home-model-hub-cta";
+    cta.textContent = readiness.model_hub_cta;
+    cta.addEventListener("click", () => {
+      const action = readiness.model_hub_action || "setup_llm";
+      const handler = readinessAction({ action });
+      handler?.();
+    });
+    head.appendChild(cta);
+  }
   mount.appendChild(head);
 }
 

@@ -53,3 +53,16 @@ class OllamaDeleteResponse(BaseModel):
 
 class OllamaPrimaryRoutingRequest(BaseModel):
     primary_model_id: str = Field(..., min_length=1)
+
+
+class OllamaBootstrapRequest(BaseModel):
+    choice: str | None = Field(
+        default=None,
+        description="Install method: winget, brew, download, script, or null for auto",
+    )
+
+
+class OllamaBootstrapResponse(BaseModel):
+    ok: bool
+    message: str
+    base_url: str | None = None

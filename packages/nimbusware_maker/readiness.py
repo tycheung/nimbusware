@@ -11,7 +11,7 @@ import yaml
 
 from agent_core.mapping import mapping_or_empty
 from nimbusware_env.edition import edition_manifest
-from nimbusware_env.env_flags import nimbusware_skip_preflight_enabled
+from nimbusware_env.env_flags import env_str, nimbusware_skip_preflight_enabled
 from nimbusware_store.memory import InMemoryEventStore
 
 INSTALL_GUIDE = "python scripts/install_nimbusware.py  (see README Quick start)"
@@ -111,8 +111,8 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
         }
         if primary:
             out["pull_command"] = f"ollama pull {primary}"
-        out["action"] = "start_ollama"
-        out["action_label"] = "Start Ollama"
+        out["action"] = "model_hub_local"
+        out["action_label"] = "Open Model Hub"
         return out
 
     names: set[str] = set()
@@ -132,8 +132,8 @@ def _check_ollama(repo_root: Path) -> dict[str, Any]:
             "primary_model": primary,
             "loaded_models": sorted(names)[:12],
             "pull_command": f"ollama pull {primary}",
-            "action": "pull_model",
-            "action_label": f"Pull {primary}",
+            "action": "model_hub_local",
+            "action_label": f"Pull {primary} in Model Hub",
         }
 
     return {
@@ -286,10 +286,12 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
     }
     manifest = edition_manifest()
     overall = _overall_status(checks)
+    install_profile = env_str("NIMBUSWARE_INSTALL_PROFILE").strip() or "recommended"
     body: dict[str, Any] = {
         "status": overall,
         "checks": checks,
         "edition": manifest.get("edition"),
+        "install_profile": install_profile,
         "presets": {
             "fast": {
                 "label": "Fast prototype",
@@ -303,4 +305,7 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
     }
     if overall == "not_ready":
         body["install_guide"] = INSTALL_GUIDE
+    if install_profile == "barebones" and checks.get("ollama", {}).get("status") == "fail":
+        body["model_hub_cta"] = "Set up local or API LLM in Model Hub"
+        body["model_hub_action"] = "setup_llm"
     return body

@@ -322,6 +322,61 @@ body:not(.mobile-mode) .mobile-only-panel {
   font-size: 0.9rem;
 }
 
+.model-hub-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.model-hub-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.model-hub-nav-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.model-hub-nav-btn.active {
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
+.model-hub-section {
+  margin-bottom: 2rem;
+  padding-top: 0.5rem;
+  scroll-margin-top: 1rem;
+}
+
+.model-hub-api-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.model-hub-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  background: var(--color-surface);
+}
+
+.model-hub-card--cursor {
+  opacity: 0.95;
+}
+
+.models-ollama-status {
+  margin-bottom: 0.5rem;
+}
+
 .approval-cards {
   display: flex;
   flex-direction: column;
