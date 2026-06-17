@@ -1,0 +1,17 @@
+version: 1
+roles:
+  planner:
+    provider_kind: local
+    provider_id: ollama
+    model_id: llama3.1:8b
+    json_mode: true
+  backend_writer:
+    provider_kind: local
+    provider_id: ollama
+    model_id: qwen2.5-coder:14b
+    json_mode: true
+  security_critic:
+    provider_kind: local
+    provider_id: ollama
+    model_id: llama3.1:8b
+    json_mode: true

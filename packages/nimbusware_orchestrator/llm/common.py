@@ -239,8 +239,19 @@ def ollama_chat_json_via_plan_patch(
     messages: list[dict[str, str]],
     timeout_seconds: float = 120.0,
     stage_name: str | None = None,
+    agent_role: str | None = None,
 ) -> dict[str, Any]:
-    """Delegate to cloud routing or ``llm_plan.ollama_chat_json`` (patch target for tests)."""
+    """Route JSON chat through ModelBindingResolver when agent_role is set."""
+    if agent_role:
+        from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
+
+        resolver = ModelBindingResolver(find_repo_root())
+        return resolver.chat_json(
+            agent_role,
+            messages=messages,
+            timeout_seconds=timeout_seconds,
+        )
     if stage_name:
         from nimbusware_config.persist import load_model_routing_dict
         from nimbusware_env import find_repo_root
