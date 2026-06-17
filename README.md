@@ -223,6 +223,9 @@ From an existing clone:
 
 ```bash
 python scripts/install_nimbusware.py
+# Barebones (no Ollama download — CI / cloud-only later):
+python scripts/install_nimbusware.py --install-profile barebones
+# or: python scripts/install_nimbusware.py --skip-ollama
 # Enterprise:
 python scripts/install_nimbusware.py --edition enterprise
 # Print documented one-liners only:
@@ -232,7 +235,7 @@ python scripts/install/bootstrap_consumer.py --print-only
 python -m nimbusware_bootstrap --print-only  # from packages/nimbusware_bootstrap
 ```
 
-The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/nimbusware_store/schema/postgres.sql`](packages/nimbusware_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`. On completion it prints **Maker Chat** at `http://127.0.0.1:8765/v1/maker/app/#/chat`, a documented **happy path** (`nimbusware-run --quick` → attach `tests/fixtures/repos/tiny_python_app` → patch gate), and full-stack steps when Postgres is configured.
+The installer can set up Poetry deps, Postgres (Docker or native), apply [`packages/nimbusware_store/schema/postgres.sql`](packages/nimbusware_store/schema/postgres.sql), seed config from the repo (`nimbusware-config seed-from-repo`), Ollama hints, and write `.env`. **Recommended** (default): Ollama + default model pulls. **Barebones** (minimal / CI): `--install-profile barebones` or `--skip-ollama` — stub/quick path without local LLM download. On completion it prints **Maker Chat** at `http://127.0.0.1:8765/v1/maker/app/#/chat`, a documented **happy path** (`nimbusware-run --quick` → attach `tests/fixtures/repos/tiny_python_app` → patch gate), and full-stack steps when Postgres is configured.
 
 Model catalog maintenance (offline-first): `python scripts/codegen/sync_model_catalog.py --help`.
 

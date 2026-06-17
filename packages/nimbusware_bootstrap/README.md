@@ -55,4 +55,21 @@ nimbusware-bootstrap --print-only
 python scripts/install_nimbusware.py --consumer-plan   # when install script is available via clone
 ```
 
-Or use the printed curl line to clone and run `install_nimbusware.py --non-interactive --skip-postgres`.
+Or use the printed curl line to clone and run `install_nimbusware.py`.
+
+**Install profiles** (v1.2):
+
+| Profile | Use case |
+|---------|----------|
+| `recommended` (default) | Ollama install + `llama3.1:8b` + `qwen2.5-coder:14b` pull; sets `NIMBUSWARE_USE_LLM=1` when ready |
+| `barebones` | Poetry + optional Postgres only; use `nimbusware-run --quick` or add models later in Models tab |
+
+```bash
+# Recommended consumer (GPU demo machine)
+curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --install-profile recommended
+
+# Barebones consumer (fast VM / CI)
+curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --skip-postgres --install-profile barebones
+```
+
+Equivalent today before `--install-profile` ships: add `--skip-ollama` for barebones LLM posture.
