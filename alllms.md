@@ -1743,11 +1743,11 @@ preflight:
 | D3 | fo1730–fo1735 | ◐ | — | ☑ | ☑ |
 | D4 | fo1740–fo1747 | ☑ | ☑ | ☑ | ☑ |
 | D5 | fo1750–fo1755 | ☑ | ☑ | ☑ | ☑ |
-| D6 | fo1760–fo1763 | ◐ | ◐ | ☑ | ☑ |
+| D6 | fo1760–fo1763 | ☑ | ◐ | ☑ | ☑ |
 | D7 | fo1770–fo1773 | ☑ | — | ☑ | ☑ |
 | D8 | fo1780–fo1789 | ◐ | ☐ | ◐ | ☑ |
 
-**Partial notes:** B2 join page UI (fo1522) ships in audit #56 Phase 2. B8 = session `metadata.folder` only (no folder CRUD). D3 = `MeshScheduler` host_only stub. D6/D4 compute list API Phase 3. D8 = host-transfer request/accept MVP (no artifact bundle).
+**Partial notes:** B8 = session `metadata.folder` only (no folder CRUD). D3 = `MeshScheduler` host_only stub. D6 fleet mesh lists session nodes via `GET /compute/nodes`. D8 = host-transfer request/accept MVP (no artifact bundle).
 
 **Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + B7 complete for Individual MVP; **B8 folder library** and **D8 full host transfer** are partial (see matrix). **B5 + D6** for Enterprise collab policy + fleet mesh list. **Track D D0–D5 + D7** for mesh MVP; D3 scheduler remains host_only until pipeline hook.
 
