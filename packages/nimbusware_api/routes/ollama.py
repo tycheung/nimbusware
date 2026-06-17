@@ -5,7 +5,6 @@ from typing import Annotated, Any
 from fastapi import APIRouter, HTTPException, Query
 
 from nimbusware_api.admin import AdminDep
-from nimbusware_api.user import UserDep
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.ollama import (
@@ -20,6 +19,7 @@ from nimbusware_api.schemas.ollama import (
     OllamaPullResponse,
     OllamaUserPolicyBody,
 )
+from nimbusware_api.user import UserDep
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.persist import load_model_routing_dict, persist_model_routing_dict
 from nimbusware_orchestrator.ollama_bootstrap import bootstrap_ollama_from_repo

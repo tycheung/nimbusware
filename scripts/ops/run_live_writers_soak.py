@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Validate production profile live-writer flags and record soak metadata."""
 
 from __future__ import annotations
 

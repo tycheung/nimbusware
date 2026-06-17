@@ -5,7 +5,6 @@ import json
 import sys
 import time
 from typing import Any
-from uuid import UUID
 
 import httpx
 

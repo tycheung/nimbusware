@@ -21,8 +21,8 @@ from nimbusware_api.routes.runs.lifecycle import router as lifecycle_router
 from nimbusware_api.routes.runs.list import router as list_router
 from nimbusware_api.routes.runs.maker_approval import router as maker_approval_router
 from nimbusware_api.routes.runs.maker_progress import router as maker_progress_router
-from nimbusware_api.routes.runs.model_bindings_swap import router as model_bindings_swap_router
 from nimbusware_api.routes.runs.memory_insert import router as memory_insert_router
+from nimbusware_api.routes.runs.model_bindings_swap import router as model_bindings_swap_router
 from nimbusware_api.routes.runs.replay_from import router as replay_from_router
 from nimbusware_api.routes.runs.research import router as research_router
 from nimbusware_api.routes.runs.slices import router as slices_router

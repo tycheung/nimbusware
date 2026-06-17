@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
 from nimbusware_orchestrator.llm.providers import (
     OllamaProvider,
     OpenAICompatibleProvider,
@@ -52,5 +50,7 @@ def test_openai_provider_chat_json_parses_response() -> None:
     with patch("httpx.post") as post:
         post.return_value.json.return_value = fake
         post.return_value.raise_for_status = lambda: None
-        out = provider.chat_json(model_id="gpt-4o-mini", messages=[{"role": "user", "content": "hi"}])
+        out = provider.chat_json(
+            model_id="gpt-4o-mini", messages=[{"role": "user", "content": "hi"}]
+        )
     assert out["verdict"] == "PASS"

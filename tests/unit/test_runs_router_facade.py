@@ -72,6 +72,10 @@ EXPECTED_RUN_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/runs/{run_id}/memory-chunks/{chunk_id}/insert"),
         ("GET", "/runs/{run_id}/critic-reliability"),
         ("POST", "/runs/{run_id}/replay-from"),
+        ("POST", "/runs/{run_id}/model-bindings/swap"),
+        ("GET", "/runs/{run_id}/model-bindings/audit"),
+        ("POST", "/runs/{run_id}/role-claims"),
+        ("DELETE", "/runs/{run_id}/role-claims/{agent_role}"),
     },
 )
 
@@ -136,6 +140,7 @@ def test_runs_sub_routers_cover_full_surface() -> None:
         "create_router",
         "detail_router",
         "lifecycle_router",
+        "model_bindings_swap_router",
         "maker_progress_router",
         "factory_evidence_router",
         "dev_env_router",

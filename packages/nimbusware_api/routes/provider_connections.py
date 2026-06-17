@@ -11,8 +11,8 @@ from nimbusware_api.errors import problem
 from nimbusware_api.user import UserDep
 from nimbusware_config.provider_connections import (
     ProviderConnectionStore,
-    encode_secret_payload,
     _row_to_public,
+    encode_secret_payload,
 )
 from nimbusware_env.edition import is_enterprise
 from nimbusware_env.env_flags import nimbusware_database_url

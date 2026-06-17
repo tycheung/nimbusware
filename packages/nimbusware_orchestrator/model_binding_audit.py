@@ -5,7 +5,6 @@ from typing import Any
 from agent_core.models import EventType
 from nimbusware_store.protocol import serialized_event_from_row
 
-
 _BINDING_EVENT_TYPES = frozenset(
     {
         EventType.MODEL_BINDING_OVERRIDDEN.value,

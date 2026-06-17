@@ -9,9 +9,9 @@ from psycopg.rows import dict_row
 
 from nimbusware_auth.crypto import hash_password
 from nimbusware_auth.models import (
+    SESSION_PARTICIPANT_ROLES,
     InviteRecord,
     ParticipantRecord,
-    SESSION_PARTICIPANT_ROLES,
     UserRecord,
 )
 
@@ -72,11 +72,7 @@ class InMemoryUserStore:
         q = query.strip().lower()
         rows = list(self._users.values())
         if q:
-            rows = [
-                u
-                for u in rows
-                if q in u.username.lower() or q in u.display_name.lower()
-            ]
+            rows = [u for u in rows if q in u.username.lower() or q in u.display_name.lower()]
         return sorted(rows, key=lambda u: u.username)[: max(1, min(limit, 100))]
 
 

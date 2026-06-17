@@ -1,5 +1,3 @@
-"""Postgres store for per-user provider API connections (v1.2 Track C2)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -51,7 +49,9 @@ def _row_from_record(rec: dict[str, Any]) -> ProviderConnectionRow:
         base_url=rec.get("base_url"),
         default_model_id=rec.get("default_model_id"),
         secret_set=bool(rec.get("secret_blob")),
-        last_probe_at=last_probe.astimezone(timezone.utc) if isinstance(last_probe, datetime) else None,
+        last_probe_at=last_probe.astimezone(timezone.utc)
+        if isinstance(last_probe, datetime)
+        else None,
         last_probe_ok=rec.get("last_probe_ok"),
         created_at=created.astimezone(timezone.utc) if isinstance(created, datetime) else None,
         updated_at=updated.astimezone(timezone.utc) if isinstance(updated, datetime) else None,
@@ -91,7 +91,9 @@ def encode_secret_payload(
     return encrypt_secret(api_key.strip())
 
 
-def decode_secret_payload(blob: bytes | None, *, connection_kind: str) -> ProviderConnectionSecret | None:
+def decode_secret_payload(
+    blob: bytes | None, *, connection_kind: str
+) -> ProviderConnectionSecret | None:
     plain = decrypt_secret(blob)
     if plain is None:
         return None
@@ -113,7 +115,9 @@ class ProviderConnectionStore:
     def __init__(self, conninfo: str) -> None:
         self._conninfo = conninfo
 
-    def list_for_user(self, *, user_id: str, tenant_id: str | None = None) -> list[ProviderConnectionRow]:
+    def list_for_user(
+        self, *, user_id: str, tenant_id: str | None = None
+    ) -> list[ProviderConnectionRow]:
         clauses = ["user_id = %s"]
         params: list[Any] = [user_id]
         if tenant_id is not None:
@@ -255,6 +259,9 @@ class ProviderConnectionStore:
                     )
                     rec = cur.fetchone()
             conn.commit()
+        if rec is None:
+            msg = "provider connection upsert returned no row"
+            raise RuntimeError(msg)
         return _row_from_record(rec)
 
     def delete(self, connection_id: UUID, *, user_id: str) -> bool:

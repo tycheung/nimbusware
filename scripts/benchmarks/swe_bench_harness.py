@@ -47,7 +47,9 @@ def _write_benchmark_snapshots(
 
     if store is None or not summary.run_id:
         return
-    from nimbusware_orchestrator.fleet_critic_reliability import critic_reliability_summary_from_events
+    from nimbusware_orchestrator.fleet_critic_reliability import (
+        critic_reliability_summary_from_events,
+    )
 
     event_rows = store.list_run_events(str(summary.run_id))
     critic = critic_reliability_summary_from_events(event_rows)

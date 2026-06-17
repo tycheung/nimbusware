@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes import chat_start
+from nimbusware_api.routes.auth import OptionalUserDep
+from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.routes.chat_common import (
     ActiveLeafBody,
     AppendTurnBody,
@@ -33,11 +35,11 @@ from nimbusware_api.routes.chat_handlers import (
     session_or_404 as _session_or_404,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from nimbusware_api.routes.auth import OptionalUserDep
-from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.user import UserDep
 from nimbusware_auth.permissions import enforce_collab_turn_write
-from nimbusware_env.env_flags import nimbusware_collab_enabled
+from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
+from nimbusware_env.env_flags import nimbusware_collab_enabled, nimbusware_database_url
+from nimbusware_iam.context import resolve_store_tenant_id
 from nimbusware_maker.chat_service import (
     classification_dict,
     session_response,
@@ -49,9 +51,6 @@ from nimbusware_orchestrator.model_binding_swap import (
     append_role_claim,
     append_role_release,
 )
-from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
-from nimbusware_env.env_flags import nimbusware_database_url
-from nimbusware_iam.context import resolve_store_tenant_id
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_start.router)
@@ -120,9 +119,7 @@ def get_chat_session(
     session = _session_or_404(chat_store, session_id)
     payload = session_response(chat_store, session, include_turns=include_turns)
     if nimbusware_collab_enabled():
-        payload["participants"] = [
-            p.to_dict() for p in collab_store.list_participants(session_id)
-        ]
+        payload["participants"] = [p.to_dict() for p in collab_store.list_participants(session_id)]
         if user is not None:
             part = collab_store.get_participant(session_id, user.user_id)
             if part is not None:
@@ -470,12 +467,17 @@ def session_role_release(
     chat_store: ChatStoreDep,
     store: StoreDep,
     _user: UserDep,
-    run_id: UUID | None = Query(default=None),
+    run_id: Annotated[UUID | None, Query()] = None,
 ) -> dict[str, Any]:
     _session_or_404(chat_store, session_id)
     resolved_run_id = run_id
     if resolved_run_id is None:
         sess = chat_store.get_session(session_id)
+        if sess is None:
+            raise HTTPException(
+                status_code=404,
+                detail=problem("session_not_found", "session not found"),
+            )
         resolved_run_id = sess.run_id
     if resolved_run_id is None or not store.list_run_events(str(resolved_run_id)):
         raise HTTPException(

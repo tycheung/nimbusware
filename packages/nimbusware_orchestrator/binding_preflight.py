@@ -197,7 +197,6 @@ def build_binding_preflight_report(
 
 
 def cloud_only_roles_satisfied(report: dict[str, Any]) -> bool:
-    """True when Ollama can be skipped: all active roles reachable and none need local."""
     if report.get("ollama_required"):
         return False
     return not report.get("roles_without_provider")

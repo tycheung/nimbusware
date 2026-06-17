@@ -10,11 +10,11 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, CollabStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep, OptionalUserDep
+from nimbusware_api.routes.chat_collab_common import actor_user_id, require_collab_enabled
 from nimbusware_api.routes.chat_handlers import session_or_404 as _session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.models import SESSION_PARTICIPANT_ROLES
 from nimbusware_auth.permissions import require_session_participant
-from nimbusware_api.routes.chat_collab_common import actor_user_id, require_collab_enabled
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 
@@ -182,7 +182,7 @@ def create_session_invite(
     user: OptionalUserDep,
 ) -> InviteResponse:
     _require_collab()
-    session = _session_or_404(chat_store, session_id)
+    _session_or_404(chat_store, session_id)
     actor = _actor_id(request, user)
     require_session_participant(
         collab_store,

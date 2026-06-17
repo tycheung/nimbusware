@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
 
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem

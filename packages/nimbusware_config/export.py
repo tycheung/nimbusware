@@ -103,7 +103,6 @@ def export_provider_connections_metadata(
     *,
     user_id: str = "",
 ) -> int:
-    """Write connection metadata (no secrets) for gitops review."""
     from nimbusware_config.provider_connections import ProviderConnectionStore
     from nimbusware_orchestrator.merge import atomic_write_yaml
 

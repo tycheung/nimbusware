@@ -90,6 +90,7 @@ Example MCP args:
 | `nimbusware_chat_graph` | `GET /v1/chat/sessions/{id}/graph` — full conversation DAG |
 | `nimbusware_chat_fork` | `POST /v1/chat/sessions/{id}/fork` — restore from turn, retain sibling branches |
 | `nimbusware_chat_select_branch` | `PUT /v1/chat/sessions/{id}/active-leaf` — navigate to branch tip |
+| `nimbusware_swap_role_model` | `POST /v1/runs/{run_id}/model-bindings/swap` — mid-run agent model swap |
 
 Admin **operator chat** (`POST /v1/admin/ui/operator-chat/message`) classifies plain-language intent via the same `/chat/classify` rules, returns structured `classification` for classifier cards in the Admin SPA, and suggests `/run auto` with the mapped workflow profile.
 

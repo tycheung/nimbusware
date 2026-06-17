@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from nimbusware_orchestrator.binding_preflight import (
     active_roles_for_context,
     build_binding_preflight_report,

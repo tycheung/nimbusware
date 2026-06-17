@@ -14,8 +14,8 @@ from nimbusware_api.routes.enterprise.fleet_critic_reliability import (
 )
 from nimbusware_api.routes.enterprise.fleet_learnings import router as fleet_learnings_router
 from nimbusware_api.routes.enterprise.fleet_memory import router as fleet_memory_router
-from nimbusware_api.routes.enterprise.fleet_ollama_sli import router as fleet_ollama_sli_router
 from nimbusware_api.routes.enterprise.fleet_mesh import router as fleet_mesh_router
+from nimbusware_api.routes.enterprise.fleet_ollama_sli import router as fleet_ollama_sli_router
 from nimbusware_api.routes.enterprise.fleet_worker import router as fleet_worker_router
 from nimbusware_api.routes.enterprise.iam import router as iam_router
 from nimbusware_api.routes.enterprise.model_policy import router as model_policy_router

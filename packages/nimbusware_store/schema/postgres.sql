@@ -220,7 +220,10 @@ CREATE TABLE IF NOT EXISTS event_store (
     'maintenance.refactor.passed',
     'maintenance.architecture.started',
     'maintenance.architecture.passed',
-    'completion.evaluated'
+    'completion.evaluated',
+    'model.binding.overridden',
+    'workload.role_claimed',
+    'workload.role_released'
   ))
 );
 

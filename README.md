@@ -326,7 +326,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 
 - First-run wizard: folder → readiness → **fit-ranked model** → intent → create run (`GET /v1/platform/hardware` + ranked models)
 - **Home models-first strip** — hardware tier + top ranked model before readiness (`GET /platform/hardware`, `GET /platform/models/ranked`); CTA opens Models tab wizard
-- **Models** tab: three-step preset wizard (`GET /platform/models/ranked` → preset → `POST /platform/models/apply-preset`); Ollama pull unchanged
+- **Models** tab: Model Hub — local Ollama + API connections (`#/models?section=local|api-connections`); ranked preset wizard; per-role bindings in Settings **Agent & Models**
 - **Optional hybrid routing** (off by default): `GET /v1/platform/routing-presets`, `POST /v1/platform/routing-presets/apply` — presets in [`configs/routing_presets.yaml`](configs/routing_presets.yaml) (`local_only`, `local_cloud_critique`, `cloud_plan_local_implement`); critique/plan LLM stages honor `stage_providers`; `GET /v1/preflight-history` includes `cloud_preflight` when cloud runtime is configured
 - Project picker backed by `nimbusware_project` (`GET/POST/PATCH /v1/projects` — **no admin token**; `DELETE` is admin-only)
 - Per-project run history and **Settings** tab (hardware tier + resource governor sliders, Ollama model list, readiness presets, auto-advance hint)
@@ -370,6 +370,17 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - **Operator ribbons** — dev-env start/stop/regression, interjection Next/Last queue, trust/autopilot slider (`GET/PUT /v1/runs/{id}/autopilot`), improvement/resolution council summary from timeline
 - **Plan / completion** — Plan tab campaign backlog tree with steer actions; factory tier + ISM coverage on maker-progress; factory evidence scorecard and zip export
 - **Production profile** — `nimbusware_production` uses live writers (`integration_adapter_writer.stub_only: false`, `refactor.stub_only: false`)
+
+**v1.2 — Model Hub, routing, collab, mesh**
+
+- **Install profiles** — `recommended` (default: Ollama + model pulls) and `barebones` (`--install-profile barebones`); see [`docs/install-profiles.md`](docs/install-profiles.md)
+- **Model Hub** — `#/models` local Ollama install/list/pull + API connections vault (`GET/PUT /v1/platform/provider-connections`); Home readiness deep-links to Model Hub ([`docs/model-hub.md`](docs/model-hub.md))
+- **Per-role model routing** — `ModelBindingResolver` for all agent LLM calls; Settings **Agent & Models** grid (`GET/PUT /v1/platform/model-bindings/defaults`); relaxed provider-aware preflight (`GET /v1/platform/model-bindings/preflight`)
+- **Mid-chat model swap** — Agents strip on Chat run cards; `POST /v1/runs/{id}/model-bindings/swap` and session-scoped swap; role claim/release; MCP `nimbusware_swap_role_model`
+- **Hybrid routing shim** — legacy `stage_providers` in [`configs/model-routing.yaml`](configs/model-routing.yaml) maps into resolver until Settings defaults fully replace presets ([`docs/hybrid-routing-migration.md`](docs/hybrid-routing-migration.md))
+- **Collaborative chat** (opt-in: `NIMBUSWARE_COLLAB_ENABLED=1`) — local auth (`POST /v1/auth/signup|signin`), session participants and invites, read-only peanut gallery, SSE session stream stub ([ADR 023](docs/adr/023-collaborative-chat-sessions.md))
+- **Compute mesh MVP** — node register/heartbeat (`POST /v1/compute/nodes/register`), work-unit queue stubs, `nimbusware-compute-worker` CLI, Chat compute nodes strip ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md))
+- **Enterprise model policy** — `GET/PUT /v1/enterprise/model-policy`; per-run binding audit `GET /v1/runs/{id}/model-bindings/audit`
 
 **Review**
 

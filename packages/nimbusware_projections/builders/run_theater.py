@@ -261,12 +261,12 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                 if isinstance(token, str) and token.startswith("inference_mode:"):
                     inference_mode = token.split(":", 1)[-1].strip()
                     break
-            body_md = f"p95 latency {latency}ms" if latency is not None else None
+            preflight_body = f"p95 latency {latency}ms" if latency is not None else None
             if inference_mode:
                 from nimbusware_orchestrator.binding_preflight import _inference_mode_label
 
                 label = _inference_mode_label(inference_mode)
-                body_md = label if body_md is None else f"{label} · {body_md}"
+                preflight_body = label if preflight_body is None else f"{label} · {preflight_body}"
             messages.append(
                 {
                     **base,
@@ -274,7 +274,7 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                     "message_kind": "system",
                     "severity": "pass",
                     "headline": f"Model preflight passed: {model}",
-                    "body_md": body_md,
+                    "body_md": preflight_body,
                 },
             )
         elif et == EventType.MODEL_BINDING_OVERRIDDEN.value:

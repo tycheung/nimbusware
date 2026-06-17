@@ -22,7 +22,6 @@ class MeshScheduler:
         session_id: UUID | None = None,
         claims: dict[str, str] | None = None,
     ) -> dict[str, UUID | None]:
-        """Return stage_name → node_id (None = host). MVP always routes to host."""
         _ = parallel_group, session_id, claims
         return {name: None for name in stage_names}
 

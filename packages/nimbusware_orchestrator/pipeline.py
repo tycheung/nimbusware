@@ -12,6 +12,14 @@ for _name, _value in vars(_helpers).items():
         continue
     globals()[_name] = _value
 
+from nimbusware_orchestrator.binding_preflight import (  # noqa: E402
+    build_binding_preflight_report,
+    cloud_only_roles_satisfied,
+)
+
+globals()["build_binding_preflight_report"] = build_binding_preflight_report
+globals()["cloud_only_roles_satisfied"] = cloud_only_roles_satisfied
+
 _finalize_run_orchestrator_class(RunOrchestrator)
 
 __all__ = [

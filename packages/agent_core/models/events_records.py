@@ -32,14 +32,12 @@ from agent_core.models.events_payloads import (
     MaintenanceRefactorStartedPayload,
     MemoryIndexedPayload,
     MemoryRetrievalEmittedPayload,
+    ModelBindingOverriddenPayload,
     ModelPreflightFailedPayload,
     ModelPreflightPassedPayload,
     ModelPreflightStartedPayload,
-    ModelBindingOverriddenPayload,
     ModelSelectedFallbackPayload,
     ModelSelectedPrimaryPayload,
-    WorkloadRoleClaimedPayload,
-    WorkloadRoleReleasedPayload,
     PersonaShelfUpdatedPayload,
     ResearchBriefEmittedPayload,
     ResearchBriefReviewPayload,
@@ -62,6 +60,8 @@ from agent_core.models.events_payloads import (
     StitchFailedPayload,
     StitchLicenseCheckedPayload,
     StitchPlanEmittedPayload,
+    WorkloadRoleClaimedPayload,
+    WorkloadRoleReleasedPayload,
 )
 
 

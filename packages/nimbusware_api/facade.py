@@ -14,11 +14,13 @@ from nimbusware_api.routes import (
     chat,
     chat_participants,
     chat_stream,
+    compute,
     config_ops,
     critic_packs,
     custom_agents,
     integrations,
     memory_chunks,
+    model_bindings,
     ollama,
     operator_settings,
     personas,
@@ -27,11 +29,10 @@ from nimbusware_api.routes import (
     preflight,
     project_context_artifacts,
     projects,
+    provider_connections,
     runs,
     scraper_artifacts,
 )
-from nimbusware_api.routes import model_bindings, provider_connections
-from nimbusware_api.routes import compute
 from nimbusware_api.routes.enterprise import build_enterprise_router
 from nimbusware_api.routes.maker_push import router as maker_push_router
 from nimbusware_api.routes.web_bootstrap import router as web_bootstrap_router
