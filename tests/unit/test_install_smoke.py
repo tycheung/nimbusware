@@ -31,6 +31,7 @@ def test_install_help_documents_ollama_flags() -> None:
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "--skip-ollama" in proc.stdout
     assert "--install-ollama" in proc.stdout
+    assert "--install-profile" in proc.stdout
 
 
 def test_install_consumer_plan_exits_zero() -> None:
@@ -43,6 +44,7 @@ def test_install_consumer_plan_exits_zero() -> None:
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "curl" in proc.stdout.lower()
+    assert "install-profile" in proc.stdout
 
 
 def test_install_print_one_command_exits_zero() -> None:

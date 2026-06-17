@@ -33,5 +33,7 @@ def test_one_command_install_lines_documented(capsys) -> None:
     assert "--non-interactive" in out
     assert "--skip-postgres" in out
     lines = mod._one_command_install_lines(_REPO)
-    assert len(lines) >= 2
+    assert len(lines) >= 3
     assert all("--non-interactive" in line for line in lines)
+    assert any("--install-profile recommended" in line for line in lines)
+    assert any("--install-profile barebones" in line for line in lines)

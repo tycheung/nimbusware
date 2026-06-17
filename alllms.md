@@ -17,7 +17,7 @@
 | **Chat congruence** | Theater shows `actor_display` | **Per-actor model badge** + live swap; **human peanut gallery** with session roles |
 | **Collaboration** | Single operator per browser; localhost open | **Invite link (Individual)** or **org directory (Enterprise)**; read / write / admin participant roles; **folders / groups / tags** for conversation library + bulk ACL |
 | **Default posture** | Local-first, cloud opt-in | **Local-first defaults per role**, cloud per-role opt-in — not local-only nor cloud-only |
-| **First install** | Ollama bootstrap runs unless `--skip-ollama`; non-interactive auto-installs via winget/brew | **`--install-profile`** **recommended** (default) or **barebones** (opt-in minimal) |
+| **First install** | `--install-profile` recommended (default) or barebones | Model Hub API connections (C2) |
 | **Model / API UX** | Models tab = Ollama rank + pull only; API keys in `.env` only | **Model Hub** tab — local models + **API connections** (keys in UI vault); **battery detail popover** + one-click Ollama pull |
 | **Compute** | Single machine; `asyncio.gather` + optional Enterprise Redis fleet worker | **Host-coordinated mesh** — parallel stages on **claimer’s machine** (`execute_on: self` only); host transfer with timed consent |
 | **Workload assignment** | Host runs all agents | **Manual claim**, **auto share**, or **auto optimize**; unlimited claims with compute headroom warnings |
@@ -263,14 +263,14 @@ Single entrypoint: **`scripts/install_nimbusware.py`** (wrapper; implementation 
 |-----------|--------|----------------|
 | **Poetry deps + slice LSP** | ✅ Current | Sets `NIMBUSWARE_SLICE_LSP_ENABLED=1`; pyright via `poetry install` |
 | **Postgres menu** | ✅ Current | Interactive `postgres_setup_menu.py`; `--non-interactive` defaults Docker or skip |
-| **Ollama step** | ⚠️ **Default-on today** | Runs unless `--skip-ollama`. Non-interactive auto-installs (winget/brew/script). Target: explicit **`--install-profile`** (C1) |
-| **`enable_nimbusware_llm_in_env`** | ✅ | Only when Ollama bootstrap succeeds — barebones/`--skip-ollama` skips |
-| **Default profile (target)** | ☐ C1 | **`recommended`** default; **`barebones`** via `--install-profile barebones` or `--skip-ollama` |
+| **Ollama step** | ✅ **Profile-driven** | `recommended` (default): bootstrap + model pull; `barebones` / `--skip-ollama`: skip |
+| **`enable_nimbusware_llm_in_env`** | ✅ | Only when Ollama bootstrap succeeds — barebones skips |
+| **Default profile** | ✅ C1 | **`recommended`** default; **`barebones`** via `--install-profile barebones` |
 | **Models tab (`#/models`)** | ✅ Partial | Ranked fit + preset wizard + `POST /platform/ollama/pull` — **no Ollama install UI, no installed-model list, no API keys** (C3) |
 | **Home readiness** | ⚠️ Drift | `start_ollama` / `pull_model` actions → **terminal toasts**, not Models tab deep links (C3 fo1614) |
 | **first-install-timing.md** | ⚠️ Drift | Assumes Ollama always in install path; missing barebones vs recommended rows (C0/C1) |
-| **Bootstrap `--run`** | ⚠️ Drift | `--non-interactive --skip-postgres --no-poetry-install` — omits `--skip-ollama` / profile (C1) |
-| **Tests** | ✅ Minimal | `test_install_smoke.py` (check-only); profile matrix tests planned C1 fo1592 |
+| **Bootstrap `--run`** | ✅ C1 | Barebones uses `--install-profile barebones` |
+| **Tests** | ✅ C1 | `test_install_smoke.py`, `test_install_profile.py`, happy-path lines |
 
 **Normative fix:** One **`install_nimbusware.py`** script; **install profile** + **edition** select defaults only (not separate installers). **Recommended** is the default (Ollama + qwen + llama pre-pull); **Barebones** is opt-in for CI/cloud-only/minimal VMs. Extra LLM/API setup always available in **Model Hub**.
 
@@ -1699,7 +1699,7 @@ preflight:
 | Phase | Epics | Code | UI | Tests | Docs |
 |-------|-------|------|-----|-------|------|
 | C0 | fo1590–fo1592 | ☑ | — | ☑ | ☑ |
-| C1 | fo1593–fo1598 | ☐ | ☐ | ☐ | ☐ |
+| C1 | fo1593–fo1598 | ☑ | ☑ | ☑ | ☑ |
 | C2 | fo1600–fo1605 | ☐ | — | ☐ | ☐ |
 | C3 | fo1610–fo1616 | ☐ | ☐ | ☐ | ☐ |
 | C4 | fo1617–fo1620 | ☐ | ☐ | ☐ | ☐ |

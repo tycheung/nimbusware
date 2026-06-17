@@ -15,6 +15,9 @@ MIN_PYTHON = (3, 10)
 REC_PYTHON = (3, 11)
 SCHEMA_REL = Path("packages/nimbusware_store/schema/postgres.sql")
 COMPOSE_FILE = "docker-compose.yml"
+INSTALL_PROFILE_RECOMMENDED = "recommended"
+INSTALL_PROFILE_BAREBONES = "barebones"
+_INSTALL_PROFILE_CHOICES = (INSTALL_PROFILE_RECOMMENDED, INSTALL_PROFILE_BAREBONES)
 
 
 class SetupError(RuntimeError):
@@ -604,15 +607,112 @@ def _fixture_workspace(repo: Path, name: str) -> Path:
     return (repo / "tests" / "fixtures" / "repos" / name).resolve()
 
 
+def _profile_explicit_in_argv(argv: list[str] | None) -> bool:
+    tokens = argv if argv is not None else sys.argv[1:]
+    return any(
+        token == "--install-profile"
+        or token.startswith("--install-profile=")
+        or token == "--skip-ollama"
+        for token in tokens
+    )
+
+
+def _prompt_install_profile() -> str:
+    _log("")
+    _log("=" * 80)
+    _log("How much do you want to set up now?")
+    _log("=" * 80)
+    _log("")
+    _log("  [1] Recommended (default)")
+    _log("      Installs Ollama (if needed) and downloads qwen2.5-coder:14b + llama3.1:8b.")
+    _log("      Enables local LLM runs (NIMBUSWARE_USE_LLM=1). Best for: first-time local dev.")
+    _log("")
+    _log("  [2] Barebones")
+    _log("      API + Maker + Chat. No Ollama download. Add models later in Models tab.")
+    _log("      Best for: cloud-only APIs, CI, quick stub runs (nimbusware-run --quick).")
+    _log("")
+    while True:
+        raw = input("  Enter 1 or 2 [default: 1]: ").strip()
+        if not raw or raw == "1":
+            return INSTALL_PROFILE_RECOMMENDED
+        if raw == "2":
+            return INSTALL_PROFILE_BAREBONES
+        _log("  Please enter 1 or 2.")
+
+
+def _resolve_install_profile(args: argparse.Namespace, argv: list[str] | None) -> str:
+    if args.skip_ollama:
+        return INSTALL_PROFILE_BAREBONES
+    profile = getattr(args, "install_profile", INSTALL_PROFILE_RECOMMENDED)
+    if profile not in _INSTALL_PROFILE_CHOICES:
+        raise SetupError(f"Invalid install profile: {profile}")
+    if (
+        not args.non_interactive
+        and not args.check_only
+        and sys.stdin.isatty()
+        and not _profile_explicit_in_argv(argv)
+    ):
+        profile = _prompt_install_profile()
+    return profile
+
+
+def _apply_install_profile_to_args(args: argparse.Namespace, profile: str) -> None:
+    args.install_profile = profile
+    if profile == INSTALL_PROFILE_BAREBONES:
+        args.skip_ollama = True
+        if args.ollama_choice is None:
+            args.ollama_choice = "skip"
+        return
+    if args.skip_ollama:
+        return
+    if args.install_ollama:
+        return
+    if args.non_interactive or args.ollama_pull_only:
+        return
+    # Recommended interactive: bootstrap_ollama prompts via ollama menu when choice is None.
+
+
+def _persist_install_profile(repo: Path, profile: str) -> None:
+    packages = repo / "packages"
+    if str(packages) not in sys.path:
+        sys.path.insert(0, str(packages))
+    from nimbusware_env import set_env_var  # noqa: PLC0415
+
+    path = set_env_var("NIMBUSWARE_INSTALL_PROFILE", profile, repo_root=repo)
+    _log(f"  Install profile: {profile} ({path})")
+
+
+def _apply_edition_profile_defaults(args: argparse.Namespace, edition_name: str) -> None:
+    if edition_name != "enterprise":
+        return
+    if args.install_profile == INSTALL_PROFILE_RECOMMENDED and not args.seed_config:
+        args.seed_config = True
+        _log("  Enterprise recommended profile: enabling --seed-config after schema apply.")
+    if (
+        args.install_profile == INSTALL_PROFILE_BAREBONES
+        and args.non_interactive
+        and not args.skip_postgres
+        and args.postgres_choice is None
+    ):
+        args.postgres_choice = "docker"
+        _log("  Enterprise barebones: defaulting Postgres to Docker in --non-interactive mode.")
+
+
 def _one_command_install_lines(repo: Path) -> list[str]:
     return [
         (
             "python scripts/install_nimbusware.py --clone <repo-url> "
-            "--target-dir ./Nimbusware --non-interactive --skip-postgres"
+            "--target-dir ./Nimbusware --non-interactive --skip-postgres "
+            "--install-profile recommended"
+        ),
+        (
+            "python scripts/install_nimbusware.py --clone <repo-url> "
+            "--target-dir ./Nimbusware --non-interactive --skip-postgres "
+            "--install-profile barebones"
         ),
         (
             f"cd {repo} && python scripts/install_nimbusware.py "
-            "--non-interactive --skip-postgres --no-poetry-install"
+            "--non-interactive --skip-postgres --no-poetry-install --install-profile barebones"
         ),
     ]
 
@@ -649,10 +749,12 @@ def _print_next_steps(
     with_faiss: bool,
     slice_lsp_ok: bool,
     edition_name: str = "individual",
+    install_profile: str = INSTALL_PROFILE_RECOMMENDED,
 ) -> None:
     _log("")
     _log("=== Nimbusware setup complete ===")
     _log(f"  Edition:  {edition_name}")
+    _log(f"  Profile:  {install_profile}")
     _log(f"  Repo:     {repo}")
     _log(f"  Database: {url}")
     _log("")
@@ -687,15 +789,20 @@ def _print_next_steps(
     _log("  cd packages/nimbusware_admin_ui && npm ci && npm run build")
     _log("Model catalog (optional):")
     _log("  python scripts/codegen/sync_model_catalog.py --help")
-    if ollama_ok:
+    if install_profile == INSTALL_PROFILE_BAREBONES:
+        _log("")
+        _log("Barebones profile: local LLM was skipped.")
+        _log("  poetry run nimbusware-run --quick   # stub path, no Postgres required")
+        _log("  Maker Models tab (#/models) — install Ollama, pull models, or add API connections")
+    elif ollama_ok:
         _log("")
         _log("Ollama: ready (NIMBUSWARE_USE_LLM=1 if enabled in .env)")
         _log("  poetry run nimbusware-preflight   # verify model routing")
     else:
         _log("")
         _warn(
-            "Ollama was not configured. Re-run install with an Ollama menu choice, "
-            "or install from https://ollama.com and set NIMBUSWARE_USE_LLM=1 in .env.",
+            "Recommended profile: Ollama was not fully configured. "
+            "Use Maker Models tab (#/models) or re-run install with --install-profile recommended.",
         )
     if edition_name == "enterprise":
         _log("")
@@ -907,9 +1014,18 @@ def main(argv: list[str] | None = None) -> int:
         help="Non-interactive Postgres setup method (skips the menu)",
     )
     parser.add_argument(
+        "--install-profile",
+        choices=_INSTALL_PROFILE_CHOICES,
+        default=INSTALL_PROFILE_RECOMMENDED,
+        help=(
+            "recommended: Ollama + default model pulls (default); "
+            "barebones: skip local LLM setup"
+        ),
+    )
+    parser.add_argument(
         "--skip-ollama",
         action="store_true",
-        help="Do not install or configure Ollama",
+        help="Do not install or configure Ollama (implies barebones LLM posture)",
     )
     parser.add_argument(
         "--install-ollama",
@@ -964,15 +1080,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.consumer_plan:
         clone_url = "https://github.com/nimbusware/nimbusware.git"
-        curl_line = (
+        recommended = (
             f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
             f"| python - --clone {clone_url} --target-dir ./Nimbusware "
-            "--non-interactive --skip-postgres"
+            "--non-interactive --skip-postgres --install-profile recommended"
+        )
+        barebones = (
+            f"curl -fsSL {clone_url}/raw/main/scripts/install_nimbusware.py "
+            f"| python - --clone {clone_url} --target-dir ./Nimbusware "
+            "--non-interactive --skip-postgres --install-profile barebones"
         )
         _log("Consumer install plan (clean VM — no monorepo checkout required):")
-        _log(f"  1. {curl_line}")
-        _log("  2. pip install nimbusware-bootstrap && nimbusware-bootstrap --print-only")
-        _log("  3. cd Nimbusware && poetry run nimbusware-run --quick")
+        _log(f"  1. Recommended: {recommended}")
+        _log(f"  2. Barebones:    {barebones}")
+        _log("  3. pip install nimbusware-bootstrap && nimbusware-bootstrap --print-only")
+        _log("  4. cd Nimbusware && poetry run nimbusware-run --quick")
         return 0
 
     repo = args.repo_root.resolve() if args.repo_root else _repo_root_from_script()
@@ -1010,7 +1132,11 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     _log(f"\nRepository: {repo}")
+    install_profile = _resolve_install_profile(args, argv)
+    _apply_install_profile_to_args(args, install_profile)
     edition_name = _configure_edition(args, repo)
+    _apply_edition_profile_defaults(args, edition_name)
+    _persist_install_profile(repo, install_profile)
     poetry = _ensure_poetry(install=not args.no_install_poetry)
 
     if not args.no_poetry_install:
@@ -1099,6 +1225,7 @@ def main(argv: list[str] | None = None) -> int:
         with_faiss=args.with_faiss,
         slice_lsp_ok=lsp_ok,
         edition_name=edition_name,
+        install_profile=install_profile,
     )
     return 0
 

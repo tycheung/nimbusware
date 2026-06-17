@@ -8,11 +8,11 @@ from pathlib import Path
 _DEFAULT_REPO = "https://github.com/tycheung/nimbusware.git"
 
 
-def curl_bootstrap_line(repo_url: str) -> str:
+def curl_bootstrap_line(repo_url: str, *, profile: str = "recommended") -> str:
     return (
         f"curl -fsSL {repo_url}/raw/main/scripts/install_nimbusware.py "
         f"| python - --clone {repo_url} --target-dir ./Nimbusware "
-        "--non-interactive --skip-postgres"
+        f"--non-interactive --skip-postgres --install-profile {profile}"
     )
 
 
@@ -35,11 +35,16 @@ def run(argv: list[str] | None = None) -> int:
     parser.add_argument("--run", action="store_true", help="Run non-interactive in-repo install")
     args = parser.parse_args(argv)
     install = resolve_install_script()
-    lines = [curl_bootstrap_line(args.repo_url), pip_hint()]
+    lines = [
+        curl_bootstrap_line(args.repo_url, profile="recommended"),
+        curl_bootstrap_line(args.repo_url, profile="barebones"),
+        pip_hint(),
+    ]
     if install is not None:
         lines.insert(
             1,
-            f"python {install} --non-interactive --skip-postgres --no-poetry-install",
+            f"python {install} --non-interactive --skip-postgres --no-poetry-install "
+            "--install-profile barebones",
         )
     if args.print_only or not args.run:
         print("Nimbusware consumer bootstrap options:")
@@ -59,6 +64,8 @@ def run(argv: list[str] | None = None) -> int:
             "--non-interactive",
             "--skip-postgres",
             "--no-poetry-install",
+            "--install-profile",
+            "barebones",
         ],
         cwd=install.parents[1],
     )
