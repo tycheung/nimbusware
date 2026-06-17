@@ -78,6 +78,30 @@ export async function mountSettings(root) {
       </div>
       <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
     </section>
+    <section id="settings-compute-sharing" class="panel" data-testid="maker-settings-compute-sharing">
+      <h3>Compute sharing</h3>
+      <p class="muted">Distributed mesh defaults (v1.2 stub).</p>
+      <label>
+        <input type="checkbox" id="settings-compute-default-share" data-testid="maker-settings-compute-default-share" />
+        Default when joining others' sessions: share my compute
+      </label>
+      <label>
+        Default workload mode for new sessions
+        <select id="settings-compute-workload-mode" data-testid="maker-settings-compute-workload-mode">
+          <option value="host_only">Host only</option>
+          <option value="manual_claim" selected>Manual claim</option>
+          <option value="auto_share">Auto share</option>
+          <option value="auto_optimize">Auto optimize</option>
+        </select>
+      </label>
+      <label>
+        Scheduling policy (auto share / optimize)
+        <select id="settings-compute-spread-policy" data-testid="maker-settings-compute-spread-policy">
+          <option value="spread" selected>Spread</option>
+          <option value="pack">Pack</option>
+        </select>
+      </label>
+    </section>
     <section id="settings-agent-models" class="panel" data-testid="maker-settings-agent-models">
       <h3>Agent &amp; Models</h3>
       <p class="muted">
