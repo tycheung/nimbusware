@@ -544,18 +544,35 @@ connection:
 
 ## Problem statement (gap vs shipped)
 
-### What exists today (§20.28)
+### Shipped in v1.2 (extends §20.28)
+
+| Capability | Location | Notes |
+|------------|----------|-------|
+| Congruent Chat thread | `#/chat`, `chat.js` | Multi-human when `NIMBUSWARE_COLLAB_ENABLED=1` |
+| Session persistence | `nimbusware_chat_session`, `nimbusware_chat_turn` | `host_user_id`, `metadata` (folder/tags stub) |
+| Local users | `nimbusware_user`, `/v1/auth/*` | Signup/signin + session cookie |
+| Participants | `nimbusware_chat_participant`, `/chat/sessions/{id}/participants` | Invite/join flow |
+| Turn roles | `CHAT_TURN_ROLES` + `participant` | Peanut gallery commentary |
+| Real-time | `GET /chat/sessions/{id}/stream` | Session SSE stub |
+| Interjection | Delegated to `session_write+` when session linked | Audit via participant role |
+| Host transfer | `POST /chat/sessions/{id}/host-transfer` | Timed consent MVP ([ADR 026](docs/adr/026-host-transfer.md)) |
+
+### Pre-v1.2 limits (resolved or stubbed)
+
+| Gap (historical) | v1.2 status |
+|------------------|-------------|
+| One human per browser | **Fixed** — collab auth + participants (B1–B4) |
+| No per-user accounts (Individual) | **Fixed** — `nimbusware_auth` |
+| No session room fan-out | **Stub** — session SSE (B4) |
+| No org directory (Enterprise) | **Stub** — `GET /v1/enterprise/users` (B5) |
+| Full folder/group ACL library | **Stub** — session `metadata.folder` (B8); CRUD planned |
+
+### Reference — pre-v1.2 baseline (§20.28 only)
 
 | Capability | Location | Limit |
 |------------|----------|-------|
-| Congruent Chat thread | `#/chat`, `chat.js` | **One human operator** per browser session |
-| Session persistence | `nimbusware_chat_session`, `nimbusware_chat_turn` | No `owner_user_id`, no participants table |
-| Turn roles | `CHAT_TURN_ROLES` | `user`, `theater`, `system`, … — **no human guest role** |
-| Auth (Individual) | `user.py` `require_user_access` | Loopback = **open**; non-loopback = admin token only — **no per-user accounts** |
-| Auth (Enterprise) | `nimbusware_iam`, API keys | Keys are service-style; **no org user directory** for chat invites |
-| Real-time theater | SSE `maker-progress/stream`, Chat theater bind | **Single subscriber** model — no session room fan-out |
-| Interjection | `POST /runs/{id}/interjection-queue` | Owner/operator only; no delegated write guests |
-| External webhook | `docs/integrations-external-chat.md` | Headless steering — **not** in-product multi-human UI |
+| Auth (Individual) | `user.py` | Loopback open unless `NIMBUSWARE_COLLAB_ENABLED=1` |
+| External webhook | `docs/integrations-external-chat.md` | Headless — not in-product multi-human UI |
 
 ### Terminology (avoid confusion with Track A)
 
@@ -1716,17 +1733,17 @@ preflight:
 | B3 | fo1530–fo1536 | ☑ | ☑ | ☑ | ☑ |
 | B4 | fo1540–fo1544 | ☑ | ☑ | ☑ | ☑ |
 | B5 | fo1550–fo1553 | ☑ | ☑ | ☑ | ☑ |
-| B6–B7 | fo1560–fo1573 | ☑ | ☑ | ☐ | ☑ |
-| B8 | fo1574–fo1582 | ☑ | ☑ | ☐ | ☑ |
+| B6–B7 | fo1560–fo1573 | ☑ | ☑ | ☑ | ☑ |
+| B8 | fo1574–fo1582 | ☑ | ☑ | ☑ | ☑ |
 | D0 | fo1700–fo1701 | ☑ | — | ☑ | ☑ |
 | D1 | fo1710–fo1714 | ☑ | — | ☑ | ☑ |
 | D2 | fo1720–fo1723 | ☑ | — | ☑ | ☑ |
 | D3 | fo1730–fo1735 | ☑ | — | ☑ | ☑ |
-| D4 | fo1740–fo1747 | ☑ | ☑ | ☐ | ☑ |
-| D5 | fo1750–fo1755 | ☑ | ☑ | ☐ | ☑ |
-| D6 | fo1760–fo1763 | ☑ | ☑ | ☐ | ☑ |
-| D7 | fo1770–fo1773 | ☐ | ☐ | ☐ | ☐ |
-| D8 | fo1780–fo1789 | ☑ | — | ☐ | ☑ |
+| D4 | fo1740–fo1747 | ☑ | ☑ | ☑ | ☑ |
+| D5 | fo1750–fo1755 | ☑ | ☑ | ☑ | ☑ |
+| D6 | fo1760–fo1763 | ☑ | ☑ | ☑ | ☑ |
+| D7 | fo1770–fo1773 | ☑ | — | ☑ | ☑ |
+| D8 | fo1780–fo1789 | ☑ | — | ☑ | ☑ |
 
 **Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + **B8** + B7 complete for Individual; **B5 + D6** for Enterprise; **Track D D0–D5 + D7–D8** for mesh MVP + host transfer.
 
