@@ -1,4 +1,4 @@
-"""Provider preset catalog and connection probes (v1.2 Track C2 / A1)."""
+"""Provider preset catalog and connection probes."""
 
 from __future__ import annotations
 

@@ -29,8 +29,23 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [019-debate-first-resolution.md](adr/019-debate-first-resolution.md) | Debate-first gate resolution |
 | [020-unified-chat-work-type-routing.md](adr/020-unified-chat-work-type-routing.md) | Unified Maker chat, work-type routing, patch lane |
 | [021-conversation-dag-branching.md](adr/021-conversation-dag-branching.md) | Persistent conversation DAG, fork/branch navigation |
+| [022-per-role-model-routing.md](adr/022-per-role-model-routing.md) | Per-role `ModelBindingResolver`, provider vault, mid-chat swap |
+| [023-collaborative-chat-sessions.md](adr/023-collaborative-chat-sessions.md) | Multi-participant chat sessions (opt-in) |
+| [024-install-profiles.md](adr/024-install-profiles.md) | Recommended vs barebones install profiles |
+| [025-distributed-compute-mesh.md](adr/025-distributed-compute-mesh.md) | Compute node registry and work-unit mesh MVP |
 
 Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
+
+## v1.2 operator docs
+
+| Doc | Purpose |
+|-----|---------|
+| [model-hub.md](model-hub.md) | Model Hub UI, API connections vault, Ollama install |
+| [install-profiles.md](install-profiles.md) | Recommended vs barebones installer |
+| [hybrid-routing-migration.md](hybrid-routing-migration.md) | Legacy `stage_providers` → resolver shim |
+| [collaborative-chat.md](collaborative-chat.md) | Collab sessions, participants, host transfer |
+| [compute-mesh.md](compute-mesh.md) | Node registry, worker policy, session compute opt-in |
+| [audits/llm-call-sites.md](audits/llm-call-sites.md) | LLM dispatch audit matrix |
 
 ## Related docs
 

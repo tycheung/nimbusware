@@ -1,4 +1,4 @@
-"""Compute mesh worker security policy (v1.2 Track D7)."""
+"""Compute mesh worker security policy."""
 
 from __future__ import annotations
 

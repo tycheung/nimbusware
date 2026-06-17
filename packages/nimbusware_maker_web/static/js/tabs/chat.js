@@ -863,6 +863,7 @@ function wireChatOperatorRibbons(root, runId) {
 
 function mountAutopilotLadderHint(root) {
   if (localStorage.getItem(AUTOPILOT_LADDER_HINT_KEY) === "1") return;
+  if (root.querySelector("[data-testid='maker-chat-autopilot-hint']")) return;
   const hint = document.createElement("aside");
   hint.className = "panel chat-autopilot-hint";
   hint.dataset.testid = "maker-chat-autopilot-hint";
@@ -974,6 +975,7 @@ export async function mountChat(root) {
     </div>`;
 
   wireFollowLiveToggle(root);
+  mountAutopilotLadderHint(root);
 
   const listing = await apiJson("/projects");
   const sel = root.querySelector("#chat-project-select");

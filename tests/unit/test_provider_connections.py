@@ -1,8 +1,18 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
-from nimbusware_config.provider_connections import decode_secret_payload, encode_secret_payload
+import pytest
+
+from nimbusware_config.provider_connections import (
+    ProviderConnectionRow,
+    _row_from_record,
+    _row_to_public,
+    decode_secret_payload,
+    encode_secret_payload,
+)
 from nimbusware_config.provider_vault import decrypt_secret, encrypt_secret
 from nimbusware_orchestrator.provider_registry import (
     load_provider_presets,
@@ -33,6 +43,50 @@ def test_load_provider_presets_includes_gemini() -> None:
     assert "openai_subscription" in ids
     google = next(p for p in presets if p["id"] == "google")
     assert "generativelanguage.googleapis.com" in (google.get("default_base_url") or "")
+
+
+def test_api_key_secret_payload_roundtrip() -> None:
+    blob = encode_secret_payload(connection_kind="api_key", api_key="sk-abc")
+    decoded = decode_secret_payload(blob, connection_kind="api_key")
+    assert decoded is not None
+    assert decoded.api_key == "sk-abc"
+    assert decoded.subscription_connected is False
+
+
+def test_encode_api_key_required() -> None:
+    with pytest.raises(ValueError, match="api_key required"):
+        encode_secret_payload(connection_kind="api_key", api_key="")
+
+
+def test_provider_connection_row_mapping() -> None:
+    cid = uuid4()
+    now = datetime.now(timezone.utc)
+    row = _row_from_record(
+        {
+            "connection_id": cid,
+            "tenant_id": None,
+            "user_id": "u1",
+            "provider_id": "openai",
+            "label": "work",
+            "connection_kind": "api_key",
+            "base_url": "https://api.openai.com/v1",
+            "default_model_id": "gpt-4o-mini",
+            "secret_blob": b"x",
+            "last_probe_at": now,
+            "last_probe_ok": True,
+            "created_at": now,
+            "updated_at": now,
+        },
+    )
+    assert isinstance(row, ProviderConnectionRow)
+    public = _row_to_public(row)
+    assert public["connection_id"] == str(cid)
+    assert public["secret_set"] is True
+    assert public["last_probe_ok"] is True
+
+
+def test_decode_secret_payload_missing_blob() -> None:
+    assert decode_secret_payload(None, connection_kind="api_key") is None
 
 
 def test_probe_subscription_disconnected() -> None:

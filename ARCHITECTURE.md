@@ -57,6 +57,15 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_console` | Admin display helpers + enterprise fleet formatters; BFF tables via `routes/admin_ui_bff.py` |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **237-key** settings catalog + `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
+| `nimbusware_auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
+| `nimbusware_compute` | Compute mesh node registry, work-unit queue, worker policy (`nimbusware-compute-worker` CLI) |
+
+## v1.2 extensions (Jun 2026)
+
+- **Model Hub & install profiles** — `recommended` / `barebones` installer profiles; Model Hub tab for Ollama + API connection vault ([`docs/model-hub.md`](docs/model-hub.md), [ADR 024](docs/adr/024-install-profiles.md)).
+- **Per-role model routing** — `ModelBindingResolver`, user defaults in Postgres, mid-chat swap, enterprise model policy ([ADR 022](docs/adr/022-per-role-model-routing.md), [`docs/audits/llm-call-sites.md`](docs/audits/llm-call-sites.md)).
+- **Collaborative chat** — opt-in multi-participant sessions, invites, host transfer MVP ([`docs/collaborative-chat.md`](docs/collaborative-chat.md), [ADR 023](docs/adr/023-collaborative-chat-sessions.md)).
+- **Compute mesh** — node register/heartbeat, work-unit stubs, session compute opt-in ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md)).
 
 ## Editions
 

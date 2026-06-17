@@ -1,4 +1,4 @@
-"""Per-role model binding resolution (v1.2 Track A2)."""
+"""Per-role model binding resolution."""
 
 from __future__ import annotations
 
@@ -78,7 +78,7 @@ _ROLE_STAGE_MAP: dict[str, str] = {
 
 
 def _hybrid_routing_binding(repo_root: Path, agent_role: str) -> ResolvedBinding | None:
-    """fo1471 shim: map legacy stage_providers + cloud_runtime to per-role bindings."""
+    """Map legacy stage_providers + cloud_runtime to per-role bindings."""
     routing = load_model_routing_dict(repo_root)
     stage = _ROLE_STAGE_MAP.get(agent_role)
     if not stage:

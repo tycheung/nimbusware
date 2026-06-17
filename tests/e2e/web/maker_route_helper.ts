@@ -2,7 +2,10 @@ import { Page } from "@playwright/test";
 
 export async function activateMakerRoute(page: Page, route: string): Promise<void> {
   await page.evaluate(async (targetRoute) => {
-    window.location.hash = `#${targetRoute}`;
+    const current = window.location.hash;
+    const qIdx = current.indexOf("?");
+    const query = qIdx >= 0 ? current.slice(qIdx) : "";
+    window.location.hash = `#${targetRoute}${query}`;
     window.dispatchEvent(new HashChangeEvent("hashchange"));
     const shell = document.querySelector("[x-data]") as HTMLElement & {
       _x_dataStack?: Array<{ route: string }>;

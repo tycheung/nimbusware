@@ -1,4 +1,4 @@
-"""Invoke scripts/install/ollama_setup.bootstrap_ollama from the API (Model Hub fo1611)."""
+"""Invoke ollama_setup.bootstrap_ollama from the API."""
 
 from __future__ import annotations
 

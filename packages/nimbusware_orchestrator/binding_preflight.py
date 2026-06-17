@@ -1,4 +1,4 @@
-"""Per-role binding preflight (v1.2 Track A3)."""
+"""Per-role binding preflight."""
 
 from __future__ import annotations
 
@@ -37,6 +37,7 @@ def agent_role_for_stage(stage_name: str | None) -> str | None:
         return None
     return _STAGE_ROLE_MAP.get(key)
 
+
 _WORK_TYPE_ROLES: dict[str, list[str]] = {
     "patch": ["planner", "backend_writer"],
     "slice": ["planner", "backend_writer", "test_writer", "security_critic"],
@@ -60,7 +61,7 @@ def active_roles_for_context(
     work_type: str | None = None,
     materializer: Any | None = None,
 ) -> list[str]:
-    """Workflow-scoped active roles (fo1432)."""
+    """Workflow-scoped active roles."""
     found: set[str] = set()
     wt = (work_type or "").strip().lower()
     if wt and wt in _WORK_TYPE_ROLES:

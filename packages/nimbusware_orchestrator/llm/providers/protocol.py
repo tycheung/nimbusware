@@ -1,4 +1,4 @@
-"""LLM provider protocol (v1.2 Track A1)."""
+"""LLM provider protocol."""
 
 from __future__ import annotations
 

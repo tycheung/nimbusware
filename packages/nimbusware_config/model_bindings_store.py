@@ -1,4 +1,4 @@
-"""User model binding defaults (v1.2 Track A4)."""
+"""User model binding defaults."""
 
 from __future__ import annotations
 

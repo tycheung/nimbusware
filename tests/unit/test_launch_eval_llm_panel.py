@@ -17,6 +17,10 @@ def test_launch_eval_llm_panel_off_by_default(
 
 def test_launch_eval_llm_panel_opt_in(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
     monkeypatch.setenv("NIMBUSWARE_LAUNCH_EVAL_LLM", "1")
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.launch_evaluator.fetch_llm_rubric_panel",
+        lambda _workspace: None,
+    )
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "app.py").write_text("x = 1\n", encoding="utf-8")
     assert llm_panel_enabled()

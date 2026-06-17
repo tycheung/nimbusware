@@ -1,4 +1,4 @@
-"""Emit model binding swap and role claim events (v1.2 Track A5)."""
+"""Model binding swap and role claim events."""
 
 from __future__ import annotations
 

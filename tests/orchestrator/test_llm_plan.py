@@ -17,6 +17,9 @@ from nimbusware_orchestrator.llm_plan import (
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_store.memory import InMemoryEventStore
 
+_MOCK_RESOLVER_CHAT = (
+    "nimbusware_orchestrator.model_binding_resolver.ModelBindingResolver.chat_json"
+)
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 CRITIQUE_PAIRINGS_YAML = ROOT / "configs" / "personas" / "critique_pairings.yaml"
 
@@ -33,7 +36,7 @@ def test_llm_invalid_shape_emits_stub_plan() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=bad_json):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
         execute_plan_stage_llm(
             store,
             reg,
@@ -56,7 +59,7 @@ def test_llm_http_error_emits_stub_plan() -> None:
     def boom(**_: object) -> dict[str, object]:
         raise httpx.ConnectError("no server")
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=boom):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=boom):
         execute_plan_stage_llm(
             store,
             reg,
@@ -95,7 +98,7 @@ def test_llm_valid_json_records_critics() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=good):
         execute_plan_stage_llm(
             store,
             reg,
@@ -120,7 +123,7 @@ def test_implementation_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=bad_json):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
         ok = execute_implementation_critique_llm(
             store,
             reg,
@@ -161,7 +164,10 @@ def test_implementation_critique_llm_records_events() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
+    with patch(
+        "nimbusware_orchestrator.llm.implementation_critique._ollama_chat_json",
+        side_effect=good,
+    ):
         ok = execute_implementation_critique_llm(
             store,
             reg,
@@ -197,7 +203,7 @@ def test_test_writer_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=bad_json):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
         ok = execute_test_writer_critique_llm(
             store,
             reg,
@@ -238,7 +244,10 @@ def test_test_writer_critique_llm_records_events() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
+    with patch(
+        "nimbusware_orchestrator.llm.test_writer_role_critique._ollama_chat_json",
+        side_effect=good,
+    ):
         ok = execute_test_writer_critique_llm(
             store,
             reg,
@@ -274,7 +283,7 @@ def test_planner_critique_llm_invalid_shape_returns_false() -> None:
     def bad_json(**_: object) -> dict[str, object]:
         return {"critics": [], "gate": {"verdict": "PASS"}}
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=bad_json):
+    with patch(_MOCK_RESOLVER_CHAT, side_effect=bad_json):
         ok = execute_planner_critique_llm(
             store,
             reg,
@@ -315,7 +324,10 @@ def test_planner_critique_llm_records_events() -> None:
             "gate": {"verdict": "PASS"},
         }
 
-    with patch("nimbusware_orchestrator.llm_plan.ollama_chat_json", side_effect=good):
+    with patch(
+        "nimbusware_orchestrator.llm.planner_critique._ollama_chat_json",
+        side_effect=good,
+    ):
         ok = execute_planner_critique_llm(
             store,
             reg,
