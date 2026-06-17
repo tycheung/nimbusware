@@ -8,12 +8,17 @@ from uuid import UUID
 CHAT_TURN_ROLES = frozenset(
     {
         "user",
+        "participant",
         "classifier",
         "work_type_switch",
         "run_status",
         "theater",
         "system",
     }
+)
+
+WORKLOAD_DISTRIBUTION_MODES = frozenset(
+    {"host_only", "manual_claim", "auto_share", "auto_optimize"}
 )
 
 
@@ -31,6 +36,9 @@ class ChatSessionRecord:
     work_type_override: str | None = None
     run_id: UUID | None = None
     campaign_id: UUID | None = None
+    host_user_id: UUID | None = None
+    workload_distribution: str = "host_only"
+    metadata: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -48,6 +56,9 @@ class ChatSessionRecord:
             "work_type_override": self.work_type_override,
             "run_id": str(self.run_id) if self.run_id else None,
             "campaign_id": str(self.campaign_id) if self.campaign_id else None,
+            "host_user_id": str(self.host_user_id) if self.host_user_id else None,
+            "workload_distribution": self.workload_distribution,
+            "metadata": dict(self.metadata or {}),
         }
 
 

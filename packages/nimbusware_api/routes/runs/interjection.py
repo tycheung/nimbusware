@@ -3,12 +3,16 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import StoreDep
+from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.routes.auth import OptionalUserDep
+from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
+from nimbusware_auth.permissions import require_session_participant
+from nimbusware_env.env_flags import nimbusware_collab_enabled
 from nimbusware_orchestrator.interjection_queue import InterjectionPriority, queue_for_run
 from nimbusware_orchestrator.slice_interjection import emit_interjection_enqueued
 
@@ -24,6 +28,28 @@ class InterjectionEnqueueBody(BaseModel):
 class InterjectionQueueResponse(BaseModel):
     run_id: str
     queue: dict[str, Any] = Field(default_factory=dict)
+
+
+def _enforce_interjection_collab(
+    *,
+    chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
+    run_id: UUID,
+    request: Request,
+    user: OptionalUserDep,
+) -> None:
+    if not nimbusware_collab_enabled():
+        return
+    session = chat_store.find_session_by_run_id(run_id)
+    if session is None:
+        return
+    actor = actor_user_id(request, user)
+    require_session_participant(
+        collab_store,
+        session_id=session.session_id,
+        user_id=actor,
+        minimum_role="session_write",
+    )
 
 
 @router.get(
@@ -50,7 +76,11 @@ def get_interjection_queue(run_id: UUID, store: StoreDep) -> InterjectionQueueRe
 def post_interjection_enqueue(
     run_id: UUID,
     body: InterjectionEnqueueBody,
+    request: Request,
     store: StoreDep,
+    chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
+    user: OptionalUserDep,
 ) -> InterjectionQueueResponse:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -58,6 +88,13 @@ def post_interjection_enqueue(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
+    _enforce_interjection_collab(
+        chat_store=chat_store,
+        collab_store=collab_store,
+        run_id=run_id,
+        request=request,
+        user=user,
+    )
     priority = (
         InterjectionPriority.LAST
         if body.priority.strip().lower() == "last"

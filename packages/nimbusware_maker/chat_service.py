@@ -31,6 +31,9 @@ def session_response(
         "work_type_override": session.work_type_override,
         "run_id": str(session.run_id) if session.run_id else None,
         "campaign_id": str(session.campaign_id) if session.campaign_id else None,
+        "host_user_id": str(session.host_user_id) if session.host_user_id else None,
+        "workload_distribution": session.workload_distribution,
+        "metadata": dict(session.metadata or {}),
     }
     if not include_turns:
         out.pop("turns")

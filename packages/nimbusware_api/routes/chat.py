@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
-from nimbusware_api.deps import ChatStoreDep, ProjectStoreDep, StoreDep
+from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes import chat_start
 from nimbusware_api.routes.chat_common import (
@@ -33,7 +33,11 @@ from nimbusware_api.routes.chat_handlers import (
     session_or_404 as _session_or_404,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
+from nimbusware_api.routes.auth import OptionalUserDep
+from nimbusware_api.routes.chat_collab_common import actor_user_id
 from nimbusware_api.user import UserDep
+from nimbusware_auth.permissions import enforce_collab_turn_write
+from nimbusware_env.env_flags import nimbusware_collab_enabled
 from nimbusware_maker.chat_service import (
     classification_dict,
     session_response,
@@ -45,6 +49,9 @@ from nimbusware_orchestrator.model_binding_swap import (
     append_role_claim,
     append_role_release,
 )
+from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
+from nimbusware_env.env_flags import nimbusware_database_url
+from nimbusware_iam.context import resolve_store_tenant_id
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 router.include_router(chat_start.router)
@@ -54,7 +61,9 @@ router.include_router(chat_start.router)
 def create_chat_session(
     body: CreateChatSessionBody,
     chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
     project_store: ProjectStoreDep,
+    user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatSessionResponse:
     try:
@@ -65,7 +74,19 @@ def create_chat_session(
             detail=problem("invalid_request", "project_id must be a UUID"),
         ) from exc
     project_metadata(project_store, project_uuid)
-    session = chat_store.create_session(project_id=project_uuid)
+    host_id = user.user_id if (nimbusware_collab_enabled() and user is not None) else None
+    metadata = {"folder": body.folder} if body.folder else None
+    session = chat_store.create_session(
+        project_id=project_uuid,
+        host_user_id=host_id,
+        metadata=metadata,
+    )
+    if nimbusware_collab_enabled() and host_id is not None:
+        collab_store.add_participant(
+            session_id=session.session_id,
+            user_id=host_id,
+            role="session_admin",
+        )
     return ChatSessionResponse(**session_response(chat_store, session))
 
 
@@ -89,12 +110,34 @@ def list_chat_sessions(
 def get_chat_session(
     session_id: UUID,
     *,
+    request: Request,
     chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
+    user: OptionalUserDep,
     _user: UserDep,
     include_turns: bool = Query(default=False),
 ) -> ChatSessionResponse:
     session = _session_or_404(chat_store, session_id)
-    return ChatSessionResponse(**session_response(chat_store, session, include_turns=include_turns))
+    payload = session_response(chat_store, session, include_turns=include_turns)
+    if nimbusware_collab_enabled():
+        payload["participants"] = [
+            p.to_dict() for p in collab_store.list_participants(session_id)
+        ]
+        if user is not None:
+            part = collab_store.get_participant(session_id, user.user_id)
+            if part is not None:
+                payload["my_participant_role"] = part.role
+        else:
+            uid = None
+            try:
+                uid = actor_user_id(request, user)
+            except HTTPException:
+                uid = None
+            if uid is not None:
+                part = collab_store.get_participant(session_id, uid)
+                if part is not None:
+                    payload["my_participant_role"] = part.role
+    return ChatSessionResponse(**payload)
 
 
 @router.get(
@@ -159,11 +202,26 @@ def set_chat_active_leaf(
 def append_chat_turn(
     session_id: UUID,
     body: AppendTurnBody,
+    request: Request,
     chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
     project_store: ProjectStoreDep,
+    user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
     session = _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else None
+    if actor_id is None and nimbusware_collab_enabled():
+        try:
+            actor_id = actor_user_id(request, user)
+        except HTTPException:
+            actor_id = None
+    enforce_collab_turn_write(
+        collab_store,
+        session_id=session_id,
+        user_id=actor_id,
+        collab_enabled=nimbusware_collab_enabled(),
+    )
     project_uuid = UUID(str(session.project_id))
     meta = project_metadata(project_store, project_uuid)
     result = classify_intent(
@@ -215,15 +273,21 @@ def append_chat_turn(
 def post_chat_message(
     session_id: UUID,
     body: ChatMessageBody,
+    request: Request,
     chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
     project_store: ProjectStoreDep,
+    user: OptionalUserDep,
     _user: UserDep,
 ) -> ChatMessageResponse:
     return append_chat_turn(
         session_id,
         AppendTurnBody(text=body.text, attachments=body.attachments),
+        request,
         chat_store,
+        collab_store,
         project_store,
+        user,
         _user,
     )
 
@@ -426,3 +490,43 @@ def session_role_release(
         payload={"role_release": payload},
     )
     return {"ok": True, "event": "workload.role_released", "payload": payload}
+
+
+class SessionComputeOptInBody(BaseModel):
+    enabled: bool = False
+    share_policy: Literal["off", "claim_only", "managed_by_host", "full_auto"] = "off"
+    allow_host_resource_management: bool = False
+    host_label: str = Field(default="", max_length=200)
+    base_url: str = Field(default="http://127.0.0.1:0", max_length=500)
+
+
+@router.post("/sessions/{session_id}/compute/opt-in")
+def session_compute_opt_in(
+    session_id: UUID,
+    body: SessionComputeOptInBody,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    """Stub D4 — link session participant to compute node registry."""
+    _session_or_404(chat_store, session_id)
+    store = build_compute_node_store(nimbusware_database_url())
+    tid = resolve_store_tenant_id()
+    tenant_id = tid if isinstance(tid, UUID) else default_tenant_id()
+    node = None
+    if body.enabled:
+        node = store.register(
+            tenant_id=tenant_id,
+            user_id="",
+            display_name=body.host_label or "local",
+            host_label=body.host_label,
+            base_url=body.base_url,
+            session_id=session_id,
+            share_policy=body.share_policy,
+            allow_host_resource_management=body.allow_host_resource_management,
+        )
+    return {
+        "session_id": str(session_id),
+        "enabled": body.enabled,
+        "share_policy": body.share_policy,
+        "node": row_to_public(node) if node else None,
+    }

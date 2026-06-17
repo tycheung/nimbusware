@@ -57,6 +57,21 @@ CREATE INDEX IF NOT EXISTS idx_nimbusware_project_tenant
   ON nimbusware_project (tenant_id, created_at DESC);
 
 -- =============================================================================
+-- nimbusware_user (Track B collaborative chat, fo1510)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_user (
+  user_id UUID PRIMARY KEY,
+  username TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  display_name TEXT NOT NULL DEFAULT '',
+  is_owner BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_user_username
+  ON nimbusware_user (LOWER(username));
+
+-- =============================================================================
 -- nimbusware_chat_session / nimbusware_chat_turn (Maker congruent chat, §20.28)
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS nimbusware_chat_session (
@@ -71,10 +86,52 @@ CREATE TABLE IF NOT EXISTS nimbusware_chat_session (
   work_type_override TEXT NULL,
   run_id UUID NULL,
   campaign_id UUID NULL,
+  host_user_id UUID NULL REFERENCES nimbusware_user(user_id),
+  workload_distribution TEXT NOT NULL DEFAULT 'host_only'
+    CHECK (workload_distribution IN ('host_only', 'manual_claim', 'auto_share', 'auto_optimize')),
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CHECK (last_classification IS NULL OR jsonb_typeof(last_classification) = 'object')
+  CHECK (last_classification IS NULL OR jsonb_typeof(last_classification) = 'object'),
+  CHECK (jsonb_typeof(metadata) = 'object')
 );
+
+ALTER TABLE nimbusware_chat_session
+  ADD COLUMN IF NOT EXISTS host_user_id UUID NULL REFERENCES nimbusware_user(user_id);
+
+ALTER TABLE nimbusware_chat_session
+  ADD COLUMN IF NOT EXISTS workload_distribution TEXT NOT NULL DEFAULT 'host_only';
+
+ALTER TABLE nimbusware_chat_session
+  ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
+
+-- =============================================================================
+-- nimbusware_chat_participant / nimbusware_chat_invite (Track B fo1520)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_chat_participant (
+  session_id UUID NOT NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES nimbusware_user(user_id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('session_read', 'session_write', 'session_admin')),
+  joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (session_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_participant_user
+  ON nimbusware_chat_participant (user_id, joined_at DESC);
+
+CREATE TABLE IF NOT EXISTS nimbusware_chat_invite (
+  invite_id UUID PRIMARY KEY,
+  session_id UUID NOT NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL CHECK (role IN ('session_read', 'session_write', 'session_admin')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_by UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  consumed_at TIMESTAMPTZ NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_invite_session
+  ON nimbusware_chat_invite (session_id, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_session_project
   ON nimbusware_chat_session (project_id, updated_at DESC);
@@ -409,6 +466,64 @@ CREATE INDEX IF NOT EXISTS idx_nimbusware_provider_connection_user
 CREATE INDEX IF NOT EXISTS idx_nimbusware_provider_connection_tenant
   ON nimbusware_provider_connection (tenant_id)
   WHERE tenant_id IS NOT NULL;
+
+-- =============================================================================
+-- nimbusware_compute_node / nimbusware_work_unit (v1.2 compute mesh — Track D1)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_compute_node (
+  node_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  session_id UUID NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE SET NULL,
+  user_id TEXT NOT NULL DEFAULT '',
+  display_name TEXT NOT NULL DEFAULT '',
+  host_label TEXT NOT NULL DEFAULT '',
+  base_url TEXT NOT NULL DEFAULT '',
+  capabilities JSONB NOT NULL DEFAULT '{}'::jsonb,
+  share_policy TEXT NOT NULL DEFAULT 'off'
+    CHECK (share_policy IN ('off', 'claim_only', 'managed_by_host', 'full_auto')),
+  allow_host_resource_management BOOLEAN NOT NULL DEFAULT FALSE,
+  last_heartbeat_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  status TEXT NOT NULL DEFAULT 'unknown'
+    CHECK (status IN ('unknown', 'online', 'degraded', 'offline')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(capabilities) = 'object')
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_compute_node_session
+  ON nimbusware_compute_node (session_id, last_heartbeat_at DESC)
+  WHERE session_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_compute_node_tenant_status
+  ON nimbusware_compute_node (tenant_id, status, last_heartbeat_at DESC);
+
+CREATE TABLE IF NOT EXISTS nimbusware_work_unit (
+  work_unit_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  run_id UUID NOT NULL,
+  session_id UUID NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE SET NULL,
+  node_id UUID NULL REFERENCES nimbusware_compute_node(node_id) ON DELETE SET NULL,
+  stage_name TEXT NOT NULL,
+  agent_role TEXT NOT NULL DEFAULT '',
+  executor_user_id TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'queued'
+    CHECK (status IN ('queued', 'assigned', 'running', 'ok', 'failed', 'timeout', 'cancelled')),
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  result JSONB NULL,
+  assigned_at TIMESTAMPTZ NULL,
+  completed_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(payload) = 'object')
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_work_unit_session_status
+  ON nimbusware_work_unit (session_id, status, created_at ASC)
+  WHERE session_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_work_unit_node_status
+  ON nimbusware_work_unit (node_id, status)
+  WHERE node_id IS NOT NULL;
 
 -- =============================================================================
 -- run_list_status (GET /v1/runs ?status= read model)

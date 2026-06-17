@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
@@ -137,13 +138,21 @@ def turns_to_legacy_messages(turns: list[ChatTurnRecord]) -> list[dict[str, Any]
                     "turn_id": str(turn.turn_id),
                 }
             )
-        elif turn.role in {"system", "classifier", "work_type_switch", "run_status", "theater"}:
+        elif turn.role in {
+            "system",
+            "classifier",
+            "work_type_switch",
+            "run_status",
+            "theater",
+            "participant",
+        }:
+            kind = "participant" if turn.role == "participant" else turn.role
             out.append(
                 {
-                    "role": "system",
+                    "role": "participant" if turn.role == "participant" else "system",
                     "text": turn.text,
                     "turn_id": str(turn.turn_id),
-                    "kind": turn.role,
+                    "kind": kind,
                     "posted_at": turn.posted_at.isoformat() if turn.posted_at else None,
                 }
             )
@@ -161,6 +170,8 @@ class InMemoryChatStore:
         *,
         project_id: UUID,
         tenant_id: UUID | None = None,
+        host_user_id: UUID | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         now = _utc_now()
         sid = uuid4()
@@ -170,6 +181,8 @@ class InMemoryChatStore:
             tenant_id=tenant_id or DEFAULT_TENANT_ID,
             created_at=now,
             updated_at=now,
+            host_user_id=host_user_id,
+            metadata=dict(metadata or {}),
         )
         self._sessions[sid] = row
         return row
@@ -180,6 +193,12 @@ class InMemoryChatStore:
     def list_sessions(self, *, project_id: UUID) -> list[ChatSessionRecord]:
         rows = [s for s in self._sessions.values() if s.project_id == project_id]
         return sorted(rows, key=lambda s: s.updated_at, reverse=True)
+
+    def find_session_by_run_id(self, run_id: UUID) -> ChatSessionRecord | None:
+        for session in self._sessions.values():
+            if session.run_id == run_id:
+                return session
+        return None
 
     def _turns_for(self, session_id: UUID) -> dict[UUID, ChatTurnRecord]:
         return self._turns[session_id]
@@ -229,17 +248,12 @@ class InMemoryChatStore:
         title = session.title
         if title is None and role_n == "user" and text.strip():
             title = text.strip()[:120]
-        updated = ChatSessionRecord(
-            session_id=session.session_id,
-            project_id=session.project_id,
-            tenant_id=session.tenant_id,
-            created_at=session.created_at,
+        updated = replace(
+            session,
             updated_at=now,
             title=title,
             root_turn_id=root,
             active_leaf_turn_id=turn_id,
-            last_classification=session.last_classification,
-            work_type_override=session.work_type_override,
             run_id=run_id or session.run_id,
             campaign_id=campaign_id or session.campaign_id,
         )
@@ -254,20 +268,7 @@ class InMemoryChatStore:
         if turn_id not in turns:
             raise KeyError("chat_turn_not_found")
         now = _utc_now()
-        updated = ChatSessionRecord(
-            session_id=session.session_id,
-            project_id=session.project_id,
-            tenant_id=session.tenant_id,
-            created_at=session.created_at,
-            updated_at=now,
-            title=session.title,
-            root_turn_id=session.root_turn_id,
-            active_leaf_turn_id=turn_id,
-            last_classification=session.last_classification,
-            work_type_override=session.work_type_override,
-            run_id=session.run_id,
-            campaign_id=session.campaign_id,
-        )
+        updated = replace(session, updated_at=now, active_leaf_turn_id=turn_id)
         self._sessions[session_id] = updated
         return updated
 
@@ -285,20 +286,7 @@ class InMemoryChatStore:
         if children_map.get(leaf_turn_id):
             raise ValueError("active_leaf_must_be_a_branch_tip")
         now = _utc_now()
-        updated = ChatSessionRecord(
-            session_id=session.session_id,
-            project_id=session.project_id,
-            tenant_id=session.tenant_id,
-            created_at=session.created_at,
-            updated_at=now,
-            title=session.title,
-            root_turn_id=session.root_turn_id,
-            active_leaf_turn_id=leaf_turn_id,
-            last_classification=session.last_classification,
-            work_type_override=session.work_type_override,
-            run_id=session.run_id,
-            campaign_id=session.campaign_id,
-        )
+        updated = replace(session, updated_at=now, active_leaf_turn_id=leaf_turn_id)
         self._sessions[session_id] = updated
         return updated
 
@@ -310,31 +298,30 @@ class InMemoryChatStore:
         work_type_override: str | None = None,
         run_id: UUID | None = None,
         campaign_id: UUID | None = None,
+        host_user_id: UUID | None = None,
+        workload_distribution: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         session = self._sessions.get(session_id)
         if session is None:
             raise KeyError("chat_session_not_found")
         now = _utc_now()
-        updated = ChatSessionRecord(
-            session_id=session.session_id,
-            project_id=session.project_id,
-            tenant_id=session.tenant_id,
-            created_at=session.created_at,
-            updated_at=now,
-            title=session.title,
-            root_turn_id=session.root_turn_id,
-            active_leaf_turn_id=session.active_leaf_turn_id,
-            last_classification=(
-                last_classification
-                if last_classification is not None
-                else session.last_classification
-            ),
-            work_type_override=(
-                work_type_override if work_type_override is not None else session.work_type_override
-            ),
-            run_id=run_id if run_id is not None else session.run_id,
-            campaign_id=campaign_id if campaign_id is not None else session.campaign_id,
-        )
+        overrides: dict[str, Any] = {"updated_at": now}
+        if last_classification is not None:
+            overrides["last_classification"] = last_classification
+        if work_type_override is not None:
+            overrides["work_type_override"] = work_type_override
+        if run_id is not None:
+            overrides["run_id"] = run_id
+        if campaign_id is not None:
+            overrides["campaign_id"] = campaign_id
+        if host_user_id is not None:
+            overrides["host_user_id"] = host_user_id
+        if workload_distribution is not None:
+            overrides["workload_distribution"] = workload_distribution
+        if metadata is not None:
+            overrides["metadata"] = dict(metadata)
+        updated = replace(session, **overrides)
         self._sessions[session_id] = updated
         return updated
 
@@ -365,6 +352,7 @@ class InMemoryChatStore:
 
 
 def _session_from_row(row: dict[str, object]) -> ChatSessionRecord:
+    meta = row.get("metadata")
     return ChatSessionRecord(
         session_id=row["session_id"],  # type: ignore[arg-type]
         project_id=row["project_id"],  # type: ignore[arg-type]
@@ -380,6 +368,9 @@ def _session_from_row(row: dict[str, object]) -> ChatSessionRecord:
         ),
         run_id=row.get("run_id"),  # type: ignore[arg-type]
         campaign_id=row.get("campaign_id"),  # type: ignore[arg-type]
+        host_user_id=row.get("host_user_id"),  # type: ignore[arg-type]
+        workload_distribution=str(row.get("workload_distribution") or "host_only"),
+        metadata=dict(meta) if isinstance(meta, dict) else {},
     )
 
 
@@ -415,18 +406,21 @@ class PostgresChatStore:
         *,
         project_id: UUID,
         tenant_id: UUID | None = None,
+        host_user_id: UUID | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         now = _utc_now()
         sid = uuid4()
         tid = tenant_id or DEFAULT_TENANT_ID
+        meta = dict(metadata or {})
         with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
             cur.execute(
                 """
                 INSERT INTO nimbusware_chat_session (
-                  session_id, tenant_id, project_id, created_at, updated_at
-                ) VALUES (%s, %s, %s, %s, %s)
+                  session_id, tenant_id, project_id, host_user_id, metadata, created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s::jsonb, %s, %s)
                 """,
-                (sid, tid, project_id, now, now),
+                (sid, tid, project_id, host_user_id, Jsonb(meta), now, now),
             )
             conn.commit()
         return ChatSessionRecord(
@@ -435,6 +429,8 @@ class PostgresChatStore:
             tenant_id=tid,
             created_at=now,
             updated_at=now,
+            host_user_id=host_user_id,
+            metadata=meta,
         )
 
     def get_session(self, session_id: UUID) -> ChatSessionRecord | None:
@@ -458,6 +454,20 @@ class PostgresChatStore:
             )
             rows = cur.fetchall()
         return [_session_from_row(r) for r in rows]
+
+    def find_session_by_run_id(self, run_id: UUID) -> ChatSessionRecord | None:
+        with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(
+                """
+                SELECT * FROM nimbusware_chat_session
+                WHERE run_id = %s
+                ORDER BY updated_at DESC
+                LIMIT 1
+                """,
+                (run_id,),
+            )
+            row = cur.fetchone()
+        return _session_from_row(row) if row else None
 
     def _load_turns(
         self, cur: psycopg.Cursor[dict[str, object]], session_id: UUID
@@ -622,6 +632,9 @@ class PostgresChatStore:
         work_type_override: str | None = None,
         run_id: UUID | None = None,
         campaign_id: UUID | None = None,
+        host_user_id: UUID | None = None,
+        workload_distribution: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         now = _utc_now()
         with self._conn() as conn, conn.cursor(row_factory=dict_row) as cur:
@@ -632,7 +645,10 @@ class PostgresChatStore:
                   last_classification = COALESCE(%s::jsonb, last_classification),
                   work_type_override = COALESCE(%s, work_type_override),
                   run_id = COALESCE(%s, run_id),
-                  campaign_id = COALESCE(%s, campaign_id)
+                  campaign_id = COALESCE(%s, campaign_id),
+                  host_user_id = COALESCE(%s, host_user_id),
+                  workload_distribution = COALESCE(%s, workload_distribution),
+                  metadata = COALESCE(%s::jsonb, metadata)
                 WHERE session_id = %s
                 RETURNING *
                 """,
@@ -642,6 +658,9 @@ class PostgresChatStore:
                     work_type_override,
                     run_id,
                     campaign_id,
+                    host_user_id,
+                    workload_distribution,
+                    Jsonb(metadata) if metadata is not None else None,
                     session_id,
                 ),
             )

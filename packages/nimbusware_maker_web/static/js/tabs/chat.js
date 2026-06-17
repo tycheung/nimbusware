@@ -15,12 +15,15 @@ const THEATER_CAP_LIVE = 96;
 
 const TURN_ROLE_LABELS = {
   user: "You",
+  participant: "Guest",
   classifier: "Classifier",
   work_type_switch: "Mode",
   run_status: "Run",
   theater: "Agent",
   system: "System",
 };
+
+let collabMyRole = null;
 
 function theaterCap() {
   const follow = localStorage.getItem(FOLLOW_LIVE_KEY);
@@ -72,8 +75,10 @@ function turnRoleLabel(turn) {
 function renderTurnLine(thread, turn) {
   const role = turn.role || turn.kind || "system";
   const li = document.createElement("li");
-  li.className = `chat-thread-line chat-thread-line--${role === "user" ? "user" : "system"}`;
-  if (role !== "user") li.classList.add(`chat-thread-line--${role}`);
+  const cssRole = role === "participant" ? "participant" : role === "user" ? "user" : "system";
+  li.className = `chat-thread-line chat-thread-line--${cssRole}`;
+  if (role !== "user" && role !== "participant") li.classList.add(`chat-thread-line--${role}`);
+  if (role === "participant") li.classList.add("chat-thread-line--participant");
   li.dataset.turnId = turn.turn_id || "";
   if (turn.turn_id) li.dataset.testid = `maker-chat-turn-${turn.turn_id}`;
 
@@ -105,7 +110,61 @@ function renderTurnLine(thread, turn) {
   thread.scrollTop = thread.scrollHeight;
 }
 
+function renderParticipantStrip(root, session) {
+  let strip = root.querySelector("[data-testid='maker-chat-participants']");
+  if (!strip) {
+    strip = document.createElement("div");
+    strip.className = "chat-participant-strip muted";
+    strip.dataset.testid = "maker-chat-participants";
+    const main = root.querySelector(".chat-main");
+    const form = root.querySelector("#chat-form");
+    if (main && form) {
+      main.insertBefore(strip, form);
+    } else {
+      root.prepend(strip);
+    }
+  }
+  const participants = session?.participants || [];
+  if (!participants.length) {
+    strip.textContent = "";
+    strip.classList.add("hidden");
+    return;
+  }
+  strip.classList.remove("hidden");
+  const bits = participants.map((p) => {
+    const name = p.display_name || p.username || p.user_id?.slice(0, 8) || "user";
+    const role = String(p.role || "session_read").replace("session_", "");
+    const hostMark = session?.host_user_id && p.user_id === session.host_user_id ? " ★" : "";
+    return `${name} · ${role}${hostMark}`;
+  });
+  strip.textContent = `Participants: ${bits.join(" · ")}`;
+}
+
+function applyComposerForRole(root) {
+  const form = root.querySelector("#chat-form");
+  const readOnly = collabMyRole === "session_read";
+  if (form) form.classList.toggle("hidden", readOnly);
+  const inj = root.querySelector("[data-testid='maker-chat-interjection-ribbon']");
+  if (inj) inj.classList.toggle("hidden", readOnly);
+  let banner = root.querySelector("[data-testid='maker-chat-readonly-banner']");
+  if (readOnly) {
+    if (!banner) {
+      banner = document.createElement("p");
+      banner.className = "muted chat-readonly-banner";
+      banner.dataset.testid = "maker-chat-readonly-banner";
+      banner.textContent =
+        "You're watching as read-only. Ask the host for Write access to comment.";
+      form?.insertAdjacentElement("beforebegin", banner);
+    }
+  } else {
+    banner?.remove();
+  }
+}
+
 function renderMessagesFromSession(root, session) {
+  collabMyRole = session?.my_participant_role || collabMyRole;
+  renderParticipantStrip(root, session);
+  applyComposerForRole(root);
   const thread = root.querySelector("#chat-thread");
   if (!thread) return;
   thread.replaceChildren();
@@ -847,6 +906,16 @@ export async function mountChat(root) {
         <button type="button" id="chat-new-session" class="linkish" data-testid="maker-chat-new-session">New session</button>
       </aside>
       <div class="chat-main">
+        <section
+          id="chat-compute-nodes"
+          class="panel chat-compute-nodes muted"
+          data-testid="maker-chat-compute-nodes"
+          hidden
+        >
+          <h4>Compute</h4>
+          <p class="chat-compute-nodes-caption">Connected nodes (mesh stub)</p>
+          <ul id="chat-compute-nodes-list" class="chat-compute-nodes-list"></ul>
+        </section>
         <section id="chat-operator-ribbons" class="chat-operator-ribbons hidden" data-testid="maker-chat-operator-ribbons">
           <div class="chat-interjection-ribbon panel" data-testid="maker-chat-interjection-ribbon">
             <h4>Interjection</h4>

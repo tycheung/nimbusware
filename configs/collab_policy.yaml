@@ -1,0 +1,5 @@
+allow_external_collaborators: false
+max_session_participants: 20
+host_transfer_consent_hours: 24
+default_invite_role: session_read
+write_may_start_runs: false

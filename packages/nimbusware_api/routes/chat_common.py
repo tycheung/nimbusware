@@ -20,6 +20,7 @@ from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot
 
 class CreateChatSessionBody(BaseModel):
     project_id: str = Field(min_length=1, max_length=36)
+    folder: str | None = Field(default=None, max_length=120)
 
 
 class ChatMessageBody(BaseModel):
@@ -80,6 +81,11 @@ class ChatSessionResponse(BaseModel):
     work_type_override: str | None = None
     run_id: str | None = None
     campaign_id: str | None = None
+    host_user_id: str | None = None
+    workload_distribution: str | None = None
+    metadata: dict[str, Any] | None = None
+    participants: list[dict[str, Any]] | None = None
+    my_participant_role: str | None = None
 
 
 class ChatMessageResponse(BaseModel):
