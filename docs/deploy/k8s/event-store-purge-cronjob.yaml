@@ -14,7 +14,7 @@ spec:
             - name: purge
               image: nimbusware-api:latest
               imagePullPolicy: IfNotPresent
-              command: ["python", "scripts/purge_event_store_retention.py"]
+              command: ["python", "scripts/database/purge_event_store_retention.py"]
               envFrom:
                 - secretRef:
                     name: nimbusware-api-secrets

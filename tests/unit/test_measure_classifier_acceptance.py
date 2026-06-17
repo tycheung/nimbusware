@@ -9,7 +9,10 @@ _REPO = Path(__file__).resolve().parents[2]
 
 def test_measure_classifier_acceptance_meets_target() -> None:
     proc = subprocess.run(
-        [sys.executable, str(_REPO / "scripts" / "measure_classifier_acceptance.py")],
+        [
+            sys.executable,
+            str(_REPO / "scripts" / "benchmarks" / "measure_classifier_acceptance.py"),
+        ],
         cwd=_REPO,
         capture_output=True,
         text=True,

@@ -52,7 +52,7 @@ For composed stages (e.g. `optional_stages.py`, `critique_gates.py`), split impl
 
 - **Mypy:** Tranche E strict-checks `_pipeline/_helpers` (explicit `__all__`) and all `_pipeline` mixin modules without `attr-defined` ignores on `_helpers` imports. Ships PEP 561 marker (`py.typed`).
 - **Compose-time patch seam:** `compose.py` binds mixin method globals to `pipeline` during each call so tests can patch `nimbusware_orchestrator.pipeline.*` without star-import barrels in mixins. Mixins still import from `_helpers` explicitly at module level.
-- After mechanical splits in console display packages, run `poetry run python scripts/explicit_star_imports.py` and `poetry run python scripts/sync_display_facade.py`.
-- Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci_check.ps1` locally.
+- After mechanical splits in console display packages, run `poetry run python scripts/ci/explicit_star_imports.py` and `poetry run python scripts/ci/sync_display_facade.py`.
+- Do **not** run repo-wide `ruff check --fix` (strips re-export imports). Use `./scripts/ci/ci_check.ps1` locally.
 
 Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

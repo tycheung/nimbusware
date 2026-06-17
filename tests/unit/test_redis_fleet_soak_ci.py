@@ -7,11 +7,11 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
 _SLOW = _REPO / ".github" / "workflows" / "slow_tests.yml"
-_RUNBOOK = _REPO / "scripts" / "e2e_redis_fleet_soak_runbook.md"
+_RUNBOOK = _REPO / "scripts" / "runbooks" / "e2e_redis_fleet_soak_runbook.md"
 
 
 def _load_runner():
-    path = _REPO / "scripts" / "run_redis_fleet_soak_ci.py"
+    path = _REPO / "scripts" / "ops" / "run_redis_fleet_soak_ci.py"
     spec = importlib.util.spec_from_file_location("run_redis_fleet_soak_ci", path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

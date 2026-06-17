@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main, master]
 
-# Scraper response artifacts: CI does not run scripts/prune_scraper_artifacts.py. Operators
+# Scraper response artifacts: CI does not run scripts/ops/prune_scraper_artifacts.py. Operators
 # should schedule that script (cron / Windows Task Scheduler examples in its module docstring).
 # Optional GitHub-hosted prune: .github/workflows/scraper_artifact_prune.yml (not invoked here);
 # that workflow runs weekly with `--json-summary` logging and opens a `prune-failure`-labelled
@@ -28,17 +28,17 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Bundle FAISS stale check
-        run: poetry run python scripts/rebuild_bundle_faiss_if_stale.py --dry-run
+        run: poetry run python scripts/faiss/rebuild_bundle_faiss_if_stale.py --dry-run
       - name: Ruff
         run: poetry run ruff check packages tests
       - name: Operator env audit
-        run: poetry run python scripts/audit_operator_env.py
+        run: poetry run python scripts/ci/audit_operator_env.py
       - name: OpenAPI TypeScript CI gate
-        run: poetry run python scripts/run_openapi_ts_ci_gate.py
+        run: poetry run python scripts/ci/run_openapi_ts_ci_gate.py
       - name: Ruff format
         run: poetry run ruff format --check packages tests
       - name: Mypy
-        run: poetry run mypy $(poetry run python scripts/mypy_ci_targets.py)
+        run: poetry run mypy $(poetry run python scripts/ci/mypy_ci_targets.py)
       - name: Bandit
         run: poetry run bandit -c pyproject.toml -r packages -lll -q
       - name: Pip audit
@@ -50,7 +50,7 @@ jobs:
             --cov-report=term-missing:skip-covered \
             --cov-report=json:.ci_coverage.json \
             --cov-fail-under=75
-          poetry run python scripts/coverage_package_floors.py --report .ci_coverage.json
+          poetry run python scripts/ci/coverage_package_floors.py --report .ci_coverage.json
           rm -f .ci_coverage.json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
@@ -60,19 +60,19 @@ jobs:
           NIMBUSWARE_SLICE_E2E_COMMAND: 'python -c "import pathlib; assert pathlib.Path(''index.html'').is_file(); print(''ok'')"'
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
       - name: Framework pack CI gate
-        run: poetry run python scripts/run_framework_pack_ci_gate.py
+        run: poetry run python scripts/ci/run_framework_pack_ci_gate.py
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
       - name: Bootstrap wheel CI gate
-        run: poetry run python scripts/run_bootstrap_ci_gate.py
+        run: poetry run python scripts/ci/run_bootstrap_ci_gate.py
       - name: Publish bootstrap workflow CI gate
-        run: poetry run python scripts/run_publish_bootstrap_ci_gate.py
+        run: poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py
       - name: Publish VS Code extension CI gate
-        run: poetry run python scripts/run_publish_vscode_ci_gate.py
+        run: poetry run python scripts/ci/run_publish_vscode_ci_gate.py
       - name: Intent-to-patch SLO gate
-        run: poetry run python scripts/run_intent_to_patch_ci_gate.py
+        run: poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
       - name: Classifier acceptance SLO gate
-        run: poetry run python scripts/run_classifier_acceptance_ci_gate.py
+        run: poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
 
   web:
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
         with:
           node-version: "20"
       - name: OpenAPI TypeScript full schema
-        run: poetry run python scripts/openapi_to_ts.py
+        run: poetry run python scripts/codegen/openapi_to_ts.py
         env:
           NIMBUSWARE_OPENAPI_TS_REQUIRE_FULL: "1"
       - name: Vitest maker_web
@@ -133,7 +133,7 @@ jobs:
         run: |
           export NIMBUSWARE_DATABASE_URL="postgresql://nimbusware:nimbusware@localhost:5432/nimbusware"
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
-          bash scripts/apply_event_store.sh
+          bash scripts/database/apply_event_store.sh
       - name: Integration tests
         run: poetry run pytest tests -q -m integration
         env:
@@ -167,7 +167,7 @@ jobs:
         run: |
           export NIMBUSWARE_DATABASE_URL="postgresql://nimbusware:nimbusware@localhost:5432/nimbusware"
           sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
-          bash scripts/apply_event_store.sh
+          bash scripts/database/apply_event_store.sh
       - name: E2E tests
         run: poetry run pytest tests/e2e -q -m e2e --reruns 1 --reruns-delay 2
         env:
@@ -188,7 +188,7 @@ jobs:
           python-version: "3.11"
       - run: pip install poetry && poetry install
       - name: PUT E2E opt-in gate
-        run: poetry run python scripts/run_put_e2e_ci_gate.py
+        run: poetry run python scripts/ci/run_put_e2e_ci_gate.py
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}

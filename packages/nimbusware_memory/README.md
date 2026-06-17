@@ -11,7 +11,7 @@ Repo-scoped retrieval index for Nimbusware agent runs (local FAISS + metadata si
 
 ## Related scripts
 
-- `scripts/build_memory_faiss_index.py` — rebuild memory index from repo artifacts
+- `scripts/faiss/build_memory_faiss_index.py` — rebuild memory index from repo artifacts
 - Console memory panels — `nimbusware_console.memory_display`
 
 Normative Nimbusware contract: gitignored `nimbusware-orchestrator-local-plan.md` at repo root.

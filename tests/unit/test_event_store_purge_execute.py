@@ -12,7 +12,9 @@ from nimbusware_store.retention_policy import (
     purge_execute_enabled,
 )
 
-_PURGE_SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "purge_event_store_retention.py"
+_PURGE_SCRIPT = (
+    Path(__file__).resolve().parents[2] / "scripts" / "database" / "purge_event_store_retention.py"
+)
 
 
 def _purge_main():

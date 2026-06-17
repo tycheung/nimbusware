@@ -34,7 +34,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 
 | Control | Implementation |
 |---------|----------------|
-| CI security | `bandit` + `pip-audit` in every PR (`scripts/ci_check.ps1`) |
+| CI security | `bandit` + `pip-audit` in every PR (`scripts/ci/ci_check.ps1`) |
 | Release SBOM | Tag `v*` triggers `.github/workflows/sbom.yml` |
 | Dependency lock | `poetry.lock` pinned in repo |
 

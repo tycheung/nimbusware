@@ -19,7 +19,7 @@ ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 def test_build_memory_faiss_index_help() -> None:
     proc = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "build_memory_faiss_index.py"), "--help"],
+        [sys.executable, str(ROOT / "scripts" / "faiss" / "build_memory_faiss_index.py"), "--help"],
         capture_output=True,
         text=True,
         check=False,

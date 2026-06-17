@@ -1,16 +1,24 @@
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi.routing import APIRoute
 
 from nimbusware_api.facade import build_v1_router
 
 
-def _route_paths(router) -> set[str]:
-    paths: set[str] = set()
+def _iter_api_routes(router: Any):
     for route in router.routes:
         if isinstance(route, APIRoute):
-            paths.add(route.path)
-    return paths
+            yield route
+        elif hasattr(route, "original_router"):
+            yield from _iter_api_routes(route.original_router)
+        elif hasattr(route, "routes"):
+            yield from _iter_api_routes(route)
+
+
+def _route_paths(router) -> set[str]:
+    return {route.path for route in _iter_api_routes(router)}
 
 
 def test_build_v1_router_includes_core_routes() -> None:

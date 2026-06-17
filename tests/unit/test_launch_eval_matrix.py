@@ -9,7 +9,7 @@ from pathlib import Path
 def test_launch_eval_matrix_scores_default_workspaces() -> None:
     root = Path(__file__).resolve().parents[2]
     proc = subprocess.run(
-        [sys.executable, str(root / "scripts" / "launch_eval.py"), "--matrix"],
+        [sys.executable, str(root / "scripts" / "benchmarks" / "launch_eval.py"), "--matrix"],
         cwd=str(root),
         capture_output=True,
         text=True,

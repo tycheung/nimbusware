@@ -15,7 +15,7 @@ jobs:
           python-version: "3.11"
       - run: pip install poetry && poetry install
       - name: micro_slice regression dry-run
-        run: poetry run python scripts/swe_bench_harness.py --dry-run --json
+        run: poetry run python scripts/benchmarks/swe_bench_harness.py --dry-run --json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
@@ -32,7 +32,7 @@ jobs:
       - name: micro_slice regression scored run
         id: scored
         run: |
-          poetry run python scripts/swe_bench_harness.py --run --json | tee swe_bench_out.json
+          poetry run python scripts/benchmarks/swe_bench_harness.py --run --json | tee swe_bench_out.json
           pass_rate=$(python -c "import json; print(json.load(open('swe_bench_out.json'))['pass_rate'])")
           echo "pass_rate=$pass_rate" >> "$GITHUB_OUTPUT"
         env:

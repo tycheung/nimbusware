@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_SCRIPT = _REPO / "scripts" / "publish_bootstrap_release.py"
+_SCRIPT = _REPO / "scripts" / "publish" / "publish_bootstrap_release.py"
 
 
 def test_publish_bootstrap_release_help_lists_upload_flags() -> None:

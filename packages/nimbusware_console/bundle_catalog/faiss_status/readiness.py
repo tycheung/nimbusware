@@ -58,7 +58,7 @@ def bundle_faiss_readiness_summary(repo_root: Path) -> dict[str, Any]:
             "headline": "FAISS index files incomplete",
             "detail": (
                 "Vector search stays off until both ``faiss.index`` and ``bundle_order.json`` "
-                "exist (run the build script or ``scripts/build_bundle_faiss_index.ps1``)."
+                "exist (run the build script or ``scripts/faiss/build_bundle_faiss_index.ps1``)."
             ),
             "missing": missing,
             **mtime_flags,

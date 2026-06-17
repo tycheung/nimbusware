@@ -87,7 +87,7 @@ def test_display_facades_match_package_init_imports() -> None:
         _, imported = _facade_import_names(facade)
         if sorted(imported) != init_names:
             stale.append(facade.name)
-    assert not stale, "Re-run: poetry run python scripts/sync_display_facade.py\n" + "\n".join(
+    assert not stale, "Re-run: poetry run python scripts/ci/sync_display_facade.py\n" + "\n".join(
         stale
     )
 

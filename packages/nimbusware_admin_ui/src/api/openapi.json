@@ -50009,8 +50009,7 @@
           "total",
           "has_more"
         ],
-        "title": "PreflightHistoryResponse",
-        "description": "``GET /v1/preflight-history`` \u2014 bounded fleet aggregation."
+        "title": "PreflightHistoryResponse"
       },
       "PreflightMetricsExport": {
         "properties": {
@@ -50146,8 +50145,7 @@
           "distinct_validated_model_id_count",
           "filters"
         ],
-        "title": "PreflightMetricsExport",
-        "description": "Stable export payload for fleet preflight SLIs."
+        "title": "PreflightMetricsExport"
       },
       "PreflightMetricsExportFilters": {
         "properties": {
@@ -50220,8 +50218,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "title": "PreflightMetricsExportFilters",
-        "description": "Filters echoed in ``metrics_export`` for external consumers."
+        "title": "PreflightMetricsExportFilters"
       },
       "ProbationReliabilityResponse": {
         "properties": {
@@ -50281,8 +50278,7 @@
           "min_score",
           "max_below_ratio"
         ],
-        "title": "ProbationReliabilityResponse",
-        "description": "Aggregated agent-evaluator scores for probation automation."
+        "title": "ProbationReliabilityResponse"
       },
       "ProjectCreateRequest": {
         "properties": {
@@ -50746,8 +50742,7 @@
           "has_escalation",
           "run_id"
         ],
-        "title": "RunDetailResponse",
-        "description": "``GET /v1/runs/{run_id}`` \u2014 summary plus identifier."
+        "title": "RunDetailResponse"
       },
       "RunListResponse": {
         "properties": {
@@ -50893,8 +50888,7 @@
           "order",
           "include_summary"
         ],
-        "title": "RunListResponse",
-        "description": "``GET /v1/runs`` paginated list."
+        "title": "RunListResponse"
       },
       "RunRequirementsBody": {
         "properties": {
@@ -50991,8 +50985,7 @@
           "findings_count",
           "has_escalation"
         ],
-        "title": "RunSummary",
-        "description": "Shape returned by ``build_run_summary`` (replay of ``list_run_events``)."
+        "title": "RunSummary"
       },
       "RunTimelineResponse": {
         "properties": {
@@ -51742,6 +51735,23 @@
             "type": "boolean",
             "title": "Autonomous",
             "default": true
+          },
+          "align_run_replay": {
+            "type": "boolean",
+            "title": "Align Run Replay",
+            "default": false
+          },
+          "replay_from_seq": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay From Seq"
           }
         },
         "type": "object",
@@ -51805,6 +51815,18 @@
               }
             ],
             "title": "Turn"
+          },
+          "replay_alignment": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay Alignment"
           }
         },
         "type": "object",

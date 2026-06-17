@@ -9,7 +9,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 
 def _load_put_e2e_gate():
-    path = REPO / "scripts" / "run_put_e2e_ci_gate.py"
+    path = REPO / "scripts" / "ci" / "run_put_e2e_ci_gate.py"
     spec = importlib.util.spec_from_file_location("run_put_e2e_ci_gate", path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

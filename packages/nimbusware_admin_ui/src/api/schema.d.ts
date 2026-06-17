@@ -4127,10 +4127,7 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
-        /**
-         * PreflightHistoryResponse
-         * @description ``GET /v1/preflight-history`` — bounded fleet aggregation.
-         */
+        /** PreflightHistoryResponse */
         PreflightHistoryResponse: {
             /** Entries */
             entries: components["schemas"]["PreflightHistoryEntry"][];
@@ -4190,10 +4187,7 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
-        /**
-         * PreflightMetricsExport
-         * @description Stable export payload for fleet preflight SLIs.
-         */
+        /** PreflightMetricsExport */
         PreflightMetricsExport: {
             /** Generated At */
             generated_at: string;
@@ -4245,10 +4239,7 @@ export interface components {
             export_window_consistent: boolean;
             filters: components["schemas"]["PreflightMetricsExportFilters"];
         };
-        /**
-         * PreflightMetricsExportFilters
-         * @description Filters echoed in ``metrics_export`` for external consumers.
-         */
+        /** PreflightMetricsExportFilters */
         PreflightMetricsExportFilters: {
             /** Workflow Profile */
             workflow_profile?: string | null;
@@ -4263,10 +4254,7 @@ export interface components {
             /** Status */
             status?: string | null;
         };
-        /**
-         * ProbationReliabilityResponse
-         * @description Aggregated agent-evaluator scores for probation automation.
-         */
+        /** ProbationReliabilityResponse */
         ProbationReliabilityResponse: {
             /** Persona Id */
             persona_id: string;
@@ -4452,10 +4440,7 @@ export interface components {
              */
             custom: boolean;
         };
-        /**
-         * RunDetailResponse
-         * @description ``GET /v1/runs/{run_id}`` — summary plus identifier.
-         */
+        /** RunDetailResponse */
         RunDetailResponse: {
             /** Status */
             status: string;
@@ -4482,10 +4467,7 @@ export interface components {
             /** Run Id */
             run_id: string;
         };
-        /**
-         * RunListResponse
-         * @description ``GET /v1/runs`` paginated list.
-         */
+        /** RunListResponse */
         RunListResponse: {
             /** Run Ids */
             run_ids: string[];
@@ -4530,10 +4512,7 @@ export interface components {
             /** Clarifications */
             clarifications?: components["schemas"]["ClarificationAnswerBody"][];
         };
-        /**
-         * RunSummary
-         * @description Shape returned by ``build_run_summary`` (replay of ``list_run_events``).
-         */
+        /** RunSummary */
         RunSummary: {
             /** Status */
             status: string;
@@ -4836,6 +4815,13 @@ export interface components {
              * @default true
              */
             autonomous: boolean;
+            /**
+             * Align Run Replay
+             * @default false
+             */
+            align_run_replay: boolean;
+            /** Replay From Seq */
+            replay_from_seq?: number | null;
         };
         /** StartChatSessionResponse */
         StartChatSessionResponse: {
@@ -4853,6 +4839,10 @@ export interface components {
             dispatch_mode?: string | null;
             /** Turn */
             turn?: {
+                [key: string]: unknown;
+            } | null;
+            /** Replay Alignment */
+            replay_alignment?: {
                 [key: string]: unknown;
             } | null;
         };

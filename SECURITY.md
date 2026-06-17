@@ -29,7 +29,7 @@ CI runs on every PR:
 - **bandit** — Python security linter (`poetry run bandit -c pyproject.toml -r packages`)
 - **pip-audit** — known vulnerability scan on locked dependencies
 
-Run locally via [`scripts/ci_check.ps1`](scripts/ci_check.ps1) or [`scripts/ci_check.sh`](scripts/ci_check.sh).
+Run locally via [`scripts/ci/ci_check.ps1`](scripts/ci/ci_check.ps1) or [`scripts/ci/ci_check.sh`](scripts/ci/ci_check.sh).
 
 ## Production checklist
 

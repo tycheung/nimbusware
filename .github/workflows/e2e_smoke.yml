@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: E2E smoke (app profile)
-        run: poetry run python scripts/e2e_smoke.py --profile app --skip-install-check
+        run: poetry run python scripts/ops/e2e_smoke.py --profile app --skip-install-check
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
@@ -49,11 +49,11 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Apply schema
-        run: bash scripts/apply_event_store.sh
+        run: bash scripts/database/apply_event_store.sh
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware
       - name: E2E smoke (full profile)
-        run: poetry run python scripts/e2e_smoke.py --profile full --skip-install-check
+        run: poetry run python scripts/ops/e2e_smoke.py --profile full --skip-install-check
         env:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware
           NIMBUSWARE_SKIP_PREFLIGHT: "1"

@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_FLOORS_SCRIPT = _REPO / "scripts" / "coverage_package_floors.py"
+_FLOORS_SCRIPT = _REPO / "scripts" / "ci" / "coverage_package_floors.py"
 
 
 def _load_floors_module():

@@ -9,7 +9,7 @@ spec:
       containers:
         - name: schema
           image: {{ .Values.image.api }}
-          command: ["bash", "scripts/apply_event_store.sh"]
+          command: ["bash", "scripts/database/apply_event_store.sh"]
           envFrom:
             - secretRef:
                 name: nimbusware-api-secrets

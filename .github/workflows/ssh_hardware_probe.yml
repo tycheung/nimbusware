@@ -39,7 +39,7 @@ jobs:
         run: |
           pip install poetry
           poetry install --no-interaction
-          poetry run python scripts/run_ssh_hardware_probe_ci.py
+          poetry run python scripts/ci/run_ssh_hardware_probe_ci.py
       - name: Open issue on scheduled probe failure
         if: failure() && github.event_name == 'schedule'
         env:

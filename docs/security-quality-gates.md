@@ -9,7 +9,7 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 ```
 
 ```bash
-./scripts/ci_check.sh
+./scripts/ci/ci_check.sh
 ```
 
 ## Tools
@@ -19,10 +19,10 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 | **bandit** | `poetry run bandit -c pyproject.toml -r packages` | `[tool.bandit]` in `pyproject.toml` |
 | **pip-audit** | `poetry run pip-audit` | Locked `poetry.lock` |
 | **ruff** | format + lint on `packages` and `tests` | `[tool.ruff]` |
-| **mypy** | tranches via `scripts/mypy_ci_targets.py` | strict islands |
-| **Intent→patch SLO** | `scripts/run_intent_to_patch_ci_gate.py` | Live harness (`measure_intent_to_patch.py --runs 1`) + committed snapshot median ≤ 180s on stub fixture |
-| **Classifier acceptance SLO** | `scripts/run_classifier_acceptance_ci_gate.py` | Live harness (`measure_classifier_acceptance.py`) + snapshot rate ≥ 70% (rules-first, no LLM) |
-| **Framework pack** | `scripts/run_framework_pack_ci_gate.py` | launch-test framework YAML smoke |
+| **mypy** | tranches via `scripts/ci/mypy_ci_targets.py` | strict islands |
+| **Intent→patch SLO** | `scripts/ci/run_intent_to_patch_ci_gate.py` | Live harness (`measure_intent_to_patch.py --runs 1`) + committed snapshot median ≤ 180s on stub fixture |
+| **Classifier acceptance SLO** | `scripts/ci/run_classifier_acceptance_ci_gate.py` | Live harness (`measure_classifier_acceptance.py`) + snapshot rate ≥ 70% (rules-first, no LLM) |
+| **Framework pack** | `scripts/ci/run_framework_pack_ci_gate.py` | launch-test framework YAML smoke |
 
 Failures in bandit or pip-audit block merge the same way as pytest coverage floors.
 

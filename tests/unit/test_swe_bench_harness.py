@@ -10,7 +10,7 @@ from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 MANIFEST = ROOT / "tests" / "fixtures" / "swe_bench" / "manifest.json"
-SCRIPT = ROOT / "scripts" / "swe_bench_harness.py"
+SCRIPT = ROOT / "scripts" / "benchmarks" / "swe_bench_harness.py"
 
 
 def test_swe_bench_dry_run_json_ok() -> None:

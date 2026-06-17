@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_SCRIPT = _REPO / "scripts" / "install_nimbusware.py"
+_SCRIPT = _REPO / "scripts" / "install" / "install_nimbusware.py"
 
 
 def _load_install_module():

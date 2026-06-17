@@ -5,7 +5,7 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 def _load_factory_weekly():
-    path = REPO / "scripts" / "run_factory_weekly_ci.py"
+    path = REPO / "scripts" / "benchmarks" / "run_factory_weekly_ci.py"
     spec = importlib.util.spec_from_file_location("run_factory_weekly_ci", path)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)

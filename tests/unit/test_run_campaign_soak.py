@@ -6,9 +6,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
+SCRIPTS_OPS = ROOT / "scripts" / "ops"
+if str(SCRIPTS_OPS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_OPS))
 
 import run_campaign_soak as campaign_soak_mod  # noqa: E402
 

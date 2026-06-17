@@ -4,7 +4,7 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
 _PYPROJECT = _REPO / "pyproject.toml"
-_TARGETS = _REPO / "scripts" / "mypy_ci_targets.py"
+_TARGETS = _REPO / "scripts" / "ci" / "mypy_ci_targets.py"
 
 _TRANCHE_C_MODULES = frozenset(
     {

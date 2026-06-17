@@ -5,7 +5,7 @@ Postgres, apply the single bootstrap script:
 
 [`../schema/postgres.sql`](../schema/postgres.sql)
 
-Use [`scripts/apply_event_store.sh`](../../../scripts/apply_event_store.sh) (or
+Use [`scripts/database/apply_event_store.sh`](../../../scripts/database/apply_event_store.sh) (or
 `.ps1`) from the repo root with `NIMBUSWARE_DATABASE_URL` set.
 
 **Existing databases:** when `event_store_type_allowed` gains new values (e.g.

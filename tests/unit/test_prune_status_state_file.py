@@ -37,7 +37,7 @@ def _run_prune_script(
             "poetry",
             "run",
             "python",
-            str(ROOT / "scripts" / "prune_scraper_artifacts.py"),
+            str(ROOT / "scripts" / "ops" / "prune_scraper_artifacts.py"),
             "--max-age-days",
             "7",
             "--dry-run",

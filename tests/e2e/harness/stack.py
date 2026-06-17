@@ -146,7 +146,7 @@ def start_worker_subprocess(
         merged.update(env)
     cmd = [
         sys.executable,
-        str(repo_root / "scripts" / "run_dispatch_worker.py"),
+        str(repo_root / "scripts" / "ops" / "run_dispatch_worker.py"),
         "--idle-sleep-seconds",
         "0.05",
     ]

@@ -8,7 +8,7 @@ from pathlib import Path
 from nimbusware_env import find_repo_root
 
 ROOT = find_repo_root(start=Path(__file__).resolve())
-SCRIPT = ROOT / "scripts" / "run_live_writers_soak.py"
+SCRIPT = ROOT / "scripts" / "ops" / "run_live_writers_soak.py"
 OUT = ROOT / "benchmarks" / "latest_live_writers_soak.json"
 
 

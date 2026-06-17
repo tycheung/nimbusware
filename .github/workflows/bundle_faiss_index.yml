@@ -1,9 +1,9 @@
 # Optional bundle FAISS index build smoke (not part of push/PR CI; see ci.yml).
 #
-# Runs ``poetry install --with faiss`` + ``scripts/build_bundle_faiss_index.py`` with
+# Runs ``poetry install --with faiss`` + ``scripts/faiss/build_bundle_faiss_index.py`` with
 # repo defaults (``configs/bundles/catalog.yaml`` → ``configs/bundles/index/``).
-# Operators may run the same locally via ``scripts/build_bundle_faiss_index.ps1`` or
-# ``scripts/build_bundle_faiss_index.sh``; see PLAN_GAP **Poetry optional groups and FAISS**.
+# Operators may run the same locally via ``scripts/faiss/build_bundle_faiss_index.ps1`` or
+# ``scripts/faiss/build_bundle_faiss_index.sh``; see PLAN_GAP **Poetry optional groups and FAISS**.
 #
 # Cadence (fo128): weekly schedule plus manual ``workflow_dispatch``. Concurrency prevents
 # overlapping cron + dispatch runs.
@@ -31,6 +31,6 @@ jobs:
           python-version: "3.11"
       - run: pip install poetry && poetry install --with faiss
       - name: Rebuild FAISS index when catalog is stale
-        run: poetry run python scripts/rebuild_bundle_faiss_if_stale.py
+        run: poetry run python scripts/faiss/rebuild_bundle_faiss_if_stale.py
       - name: Build bundle FAISS index smoke (if index still missing)
-        run: poetry run python scripts/build_bundle_faiss_index.py
+        run: poetry run python scripts/faiss/build_bundle_faiss_index.py

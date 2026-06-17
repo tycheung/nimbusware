@@ -10,7 +10,7 @@ Guide for wiring **multi-broker Redis dispatch** (`NIMBUSWARE_REDIS_FLEET_URLS`)
 | Managed Redis (one endpoint) | `secrets.redisUrl` in Helm values |
 | **Multi-host fleet** (primary + replica brokers, regional shards) | `secrets.redisFleetUrls` comma-separated list |
 
-Fleet URLs power weekly **redis-fleet-soak** CI (`NIMBUSWARE_REDIS_FLEET_URLS=redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0`) and production worker drain across brokers. See [`scripts/e2e_redis_fleet_soak_runbook.md`](../../scripts/e2e_redis_fleet_soak_runbook.md).
+Fleet URLs power weekly **redis-fleet-soak** CI (`NIMBUSWARE_REDIS_FLEET_URLS=redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0`) and production worker drain across brokers. See [`scripts/runbooks/e2e_redis_fleet_soak_runbook.md`](../../scripts/runbooks/e2e_redis_fleet_soak_runbook.md).
 
 ## Helm values (recommended)
 
@@ -56,7 +56,7 @@ Both API and worker deployments must mount the same secret and set `NIMBUSWARE_R
 1. **Pre-rollout soak** — with VPN/firewall open to brokers:
    ```bash
    export NIMBUSWARE_REDIS_FLEET_URLS='rediss://primary:6379/0,rediss://replica:6379/0'
-   poetry run python scripts/run_redis_fleet_soak_ci.py
+   poetry run python scripts/ops/run_redis_fleet_soak_ci.py
    ```
 2. **Worker health** — Enterprise Admin **Fleet** tab: worker queue depth and heartbeat.
 3. **Campaign tick** — start `campaign_micro_slice`; confirm `campaign_driver_tick` events on timeline.
@@ -75,6 +75,6 @@ Both API and worker deployments must mount the same secret and set `NIMBUSWARE_R
 
 ## Related
 
-- [`scripts/e2e_redis_fleet_soak_runbook.md`](../../scripts/e2e_redis_fleet_soak_runbook.md)
-- [`scripts/run_dispatch_fleet_runbook.md`](../../scripts/run_dispatch_fleet_runbook.md)
+- [`scripts/runbooks/e2e_redis_fleet_soak_runbook.md`](../../scripts/runbooks/e2e_redis_fleet_soak_runbook.md)
+- [`scripts/runbooks/run_dispatch_fleet_runbook.md`](../../scripts/runbooks/run_dispatch_fleet_runbook.md)
 - [helm.md](helm.md)

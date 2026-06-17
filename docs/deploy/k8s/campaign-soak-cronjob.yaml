@@ -20,7 +20,7 @@ spec:
             - name: soak
               image: nimbusware-api:latest
               imagePullPolicy: IfNotPresent
-              command: ["python", "scripts/run_campaign_soak.py"]
+              command: ["python", "scripts/ops/run_campaign_soak.py"]
               envFrom:
                 - secretRef:
                     name: nimbusware-api-secrets

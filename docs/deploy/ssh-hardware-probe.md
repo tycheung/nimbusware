@@ -11,7 +11,7 @@ Workflow: [`.github/workflows/ssh_hardware_probe.yml`](../../.github/workflows/s
 | **Weekly schedule** (Sunday 04:30 UTC) | Fails the job on probe regression; opens a GitHub issue labelled `ssh-probe-failure`. |
 | **workflow_dispatch** | Same probe matrix; job uses `continue-on-error` so manual runs do not block the repo. |
 
-Entrypoint: `poetry run python scripts/run_ssh_hardware_probe_ci.py` — prints one JSON summary line and exits non-zero when any host fails.
+Entrypoint: `poetry run python scripts/ci/run_ssh_hardware_probe_ci.py` — prints one JSON summary line and exits non-zero when any host fails.
 
 ## Secrets and variables
 
@@ -33,7 +33,7 @@ export NIMBUSWARE_HW_SSH_IDENTITY=/path/to/deploy_key
 # optional regression guard:
 export NIMBUSWARE_HW_EXPECT_MIN_TIER=medium
 
-poetry run python scripts/run_ssh_hardware_probe_ci.py
+poetry run python scripts/ci/run_ssh_hardware_probe_ci.py
 ```
 
 PR CI sets `NIMBUSWARE_HW_SSH_MOCK=1` so unit tests never open real SSH sessions.

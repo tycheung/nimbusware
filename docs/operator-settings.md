@@ -28,7 +28,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## CI guard
 
-`scripts/audit_operator_env.py` runs in `scripts/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers. `scripts/run_openapi_ts_ci_gate.py` regenerates Admin `schema.d.ts` (and snapshots `openapi.json`) from the FastAPI OpenAPI export.
+`scripts/ci/audit_operator_env.py` runs in `scripts/ci/ci_check.ps1`. Every `NIMBUSWARE_*` / `OLLAMA_HOST` / `PORT` read under `packages/` must be cataloged or in a bootstrap allowlist — including reads via `env_str`, `env_bool`, `env_truthy`, `resolve_str`, and local `_int_env` / `_truthy_env` helpers. `scripts/ci/run_openapi_ts_ci_gate.py` regenerates Admin `schema.d.ts` (and snapshots `openapi.json`) from the FastAPI OpenAPI export.
 
 ## Implementation
 

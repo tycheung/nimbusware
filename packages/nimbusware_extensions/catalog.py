@@ -249,7 +249,7 @@ def bundle_faiss_index_ready(repo_root: Path) -> bool:
     """Return ``True`` when both bundle FAISS index files exist under ``repo_root``.
 
     Checks ``configs/bundles/index/faiss.index`` and ``configs/bundles/index/bundle_order.json``
-    (the two files written by ``scripts/build_bundle_faiss_index.py`` and consumed by
+    (the two files written by ``scripts/faiss/build_bundle_faiss_index.py`` and consumed by
     :meth:`BundleCatalog._try_load_faiss`). This is a *file-presence* signal only — it does
     not import ``faiss`` or attempt to load the index, so it stays cheap to call from API
     handlers and Admin display captions alike.

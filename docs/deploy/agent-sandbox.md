@@ -32,5 +32,5 @@ Implementation: `packages/nimbusware_agent_tools/fleet_sandbox.py`. When fleet p
 ## Related docs
 
 - [Enterprise buyer checklist](../enterprise-buyer.md)
-- [Run dispatch fleet runbook](../../scripts/run_dispatch_fleet_runbook.md)
+- [Run dispatch fleet runbook](../../scripts/runbooks/run_dispatch_fleet_runbook.md)
 - Package reference: [nimbusware_agent_tools README](../../packages/nimbusware_agent_tools/README.md)

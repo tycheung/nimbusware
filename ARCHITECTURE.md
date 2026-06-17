@@ -97,23 +97,23 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) for setup,
 
 | Step | Command / guard |
 |------|-----------------|
-| Local CI | `./scripts/ci_check.ps1` or `scripts/ci_check.sh` |
-| After display package splits | `poetry run python scripts/explicit_star_imports.py` |
-| After package `__init__` export changes | `poetry run python scripts/sync_display_facade.py` |
+| Local CI | `./scripts/ci/ci_check.ps1` or `scripts/ci/ci_check.sh` |
+| After display package splits | `poetry run python scripts/ci/explicit_star_imports.py` |
+| After package `__init__` export changes | `poetry run python scripts/ci/sync_display_facade.py` |
 | Facade contract | `tests/unit/test_display_facade_exports.py` |
 
 **Do not** run repo-wide `ruff check --fix` — it strips explicit re-export imports.
 
-**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/coverage_package_floors.py`. Web static assets (`nimbusware_maker_web`, `nimbusware_admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
+**Coverage:** CI enforces `--cov-fail-under=75` on the default unit subset. Per-package floors (≥85%): `agent_core`, `nimbusware_store`, `nimbusware_executor`, `nimbusware_config`, `nimbusware_projections` via `scripts/ci/coverage_package_floors.py`. Web static assets (`nimbusware_maker_web`, `nimbusware_admin_ui`) and desktop launcher modules are omitted from the denominator (`pyproject.toml`).
 
-**Typing:** Global mypy `strict = true`. CI checks paths from `scripts/mypy_ci_targets.py`:
+**Typing:** Global mypy `strict = true`. CI checks paths from `scripts/ci/mypy_ci_targets.py`:
 
 | Tranche | Packages / paths |
 |---------|------------------|
 | B | `nimbusware_projections`, `nimbusware_client`, `nimbusware_agent_tools` |
 | C | `agent_core`, `nimbusware_store`, `nimbusware_config`, `nimbusware_executor`, `nimbusware_extensions`, `nimbusware_memory`, `nimbusware_iam`, `nimbusware_env` |
 | D | `nimbusware_api/read_models`, `facade`, `deps`, `routes/enterprise`, `routes/personas_helpers` |
-| E | Orchestrator islands: orchestrator root modules plus full `_pipeline/*` (including `dev_factory`, `compose`, `protocol_hosts`, `pipeline_scraper`); probation/fast-slice workflow metadata on `run.created` (see `scripts/mypy_ci_targets.py` `_TRANCHE_E`) |
+| E | Orchestrator islands: orchestrator root modules plus full `_pipeline/*` (including `dev_factory`, `compose`, `protocol_hosts`, `pipeline_scraper`); probation/fast-slice workflow metadata on `run.created` (see `scripts/ci/mypy_ci_targets.py` `_TRANCHE_E`) |
 | F | Orchestrator root (`autopilot_profiles`, `micro_slice_*`, `workflow_universal_critique`); API `routes/bundles*`, `routes/chat*` (see `_TRANCHE_F`; console covered by UI tranche) |
 | API pilot | `routes/ollama`, `schemas/ollama`, `errors` |
 | UI | Full `nimbusware_console` and `nimbusware_maker` under narrowed ignore list; `services/*` strict |
@@ -124,7 +124,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **Deploy:** Production Kubernetes installs use the Helm chart at [`charts/nimbusware`](charts/nimbusware) ([`docs/deploy/helm.md`](docs/deploy/helm.md)); raw manifests under [`docs/deploy/k8s/`](docs/deploy/k8s/README.md) include optional ingress, NetworkPolicy, HPA, PDB, and a suspended event-store purge CronJob sketch. Enterprise integrator gate: [`docs/deploy/enterprise-integrator-runbook.md`](docs/deploy/enterprise-integrator-runbook.md). Multi-host Redis fleet secrets: [`docs/deploy/production-fleet-redis-secrets.md`](docs/deploy/production-fleet-redis-secrets.md).
 
-**CI layout (PR):** `.github/workflows/ci.yml` runs **unit** (ruff, `audit_operator_env`, openapi TS gate, publish VS Code gate, mypy, bandit, pip-audit, pytest @ 75%, framework-pack + SLO gates), **web** (full OpenAPI schema regen, vitest maker + admin, Playwright `tests/e2e/web`), **integration**, and **e2e** jobs in parallel. Local parity: `scripts/ci_check.ps1` / `ci_check.sh` (unit + optional web when Node is present).
+**CI layout (PR):** `.github/workflows/ci.yml` runs **unit** (ruff, `audit_operator_env`, openapi TS gate, publish VS Code gate, mypy, bandit, pip-audit, pytest @ 75%, framework-pack + SLO gates), **web** (full OpenAPI schema regen, vitest maker + admin, Playwright `tests/e2e/web`), **integration**, and **e2e** jobs in parallel. Local parity: `scripts/ci/ci_check.ps1` / `ci_check.sh` (unit + optional web when Node is present).
 
 **Operator analytics:** `GET /v1/platform/analytics/competitive-summary` and `GET /v1/platform/analytics/bundle-outcomes` on Admin **Metrics** (optional committed snapshots under `benchmarks/` — local micro_slice regression, not public SWE-bench); stitch transplant stats via `GET /v1/platform/analytics/stitch-outcomes` (Run detail **StitchSummaryPanel**). Persona shelf overlap: `GET /v1/personas/overlap-report` (Config → Personas).
 

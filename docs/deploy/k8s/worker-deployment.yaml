@@ -18,7 +18,7 @@ spec:
         - name: worker
           image: nimbusware-api:latest
           imagePullPolicy: IfNotPresent
-          command: ["python", "scripts/run_dispatch_worker.py"]
+          command: ["python", "scripts/ops/run_dispatch_worker.py"]
           envFrom:
             - secretRef:
                 name: nimbusware-api-secrets

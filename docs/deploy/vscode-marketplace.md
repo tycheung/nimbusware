@@ -20,7 +20,7 @@ npm run package
 Or from repo root:
 
 ```bash
-poetry run python scripts/publish_vscode_extension.py
+poetry run python scripts/publish/publish_vscode_extension.py
 ```
 
 Install the generated `.vsix` via VS Code / Cursor → **Extensions** → **…** → **Install from VSIX…**.
@@ -28,7 +28,7 @@ Install the generated `.vsix` via VS Code / Cursor → **Extensions** → **…*
 Contract gate (no upload):
 
 ```bash
-poetry run python scripts/run_publish_vscode_ci_gate.py
+poetry run python scripts/ci/run_publish_vscode_ci_gate.py
 ```
 
 ## Publish to Marketplace (manual)
@@ -38,7 +38,7 @@ poetry run python scripts/run_publish_vscode_ci_gate.py
 
 ```bash
 export VSCE_PAT=...
-poetry run python scripts/publish_vscode_extension.py --publish
+poetry run python scripts/publish/publish_vscode_extension.py --publish
 ```
 
 Or from the extension directory:

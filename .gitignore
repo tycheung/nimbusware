@@ -40,7 +40,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 pip-wheel-metadata/
-# PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/NimbuswareLauncher.spec)
+# PyInstaller spec if accidentally regenerated at repo root (canonical: scripts/publish/NimbuswareLauncher.spec)
 /NimbuswareLauncher.spec
 # Rare stray single-character junk at repo root (broken UPX/tooling redirects)
 /[0-9]

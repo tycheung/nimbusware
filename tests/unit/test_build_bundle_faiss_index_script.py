@@ -14,7 +14,7 @@ def test_build_bundle_faiss_index_help_lists_paths() -> None:
             "poetry",
             "run",
             "python",
-            str(ROOT / "scripts" / "build_bundle_faiss_index.py"),
+            str(ROOT / "scripts" / "faiss" / "build_bundle_faiss_index.py"),
             "--help",
         ],
         cwd=ROOT,

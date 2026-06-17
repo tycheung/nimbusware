@@ -30,8 +30,8 @@ repos:
         pass_filenames: false
         files: ^packages/.*\.py$
       - id: mypy-services
-        name: mypy (CI targets via scripts/mypy_ci_targets.py)
-        entry: bash -c 'poetry run mypy $(poetry run python scripts/mypy_ci_targets.py)'
+        name: mypy (CI targets via scripts/ci/mypy_ci_targets.py)
+        entry: bash -c 'poetry run mypy $(poetry run python scripts/ci/mypy_ci_targets.py)'
         language: system
         pass_filenames: false
         files: ^packages/

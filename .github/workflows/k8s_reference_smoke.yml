@@ -29,4 +29,4 @@ jobs:
       - name: Schema job command sanity
         run: |
           grep -q 'apply_event_store.sh' docs/deploy/k8s/schema-job.yaml
-          test -f scripts/apply_event_store.sh
+          test -f scripts/database/apply_event_store.sh

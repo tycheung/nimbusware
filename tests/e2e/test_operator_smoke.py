@@ -9,7 +9,7 @@ import pytest
 pytestmark = [pytest.mark.integration, pytest.mark.slow]
 
 REPO = Path(__file__).resolve().parents[2]
-SCRIPT = REPO / "scripts" / "e2e_smoke.py"
+SCRIPT = REPO / "scripts" / "ops" / "e2e_smoke.py"
 
 
 def test_operator_e2e_smoke() -> None:
@@ -18,4 +18,4 @@ def test_operator_e2e_smoke() -> None:
         cwd=REPO,
         check=False,
     )
-    assert proc.returncode == 0, "scripts/e2e_smoke.py --profile app failed; run it for details"
+    assert proc.returncode == 0, "scripts/ops/e2e_smoke.py --profile app failed; run it for details"

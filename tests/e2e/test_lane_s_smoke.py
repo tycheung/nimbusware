@@ -18,7 +18,7 @@ def test_nimbusware_api_app_importable() -> None:
     from nimbusware_api.app import app
 
     assert app.title
-    assert any(route.path.startswith("/v1") for route in app.routes)
+    assert any(path.startswith("/v1") for path in app.openapi().get("paths", {}))
 
 
 def test_nimbusware_maker_web_importable() -> None:

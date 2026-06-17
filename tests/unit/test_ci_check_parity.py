@@ -4,8 +4,8 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
 _CI = _REPO / ".github" / "workflows" / "ci.yml"
-_PS1 = _REPO / "scripts" / "ci_check.ps1"
-_SH = _REPO / "scripts" / "ci_check.sh"
+_PS1 = _REPO / "scripts" / "ci" / "ci_check.ps1"
+_SH = _REPO / "scripts" / "ci" / "ci_check.sh"
 
 _CRITICAL_STEPS = (
     "rebuild_bundle_faiss_if_stale.py --dry-run",

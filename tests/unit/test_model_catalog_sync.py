@@ -85,7 +85,7 @@ def test_sync_script_dry_run(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
-    script = Path(__file__).resolve().parents[2] / "scripts" / "sync_model_catalog.py"
+    script = Path(__file__).resolve().parents[2] / "scripts" / "codegen" / "sync_model_catalog.py"
     proc = subprocess.run(
         [sys.executable, str(script), "--from-json", str(src), "--dry-run"],
         cwd=tmp_path,

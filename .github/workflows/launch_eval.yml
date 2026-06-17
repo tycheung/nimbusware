@@ -19,7 +19,7 @@ jobs:
         run: poetry install
       - name: Score attachable fixture workspaces
         run: |
-          poetry run python scripts/launch_eval.py --matrix | tee launch_eval_matrix.json
+          poetry run python scripts/benchmarks/launch_eval.py --matrix | tee launch_eval_matrix.json
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}

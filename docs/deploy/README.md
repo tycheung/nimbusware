@@ -13,7 +13,7 @@ Required env:
 
 | Variable | Notes |
 |----------|--------|
-| `NIMBUSWARE_DATABASE_URL` | Postgres DSN (schema via `scripts/apply_event_store.sh`) |
+| `NIMBUSWARE_DATABASE_URL` | Postgres DSN (schema via `scripts/database/apply_event_store.sh`) |
 | `NIMBUSWARE_REPO_ROOT` | Repo root inside container (`/app` in image) |
 | `NIMBUSWARE_ADMIN_TOKEN` | Required for admin routes off loopback |
 
@@ -31,7 +31,7 @@ Apply schema on the host before first run:
 
 ```bash
 NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbusware \
-  bash scripts/apply_event_store.sh
+  bash scripts/database/apply_event_store.sh
 ```
 
 ## CI (GitHub Actions)
@@ -56,8 +56,8 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 | Check | Command / reference |
 |-------|---------------------|
-| CI parity | `./scripts/ci_check.ps1` or `ci_check.sh` (see [CONTRIBUTING.md](../../CONTRIBUTING.md)) |
-| Schema applied | `scripts/apply_event_store.sh` |
+| CI parity | `./scripts/ci/ci_check.ps1` or `ci_check.sh` (see [CONTRIBUTING.md](../../CONTRIBUTING.md)) |
+| Schema applied | `scripts/database/apply_event_store.sh` |
 | Admin token rotated | `NIMBUSWARE_ADMIN_TOKEN` not the dev default |
 | API bind policy | Loopback-only unless token is production-grade |
 | SBOM on release | Tag `v*` triggers `.github/workflows/sbom.yml` |
@@ -65,7 +65,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 
 ## Worker (optional)
 
-Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate container — see `scripts/run_dispatch_fleet_runbook.md`.
+Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate container — see `scripts/runbooks/run_dispatch_fleet_runbook.md`.
 
 ## Production ops runbooks
 
@@ -75,7 +75,7 @@ Redis fleet dispatch uses `nimbusware-run-worker` on the host or a separate cont
 | Fleet Redis secrets | [production-fleet-redis-secrets.md](production-fleet-redis-secrets.md) |
 | Remote Playwright pool | [fleet-playwright-pool.md](fleet-playwright-pool.md) — set `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT` on API + workers |
 | Long-run campaign soak | [campaign-soak-runbook.md](campaign-soak-runbook.md) — preflight `run_campaign_soak_check.py`, execution `run_campaign_soak.py`, optional [`k8s/campaign-soak-cronjob.yaml`](k8s/campaign-soak-cronjob.yaml) |
-| Persistent dev-env journey soak | [`scripts/run_dev_env_weekly_soak.py`](../../scripts/run_dev_env_weekly_soak.py) (weekly **dev-env-weekly-soak** in `slow_tests.yml`) |
+| Persistent dev-env journey soak | [`scripts/ops/run_dev_env_weekly_soak.py`](../../scripts/ops/run_dev_env_weekly_soak.py) (weekly **dev-env-weekly-soak** in `slow_tests.yml`) |
 
 **Staging → production checklist:** apply schema, rotate admin token, enable Helm ingress TLS ([helm.md](helm.md)), configure fleet Redis + worker fleet ([production-fleet-redis-secrets.md](production-fleet-redis-secrets.md)), attach remote Playwright when factory tiers run concurrently ([fleet-playwright-pool.md](fleet-playwright-pool.md)), then schedule campaign soak per [campaign-soak-runbook.md](campaign-soak-runbook.md).
 
@@ -94,7 +94,7 @@ Use the uploaded `sbom.cdx.json` artifact as the release bill of materials.
 
 ## External SLI
 
-Fleet Ollama SLI: `scripts/fleet_ollama_sli_runbook.md` and `poetry run nimbusware-fleet-ollama-sli`.
+Fleet Ollama SLI: `scripts/runbooks/fleet_ollama_sli_runbook.md` and `poetry run nimbusware-fleet-ollama-sli`.
 
 ## Agent sandbox
 

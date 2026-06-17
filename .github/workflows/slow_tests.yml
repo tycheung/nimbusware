@@ -67,7 +67,7 @@ jobs:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_REDIS_FLEET_URLS: redis://127.0.0.1:6379/0,redis://127.0.0.1:6380/0
-        run: poetry run python scripts/run_redis_fleet_soak_ci.py
+        run: poetry run python scripts/ops/run_redis_fleet_soak_ci.py
 
   factory-weekly:
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-        run: poetry run python scripts/run_factory_weekly_ci.py
+        run: poetry run python scripts/benchmarks/run_factory_weekly_ci.py
 
   dev-env-weekly-soak:
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-        run: poetry run python scripts/run_dev_env_weekly_soak.py
+        run: poetry run python scripts/ops/run_dev_env_weekly_soak.py
 
   fullstack-weekly-soak:
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
-        run: poetry run python scripts/run_fullstack_weekly_soak.py
+        run: poetry run python scripts/ops/run_fullstack_weekly_soak.py
 
   campaign-soak-preflight:
     runs-on: ubuntu-latest
@@ -138,7 +138,7 @@ jobs:
           NIMBUSWARE_EDITION: enterprise
           NIMBUSWARE_RUN_DISPATCH: redis
           NIMBUSWARE_REDIS_URL: redis://127.0.0.1:6379/0
-        run: poetry run python scripts/run_campaign_soak_check.py
+        run: poetry run python scripts/ops/run_campaign_soak_check.py
 
   campaign-soak:
     runs-on: ubuntu-latest
@@ -166,4 +166,4 @@ jobs:
           NIMBUSWARE_RUN_DISPATCH: redis
           NIMBUSWARE_REDIS_URL: redis://127.0.0.1:6379/0
           NIMBUSWARE_CAMPAIGN_SOAK_PASSES: "2"
-        run: poetry run python scripts/run_campaign_soak.py
+        run: poetry run python scripts/ops/run_campaign_soak.py

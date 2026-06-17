@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_SCRIPT = _REPO / "scripts" / "publish_vscode_extension.py"
+_SCRIPT = _REPO / "scripts" / "publish" / "publish_vscode_extension.py"
 _EXT = _REPO / "extensions" / "nimbusware-status"
 
 

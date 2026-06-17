@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
-_SCRIPT = _REPO / "scripts" / "bootstrap_consumer.py"
+_SCRIPT = _REPO / "scripts" / "install" / "bootstrap_consumer.py"
 
 
 def test_bootstrap_consumer_print_only() -> None:

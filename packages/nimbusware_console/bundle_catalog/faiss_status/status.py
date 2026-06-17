@@ -75,8 +75,8 @@ def bundle_faiss_index_workflow_caption_note() -> str:
 def bundle_faiss_build_command_snippet() -> str:
     return (
         "poetry install --with faiss\n"
-        "poetry run python scripts/build_bundle_faiss_index.py\n"
-        "# poetry run python scripts/build_bundle_faiss_index.py --help"
+        "poetry run python scripts/faiss/build_bundle_faiss_index.py\n"
+        "# poetry run python scripts/faiss/build_bundle_faiss_index.py --help"
     )
 
 
@@ -84,8 +84,8 @@ def bundle_faiss_build_command_snippet_explicit(repo_root: Path) -> str:
     root_s = str(repo_root.resolve())
     return (
         "poetry install --with faiss\n"
-        f'poetry run python scripts/build_bundle_faiss_index.py --repo-root "{root_s}"\n'
-        "# poetry run python scripts/build_bundle_faiss_index.py --help"
+        f'poetry run python scripts/faiss/build_bundle_faiss_index.py --repo-root "{root_s}"\n'
+        "# poetry run python scripts/faiss/build_bundle_faiss_index.py --help"
     )
 
 
@@ -93,7 +93,7 @@ def bundle_faiss_build_powershell_snippet_explicit(repo_root: Path) -> str:
     root_s = str(repo_root.resolve())
     return (
         "poetry install --with faiss\n"
-        f'poetry run python scripts/build_bundle_faiss_index.py --repo-root "{root_s}"\n'
+        f'poetry run python scripts/faiss/build_bundle_faiss_index.py --repo-root "{root_s}"\n'
         f'# Or: .\\scripts\\build_bundle_faiss_index.ps1 -RepoRoot "{root_s}"'
     )
 

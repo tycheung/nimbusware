@@ -24,15 +24,15 @@ The helper prints a curl-based clone install and documents the in-repo path when
 Preflight (build + twine check, no upload):
 
 ```bash
-poetry run python scripts/publish_bootstrap_release.py
+poetry run python scripts/publish/publish_bootstrap_release.py
 ```
 
 TestPyPI or production upload (requires API token in env):
 
 ```bash
 export TESTPYPI_API_TOKEN=...   # or PYPI_API_TOKEN for production
-poetry run python scripts/publish_bootstrap_release.py --testpypi
-poetry run python scripts/publish_bootstrap_release.py --pypi
+poetry run python scripts/publish/publish_bootstrap_release.py --testpypi
+poetry run python scripts/publish/publish_bootstrap_release.py --pypi
 ```
 
 GitHub Actions (preferred for production):
@@ -43,7 +43,7 @@ GitHub Actions (preferred for production):
 4. Leave `publish_pypi` / `publish_testpypi` **false** for build-only validation.
 5. Set `publish_pypi=true` only when the token secret is configured — the workflow fails fast if the token is missing.
 
-Local contract gate: `poetry run python scripts/run_publish_bootstrap_ci_gate.py`.
+Local contract gate: `poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py`.
 
 ## Clean VM path
 

@@ -27,7 +27,7 @@ Legal hold blocks purge via `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD`. IAM-scoped defe
 
 ## Purge helper
 
-`scripts/purge_event_store_retention.py` reports eligible row counts (dry-run by default).
+`scripts/database/purge_event_store_retention.py` reports eligible row counts (dry-run by default).
 
 | Env | Effect |
 |-----|--------|
@@ -38,9 +38,9 @@ Legal hold blocks purge via `NIMBUSWARE_EVENT_STORE_LEGAL_HOLD`. IAM-scoped defe
 Append-only triggers on `event_store` still reject `DELETE` until an operator removes or bypasses `prevent_event_store_mutation()`.
 
 ```bash
-python scripts/purge_event_store_retention.py              # dry-run count
+python scripts/database/purge_event_store_retention.py              # dry-run count
 NIMBUSWARE_EVENT_STORE_PURGE_EXECUTE=1 \
-  python scripts/purge_event_store_retention.py --execute  # requires trigger override
+  python scripts/database/purge_event_store_retention.py --execute  # requires trigger override
 ```
 
 Reference manifest: `docs/deploy/k8s/event-store-purge-cronjob.yaml` (suspended). Helm: enable when `hardening.eventStorePurge` is set.

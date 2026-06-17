@@ -10,7 +10,7 @@ _REPO = Path(__file__).resolve().parents[2]
 
 def _run(script: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(_REPO / "scripts" / script)],
+        [sys.executable, str(_REPO / "scripts" / "ci" / script)],
         cwd=_REPO,
         capture_output=True,
         text=True,

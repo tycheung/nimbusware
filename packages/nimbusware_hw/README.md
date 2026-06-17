@@ -28,9 +28,9 @@ Local hardware probe, tier classification, resource governor, model fit ranking,
 Default catalog ships at `configs/hardware/model_catalog.json`. Refresh from a local Odysseus-style export (MIT attribution in repo `ACKNOWLEDGMENTS.md`):
 
 ```bash
-python scripts/sync_model_catalog.py --from-json path/to/export.json --dry-run
-python scripts/sync_model_catalog.py --from-json path/to/export.json --merge
-python scripts/sync_model_catalog.py --from-url https://example.com/curated-models.json
+python scripts/codegen/sync_model_catalog.py --from-json path/to/export.json --dry-run
+python scripts/codegen/sync_model_catalog.py --from-json path/to/export.json --merge
+python scripts/codegen/sync_model_catalog.py --from-url https://example.com/curated-models.json
 ```
 
 Use `--merge` to keep existing model ids and overlay new rows. CI does not fetch URLs; operators opt in to `--from-url`.

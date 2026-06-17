@@ -10,7 +10,7 @@ from nimbusware_env.settings_catalog import CATALOG, SettingScope
 def test_audit_operator_env_passes() -> None:
     repo = Path(__file__).resolve().parents[2]
     proc = subprocess.run(
-        [sys.executable, str(repo / "scripts" / "audit_operator_env.py")],
+        [sys.executable, str(repo / "scripts" / "ci" / "audit_operator_env.py")],
         cwd=repo,
         capture_output=True,
         text=True,

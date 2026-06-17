@@ -24,8 +24,8 @@ nimbusware-bootstrap --print-only
 Contract gate (no upload):
 
 ```bash
-poetry run python scripts/run_publish_bootstrap_ci_gate.py
-poetry run python scripts/publish_bootstrap_release.py
+poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py
+poetry run python scripts/publish/publish_bootstrap_release.py
 ```
 
 ## Publish with twine (manual)
@@ -35,21 +35,21 @@ poetry run python scripts/publish_bootstrap_release.py
 3. Build and validate:
 
 ```bash
-poetry run python scripts/publish_bootstrap_release.py
+poetry run python scripts/publish/publish_bootstrap_release.py
 ```
 
 4. TestPyPI upload (optional):
 
 ```bash
 export TESTPYPI_API_TOKEN=...
-poetry run python scripts/publish_bootstrap_release.py --testpypi
+poetry run python scripts/publish/publish_bootstrap_release.py --testpypi
 ```
 
 5. Production upload (operator only — **do not run in CI without approval**):
 
 ```bash
 export PYPI_API_TOKEN=...
-poetry run python scripts/publish_bootstrap_release.py --pypi
+poetry run python scripts/publish/publish_bootstrap_release.py --pypi
 ```
 
 Or use twine directly after build:

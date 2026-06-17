@@ -23,5 +23,5 @@ Response shape: `{ "candidates": [ { "run_id", "candidate_id", "status", "repo_u
 ## Operator checklist
 
 - Confirm license and `domain_tag` on each candidate JSON before catalog merge.
-- Rebuild the bundle FAISS index after catalog changes (`scripts/build_bundle_faiss_index.py` or Admin bundle panel).
+- Rebuild the bundle FAISS index after catalog changes (`scripts/faiss/build_bundle_faiss_index.py` or Admin bundle panel).
 - Enterprise tenants: fleet memory sync is independent; catalog authority remains repo-scoped YAML + Postgres materializer.

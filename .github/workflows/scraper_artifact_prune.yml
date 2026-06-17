@@ -1,6 +1,6 @@
 # Optional: scheduled prune for local scraper response artifacts (not part of default CI; see ci.yml).
 #
-# Operator flags (see scripts/prune_scraper_artifacts.py docstring for authoritative usage):
+# Operator flags (see scripts/ops/prune_scraper_artifacts.py docstring for authoritative usage):
 #   --dry-run            Count stale files without deleting them (follow-on 41).
 #   --json-summary       Emit one extra stdout line {"pruned":N,"base":"...","dry_run":bool,
 #                        "include_patterns":...,"exclude_patterns":...} (follow-on 44, extended fo125).
@@ -43,7 +43,7 @@ jobs:
         run: |
           pip install poetry
           poetry install --no-interaction
-          poetry run python scripts/prune_scraper_artifacts.py --json-summary
+          poetry run python scripts/ops/prune_scraper_artifacts.py --json-summary
       - name: Open issue on prune failure
         if: failure()
         env:

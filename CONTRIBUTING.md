@@ -21,10 +21,10 @@ Before opening a PR, run the full unit CI job locally:
 ```
 
 ```bash
-./scripts/ci_check.sh
+./scripts/ci/ci_check.sh
 ```
 
-This runs: ruff check, [`scripts/audit_operator_env.py`](scripts/audit_operator_env.py), [`scripts/run_openapi_ts_ci_gate.py`](scripts/run_openapi_ts_ci_gate.py), format check, mypy (targets from [`scripts/mypy_ci_targets.py`](scripts/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **55** Playwright tests across **41** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **55** Playwright tests across **41** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
 
 Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 
@@ -33,7 +33,7 @@ Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 ```
 
 ```bash
-./scripts/ci_check.sh --with-integration --with-e2e
+./scripts/ci/ci_check.sh --with-integration --with-e2e
 ```
 
 GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`](.github/workflows/ci.yml); integration and e2e run as separate PR jobs. `tests/unit/test_ci_check_parity.py` guards script drift.
@@ -41,7 +41,7 @@ GitHub PR CI mirrors unit + web via parallel jobs in [`.github/workflows/ci.yml`
 Standalone integration (same as `-WithIntegration`):
 
 ```bash
-./scripts/run_integration_like_ci.sh
+./scripts/ci/run_integration_like_ci.sh
 ```
 
 See [tests/README.md](tests/README.md) for test layout and markers.
@@ -90,6 +90,6 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
-- Optional docstring hygiene: `poetry run python scripts/trim_redundant_docstrings.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
+- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

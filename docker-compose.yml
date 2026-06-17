@@ -23,9 +23,9 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # Scale workers on the host (see scripts/run_dispatch_fleet_runbook.md):
+  # Scale workers on the host (see scripts/runbooks/run_dispatch_fleet_runbook.md):
   #   NIMBUSWARE_RUN_DISPATCH=redis NIMBUSWARE_REDIS_URL=redis://127.0.0.1:6379/0
-  #   poetry run python scripts/run_dispatch_worker.py
+  #   poetry run python scripts/ops/run_dispatch_worker.py
 
   api:
     profiles: ["api"]

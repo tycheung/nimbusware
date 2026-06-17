@@ -84,11 +84,20 @@ def client() -> TestClient:
 
 def _route_methods(router: Any) -> set[tuple[str, str]]:
     out: set[tuple[str, str]] = set()
+    for route in _iter_api_routes(router):
+        for method in route.methods:
+            out.add((method.upper(), route.path))
+    return out
+
+
+def _iter_api_routes(router: Any):
     for route in router.routes:
         if isinstance(route, APIRoute):
-            for method in route.methods:
-                out.add((method.upper(), route.path))
-    return out
+            yield route
+        elif hasattr(route, "original_router"):
+            yield from _iter_api_routes(route.original_router)
+        elif hasattr(route, "routes"):
+            yield from _iter_api_routes(route)
 
 
 def _openapi_run_paths(spec: dict[str, Any]) -> set[tuple[str, str]]:

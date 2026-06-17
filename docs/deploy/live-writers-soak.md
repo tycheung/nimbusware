@@ -5,7 +5,7 @@ Validates that **`nimbusware_production`** enables live writer stages (`stub_onl
 ## Quick gate (CI / local)
 
 ```bash
-poetry run python scripts/run_live_writers_soak.py
+poetry run python scripts/ops/run_live_writers_soak.py
 ```
 
 Writes `benchmarks/latest_live_writers_soak.json` with:
@@ -14,7 +14,7 @@ Writes `benchmarks/latest_live_writers_soak.json` with:
 - `refactor_stub_only: false`
 - Optional in-memory micro_slice smoke (`run_id`, `pass_rate`)
 
-Included in `scripts/run_v11_ship_gates.py`.
+Included in `scripts/publish/run_v11_ship_gates.py`.
 
 ## Full Ollama soak (operator, optional)
 
