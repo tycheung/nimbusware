@@ -32,6 +32,8 @@ def test_build_v1_router_includes_core_routes() -> None:
     assert "/platform/provider-connections" in paths
     assert "/platform/ollama/bootstrap" in paths
     assert "/platform/model-bindings/preflight" in paths
+    assert "/platform/model-bindings/defaults" in paths
+    assert "/platform/model-bindings/roles" in paths
     assert "/admin/ollama/user-policy" in paths
 
 

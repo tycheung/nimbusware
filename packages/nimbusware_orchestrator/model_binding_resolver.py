@@ -103,6 +103,11 @@ class ModelBindingResolver:
             if block:
                 return _binding_from_block(role, block, source="session.role_binding_overrides")
 
+        if user_defaults is None:
+            from nimbusware_config.model_bindings_store import load_user_defaults
+
+            user_defaults = load_user_defaults(self._repo_root)
+
         if user_defaults:
             roles = mapping_or_empty(user_defaults.get("roles"))
             block = mapping_or_empty(roles.get(role))

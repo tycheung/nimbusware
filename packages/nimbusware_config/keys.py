@@ -22,3 +22,6 @@ NS_CUSTOM_AGENTS = "custom_agents"
 KEY_CUSTOM_AGENTS_REGISTRY = "registry"
 
 NS_CRITIC_PACKS = "critic_packs"
+
+NS_MODEL_BINDINGS = "model_bindings"
+KEY_USER_DEFAULTS = "user_defaults"

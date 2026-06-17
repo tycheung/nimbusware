@@ -12,7 +12,7 @@ def test_resolve_defaults_planner() -> None:
     binding = resolver.resolve("planner")
     assert binding.provider_id == "ollama"
     assert binding.model_id == "llama3.1:8b"
-    assert binding.binding_source == "configs/model_bindings/defaults.yaml"
+    assert binding.binding_source in ("user_defaults", "configs/model_bindings/defaults.yaml")
 
 
 def test_run_snapshot_overrides_defaults() -> None:

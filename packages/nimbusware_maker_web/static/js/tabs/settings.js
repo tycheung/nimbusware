@@ -78,6 +78,19 @@ export async function mountSettings(root) {
       </div>
       <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
     </section>
+    <section id="settings-agent-models" class="panel" data-testid="maker-settings-agent-models">
+      <h3>Agent &amp; Models</h3>
+      <p class="muted">
+        Per-role provider bindings. API keys are configured in
+        <a href="#/models?section=api-connections">Model Hub → API connections</a>.
+      </p>
+      <div id="settings-agent-models-table"></div>
+      <div class="actions">
+        <button type="button" id="settings-agent-models-save" class="primary" data-testid="maker-settings-agent-models-save">
+          Save bindings
+        </button>
+      </div>
+    </section>
     <section id="settings-routing-panel" class="panel" data-testid="maker-settings-routing-presets">
       <h3>Hybrid model routing</h3>
       <p class="muted" id="settings-routing-active" data-testid="maker-settings-routing-active"></p>
@@ -169,6 +182,91 @@ export async function mountSettings(root) {
     }
   }
   await refreshRoutingPresets();
+
+  let agentBindingsState = { version: 1, roles: {} };
+  let agentProviders = [];
+
+  async function refreshAgentModels() {
+    const host = root.querySelector("#settings-agent-models-table");
+    if (!host) return;
+    try {
+      const body = await apiJson("/platform/model-bindings/defaults");
+      agentBindingsState = body.defaults || { version: 1, roles: {} };
+      agentProviders = body.providers || [];
+      const rows = body.roles || [];
+      const table = document.createElement("table");
+      table.className = "data-table";
+      table.innerHTML =
+        "<thead><tr><th>Agent role</th><th>Provider</th><th>Model</th></tr></thead>";
+      const tbody = document.createElement("tbody");
+      for (const row of rows) {
+        const role = row.agent_role || "";
+        const binding = row.binding || agentBindingsState.roles?.[role] || {};
+        const tr = document.createElement("tr");
+        tr.dataset.testid = `maker-settings-agent-row-${role}`;
+        const providerSelect = document.createElement("select");
+        providerSelect.dataset.role = role;
+        providerSelect.dataset.field = "provider_id";
+        const cloudProviders = agentProviders.filter((p) => p.kind !== "local");
+        for (const opt of [{ id: "ollama", label: "Ollama" }, ...cloudProviders]) {
+          const o = document.createElement("option");
+          o.value = opt.id;
+          o.textContent = opt.label || opt.id;
+          if ((binding.provider_id || "ollama") === o.value) o.selected = true;
+          providerSelect.appendChild(o);
+        }
+        const modelInput = document.createElement("input");
+        modelInput.dataset.role = role;
+        modelInput.dataset.field = "model_id";
+        modelInput.value = binding.model_id || "";
+        modelInput.placeholder = "model id";
+        tr.innerHTML = `<td>${row.display_name || role}</td>`;
+        const pCell = document.createElement("td");
+        pCell.appendChild(providerSelect);
+        const mCell = document.createElement("td");
+        mCell.appendChild(modelInput);
+        tr.appendChild(pCell);
+        tr.appendChild(mCell);
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      host.replaceChildren(table);
+    } catch (e) {
+      host.textContent = String(e.message || e);
+    }
+  }
+
+  root.querySelector("#settings-agent-models-save")?.addEventListener("click", async () => {
+    const host = root.querySelector("#settings-agent-models-table");
+    if (!host) return;
+    const roles = { ...(agentBindingsState.roles || {}) };
+    host.querySelectorAll("[data-role][data-field]").forEach((el) => {
+      const role = el.dataset.role;
+      const field = el.dataset.field;
+      if (!role || !field) return;
+      const block = { ...(roles[role] || {}) };
+      if (field === "provider_id") {
+        block.provider_id = el.value;
+        block.provider_kind = el.value === "ollama" ? "local" : "cloud";
+      } else {
+        block[field] = el.value;
+      }
+      roles[role] = block;
+    });
+    try {
+      await apiJson("/platform/model-bindings/defaults", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ version: 1, roles }),
+      });
+      toast("Agent model bindings saved", "success");
+      await refreshAgentModels();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  await refreshAgentModels();
+
   root.querySelector("#settings-routing-apply")?.addEventListener("click", async () => {
     const select = root.querySelector("#settings-routing-select");
     const presetId = select?.value?.trim();

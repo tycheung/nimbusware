@@ -16,7 +16,9 @@ from nimbusware_config.keys import (
     KEY_PERSONA_SHELVES,
     KEY_ROLE_REGISTRY,
     KEY_SELF_REFINEMENT,
+    KEY_USER_DEFAULTS,
     NS_CUSTOM_AGENTS,
+    NS_MODEL_BINDINGS,
     NS_PERSONAS,
     NS_POLICY,
     NS_ROLES,
@@ -53,6 +55,11 @@ _STATIC_EXPORTS: list[tuple[str, str, PathFn]] = [
         NS_CUSTOM_AGENTS,
         KEY_CUSTOM_AGENTS_REGISTRY,
         lambda r: r / "configs" / "custom_agents" / "registry.yaml",
+    ),
+    (
+        NS_MODEL_BINDINGS,
+        KEY_USER_DEFAULTS,
+        lambda r: r / "configs" / "model_bindings" / "defaults.yaml",
     ),
 ]
 
