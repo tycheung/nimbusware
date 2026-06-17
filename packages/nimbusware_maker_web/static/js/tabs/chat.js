@@ -3,6 +3,14 @@ import { autopilotRibbonHtml, wireAutopilotRibbon } from "../autopilot-ribbon.js
 import { openSseStream, parseSseJson } from "../sse-client.js";
 import { appendTheaterLine, theaterPayloadFromSse } from "../theater-renderer.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
+import { refreshBranchPanel } from "./chat_branch_ui.js";
+import {
+  applyComposerForRole,
+  refreshComputeNodes,
+  refreshSessionSidebar,
+  renderParticipantStrip,
+  setCollabMyRole,
+} from "./chat_session_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
@@ -22,8 +30,6 @@ const TURN_ROLE_LABELS = {
   theater: "Agent",
   system: "System",
 };
-
-let collabMyRole = null;
 
 function theaterCap() {
   const follow = localStorage.getItem(FOLLOW_LIVE_KEY);
@@ -110,59 +116,8 @@ function renderTurnLine(thread, turn) {
   thread.scrollTop = thread.scrollHeight;
 }
 
-function renderParticipantStrip(root, session) {
-  let strip = root.querySelector("[data-testid='maker-chat-participants']");
-  if (!strip) {
-    strip = document.createElement("div");
-    strip.className = "chat-participant-strip muted";
-    strip.dataset.testid = "maker-chat-participants";
-    const main = root.querySelector(".chat-main");
-    const form = root.querySelector("#chat-form");
-    if (main && form) {
-      main.insertBefore(strip, form);
-    } else {
-      root.prepend(strip);
-    }
-  }
-  const participants = session?.participants || [];
-  if (!participants.length) {
-    strip.textContent = "";
-    strip.classList.add("hidden");
-    return;
-  }
-  strip.classList.remove("hidden");
-  const bits = participants.map((p) => {
-    const name = p.display_name || p.username || p.user_id?.slice(0, 8) || "user";
-    const role = String(p.role || "session_read").replace("session_", "");
-    const hostMark = session?.host_user_id && p.user_id === session.host_user_id ? " ★" : "";
-    return `${name} · ${role}${hostMark}`;
-  });
-  strip.textContent = `Participants: ${bits.join(" · ")}`;
-}
-
-function applyComposerForRole(root) {
-  const form = root.querySelector("#chat-form");
-  const readOnly = collabMyRole === "session_read";
-  if (form) form.classList.toggle("hidden", readOnly);
-  const inj = root.querySelector("[data-testid='maker-chat-interjection-ribbon']");
-  if (inj) inj.classList.toggle("hidden", readOnly);
-  let banner = root.querySelector("[data-testid='maker-chat-readonly-banner']");
-  if (readOnly) {
-    if (!banner) {
-      banner = document.createElement("p");
-      banner.className = "muted chat-readonly-banner";
-      banner.dataset.testid = "maker-chat-readonly-banner";
-      banner.textContent =
-        "You're watching as read-only. Ask the host for Write access to comment.";
-      form?.insertAdjacentElement("beforebegin", banner);
-    }
-  } else {
-    banner?.remove();
-  }
-}
-
 function renderMessagesFromSession(root, session) {
-  collabMyRole = session?.my_participant_role || collabMyRole;
+  setCollabMyRole(session?.my_participant_role ?? null);
   renderParticipantStrip(root, session);
   applyComposerForRole(root);
   const thread = root.querySelector("#chat-thread");
@@ -184,6 +139,10 @@ function renderMessagesFromSession(root, session) {
       payload: msg.payload,
     });
   }
+}
+
+function branchPanelCallbacks(root) {
+  return { onSessionUpdated: (session) => renderMessagesFromSession(root, session) };
 }
 
 function renderClassifierCard(root, classification, { onAccept, onOverride }) {
@@ -231,144 +190,6 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
 
   card.appendChild(chips);
   mount.appendChild(card);
-}
-
-function branchDepth(graph, turnId) {
-  let depth = 0;
-  let cur = turnId;
-  while (cur) {
-    const edge = graph.edges?.find((e) => e.to_turn_id === cur);
-    if (!edge) break;
-    depth += 1;
-    cur = edge.from_turn_id;
-  }
-  return depth;
-}
-
-async function refreshBranchPanel(root, sessionId) {
-  const panel = root.querySelector("#chat-branch-panel");
-  if (!panel || !sessionId) return;
-  try {
-    const graph = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/graph`);
-    panel.replaceChildren();
-    if (!graph.nodes?.length) {
-      applySiblingBadges(root, graph);
-      panel.classList.add("hidden");
-      return;
-    }
-    panel.classList.remove("hidden");
-    const title = document.createElement("h4");
-    title.textContent = "Conversation branches";
-    panel.appendChild(title);
-    const list = document.createElement("ul");
-    list.className = "chat-branch-tree";
-    const leaves = (graph.nodes || []).filter(
-      (n) => !graph.edges?.some((e) => e.from_turn_id === n.turn_id),
-    );
-    for (const leaf of leaves) {
-      let cur = leaf.turn_id;
-      const path = [];
-      while (cur) {
-        const node = graph.nodes.find((n) => n.turn_id === cur);
-        if (node) path.unshift(node);
-        const edge = graph.edges?.find((e) => e.to_turn_id === cur);
-        cur = edge?.from_turn_id;
-      }
-      for (const node of path) {
-        const depth = branchDepth(graph, node.turn_id);
-        const li = document.createElement("li");
-        li.className = "chat-branch-tree__node";
-        li.style.paddingLeft = `${depth * 1.25}rem`;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = leaf.turn_id === node.turn_id ? "linkish branch-active" : "linkish";
-        btn.textContent = (node.text || node.turn_id).slice(0, 72);
-        btn.dataset.testid = `maker-chat-branch-${node.turn_id}`;
-        btn.addEventListener("click", async () => {
-          const updated = await apiJson(
-            `/chat/sessions/${encodeURIComponent(sessionId)}/active-leaf`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ leaf_turn_id: leaf.turn_id }),
-            },
-          );
-          renderMessagesFromSession(root, updated);
-          await refreshBranchPanel(root, sessionId);
-          toast("Switched branch", "success");
-        });
-        li.appendChild(btn);
-        if (Number(node.sibling_count || 0) > 0) {
-          const badge = document.createElement("span");
-          badge.className = "chat-sibling-badge muted";
-          badge.textContent = `${Number(node.sibling_count) + 1} branches`;
-          li.appendChild(badge);
-        }
-        list.appendChild(li);
-      }
-    }
-    panel.appendChild(list);
-    applySiblingBadges(root, graph);
-  } catch {
-    panel.classList.add("hidden");
-  }
-}
-
-async function refreshComputeNodes(root, sessionId) {
-  const panel = root.querySelector("#chat-compute-nodes");
-  const list = root.querySelector("#chat-compute-nodes-list");
-  if (!panel || !list || !sessionId) return;
-  try {
-    const body = await apiJson(
-      `/compute/nodes?session_id=${encodeURIComponent(sessionId)}`,
-    );
-    const nodes = body.nodes || [];
-    if (!nodes.length) {
-      panel.hidden = true;
-      return;
-    }
-    panel.hidden = false;
-    list.replaceChildren();
-    for (const node of nodes) {
-      const li = document.createElement("li");
-      const label = node.display_name || node.host_label || node.node_id;
-      li.textContent = `${label} · ${node.status || "unknown"}`;
-      list.appendChild(li);
-    }
-  } catch {
-    panel.hidden = true;
-  }
-}
-
-async function refreshSessionSidebar(root, projectId, activeSessionId, onSelect) {
-  const list = root.querySelector("#chat-session-list");
-  if (!list || !projectId) return;
-  try {
-    const sessions = await apiJson(`/chat/sessions?project_id=${encodeURIComponent(projectId)}`);
-    list.replaceChildren();
-    const sorted = [...(sessions || [])].sort(
-      (a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")),
-    );
-    for (const session of sorted) {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = session.session_id === activeSessionId ? "chat-session-item chat-session-item--active" : "chat-session-item";
-      btn.dataset.testid = `maker-chat-session-${session.session_id}`;
-      const title = session.title || `Session ${String(session.session_id).slice(0, 8)}`;
-      btn.textContent = title;
-      btn.title = session.updated_at || "";
-      btn.addEventListener("click", () => onSelect(session.session_id));
-      li.appendChild(btn);
-      list.appendChild(li);
-    }
-  } catch {
-    list.replaceChildren();
-    const err = document.createElement("li");
-    err.className = "muted";
-    err.textContent = "Sessions unavailable";
-    list.appendChild(err);
-  }
 }
 
 function defaultAutopilotProfileId() {
@@ -460,22 +281,6 @@ async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq
     toast(`Mode: ${workTypeLabel(workType)}`, "success");
   }
   return updated;
-}
-
-function applySiblingBadges(root, graph) {
-  const thread = root.querySelector("#chat-thread");
-  if (!thread || !graph?.nodes) return;
-  for (const node of graph.nodes) {
-    const siblings = Number(node.sibling_count || 0);
-    if (siblings < 1) continue;
-    const line = thread.querySelector(`[data-turn-id="${node.turn_id}"]`);
-    if (!line || line.querySelector(".chat-sibling-badge")) continue;
-    const badge = document.createElement("span");
-    badge.className = "chat-sibling-badge muted";
-    badge.dataset.testid = `maker-chat-sibling-badge-${node.turn_id}`;
-    badge.textContent = `${siblings + 1} branches`;
-    line.appendChild(badge);
-  }
 }
 
 function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) {
@@ -1049,7 +854,7 @@ export async function mountChat(root) {
       `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
     );
     renderMessagesFromSession(root, existing);
-    await refreshBranchPanel(root, sessionId);
+    await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
     const projectId = String(root.querySelector("#chat-project-select")?.value || "");
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
     await refreshComputeNodes(root, sessionId);
@@ -1066,7 +871,7 @@ export async function mountChat(root) {
         );
         if (existing.project_id === projectId) {
           renderMessagesFromSession(root, existing);
-          await refreshBranchPanel(root, sessionId);
+          await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
           await refreshSessionSidebar(root, projectId, sessionId, loadSession);
           return sessionId;
         }
@@ -1145,7 +950,7 @@ export async function mountChat(root) {
         forkReplaySeq = turn?.event_seq ?? null;
       }
       renderMessagesFromSession(root, updated);
-      await refreshBranchPanel(root, sessionId);
+      await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
       toast("Forked — next message starts a new branch", "info");
     } catch (e) {
       toast(String(e.message || e), "error");
@@ -1220,7 +1025,7 @@ export async function mountChat(root) {
         `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
       );
       renderMessagesFromSession(root, session);
-      await refreshBranchPanel(root, sessionId);
+      await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
 
       const classification = turnResp.classification || {};
 
