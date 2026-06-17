@@ -1713,6 +1713,8 @@ preflight:
 
 ## Cross-doc completion matrix
 
+**Legend:** ☑ shipped MVP+ · ◐ partial / stub · — not applicable · ☐ not started
+
 | Phase | Epics | Code | UI | Tests | Docs |
 |-------|-------|------|-----|-------|------|
 | C0 | fo1590–fo1592 | ☑ | — | ☑ | ☑ |
@@ -1729,23 +1731,25 @@ preflight:
 | A6–A8 | fo1460–fo1483 | ☑ | — | ☑ | ☑ |
 | B0 | fo1500–fo1501 | ☑ | — | ☑ | ☑ |
 | B1 | fo1510–fo1514 | ☑ | — | ☑ | ☑ |
-| B2 | fo1520–fo1524 | ☑ | ☑ | ☑ | ☑ |
+| B2 | fo1520–fo1524 | ☑ | ◐ | ☑ | ☑ |
 | B3 | fo1530–fo1536 | ☑ | ☑ | ☑ | ☑ |
-| B4 | fo1540–fo1544 | ☑ | ☑ | ☑ | ☑ |
+| B4 | fo1540–fo1544 | ◐ | ◐ | ☑ | ☑ |
 | B5 | fo1550–fo1553 | ☑ | ☑ | ☑ | ☑ |
 | B6–B7 | fo1560–fo1573 | ☑ | ☑ | ☑ | ☑ |
-| B8 | fo1574–fo1582 | ☑ | ☑ | ☑ | ☑ |
+| B8 | fo1574–fo1582 | ◐ | ☐ | ☐ | ☑ |
 | D0 | fo1700–fo1701 | ☑ | — | ☑ | ☑ |
 | D1 | fo1710–fo1714 | ☑ | — | ☑ | ☑ |
 | D2 | fo1720–fo1723 | ☑ | — | ☑ | ☑ |
-| D3 | fo1730–fo1735 | ☑ | — | ☑ | ☑ |
+| D3 | fo1730–fo1735 | ◐ | — | ☑ | ☑ |
 | D4 | fo1740–fo1747 | ☑ | ☑ | ☑ | ☑ |
 | D5 | fo1750–fo1755 | ☑ | ☑ | ☑ | ☑ |
-| D6 | fo1760–fo1763 | ☑ | ☑ | ☑ | ☑ |
+| D6 | fo1760–fo1763 | ◐ | ◐ | ☑ | ☑ |
 | D7 | fo1770–fo1773 | ☑ | — | ☑ | ☑ |
-| D8 | fo1780–fo1789 | ☑ | — | ☑ | ☑ |
+| D8 | fo1780–fo1789 | ◐ | ☐ | ◐ | ☑ |
 
-**Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + **B8** + B7 complete for Individual; **B5 + D6** for Enterprise; **Track D D0–D5 + D7–D8** for mesh MVP + host transfer.
+**Partial notes:** B2 join page UI (fo1522) ships in audit #56 Phase 2. B8 = session `metadata.folder` only (no folder CRUD). D3 = `MeshScheduler` host_only stub. D6/D4 compute list API Phase 3. D8 = host-transfer request/accept MVP (no artifact bundle).
+
+**Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + B7 complete for Individual MVP; **B8 folder library** and **D8 full host transfer** are partial (see matrix). **B5 + D6** for Enterprise collab policy + fleet mesh list. **Track D D0–D5 + D7** for mesh MVP; D3 scheduler remains host_only until pipeline hook.
 
 ---
 
