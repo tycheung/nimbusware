@@ -55,6 +55,28 @@ def test_heartbeat_unknown_node_404(client: TestClient) -> None:
     assert resp.status_code == 404
 
 
+def test_list_compute_nodes_for_session(client: TestClient, tmp_path: Path) -> None:
+    project_id = _create_project(client, tmp_path)
+    session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[
+        "session_id"
+    ]
+    reg = client.post(
+        "/v1/compute/nodes/register",
+        json={
+            "session_id": session_id,
+            "host_label": "session-worker",
+            "base_url": "http://127.0.0.1:9998",
+            "display_name": "Session worker",
+        },
+    )
+    assert reg.status_code == 200
+    listed = client.get("/v1/compute/nodes", params={"session_id": session_id})
+    assert listed.status_code == 200
+    nodes = listed.json()["nodes"]
+    assert len(nodes) == 1
+    assert nodes[0]["session_id"] == session_id
+
+
 def test_session_compute_opt_in_stub(client: TestClient, tmp_path: Path) -> None:
     project_id = _create_project(client, tmp_path)
     session_id = client.post("/v1/chat/sessions", json={"project_id": project_id}).json()[

@@ -54,6 +54,18 @@ def _store():
     return build_compute_node_store(nimbusware_database_url())
 
 
+@router.get("/compute/nodes")
+def list_compute_nodes(
+    _: UserDep,
+    session_id: UUID | None = None,
+) -> dict[str, Any]:
+    store = _store()
+    if session_id is None:
+        return {"nodes": []}
+    rows = store.list_for_session(session_id)
+    return {"nodes": [row_to_public(r) for r in rows]}
+
+
 @router.post("/compute/nodes/register")
 def register_compute_node(body: ComputeNodeRegisterBody, _: UserDep) -> dict[str, Any]:
     store = _store()
