@@ -33,3 +33,16 @@ Not shipped in v1.2. A reduced-footprint agent would sync only: node registry cl
 ## Host transfer
 
 When canonical host moves to another machine, use the host-transfer protocol ([ADR 026](adr/026-host-transfer.md)): timed consent, session-scoped freeze, artifact bundle import on the new host.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/v1/chat/sessions/{id}/host-transfer` | Request transfer to another user |
+| GET | `/v1/chat/sessions/{id}/host-transfer` | List pending transfers |
+| POST | `…/host-transfer/{transfer_id}/accept` | Target user accepts |
+
+## Security (Track D7)
+
+- **Worker sandbox** — remote stages run agent tools inside the same jail as host (`docs/deploy/agent-sandbox.md`); workers never receive host `.env` paths.
+- **No cross-user secrets** — `nimbusware_compute.worker_policy.sanitize_work_unit_payload` strips `api_key`, `secret`, and similar keys before enqueue; work units carry `executor_user_id` only.
+- **Packet caps** — default 512 KB JSON payload limit per work unit.
+- **Reachability** — use LAN or Tailscale; do not expose worker register endpoints on the public internet without TLS and session tokens.

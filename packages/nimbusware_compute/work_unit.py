@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
+from nimbusware_compute.worker_policy import sanitize_work_unit_payload
+
 WORK_UNIT_STATUSES = frozenset(
     {"queued", "assigned", "running", "ok", "failed", "timeout", "cancelled"}
 )
@@ -47,6 +49,7 @@ class InMemoryWorkUnitQueue:
         executor_user_id: str = "",
         payload: dict[str, Any] | None = None,
     ) -> WorkUnitRecord:
+        safe_payload = sanitize_work_unit_payload(payload)
         wid = uuid4()
         now = _utc_now()
         rec = WorkUnitRecord(
@@ -57,7 +60,7 @@ class InMemoryWorkUnitQueue:
             agent_role=agent_role,
             executor_user_id=executor_user_id,
             status="queued",
-            payload=dict(payload or {}),
+            payload=safe_payload,
             created_at=now,
         )
         self._units[wid] = rec
