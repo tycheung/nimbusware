@@ -57,3 +57,10 @@ def test_install_print_one_command_exits_zero() -> None:
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "One-command install" in proc.stdout
+
+
+def test_model_hub_and_install_profile_docs_exist() -> None:
+    assert (_REPO / "docs" / "model-hub.md").is_file()
+    assert (_REPO / "docs" / "install-profiles.md").is_file()
+    hub = (_REPO / "docs" / "model-hub.md").read_text(encoding="utf-8")
+    assert "provider-connections" in hub
