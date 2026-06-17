@@ -29,6 +29,15 @@ Set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loopback ho
 
 Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{token}` in Maker — sign in or create an account, then the app redeems the token via `POST /v1/chat/join` and redirects to `#/chat?session_id=…`.
 
+### Maker UI modules
+
+| Module | Responsibility |
+|--------|----------------|
+| `chat.js` | Composer, theater, run cards, classifier |
+| `chat_join.js` | `#/chat/join/{token}` sign-in + redeem |
+| `chat_session_ui.js` | Participants strip, session sidebar, compute nodes |
+| `chat_branch_ui.js` | Conversation branch tree |
+
 ## Enterprise
 
 Use `GET /v1/enterprise/users?q=` for directory search. Tenant policy: `GET/PUT /v1/enterprise/collab-policy` (`allow_external_collaborators`, `max_session_participants`, `host_transfer_consent_hours`).

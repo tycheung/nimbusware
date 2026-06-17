@@ -117,7 +117,9 @@ function renderTurnLine(thread, turn) {
 }
 
 function renderMessagesFromSession(root, session) {
-  setCollabMyRole(session?.my_participant_role ?? null);
+  if (session?.my_participant_role != null) {
+    setCollabMyRole(session.my_participant_role);
+  }
   renderParticipantStrip(root, session);
   applyComposerForRole(root);
   const thread = root.querySelector("#chat-thread");
