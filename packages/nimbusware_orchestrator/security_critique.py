@@ -20,8 +20,10 @@ from agent_core.models import (
     Verdict,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.common import append_gate_decision_event
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.llm.common import (
+    append_gate_decision_event,
+    ollama_chat_json_via_plan_patch,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.scan_stub_critique_emit import (
     ScanStubCritiqueConfig,
@@ -169,7 +171,7 @@ def execute_security_critique_llm(
     failed, failing_tools = security_scan_tools_failed(scan_summary)
     tools = scan_summary.get("security_scan_tools") or {}
     try:
-        raw = ollama_chat_json(
+        raw = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -193,6 +195,7 @@ def execute_security_critique_llm(
                 },
             ],
             timeout_seconds=timeout_seconds,
+            agent_role="security_critic",
         )
         parsed = SecurityCritiqueLlmResponse.model_validate(raw)
     except (

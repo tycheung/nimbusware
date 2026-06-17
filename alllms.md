@@ -34,27 +34,27 @@
 
 # Track A — Per-role model routing & mid-chat swap
 
-## Problem statement (gap vs shipped)
+## Shipped baseline (Jun 2026)
 
-### What exists today
+### Legacy vs current
 
-| Capability | Location | Limit |
-|------------|----------|-------|
-| Ollama primary runtime | `configs/model-routing.yaml` → `runtime` | Single global local model + fallbacks |
-| Hybrid presets | `configs/routing_presets.yaml`, `hybrid_routing.py` | Stage keys only; cloud = one `openai_compatible` block |
-| Model Manager | fo543–fo549, Maker Models tab | Ollama fit/rank/apply — **one** primary model, not per-role |
-| Role registry | `configs/roles.yaml`, Postgres `nimbusware_roles_registry` | **Agent** identity only — **no model binding** |
-| Custom agents | `configs/custom_agents/registry.yaml` | System prompt + optional `bound_role_id` — **no model override** |
-| Chat theater | §20.28, `run_theater.py` | Shows **which agent** spoke, not **which model** |
-| Preflight | `preflight_cli.py`, readiness API | **`runtime_reachable` + `model_available` assume Ollama** |
-| **Universal installer** | `scripts/install_nimbusware.py` | Ollama runs unless `--skip-ollama` (barebones-equivalent); **`--install-profile`** recommended/barebones in C1 |
-| **Models tab** | `#/models`, `models.js` | Pull + preset only — **no Ollama install UI, no API keys** |
+| Capability | Location | Status |
+|------------|----------|--------|
+| Ollama primary runtime | `configs/model-routing.yaml` → `runtime` | Legacy global default; superseded by per-role bindings |
+| Hybrid presets | `configs/routing_presets.yaml`, `hybrid_routing.py` | Shim for unmapped stages; presets migrated (A7) |
+| Model Manager | Maker **Model Hub** (`#/models`) | Per-role fit/rank via `ModelBindingResolver` + profile defaults |
+| Role registry | `configs/roles.yaml`, Postgres `nimbusware_roles_registry` | Agent identity; model binding via `configs/model_bindings/` |
+| Custom agents | `configs/custom_agents/registry.yaml` | System prompt + optional `bound_role_id`; inherits role binding |
+| Chat theater | `run_theater.py` | Agent + model badge; mid-chat swap events (A5) |
+| Preflight | `binding_preflight.py`, readiness API | Per-role `roles_covered` / `providers_reachable` (A3) |
+| **Universal installer** | `scripts/install_nimbusware.py` | **`--install-profile`** recommended (default) / barebones (C1) |
+| **Model Hub** | `#/models`, `models.js` | Ollama install/pull + **API connections** vault (C2/C3) |
 
-### Known wiring gaps (must close in fo1422)
+### Resolver wiring (fo1422 — closed)
 
-- `llm_slice.py` (`slice.plan`, `slice.implement`, `slice.critique`) calls `ollama_chat_json` **directly** — ignores `stage_providers`.
-- Intent classifier, backlog generator, agent JIT loop use **Ollama base URL only**.
-- Preset `slice.critique: cloud` does not match critique stage names (`implementation.critique`, etc.).
+- All orchestrator/maker LLM entry points route through `ModelBindingResolver` via `ollama_chat_json_via_plan_patch` or direct resolver calls.
+- Stage → role mapping in `binding_preflight.agent_role_for_stage` covers `slice.*`, `plan`, and `*.critique` stages.
+- Audit matrix: `docs/audits/llm-call-sites.md`.
 
 ## North star (Track A)
 

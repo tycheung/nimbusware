@@ -162,7 +162,7 @@ def _steps_from_llm(
     system_prompt: str | None,
 ) -> list[AgentStep]:
     from nimbusware_agent_tools.prompts import build_agent_stable_prompt
-    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+    from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
     from nimbusware_orchestrator.prompt_tiers import assemble_prompt
 
     context = _gather_context(workspace, plan)
@@ -180,11 +180,13 @@ def _steps_from_llm(
         f"Workspace context:\n{context}"
     )
     messages = assemble_prompt(stable=stable, volatile=user)
-    data = ollama_chat_json(
+    data = ollama_chat_json_via_plan_patch(
         base_url=base_url,
         model=model_id,
         messages=messages,
         timeout_seconds=timeout_seconds,
+        agent_role="backend_writer",
+        stage_name="slice.implement",
     )
     return _parse_steps(data)
 

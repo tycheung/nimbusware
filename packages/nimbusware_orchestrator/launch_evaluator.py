@@ -99,10 +99,10 @@ _RUBRIC_DIMENSIONS = frozenset(
 def fetch_llm_rubric_panel(workspace: Path) -> dict[str, Any] | None:
     import httpx
 
-    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+    from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
     try:
-        data = ollama_chat_json(
+        data = ollama_chat_json_via_plan_patch(
             base_url=ollama_base_url(),
             model=_launch_eval_llm_model(),
             messages=[
@@ -118,6 +118,7 @@ def fetch_llm_rubric_panel(workspace: Path) -> dict[str, Any] | None:
                 {"role": "user", "content": _workspace_llm_context(workspace)},
             ],
             timeout_seconds=30.0,
+            agent_role="planner",
         )
     except (OSError, ValueError, TypeError, json.JSONDecodeError, httpx.HTTPError):
         return None

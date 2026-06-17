@@ -8,8 +8,8 @@ import httpx
 from pydantic import BaseModel, Field, ValidationError
 
 from agent_core.context_budget import truncate_for_llm_history
+from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
 from nimbusware_orchestrator.prompt_tiers import assemble_prompt, stable_slice_agent_block
 
 
@@ -91,7 +91,7 @@ def execute_slice_replan_llm(
         "Propose a smaller slice_id (e.g. slice-1-r1)."
     )
     try:
-        data = ollama_chat_json(
+        data = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -99,6 +99,7 @@ def execute_slice_replan_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name="slice.plan",
         )
         parsed = LlmSlicePlanResponse.model_validate(data)
         return parse_slice_plan(parsed.model_dump())
@@ -159,11 +160,12 @@ def execute_slice_plan_llm(
         volatile="\n\n".join(volatile_parts),
     )
     try:
-        data = ollama_chat_json(
+        data = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=messages,
             timeout_seconds=timeout_seconds,
+            stage_name="slice.plan",
         )
         parsed = LlmSlicePlanResponse.model_validate(data)
         return parse_slice_plan(parsed.model_dump())
@@ -221,7 +223,7 @@ def execute_slice_implement_llm(
         )
     user += f"Current files:\n{truncate_for_llm_history(''.join(excerpts), max_chars=12000)}"
     try:
-        data = ollama_chat_json(
+        data = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -229,6 +231,7 @@ def execute_slice_implement_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name="slice.implement",
         )
         parsed = LlmSliceImplementResponse.model_validate(data)
         return [{"path": e.path, "content": e.content} for e in parsed.edits]
@@ -264,7 +267,7 @@ def execute_slice_critique_llm(
         f"Verify log excerpt:\n{truncate_for_llm_history(verify_log or 'ok')}"
     )
     try:
-        data = ollama_chat_json(
+        data = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -272,6 +275,7 @@ def execute_slice_critique_llm(
                 {"role": "user", "content": user},
             ],
             timeout_seconds=timeout_seconds,
+            stage_name="slice.critique",
         )
         parsed = LlmSliceCritiqueResponse.model_validate(data)
         return [v.upper() for v in parsed.verdicts if str(v).strip()] or ["PASS"]

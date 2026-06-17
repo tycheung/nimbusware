@@ -325,13 +325,13 @@ def _classify_intent_llm(
     model_id: str,
     timeout_seconds: float = 60.0,
 ) -> ClassificationResult | None:
-    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+    from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
     schema = (
         '{"work_type":"patch|slice|campaign|factory|quick",'
         '"confidence":0.0,"rationale":"...","signals":["..."]}'
     )
-    data = ollama_chat_json(
+    data = ollama_chat_json_via_plan_patch(
         base_url=base_url,
         model=model_id,
         messages=[
@@ -344,6 +344,7 @@ def _classify_intent_llm(
             {"role": "user", "content": message[:4000]},
         ],
         timeout_seconds=timeout_seconds,
+        agent_role="planner",
     )
     if not isinstance(data, dict):
         return None

@@ -24,7 +24,7 @@ def test_persona_coverage_llm_branch_emits_gate() -> None:
     ):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "nimbusware_orchestrator.persona_coverage_critique.ollama_chat_json",
+                "nimbusware_orchestrator.persona_coverage_critique.ollama_chat_json_via_plan_patch",
                 return_value={"status": "invalid", "gaps": ["x"], "summary": "coverage gap"},
             ):
                 orch.execute_writer_verifier_pass(rid)

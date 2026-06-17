@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field, ValidationError
 
 from nimbusware_env.env_flags import env_bool, env_str, nimbusware_ollama_base_url
 from nimbusware_orchestrator.interaction_surface_map import discover_surfaces_combined
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 from nimbusware_orchestrator.ui_flow_synthesis import validate_ui_flow_yaml
 
 
@@ -74,7 +74,7 @@ def generate_llm_ui_flow_dict(
         indent=2,
     )
     try:
-        raw = ollama_chat_json(
+        raw = ollama_chat_json_via_plan_patch(
             base_url=nimbusware_ollama_base_url(),
             model=model,
             messages=[
@@ -82,6 +82,7 @@ def generate_llm_ui_flow_dict(
                 {"role": "user", "content": f"{error_block}\n\nWorkspace context:\n{user}"},
             ],
             timeout_seconds=90.0,
+            agent_role="test_writer",
         )
         parsed = _LlmUiFlowResponse.model_validate(raw)
         flow = dict(parsed.flow)

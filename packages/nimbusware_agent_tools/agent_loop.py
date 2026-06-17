@@ -113,12 +113,20 @@ def run(
     chat_fn: ChatFn | None = None,
 ) -> AgentLoopResult:
     from nimbusware_agent_tools.risk_caps import resolve_agent_risk_caps
-    from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+    from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
     ws = workspace.resolve()
     allowed = _allowed_paths(plan)
     caps = risk_caps or resolve_agent_risk_caps()
-    chat = chat_fn or ollama_chat_json
+
+    def _default_chat(**kwargs: Any) -> dict[str, Any]:
+        return ollama_chat_json_via_plan_patch(
+            **kwargs,
+            agent_role="backend_writer",
+            stage_name="slice.implement",
+        )
+
+    chat = chat_fn or _default_chat
 
     messages = assemble_prompt(
         stable=_stable_system_prompt(base_prompt=system_prompt),

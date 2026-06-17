@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Literal
 
 from nimbusware_env.env_flags import env_str, env_truthy
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
 
 def _run_test_writer_stage_subprocess(workspace: Path) -> tuple[int, str]:
@@ -35,7 +35,7 @@ def _run_test_writer_stage_llm(
     timeout_seconds: float,
 ) -> tuple[int, str]:
     try:
-        payload = ollama_chat_json(
+        payload = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             timeout_seconds=timeout_seconds,
@@ -52,6 +52,7 @@ def _run_test_writer_stage_llm(
                     "content": "Suggest lightweight tests for the current workspace.",
                 },
             ],
+            agent_role="test_writer",
         )
     except Exception as exc:  # pragma: no cover - exercised via fallback tests
         return 1, f"llm test-writer failed: {str(exc)[:200]}"

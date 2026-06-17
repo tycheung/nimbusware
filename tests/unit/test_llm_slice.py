@@ -24,7 +24,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
         "acceptance_criteria": "tests pass",
     }
     with patch(
-        "nimbusware_orchestrator.llm_slice.ollama_chat_json",
+        "nimbusware_orchestrator.llm_slice.ollama_chat_json_via_plan_patch",
         return_value=fake,
     ):
         plan = execute_slice_plan_llm(
@@ -40,7 +40,7 @@ def test_execute_slice_plan_llm_parses_response() -> None:
 
 def test_execute_slice_plan_llm_returns_none_on_failure() -> None:
     with patch(
-        "nimbusware_orchestrator.llm_slice.ollama_chat_json",
+        "nimbusware_orchestrator.llm_slice.ollama_chat_json_via_plan_patch",
         side_effect=RuntimeError("down"),
     ):
         plan = execute_slice_plan_llm(

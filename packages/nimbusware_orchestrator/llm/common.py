@@ -241,14 +241,19 @@ def ollama_chat_json_via_plan_patch(
     stage_name: str | None = None,
     agent_role: str | None = None,
 ) -> dict[str, Any]:
-    """Route JSON chat through ModelBindingResolver when agent_role is set."""
-    if agent_role:
+    """Route JSON chat through ModelBindingResolver when role or stage is known."""
+    role = (agent_role or "").strip() or None
+    if not role and stage_name:
+        from nimbusware_orchestrator.binding_preflight import agent_role_for_stage
+
+        role = agent_role_for_stage(stage_name)
+    if role:
         from nimbusware_env import find_repo_root
         from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
 
         resolver = ModelBindingResolver(find_repo_root())
         return resolver.chat_json(
-            agent_role,
+            role,
             messages=messages,
             timeout_seconds=timeout_seconds,
         )

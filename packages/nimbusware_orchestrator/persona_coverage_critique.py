@@ -19,8 +19,10 @@ from agent_core.models import (
     Verdict,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.common import append_gate_decision_event
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.llm.common import (
+    append_gate_decision_event,
+    ollama_chat_json_via_plan_patch,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_store.protocol import EventStore
@@ -157,7 +159,7 @@ def execute_persona_coverage_critique_llm(
     gaps = rules_eval.get("gaps") if isinstance(rules_eval, dict) else []
     gap_list = [str(g).strip() for g in gaps] if isinstance(gaps, list) else []
     try:
-        raw = ollama_chat_json(
+        raw = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -174,6 +176,7 @@ def execute_persona_coverage_critique_llm(
                 },
             ],
             timeout_seconds=timeout_seconds,
+            agent_role="security_critic",
         )
         parsed = PersonaCoverageLlmResponse.model_validate(raw)
     except (

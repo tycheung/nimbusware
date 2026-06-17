@@ -22,7 +22,20 @@ _STAGE_ROLE_MAP: dict[str, str] = {
     "implementation.critique": "security_critic",
     "test_writer.critique": "test_writer",
     "planner.critique": "planner",
+    "frontend_writer.critique": "frontend_writer",
+    "module_integrator.critique": "backend_writer",
+    "self_refinement.critique": "planner",
+    "agent_evaluator.critique": "planner",
 }
+
+
+def agent_role_for_stage(stage_name: str | None) -> str | None:
+    if not stage_name:
+        return None
+    key = stage_name.strip()
+    if not key:
+        return None
+    return _STAGE_ROLE_MAP.get(key)
 
 _WORK_TYPE_ROLES: dict[str, list[str]] = {
     "patch": ["planner", "backend_writer"],

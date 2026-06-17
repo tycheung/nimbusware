@@ -88,12 +88,12 @@ def emit_refactor_stage_and_critique(
                     nimbusware_ollama_base_url,
                     nimbusware_use_llm_enabled,
                 )
-                from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+                from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
                 if nimbusware_use_llm_enabled():
                     model = env_str("NIMBUSWARE_DEFAULT_MODEL") or "llama3.2"
                     base = nimbusware_ollama_base_url()
-                    payload = ollama_chat_json(
+                    payload = ollama_chat_json_via_plan_patch(
                         base_url=base,
                         model=model,
                         timeout_seconds=60.0,
@@ -106,6 +106,7 @@ def emit_refactor_stage_and_critique(
                                 ),
                             },
                         ],
+                        agent_role="backend_writer",
                     )
                     if payload.get("summary"):
                         llm_summary = str(payload.get("summary"))[:500]

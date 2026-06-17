@@ -6,7 +6,7 @@ from typing import Any
 from pydantic import BaseModel, Field, ValidationError
 
 from agent_core.models.backlog import DeliveryBacklog
-from nimbusware_orchestrator.ollama_chat import ollama_chat_json
+from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
 
 
 class _LlmBacklogResponse(BaseModel):
@@ -33,7 +33,7 @@ def generate_llm_backlog(
         memory_excerpt=memory_excerpt,
     )
     try:
-        raw = ollama_chat_json(
+        raw = ollama_chat_json_via_plan_patch(
             base_url=base_url,
             model=model_id,
             messages=[
@@ -48,6 +48,7 @@ def generate_llm_backlog(
                 {"role": "user", "content": prompt},
             ],
             timeout_seconds=timeout_seconds,
+            agent_role="planner",
         )
         parsed = _LlmBacklogResponse.model_validate(raw)
         body = dict(parsed.backlog)
