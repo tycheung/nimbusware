@@ -10,6 +10,7 @@ import yaml
 
 from agent_core.mapping import mapping_or_empty
 from nimbusware_config.persist import load_model_routing_dict
+from nimbusware_orchestrator.hybrid_routing import resolve_stage_provider
 from nimbusware_orchestrator.llm.providers import provider_for_preset
 
 
@@ -68,6 +69,38 @@ def _global_fallback(repo_root: Path, agent_role: str) -> ResolvedBinding:
     )
 
 
+_ROLE_STAGE_MAP: dict[str, str] = {
+    "planner": "plan",
+    "backend_writer": "implement",
+    "security_critic": "critique",
+    "frontend_writer": "implement",
+}
+
+
+def _hybrid_routing_binding(repo_root: Path, agent_role: str) -> ResolvedBinding | None:
+    """fo1471 shim: map legacy stage_providers + cloud_runtime to per-role bindings."""
+    routing = load_model_routing_dict(repo_root)
+    stage = _ROLE_STAGE_MAP.get(agent_role)
+    if not stage:
+        return None
+    if resolve_stage_provider(routing, stage) != "cloud":
+        return None
+    cloud = mapping_or_empty(routing.get("cloud_runtime"))
+    if not cloud.get("enabled"):
+        return None
+    return ResolvedBinding(
+        agent_role=agent_role,
+        provider_kind="cloud",
+        provider_id=str(cloud.get("provider") or "openai_compatible"),
+        model_id=str(cloud.get("model_id") or "gpt-4o-mini"),
+        base_url=str(cloud.get("base_url") or "") or None,
+        api_key_ref=str(cloud.get("api_key_env") or "OPENAI_API_KEY"),
+        connection_id=None,
+        binding_source="hybrid_routing.stage_providers",
+        params={},
+    )
+
+
 class ModelBindingResolver:
     def __init__(self, repo_root: Path) -> None:
         self._repo_root = repo_root.resolve()
@@ -118,6 +151,10 @@ class ModelBindingResolver:
             block = mapping_or_empty(workflow_bindings[role])
             if block:
                 return _binding_from_block(role, block, source="workflow.profile")
+
+        hybrid = _hybrid_routing_binding(self._repo_root, role)
+        if hybrid is not None:
+            return hybrid
 
         defaults = _load_defaults_yaml(self._repo_root)
         roles = mapping_or_empty(defaults.get("roles"))

@@ -37,3 +37,35 @@ def test_unknown_role_falls_back_to_primary() -> None:
     binding = resolver.resolve("custom_unknown_role_xyz")
     assert binding.binding_source == "model-routing.primary"
     assert binding.model_id
+
+
+def test_hybrid_stage_providers_cloud_planner(tmp_path: Path) -> None:
+    routing = tmp_path / "configs"
+    routing.mkdir(parents=True)
+    (routing / "model-routing.yaml").write_text(
+        """
+version: 1
+cloud_runtime:
+  enabled: true
+  provider: openai_compatible
+  base_url: https://api.openai.com/v1
+  api_key_env: OPENAI_API_KEY
+  model_id: gpt-4o-mini
+stage_providers:
+  plan: cloud
+""",
+        encoding="utf-8",
+    )
+    (routing / "model_bindings").mkdir(parents=True, exist_ok=True)
+    (routing / "model_bindings" / "defaults.yaml").write_text(
+        "version: 1\nroles: {}\n",
+        encoding="utf-8",
+    )
+    resolver = ModelBindingResolver(tmp_path)
+    binding = resolver.resolve(
+        "planner",
+        user_defaults={"version": 1, "roles": {}},
+    )
+    assert binding.binding_source == "hybrid_routing.stage_providers"
+    assert binding.provider_kind == "cloud"
+    assert binding.model_id == "gpt-4o-mini"
