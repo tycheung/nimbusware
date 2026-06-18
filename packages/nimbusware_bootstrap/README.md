@@ -17,7 +17,11 @@ pip install nimbusware-bootstrap
 nimbusware-bootstrap --print-only
 ```
 
-The helper prints a curl-based clone install and documents the in-repo path when a checkout exists.
+The helper prints platform-specific launcher download URLs, curl-based clone install lines, and the in-repo install path when a checkout exists.
+
+```bash
+nimbusware-bootstrap --install --install-profile barebones
+```
 
 ## Publish (operator)
 

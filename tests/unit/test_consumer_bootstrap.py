@@ -17,6 +17,7 @@ def test_bootstrap_consumer_print_only() -> None:
         check=False,
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "NimbuswareLauncher-" in proc.stdout
     assert "curl -fsSL" in proc.stdout
     assert "install_nimbusware.py" in proc.stdout
 
@@ -32,4 +33,5 @@ def test_bootstrap_wheel_module_print_only() -> None:
         env={**dict(__import__("os").environ), "PYTHONPATH": str(pkg_root)},
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "NimbuswareLauncher-" in proc.stdout
     assert "nimbusware-bootstrap" in proc.stdout
