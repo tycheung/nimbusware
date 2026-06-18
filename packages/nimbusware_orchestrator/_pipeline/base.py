@@ -61,6 +61,10 @@ class RunOrchestratorBase:
         return self._repo_root
 
     def _base_cfg(self) -> dict[str, Any]:
+        mat = self._config_materializer
+        if mat is not None and getattr(mat, "use_db", False):
+            raw = mat.get_model_routing_base()
+            return raw if isinstance(raw, dict) else {}
         return load_yaml(self._base_path)
 
     def policy_snapshot_for_run(self, run_id: UUID) -> dict[str, Any]:
