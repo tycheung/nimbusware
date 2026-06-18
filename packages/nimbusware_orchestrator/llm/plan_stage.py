@@ -57,9 +57,14 @@ def _plan_deliverables(requirements: dict[str, Any] | None) -> list[str]:
     if not prompt:
         return ["Deliver bounded slices with tests and gate verification"]
     try:
-        from nimbusware_orchestrator.backlog_heuristic import _match_template_id, _TEMPLATES
+        from nimbusware_orchestrator.backlog_heuristic_templates import (
+            HEURISTIC_TEMPLATES,
+            match_template_id,
+        )
 
-        template = _TEMPLATES.get(_match_template_id(prompt)) or _TEMPLATES["generic"]
+        template = (
+            HEURISTIC_TEMPLATES.get(match_template_id(prompt)) or HEURISTIC_TEMPLATES["generic"]
+        )
         return [f"{spec.title}: {spec.rationale}" for spec in template.slices]
     except ImportError:
         pass

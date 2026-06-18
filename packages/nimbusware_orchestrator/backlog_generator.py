@@ -1,21 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
 from agent_core.models import EventType
-from agent_core.models.backlog import (
-    BacklogEpic,
-    BacklogFeature,
-    BacklogMetadata,
-    BacklogSlice,
-    DeliveryBacklog,
-    EpicStatus,
-    SliceStatus,
-    sync_backlog_metadata,
-)
+from agent_core.models.backlog import DeliveryBacklog, sync_backlog_metadata
 from agent_core.models.events_payloads import (
     DeliveryBacklogGeneratedPayload,
     DeliveryBacklogRevisedPayload,

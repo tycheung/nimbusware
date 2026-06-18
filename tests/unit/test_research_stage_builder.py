@@ -3,9 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_research.stage_builder import (
-    code_brief_summary,
-    domain_brief_summary,
     discover_workspace_patterns,
+    domain_brief_summary,
     infer_domain_tag,
     select_research_patterns,
 )

@@ -1,5 +1,3 @@
-"""Interaction surface map (ISM) — OpenAPI and HTML link discovery."""
-
 from __future__ import annotations
 
 import json

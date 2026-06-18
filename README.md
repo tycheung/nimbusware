@@ -9,7 +9,7 @@
 | **Default workflow** | `nimbusware_production` |
 | **License** | [GPL-3.0](LICENSE) |
 
-**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code.  
+**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog).  
 **Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
 
 ## Quick start

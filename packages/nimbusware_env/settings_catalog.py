@@ -442,7 +442,7 @@ def _defs() -> tuple[SettingDef, ...]:
             s,
             "",
             "Backlog generator model",
-            "Ollama model id for LLM backlog generation (empty = stub fallback).",
+            "Ollama model id for LLM campaign backlog (empty = heuristic fallback).",
             "Run — campaign",
         ),
         SettingDef(

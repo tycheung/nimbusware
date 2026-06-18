@@ -29,15 +29,15 @@ from nimbusware_research.enterprise_index import append_enterprise_research_inde
 from nimbusware_research.models import ResearchBrief, ResearchBriefSource
 from nimbusware_research.pattern_index import append_pattern_index, new_pattern_id
 from nimbusware_research.prompt_security import wrap_researcher_prompt
-from nimbusware_store.protocol import EventStore
-
-
 from nimbusware_research.stage_builder import (
     code_brief_summary,
     domain_brief_summary,
     infer_domain_tag,
     select_research_patterns,
 )
+from nimbusware_store.protocol import EventStore
+
+
 def _emit_critique_panel(
     store: EventStore,
     registry: RoleRegistry,
@@ -234,8 +234,7 @@ def emit_research_stages(
             repo_root,
             pattern_id=str(seed.get("pattern_id") or pattern_id),
             repo_url=str(seed.get("repo_url") or f"requirements://code/{domain_tag}"),
-            paths=[str(p) for p in (seed.get("paths") or []) if str(p).strip()]
-            or ["src/"],
+            paths=[str(p) for p in (seed.get("paths") or []) if str(p).strip()] or ["src/"],
             license_name=str(seed.get("license") or "MIT"),
             embedding_ref=str(seed.get("embedding_ref") or f"requirements:{domain_tag}"),
         )

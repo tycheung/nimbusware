@@ -20,7 +20,7 @@ The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial ag
 | `patch_go` / `patch_jvm` | Go/Java patch variants |
 | `micro_slice` | Bounded files/LOC per slice, verify → critique → test → optional `slice.e2e` → gate |
 | `micro_slice_fullstack` | Full-stack + launch-test writer/critic stages |
-| `campaign_micro_slice` | Autonomous campaign — backlog → one slice/tick → completion |
+| `campaign_micro_slice` | Autonomous campaign — heuristic or LLM backlog → one slice/tick → completion |
 | `campaign_factory_zero_touch` | Factory scaffold T0–T3 with PUT E2E |
 
 Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_production`.
@@ -29,6 +29,7 @@ Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_
 
 - **Slice implement agent** — JIT tool loop (`read`, `edit`, `write`, `grep`, `shell`, optional `browser_act`)
 - **Cross-slice handoffs** — deterministic `slice.handoff` summaries
+- **Campaign backlog** — heuristic decomposition from `business_prompt` (CRM/todo/API templates, repo paths) or optional LLM via `NIMBUSWARE_BACKLOG_GENERATOR_MODEL`
 - **Campaign compaction** — summarize older handoffs in long runs
 - **Factory scaffold** — PUT preview runtime, factory tiers, interaction surface map, PUT E2E flows
 - **Persistent dev env** — session supervisor, incremental regression, UI controller (ADRs [009](adr/009-persistent-dev-environment.md), [010](adr/010-ui-controller.md))

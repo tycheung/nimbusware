@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog, generate_stub_backlog
+from nimbusware_orchestrator.backlog_generator import (
+    generate_heuristic_backlog,
+    generate_stub_backlog,
+)
 from nimbusware_orchestrator.campaign_slice_selector import select_next_slice
 
 

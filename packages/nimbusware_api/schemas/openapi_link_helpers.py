@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-# RFC 5988 ``Link`` on ``GET /v1/runs`` when ``rel=next`` / ``rel=prev`` apply (optional header).
 RUN_LIST_LINK_HEADER: dict[str, Any] = {
     "description": (
         "RFC 5988 Web Linking: comma-separated entries when pagination applies. "
@@ -12,8 +11,6 @@ RUN_LIST_LINK_HEADER: dict[str, Any] = {
     "schema": {"type": "string"},
 }
 
-# Optional RFC 5988 ``Link`` on ``GET /v1/runs/{run_id}`` — related sub-resources (OpenAPI hint
-# servers may omit the header; paths follow ``/v1`` prefix).
 RUN_DETAIL_LINK_HEADER: dict[str, Any] = {
     "description": (
         'RFC 5988 Web Linking on **200**: comma-separated ``<``URL``>; rel="…"`` entries for '
@@ -36,7 +33,6 @@ def format_run_detail_link_header(run_id: str) -> str:
     )
 
 
-# ``GET /v1/runs/{run_id}/timeline`` — parent run summary + sibling findings.
 RUN_TIMELINE_LINK_HEADER: dict[str, Any] = {
     "description": (
         "RFC 5988 Web Linking on **200**: ``run`` points at ``GET /v1/runs/{run_id}``; "
@@ -54,7 +50,6 @@ def format_run_timeline_link_header(run_id: str) -> str:
     return f'</v1/runs/{run_id}>; rel="run", </v1/runs/{run_id}/findings>; rel="findings"'
 
 
-# Body schema and example come from ``response_model=RunTimelineResponse`` on the route.
 RUN_TIMELINE_RESPONSE_200: dict[str, Any] = {
     "description": (
         "Replayed canonical events for the run plus top-level read-model "
@@ -113,7 +108,6 @@ RUN_TIMELINE_RESPONSE_200: dict[str, Any] = {
     },
 }
 
-# ``GET /v1/runs/{run_id}/findings`` — parent run summary + sibling timeline.
 RUN_FINDINGS_LINK_HEADER: dict[str, Any] = {
     "description": (
         "RFC 5988 Web Linking on **200**: ``run`` points at ``GET /v1/runs/{run_id}``; "

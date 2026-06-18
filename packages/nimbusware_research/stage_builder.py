@@ -43,7 +43,7 @@ def domain_brief_summary(requirements: dict[str, Any] | None, *, domain_tag: str
                 "Constraints: small bounded slices, tests required before merge."
             )
         return (
-            f"Domain ({domain_tag}): deliver \"{prompt[:240]}\" with explicit acceptance "
+            f'Domain ({domain_tag}): deliver "{prompt[:240]}" with explicit acceptance '
             "criteria per feature and regression tests."
         )
     return f"Domain ({domain_tag}): standard software delivery with gated verification."
