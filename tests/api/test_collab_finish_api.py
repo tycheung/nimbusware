@@ -58,7 +58,9 @@ def test_session_commentary_and_delegate_control(
         f"/v1/chat/sessions/{session_id}/participants",
         json={"user_id": writer["user_id"], "role": "session_write"},
     )
-    client.post("/v1/auth/signin", json={"username": writer["username"], "password": "password1234"})
+    client.post(
+        "/v1/auth/signin", json={"username": writer["username"], "password": "password1234"}
+    )
     client.post(
         f"/v1/chat/sessions/{session_id}/compute/opt-in",
         json={
@@ -88,7 +90,7 @@ def test_host_transfer_decline(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _enable_collab(monkeypatch)
-    host = _signup(client, f"host-{uuid4().hex[:8]}")
+    _signup(client, f"host-{uuid4().hex[:8]}")
     target = _signup(client, f"target-{uuid4().hex[:8]}")
     project_id = _create_project(client, tmp_path)
     sess = client.post("/v1/chat/sessions", json={"project_id": project_id})
@@ -103,7 +105,9 @@ def test_host_transfer_decline(
     )
     assert req.status_code == 200
     transfer_id = req.json()["transfer"]["transfer_id"]
-    client.post("/v1/auth/signin", json={"username": target["username"], "password": "password1234"})
+    client.post(
+        "/v1/auth/signin", json={"username": target["username"], "password": "password1234"}
+    )
     declined = client.post(f"/v1/chat/sessions/{session_id}/host-transfer/{transfer_id}/decline")
     assert declined.status_code == 200
     assert declined.json()["transfer"]["status"] == "declined"
