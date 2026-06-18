@@ -1,6 +1,6 @@
 # All LLMs + collaborative group chat + distributed resource sharing (v1.2 program)
 
-> **Status:** **Planned** (Jun 2026). Extends shipped v1.1 hybrid routing (fo1310–fo1313) and congruent Chat (§20.28 / fo1180–fo1259).  
+> **Status:** **Shipped MVP** (Jun 2026). Extends shipped v1.1 hybrid routing (fo1310–fo1313) and congruent Chat (§20.28 / fo1180–fo1259).
 > **References:** normative [`nimbusware-orchestrator-local-plan.md`](nimbusware-orchestrator-local-plan.md) (§19.5, §20.8, §20.28, §20.29), engineering [`PLAN_GAP.md`](PLAN_GAP.md), market ledger [`v1.1features.md`](v1.1features.md), boundary doc [`docs/integrations-external-chat.md`](docs/integrations-external-chat.md).  
 > **Supersedes (partially):** stage-level `cloud_runtime` + `stage_providers` in [`configs/model-routing.yaml`](configs/model-routing.yaml) — migrated in fo1471, not deleted.
 
@@ -549,7 +549,7 @@ connection:
 | Capability | Location | Notes |
 |------------|----------|-------|
 | Congruent Chat thread | `#/chat`, `chat.js` | Multi-human when `NIMBUSWARE_COLLAB_ENABLED=1` |
-| Session persistence | `nimbusware_chat_session`, `nimbusware_chat_turn` | `host_user_id`, `metadata` (folder/tags stub) |
+| Session persistence | `nimbusware_chat_session`, `nimbusware_chat_turn` | `host_user_id`, `metadata` (folder/tags via B8 library) |
 | Local users | `nimbusware_user`, `/v1/auth/*` | Signup/signin + session cookie |
 | Participants | `nimbusware_chat_participant`, `/chat/sessions/{id}/participants` | Invite/join flow |
 | Turn roles | `CHAT_TURN_ROLES` + `participant` | Peanut gallery commentary |

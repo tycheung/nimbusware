@@ -262,9 +262,8 @@ export function FleetPage() {
           {dashboard.worker_caption ? <p>{dashboard.worker_caption}</p> : null}
           <h3 data-testid="admin-fleet-mesh-panel">Fleet mesh</h3>
           <p class="muted" data-testid="admin-fleet-mesh-caption">
-            Session-scoped compute nodes and queue depth (fo1761 stub).
+            Enterprise fleet overview. Session-scoped nodes and queue depth: use Session compute mesh below.
           </p>
-          <p class="hint">Mesh status API: GET /v1/enterprise/fleet-mesh/status</p>
           <h3>Fleet memory</h3>
           <table class="data-table">
             <thead>

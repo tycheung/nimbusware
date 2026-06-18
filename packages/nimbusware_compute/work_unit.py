@@ -34,10 +34,17 @@ class WorkUnitRecord:
 
 
 class InMemoryWorkUnitQueue:
-    """Stub queue for D2 — host enqueue/dequeue/complete without Redis yet."""
+    """In-memory work-unit queue (host enqueue/dequeue/complete; Redis optional later)."""
 
     def __init__(self) -> None:
         self._units: dict[UUID, WorkUnitRecord] = {}
+
+    def queued_count(self, *, session_id: UUID | None = None) -> int:
+        return sum(
+            1
+            for rec in self._units.values()
+            if rec.status == "queued" and (session_id is None or rec.session_id == session_id)
+        )
 
     def enqueue(
         self,

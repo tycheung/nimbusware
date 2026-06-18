@@ -23,7 +23,7 @@ Set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loopback ho
 | GET | `/v1/chat/sessions/{id}/participants` | List participants |
 | POST | `/v1/chat/sessions/{id}/invites` | Create join link |
 | POST | `/v1/chat/join` | Redeem invite token |
-| GET | `/v1/chat/sessions/{id}/stream` | Session SSE room (theater fan-out stub) |
+| GET | `/v1/chat/sessions/{id}/stream` | Session SSE theater fan-out (0.5s poll, capped backlog) |
 
 ## Individual deployment
 
