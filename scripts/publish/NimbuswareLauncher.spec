@@ -1,17 +1,18 @@
-﻿# -*- mode: python ; coding: utf-8 -*-
+# -*- mode: python ; coding: utf-8 -*-
 # Built by scripts/publish/build_launcher.ps1 | build_launcher.sh
 
 import os
 
-ROOT = os.path.abspath(os.path.join(SPECPATH, ".."))
-LAUNCHER = os.path.join(ROOT, "launcher.py")
+REPO_ROOT = os.path.abspath(os.path.join(SPECPATH, "..", ".."))
+LAUNCHER = os.path.join(REPO_ROOT, "launcher.py")
+INSTALL_SCRIPT = os.path.join(REPO_ROOT, "scripts", "install", "install_nimbusware.py")
 
 a = Analysis(
     [LAUNCHER],
-    pathex=[os.path.join(ROOT, "packages")],
+    pathex=[os.path.join(REPO_ROOT, "packages")],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
+    datas=[(INSTALL_SCRIPT, "install")],
+    hiddenimports=["nimbusware_env.launcher_fetch"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

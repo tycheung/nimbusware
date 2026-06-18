@@ -34,8 +34,8 @@ def test_read_poetry_version_from_repo() -> None:
 def test_default_install_script_args_non_interactive() -> None:
     args = default_install_script_args()
     assert "--non-interactive" in args
-    assert "--seed-config" in args
-    assert "--postgres-choice" in args
+    assert "--skip-postgres" in args
+    assert "--install-profile" in args
 
 
 def test_pick_webview_gui_for_platform() -> None:

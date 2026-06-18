@@ -89,10 +89,10 @@ python scripts/install_nimbusware.py --skip-linux-desktop-deps
 
 ## Launcher binary
 
-**Windows:** `.\scripts\build_launcher.ps1` → `dist/NimbuswareLauncher.exe`  
+**Windows:** `.\scripts\publish\build_launcher.ps1` → `dist/NimbuswareLauncher.exe`  
 **macOS / Linux:** `./scripts/publish/build_launcher.sh` → `dist/NimbuswareLauncher`
 
-Place the binary next to `pyproject.toml`.
+Place the binary next to `pyproject.toml`, or run it standalone — **Quick setup** clones or downloads source (git or GitHub zip) and runs the barebones install profile; **Full setup** adds Docker Postgres and Ollama when available.
 
 ## Enterprise sketch
 

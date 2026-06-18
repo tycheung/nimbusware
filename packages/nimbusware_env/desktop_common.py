@@ -195,8 +195,9 @@ def run_log_path(root: Path) -> Path:
 
 
 def default_install_script_args() -> list[str]:
-    """Non-interactive install flags; Docker Postgres when the install script supports it."""
-    return ["--non-interactive", "--seed-config", "--postgres-choice", "docker"]
+    from nimbusware_env.launcher_fetch import install_script_args
+
+    return install_script_args()
 
 
 def pick_webview_gui() -> str | None:
