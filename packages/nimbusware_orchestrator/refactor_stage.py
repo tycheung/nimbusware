@@ -78,8 +78,21 @@ def emit_refactor_stage_and_critique(
     now = datetime.now(timezone.utc)
     refactor_mode = "stub_proposal"
     llm_summary: str | None = None
+    orphan_gate_fail = False
+    proposal_meta: dict[str, Any] = {}
     if not block.stub_only and workspace is not None and workspace.is_dir():
-        refactor_mode = "workspace_scan"
+        from nimbusware_orchestrator.refactor_proposal import (
+            build_refactor_proposal,
+            orphan_gate_exceeded,
+        )
+
+        proposal = build_refactor_proposal(workspace, workspace, block)
+        proposal_meta = dict(proposal)
+        orphan_gate_fail = orphan_gate_exceeded(
+            proposal,
+            orphan_gate_max=block.orphan_gate_max,
+        )
+        refactor_mode = "code_intel_proposal"
         if block.llm_enabled:
             refactor_mode = "llm_proposal"
             try:
@@ -111,15 +124,18 @@ def emit_refactor_stage_and_critique(
                     if payload.get("summary"):
                         llm_summary = str(payload.get("summary"))[:500]
                     else:
-                        refactor_mode = "workspace_scan"
+                        refactor_mode = "code_intel_proposal"
             except Exception:
-                refactor_mode = "workspace_scan"
+                refactor_mode = "code_intel_proposal"
     refactor_meta: dict[str, Any] = {
         "stub_only": block.stub_only,
         "llm_enabled": block.llm_enabled,
         "max_iterations": block.max_iterations,
         "mode": refactor_mode,
+        "orphan_gate_fail": orphan_gate_fail,
     }
+    if proposal_meta:
+        refactor_meta.update(proposal_meta)
     if llm_summary:
         refactor_meta["llm_summary"] = llm_summary
     if workspace is not None and workspace.is_dir():
@@ -173,6 +189,8 @@ def emit_refactor_stage_and_critique(
     for tax_key in tax_keys:
         critic_role = registry.resolve(tax_key)
         fail = force_fail and tax_key in (_REFACTOR_CRITIC, _CODE_QUALITY_CRITIC)
+        if orphan_gate_fail and tax_key == _REFACTOR_CRITIC:
+            fail = True
         verdict = Verdict.FAIL if fail else Verdict.PASS
         fixes = [_REFACTOR_FAIL_FIX] if verdict == Verdict.FAIL else []
         payload = CriticVerdictEmittedPayload(
@@ -200,10 +218,10 @@ def emit_refactor_stage_and_critique(
         critic_payloads,
         stage_name=REFACTOR_CRITIQUE_STAGE,
         unanimous_pass_required=True,
-        enforce=unanimous_gate_enforce or force_fail,
+        enforce=unanimous_gate_enforce or force_fail or orphan_gate_fail,
     )
     append_gate_decision_event(store, run_id=run_id, payload=gate)
-    return str(gate.verdict).upper() == "FAIL"
+    return gate.verdict == Verdict.FAIL
 
 
 def refactor_post_stitch_gate_failed(events: list[dict[str, Any]]) -> bool:
@@ -303,4 +321,4 @@ def emit_refactor_post_stitch_stage_and_critique(
         enforce=unanimous_gate_enforce or force_fail,
     )
     append_gate_decision_event(store, run_id=run_id, payload=gate)
-    return str(gate.verdict).upper() == "FAIL"
+    return gate.verdict == Verdict.FAIL

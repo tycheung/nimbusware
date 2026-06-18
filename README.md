@@ -126,6 +126,7 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. See
 | `NIMBUSWARE_CAMPAIGN_COMPACT_ENABLED` | 1 | Summarize older handoffs in long campaigns |
 | `NIMBUSWARE_CAMPAIGN_KEEP_RECENT_TOKENS` | (from HW) | Verbatim recent handoff window |
 | `NIMBUSWARE_CAMPAIGN_RESERVE_TOKENS` | 8000 | Output reservation subtracted from keep window |
+| `NIMBUSWARE_CAMPAIGN_PARALLEL_SLICES` | 1 | Max independent backlog slices per campaign tick (mesh assigns when >1) |
 | `NIMBUSWARE_CONTEXT_ARTIFACT_FAISS_REBUILD` | 0 | Rebuild memory FAISS after context-artifact bridge-memory |
 | `NIMBUSWARE_FLEET_PLAYWRIGHT_WS_ENDPOINT` | (empty) | Optional remote Playwright WS for fleet PUT E2E (Enterprise) |
 | `NIMBUSWARE_MAKER_VAPID_PUBLIC_KEY` | (empty) | Enables Maker Web Push subscription API when set |

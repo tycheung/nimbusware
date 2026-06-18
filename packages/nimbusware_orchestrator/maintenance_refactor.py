@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -39,19 +40,30 @@ def run_maintenance_refactor(
             ),
         ),
     )
-    index_meta: dict[str, Any] = {}
     rows_for_index = store.list_run_events(str(run_id))
     from nimbusware_maker.workspace import resolve_run_workspace
     from nimbusware_orchestrator.orphan_index import build_orphan_report
     from nimbusware_orchestrator.similarity_index import build_similarity_index
 
     ws_index = resolve_run_workspace(rows_for_index)
+    from nimbusware_orchestrator.code_intel_store import load_or_build_code_intel
+
+    repo_root = getattr(orch, "repo_root", ws_index)
+    intel = load_or_build_code_intel(Path(repo_root), ws_index)
     orphan_report = build_orphan_report(ws_index)
     similarity = build_similarity_index(ws_index)
     duplicate_clusters = [c for c in similarity.clusters if len(c.paths) > 1]
+    reach = intel.get("route_reachability")
+    unreachable_count = 0
+    if isinstance(reach, dict):
+        raw_n = reach.get("unreachable_count")
+        if isinstance(raw_n, int) and not isinstance(raw_n, bool):
+            unreachable_count = raw_n
     index_meta = {
         "orphan_count": len(orphan_report.orphans),
         "duplicate_clusters": len(duplicate_clusters),
+        "unreachable_module_count": unreachable_count,
+        "code_intel_persisted": True,
     }
     gate_fail = False
     if hasattr(orch, "_emit_refactor_stage_optional"):

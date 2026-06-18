@@ -70,6 +70,7 @@ refactor:
   enabled: true
   stub_only: false
   max_iterations: 1
+  orphan_gate_max: 15
 
 # Phase 4 memory: default-on retrieval + index contribution for production runs.
 memory:

@@ -65,6 +65,26 @@ def mesh_assign_parallel_critics(
     )
 
 
+def mesh_assign_campaign_slices(
+    *,
+    run_id: UUID,
+    slice_ids: list[str],
+    session_id: UUID | None,
+    workload_distribution: str,
+    node_ids: list[UUID],
+) -> dict[str, UUID | None]:
+    stage_names = [f"campaign.slice:{sid}" for sid in slice_ids]
+    raw = mesh_assign_parallel_stages(
+        run_id=run_id,
+        stage_names=stage_names,
+        session_id=session_id,
+        workload_distribution=workload_distribution,
+        node_ids=node_ids,
+        parallel_group="campaign_slices",
+    )
+    return {sid: raw.get(f"campaign.slice:{sid}") for sid in slice_ids}
+
+
 def resolve_mesh_context_for_run(run_id: UUID) -> tuple[UUID | None, str, list[UUID]]:
     try:
         from nimbusware_compute.node_store import build_compute_node_store

@@ -643,6 +643,15 @@ def extended_defs() -> tuple[SettingDef, ...]:
             "User — context efficiency",
         ),
         SettingDef(
+            "NIMBUSWARE_CAMPAIGN_PARALLEL_SLICES",
+            _USER,
+            _INT,
+            "1",
+            "Campaign parallel slices per tick",
+            "Max independent backlog slices queued per campaign tick; mesh assigns across compute nodes when >1.",
+            "User — campaign throughput",
+        ),
+        SettingDef(
             "NIMBUSWARE_MEMORY_RETRIEVAL_K",
             _USER,
             _INT,

@@ -21,7 +21,12 @@ from nimbusware_orchestrator.campaign import (
     campaign_enabled_for_run,
     campaign_policy_from_rows,
 )
-from nimbusware_orchestrator.campaign_slice_selector import all_slices_terminal, select_next_slice
+from nimbusware_orchestrator.campaign_slice_selector import (
+    SelectedSlice,
+    all_slices_terminal,
+    select_next_slice,
+    select_next_slices,
+)
 from nimbusware_orchestrator.context_compaction import maybe_emit_compaction_event
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_projections.builders.context_budget import estimate_context_budget
@@ -269,8 +274,8 @@ def campaign_driver_tick(
             message=eval_result.rationale,
         )
 
-    selected = select_next_slice(backlog)
-    if selected is None:
+    selected_list = _select_slices_for_tick(run_id, backlog)
+    if not selected_list:
         return CampaignTickResult(
             state=CampaignDriverState.ASSESSING,
             should_continue=False,
@@ -278,52 +283,106 @@ def campaign_driver_tick(
             message="no eligible pending slice",
         )
 
-    _emit_slice_queued(
-        orch._store,
+    return _execute_campaign_slices(
+        orch,
         run_id,
-        slice_id=selected.slice.slice_id,
-        epic_id=selected.epic_id,
-    )
-    plan = parse_slice_plan(
-        {
-            "slice_id": selected.slice.slice_id,
-            "rationale": selected.slice.rationale,
-            "target_paths": list(selected.slice.target_paths),
-            "acceptance_criteria": "Campaign backlog slice",
-        },
-    )
-    slice_index = backlog.metadata.slices_completed + 1
-    gate = orch.execute_single_micro_slice(
-        run_id,
-        slice_index=slice_index,
+        backlog=backlog,
+        selected_list=selected_list,
         workspace=workspace,
-        plan=plan,
-        backlog_slice_id=selected.slice.slice_id,
+        policy=policy,
     )
 
-    rows = orch._store.list_run_events(str(run_id))
-    backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
-    completed = backlog.metadata.slices_completed
 
-    if not gate.passed:
-        failures = _consecutive_slice_failures(rows)
-        max_fail = policy.max_consecutive_slice_failures if policy else 5
-        if failures >= max_fail:
-            return CampaignTickResult(
-                state=CampaignDriverState.FAILED,
-                should_continue=False,
-                slices_completed=completed,
-                message=f"slice failed; {failures} consecutive failures",
-                last_slice_passed=False,
-            )
-        return CampaignTickResult(
-            state=CampaignDriverState.EXECUTING,
-            should_continue=True,
-            slices_completed=completed,
-            message="slice failed; will retry next eligible slice",
-            last_slice_passed=False,
+def _parallel_slice_count() -> int:
+    from nimbusware_env.settings_resolve import resolve_int
+
+    return max(1, resolve_int("NIMBUSWARE_CAMPAIGN_PARALLEL_SLICES", default=1))
+
+
+def _select_slices_for_tick(run_id: UUID, backlog: Any) -> list[SelectedSlice]:
+    parallel = _parallel_slice_count()
+    if parallel <= 1:
+        one = select_next_slice(backlog)
+        return [one] if one is not None else []
+    return select_next_slices(backlog, parallel)
+
+
+def _execute_campaign_slices(
+    orch: RunOrchestrator,
+    run_id: UUID,
+    *,
+    backlog: Any,
+    selected_list: list[SelectedSlice],
+    workspace: Any | None,
+    policy: Any,
+) -> CampaignTickResult:
+    from nimbusware_orchestrator.mesh_pipeline_hook import (
+        mesh_assign_campaign_slices,
+        resolve_mesh_context_for_run,
+    )
+
+    session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
+    if len(selected_list) > 1 and session_id is not None and node_ids:
+        mesh_assign_campaign_slices(
+            run_id=run_id,
+            slice_ids=[sel.slice.slice_id for sel in selected_list],
+            session_id=session_id,
+            workload_distribution=workload,
+            node_ids=node_ids,
         )
 
+    last_passed: bool | None = None
+    completed = backlog.metadata.slices_completed
+    for selected in selected_list:
+        rows = orch._store.list_run_events(str(run_id))
+        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        completed = backlog.metadata.slices_completed
+
+        _emit_slice_queued(
+            orch._store,
+            run_id,
+            slice_id=selected.slice.slice_id,
+            epic_id=selected.epic_id,
+        )
+        plan = parse_slice_plan(
+            {
+                "slice_id": selected.slice.slice_id,
+                "rationale": selected.slice.rationale,
+                "target_paths": list(selected.slice.target_paths),
+                "acceptance_criteria": "Campaign backlog slice",
+            },
+        )
+        gate = orch.execute_single_micro_slice(
+            run_id,
+            slice_index=completed + 1,
+            workspace=workspace,
+            plan=plan,
+            backlog_slice_id=selected.slice.slice_id,
+        )
+        rows = orch._store.list_run_events(str(run_id))
+        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        completed = backlog.metadata.slices_completed
+        last_passed = gate.passed
+        if not gate.passed:
+            failures = _consecutive_slice_failures(rows)
+            max_fail = policy.max_consecutive_slice_failures if policy else 5
+            if failures >= max_fail:
+                return CampaignTickResult(
+                    state=CampaignDriverState.FAILED,
+                    should_continue=False,
+                    slices_completed=completed,
+                    message=f"slice failed; {failures} consecutive failures",
+                    last_slice_passed=False,
+                )
+            return CampaignTickResult(
+                state=CampaignDriverState.EXECUTING,
+                should_continue=True,
+                slices_completed=completed,
+                message="slice failed; will retry next eligible slice",
+                last_slice_passed=False,
+            )
+
+    rows = orch._store.list_run_events(str(run_id))
     if all_slices_terminal(apply_slice_outcomes(backlog, rows)):
         from nimbusware_orchestrator.completion_evaluator import evaluate_and_finalize_campaign
 
@@ -338,7 +397,7 @@ def campaign_driver_tick(
             should_continue=False,
             slices_completed=completed,
             message=eval_result.rationale,
-            last_slice_passed=True,
+            last_slice_passed=last_passed,
         )
 
     return CampaignTickResult(
@@ -346,7 +405,7 @@ def campaign_driver_tick(
         should_continue=True,
         slices_completed=completed,
         message="slice passed; more work remains",
-        last_slice_passed=True,
+        last_slice_passed=last_passed,
     )
 
 

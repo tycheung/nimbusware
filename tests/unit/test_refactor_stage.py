@@ -18,6 +18,9 @@ def test_refactor_workflow_block() -> None:
     block = parse_refactor_workflow_block(root, "refactor_on")
     assert block.enabled is True
     assert refactor_stage_effective(block)
+    prod = parse_refactor_workflow_block(root, "nimbusware_production")
+    assert prod.stub_only is False
+    assert prod.orphan_gate_max == 15
 
 
 def test_verify_runs_refactor_stage(monkeypatch: pytest.MonkeyPatch) -> None:

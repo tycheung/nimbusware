@@ -14,6 +14,7 @@ class RefactorWorkflowBlock:
     stub_only: bool = True
     max_iterations: int = 1
     llm_enabled: bool = False
+    orphan_gate_max: int | None = None
 
 
 def parse_refactor_workflow_block(
@@ -36,11 +37,16 @@ def parse_refactor_workflow_block(
         max_iter = int(block.get("max_iterations", 1) or 1)
     except (TypeError, ValueError):
         max_iter = 1
+    raw_og = block.get("orphan_gate_max")
+    orphan_gate_max: int | None = None
+    if isinstance(raw_og, int) and not isinstance(raw_og, bool) and raw_og >= 0:
+        orphan_gate_max = raw_og
     return RefactorWorkflowBlock(
         enabled=bool(block.get("enabled", False)),
         stub_only=bool(block.get("stub_only", True)),
         max_iterations=max(1, min(5, max_iter)),
         llm_enabled=bool(block.get("llm_enabled", False)),
+        orphan_gate_max=orphan_gate_max,
     )
 
 

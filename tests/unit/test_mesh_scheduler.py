@@ -50,6 +50,24 @@ def test_host_only_skips_enqueue() -> None:
     assert not units
 
 
+def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
+    from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_campaign_slices
+
+    sid = uuid4()
+    run_id = uuid4()
+    n1, n2 = uuid4(), uuid4()
+    mesh_assign_campaign_slices(
+        run_id=run_id,
+        slice_ids=["slice-a", "slice-b"],
+        session_id=sid,
+        workload_distribution="auto_share",
+        node_ids=[n1, n2],
+    )
+    units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
+    assert len(units) == 2
+    assert {u.stage_name for u in units} == {"campaign.slice:slice-a", "campaign.slice:slice-b"}
+
+
 def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
     from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_critics
 

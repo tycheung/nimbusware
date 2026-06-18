@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.code_graph import build_code_graph
+from nimbusware_orchestrator.code_graph import CodeGraphIndex, build_code_graph
 
 
 @dataclass
@@ -15,8 +15,12 @@ class OrphanReport:
         return {"orphans": self.orphans, "count": len(self.orphans)}
 
 
-def build_orphan_report(workspace: Path) -> OrphanReport:
-    graph = build_code_graph(workspace)
+def build_orphan_report(
+    workspace: Path,
+    *,
+    graph: CodeGraphIndex | None = None,
+) -> OrphanReport:
+    graph = graph or build_code_graph(workspace)
     modules = {n.path for n in graph.nodes if n.kind == "module"}
     imported = {tgt for _src, tgt in graph.import_edges if not tgt.startswith("import:")}
     referenced = imported | {e[0] for e in graph.edges}
