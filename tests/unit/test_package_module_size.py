@@ -12,7 +12,6 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
             {
                 "micro_slice_executor.py",
                 "slice_cycle_integration.py",
-                "_pipeline/_helpers.py",
                 "_pipeline/create_run.py",
                 "_pipeline/protocol_hosts.py",
                 "put_e2e_runner.py",

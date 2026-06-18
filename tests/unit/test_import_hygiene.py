@@ -27,6 +27,7 @@ _STAR_IMPORT_F403_ALLOWED: frozenset[str] = frozenset(
         "pages/config_tooling/workflows/**",
         "pages/config_tooling/bundles/**",
         "pages/run_detail/_imports*.py",
+        "_pipeline/_helpers.py",
     },
 )
 

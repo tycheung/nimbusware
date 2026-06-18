@@ -56,6 +56,8 @@ _TRANCHE_E = (
     "packages/nimbusware_orchestrator/workflow_profiles.py",
     "packages/nimbusware_orchestrator/_pipeline/base.py",
     "packages/nimbusware_orchestrator/_pipeline/_helpers.py",
+    "packages/nimbusware_orchestrator/_pipeline/_helpers_std.py",
+    "packages/nimbusware_orchestrator/_pipeline/_helpers_bundle.py",
     "packages/nimbusware_orchestrator/_pipeline/create_run.py",
     "packages/nimbusware_orchestrator/_pipeline/micro_slice.py",
     "packages/nimbusware_orchestrator/_pipeline/lifecycle_verify.py",

@@ -40,9 +40,10 @@ def _defined_or_imported(path: Path) -> set[str]:
 
 
 def test_pipeline_helpers_exports_core_symbols() -> None:
-    names = _defined_or_imported(_HELPERS)
-    missing = sorted(_REQUIRED - names)
-    assert not missing, f"_helpers.py missing exports: {missing}"
+    import nimbusware_orchestrator._pipeline._helpers as helpers
+
+    missing = sorted(name for name in _REQUIRED if not hasattr(helpers, name))
+    assert not missing, f"_helpers facade missing exports: {missing}"
 
 
 def test_pipeline_mixins_use_explicit_helpers_imports() -> None:
@@ -53,8 +54,9 @@ def test_pipeline_mixins_use_explicit_helpers_imports() -> None:
         if path.name in {
             "__init__.py",
             "_helpers.py",
+            "_helpers_std.py",
+            "_helpers_bundle.py",
             "compose.py",
-            "dev_factory.py",
             "critique_gates.py",
             "optional_stages.py",
         }:
