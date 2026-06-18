@@ -40,6 +40,7 @@ poetry run python scripts/ci/run_framework_pack_ci_gate.py
 poetry run python scripts/ci/run_bootstrap_ci_gate.py
 poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py
 poetry run python scripts/ci/run_publish_launcher_ci_gate.py
+poetry run python scripts/ci/run_playwright_button_ci_gate.py
 poetry run python scripts/ci/run_publish_vscode_ci_gate.py
 poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
 poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py

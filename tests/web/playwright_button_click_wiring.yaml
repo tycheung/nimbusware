@@ -1,0 +1,33 @@
+# Required Playwright button clicks enforced in CI.
+# Maps data-testid (or role-only buttons) to the spec that must call .click().
+maker:
+  maker-chat-start: tests/e2e/web/maker_chat_patch.spec.ts
+  maker-chat-accept-chip: tests/e2e/web/maker_chat_patch.spec.ts
+  maker-chat-autopilot-hint-dismiss: tests/e2e/web/maker_chat_patch.spec.ts
+  maker-chat-override-chip-campaign: tests/e2e/web/maker_chat_override.spec.ts
+  maker-chat-escalate-campaign: tests/e2e/web/maker_chat_escalation.spec.ts
+  maker-intent-patch: tests/e2e/web/maker_home_intents.spec.ts
+  maker-factory-demo-todo: tests/e2e/web/maker_home_intents.spec.ts
+  maker-interjection-next: tests/e2e/web/maker_operator_ribbons.spec.ts
+  maker-interjection-last: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-autopilot-save: tests/e2e/web/maker_operator_ribbons.spec.ts
+  maker-dev-env-start: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-finding-action-widen: tests/e2e/web/maker_progress_gate_actions.spec.ts
+  maker-finding-action-interject: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-integrator-stitch-refresh: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-review-refresh: tests/e2e/web/maker_apply_flow.spec.ts
+  maker-review-apply-slice: tests/e2e/web/maker_apply_flow.spec.ts
+  maker-review-launch-scorecard: tests/e2e/web/maker_launch_scorecard.spec.ts
+  maker-review-load-diff: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-review-revert: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-settings-routing-apply: tests/e2e/web/maker_settings_routing.spec.ts
+  maker-settings-agent-models-save: tests/e2e/web/maker_settings_agent_models.spec.ts
+  maker-settings-run-launch-eval: tests/e2e/web/maker_settings_launch_check.spec.ts
+  maker-context-artifact-insert: tests/e2e/web/maker_context_artifacts.spec.ts
+admin:
+  admin-chat-accept-chip: tests/e2e/web/admin_operator_chat.spec.ts
+  admin-fleet-rescan-btn: tests/e2e/web/admin_fleet_hardware.spec.ts
+role_buttons:
+  - name: Compact all
+    within_testid: maker-compact-toolbar
+    spec: tests/e2e/web/maker_button_clicks.spec.ts
