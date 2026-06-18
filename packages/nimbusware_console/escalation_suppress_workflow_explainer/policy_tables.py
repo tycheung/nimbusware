@@ -4,6 +4,7 @@ import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from agent_core.mapping import field_error_text
 from nimbusware_console.components.operator_metrics import (
     table_rows_csv,
 )
@@ -63,8 +64,7 @@ def escalation_policy_yaml_top_level_kinds_table_rows(
         return []
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return []
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return []
     kinds = payload.get("escalation_policy_yaml_top_level_kinds")
     if not isinstance(kinds, Mapping):

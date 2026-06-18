@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from agent_core.mapping import load_error_text
+from agent_core.mapping import field_error_text, load_error_text
 
 
 def escalation_policy_yaml_verification_shape_caption(
@@ -13,8 +13,7 @@ def escalation_policy_yaml_verification_shape_caption(
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
-    pol_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(pol_err, str) and pol_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     has_v = payload.get("escalation_policy_yaml_has_verification_mapping")
     if has_v is True:
@@ -39,8 +38,7 @@ def escalation_policy_yaml_deadlock_minutes_caption(
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
-    pol_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(pol_err, str) and pol_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     raw = payload.get("escalation_policy_yaml_deadlock_escalation_after_minutes")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
@@ -56,8 +54,7 @@ def escalation_policy_yaml_anti_deadlock_min_progress_caption(
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
-    pol_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(pol_err, str) and pol_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     raw = payload.get("escalation_policy_yaml_anti_deadlock_min_progress_events")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
@@ -73,8 +70,7 @@ def escalation_policy_yaml_anti_deadlock_shape_caption(
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
-    pol_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(pol_err, str) and pol_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     has_ad = payload.get("escalation_policy_yaml_has_anti_deadlock_mapping")
     if has_ad is True:
@@ -138,8 +134,7 @@ def escalation_policy_yaml_age_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -154,8 +149,7 @@ def escalation_policy_yaml_file_bytes_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -170,8 +164,7 @@ def escalation_policy_yaml_key_count_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -188,8 +181,7 @@ def escalation_policy_yaml_version_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -204,8 +196,7 @@ def escalation_policy_yaml_max_retries_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -220,8 +211,7 @@ def escalation_policy_yaml_keys_sample_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -245,8 +235,7 @@ def escalation_policy_yaml_relpath_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -266,8 +255,7 @@ def escalation_policy_yaml_mtime_caption(
         return None
     if not payload.get("escalation_policy_yaml_path_exists", True):
         return None
-    load_err = payload.get("escalation_policy_yaml_load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
         return None
     iso = payload.get("escalation_policy_yaml_mtime_iso")
     if not isinstance(iso, str) or not iso.strip():
@@ -288,8 +276,7 @@ def escalation_policy_yaml_top_level_kinds_caption(
     if explicit_path:
         if not payload.get("escalation_policy_yaml_path_exists", True):
             return None
-        load_err = payload.get("escalation_policy_yaml_load_error")
-        if isinstance(load_err, str) and load_err.strip():
+        if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
             return None
         kinds = payload.get("escalation_policy_yaml_top_level_kinds")
     else:
