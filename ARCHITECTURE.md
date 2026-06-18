@@ -81,6 +81,10 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 3. **Read** — Shared row parsers and read-model helpers live in `agent_core.read` (`campaign`, `critic_matrix`) and `agent_core.stage_graph`. HTTP handlers use `nimbusware_projections` / `read_models/`; Admin BFF routes call `nimbusware_console` display formatters.
 4. **Maker loop** — Pending slices, research approve/reject, stitch summary, and launch readiness scorecards are read models over the same event log (`nimbusware_maker` + maker web tabs). **Chat sessions** (`nimbusware_chat_session` / `nimbusware_chat_turn`, or in-memory `ChatStore`) persist operator turns and DAG branches; runs started from Chat append to the event store as usual.
 
+## Config authority
+
+When `NIMBUSWARE_CONFIG_FROM_DB=1`, hot paths (orchestrator `_base_cfg`, integrator gate, Admin `bundle_catalog/catalog_local`) read versioned documents from Postgres via `ConfigMaterializer` (`load_bundle_catalog_content`, `get_model_routing_base`, …). Repo `configs/` YAML is the gitops export/review surface (`export_config_to_repo`), not the runtime source of truth in DB mode.
+
 ## Auth (request path)
 
 | Surface | Header / cookie |
