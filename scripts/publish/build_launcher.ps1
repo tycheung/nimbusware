@@ -62,4 +62,10 @@ if (-not (Test-Path $exe)) {
 
 Write-Host ""
 Write-Host "Built: $exe"
-Write-Host "Copy dist/NimbuswareLauncher.exe into your Nimbusware repo root for Install / Update / Run."
+$renamed = poetry run python scripts/publish/rename_launcher_artifact.py
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "rename_launcher_artifact failed (exit $LASTEXITCODE)"
+    exit $LASTEXITCODE
+}
+Write-Host "Release artifact: $renamed"
+Write-Host "Copy the release artifact into your Nimbusware repo root for Quick / Full setup."

@@ -69,6 +69,8 @@ jobs:
         run: poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py
       - name: Publish VS Code extension CI gate
         run: poetry run python scripts/ci/run_publish_vscode_ci_gate.py
+      - name: Publish launcher CI gate
+        run: poetry run python scripts/ci/run_publish_launcher_ci_gate.py
       - name: Intent-to-patch SLO gate
         run: poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
       - name: Classifier acceptance SLO gate

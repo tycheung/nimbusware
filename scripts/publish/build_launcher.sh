@@ -51,4 +51,5 @@ fi
 
 echo ""
 echo "Built: $OUT"
-echo "Copy $OUT into your Nimbusware repo root for Install / Update / Run."
+poetry run python scripts/publish/rename_launcher_artifact.py
+echo "Release artifact in dist/ (platform-specific filename)."
