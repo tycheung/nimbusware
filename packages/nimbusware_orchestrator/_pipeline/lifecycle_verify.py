@@ -175,6 +175,18 @@ class LifecycleVerifyMixin:
                 resource_governor=gov_meta,
                 config_materializer=self._config_materializer,
             ):
+                from nimbusware_orchestrator.mesh_pipeline_hook import (
+                    mesh_assign_parallel_critics,
+                    resolve_mesh_context_for_run,
+                )
+
+                mesh_sid, mesh_workload, mesh_nodes = resolve_mesh_context_for_run(run_id)
+                mesh_assign_parallel_critics(
+                    run_id=run_id,
+                    session_id=mesh_sid,
+                    workload_distribution=mesh_workload,
+                    node_ids=mesh_nodes,
+                )
                 with ThreadPoolExecutor(max_workers=3) as pool:
                     sec_f = pool.submit(
                         self._emit_security_critique_optional,

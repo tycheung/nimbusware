@@ -37,7 +37,11 @@ export function renderParticipantStrip(root, session) {
     const hostMark = session?.host_user_id && p.user_id === session.host_user_id ? " ★" : "";
     return `${name} · ${role}${hostMark}`;
   });
-  strip.textContent = `Participants: ${bits.join(" · ")}`;
+  strip.replaceChildren();
+  const text = document.createElement("span");
+  text.className = "chat-participant-strip-text";
+  text.textContent = `Participants: ${bits.join(" · ")}`;
+  strip.appendChild(text);
 }
 
 export function applyComposerForRole(root) {
@@ -70,17 +74,52 @@ export async function refreshComputeNodes(root, sessionId) {
       `/compute/nodes?session_id=${encodeURIComponent(sessionId)}`,
     );
     const nodes = body.nodes || [];
-    if (!nodes.length) {
-      panel.hidden = true;
-      return;
-    }
     panel.hidden = false;
     list.replaceChildren();
+    if (!nodes.length) {
+      const empty = document.createElement("li");
+      empty.className = "muted";
+      empty.textContent = "No compute nodes registered for this session.";
+      list.appendChild(empty);
+    }
     for (const node of nodes) {
       const li = document.createElement("li");
       const label = node.display_name || node.host_label || node.node_id;
-      li.textContent = `${label} · ${node.status || "unknown"}`;
+      const policy = node.share_policy || "off";
+      const delegate = node.allow_host_resource_management ? " · host may configure" : "";
+      li.textContent = `${label} · ${node.status || "unknown"} · ${policy}${delegate}`;
       list.appendChild(li);
+    }
+    let delegateRow = panel.querySelector("[data-testid='maker-chat-delegate-control']");
+    const role = getCollabMyRole();
+    if (role === "session_write" || role === "session_admin") {
+      if (!delegateRow) {
+        delegateRow = document.createElement("label");
+        delegateRow.className = "chat-delegate-control";
+        delegateRow.dataset.testid = "maker-chat-delegate-control";
+        delegateRow.innerHTML = `
+          <input type="checkbox" id="chat-delegate-control" />
+          Allow host to manage my compute bindings for this session
+        `;
+        panel.appendChild(delegateRow);
+        delegateRow.querySelector("input")?.addEventListener("change", async (ev) => {
+          const enabled = ev.target.checked;
+          try {
+            await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/compute/delegate-control`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ allow_host_resource_management: enabled }),
+            });
+          } catch {
+            ev.target.checked = !enabled;
+          }
+        });
+      }
+      const mine = nodes.find((n) => n.allow_host_resource_management);
+      const box = delegateRow.querySelector("input");
+      if (box) box.checked = Boolean(mine?.allow_host_resource_management);
+    } else {
+      delegateRow?.remove();
     }
   } catch {
     panel.hidden = true;

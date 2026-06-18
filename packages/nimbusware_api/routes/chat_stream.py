@@ -18,9 +18,18 @@ from nimbusware_env.env_flags import nimbusware_collab_enabled
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 
+_SESSION_SSE_CAP = 96
+_STREAM_ROLES = frozenset({"theater", "run_status", "participant", "user", "system"})
+
 
 def _sse_pack(event: str, data: dict[str, Any]) -> str:
     return f"event: {event}\ndata: {json.dumps(data, default=str)}\n\n"
+
+
+def _participant_signature(collab_store: CollabStoreDep, session_id: UUID) -> str:
+    rows = collab_store.list_participants(session_id)
+    bits = sorted(f"{p.user_id}:{p.role}" for p in rows)
+    return "|".join(bits)
 
 
 @router.get(
@@ -48,33 +57,40 @@ def chat_session_stream(
         _session_or_404(chat_store, session_id)
 
     async def generate() -> Any:
-        last_updated: str | None = None
+        last_fingerprint: str | None = None
         idle = 0
-        while idle < 30:
+        while idle < 60:
             session = chat_store.get_session(session_id)
             if session is None:
                 yield _sse_pack("error", {"code": "chat_session_not_found"})
                 return
+            turns = chat_store.list_turns(session_id)
+            turn_count = len(turns)
             updated = session.updated_at.isoformat()
-            if updated != last_updated:
-                last_updated = updated
+            part_sig = ""
+            participants: list[dict[str, Any]] = []
+            if nimbusware_collab_enabled():
+                part_sig = _participant_signature(collab_store, session_id)
+                participants = [p.to_dict() for p in collab_store.list_participants(session_id)]
+            fingerprint = f"{updated}:{turn_count}:{part_sig}"
+            if fingerprint != last_fingerprint:
+                last_fingerprint = fingerprint
                 idle = 0
-                turns = chat_store.list_turns(session_id)
-                theater = [
-                    t.to_dict() for t in turns if t.role in {"theater", "run_status", "participant"}
-                ][-12:]
+                lines = [t.to_dict() for t in turns if t.role in _STREAM_ROLES][-_SESSION_SSE_CAP:]
                 yield _sse_pack(
                     "session",
                     {
                         "session_id": str(session_id),
                         "updated_at": updated,
-                        "theater_lines": theater,
+                        "turn_count": turn_count,
+                        "theater_lines": lines,
+                        "participants": participants,
                     },
                 )
             else:
                 idle += 1
                 yield _sse_pack("heartbeat", {"session_id": str(session_id)})
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(0.5)
         yield _sse_pack("done", {"session_id": str(session_id), "reason": "idle_timeout"})
 
     return StreamingResponse(

@@ -942,3 +942,71 @@ button.intent-card:hover {
 .chat-theater-export {
   margin-left: 0.75rem;
 }
+
+.chat-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.chat-modal {
+  max-width: 28rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.chat-invite-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+}
+
+.chat-invite-tab {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border, #333);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chat-invite-tab--active {
+  background: var(--accent-muted, #1a3a5c);
+}
+
+.chat-invite-results {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+.chat-participant-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chat-commentary {
+  margin: 0.5rem 0;
+}
+
+.chat-host-transfer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.chat-delegate-control {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}

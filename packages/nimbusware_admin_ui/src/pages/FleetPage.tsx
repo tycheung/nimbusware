@@ -52,6 +52,16 @@ export function FleetPage() {
   const [policyCheckpoints, setPolicyCheckpoints] = useState("");
   const [policyCatalog, setPolicyCatalog] = useState<string[]>([]);
   const [policyCaption, setPolicyCaption] = useState("");
+  const [meshSessionId, setMeshSessionId] = useState("");
+  const [meshNodes, setMeshNodes] = useState<
+    {
+      node_id?: string;
+      display_name?: string;
+      status?: string;
+      share_policy?: string;
+      allow_host_resource_management?: boolean;
+    }[]
+  >([]);
   const [error, setError] = useState("");
 
   const loadDashboard = useCallback(() => {
@@ -115,6 +125,17 @@ export function FleetPage() {
   useEffect(() => {
     loadAutopilotPolicy();
   }, [loadAutopilotPolicy]);
+
+  const loadSessionMeshNodes = useCallback(() => {
+    const sid = meshSessionId.trim();
+    if (!sid) {
+      setMeshNodes([]);
+      return;
+    }
+    apiJson<{ nodes?: typeof meshNodes }>(`/compute/nodes?session_id=${encodeURIComponent(sid)}`)
+      .then((body) => setMeshNodes(body.nodes || []))
+      .catch(() => setMeshNodes([]));
+  }, [meshSessionId]);
 
   const saveAutopilotPolicy = () => {
     if (!enterpriseApiKey() || !tenantId) return;
@@ -356,6 +377,41 @@ export function FleetPage() {
               </button>
             </>
           ) : null}
+          <h3>Session compute mesh</h3>
+          <p class="muted">Nodes registered for a collaborative chat session (share policy + delegate).</p>
+          <label>
+            Session ID{" "}
+            <input
+              type="text"
+              value={meshSessionId}
+              onInput={(e) => setMeshSessionId((e.target as HTMLInputElement).value)}
+              placeholder="chat session uuid"
+              data-testid="admin-fleet-mesh-session-id"
+            />
+          </label>{" "}
+          <button type="button" class="secondary" onClick={loadSessionMeshNodes}>
+            Load nodes
+          </button>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Node</th>
+                <th>Status</th>
+                <th>Share policy</th>
+                <th>Delegate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {meshNodes.map((row, i) => (
+                <tr key={i} data-testid="admin-fleet-mesh-node-row">
+                  <td>{row.display_name || row.node_id || "—"}</td>
+                  <td>{row.status || "—"}</td>
+                  <td>{row.share_policy || "—"}</td>
+                  <td>{row.allow_host_resource_management ? "yes" : "no"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <h3>Cross-tenant comparison</h3>
           <p class="muted">Compare slice gate pass/fail rates between two tenants.</p>
           {tenants.length >= 2 ? (

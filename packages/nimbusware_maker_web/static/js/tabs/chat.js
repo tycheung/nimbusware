@@ -12,6 +12,14 @@ import {
   setCollabMyRole,
 } from "./chat_session_ui.js";
 import { refreshChatLibrary } from "./chat_library_ui.js";
+import {
+  bindSessionStream,
+  closeInviteModal,
+  mountCommentaryComposer,
+  mountInviteButton,
+  unbindSessionStream,
+} from "./chat_collab_ui.js";
+import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
@@ -146,6 +154,64 @@ function renderMessagesFromSession(root, session) {
 
 function branchPanelCallbacks(root) {
   return { onSessionUpdated: (session) => renderMessagesFromSession(root, session) };
+}
+
+let sessionStreamTurnCount = 0;
+let cachedCurrentUserId = null;
+
+async function resolveCurrentUserId() {
+  if (cachedCurrentUserId) return cachedCurrentUserId;
+  try {
+    const me = await apiJson("/auth/me");
+    cachedCurrentUserId = me.user_id || null;
+  } catch {
+    cachedCurrentUserId = null;
+  }
+  return cachedCurrentUserId;
+}
+
+async function wireCollabSessionUi(root, sessionId, session) {
+  if (!sessionId) return;
+  renderMessagesFromSession(root, session);
+  mountInviteButton(root, sessionId);
+  mountCommentaryComposer(root, sessionId, (turn) => {
+    const thread = root.querySelector("#chat-thread");
+    if (thread && turn) renderTurnLine(thread, turn);
+  });
+  const userId = await resolveCurrentUserId();
+  await refreshHostTransferPanel(root, sessionId, {
+    currentUserId: userId,
+    onReload: async () => {
+      const existing = await apiJson(
+        `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+      );
+      renderMessagesFromSession(root, existing);
+    },
+  });
+  sessionStreamTurnCount = session?.turns?.length || 0;
+  bindSessionStream(root, sessionId, {
+    onSession: async (data) => {
+      if (data.participants?.length) {
+        renderParticipantStrip(root, {
+          participants: data.participants,
+          host_user_id: session?.host_user_id,
+        });
+        mountInviteButton(root, sessionId);
+      }
+      const count = data.turn_count ?? sessionStreamTurnCount;
+      if (count > sessionStreamTurnCount) {
+        sessionStreamTurnCount = count;
+        try {
+          const existing = await apiJson(
+            `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
+          );
+          renderMessagesFromSession(root, existing);
+        } catch {
+          /* ignore */
+        }
+      }
+    },
+  });
 }
 
 function renderClassifierCard(root, classification, { onAccept, onOverride }) {
@@ -857,7 +923,7 @@ export async function mountChat(root) {
     const existing = await apiJson(
       `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
     );
-    renderMessagesFromSession(root, existing);
+    await wireCollabSessionUi(root, sessionId, existing);
     await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
     const projectId = String(root.querySelector("#chat-project-select")?.value || "");
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
@@ -875,9 +941,10 @@ export async function mountChat(root) {
           `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
         );
         if (existing.project_id === projectId) {
-          renderMessagesFromSession(root, existing);
+          await wireCollabSessionUi(root, sessionId, existing);
           await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
           await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+          await refreshComputeNodes(root, sessionId);
           return sessionId;
         }
       } catch {
@@ -894,6 +961,7 @@ export async function mountChat(root) {
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
     await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
     await refreshComputeNodes(root, sessionId);
+    await wireCollabSessionUi(root, sessionId, session);
     return sessionId;
   }
 
@@ -1089,6 +1157,8 @@ export async function mountChat(root) {
   chatUnmount = () => {
     theaterHandle?.close();
     theaterHandle = null;
+    unbindSessionStream();
+    closeInviteModal();
   };
 }
 

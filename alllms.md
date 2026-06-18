@@ -553,7 +553,7 @@ connection:
 | Local users | `nimbusware_user`, `/v1/auth/*` | Signup/signin + session cookie |
 | Participants | `nimbusware_chat_participant`, `/chat/sessions/{id}/participants` | Invite/join flow |
 | Turn roles | `CHAT_TURN_ROLES` + `participant` | Peanut gallery commentary |
-| Real-time | `GET /chat/sessions/{id}/stream` | Session SSE stub |
+| Real-time | `GET /chat/sessions/{id}/stream` | Session SSE (turn + participant fan-out) |
 | Interjection | Delegated to `session_write+` when session linked | Audit via participant role |
 | Host transfer | `POST /chat/sessions/{id}/host-transfer` | Timed consent MVP ([ADR 026](docs/adr/026-host-transfer.md)) |
 
@@ -563,9 +563,9 @@ connection:
 |------------------|-------------|
 | One human per browser | **Fixed** — collab auth + participants (B1–B4) |
 | No per-user accounts (Individual) | **Fixed** — `nimbusware_auth` |
-| No session room fan-out | **Stub** — session SSE (B4) |
+| No session room fan-out | **Fixed** — session SSE + commentary API (B4) |
 | No org directory (Enterprise) | **Stub** — `GET /v1/enterprise/users` (B5) |
-| Full folder/group ACL library | **Stub** — session `metadata.folder` (B8); CRUD planned |
+| Full folder/group ACL library | **Fixed** — B8 folders/groups/grants + library sidebar |
 
 ### Reference — pre-v1.2 baseline (§20.28 only)
 
@@ -1733,7 +1733,7 @@ preflight:
 | B1 | fo1510–fo1514 | ☑ | — | ☑ | ☑ |
 | B2 | fo1520–fo1524 | ☑ | ☑ | ☑ | ☑ |
 | B3 | fo1530–fo1536 | ☑ | ☑ | ☑ | ☑ |
-| B4 | fo1540–fo1544 | ◐ | ◐ | ☑ | ☑ |
+| B4 | fo1540–fo1544 | ☑ | ☑ | ☑ | ☑ |
 | B5 | fo1550–fo1553 | ☑ | ☑ | ☑ | ☑ |
 | B6–B7 | fo1560–fo1573 | ☑ | ☑ | ☑ | ☑ |
 | B8 | fo1574–fo1582 | ☑ | ☑ | ☑ | ☑ |
@@ -1743,13 +1743,13 @@ preflight:
 | D3 | fo1730–fo1735 | ☑ | — | ☑ | ☑ |
 | D4 | fo1740–fo1747 | ☑ | ☑ | ☑ | ☑ |
 | D5 | fo1750–fo1755 | ☑ | ☑ | ☑ | ☑ |
-| D6 | fo1760–fo1763 | ☑ | ◐ | ☑ | ☑ |
+| D6 | fo1760–fo1763 | ☑ | ☑ | ☑ | ☑ |
 | D7 | fo1770–fo1773 | ☑ | — | ☑ | ☑ |
-| D8 | fo1780–fo1789 | ☑ | ◐ | ☑ | ☑ |
+| D8 | fo1780–fo1789 | ☑ | ☑ | ☑ | ☑ |
 
-**Partial notes:** B8 invite modal v2 tabs deferred. D6 fleet mesh lists session nodes via `GET /compute/nodes`. D8 delegate-control UI (fo1786) and optimizer weights deferred. D3 critics remote fan-out (fo1731) deferred.
+**Partial notes:** B8 invite modal v2 tabs shipped (link / directory / group). D3 critics remote fan-out (fo1731) wired via `mesh_assign_parallel_critics`. D8 delegate-control API + optimizer weights UI shipped.
 
-**Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + B7 complete for Individual MVP; **B8 folder library** and **D8 full host transfer** are partial (see matrix). **B5 + D6** for Enterprise collab policy + fleet mesh list. **Track D D0–D5 + D7** for mesh MVP; D3 scheduler remains host_only until pipeline hook.
+**Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B8, D0–D8 complete for Individual + Enterprise collab/mesh MVP. Mesh writers + critics enqueue on non-`host_only` sessions; host still merges gate events.
 
 ---
 

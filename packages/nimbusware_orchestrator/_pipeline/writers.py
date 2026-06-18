@@ -289,27 +289,13 @@ class WritersMixin:
             )
         if not runners:
             return self._run_writers_sequential(run_id, sg_snapshot, workspace=workspace)
-        from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_stages
+        from nimbusware_orchestrator.mesh_pipeline_hook import (
+            mesh_assign_parallel_stages,
+            resolve_mesh_context_for_run,
+        )
 
         stage_names = [name for name, _ in runners]
-        session_id = None
-        workload = "host_only"
-        node_ids: list[UUID] = []
-        try:
-            from nimbusware_compute.node_store import build_compute_node_store
-            from nimbusware_env.env_flags import nimbusware_database_url
-            from nimbusware_maker.chat_store import build_chat_store
-
-            chat_store = build_chat_store(nimbusware_database_url())
-            sess = chat_store.find_session_by_run_id(run_id)
-            if sess is not None:
-                session_id = sess.session_id
-                workload = sess.workload_distribution or "host_only"
-                node_store = build_compute_node_store(nimbusware_database_url())
-                rows = node_store.list_for_session(session_id)
-                node_ids = [r.node_id for r in rows if r.status in {"online", "degraded"}]
-        except Exception:
-            pass
+        session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
         mesh_assign_parallel_stages(
             run_id=run_id,
             stage_names=stage_names,

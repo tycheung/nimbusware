@@ -622,6 +622,15 @@ CREATE TABLE IF NOT EXISTS nimbusware_host_transfer_request (
 CREATE INDEX IF NOT EXISTS idx_nimbusware_host_transfer_session
   ON nimbusware_host_transfer_request (session_id, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS nimbusware_user_optimizer_weights (
+  user_id UUID NOT NULL REFERENCES nimbusware_user(user_id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES nimbusware_tenant(tenant_id) ON DELETE CASCADE,
+  weights JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (user_id, tenant_id),
+  CHECK (jsonb_typeof(weights) = 'object')
+);
+
 -- =============================================================================
 -- run_list_status (GET /v1/runs ?status= read model)
 -- =============================================================================

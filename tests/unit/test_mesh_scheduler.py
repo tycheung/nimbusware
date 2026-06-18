@@ -48,3 +48,24 @@ def test_host_only_skips_enqueue() -> None:
     )
     units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
     assert not units
+
+
+def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
+    from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_critics
+
+    sid = uuid4()
+    run_id = uuid4()
+    n1, n2, n3 = uuid4(), uuid4(), uuid4()
+    mesh_assign_parallel_critics(
+        run_id=run_id,
+        session_id=sid,
+        workload_distribution="auto_share",
+        node_ids=[n1, n2, n3],
+    )
+    units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
+    assert len(units) == 3
+    assert {u.stage_name for u in units} == {
+        "security_critique",
+        "performance_critique",
+        "network_resilience_critique",
+    }

@@ -10,7 +10,7 @@ from nimbusware_api.deps import ChatStoreDep, CollabStoreDep, ProjectStoreDep, S
 from nimbusware_api.errors import problem
 from nimbusware_api.routes import chat_start
 from nimbusware_api.routes.auth import OptionalUserDep
-from nimbusware_api.routes.chat_collab_common import actor_user_id
+from nimbusware_api.routes.chat_collab_common import actor_user_id, require_collab_enabled
 from nimbusware_api.routes.chat_common import (
     ActiveLeafBody,
     AppendTurnBody,
@@ -36,7 +36,7 @@ from nimbusware_api.routes.chat_handlers import (
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep
-from nimbusware_auth.permissions import enforce_collab_turn_write
+from nimbusware_auth.permissions import enforce_collab_turn_write, require_session_participant
 from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
 from nimbusware_env.env_flags import nimbusware_collab_enabled, nimbusware_database_url
 from nimbusware_iam.context import resolve_store_tenant_id
@@ -494,6 +494,79 @@ def session_role_release(
     return {"ok": True, "event": "workload.role_released", "payload": payload}
 
 
+class CommentaryBody(BaseModel):
+    text: str = Field(min_length=1, max_length=2000)
+
+
+@router.post("/sessions/{session_id}/commentary")
+def post_session_commentary(
+    session_id: UUID,
+    body: CommentaryBody,
+    request: Request,
+    chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
+    user: OptionalUserDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    require_collab_enabled()
+    _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else actor_user_id(request, user)
+    enforce_collab_turn_write(
+        collab_store,
+        session_id=session_id,
+        user_id=actor_id,
+        collab_enabled=True,
+    )
+    turn = chat_store.append_turn(
+        session_id,
+        role="participant",
+        text=body.text.strip(),
+        payload={"kind": "commentary"},
+    )
+    return {"turn": turn.to_dict()}
+
+
+class DelegateControlBody(BaseModel):
+    allow_host_resource_management: bool = False
+
+
+@router.post("/sessions/{session_id}/compute/delegate-control")
+def session_compute_delegate_control(
+    session_id: UUID,
+    body: DelegateControlBody,
+    request: Request,
+    chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
+    user: OptionalUserDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    """Per-session opt-in for host-managed compute bindings (fo1786)."""
+    require_collab_enabled()
+    _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else actor_user_id(request, user)
+    require_session_participant(
+        collab_store,
+        session_id=session_id,
+        user_id=actor_id,
+        minimum_role="session_write",
+    )
+    store = build_compute_node_store(nimbusware_database_url())
+    row = store.set_delegate_control(
+        session_id=session_id,
+        user_id=str(actor_id),
+        allow_host_resource_management=body.allow_host_resource_management,
+    )
+    if row is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "compute_node_not_found",
+                "register compute for this session before delegating control",
+            ),
+        )
+    return {"node": row_to_public(row)}
+
+
 class SessionComputeOptInBody(BaseModel):
     enabled: bool = False
     share_policy: Literal["off", "claim_only", "managed_by_host", "full_auto"] = "off"
@@ -506,11 +579,16 @@ class SessionComputeOptInBody(BaseModel):
 def session_compute_opt_in(
     session_id: UUID,
     body: SessionComputeOptInBody,
+    request: Request,
     chat_store: ChatStoreDep,
+    user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
-    """Stub D4 — link session participant to compute node registry."""
+    """Register or update the caller's compute node for a collaborative session."""
     _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else None
+    if actor_id is None and nimbusware_collab_enabled():
+        actor_id = actor_user_id(request, user)
     store = build_compute_node_store(nimbusware_database_url())
     tid = resolve_store_tenant_id()
     tenant_id = tid if isinstance(tid, UUID) else default_tenant_id()
@@ -518,7 +596,7 @@ def session_compute_opt_in(
     if body.enabled:
         node = store.register(
             tenant_id=tenant_id,
-            user_id="",
+            user_id=str(actor_id) if actor_id is not None else "",
             display_name=body.host_label or "local",
             host_label=body.host_label,
             base_url=body.base_url,

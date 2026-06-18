@@ -205,3 +205,39 @@ def complete_host_transfer(
     meta.pop("transfer_frozen", None)
     chat_store.update_session(session_id, metadata=meta)
     return {"ok": True, "transfer": completed.to_dict()}
+
+
+@router.post("/sessions/{session_id}/host-transfer/{transfer_id}/decline")
+def decline_host_transfer(
+    session_id: UUID,
+    transfer_id: UUID,
+    chat_store: ChatStoreDep,
+    transfer_store: HostTransferStoreDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    require_collab_enabled()
+    _session_or_404(chat_store, session_id)
+    row = transfer_store.get(transfer_id)
+    if row is None or row.session_id != session_id:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("transfer_not_found", "host transfer not found"),
+        )
+    if row.to_user_id != user.user_id:
+        raise HTTPException(
+            status_code=403,
+            detail=problem("forbidden", "only the nominated user may decline"),
+        )
+    if row.status != "pending":
+        raise HTTPException(
+            status_code=409,
+            detail=problem("transfer_not_pending", "transfer is not pending"),
+        )
+    declined = transfer_store.decline(transfer_id)
+    chat_store.append_turn(
+        session_id,
+        role="system",
+        text="Host transfer declined",
+        payload={"host_transfer_declined": declined.to_dict()},
+    )
+    return {"ok": True, "transfer": declined.to_dict()}

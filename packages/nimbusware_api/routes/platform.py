@@ -9,8 +9,9 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from agent_core.mapping import mapping_or_empty
-from nimbusware_api.deps import OrchDep, StoreDep
+from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
+from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_config.keys import KEY_MODEL_ROUTING, NS_POLICY
 from nimbusware_config.store import PostgresConfigStore
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles, is_enterprise
@@ -369,3 +370,26 @@ def _persist_routing(repo_root: Path, content: dict[str, Any]) -> None:
     else:
         path = repo_root / "configs" / "model-routing.yaml"
         path.write_text(yaml.dump(content, sort_keys=False), encoding="utf-8")
+
+
+class OptimizerWeightsBody(BaseModel):
+    weights: dict[str, float] = Field(default_factory=dict)
+
+
+@router.get("/platform/optimizer-weights")
+def get_optimizer_weights(
+    user: AuthUserDep,
+    weights_store: OptimizerWeightsStoreDep,
+) -> dict[str, Any]:
+    row = weights_store.get(user_id=user.user_id)
+    return {"weights": row.weights, "updated_at": row.updated_at.isoformat()}
+
+
+@router.put("/platform/optimizer-weights")
+def put_optimizer_weights(
+    body: OptimizerWeightsBody,
+    user: AuthUserDep,
+    weights_store: OptimizerWeightsStoreDep,
+) -> dict[str, Any]:
+    row = weights_store.put(user_id=user.user_id, weights=body.weights)
+    return {"weights": row.weights, "updated_at": row.updated_at.isoformat()}

@@ -101,6 +101,14 @@ class ComputeNodeStore(Protocol):
 
     def list_for_session(self, session_id: UUID) -> list[ComputeNodeRow]: ...
 
+    def set_delegate_control(
+        self,
+        *,
+        session_id: UUID,
+        user_id: str,
+        allow_host_resource_management: bool,
+    ) -> ComputeNodeRow | None: ...
+
 
 class InMemoryComputeNodeStore:
     def __init__(self) -> None:
@@ -176,6 +184,35 @@ class InMemoryComputeNodeStore:
 
     def list_for_session(self, session_id: UUID) -> list[ComputeNodeRow]:
         return [r for r in self._nodes.values() if r.session_id == session_id]
+
+    def set_delegate_control(
+        self,
+        *,
+        session_id: UUID,
+        user_id: str,
+        allow_host_resource_management: bool,
+    ) -> ComputeNodeRow | None:
+        for row in self._nodes.values():
+            if row.session_id != session_id or row.user_id != user_id:
+                continue
+            updated = ComputeNodeRow(
+                node_id=row.node_id,
+                tenant_id=row.tenant_id,
+                session_id=row.session_id,
+                user_id=row.user_id,
+                display_name=row.display_name,
+                host_label=row.host_label,
+                base_url=row.base_url,
+                capabilities=row.capabilities,
+                share_policy=row.share_policy,
+                allow_host_resource_management=allow_host_resource_management,
+                last_heartbeat_at=row.last_heartbeat_at,
+                status=row.status,
+                created_at=row.created_at,
+            )
+            self._nodes[row.node_id] = updated
+            return updated
+        return None
 
 
 class PostgresComputeNodeStore:
@@ -328,6 +365,31 @@ class PostgresComputeNodeStore:
                 )
                 rows = cur.fetchall()
         return [_row_from_record(r) for r in rows]
+
+    def set_delegate_control(
+        self,
+        *,
+        session_id: UUID,
+        user_id: str,
+        allow_host_resource_management: bool,
+    ) -> ComputeNodeRow | None:
+        with psycopg.connect(self._conninfo) as conn:
+            with conn.cursor(row_factory=dict_row) as cur:
+                cur.execute(
+                    """
+                    UPDATE nimbusware_compute_node
+                    SET allow_host_resource_management = %s
+                    WHERE session_id = %s AND user_id = %s
+                    RETURNING node_id, tenant_id, session_id, user_id, display_name,
+                              host_label, base_url, capabilities, share_policy,
+                              allow_host_resource_management, last_heartbeat_at,
+                              status, created_at
+                    """,
+                    (allow_host_resource_management, session_id, user_id),
+                )
+                rec = cur.fetchone()
+            conn.commit()
+        return _row_from_record(rec) if rec else None
 
 
 _IN_MEMORY_SINGLETON: InMemoryComputeNodeStore | None = None

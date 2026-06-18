@@ -80,7 +80,7 @@ export async function mountSettings(root) {
     </section>
     <section id="settings-compute-sharing" class="panel" data-testid="maker-settings-compute-sharing">
       <h3>Compute sharing</h3>
-      <p class="muted">Distributed mesh defaults (v1.2 stub).</p>
+      <p class="muted">Distributed mesh defaults for collaborative sessions.</p>
       <label>
         <input type="checkbox" id="settings-compute-default-share" data-testid="maker-settings-compute-default-share" />
         Default when joining others' sessions: share my compute
@@ -101,6 +101,16 @@ export async function mountSettings(root) {
           <option value="pack">Pack</option>
         </select>
       </label>
+    </section>
+    <section id="settings-optimizer-weights" class="panel" data-testid="maker-settings-optimizer-weights">
+      <h3>Auto-optimize weights</h3>
+      <p class="muted">Priority mix when workload mode is Auto optimize (fo1788).</p>
+      <div id="settings-optimizer-fields"></div>
+      <div class="actions">
+        <button type="button" id="settings-optimizer-save" class="secondary" data-testid="maker-settings-optimizer-save">
+          Save weights
+        </button>
+      </div>
     </section>
     <section id="settings-agent-models" class="panel" data-testid="maker-settings-agent-models">
       <h3>Agent &amp; Models</h3>
@@ -600,6 +610,51 @@ export async function mountSettings(root) {
       if (pre) pre.textContent = JSON.stringify(body, null, 2);
     } catch (e) {
       if (pre) pre.textContent = String(e.message || e);
+    }
+  });
+
+  const optimizerFields = root.querySelector("#settings-optimizer-fields");
+  const optimizerKeys = ["headroom", "model_fit", "latency", "cost"];
+  if (optimizerFields) {
+    optimizerFields.replaceChildren();
+    for (const key of optimizerKeys) {
+      const label = document.createElement("label");
+      label.textContent = `${key} `;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      input.max = "1";
+      input.step = "0.05";
+      input.dataset.optimizerKey = key;
+      input.dataset.testid = `maker-settings-optimizer-${key}`;
+      label.appendChild(input);
+      optimizerFields.appendChild(label);
+    }
+    try {
+      const body = await apiJson("/platform/optimizer-weights");
+      const weights = body.weights || {};
+      for (const input of optimizerFields.querySelectorAll("input[data-optimizer-key]")) {
+        const k = input.dataset.optimizerKey;
+        if (k && weights[k] != null) input.value = String(weights[k]);
+      }
+    } catch {
+      /* defaults in UI */
+    }
+  }
+  root.querySelector("#settings-optimizer-save")?.addEventListener("click", async () => {
+    const weights = {};
+    for (const input of optimizerFields?.querySelectorAll("input[data-optimizer-key]") || []) {
+      weights[input.dataset.optimizerKey] = Number(input.value) || 0;
+    }
+    try {
+      await apiJson("/platform/optimizer-weights", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ weights }),
+      });
+      toast("Optimizer weights saved", "success");
+    } catch (e) {
+      toast(String(e.message || e), "error");
     }
   });
 }

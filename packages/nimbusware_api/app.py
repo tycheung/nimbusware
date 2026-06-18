@@ -28,6 +28,7 @@ from nimbusware_iam.store import PostgresIamStore, build_iam_store
 from nimbusware_maker.chat_library_store import build_chat_library_store
 from nimbusware_maker.chat_store import build_chat_store
 from nimbusware_maker.host_transfer_store import build_host_transfer_store
+from nimbusware_maker.optimizer_weights_store import build_optimizer_weights_store
 from nimbusware_maker.store import build_project_store
 from nimbusware_orchestrator.run_dispatch import get_run_queue, run_dispatch_enabled
 from nimbusware_orchestrator.runtime_bootstrap import (
@@ -63,6 +64,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.chat_store = build_chat_store(url)
     app.state.chat_library_store = build_chat_library_store(url)
     app.state.host_transfer_store = build_host_transfer_store(url)
+    app.state.optimizer_weights_store = build_optimizer_weights_store(url)
     app.state.user_store = build_user_store(url)
     app.state.collab_store = build_collab_store(url, app.state.user_store)
     if url and isinstance(app.state.iam_store, PostgresIamStore):
