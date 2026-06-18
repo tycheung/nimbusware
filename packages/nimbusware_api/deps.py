@@ -8,6 +8,7 @@ from nimbusware_auth.store import CollabStore, UserStore
 from nimbusware_iam.store import InMemoryIamStore, PostgresIamStore
 from nimbusware_maker.chat_library_store import ChatLibraryStore, build_chat_library_store
 from nimbusware_maker.chat_store import InMemoryChatStore, PostgresChatStore
+from nimbusware_maker.host_transfer_store import HostTransferStore, build_host_transfer_store
 from nimbusware_maker.store import InMemoryProjectStore, PostgresProjectStore
 from nimbusware_orchestrator.pipeline import RunOrchestrator
 from nimbusware_store.protocol import EventStore
@@ -49,6 +50,10 @@ def get_chat_library_store(request: Request) -> ChatLibraryStore:
     return cast(ChatLibraryStore, request.app.state.chat_library_store)
 
 
+def get_host_transfer_store(request: Request) -> HostTransferStore:
+    return cast(HostTransferStore, request.app.state.host_transfer_store)
+
+
 StoreDep = Annotated[EventStore, Depends(get_store)]
 OrchDep = Annotated[RunOrchestrator, Depends(get_orchestrator)]
 IamStoreDep = Annotated[IamStore, Depends(get_iam_store)]
@@ -57,3 +62,4 @@ ChatStoreDep = Annotated[ChatStore, Depends(get_chat_store)]
 UserStoreDep = Annotated[UserStore, Depends(get_user_store)]
 CollabStoreDep = Annotated[CollabStore, Depends(get_collab_store)]
 ChatLibraryStoreDep = Annotated[ChatLibraryStore, Depends(get_chat_library_store)]
+HostTransferStoreDep = Annotated[HostTransferStore, Depends(get_host_transfer_store)]

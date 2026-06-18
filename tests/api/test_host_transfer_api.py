@@ -42,7 +42,7 @@ def _create_project(client: TestClient, tmp_path: Path) -> str:
     return resp.json()["project_id"]
 
 
-def test_host_transfer_request_and_accept(
+def test_host_transfer_freeze_bundle_and_complete(
     client: TestClient,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -52,6 +52,10 @@ def test_host_transfer_request_and_accept(
     target_name = f"target-{uuid4().hex[:6]}"
     _signup(client, admin_name)
     target = _signup(client, target_name)
+    client.post(
+        "/v1/auth/signin",
+        json={"username": admin_name, "password": "password1234"},
+    )
     project_id = _create_project(client, tmp_path)
     sess = client.post("/v1/chat/sessions", json={"project_id": project_id, "title": "xfer"})
     assert sess.status_code == 200
@@ -69,7 +73,16 @@ def test_host_transfer_request_and_accept(
     )
     accept = client.post(f"/v1/chat/sessions/{session_id}/host-transfer/{transfer_id}/accept")
     assert accept.status_code == 200, accept.text
-    assert accept.json()["transfer"]["status"] == "accepted"
+    assert accept.json()["transfer"]["status"] == "frozen"
+    bundle = client.get(f"/v1/chat/sessions/{session_id}/host-transfer/{transfer_id}/bundle")
+    assert bundle.status_code == 200, bundle.text
+    assert bundle.json()["manifest"]["checksum_sha256"]
+    imported = client.post(
+        f"/v1/chat/sessions/{session_id}/host-transfer/{transfer_id}/import",
+        json={"manifest": bundle.json()["manifest"]},
+    )
+    assert imported.status_code == 200, imported.text
+    assert imported.json()["transfer"]["status"] == "completed"
     refreshed = client.get(f"/v1/chat/sessions/{session_id}")
     assert refreshed.status_code == 200
     assert refreshed.json().get("host_user_id") == target["user_id"]
