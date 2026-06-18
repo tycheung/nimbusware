@@ -83,7 +83,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 
 ## Config authority
 
-When `NIMBUSWARE_CONFIG_FROM_DB=1`, hot paths (orchestrator `_base_cfg`, integrator gate, Admin `bundle_catalog/catalog_local`) read versioned documents from Postgres via `ConfigMaterializer` (`load_bundle_catalog_content`, `get_model_routing_base`, …). Repo `configs/` YAML is the gitops export/review surface (`export_config_to_repo`), not the runtime source of truth in DB mode.
+When `NIMBUSWARE_CONFIG_FROM_DB=1`, hot paths (orchestrator `_base_cfg`, integrator gate, Admin `bundle_catalog/catalog_local`, `persona_catalog` critique pairings) read versioned documents from Postgres via `ConfigMaterializer` (`load_bundle_catalog_content`, `load_critique_pairings_doc`, `get_model_routing_base`, …). Repo `configs/` YAML is the gitops export/review surface (`export_config_to_repo`), not the runtime source of truth in DB mode.
 
 ## Auth (request path)
 

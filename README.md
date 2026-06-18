@@ -50,7 +50,7 @@ Set `NIMBUSWARE_EDITION=individual|enterprise` in `.env`. Enterprise-only routes
 | **Agent tools** | `nimbusware_agent_tools` | Allowlisted tools; filesystem jail; sandbox (`none`/`stub`/`docker`/`kubernetes`/`e2b`); per-slice risk caps |
 | **Nimbusware orchestrator** | `nimbusware_orchestrator`, `agent_core` | Run pipeline, critics, gates, slice chain, preflight |
 | **Event store** | `nimbusware_store` | Append-only Postgres (or in-memory without DB URL) |
-| **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2) |
+| **Config store** | `nimbusware_config` | Versioned Postgres documents + materializer (T1/T2); when `NIMBUSWARE_CONFIG_FROM_DB=1`, runtime reads Postgres (see [ARCHITECTURE.md — Config authority](ARCHITECTURE.md#config-authority)) |
 | **Memory** | `nimbusware_memory` | Repo-scoped retrieval index (Individual); fleet scope (Enterprise) |
 | **IAM** | `nimbusware_iam` | Enterprise tenancy and API keys |
 | **Extensions** | `nimbusware_extensions` | Personas, bundles, escalation, integrator helpers |
