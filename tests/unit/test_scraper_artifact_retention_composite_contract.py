@@ -22,25 +22,11 @@ _VALUE_ERROR_MSG = "max_age_days must be >= 1"
 
 
 def _set_mtime(path: Path, *, days_ago: float) -> None:
-    """Set the mtime (and atime) of ``path`` to ``days_ago`` days before now.
-
-    Wraps the recurring ``os.utime`` + ``time.time()`` boilerplate so each
-    axis stays focused on the contract rather than the time arithmetic.
-    Used to construct stale files (``days_ago`` large) and freshly-cutoff
-    files (``days_ago`` exactly equal to ``max_age_days``).
-    """
     ts = time.time() - days_ago * 86400
     os.utime(path, (ts, ts))
 
 
 def _set_mtime_to(path: Path, when: datetime) -> None:
-    """Set ``path`` mtime to a precise UTC ``when`` (for cutoff boundary axes).
-
-    Distinct from ``_set_mtime``: this one accepts an absolute datetime
-    rather than a relative offset, so the cutoff-boundary axis can
-    construct ``mtime == cutoff`` precisely (no clock drift between
-    ``time.time()`` and the function's own ``datetime.now`` call).
-    """
     ts = when.timestamp()
     os.utime(path, (ts, ts))
 

@@ -68,13 +68,6 @@ def _append_gate(
     stage_name: str,
     verdict: Verdict,
 ) -> None:
-    """Append a synthesized ``gate.decision.emitted`` row.
-
-    GateDecisionEmittedPayload requires FAIL verdicts to carry at least one
-    of failing_critics / failing_finding_ids / non-empty failure_reason_code;
-    we default to a synthetic reason code for FAIL so call-sites stay compact
-    (mirrors fo89's helper).
-    """
     code = "llm_gate_fail" if verdict == Verdict.FAIL else None
     mem.append(
         GateDecisionEmittedEvent(

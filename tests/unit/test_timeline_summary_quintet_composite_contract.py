@@ -34,12 +34,6 @@ def _gate_decision_event(
     event_type: str = _EVENT_TYPE_GATE,
     occurred_at: str = _ISO_NOW,
 ) -> dict[str, Any]:
-    """Construct a minimal dict-shaped ``gate.decision.emitted`` event.
-
-    Note ``metadata`` / ``payload`` accept ``Any`` so axes can pass
-    non-dict / ``None`` values and force the defensive arms in
-    ``integrator_gate_timeline_summary``.
-    """
     return {
         "event_type": event_type,
         "event_id": str(event_id),

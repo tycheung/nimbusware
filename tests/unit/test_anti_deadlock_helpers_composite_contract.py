@@ -18,16 +18,6 @@ def _make_row(
     event_type: str,
     occurred_at: Any = ...,
 ) -> dict[str, Any]:
-    """Build a single row dict matching the ``list_run_events`` shape.
-
-    ``occurred_at = ...`` (Ellipsis sentinel) omits the key entirely so
-    Part A's "missing key" sub-axis exercises the ``r.get(...)``
-    ``None`` default. Any other value (including ``None``) is set
-    verbatim.
-
-    ``store_seq`` accepts ``int`` or ``str`` so Part B B5 can sweep
-    the ``int(x["store_seq"])`` sort-key coercion.
-    """
     row: dict[str, Any] = {"store_seq": store_seq, "event_type": event_type}
     if occurred_at is not ...:
         row["occurred_at"] = occurred_at

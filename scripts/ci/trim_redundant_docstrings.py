@@ -403,6 +403,40 @@ def _strip_test_module_docstring(path: Path) -> bool:
     return True
 
 
+def _strip_contract_helper_docstrings(path: Path) -> bool:
+    if "composite_contract" not in path.name and "matrix" not in path.name:
+        return False
+    text = path.read_text(encoding="utf-8")
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    lines = text.splitlines(keepends=True)
+    removals: list[tuple[int, int]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        if node.name.startswith("test_"):
+            continue
+        if not node.body:
+            continue
+        first = node.body[0]
+        if not isinstance(first, ast.Expr) or not isinstance(first.value, ast.Constant):
+            continue
+        if not isinstance(first.value.value, str):
+            continue
+        doc = first.value.value.strip()
+        if not doc or len(doc.splitlines()) <= 2:
+            continue
+        removals.append((first.lineno - 1, first.end_lineno))
+    if not removals:
+        return False
+    for start, end in sorted(removals, reverse=True):
+        lines = lines[:start] + lines[end:]
+    path.write_text("".join(lines), encoding="utf-8")
+    return True
+
+
 def _process(path: Path) -> bool:
     rel = _rel(path)
     if rel in _SKIP_REL:
@@ -456,6 +490,8 @@ def main() -> int:
             if _strip_oneline_function_docstrings(path):
                 file_changed = True
             if _strip_verbose_multiline_docstrings(path):
+                file_changed = True
+            if _strip_contract_helper_docstrings(path):
                 file_changed = True
             if file_changed:
                 changed += 1

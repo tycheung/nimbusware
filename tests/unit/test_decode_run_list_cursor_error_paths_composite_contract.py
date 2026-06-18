@@ -14,28 +14,11 @@ _SAMPLE_UUID_STR = "11111111-1111-4111-8111-111111111111"
 
 
 def _encode_for_cursor(raw: bytes) -> str:
-    """Return a URL-safe base64 cursor token that, after the helper's
-    padding restoration, decodes back to ``raw``.
-
-    Mirrors ``_encode_run_list_cursor``'s final two operations
-    (``urlsafe_b64encode(...).rstrip('=')``) so each test can target
-    the **layer** of failure (b64 / utf-8 / json / non-dict /
-    field-coercion) independently. Using this helper instead of
-    handing raw bytes to ``base64.urlsafe_b64encode`` directly lets
-    each axis state its intent in terms of "the decoded raw bytes
-    look like X".
-    """
     return base64.urlsafe_b64encode(raw).decode().rstrip("=")
 
 
 @pytest.fixture
 def client() -> TestClient:
-    """Local TestClient fixture mirroring ``tests/test_api.py:32-34``.
-
-    Defined in this file (not imported) so the test file is
-    self-contained and can be run in isolation
-    (``pytest tests/test_decode_run_list_cursor_error_paths_composite_contract.py``).
-    """
     with TestClient(app) as c:
         yield c
 

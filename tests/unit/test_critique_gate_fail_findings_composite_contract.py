@@ -41,12 +41,6 @@ _ENV_IMPL_ONLY = {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"
 
 
 def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:
-    """Append a FAIL ``gate.decision.emitted`` row for the stage.
-
-    FAIL verdicts require at least one of failing_critics / failing_finding_ids /
-    non-empty failure_reason_code; we use a synthetic reason code so call sites
-    stay compact.
-    """
     mem.append(
         GateDecisionEmittedEvent(
             event_type=EventType.GATE_DECISION_EMITTED,

@@ -21,34 +21,11 @@ _URLSAFE_ALPHABET_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
 def _restore_b64_padding(value: str) -> str:
-    """Re-attach the stripped ``=`` padding using the same formula the helper does.
-
-    Used by Part A / Part B to independently round-trip the encoded
-    cursor back to JSON bytes without going through
-    ``_decode_run_list_cursor`` -- so a refactor that broke decode
-    would NOT mask a Part A wire-format regression.
-    """
     pad = "=" * ((4 - len(value) % 4) % 4)
     return value + pad
 
 
 def _self_check_urlsafe_vs_standard_alphabet_differ() -> None:
-    """Independently verify ``urlsafe_b64encode`` and ``b64encode`` diverge on ``0xFF`` bytes.
-
-    Used by Part A4. The cursor JSON's restricted byte vocabulary
-    (``{``, ``}``, ``"``, ``:``, ``,``, ``0-9``, ``a-f``, ``-``) never
-    produces 6-bit groups of value 62 (``+``) or 63 (``/``), so
-    standard and urlsafe b64 are bitwise identical for ANY cursor
-    input -- which means we cannot pin the urlsafe choice from
-    helper output alone. Instead, A4 pins the helper's byte-for-byte
-    equality with ``urlsafe_b64encode(...).rstrip('=')`` AND this
-    self-check, which independently confirms the two encoders DO
-    diverge on a forcing byte sequence outside the cursor charset.
-    A refactor that swapped to ``b64encode`` would still pass A4 for
-    cursor inputs today but would silently break a future cursor
-    JSON variant that included arbitrary bytes (e.g. binary opaque
-    tokens). This self-check guards the SHAPE of the contract.
-    """
     raw_force = b"\xff\xff\xff"
     std = base64.b64encode(raw_force).decode().rstrip("=")
     urlsafe = base64.urlsafe_b64encode(raw_force).decode().rstrip("=")

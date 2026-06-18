@@ -49,14 +49,6 @@ def _append_critique_gate(
     failing_critics: list[UUID] | None = None,
     failing_finding_ids: list[UUID] | None = None,
 ) -> None:
-    """Append one synthesized critique gate row for the stage.
-
-    For FAIL verdicts, the GateDecisionEmittedPayload validator requires at
-    least one of ``failing_critics`` / ``failing_finding_ids`` /
-    non-empty ``failure_reason_code``; we inject a default
-    ``failure_reason_code`` when the caller does not supply any of these to
-    keep call-sites compact.
-    """
     fc_list = failing_critics or []
     ff_list = failing_finding_ids or []
     code = failure_reason_code

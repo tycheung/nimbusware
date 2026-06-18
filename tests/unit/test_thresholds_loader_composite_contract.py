@@ -15,12 +15,6 @@ _YAML_ROOT_MAPPING_PREFIX = "YAML root must be a mapping:"
 
 
 def _write_thresholds(repo: Path, body: str) -> Path:
-    """Write ``configs/integrator/thresholds.yaml`` under ``repo``.
-
-    ``exist_ok=True`` so a single test can drop multiple successive
-    thresholds files into the same ``tmp_path`` for sub-axis sweeps.
-    Returns the written path so callers can probe ``is_file()``.
-    """
     ig_dir = repo / _THRESHOLDS_REL[0] / _THRESHOLDS_REL[1]
     ig_dir.mkdir(parents=True, exist_ok=True)
     path = ig_dir / _THRESHOLDS_REL[2]
@@ -29,13 +23,6 @@ def _write_thresholds(repo: Path, body: str) -> Path:
 
 
 def _write_workflow_min_score(repo: Path, name: str, value: str) -> None:
-    """Write ``configs/workflows/{name}.yaml`` carrying ``min_score_to_pass``.
-
-    Used by Part D to drive the workflow-layer parser
-    ``parse_integrator_gate_min_score_to_pass`` against the same numeric
-    inputs as the thresholds-layer loader to assert the clamp vs
-    no-clamp divergence.
-    """
     wf_dir = repo / "configs" / "workflows"
     wf_dir.mkdir(parents=True, exist_ok=True)
     body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"

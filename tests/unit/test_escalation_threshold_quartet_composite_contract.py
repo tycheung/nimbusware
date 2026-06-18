@@ -18,12 +18,6 @@ _KEY_GATE = "escalate_after_cumulative_gate_failures"
 
 
 def _write_policy(repo: Path, body: str) -> Path:
-    """Write ``configs/escalation/policy.yaml`` under ``repo``.
-
-    ``exist_ok=True`` so a single test can drop multiple successive
-    policy files into the same ``tmp_path`` for sub-axis sweeps.
-    Returns the written path so callers can probe ``is_file()``.
-    """
     pol_dir = repo / _POLICY_REL[0] / _POLICY_REL[1]
     pol_dir.mkdir(parents=True, exist_ok=True)
     path = pol_dir / _POLICY_REL[2]

@@ -15,13 +15,6 @@ from nimbusware_orchestrator.workflow_universal_critique import EffectiveUnivers
 
 
 def _all_false_effective_critique() -> EffectiveUniversalCritique:
-    """Construct a fully-defaulted ``EffectiveUniversalCritique`` (all-False).
-
-    Used as the patched ``effective_universal_critique`` return value
-    in Part C / Part D axes that only care about CAPTURED args, not
-    the returned content. Keeping all 15 booleans False simplifies
-    debugging when an assertion fires with this in scope.
-    """
     return EffectiveUniversalCritique(
         impl_llm=False,
         impl_stub=False,
@@ -49,16 +42,6 @@ def _inject_raw_run_created_row(
     *,
     workflow_profile: Any,
 ) -> None:
-    """Append a raw ``run.created`` row directly to ``InMemoryEventStore._rows``.
-
-    Bypasses Pydantic validation in ``InMemoryEventStore.append`` so
-    Part C C4 / C5 can inject non-string ``workflow_profile`` values
-    (which the normal path would reject at the
-    ``RunCreatedPayload(workflow_profile=...)`` step). The row shape
-    matches what ``InMemoryEventStore.append`` would have produced
-    -- see [packages/nimbusware_store/memory.py](packages/nimbusware_store/memory.py)
-    lines 25-60 for the canonical row dict shape.
-    """
     store._seq += 1  # noqa: SLF001
     store._rows.append(  # noqa: SLF001
         {

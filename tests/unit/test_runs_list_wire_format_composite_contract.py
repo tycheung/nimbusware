@@ -19,14 +19,6 @@ _RFC5988_ENTRY_RE = re.compile(r'<(/v1/runs/[^>]+)>; rel="([a-z]+)"')
 
 
 def _parse_link_entries(link_header: str) -> list[tuple[str, str]]:
-    """Parse a 2-entry RFC 5988 Link string into ``[(uri, rel), ...]``.
-
-    Splits on the canonical ``", "`` separator (comma + space) and
-    applies ``_RFC5988_ENTRY_RE`` per entry. Used across Parts A
-    and B; centralised so refactor pressure on the parsing
-    heuristic stays in one place rather than scattered across 6
-    axis blocks.
-    """
     entries = link_header.split(", ")
     parsed: list[tuple[str, str]] = []
     for entry in entries:
