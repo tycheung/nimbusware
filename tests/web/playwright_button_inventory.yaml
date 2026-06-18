@@ -1,9 +1,9 @@
 summary:
   total_buttons: 116
-  clicked: 22
-  visible_only: 13
-  unwired: 81
-  click_ratio: 0.1897
+  clicked: 34
+  visible_only: 7
+  unwired: 75
+  click_ratio: 0.2931
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -23,7 +23,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/autopilot-ribbon.js
   label: Save profile
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-autopilot-save
   app: maker
@@ -36,14 +37,16 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/build.js
   label: '${campaignMode ? "Start campaign" : "Start run"}'
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_build_review.spec.ts
 - test_id: maker-campaign-pause
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
   label: (dynamic)
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_campaign_progress.spec.ts
 - test_id: maker-chat-accept-chip
@@ -110,7 +113,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat.js
   label: (dynamic)
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_chat_escalation.spec.ts
 - test_id: maker-chat-escalation-campaign
@@ -240,7 +244,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
   label: Save compaction as artifact
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_context_artifacts.spec.ts
 - test_id: maker-compaction-preview-toggle
@@ -299,7 +304,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
   label: Stop session
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-factory-evidence-download
   app: maker
@@ -387,7 +393,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/wizard.js
   label: Open Chat (quick demo)
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-home-inference-mode
   app: maker
@@ -447,7 +454,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
   label: Promote pending batch
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_integrator_ribbon.spec.ts
 - test_id: maker-integrator-stitch-refresh
@@ -515,7 +523,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/plan.js
   label: Refresh
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-plan-steer-${slice.slice_id}
   app: maker
@@ -527,7 +536,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/review.js
   label: (dynamic)
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-review-copy-branch
   app: maker
@@ -539,7 +549,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/review.js
   label: Load scorecard
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []
 - test_id: maker-review-gate-recover-link
   app: maker
@@ -625,6 +636,7 @@ buttons:
   label: Refresh approval
   clicked_in:
   - tests/e2e/web/maker_apply_flow.spec.ts
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_build_review.spec.ts
 - test_id: maker-review-revert
@@ -638,7 +650,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/review.js
   label: Run launch check
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_launch_scorecard.spec.ts
 - test_id: maker-review-slice-status

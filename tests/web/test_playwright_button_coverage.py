@@ -23,7 +23,7 @@ _CLICK_TESTID_CHAIN_RE = re.compile(
 )
 _ROLE_CLICK_RE = re.compile(
     r'getByRole\(\s*["\']button["\']\s*,\s*\{\s*name:\s*["\']([^"\']+)["\']\s*\}\s*\)'
-    r"\s*\.click\(",
+    r"(?:\s*\.\s*first\(\))?\s*\.click\(",
 )
 
 
@@ -82,4 +82,4 @@ def test_playwright_button_click_ratio_meets_floor() -> None:
     summary = inventory.get("summary") or {}
     ratio = float(summary.get("click_ratio") or 0.0)
     # Floor ratchets as click wiring grows; keep below current inventory click_ratio.
-    assert ratio >= 0.18, f"click_ratio {ratio:.1%} below 18% floor"
+    assert ratio >= 0.25, f"click_ratio {ratio:.1%} below 25% floor"

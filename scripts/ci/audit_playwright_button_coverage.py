@@ -40,7 +40,7 @@ SPEC_VISIBLE_TESTID_RE = re.compile(
 )
 SPEC_ROLE_CLICK_RE = re.compile(
     r'getByRole\(\s*["\']button["\']\s*,\s*\{\s*name:\s*["\']([^"\']+)["\']\s*\}\s*\)'
-    r"\s*\.click\(",
+    r"(?:\s*\.\s*first\(\))?\s*\.click\(",
 )
 
 

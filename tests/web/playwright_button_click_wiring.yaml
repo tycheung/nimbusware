@@ -6,24 +6,36 @@ maker:
   maker-chat-autopilot-hint-dismiss: tests/e2e/web/maker_chat_patch.spec.ts
   maker-chat-override-chip-campaign: tests/e2e/web/maker_chat_override.spec.ts
   maker-chat-escalate-campaign: tests/e2e/web/maker_chat_escalation.spec.ts
+  maker-chat-escalate-slice: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-intent-patch: tests/e2e/web/maker_home_intents.spec.ts
   maker-factory-demo-todo: tests/e2e/web/maker_home_intents.spec.ts
   maker-interjection-next: tests/e2e/web/maker_operator_ribbons.spec.ts
   maker-interjection-last: tests/e2e/web/maker_button_clicks.spec.ts
   maker-autopilot-save: tests/e2e/web/maker_operator_ribbons.spec.ts
+  maker-autopilot-profile-save: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-dev-env-start: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-dev-env-stop: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-finding-action-widen: tests/e2e/web/maker_progress_gate_actions.spec.ts
   maker-finding-action-interject: tests/e2e/web/maker_button_clicks.spec.ts
   maker-integrator-stitch-refresh: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-integrator-stitch-promote-batch: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-review-refresh: tests/e2e/web/maker_apply_flow.spec.ts
   maker-review-apply-slice: tests/e2e/web/maker_apply_flow.spec.ts
+  maker-review-approve-plan: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-review-launch-scorecard: tests/e2e/web/maker_launch_scorecard.spec.ts
   maker-review-load-diff: tests/e2e/web/maker_button_clicks.spec.ts
   maker-review-revert: tests/e2e/web/maker_button_clicks.spec.ts
+  maker-review-run-launch-eval: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-review-factory-evidence-load: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-settings-routing-apply: tests/e2e/web/maker_settings_routing.spec.ts
   maker-settings-agent-models-save: tests/e2e/web/maker_settings_agent_models.spec.ts
   maker-settings-run-launch-eval: tests/e2e/web/maker_settings_launch_check.spec.ts
   maker-context-artifact-insert: tests/e2e/web/maker_context_artifacts.spec.ts
+  maker-campaign-pause: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-build-start-run: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-guided-start-quick: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-compact-save-artifact: tests/e2e/web/maker_playwright_extended.spec.ts
+  maker-plan-refresh: tests/e2e/web/maker_playwright_extended.spec.ts
 admin:
   admin-chat-accept-chip: tests/e2e/web/admin_operator_chat.spec.ts
   admin-fleet-rescan-btn: tests/e2e/web/admin_fleet_hardware.spec.ts
@@ -31,3 +43,7 @@ role_buttons:
   - name: Compact all
     within_testid: maker-compact-toolbar
     spec: tests/e2e/web/maker_button_clicks.spec.ts
+  - name: Pull
+    spec: tests/e2e/web/admin_button_clicks.spec.ts
+  - name: Approve
+    spec: tests/e2e/web/admin_button_clicks.spec.ts

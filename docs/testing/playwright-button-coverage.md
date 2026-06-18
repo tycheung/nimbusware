@@ -21,11 +21,17 @@ poetry run python scripts/ci/audit_playwright_button_coverage.py --check   # CI 
 After the button-click expansion (see inventory `summary`):
 
 - **~116** inventoried buttons (`data-testid` on buttons)
-- **~22** clicked in Playwright specs
-- **~13** visible-only (asserted but not clicked)
-- **~81** unwired (no Playwright reference yet)
+- **~34** clicked in Playwright specs
+- **~7** visible-only (asserted but not clicked)
+- **~75** unwired (no Playwright reference yet)
 
-Click ratio floor in CI: **18%** (ratchets up as wiring grows).
+Click ratio floor in CI: **25%** (current inventory: **29%**).
+
+Extended click suites:
+
+- `maker_button_clicks.spec.ts` — compaction, dev-env, interjection, review advanced, integrator refresh
+- `maker_playwright_extended.spec.ts` — campaign pause, build submit, wizard, plan/review actions, chat slice escalation
+- `admin_button_clicks.spec.ts` — research approve, Ollama pull
 
 ## Adding a required click
 
