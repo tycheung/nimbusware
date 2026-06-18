@@ -1,4 +1,4 @@
-# Conversation library (v1.2 Track B8 — stub)
+# Conversation library (v1.2 Track B8)
 
 Organize many chat sessions per project without merging threads. Each session remains one shared conversation; library features reduce one-by-one invites.
 
@@ -11,23 +11,21 @@ Organize many chat sessions per project without merging threads. Each session re
 | **User group** | Bulk grant target (Enterprise directory) |
 | **Access grant** | ACL: folder/tag/session → user or group + participant role |
 
-## Session metadata (shipped stub)
+## APIs (shipped)
 
-`nimbusware_chat_session.metadata` JSONB:
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET/POST/PATCH/DELETE | `/v1/chat/folders` | Folder CRUD |
+| GET/POST | `/v1/chat/groups` | User group CRUD |
+| POST | `/v1/chat/groups/{id}/members` | Group membership |
+| GET/POST/DELETE | `/v1/chat/access-grants` | Bulk ACL grants |
+| PUT | `/v1/chat/sessions/{id}/library` | Move session to folder; set tags |
+| GET | `/v1/chat/sessions/{id}/effective-role` | Merged ACL role for a user |
 
-```json
-{ "folder": "Q2 patches", "tags": ["security"] }
-```
+## ACL merge rule
 
-API: set via session create/update when collab enabled. Full folder CRUD (`GET/POST …/chat/folders`) is planned fo1576.
+Highest participant role wins at finest grain: direct session grant > folder > tag (`session_admin` > `session_write` > `session_read`).
 
-## ACL merge rule (normative, not yet implemented)
+## UI
 
-Highest participant role wins at finest grain: direct session grant > tag > folder.
-
-## UI (planned)
-
-- Chat library sidebar (`data-testid="maker-chat-library"`)
-- Invite modal v2 tabs: session · group · folder · tag
-
-See ADR 023 and `alllms.md` Phase B8 for full epic list.
+Maker Chat **Library** sidebar (`data-testid="maker-chat-library"`) — folder tree, tag filter, session list. Module: `chat_library_ui.js`.

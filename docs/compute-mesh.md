@@ -27,19 +27,28 @@ The worker registers once, then sends heartbeats until stopped.
 
 v1.2 requires **LAN or Tailscale** between host and workers. Home readiness should warn when mesh is enabled without a tailnet (fo1773).
 
+## Scheduler (D3)
+
+`MeshScheduler` hooks `_run_writers_parallel_dispatch` when a chat session’s `workload_distribution` is not `host_only`. Remote stages enqueue `nimbusware_work_unit` rows for session-scoped workers; host still executes locally until workers pull units.
+
 ## Future minimal worker agent
 
 Not shipped in v1.2. A reduced-footprint agent would sync only: node registry client, hardware/Ollama probe, work-unit pull/execute, and bounded stage executors — without full Maker UI or Postgres. Protocol remains the same register/heartbeat/work-unit envelopes documented in `alllms.md` § Track D.
 
 ## Host transfer
 
-When canonical host moves to another machine, use the host-transfer protocol ([ADR 026](adr/026-host-transfer.md)). **v1.2 MVP:** timed consent request/accept only. Full freeze + artifact bundle import is deferred.
+When canonical host moves to another machine, use the host-transfer protocol ([ADR 026](adr/026-host-transfer.md)).
+
+**Shipped:** timed consent, session freeze on accept, artifact bundle export/import, Postgres `nimbusware_host_transfer_request` (or in-memory for dev).
 
 | Method | Path | Purpose |
 |--------|------|---------|
 | POST | `/v1/chat/sessions/{id}/host-transfer` | Request transfer to another user |
 | GET | `/v1/chat/sessions/{id}/host-transfer` | List pending transfers |
-| POST | `…/host-transfer/{transfer_id}/accept` | Target user accepts |
+| POST | `…/host-transfer/{transfer_id}/accept` | Target accepts → **frozen** + manifest |
+| GET | `…/host-transfer/{transfer_id}/bundle` | Export artifact manifest |
+| POST | `…/host-transfer/{transfer_id}/import` | Import bundle + complete cutover |
+| POST | `…/host-transfer/{transfer_id}/complete` | Complete without re-import |
 
 ## Security (Track D7)
 

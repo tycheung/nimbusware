@@ -252,6 +252,8 @@ from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_store.protocol import EventStore, serialized_event_from_row
 
 from nimbusware_orchestrator._pipeline._helpers_runtime import (
+    _SELF_REFINEMENT_MAX_ITER_REASON,
+    _SELF_REFINEMENT_POLICY_STAGE,
     _agent_evaluator_auto_create_env_disabled,
     _agent_evaluator_auto_promote_env_disabled,
     _coerce_samples_ms,
@@ -270,6 +272,8 @@ from nimbusware_orchestrator._pipeline._helpers_runtime import (
 
 
 __all__ = (
+    "_SELF_REFINEMENT_MAX_ITER_REASON",
+    "_SELF_REFINEMENT_POLICY_STAGE",
     "AgentEvaluator",
     "Any",
     "EffectiveUniversalCritique",

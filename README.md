@@ -381,7 +381,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - **Collaborative chat** (opt-in: `NIMBUSWARE_COLLAB_ENABLED=1`) — local auth, participants, invites, **`#/chat/join/{token}` page**, host transfer request/accept MVP ([`docs/collaborative-chat.md`](docs/collaborative-chat.md), [ADR 023](docs/adr/023-collaborative-chat-sessions.md))
 - **Compute mesh MVP** — node register/heartbeat/list, work-unit queue stubs, `nimbusware-compute-worker` CLI, Chat compute nodes strip ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md))
 
-**v1.2 partial (documented, not full spec):** conversation folder/group ACL library (B8), full host-transfer artifact bundle (D8), `MeshScheduler` pipeline hook (D3). See [`alllms.md`](alllms.md) completion matrix (◐).
+**v1.2 partial (documented):** delegate-control API (D8 fo1786), invite modal v2 tabs (B8). **Shipped in v1.2:** conversation library (B8), host transfer freeze+bundle (D8), MeshScheduler pipeline hook (D3). See [`alllms.md`](alllms.md) completion matrix.
 - **Enterprise model policy** — `GET/PUT /v1/enterprise/model-policy`; per-run binding audit `GET /v1/runs/{id}/model-bindings/audit`
 
 **Review**

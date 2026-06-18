@@ -46,9 +46,9 @@ Use `GET /v1/enterprise/users?q=` for directory search. Tenant policy: `GET/PUT 
 
 Session `metadata.folder` and `metadata.tags` organize many sessions per project. Full folder CRUD is documented in [conversation-library.md](conversation-library.md).
 
-## Host transfer (MVP)
+## Host transfer (shipped)
 
-Request/accept flow is implemented in-memory for development. **Not yet shipped:** session freeze, artifact bundle export/import, Postgres `nimbusware_host_transfer_request` table, delegate-control API.
+Request/accept flow with **session freeze**, artifact bundle export/import, and Postgres `nimbusware_host_transfer_request` (in-memory when no DB). See [compute-mesh.md](compute-mesh.md) host-transfer APIs.
 
 ## Related
 

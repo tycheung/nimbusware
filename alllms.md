@@ -1736,18 +1736,18 @@ preflight:
 | B4 | fo1540–fo1544 | ◐ | ◐ | ☑ | ☑ |
 | B5 | fo1550–fo1553 | ☑ | ☑ | ☑ | ☑ |
 | B6–B7 | fo1560–fo1573 | ☑ | ☑ | ☑ | ☑ |
-| B8 | fo1574–fo1582 | ◐ | ☐ | ☐ | ☑ |
+| B8 | fo1574–fo1582 | ☑ | ☑ | ☑ | ☑ |
 | D0 | fo1700–fo1701 | ☑ | — | ☑ | ☑ |
 | D1 | fo1710–fo1714 | ☑ | — | ☑ | ☑ |
 | D2 | fo1720–fo1723 | ☑ | — | ☑ | ☑ |
-| D3 | fo1730–fo1735 | ◐ | — | ☑ | ☑ |
+| D3 | fo1730–fo1735 | ☑ | — | ☑ | ☑ |
 | D4 | fo1740–fo1747 | ☑ | ☑ | ☑ | ☑ |
 | D5 | fo1750–fo1755 | ☑ | ☑ | ☑ | ☑ |
 | D6 | fo1760–fo1763 | ☑ | ◐ | ☑ | ☑ |
 | D7 | fo1770–fo1773 | ☑ | — | ☑ | ☑ |
-| D8 | fo1780–fo1789 | ◐ | ☐ | ◐ | ☑ |
+| D8 | fo1780–fo1789 | ☑ | ◐ | ☑ | ☑ |
 
-**Partial notes:** B8 = session `metadata.folder` only (no folder CRUD). D3 = `MeshScheduler` host_only stub. D6 fleet mesh lists session nodes via `GET /compute/nodes`. D8 = host-transfer request/accept MVP (no artifact bundle).
+**Partial notes:** B8 invite modal v2 tabs deferred. D6 fleet mesh lists session nodes via `GET /compute/nodes`. D8 delegate-control UI (fo1786) and optimizer weights deferred. D3 critics remote fan-out (fo1731) deferred.
 
 **Ship when:** Tracks C0–C3 + C4, A0–A5 + A8, B0–B4 + B7 complete for Individual MVP; **B8 folder library** and **D8 full host transfer** are partial (see matrix). **B5 + D6** for Enterprise collab policy + fleet mesh list. **Track D D0–D5 + D7** for mesh MVP; D3 scheduler remains host_only until pipeline hook.
 
