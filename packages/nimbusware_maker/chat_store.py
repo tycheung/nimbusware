@@ -362,6 +362,10 @@ class InMemoryChatStore:
 
 def _session_from_row(row: dict[str, object]) -> ChatSessionRecord:
     meta = row.get("metadata")
+    raw_tags = row.get("tags")
+    tags: tuple[str, ...] = (
+        tuple(str(t) for t in raw_tags) if isinstance(raw_tags, (list, tuple)) else ()
+    )
     return ChatSessionRecord(
         session_id=row["session_id"],  # type: ignore[arg-type]
         project_id=row["project_id"],  # type: ignore[arg-type]
@@ -380,7 +384,7 @@ def _session_from_row(row: dict[str, object]) -> ChatSessionRecord:
         host_user_id=row.get("host_user_id"),  # type: ignore[arg-type]
         workload_distribution=str(row.get("workload_distribution") or "host_only"),
         folder_id=row.get("folder_id"),  # type: ignore[arg-type]
-        tags=tuple(row.get("tags") or []) if row.get("tags") is not None else (),
+        tags=tags,
         metadata=dict(meta) if isinstance(meta, dict) else {},
     )
 
