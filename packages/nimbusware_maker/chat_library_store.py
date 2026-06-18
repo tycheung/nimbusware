@@ -221,7 +221,9 @@ class InMemoryChatLibraryStore:
             name=name.strip() if name is not None else row.name,
             owner_user_id=row.owner_user_id,
             created_at=row.created_at,
-            parent_folder_id=parent_folder_id if parent_folder_id is not None else row.parent_folder_id,
+            parent_folder_id=parent_folder_id
+            if parent_folder_id is not None
+            else row.parent_folder_id,
         )
         self._folders[folder_id] = updated
         return updated
