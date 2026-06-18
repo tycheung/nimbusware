@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from agent_core.mapping import mapping_or_empty
+
+if TYPE_CHECKING:
+    from nimbusware_orchestrator.micro_slice import SlicePlan
 
 
 def normalize_patch_context(raw: Any) -> dict[str, Any] | None:
@@ -44,6 +48,88 @@ def work_type_from_run_rows(rows: list[dict[str, Any]]) -> str | None:
         return None
     wt = str(mapping_or_empty(rows[0].get("metadata")).get("work_type") or "").strip().lower()
     return wt or None
+
+
+def is_patch_run(rows: list[dict[str, Any]]) -> bool:
+    wt = work_type_from_run_rows(rows)
+    if wt == "patch":
+        return True
+    patch_eff = patch_effective_from_run_rows(rows)
+    return bool(patch_eff and patch_eff.get("enabled"))
+
+
+def _workspace_stack(workspace: Path) -> str:
+    if (workspace / "go.mod").is_file():
+        return "go"
+    if (workspace / "pom.xml").is_file():
+        return "jvm"
+    return "python"
+
+
+def implementation_path_from_failing_test(failing_test: str, *, stack: str) -> str | None:
+    path = failing_test.replace("\\", "/").strip()
+    if not path:
+        return None
+    if stack == "go" and path.endswith("_test.go"):
+        return f"{path[:-len('_test.go')]}.go"
+    if stack == "jvm" and "src/test/java/" in path and path.endswith("Test.java"):
+        return path.replace("src/test/java/", "src/main/java/").removesuffix("Test.java") + ".java"
+    if stack == "python" and path.startswith("tests/") and path.endswith(".py"):
+        stem = Path(path).stem
+        if stem.startswith("test_"):
+            module = stem.removeprefix("test_")
+            return f"src/{module}.py"
+    return None
+
+
+def infer_patch_implementation_paths(
+    patch_ctx: dict[str, Any] | None,
+    workspace: Path,
+) -> tuple[str, ...]:
+    if patch_ctx:
+        paths = patch_ctx.get("target_paths")
+        if isinstance(paths, list) and paths:
+            return tuple(str(p).strip() for p in paths[:3] if str(p).strip())
+        failing = str(patch_ctx.get("failing_test") or "").strip()
+        if failing:
+            impl = implementation_path_from_failing_test(
+                failing,
+                stack=_workspace_stack(workspace),
+            )
+            if impl and (workspace / impl).is_file():
+                return (impl,)
+
+    stack = _workspace_stack(workspace)
+    if stack == "go":
+        for candidate in sorted(workspace.glob("*.go")):
+            if not candidate.name.endswith("_test.go"):
+                return (candidate.name,)
+    elif stack == "jvm":
+        for candidate in sorted(workspace.glob("src/main/java/**/*.java")):
+            return (candidate.relative_to(workspace).as_posix(),)
+    return ()
+
+
+def patch_slice_plan_for_run(
+    slice_index: int,
+    rows: list[dict[str, Any]],
+    workspace: Path,
+) -> "SlicePlan | None":
+    if not is_patch_run(rows):
+        return None
+    target_paths = infer_patch_implementation_paths(patch_context_from_run_rows(rows), workspace)
+    if not target_paths:
+        return None
+    from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+
+    return parse_slice_plan(
+        {
+            "slice_id": f"slice-{slice_index}",
+            "rationale": "Patch lane scoped plan from failing test or workspace stack",
+            "target_paths": list(target_paths),
+            "acceptance_criteria": "Scoped stack tests pass",
+        },
+    )
 
 
 def resolve_patch_test_targets(

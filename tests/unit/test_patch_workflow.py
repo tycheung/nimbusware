@@ -5,6 +5,8 @@ from pathlib import Path
 from nimbusware_agent_tools.risk_caps import PATCH_DEFAULT_CAPS, agent_risk_caps_from_run_rows
 from nimbusware_orchestrator.micro_slice import micro_slice_count_for_run
 from nimbusware_orchestrator.patch_context import (
+    implementation_path_from_failing_test,
+    infer_patch_implementation_paths,
     normalize_patch_context,
     patch_auto_apply_allowed,
     resolve_patch_test_targets,
@@ -93,3 +95,18 @@ def test_agent_risk_caps_from_run_rows() -> None:
     ]
     caps = agent_risk_caps_from_run_rows(rows)
     assert caps.max_tool_steps == 12
+
+
+def test_implementation_path_from_failing_test_go() -> None:
+    path = implementation_path_from_failing_test("calculator_test.go", stack="go")
+    assert path == "calculator.go"
+
+
+def test_infer_patch_implementation_paths_from_go_fixture(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[2]
+    fixture = root / "tests/fixtures/repos/tiny_go_app"
+    paths = infer_patch_implementation_paths(
+        {"failing_test": "calculator_test.go"},
+        fixture,
+    )
+    assert paths == ("calculator.go",)

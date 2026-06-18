@@ -52,6 +52,11 @@ def test_todo_fullstack_http_and_ui_launch() -> None:
         except ImportError:
             pytest.skip("playwright not installed")
 
+        from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
+
+        if not playwright_chromium_launchable():
+            pytest.skip("playwright chromium browser not installed")
+
         ui_flow = load_catalog_ui_flow("todo_api_ui")
         ui = run_ui_flow(fe_url, ui_flow)
         assert ui.passed is True, ui.detail

@@ -196,7 +196,7 @@ def _heuristic_grep_token(rationale: str) -> str | None:
     for token in tokens:
         lower = token.lower()
         if lower not in {"slice", "implement", "scaffold", "tests", "verification", "project"}:
-            return token
+            return str(token)
     return None
 
 

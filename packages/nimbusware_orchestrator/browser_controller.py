@@ -133,17 +133,24 @@ def _run_ui_flow_sync(
 
     if page is None:
         ephemeral_mgr = sync_playwright().start()
-        ephemeral_browser = ephemeral_mgr.chromium.launch(headless=True)
-        ephemeral_context = ephemeral_browser.new_context()
-        page = ephemeral_context.new_page()
-        if reuse_context:
-            _PERSISTENT[key] = {
-                "mgr": ephemeral_mgr,
-                "browser": ephemeral_browser,
-                "context": ephemeral_context,
-                "page": page,
-            }
-            ephemeral_mgr = ephemeral_browser = ephemeral_context = None
+        try:
+            ephemeral_browser = ephemeral_mgr.chromium.launch(headless=True)
+            ephemeral_context = ephemeral_browser.new_context()
+            page = ephemeral_context.new_page()
+            if reuse_context:
+                _PERSISTENT[key] = {
+                    "mgr": ephemeral_mgr,
+                    "browser": ephemeral_browser,
+                    "context": ephemeral_context,
+                    "page": page,
+                }
+                ephemeral_mgr = ephemeral_browser = ephemeral_context = None
+        except Exception:
+            try:
+                ephemeral_mgr.stop()
+            except _BROWSER_IO_ERRORS:
+                pass
+            raise
 
     try:
         for step in flow.steps:

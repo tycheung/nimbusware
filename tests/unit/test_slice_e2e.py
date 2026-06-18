@@ -43,6 +43,12 @@ def test_run_slice_e2e_custom_command(tmp_path: Path) -> None:
     assert result.verdict == "PASS"
 
 
+def test_run_slice_e2e_skips_without_workspace_tests_e2e(tmp_path: Path) -> None:
+    result = run_slice_e2e_verify(tmp_path, timeout_seconds=30.0)
+    assert result.verdict == "SKIP"
+    assert "tests/e2e" in result.detail
+
+
 def test_micro_slice_workflow_parses_e2e_enabled_by_default() -> None:
     repo = find_repo_root()
     block = parse_micro_slice_workflow_block(repo, "micro_slice")

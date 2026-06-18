@@ -45,13 +45,13 @@ def _free_port() -> int:
 
 
 def _playwright_available() -> bool:
-    try:
-        import playwright  # noqa: F401
-    except ImportError:
-        if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
-            pytest.fail("playwright required for framework pack fidelity gate")
-        return False
-    return True
+    from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
+
+    if playwright_chromium_launchable():
+        return True
+    if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
+        pytest.fail("playwright chromium required for framework pack fidelity gate")
+    return False
 
 
 def _seed_spa_workspace(tmp_path: Path, deps: dict) -> None:

@@ -87,4 +87,12 @@ def plan_one_slice(
             )
             if plan is not None:
                 return plan
+    from nimbusware_maker.workspace import resolve_run_workspace
+    from nimbusware_orchestrator.patch_context import patch_slice_plan_for_run
+
+    ws = resolve_run_workspace(rows)
+    if ws is not None:
+        patch_plan = patch_slice_plan_for_run(slice_index, rows, ws)
+        if patch_plan is not None:
+            return patch_plan
     return default_stub_slice_plan(slice_index)
