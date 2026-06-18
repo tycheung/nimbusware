@@ -6,6 +6,7 @@ from fastapi import Depends, Request
 
 from nimbusware_auth.store import CollabStore, UserStore
 from nimbusware_iam.store import InMemoryIamStore, PostgresIamStore
+from nimbusware_maker.chat_library_store import ChatLibraryStore, build_chat_library_store
 from nimbusware_maker.chat_store import InMemoryChatStore, PostgresChatStore
 from nimbusware_maker.store import InMemoryProjectStore, PostgresProjectStore
 from nimbusware_orchestrator.pipeline import RunOrchestrator
@@ -44,6 +45,10 @@ def get_collab_store(request: Request) -> CollabStore:
     return cast(CollabStore, request.app.state.collab_store)
 
 
+def get_chat_library_store(request: Request) -> ChatLibraryStore:
+    return cast(ChatLibraryStore, request.app.state.chat_library_store)
+
+
 StoreDep = Annotated[EventStore, Depends(get_store)]
 OrchDep = Annotated[RunOrchestrator, Depends(get_orchestrator)]
 IamStoreDep = Annotated[IamStore, Depends(get_iam_store)]
@@ -51,3 +56,4 @@ ProjectStoreDep = Annotated[ProjectStore, Depends(get_project_store)]
 ChatStoreDep = Annotated[ChatStore, Depends(get_chat_store)]
 UserStoreDep = Annotated[UserStore, Depends(get_user_store)]
 CollabStoreDep = Annotated[CollabStore, Depends(get_collab_store)]
+ChatLibraryStoreDep = Annotated[ChatLibraryStore, Depends(get_chat_library_store)]

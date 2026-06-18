@@ -33,6 +33,8 @@ def session_response(
         "campaign_id": str(session.campaign_id) if session.campaign_id else None,
         "host_user_id": str(session.host_user_id) if session.host_user_id else None,
         "workload_distribution": session.workload_distribution,
+        "folder_id": str(session.folder_id) if session.folder_id else None,
+        "tags": list(session.tags),
         "metadata": dict(session.metadata or {}),
     }
     if not include_turns:

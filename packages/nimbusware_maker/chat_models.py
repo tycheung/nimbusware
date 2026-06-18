@@ -38,6 +38,8 @@ class ChatSessionRecord:
     campaign_id: UUID | None = None
     host_user_id: UUID | None = None
     workload_distribution: str = "host_only"
+    folder_id: UUID | None = None
+    tags: tuple[str, ...] = ()
     metadata: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -58,6 +60,8 @@ class ChatSessionRecord:
             "campaign_id": str(self.campaign_id) if self.campaign_id else None,
             "host_user_id": str(self.host_user_id) if self.host_user_id else None,
             "workload_distribution": self.workload_distribution,
+            "folder_id": str(self.folder_id) if self.folder_id else None,
+            "tags": list(self.tags),
             "metadata": dict(self.metadata or {}),
         }
 

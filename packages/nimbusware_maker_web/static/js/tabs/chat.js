@@ -11,6 +11,7 @@ import {
   renderParticipantStrip,
   setCollabMyRole,
 } from "./chat_session_ui.js";
+import { refreshChatLibrary } from "./chat_library_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
@@ -734,6 +735,7 @@ function wireFollowLiveToggle(root) {
 export async function mountChat(root) {
   root.innerHTML = `
     <div class="chat-layout">
+      <aside class="chat-library panel" data-testid="maker-chat-library"></aside>
       <aside class="chat-session-sidebar panel" data-testid="maker-chat-session-sidebar">
         <h4>Sessions</h4>
         <ul id="chat-session-list" class="chat-session-list"></ul>
@@ -859,6 +861,7 @@ export async function mountChat(root) {
     await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
     const projectId = String(root.querySelector("#chat-project-select")?.value || "");
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+    await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
     await refreshComputeNodes(root, sessionId);
   }
 
@@ -889,6 +892,7 @@ export async function mountChat(root) {
     sessionId = String(session.session_id || "");
     sessionStorage.setItem(SESSION_KEY, sessionId);
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
+    await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
     await refreshComputeNodes(root, sessionId);
     return sessionId;
   }
@@ -907,7 +911,10 @@ export async function mountChat(root) {
     const projectId = String(sel.value || "");
     sessionId = "";
     sessionStorage.removeItem(SESSION_KEY);
-    if (projectId) await refreshSessionSidebar(root, projectId, "", loadSession);
+    if (projectId) {
+      await refreshSessionSidebar(root, projectId, "", loadSession);
+      await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
+    }
   });
 
   async function runStart(workType) {

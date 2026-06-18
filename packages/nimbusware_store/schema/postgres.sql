@@ -529,6 +529,100 @@ CREATE INDEX IF NOT EXISTS idx_nimbusware_work_unit_node_status
   WHERE node_id IS NOT NULL;
 
 -- =============================================================================
+-- Conversation library (Track B8 — folders, groups, access grants)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_chat_folder (
+  folder_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  project_id UUID NOT NULL REFERENCES nimbusware_project(project_id) ON DELETE CASCADE,
+  parent_folder_id UUID NULL REFERENCES nimbusware_chat_folder(folder_id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  owner_user_id UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_folder_project
+  ON nimbusware_chat_folder (project_id, name);
+
+ALTER TABLE nimbusware_chat_session
+  ADD COLUMN IF NOT EXISTS folder_id UUID NULL;
+
+ALTER TABLE nimbusware_chat_session
+  ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}';
+
+CREATE TABLE IF NOT EXISTS nimbusware_user_group (
+  group_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  name TEXT NOT NULL,
+  owner_user_id UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (tenant_id, name)
+);
+
+CREATE TABLE IF NOT EXISTS nimbusware_user_group_member (
+  group_id UUID NOT NULL REFERENCES nimbusware_user_group(group_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES nimbusware_user(user_id) ON DELETE CASCADE,
+  PRIMARY KEY (group_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS nimbusware_chat_access_grant (
+  grant_id UUID PRIMARY KEY,
+  tenant_id UUID NOT NULL DEFAULT '00000000-0000-4000-8000-000000000001'::uuid
+    REFERENCES nimbusware_tenant(tenant_id),
+  grantee_type TEXT NOT NULL CHECK (grantee_type IN ('user', 'group')),
+  grantee_user_id UUID NULL REFERENCES nimbusware_user(user_id) ON DELETE CASCADE,
+  grantee_group_id UUID NULL REFERENCES nimbusware_user_group(group_id) ON DELETE CASCADE,
+  scope_type TEXT NOT NULL CHECK (scope_type IN ('folder', 'tag', 'session')),
+  folder_id UUID NULL REFERENCES nimbusware_chat_folder(folder_id) ON DELETE CASCADE,
+  tag TEXT NULL,
+  session_id UUID NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
+  participant_role TEXT NOT NULL DEFAULT 'session_read'
+    CHECK (participant_role IN ('session_read', 'session_write', 'session_admin')),
+  created_by UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  expires_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_access_grant_folder
+  ON nimbusware_chat_access_grant (folder_id) WHERE folder_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_chat_access_grant_session
+  ON nimbusware_chat_access_grant (session_id) WHERE session_id IS NOT NULL;
+
+-- =============================================================================
+-- Host transfer (Track D8)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS nimbusware_host_transfer_request (
+  transfer_id UUID PRIMARY KEY,
+  session_id UUID NOT NULL REFERENCES nimbusware_chat_session(session_id) ON DELETE CASCADE,
+  project_id UUID NOT NULL REFERENCES nimbusware_project(project_id) ON DELETE CASCADE,
+  from_host_user_id UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  to_user_id UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  initiated_by_user_id UUID NOT NULL REFERENCES nimbusware_user(user_id),
+  direction TEXT NOT NULL DEFAULT 'host_nominate_successor'
+    CHECK (direction IN ('admin_requests_host', 'host_nominate_successor')),
+  promote_to_admin BOOLEAN NOT NULL DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN (
+      'pending', 'accepted', 'declined', 'expired', 'frozen', 'transferring',
+      'completed', 'cancelled'
+    )),
+  consent_expires_at TIMESTAMPTZ NOT NULL,
+  artifact_transfer_expires_at TIMESTAMPTZ NULL,
+  from_host_agreed_at TIMESTAMPTZ NULL,
+  freeze_started_at TIMESTAMPTZ NULL,
+  artifact_manifest JSONB NOT NULL DEFAULT '{}'::jsonb,
+  completed_at TIMESTAMPTZ NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (jsonb_typeof(artifact_manifest) = 'object')
+);
+
+CREATE INDEX IF NOT EXISTS idx_nimbusware_host_transfer_session
+  ON nimbusware_host_transfer_request (session_id, created_at DESC);
+
+-- =============================================================================
 -- run_list_status (GET /v1/runs ?status= read model)
 -- =============================================================================
 CREATE OR REPLACE VIEW run_list_status AS

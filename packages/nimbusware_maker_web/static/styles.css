@@ -770,9 +770,44 @@ button.intent-card:hover {
 
 .chat-layout {
   display: grid;
-  grid-template-columns: minmax(10rem, 14rem) 1fr;
+  grid-template-columns: minmax(9rem, 12rem) minmax(10rem, 14rem) 1fr;
   gap: 1rem;
   align-items: start;
+}
+
+.chat-library h4,
+.chat-session-sidebar h4 {
+  margin: 0 0 0.5rem;
+}
+
+.chat-library-folder {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.3rem 0.45rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
+.chat-library-folder--active {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-accent, #2563eb) 12%, transparent);
+}
+
+.chat-library-tag-filter {
+  width: 100%;
+  margin: 0.5rem 0;
+  font-size: 0.8125rem;
+}
+
+.chat-library-session-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 14rem;
+  overflow-y: auto;
 }
 
 .chat-session-sidebar h4 {

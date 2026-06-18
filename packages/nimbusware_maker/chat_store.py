@@ -18,6 +18,9 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+_UNSET: Any = object()
+
+
 def _validate_role(role: str) -> str:
     r = role.strip().lower()
     if r not in CHAT_TURN_ROLES:
@@ -300,6 +303,8 @@ class InMemoryChatStore:
         campaign_id: UUID | None = None,
         host_user_id: UUID | None = None,
         workload_distribution: str | None = None,
+        folder_id: UUID | None | Any = _UNSET,
+        tags: list[str] | None | Any = _UNSET,
         metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         session = self._sessions.get(session_id)
@@ -319,6 +324,10 @@ class InMemoryChatStore:
             overrides["host_user_id"] = host_user_id
         if workload_distribution is not None:
             overrides["workload_distribution"] = workload_distribution
+        if folder_id is not _UNSET:
+            overrides["folder_id"] = folder_id
+        if tags is not _UNSET:
+            overrides["tags"] = tuple(tags or [])
         if metadata is not None:
             overrides["metadata"] = dict(metadata)
         updated = replace(session, **overrides)
@@ -370,6 +379,8 @@ def _session_from_row(row: dict[str, object]) -> ChatSessionRecord:
         campaign_id=row.get("campaign_id"),  # type: ignore[arg-type]
         host_user_id=row.get("host_user_id"),  # type: ignore[arg-type]
         workload_distribution=str(row.get("workload_distribution") or "host_only"),
+        folder_id=row.get("folder_id"),  # type: ignore[arg-type]
+        tags=tuple(row.get("tags") or []) if row.get("tags") is not None else (),
         metadata=dict(meta) if isinstance(meta, dict) else {},
     )
 
@@ -634,6 +645,8 @@ class PostgresChatStore:
         campaign_id: UUID | None = None,
         host_user_id: UUID | None = None,
         workload_distribution: str | None = None,
+        folder_id: UUID | None | Any = _UNSET,
+        tags: list[str] | None | Any = _UNSET,
         metadata: dict[str, Any] | None = None,
     ) -> ChatSessionRecord:
         now = _utc_now()
@@ -648,6 +661,8 @@ class PostgresChatStore:
                   campaign_id = COALESCE(%s, campaign_id),
                   host_user_id = COALESCE(%s, host_user_id),
                   workload_distribution = COALESCE(%s, workload_distribution),
+                  folder_id = CASE WHEN %s THEN %s ELSE folder_id END,
+                  tags = CASE WHEN %s THEN %s::text[] ELSE tags END,
                   metadata = COALESCE(%s::jsonb, metadata)
                 WHERE session_id = %s
                 RETURNING *
@@ -660,6 +675,10 @@ class PostgresChatStore:
                     campaign_id,
                     host_user_id,
                     workload_distribution,
+                    folder_id is not _UNSET,
+                    folder_id if folder_id is not _UNSET else None,
+                    tags is not _UNSET,
+                    list(tags or []) if tags is not _UNSET else None,
                     Jsonb(metadata) if metadata is not None else None,
                     session_id,
                 ),
