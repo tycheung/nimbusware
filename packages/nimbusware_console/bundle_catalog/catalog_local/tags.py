@@ -10,6 +10,10 @@ from typing import Any
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_search_hit_cell,
 )
+from nimbusware_console.bundle_catalog.catalog_local._load import (
+    catalog_bundle_rows,
+    load_catalog_doc,
+)
 from nimbusware_console.bundle_catalog.catalog_local.rollup_without_tags import (
     bundle_catalog_bundles_without_tags_count,
 )
@@ -22,29 +26,15 @@ def bundle_catalog_distinct_tags_sample(
     repo_root: Path,
     *,
     max_n: int = 12,
+    config_materializer: Any | None = None,
 ) -> list[str]:
     if max_n <= 0:
         return []
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
-        return []
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return []
-    if not isinstance(doc, dict):
-        return []
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
         return []
     tags: set[str] = set()
-    for b in bundles:
-        if not isinstance(b, dict):
-            continue
+    for b in catalog_bundle_rows(doc):
         raw_tags = b.get("tags")
         if not isinstance(raw_tags, list):
             continue
@@ -63,29 +53,15 @@ def bundle_catalog_top_tag_counts(
     repo_root: Path,
     *,
     top_n: int = 5,
+    config_materializer: Any | None = None,
 ) -> list[dict[str, Any]]:
     if top_n <= 0:
         return []
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
-        return []
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return []
-    if not isinstance(doc, dict):
-        return []
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
         return []
     counts: dict[str, int] = {}
-    for b in bundles:
-        if not isinstance(b, dict):
-            continue
+    for b in catalog_bundle_rows(doc):
         raw_tags = b.get("tags")
         if not isinstance(raw_tags, list):
             continue
@@ -140,29 +116,15 @@ def bundle_catalog_bundle_ids_sample(
     repo_root: Path,
     *,
     max_n: int = 12,
+    config_materializer: Any | None = None,
 ) -> list[str]:
     if max_n <= 0:
         return []
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
-        return []
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return []
-    if not isinstance(doc, dict):
-        return []
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
         return []
     ids: set[str] = set()
-    for b in bundles:
-        if not isinstance(b, dict):
-            continue
+    for b in catalog_bundle_rows(doc):
         raw_id = b.get("id")
         if isinstance(raw_id, str):
             trimmed = raw_id.strip()
@@ -196,23 +158,11 @@ def bundle_catalog_top_tag_caption(
 
 
 def bundle_catalog_bundle_count_caption(repo_root: Path) -> str | None:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
+    doc = load_catalog_doc(repo_root)
+    if doc is None:
         return None
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return None
-    if not isinstance(doc, dict):
-        return None
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
-        return None
-    total = sum(1 for b in bundles if isinstance(b, dict))
+    bundles = catalog_bundle_rows(doc)
+    total = len(bundles)
     if total <= 0:
         return None
     untagged = bundle_catalog_bundles_without_tags_count(repo_root)

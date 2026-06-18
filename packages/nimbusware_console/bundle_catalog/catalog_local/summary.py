@@ -15,32 +15,33 @@ from nimbusware_console.bundle_catalog.catalog_local._cells import (
 from nimbusware_console.bundle_catalog.catalog_local._constants import (
     _LOCAL_CATALOG_RELPATH,
 )
+from nimbusware_console.bundle_catalog.catalog_local._load import (
+    catalog_bundle_rows,
+    catalog_yaml_path,
+    load_catalog_doc,
+)
 
 
-def bundle_catalog_local_summary(repo_root: Path) -> dict[str, Any]:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
+def bundle_catalog_local_summary(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> dict[str, Any]:
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    path = catalog_yaml_path(repo_root)
+    has = doc is not None
     out: dict[str, Any] = {
-        "has_catalog_yaml": path.is_file(),
-        "catalog_yaml_relpath": _LOCAL_CATALOG_RELPATH if path.is_file() else None,
+        "has_catalog_yaml": has,
+        "catalog_yaml_relpath": _LOCAL_CATALOG_RELPATH if has else None,
         "bundle_count": 0,
         "distinct_tag_count": 0,
     }
-    if not out["has_catalog_yaml"]:
+    if doc is None:
+        if path.is_file():
+            out["has_catalog_yaml"] = True
+            out["catalog_yaml_relpath"] = _LOCAL_CATALOG_RELPATH
         return out
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return out
-    if not isinstance(doc, dict):
-        return out
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
-        return out
-    dict_rows = [b for b in bundles if isinstance(b, dict)]
+    dict_rows = catalog_bundle_rows(doc)
     out["bundle_count"] = len(dict_rows)
     tags: set[str] = set()
     for b in dict_rows:

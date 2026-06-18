@@ -9,6 +9,11 @@ from typing import Any
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _mtime_iso_utc_ns,
 )
+from nimbusware_console.bundle_catalog.catalog_local._load import (
+    catalog_bundle_rows,
+    catalog_yaml_path,
+    load_catalog_doc,
+)
 
 
 def _bundle_faiss_mtime_observability(sync: Mapping[str, Any]) -> dict[str, bool]:
@@ -31,24 +36,17 @@ def _file_size_mtime(path: Path) -> dict[str, Any]:
     }
 
 
-def _catalog_bundle_row_counts(repo_root: Path) -> tuple[int | None, int | None, str | None]:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
+def _catalog_bundle_row_counts(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> tuple[int | None, int | None, str | None]:
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
+        if catalog_yaml_path(repo_root).is_file():
+            return None, None, "catalog load failed"
         return None, None, None
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError) as err:
-        return None, None, str(err)
-    if not isinstance(doc, dict):
-        return None, None, "catalog root is not a mapping"
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
-        return None, None, "bundles is not a list"
-    dict_rows = [b for b in bundles if isinstance(b, dict)]
+    dict_rows = catalog_bundle_rows(doc)
     n_nonempty = 0
     for b in dict_rows:
         bid = b.get("id")
@@ -73,27 +71,18 @@ def _bundle_order_list_length(path: Path) -> tuple[int | None, str | None]:
     return len(data), None
 
 
-def _catalog_nonempty_stripped_id_set(repo_root: Path) -> tuple[set[str] | None, str | None]:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
+def _catalog_nonempty_stripped_id_set(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> tuple[set[str] | None, str | None]:
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
+        if catalog_yaml_path(repo_root).is_file():
+            return None, "catalog load failed"
         return None, None
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError) as err:
-        return None, str(err)
-    if not isinstance(doc, dict):
-        return None, "catalog root is not a mapping"
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
-        return None, "bundles is not a list"
     out: set[str] = set()
-    for b in bundles:
-        if not isinstance(b, dict):
-            continue
+    for b in catalog_bundle_rows(doc):
         bid = b.get("id")
         if isinstance(bid, str) and bid.strip():
             out.add(bid.strip())

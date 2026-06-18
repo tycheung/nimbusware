@@ -3,12 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-
-def _payload_load_error(payload: Mapping[str, Any] | None) -> bool:
-    if not isinstance(payload, Mapping):
-        return True
-    load_error = payload.get("load_error")
-    return isinstance(load_error, str) and bool(load_error.strip())
+from agent_core.mapping import load_error_text
 
 
 def _raw_detail(env: Mapping[str, Any]) -> str:
@@ -29,7 +24,7 @@ def env_tri_state_gate_caption(
     unrecognised_text: str,
     unset_key: str = "unset",
 ) -> str | None:
-    if _payload_load_error(payload):
+    if load_error_text(payload) is not None:
         return None
     env = payload.get(env_key) if isinstance(payload, Mapping) else None
     if not isinstance(env, Mapping):
@@ -54,7 +49,7 @@ def env_disable_flag_gate_caption(
     unset_text: str,
     unrecognised_text: str,
 ) -> str | None:
-    if _payload_load_error(payload):
+    if load_error_text(payload) is not None:
         return None
     env = payload.get(env_key) if isinstance(payload, Mapping) else None
     if not isinstance(env, Mapping):
