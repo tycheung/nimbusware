@@ -21,6 +21,15 @@ def test_code_graph_builds_nodes(tmp_path: Path) -> None:
     assert any(n.kind == "function" for n in graph.nodes)
 
 
+def test_code_graph_import_edges(tmp_path: Path) -> None:
+    ws = tmp_path / "proj"
+    ws.mkdir()
+    (ws / "util.py").write_text("VALUE = 1\n", encoding="utf-8")
+    (ws / "main.py").write_text("from util import VALUE\nx = VALUE\n", encoding="utf-8")
+    graph = build_code_graph(ws)
+    assert any(tgt == "util.py" for _src, tgt in graph.import_edges)
+
+
 def test_repo_inventory_and_council(tmp_path: Path) -> None:
     ws = tmp_path / "proj"
     pkg = ws / "src"
