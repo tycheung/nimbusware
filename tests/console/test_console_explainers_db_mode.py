@@ -98,6 +98,9 @@ def test_escalation_suppress_explainer_db_mode_without_workflow_file(
     assert payload.get("workflow_profile") == "escalation_suppress_on"
     assert payload.get("load_error") is None
     assert payload.get("suppress_automatic_escalation_effective") is True
+    assert payload.get("escalation_policy_yaml_path_exists") is True
+    assert payload.get("escalation_policy_yaml_load_error") is None
+    assert payload.get("escalation_policy_yaml_version") is not None
 
 
 def test_self_refinement_explainer_db_mode_without_workflow_file(

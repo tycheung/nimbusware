@@ -7,12 +7,15 @@ def mapping_or_empty(value: object) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
-def load_error_text(payload: object) -> str | None:
-    """Non-empty ``load_error`` string from a mapping payload, if present."""
+def field_error_text(payload: object, field: str) -> str | None:
     if not isinstance(payload, dict):
         return None
-    raw = payload.get("load_error")
+    raw = payload.get(field)
     if not isinstance(raw, str):
         return None
     text = raw.strip()
     return text or None
+
+
+def load_error_text(payload: object) -> str | None:
+    return field_error_text(payload, "load_error")

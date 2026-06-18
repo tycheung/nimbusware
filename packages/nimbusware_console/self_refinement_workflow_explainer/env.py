@@ -48,15 +48,6 @@ def _load_policy_or_default(
             snap["policy_yaml_top_level_version_int"] = (
                 int(rv) if type(rv) is int and not isinstance(rv, bool) else None
             )
-            if snap["policy_yaml_top_level_version_int"] is None and path.is_file():
-                try:
-                    raw_pol = load_yaml(path)
-                    if isinstance(raw_pol, dict):
-                        rv_disk = raw_pol.get("version")
-                        if type(rv_disk) is int and not isinstance(rv_disk, bool):
-                            snap["policy_yaml_top_level_version_int"] = rv_disk
-                except (OSError, ValueError, UnicodeDecodeError):
-                    pass
             return pol, snap
         except KeyError:
             pol = SelfRefinementPolicy(version=1, enabled=False, description="")

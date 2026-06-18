@@ -52,7 +52,8 @@ def escalation_suppress_workflow_explainer_payload(
         suppress_yaml_raw_type = type(suppress_yaml_raw).__name__
 
     policy_path = repo_root / "configs" / "escalation" / "policy.yaml"
-    escalation_policy_yaml_path_exists = policy_path.is_file()
+    mat = snap.materializer
+    escalation_policy_yaml_path_exists = False
     escalation_policy_yaml_relpath: str | None = None
     escalation_policy_yaml_file_bytes: int | None = None
     escalation_policy_yaml_mtime_iso: str | None = None
@@ -73,60 +74,70 @@ def escalation_suppress_workflow_explainer_payload(
     escalation_policy_yaml_version: int | None = None
     escalation_policy_yaml_anti_deadlock_enabled: bool | None = None
     escalation_policy_yaml_anti_deadlock_min_progress_events: int | None = None
-    if escalation_policy_yaml_path_exists:
+    pol_doc: Any = None
+    if mat is not None and getattr(mat, "use_db", False):
+        try:
+            raw_pol = mat.get_escalation_policy()
+            pol_doc = raw_pol if isinstance(raw_pol, dict) else None
+            escalation_policy_yaml_path_exists = pol_doc is not None
+            if escalation_policy_yaml_path_exists:
+                escalation_policy_yaml_relpath = "configs/escalation/policy.yaml"
+        except (AttributeError, KeyError):
+            escalation_policy_yaml_path_exists = False
+    elif policy_path.is_file():
+        escalation_policy_yaml_path_exists = True
         escalation_policy_yaml_relpath = relative_under(repo_root, policy_path)
         escalation_policy_yaml_mtime_iso = mtime_iso_utc(policy_path)
         try:
             escalation_policy_yaml_file_bytes = int(policy_path.stat().st_size)
         except OSError:
             escalation_policy_yaml_file_bytes = None
-        pol_doc: Any = None
         try:
             pol_doc = load_yaml(policy_path)
         except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError) as err:
             escalation_policy_yaml_load_error = str(err)
-        if isinstance(pol_doc, dict):
-            escalation_policy_yaml_has_verification_mapping = isinstance(
-                pol_doc.get("verification"),
-                dict,
-            )
-            escalation_policy_yaml_has_anti_deadlock_mapping = isinstance(
-                pol_doc.get("anti_deadlock"),
-                dict,
-            )
-            keys = sorted(str(k) for k in pol_doc if isinstance(k, str))
-            escalation_policy_yaml_top_level_key_count = len(keys)
-            escalation_policy_yaml_top_level_keys = keys
-            escalation_policy_yaml_top_level_keys_sample = keys[:12]
-            for k in pol_doc:
-                if not isinstance(k, str):
-                    continue
-                v = pol_doc[k]
-                if isinstance(v, dict):
-                    escalation_policy_yaml_top_level_kinds["mapping"] += 1
-                elif isinstance(v, list):
-                    escalation_policy_yaml_top_level_kinds["list"] += 1
-                elif v is None or isinstance(v, (bool, int, float, str)):
-                    escalation_policy_yaml_top_level_kinds["scalar"] += 1
-                else:
-                    escalation_policy_yaml_top_level_kinds["other"] += 1
-            raw_mr = pol_doc.get("max_retries_per_stage")
-            if type(raw_mr) is int and not isinstance(raw_mr, bool):
-                escalation_policy_yaml_max_retries_per_stage = raw_mr
-            raw_dm = pol_doc.get("deadlock_escalation_after_minutes")
-            if type(raw_dm) is int and not isinstance(raw_dm, bool):
-                escalation_policy_yaml_deadlock_escalation_after_minutes = raw_dm
-            raw_pv = pol_doc.get("version")
-            if type(raw_pv) is int and not isinstance(raw_pv, bool):
-                escalation_policy_yaml_version = raw_pv
-            ad_blk = pol_doc.get("anti_deadlock")
-            if isinstance(ad_blk, dict):
-                ad_en = ad_blk.get("enabled")
-                if isinstance(ad_en, bool):
-                    escalation_policy_yaml_anti_deadlock_enabled = ad_en
-                raw_mpe = ad_blk.get("min_progress_events")
-                if type(raw_mpe) is int and not isinstance(raw_mpe, bool):
-                    escalation_policy_yaml_anti_deadlock_min_progress_events = raw_mpe
+    if isinstance(pol_doc, dict):
+        escalation_policy_yaml_has_verification_mapping = isinstance(
+            pol_doc.get("verification"),
+            dict,
+        )
+        escalation_policy_yaml_has_anti_deadlock_mapping = isinstance(
+            pol_doc.get("anti_deadlock"),
+            dict,
+        )
+        keys = sorted(str(k) for k in pol_doc if isinstance(k, str))
+        escalation_policy_yaml_top_level_key_count = len(keys)
+        escalation_policy_yaml_top_level_keys = keys
+        escalation_policy_yaml_top_level_keys_sample = keys[:12]
+        for k in pol_doc:
+            if not isinstance(k, str):
+                continue
+            v = pol_doc[k]
+            if isinstance(v, dict):
+                escalation_policy_yaml_top_level_kinds["mapping"] += 1
+            elif isinstance(v, list):
+                escalation_policy_yaml_top_level_kinds["list"] += 1
+            elif v is None or isinstance(v, (bool, int, float, str)):
+                escalation_policy_yaml_top_level_kinds["scalar"] += 1
+            else:
+                escalation_policy_yaml_top_level_kinds["other"] += 1
+        raw_mr = pol_doc.get("max_retries_per_stage")
+        if type(raw_mr) is int and not isinstance(raw_mr, bool):
+            escalation_policy_yaml_max_retries_per_stage = raw_mr
+        raw_dm = pol_doc.get("deadlock_escalation_after_minutes")
+        if type(raw_dm) is int and not isinstance(raw_dm, bool):
+            escalation_policy_yaml_deadlock_escalation_after_minutes = raw_dm
+        raw_pv = pol_doc.get("version")
+        if type(raw_pv) is int and not isinstance(raw_pv, bool):
+            escalation_policy_yaml_version = raw_pv
+        ad_blk = pol_doc.get("anti_deadlock")
+        if isinstance(ad_blk, dict):
+            ad_en = ad_blk.get("enabled")
+            if isinstance(ad_en, bool):
+                escalation_policy_yaml_anti_deadlock_enabled = ad_en
+            raw_mpe = ad_blk.get("min_progress_events")
+            if type(raw_mpe) is int and not isinstance(raw_mpe, bool):
+                escalation_policy_yaml_anti_deadlock_min_progress_events = raw_mpe
 
     escalation_policy_yaml_age_seconds: int | None = None
     if escalation_policy_yaml_path_exists and escalation_policy_yaml_load_error is None:
