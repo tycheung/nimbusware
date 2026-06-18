@@ -48,7 +48,7 @@ def test_session_commentary_and_delegate_control(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _enable_collab(monkeypatch)
-    admin = _signup(client, f"admin-{uuid4().hex[:8]}")
+    _signup(client, f"admin-{uuid4().hex[:8]}")
     writer = _signup(client, f"writer-{uuid4().hex[:8]}")
     project_id = _create_project(client, tmp_path)
     sess = client.post("/v1/chat/sessions", json={"project_id": project_id})
