@@ -1,0 +1,54 @@
+# Agent runtime
+
+The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial agentic workflows: multi-role pipeline, unanimous gates, verifiers, and optional Ollama-backed LLM stages.
+
+## Core loop
+
+- **Run lifecycle** — `run.created` → plan → implement/verify with frozen `policy_snapshot`
+- **Adversarial critics** — domain-bound critique stages (security, performance, resilience, refactor)
+- **Unanimous gates** — stage progression blocked until critics/verifiers pass (escalation anti-deadlock)
+- **Parallel writers** — frontend/backend/test writers with `asyncio.gather`
+- **Bundle integrator** — catalog search, FAISS ranking, integrator gate with live adapter probe
+- **Personas** — business + development shelves, probation automation
+- **Self-refinement** — gated/ungated loops with optional LLM critique
+
+## Workflow profiles
+
+| Profile | Use |
+|---------|-----|
+| `patch` | Hotfix lane — one bounded slice, minimal stage graph |
+| `patch_go` / `patch_jvm` | Go/Java patch variants |
+| `micro_slice` | Bounded files/LOC per slice, verify → critique → test → optional `slice.e2e` → gate |
+| `micro_slice_fullstack` | Full-stack + launch-test writer/critic stages |
+| `campaign_micro_slice` | Autonomous campaign — backlog → one slice/tick → completion |
+| `campaign_factory_zero_touch` | Factory scaffold T0–T3 with PUT E2E |
+
+Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_production`.
+
+## Notable subsystems
+
+- **Slice implement agent** — JIT tool loop (`read`, `edit`, `write`, `grep`, `shell`, optional `browser_act`)
+- **Cross-slice handoffs** — deterministic `slice.handoff` summaries
+- **Campaign compaction** — summarize older handoffs in long runs
+- **Factory scaffold** — PUT preview runtime, factory tiers, interaction surface map, PUT E2E flows
+- **Persistent dev env** — session supervisor, incremental regression, UI controller (ADRs [009](adr/009-persistent-dev-environment.md), [010](adr/010-ui-controller.md))
+- **Launch testing** — variable PUT flows, framework packs, human-fidelity checks (ADR [011](adr/011-human-fidelity-e2e.md))
+- **Operator interjection + autopilot** — trust slider 0–10, interjection queue (ADRs [013](adr/013-operator-interjection.md)–[015](adr/015-custom-autopilot-profiles.md))
+- **Code intelligence** — code graph, improvement/resolution councils, variant arena (ADRs [016](adr/016-repo-exploration-variants.md)–[019](adr/019-debate-first-resolution.md))
+- **Preflight** — Ollama/model health at run start
+- **Scraper stage** — role-gated HTTP fetch with artifact retention
+- **Retrieval memory** — index findings/gate failures; replay harness
+
+## Fast slice
+
+`fast_slice: true` or `NIMBUSWARE_FAST_SLICE` skips optional universal critic matrix when max finding severity is below HIGH.
+
+## Parallel critics
+
+When `hardware_tier=strong`, set `NIMBUSWARE_ALLOW_PARALLEL_CRITICS=1` to run security/performance/network critiques concurrently during verify.
+
+## Configuration
+
+Workflow YAML, personas, roles, `model-routing.yaml`, bundles, critic packs, and skills live under [`configs/`](../../configs/). With Postgres, operator edits persist to `nimbusware_config_document` and materialize at API startup.
+
+Critic packs: `GET /v1/config/critic-packs/{id}/workflows` for blast-radius preview.

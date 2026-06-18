@@ -12,7 +12,7 @@ Nimbusware agent `shell` tool execution can run on the host (with filesystem jai
 
 Set `NIMBUSWARE_SANDBOX_DOCKER_IMAGE` (default `python:3.11-slim`). When Docker is unavailable, commands fall back to host execution with a `[sandbox:docker-unavailable]` prefix.
 
-Configure in Maker **Settings** or `.env` (see [README](../../README.md) operator env table).
+Configure in Maker **Settings** or `.env` (see [env vars reference](../../docs/reference/env-vars.md)).
 
 ## Enterprise fleet
 

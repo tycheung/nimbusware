@@ -10,7 +10,7 @@ poetry install
 cp .env.example .env
 ```
 
-Python **>=3.10** (3.11+ recommended). See [README.md](README.md) for install and quick start.
+Python **>=3.10** (3.11+ recommended). See [docs/getting-started.md](docs/getting-started.md) for install and quick start.
 
 ## CI parity
 

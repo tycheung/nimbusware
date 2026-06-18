@@ -40,4 +40,4 @@ poetry run python scripts/benchmarks/measure_intent_to_patch.py --json benchmark
 
 The **&lt; 3 min** quick-path target applies to stub critics with `poetry run nimbusware-run --quick`, not to LLM-backed runs.
 
-See [README.md](../../README.md) Maker onboarding and [operator-settings.md](../operator-settings.md).
+See [getting-started.md](../getting-started.md) Maker onboarding and [operator-settings.md](../operator-settings.md).
