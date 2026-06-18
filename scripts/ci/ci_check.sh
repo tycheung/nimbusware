@@ -39,6 +39,7 @@ poetry run pytest tests/e2e/journeys/test_slice_e2e_workflow.py::test_micro_slic
 poetry run python scripts/ci/run_framework_pack_ci_gate.py
 poetry run python scripts/ci/run_bootstrap_ci_gate.py
 poetry run python scripts/ci/run_publish_bootstrap_ci_gate.py
+poetry run python scripts/ci/run_publish_launcher_ci_gate.py
 poetry run python scripts/ci/run_publish_vscode_ci_gate.py
 poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
 poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py

@@ -75,5 +75,3 @@ curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --
 # Barebones consumer (fast VM / CI)
 curl -fsSL …/install_nimbusware.py | python - --clone … --non-interactive --skip-postgres --install-profile barebones
 ```
-
-Equivalent today before `--install-profile` ships: add `--skip-ollama` for barebones LLM posture.

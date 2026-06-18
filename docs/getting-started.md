@@ -87,12 +87,21 @@ Set `NIMBUSWARE_RUN_DISPATCH=redis` and `NIMBUSWARE_REDIS_URL` for multi-worker 
 python scripts/install_nimbusware.py --skip-linux-desktop-deps
 ```
 
-## Launcher binary
+## Desktop launcher
 
-**Windows:** `.\scripts\publish\build_launcher.ps1` → `dist/NimbuswareLauncher.exe`  
-**macOS / Linux:** `./scripts/publish/build_launcher.sh` → `dist/NimbuswareLauncher`
+Per-OS builds from [GitHub Releases](https://github.com/tycheung/nimbusware/releases) (`launcher-v*` tags) or local build:
 
-Place the binary next to `pyproject.toml`, or run it standalone — **Quick setup** clones or downloads source (git or GitHub zip) and runs the barebones install profile; **Full setup** adds Docker Postgres and Ollama when available.
+```bash
+# Windows
+.\scripts\publish\build_launcher.ps1
+
+# macOS / Linux
+./scripts/publish/build_launcher.sh
+```
+
+Outputs use platform names (e.g. `NimbuswareLauncher-windows-x64.exe`). **Quick setup** clones or downloads source (git or GitHub zip) and runs the barebones install profile; **Full setup** adds Docker Postgres and Ollama when available. See [deploy/launcher.md](deploy/launcher.md).
+
+Without a checkout: `pip install nimbusware-bootstrap` then `nimbusware-bootstrap --print-only` for launcher URL and curl install lines.
 
 ## Enterprise sketch
 

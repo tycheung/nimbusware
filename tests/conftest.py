@@ -23,6 +23,8 @@ def _unit_tests_use_file_config(
     if request.node.get_closest_marker("integration") is not None:
         return
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
+    # GitHub unit job has no NIMBUSWARE_USE_LLM; local .env often sets 0 for stub runs.
+    monkeypatch.delenv("NIMBUSWARE_USE_LLM", raising=False)
 
 
 @pytest.fixture(autouse=True)

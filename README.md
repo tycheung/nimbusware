@@ -22,6 +22,15 @@ poetry run nimbusware-run --quick                      # in-memory demo, no DB
 
 Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Full install and run options: **[docs/getting-started.md](docs/getting-started.md)**.
 
+### Desktop launcher (Windows / macOS / Linux)
+
+Download the platform build from GitHub Releases (`launcher-v*` tags) or build with `scripts/publish/build_launcher.ps1` / `build_launcher.sh`. The launcher offers **Quick setup** (barebones) and **Full setup** (Postgres + Ollama). Details: **[docs/deploy/launcher.md](docs/deploy/launcher.md)**.
+
+```bash
+pip install nimbusware-bootstrap
+nimbusware-bootstrap --print-only    # launcher URL + curl install lines
+```
+
 ## Documentation
 
 | I want to… | Start here |
@@ -36,6 +45,7 @@ Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Full install and run option
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Configure settings (237 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
+| Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
 | Run tests & CI locally | [CONTRIBUTING.md](CONTRIBUTING.md), [tests/README.md](tests/README.md) |
 | Security & compliance | [SECURITY.md](SECURITY.md), [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
 | **Full doc index** | **[docs/README.md](docs/README.md)** |
@@ -74,6 +84,7 @@ tests/        Pytest suite (unit, api, integration, e2e)
 ```bash
 poetry run nimbusware-run          # Desktop: API + Maker
 poetry run nimbusware-admin        # Desktop: API + Admin
+poetry run nimbusware-launcher     # Install / update GUI (or use release binary)
 poetry run nimbusware-api          # API only
 poetry run nimbusware-mcp          # IDE bridge (stdio MCP)
 ```

@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 # Build NimbuswareLauncher binary (macOS / Linux GUI entry point).
-#
-# Output: dist/NimbuswareLauncher (or .exe on Windows)
-# Work files: build/pyinstaller/
-# Spec: scripts/publish/NimbuswareLauncher.spec
-
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"

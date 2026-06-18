@@ -1,5 +1,4 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Built by scripts/publish/build_launcher.ps1 | build_launcher.sh
 
 import os
 

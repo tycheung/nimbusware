@@ -44,6 +44,7 @@ NIMBUSWARE_DATABASE_URL=postgresql://nimbusware:nimbusware@127.0.0.1:5432/nimbus
 - **Weekly / manual** — `ssh_hardware_probe.yml` (Enterprise fleet SSH tier probe; [runbook](ssh-hardware-probe.md)).
 - **PR / manual** — `oidc_smoke.yml` (mock Enterprise OIDC session tests).
 - **Optional ops** — Enterprise integrator gate + live probe: [enterprise-integrator-runbook.md](enterprise-integrator-runbook.md); GitHub Checks or GitLab commit status bridge (integrator, slice.gate, factory.gate): [external-ci-bridge.md](external-ci-bridge.md); headless patch from CI: [headless-patch-ci.md](headless-patch-ci.md).
+- **Launcher releases** — `publish_launcher.yml` on tag `launcher-v*` or manual dispatch; see [launcher.md](launcher.md).
 
 ## Secrets
 

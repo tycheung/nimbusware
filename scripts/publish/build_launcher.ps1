@@ -1,12 +1,4 @@
 # Build NimbuswareLauncher.exe (Windows GUI entry point).
-# Cross-platform: use scripts/publish/build_launcher.sh on macOS / Linux.
-#
-# Output: dist/NimbuswareLauncher.exe
-# Work files: build/pyinstaller/ (gitignored via build/)
-# Spec: scripts/publish/NimbuswareLauncher.spec
-#
-# Place the exe in the Nimbusware repo root (next to pyproject.toml).
-
 # Native tools (poetry, PyInstaller) write diagnostics to stderr; do not treat that as failure.
 $ErrorActionPreference = "Continue"
 Set-Location (Resolve-Path (Join-Path $PSScriptRoot "../..")).Path

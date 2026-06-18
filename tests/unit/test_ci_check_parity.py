@@ -22,6 +22,7 @@ _CRITICAL_STEPS = (
     "run_framework_pack_ci_gate.py",
     "run_bootstrap_ci_gate.py",
     "run_publish_bootstrap_ci_gate.py",
+    "run_publish_launcher_ci_gate.py",
     "run_publish_vscode_ci_gate.py",
     "run_intent_to_patch_ci_gate.py",
     "run_classifier_acceptance_ci_gate.py",

@@ -110,7 +110,9 @@ def run(argv: list[str] | None = None) -> int:
     launcher_url = launcher_release_download_url(args.repo_url, tag=args.launcher_tag)
     lines = [
         f"Launcher ({launcher_name}): {launcher_url}",
-        curl_bootstrap_line(args.repo_url, profile=_PROFILE_RECOMMENDED, target_dir=args.target_dir),
+        curl_bootstrap_line(
+            args.repo_url, profile=_PROFILE_RECOMMENDED, target_dir=args.target_dir
+        ),
         curl_bootstrap_line(args.repo_url, profile=_PROFILE_BAREBONES, target_dir=args.target_dir),
         pip_hint(),
     ]

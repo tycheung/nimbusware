@@ -59,6 +59,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [deploy/k8s/README.md](deploy/k8s/README.md) | Kubernetes manifests |
 | [deploy/helm.md](deploy/helm.md) | Helm chart |
 | [deploy/first-install-timing.md](deploy/first-install-timing.md) | Install → first gate pass timing |
+| [deploy/launcher.md](deploy/launcher.md) | Desktop launcher builds & releases |
 | [deploy/enterprise-integrator-runbook.md](deploy/enterprise-integrator-runbook.md) | Integrator gate |
 | [deploy/production-fleet-redis-secrets.md](deploy/production-fleet-redis-secrets.md) | Multi-broker Redis |
 | [deploy/oidc.md](deploy/oidc.md) | Admin OIDC SSO |

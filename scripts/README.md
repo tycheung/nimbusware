@@ -13,7 +13,7 @@ Operator, CI, install, and release helpers. **Public entry points** stay at `scr
 | [`faiss/`](faiss/) | Bundle & memory FAISS index build/rebuild |
 | [`codegen/`](codegen/) | OpenAPI → TypeScript, model catalog & bundle sync |
 | [`ops/`](ops/) | Dispatch worker, campaign/redis/fullstack soaks, e2e smoke, scraper prune, replay |
-| [`publish/`](publish/) | Bootstrap wheel & VS Code extension publish, PyInstaller launcher, v1.1 ship gates |
+| [`publish/`](publish/) | Launcher PyInstaller builds, release zips/dmg/tar.gz, bootstrap & VS Code publish |
 | [`runbooks/`](runbooks/) | Operator runbooks (fleet dispatch, Redis soak, campaign soak, Ollama SLI) |
 
 ## Common entry points
@@ -38,7 +38,9 @@ NIMBUSWARE_DATABASE_URL=postgresql://... ./scripts/apply_event_store.sh
 | `run_openapi_ts_ci_gate.py` | Regenerate Admin `schema.d.ts` / snapshot `openapi.json` |
 | `run_framework_pack_ci_gate.py` | JS framework pack + launch-test journeys |
 | `run_bootstrap_ci_gate.py` | Bootstrap wheel build smoke |
-| `run_publish_*_ci_gate.py` | Guard publish workflows |
+| `run_publish_launcher_ci_gate.py` | Launcher spec + artifact naming |
+| `run_publish_bootstrap_ci_gate.py` | Bootstrap wheel build smoke |
+| `run_publish_*_ci_gate.py` | Guard other publish workflows |
 | `run_intent_to_patch_ci_gate.py` | Benchmark snapshot SLO |
 | `run_classifier_acceptance_ci_gate.py` | Classifier acceptance SLO |
 | `audit_operator_env.py` | Enforce `NIMBUSWARE_*` catalog coverage |

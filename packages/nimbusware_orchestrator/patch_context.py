@@ -71,7 +71,7 @@ def implementation_path_from_failing_test(failing_test: str, *, stack: str) -> s
     if not path:
         return None
     if stack == "go" and path.endswith("_test.go"):
-        return f"{path[:-len('_test.go')]}.go"
+        return f"{path[: -len('_test.go')]}.go"
     if stack == "jvm" and "src/test/java/" in path and path.endswith("Test.java"):
         return path.replace("src/test/java/", "src/main/java/").removesuffix("Test.java") + ".java"
     if stack == "python" and path.startswith("tests/") and path.endswith(".py"):
@@ -114,13 +114,13 @@ def patch_slice_plan_for_run(
     slice_index: int,
     rows: list[dict[str, Any]],
     workspace: Path,
-) -> "SlicePlan | None":
+) -> SlicePlan | None:
     if not is_patch_run(rows):
         return None
     target_paths = infer_patch_implementation_paths(patch_context_from_run_rows(rows), workspace)
     if not target_paths:
         return None
-    from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
+    from nimbusware_orchestrator.micro_slice import parse_slice_plan
 
     return parse_slice_plan(
         {
