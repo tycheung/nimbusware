@@ -384,6 +384,7 @@ Web entry: `GET /v1/maker/app/` ([`packages/nimbusware_maker_web`](packages/nimb
 - **Host transfer (D8)** — bidirectional admin↔admin, bundle import, conversation freeze, delegate-control API ([`docs/adr/026-host-transfer.md`](docs/adr/026-host-transfer.md))
 
 See [`alllms.md`](alllms.md) completion matrix for the full v1.2 program (Tracks A–D).
+
 - **Enterprise model policy** — `GET/PUT /v1/enterprise/model-policy`; per-run binding audit `GET /v1/runs/{id}/model-bindings/audit`
 
 **Review**

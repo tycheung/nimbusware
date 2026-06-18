@@ -2,7 +2,7 @@
 
 | Document | Audience | Summary |
 |----------|----------|---------|
-| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI (~2,824 unit pytest / 3,684 collected) |
+| [../ARCHITECTURE.md](../ARCHITECTURE.md) | Developers | **Canonical** package map, layers, editions, CI (~2,923 unit pytest / 3,684 collected) |
 | [architecture.md](architecture.md) | Developers | ADR index (no duplicate architecture body) |
 | [operator-settings.md](operator-settings.md) | Operators | Settings catalog (**237** keys; canonical env helpers in `env_flags`) |
 | [ide-bridge.md](ide-bridge.md) | Developers | MCP IDE bridge (`nimbusware-mcp`) v1-shipped; optional VS Code status extension |
