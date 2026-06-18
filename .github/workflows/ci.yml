@@ -163,6 +163,8 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
+      - name: Install Playwright browser (Python e2e journeys)
+        run: poetry run playwright install chromium
       - name: Apply Postgres schema
         run: |
           export NIMBUSWARE_DATABASE_URL="postgresql://nimbusware:nimbusware@localhost:5432/nimbusware"
@@ -174,6 +176,9 @@ jobs:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SLICE_IMPLEMENT: stub
+          NIMBUSWARE_SLICE_P3_EVIDENCE: "0"
+          NIMBUSWARE_USE_LLM: "0"
           NIMBUSWARE_E2E_FLAKE_RETRIES: "1"
 
   put_e2e_gate:

@@ -3,7 +3,7 @@ import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from ".
 import { renderLaunchScorecard, fetchScorecardForRun } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { openSseStream, parseSseJson, theaterLineText } from "../sse-client.js";
-import { appendTheaterLine } from "../../../nimbusware_ui_shared/js/theater-dom.js";
+import { appendTheaterLine } from "../../../../nimbusware_ui_shared/js/theater-dom.js";
 import { PROGRESS_MOUNT_HTML } from "./progress/template.js";
 import { renderFindings, renderGateFailSteps } from "./progress/findings-gates.js";
 import { renderProgressBody, loadCompletionEval } from "./progress/render-chips.js";

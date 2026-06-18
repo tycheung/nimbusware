@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { activateMakerRouteHash } from "./maker_route_helper";
 const RUN_ID = "00000000-0000-4000-8000-000000000005";
 
 test("chat tab shows live theater lines for active run", async ({ page }) => {
@@ -22,19 +23,7 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
 
   await page.goto("/v1/maker/app/");
   await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
-  await page.evaluate(
-    async ({ runId }) => {
-      const shell = document.querySelector("[x-data]") as HTMLElement & {
-        _x_dataStack?: Array<{ route: string }>;
-      };
-      const data = shell?._x_dataStack?.[0];
-      if (data) data.route = "/chat";
-      window.location.hash = `#/chat?run_id=${runId}`;
-      const { loadRoute } = await import("/v1/maker/app/js/tab-loader.js");
-      await loadRoute("/chat");
-    },
-    { runId: RUN_ID },
-  );
+  await activateMakerRouteHash(page, `#/chat?run_id=${RUN_ID}`);
 
   await expect(page.getByTestId("maker-chat-theater-line").first()).toContainText("Planner", {
     timeout: 10_000,

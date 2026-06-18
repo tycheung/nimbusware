@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 
 from nimbusware_maker.chat_store import PostgresChatStore
+from nimbusware_maker.store import PostgresProjectStore
 
 pytestmark = pytest.mark.integration
 
@@ -17,9 +19,17 @@ def _url() -> str:
     return u
 
 
-def test_postgres_chat_analytics_turn_rows() -> None:
-    store = PostgresChatStore(_url())
-    project_id = uuid4()
+def test_postgres_chat_analytics_turn_rows(tmp_path: Path) -> None:
+    url = _url()
+    ws = tmp_path / "chat-analytics-ws"
+    ws.mkdir()
+    project = PostgresProjectStore(url).create(
+        name=f"chat-analytics-{uuid4().hex[:8]}",
+        workspace_path=str(ws),
+        template="attach",
+    )
+    store = PostgresChatStore(url)
+    project_id = project.project_id
     session = store.create_session(project_id=project_id)
     store.append_turn(session.session_id, role="user", text="hello postgres")
     run_id = uuid4()

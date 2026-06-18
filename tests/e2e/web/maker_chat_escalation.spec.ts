@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { activateMakerRoute } from "./maker_route_helper";
+import { activateMakerRouteHash } from "./maker_route_helper";
 
 const SESSION_ID = "pw-chat-escalation-session";
 const RUN_ID = "00000000-0000-4000-8000-000000000003";
@@ -76,19 +76,7 @@ test("chat offers slice escalation after patch gate fail", async ({ page }) => {
     { sid: SESSION_ID, pid: PROJECT_ID },
   );
 
-  await page.evaluate(
-    async ({ runId }) => {
-      const shell = document.querySelector("[x-data]") as HTMLElement & {
-        _x_dataStack?: Array<{ route: string }>;
-      };
-      const data = shell?._x_dataStack?.[0];
-      if (data) data.route = "/chat";
-      window.location.hash = `#/chat?run_id=${runId}`;
-      const { loadRoute } = await import("/v1/maker/app/js/tab-loader.js");
-      await loadRoute("/chat");
-    },
-    { runId: RUN_ID },
-  );
+  await activateMakerRouteHash(page, `#/chat?run_id=${RUN_ID}`);
   await expect(page.locator("#view-chat")).toBeVisible();
   await expect(page.getByTestId("maker-chat-escalate-slice")).toBeVisible({ timeout: 10_000 });
 });
@@ -157,19 +145,7 @@ test("chat offers campaign promotion after slice replans", async ({ page }) => {
     { sid: SESSION_ID, pid: PROJECT_ID },
   );
 
-  await page.evaluate(
-    async ({ runId }) => {
-      const shell = document.querySelector("[x-data]") as HTMLElement & {
-        _x_dataStack?: Array<{ route: string }>;
-      };
-      const data = shell?._x_dataStack?.[0];
-      if (data) data.route = "/chat";
-      window.location.hash = `#/chat?run_id=${runId}`;
-      const { loadRoute } = await import("/v1/maker/app/js/tab-loader.js");
-      await loadRoute("/chat");
-    },
-    { runId: RUN_ID },
-  );
+  await activateMakerRouteHash(page, `#/chat?run_id=${RUN_ID}`);
   await expect(page.getByTestId("maker-chat-escalate-campaign")).toBeVisible({ timeout: 10_000 });
   await page.getByTestId("maker-chat-escalate-campaign").click();
   await expect(page).toHaveURL(/run_id=00000000-0000-4000-8000-000000000004/, { timeout: 10_000 });

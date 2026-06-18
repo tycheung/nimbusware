@@ -133,12 +133,15 @@ def check_poetry_env() -> CheckResult:
     )
 
 
-def check_journey_tests() -> CheckResult:
+def check_journey_tests(*, profile: str = "app") -> CheckResult:
     env = os.environ.copy()
     env.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
     env.setdefault("NIMBUSWARE_REPO_ROOT", str(REPO_ROOT))
     env.setdefault("NIMBUSWARE_SLICE_IMPLEMENT", "stub")
     env.setdefault("NIMBUSWARE_SLICE_AUTO_ADVANCE", "0")
+    env.setdefault("NIMBUSWARE_SLICE_P3_EVIDENCE", "0")
+    env.setdefault("NIMBUSWARE_USE_LLM", "0")
+    marker = "e2e_journey and not integration" if profile == "app" else "e2e_journey"
     code = _run(
         [
             _poetry(),
@@ -147,7 +150,7 @@ def check_journey_tests() -> CheckResult:
             "tests/e2e/journeys",
             "-q",
             "-m",
-            "e2e_journey",
+            marker,
             "--maxfail=3",
         ],
         env=env,
@@ -155,7 +158,7 @@ def check_journey_tests() -> CheckResult:
     return CheckResult(
         "journey_tests",
         code == 0,
-        "pytest tests/e2e/journeys -m e2e_journey",
+        f"pytest tests/e2e/journeys -m {marker}",
         required=True,
     )
 
@@ -238,7 +241,9 @@ with TestClient(app) as client:
 print("api_smoke ok")
 """ % str(REPO_ROOT)
     code = _poetry_run_python(snippet)
-    return CheckResult("api_run_smoke", code == 0, "TestClient POST /v1/runs + timeline", required=True)
+    return CheckResult(
+        "api_run_smoke", code == 0, "TestClient POST /v1/runs + timeline", required=True
+    )
 
 
 def check_web_ui_smoke() -> CheckResult:
@@ -263,7 +268,9 @@ print("web_ui_smoke ok")
 def check_faiss_stale_rebuild() -> CheckResult:
     script = REPO_ROOT / "scripts" / "faiss" / "rebuild_bundle_faiss_if_stale.py"
     if not script.is_file():
-        return CheckResult("faiss_rebuild", False, "missing rebuild_bundle_faiss_if_stale.py", required=False)
+        return CheckResult(
+            "faiss_rebuild", False, "missing rebuild_bundle_faiss_if_stale.py", required=False
+        )
     code = _run([sys.executable, str(script), "--dry-run"], cwd=REPO_ROOT)
     return CheckResult(
         "faiss_rebuild",
@@ -276,7 +283,9 @@ def check_faiss_stale_rebuild() -> CheckResult:
 def check_install_script() -> CheckResult:
     script = REPO_ROOT / "scripts" / "install_nimbusware.py"
     code = _run([sys.executable, str(script), "--check-only"], cwd=REPO_ROOT)
-    return CheckResult("install_check", code == 0, "install_nimbusware.py --check-only", required=True)
+    return CheckResult(
+        "install_check", code == 0, "install_nimbusware.py --check-only", required=True
+    )
 
 
 def run_checks(
@@ -315,7 +324,7 @@ def run_checks(
             ),
         )
     results.append(check_api_smoke())
-    results.append(check_journey_tests())
+    results.append(check_journey_tests(profile=profile))
     results.append(check_web_ui_smoke())
     results.append(check_faiss_stale_rebuild())
     return results
@@ -323,8 +332,12 @@ def run_checks(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Nimbusware end-to-end operator smoke checks.")
-    parser.add_argument("--database-url", default=os.environ.get("NIMBUSWARE_DATABASE_URL", DEFAULT_DATABASE_URL))
-    parser.add_argument("--no-docker", action="store_true", help="Do not try docker compose for Postgres")
+    parser.add_argument(
+        "--database-url", default=os.environ.get("NIMBUSWARE_DATABASE_URL", DEFAULT_DATABASE_URL)
+    )
+    parser.add_argument(
+        "--no-docker", action="store_true", help="Do not try docker compose for Postgres"
+    )
     parser.add_argument("--skip-integration", action="store_true")
     parser.add_argument("--skip-install-check", action="store_true")
     parser.add_argument(

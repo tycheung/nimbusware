@@ -126,12 +126,23 @@ test("autopilot ribbon applies level via API from UI", async ({ page, request })
 
   const slider = page.getByTestId("maker-autopilot-slider");
   await expect(slider).toBeVisible({ timeout: 15_000 });
+  await page.waitForResponse(
+    (resp) =>
+      resp.url().includes(`/v1/runs/${runId}/autopilot`) && resp.request().method() === "GET",
+    { timeout: 15_000 },
+  );
   await slider.evaluate((el) => {
     (el as HTMLInputElement).value = "8";
     el.dispatchEvent(new Event("input", { bubbles: true }));
   });
   const savePromise = page.waitForResponse(
-    (resp) => resp.url().includes(`/v1/runs/${runId}/autopilot`) && resp.request().method() === "PUT",
+    async (resp) => {
+      if (!resp.url().includes(`/v1/runs/${runId}/autopilot`) || resp.request().method() !== "PUT") {
+        return false;
+      }
+      const body = await resp.json();
+      return body.level === 8;
+    },
   );
   await page.getByTestId("maker-autopilot-save").click();
   await savePromise;
