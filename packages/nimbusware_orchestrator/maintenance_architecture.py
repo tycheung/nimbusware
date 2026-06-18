@@ -50,13 +50,30 @@ def run_maintenance_architecture(
         rows = store.list_run_events(str(run_id))
         backlog = backlog_from_events(rows)
         if backlog is not None:
+            from nimbusware_maker.workspace import resolve_run_workspace
+            from nimbusware_orchestrator.repo_inventory import build_repo_inventory
+
+            ws = resolve_run_workspace(rows)
+            inv = build_repo_inventory(ws)
+            rationale = "Architecture pass follow-up slice"
+            target_paths: tuple[str, ...] = ("packages/",)
+            if inv.orphan_count > 0:
+                rationale = f"Architecture: address {inv.orphan_count} orphan module(s)"
+            elif inv.duplicate_clusters > 0:
+                rationale = f"Architecture: deduplicate {inv.duplicate_clusters} similar cluster(s)"
+            else:
+                from nimbusware_orchestrator.feature_gap_matrix import build_feature_gap_matrix
+
+                gap = build_feature_gap_matrix(ws)
+                if gap.gaps:
+                    rationale = f"Architecture: close gap `{gap.gaps[0]}`"
             epics = list(backlog.epics)
             if epics and epics[0].features:
                 feat = epics[0].features[0]
                 arch_slice = BacklogSlice(
                     slice_id=f"arch-review-{slices_completed}",
-                    rationale="Architecture pass follow-up slice",
-                    target_paths=("packages/",),
+                    rationale=rationale,
+                    target_paths=target_paths,
                 )
                 feat = feat.model_copy(update={"slices": tuple(list(feat.slices) + [arch_slice])})
                 epics[0] = epics[0].model_copy(update={"features": (feat,)})

@@ -10,14 +10,9 @@ from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_ca
 def security_scan_metadata_workflow_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("workflow_yaml_top_level_version_int")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
-        return None
-    return f"Security scan metadata workflow YAML top-level version: **{raw}**."
+    from nimbusware_console.explainer_core.yaml_version_caption import workflow_yaml_version_caption
+
+    return workflow_yaml_version_caption(payload, label="Security scan metadata")
 
 
 def security_scan_metadata_workflow_yaml_string_key_count_caption(

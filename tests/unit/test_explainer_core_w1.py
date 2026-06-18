@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    apply_bool_payload_fields,
+    default_operator_metrics,
+    metrics_caption,
+    metrics_table_rows,
+)
 from nimbusware_console.explainer_core.payload import payload_mapping, payload_str_field
 from nimbusware_console.explainer_core.time import age_seconds_utc
 from nimbusware_console.explainer_core.universal_critique_counts import (
@@ -39,11 +45,20 @@ _ALLOWED_EXPLAINER_PACKAGES = frozenset(
     {
         "agent_evaluator_workflow_explainer",
         "escalation_suppress_workflow_explainer",
+        "integration_adapter_writer_workflow_explainer",
         "security_scan_metadata_workflow_explainer",
         "self_refinement_workflow_explainer",
         "universal_critique_workflow_explainer",
     }
 )
+
+
+def test_metrics_scaffold_field_map() -> None:
+    metrics = default_operator_metrics({"enabled": False, "count": 0})
+    apply_bool_payload_fields(metrics, {"on": True, "off": False}, (("on", "enabled"),))
+    rows = metrics_table_rows(metrics, (("Enabled", "enabled"), ("Count", "count")))
+    assert rows[0]["value"] == "true"
+    assert metrics_caption("Test: ", ["a", "b"]) == "Test: a, b."
 
 
 def test_explainer_package_allowlist_frozen() -> None:

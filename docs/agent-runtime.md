@@ -34,10 +34,14 @@ Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_
 - **Persistent dev env** — session supervisor, incremental regression, UI controller (ADRs [009](adr/009-persistent-dev-environment.md), [010](adr/010-ui-controller.md))
 - **Launch testing** — variable PUT flows, framework packs, human-fidelity checks (ADR [011](adr/011-human-fidelity-e2e.md))
 - **Operator interjection + autopilot** — trust slider 0–10, interjection queue (ADRs [013](adr/013-operator-interjection.md)–[015](adr/015-custom-autopilot-profiles.md))
-- **Code intelligence** — code graph, improvement/resolution councils, variant arena (ADRs [016](adr/016-repo-exploration-variants.md)–[019](adr/019-debate-first-resolution.md))
+- **Code intelligence** — code graph (v2 bundle), entrypoint-aware orphans/route reachability, deterministic refactor patches (+ optional LLM patch when `refactor.llm_enabled`), improvement/resolution councils, variant arena (ADRs [016](adr/016-repo-exploration-variants.md)–[019](adr/019-debate-first-resolution.md))
 - **Preflight** — Ollama/model health at run start
 - **Scraper stage** — role-gated HTTP fetch with artifact retention
 - **Retrieval memory** — index findings/gate failures; replay harness
+
+## Refactor stage
+
+When `refactor.enabled` and `stub_only: false` (production default), the pipeline loads a **code-intel bundle** (`.nimbusware/code_intel/{fingerprint}.json`, schema v2) and emits a proposal with a non-empty **JSON patch** for orphan or route-reachability findings. `refactor.critique` fails when the orphan gate is exceeded or when a non-`noop` proposal has an empty patch. Optional `refactor.llm_enabled` requests an LLM-generated patch via Ollama (`NIMBUSWARE_USE_LLM=1`) and falls back to deterministic patches.
 
 ## Fast slice
 

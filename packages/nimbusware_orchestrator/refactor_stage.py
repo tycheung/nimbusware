@@ -19,6 +19,11 @@ from agent_core.models import (
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import append_gate_decision_event
+from nimbusware_orchestrator.refactor_proposal import (
+    build_refactor_proposal,
+    estimate_loc_delta_from_patch,
+    orphan_gate_exceeded,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_orchestrator.workflow_refactor import RefactorWorkflowBlock
@@ -81,11 +86,6 @@ def emit_refactor_stage_and_critique(
     orphan_gate_fail = False
     proposal_meta: dict[str, Any] = {}
     if not block.stub_only and workspace is not None and workspace.is_dir():
-        from nimbusware_orchestrator.refactor_proposal import (
-            build_refactor_proposal,
-            orphan_gate_exceeded,
-        )
-
         proposal = build_refactor_proposal(workspace, workspace, block)
         proposal_meta = dict(proposal)
         orphan_gate_fail = orphan_gate_exceeded(
@@ -102,10 +102,16 @@ def emit_refactor_stage_and_critique(
                     nimbusware_use_llm_enabled,
                 )
                 from nimbusware_orchestrator.llm.common import ollama_chat_json_via_plan_patch
+                from nimbusware_orchestrator.refactor_proposal import build_refactor_patch_artifact
 
                 if nimbusware_use_llm_enabled():
                     model = env_str("NIMBUSWARE_DEFAULT_MODEL") or "llama3.2"
                     base = nimbusware_ollama_base_url()
+                    intel_hint = (
+                        f"proposal_kind={proposal.get('proposal_kind')}; "
+                        f"orphans={proposal.get('orphan_count')}; "
+                        f"unreachable={proposal.get('unreachable_module_count')}"
+                    )
                     payload = ollama_chat_json_via_plan_patch(
                         base_url=base,
                         model=model,
@@ -114,17 +120,40 @@ def emit_refactor_stage_and_critique(
                             {
                                 "role": "user",
                                 "content": (
-                                    "Summarize one low-risk refactor for this workspace "
-                                    "(JSON: summary, target_paths)."
+                                    "Propose one low-risk refactor as JSON with keys: "
+                                    "summary (str), target_paths (list[str]), "
+                                    "patch_artifact (list of RFC6902 ops with op, path, value). "
+                                    f"Context: {intel_hint}"
                                 ),
                             },
                         ],
-                        agent_role="backend_writer",
+                        agent_role="refactorer",
                     )
                     if payload.get("summary"):
                         llm_summary = str(payload.get("summary"))[:500]
+                    patch_raw = payload.get("patch_artifact")
+                    if isinstance(patch_raw, list) and patch_raw:
+                        import json
+
+                        proposal_meta["patch_artifact"] = json.dumps(patch_raw)
+                        proposal_meta["summary"] = str(
+                            payload.get("summary") or proposal_meta.get("summary", ""),
+                        )[:500]
+                        targets = payload.get("target_paths")
+                        if isinstance(targets, list) and targets:
+                            proposal_meta["target_paths"] = [
+                                str(x) for x in targets if isinstance(x, str) and str(x).strip()
+                            ]
+                        refactor_mode = "llm_patch"
+                    elif payload.get("summary"):
+                        refactor_mode = "llm_proposal"
                     else:
                         refactor_mode = "code_intel_proposal"
+                    if refactor_mode != "llm_patch" and not proposal_meta.get("patch_artifact"):
+                        proposal_meta["patch_artifact"] = build_refactor_patch_artifact(
+                            proposal_meta,
+                            workspace,
+                        )
             except Exception:
                 refactor_mode = "code_intel_proposal"
     refactor_meta: dict[str, Any] = {
@@ -143,7 +172,11 @@ def emit_refactor_stage_and_critique(
         from nimbusware_orchestrator.simplification_metrics import ComplexityIndex
 
         cx = ComplexityIndex.from_workspace(workspace)
-        loc_delta = max(0, cx.loc - block.max_iterations * 40)
+        patch_raw = str(proposal_meta.get("patch_artifact") or "[]")
+        patch_loc = estimate_loc_delta_from_patch(patch_raw)
+        loc_delta = (
+            patch_loc if patch_loc is not None else max(0, cx.loc - block.max_iterations * 40)
+        )
         loc_accord_ok = emit_refactor_loc_accord_stage(store, run_id, loc_delta=loc_delta)
         refactor_meta.update(
             {
@@ -186,13 +219,39 @@ def emit_refactor_stage_and_critique(
     )
 
     critic_payloads: list[CriticVerdictEmittedPayload] = []
+    patch_artifact = str(proposal_meta.get("patch_artifact") or "[]")
+    proposal_kind = proposal_meta.get("proposal_kind")
+    empty_patch_fail = (
+        not block.stub_only and proposal_kind not in (None, "noop") and patch_artifact in ("[]", "")
+    )
+    fail_targets = proposal_meta.get("target_paths")
+    target_files = (
+        [str(x) for x in fail_targets if isinstance(x, str) and str(x).strip()]
+        if isinstance(fail_targets, list)
+        else ["packages/"]
+    )
     for tax_key in tax_keys:
         critic_role = registry.resolve(tax_key)
         fail = force_fail and tax_key in (_REFACTOR_CRITIC, _CODE_QUALITY_CRITIC)
         if orphan_gate_fail and tax_key == _REFACTOR_CRITIC:
             fail = True
+        if empty_patch_fail and tax_key == _REFACTOR_CRITIC:
+            fail = True
         verdict = Verdict.FAIL if fail else Verdict.PASS
-        fixes = [_REFACTOR_FAIL_FIX] if verdict == Verdict.FAIL else []
+        fixes = []
+        if verdict == Verdict.FAIL:
+            fixes = [
+                RequiredFixArtifact.model_validate(
+                    {
+                        "artifact_schema_version": 1,
+                        "format": "json_patch",
+                        "target_files": target_files or ["packages/"],
+                        "patch_artifact": patch_artifact,
+                        "validation_steps": ["address refactor critique findings"],
+                        "acceptance_criteria": "refactor.critique gate passes",
+                    },
+                ),
+            ]
         payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
             verdict=verdict,

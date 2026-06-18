@@ -28,6 +28,7 @@ Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Full install and run option
 |------------|------------|
 | Install, bootstrap, and run | [docs/getting-started.md](docs/getting-started.md) |
 | Use the Maker app | [docs/product/maker.md](docs/product/maker.md) |
+| Understand refactor / code-intel | [docs/agent-runtime.md](docs/agent-runtime.md#refactor-stage) |
 | Use the Admin Console | [docs/product/admin.md](docs/product/admin.md) |
 | Understand editions & auth | [docs/product/editions.md](docs/product/editions.md) |
 | Browse API endpoints | [docs/product/api-overview.md](docs/product/api-overview.md) |

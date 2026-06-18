@@ -1,5 +1,4 @@
 from nimbusware_console.agent_evaluator_workflow_explainer import (
-    _agent_evaluator_explainer_cell,
     _nimbusware_agent_evaluator_auto_create_env_summary,
     _nimbusware_agent_evaluator_auto_promote_env_summary,
     _nimbusware_agent_evaluator_env_summary,
@@ -8,10 +7,6 @@ from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_auto_create_env_gate_caption,
     agent_evaluator_auto_promote_env_gate_caption,
     agent_evaluator_env_gate_caption,
-    agent_evaluator_explainer_export_json,
-    agent_evaluator_explainer_table_rows,
-    agent_evaluator_explainer_table_rows_csv,
-    agent_evaluator_export_filename_slug,
     agent_evaluator_llm_evaluation_enabled_caption,
     agent_evaluator_persona_id_caption,
     agent_evaluator_workflow_explainer_operator_metrics,
@@ -27,4 +22,5 @@ from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_yaml_parsed_enabled_caption,
     agent_evaluator_yaml_raw_type_caption,
     agent_evaluator_yaml_true_bool_count_caption,
+    install_named_workflow_explainer_exports,
 )

@@ -26,7 +26,8 @@ Build Admin SPA before packaging: `cd packages/nimbusware_admin_ui && npm ci && 
 nimbusware_console/
 ├── services/                 # HTTP clients to /v1 (runs, chat, config, ollama, …)
 ├── components/               # Shared explainer panel + operator metrics helpers
-├── explainer_core/           # Workflow profile exports, env captions, payload helpers
+├── explainer_core/           # metrics_scaffold, workflow_payload_header, yaml_version_caption, exports
+├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
 ├── *_display.py              # Top-level display facades (import these from BFF routes)
 ├── operator_chat_core.py     # Operator chat command handling
 ├── admin_gate.py             # Token gate helpers

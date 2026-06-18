@@ -498,6 +498,15 @@ def execute_improvement_track(
     if track in {ImprovementTrack.DISCOVER_FEATURES, ImprovementTrack.SIMPLIFY}:
         explore = run_repo_explore(workspace)
         emit_repo_explore(store, run_id, explore)
+        from nimbusware_orchestrator.improvement_council_backlog import queue_council_backlog_slice
+
+        if track == ImprovementTrack.SIMPLIFY:
+            queue_council_backlog_slice(store, run_id, workspace, track)
+        return
+    if track == ImprovementTrack.IMPLEMENT_PLANNED:
+        from nimbusware_orchestrator.improvement_council_backlog import queue_council_backlog_slice
+
+        queue_council_backlog_slice(store, run_id, workspace, track)
         return
     if track == ImprovementTrack.RESEARCH_TRANSPLANT:
         applied = run_research_transplant_track(store, run_id, workspace, repo_root=repo_root)

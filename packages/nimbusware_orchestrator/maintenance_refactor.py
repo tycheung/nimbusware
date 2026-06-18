@@ -90,8 +90,10 @@ def run_maintenance_refactor(
             target_paths: tuple[str, ...] = ("packages/",)
             rationale = "Refactor maintenance fix slice"
             if orphan_report.orphans:
-                target_paths = (orphan_report.orphans[0],)
-                rationale = f"Simplify orphan module: {orphan_report.orphans[0]}"
+                first = orphan_report.orphans[0]
+                reason = orphan_report.orphan_metadata.get(first, "orphan")
+                target_paths = (first,)
+                rationale = f"Simplify orphan module: {first} ({reason})"
             elif duplicate_clusters:
                 cluster = duplicate_clusters[0]
                 if cluster.paths:

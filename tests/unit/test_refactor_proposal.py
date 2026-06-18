@@ -37,6 +37,7 @@ def test_build_refactor_proposal_orphan_target(tmp_path: Path) -> None:
     )
     assert proposal["proposal_kind"] == "orphan_fixup"
     assert proposal["orphan_count"] >= 1
+    assert proposal["patch_artifact"] not in ("[]", "")
 
 
 def test_refactor_orphan_gate_fails_critique(tmp_path: Path) -> None:
@@ -69,3 +70,57 @@ def test_refactor_orphan_gate_fails_critique(tmp_path: Path) -> None:
         and (r.get("payload") or {}).get("stage_name") == "refactor.critique"
     )
     assert str((gate.get("payload") or {}).get("verdict")).upper() == "FAIL"
+
+
+def test_refactor_llm_patch_path(monkeypatch: object, tmp_path: Path) -> None:
+    from uuid import uuid4
+
+    from nimbusware_extensions.phase2 import UniversalCritiqueRouter
+    from nimbusware_orchestrator.refactor_stage import emit_refactor_stage_and_critique
+    from nimbusware_orchestrator.registry import RoleRegistry
+    from nimbusware_store.memory import InMemoryEventStore
+
+    ws = tmp_path / "proj"
+    ws.mkdir()
+    (ws / "orphan.py").write_text("X = 1\n", encoding="utf-8")
+
+    def _fake_ollama(**_kwargs: object) -> dict[str, object]:
+        return {
+            "summary": "Wire orphan module",
+            "target_paths": ["orphan.py"],
+            "patch_artifact": [{"op": "add", "path": "orphan.py", "value": "# wired"}],
+        }
+
+    monkeypatch.setenv("NIMBUSWARE_USE_LLM", "1")
+    monkeypatch.setattr(
+        "nimbusware_orchestrator.llm.common.ollama_chat_json_via_plan_patch",
+        _fake_ollama,
+    )
+    monkeypatch.setattr(
+        "nimbusware_env.env_flags.nimbusware_use_llm_enabled",
+        lambda: True,
+    )
+
+    store = InMemoryEventStore()
+    registry = RoleRegistry.from_yaml(_REPO / "configs" / "roles.yaml")
+    router = UniversalCritiqueRouter.from_yaml(
+        _REPO / "configs" / "personas" / "critique_pairings.yaml",
+    )
+    run_id = uuid4()
+    emit_refactor_stage_and_critique(
+        store,
+        registry,
+        router,
+        run_id=run_id,
+        block=RefactorWorkflowBlock(enabled=True, stub_only=False, llm_enabled=True),
+        workspace=ws,
+    )
+    started = next(
+        r
+        for r in store.list_run_events(str(run_id))
+        if r.get("event_type") == "stage.started"
+        and (r.get("payload") or {}).get("stage_name") == "refactor"
+    )
+    meta = (started.get("metadata") or {}).get("refactor") or {}
+    assert meta.get("mode") == "llm_patch"
+    assert meta.get("patch_artifact") not in ("[]", "")

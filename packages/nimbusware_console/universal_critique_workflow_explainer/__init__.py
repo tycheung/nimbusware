@@ -22,6 +22,9 @@ from nimbusware_console.explainer_core.universal_critique_counts import (
 from nimbusware_console.explainer_core.universal_critique_counts import (
     universal_critique_yaml_value_nonempty as _universal_critique_yaml_value_nonempty,
 )
+from nimbusware_console.explainer_core.workflow_exports import (
+    install_named_workflow_explainer_exports,
+)
 from nimbusware_console.universal_critique_workflow_explainer.captions import (
     _UNIVERSAL_CRITIQUE_STAGE_KEYS_CAP,
     universal_critique_default_enabled_caption,
@@ -42,13 +45,6 @@ from nimbusware_console.universal_critique_workflow_explainer.compare import (
     universal_critique_env_override_deltas,
     universal_critique_workflow_vs_timeline_rows,
 )
-from nimbusware_console.universal_critique_workflow_explainer.exports import (
-    _universal_critique_explainer_cell,
-    universal_critique_explainer_export_json,
-    universal_critique_explainer_table_rows,
-    universal_critique_explainer_table_rows_csv,
-    universal_critique_export_filename_slug,
-)
 from nimbusware_console.universal_critique_workflow_explainer.metrics import (
     universal_critique_workflow_explainer_operator_metrics,
     universal_critique_workflow_explainer_operator_metrics_caption,
@@ -59,4 +55,10 @@ from nimbusware_console.universal_critique_workflow_explainer.metrics import (
 )
 from nimbusware_console.universal_critique_workflow_explainer.payload import (
     universal_critique_workflow_explainer_payload,
+)
+
+install_named_workflow_explainer_exports(
+    globals(),
+    "universal_critique",
+    cell_alias="_universal_critique_explainer_cell",
 )

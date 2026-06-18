@@ -75,6 +75,7 @@ class ResolutionCouncilResult:
             "hard_block": self.verdict.hard_block,
             "rounds": self.verdict.rounds,
             "detail": self.verdict.detail,
+            "resolution_rationale": self.verdict.detail,
             "dissent": self.verdict.dissent,
             "loc_accord": self.verdict.loc_accord,
         }

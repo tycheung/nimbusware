@@ -1,3 +1,7 @@
+from nimbusware_console.components.operator_metrics import FIELD_VALUE_COLUMNS
+from nimbusware_console.explainer_core.workflow_exports import (
+    install_named_workflow_explainer_exports,
+)
 from nimbusware_console.security_scan_metadata_workflow_explainer.captions import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
@@ -12,15 +16,6 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.captions impor
 from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
     _nimbusware_attach_security_scan_metadata_env_summary,
 )
-from nimbusware_console.security_scan_metadata_workflow_explainer.exports import (
-    _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS,
-    _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS,
-    _security_scan_metadata_explainer_cell,
-    security_scan_metadata_explainer_export_json,
-    security_scan_metadata_explainer_table_rows,
-    security_scan_metadata_explainer_table_rows_csv,
-    security_scan_metadata_export_filename_slug,
-)
 from nimbusware_console.security_scan_metadata_workflow_explainer.metrics import (
     security_scan_metadata_workflow_explainer_operator_metrics,
     security_scan_metadata_workflow_explainer_operator_metrics_caption,
@@ -32,3 +27,11 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.metrics import
 from nimbusware_console.security_scan_metadata_workflow_explainer.payload import (
     security_scan_metadata_workflow_explainer_payload,
 )
+
+install_named_workflow_explainer_exports(
+    globals(),
+    "security_scan_metadata",
+    cell_alias="_security_scan_metadata_explainer_cell",
+)
+_SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS = FIELD_VALUE_COLUMNS
+_SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS = FIELD_VALUE_COLUMNS

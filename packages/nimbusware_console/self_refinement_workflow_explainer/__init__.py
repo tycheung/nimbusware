@@ -1,3 +1,6 @@
+from nimbusware_console.explainer_core.workflow_exports import (
+    install_named_workflow_explainer_exports,
+)
 from nimbusware_console.self_refinement_workflow_explainer.captions import (
     self_refinement_merged_description_preview_caption,
     self_refinement_merged_version_caption,
@@ -20,13 +23,6 @@ from nimbusware_console.self_refinement_workflow_explainer.env import (
     _self_refinement_stage_marker_env_disabled,
     self_refinement_ungated_loop_env_gate_caption,
 )
-from nimbusware_console.self_refinement_workflow_explainer.exports import (
-    _self_refinement_explainer_cell,
-    self_refinement_explainer_export_json,
-    self_refinement_explainer_table_rows,
-    self_refinement_explainer_table_rows_csv,
-    self_refinement_export_filename_slug,
-)
 from nimbusware_console.self_refinement_workflow_explainer.marker_exports import (
     self_refinement_marker_merge_compare_export_filename_slug,
     self_refinement_marker_merge_compare_export_json,
@@ -44,4 +40,10 @@ from nimbusware_console.self_refinement_workflow_explainer.metrics import (
 )
 from nimbusware_console.self_refinement_workflow_explainer.payload import (
     self_refinement_workflow_explainer_payload,
+)
+
+install_named_workflow_explainer_exports(
+    globals(),
+    "self_refinement",
+    cell_alias="_self_refinement_explainer_cell",
 )

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import hashlib
 import json
 from collections import deque
@@ -7,9 +8,10 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_orchestrator.code_graph import CodeGraphIndex, build_code_graph
+from nimbusware_orchestrator.code_intel_entrypoints import discover_entrypoint_modules
 from nimbusware_orchestrator.orphan_index import build_orphan_report
 
-_CODE_INTEL_VERSION = 1
+_CODE_INTEL_VERSION = 2
 _REL_DIR = Path(".nimbusware/code_intel")
 
 
@@ -21,16 +23,34 @@ def code_intel_path(repo_root: Path, workspace: Path) -> Path:
     return repo_root / _REL_DIR / f"{workspace_fingerprint(workspace)}.json"
 
 
+def _fastapi_router_imports(app_path: Path) -> list[str]:
+    try:
+        tree = ast.parse(app_path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return []
+    imports: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            imports.append(node.module.replace(".", "/") + ".py")
+        elif isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Attribute) and func.attr == "include_router":
+                if node.args and isinstance(node.args[0], ast.Name):
+                    imports.append(f"router:{node.args[0].id}")
+    return imports
+
+
 def compute_route_reachability(workspace: Path, graph: CodeGraphIndex) -> dict[str, Any]:
     ws = workspace.resolve()
-    entries: list[str] = []
-    for rel in ("main.py", "app.py"):
-        if (ws / rel).is_file():
-            entries.append(rel)
+    entries = discover_entrypoint_modules(ws)
+
     for py in sorted(ws.rglob("app.py")):
-        rel = str(py.relative_to(ws)).replace("\\", "/")
-        if rel not in entries and "nimbusware_api" in rel.replace("\\", "/"):
-            entries.append(rel)
+        for imp in _fastapi_router_imports(py):
+            if imp.startswith("router:"):
+                continue
+            candidate = imp.replace("\\", "/")
+            if (ws / candidate).is_file() and candidate not in entries:
+                entries.append(candidate)
 
     adj: dict[str, set[str]] = {}
     for src, tgt in graph.import_edges:
@@ -52,6 +72,7 @@ def compute_route_reachability(workspace: Path, graph: CodeGraphIndex) -> dict[s
     unreachable = sorted(m for m in modules if m not in reachable and not m.endswith("__init__.py"))
     return {
         "entry_modules": entries,
+        "entrypoints_used": entries,
         "reachable_module_count": len(reachable & modules),
         "unreachable_modules": unreachable[:50],
         "unreachable_count": len(unreachable),
@@ -60,10 +81,12 @@ def compute_route_reachability(workspace: Path, graph: CodeGraphIndex) -> dict[s
 
 def build_code_intel_bundle(workspace: Path) -> dict[str, Any]:
     graph = build_code_graph(workspace)
-    orphans = build_orphan_report(workspace, graph=graph)
+    entries = discover_entrypoint_modules(workspace)
+    orphans = build_orphan_report(workspace, graph=graph, entry_modules=entries)
     return {
         "version": _CODE_INTEL_VERSION,
         "workspace": str(workspace.resolve()),
+        "entrypoints": entries,
         "graph": graph.to_dict(),
         "orphans": orphans.to_dict(),
         "route_reachability": compute_route_reachability(workspace, graph),
@@ -93,7 +116,7 @@ def load_code_intel(repo_root: Path, workspace: Path) -> dict[str, Any] | None:
 
 def load_or_build_code_intel(repo_root: Path, workspace: Path) -> dict[str, Any]:
     cached = load_code_intel(repo_root, workspace)
-    if cached is not None:
+    if cached is not None and cached.get("version") == _CODE_INTEL_VERSION:
         return cached
     bundle = build_code_intel_bundle(workspace)
     persist_code_intel(repo_root, workspace, bundle)

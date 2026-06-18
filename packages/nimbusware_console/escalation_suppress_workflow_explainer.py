@@ -1,8 +1,6 @@
 from nimbusware_console.escalation_suppress_workflow_explainer import (
     _age_seconds_utc,
     _escalation_policy_keys_rows_from_list,
-    _escalation_suppress_explainer_cell,
-    escalation_policy_export_filename_slug,
     escalation_policy_yaml_age_caption,
     escalation_policy_yaml_anti_deadlock_min_progress_caption,
     escalation_policy_yaml_anti_deadlock_shape_caption,
@@ -22,10 +20,6 @@ from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
     escalation_policy_yaml_verification_shape_caption,
     escalation_policy_yaml_version_caption,
-    escalation_suppress_explainer_export_json,
-    escalation_suppress_explainer_table_rows,
-    escalation_suppress_explainer_table_rows_csv,
-    escalation_suppress_export_filename_slug,
     escalation_suppress_flag_caption,
     escalation_suppress_workflow_explainer_operator_metrics,
     escalation_suppress_workflow_explainer_operator_metrics_caption,
@@ -35,4 +29,5 @@ from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv,
     escalation_suppress_workflow_explainer_payload,
     escalation_yaml_key_present_caption,
+    install_named_workflow_explainer_exports,
 )

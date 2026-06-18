@@ -55,14 +55,9 @@ def agent_evaluator_auto_promote_env_gate_caption(
 def agent_evaluator_workflow_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("workflow_yaml_top_level_version_int")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
-        return None
-    return f"Agent evaluator workflow YAML top-level version: **{raw}**."
+    from nimbusware_console.explainer_core.yaml_version_caption import workflow_yaml_version_caption
+
+    return workflow_yaml_version_caption(payload, label="Agent evaluator")
 
 
 def agent_evaluator_auto_create_env_gate_caption(

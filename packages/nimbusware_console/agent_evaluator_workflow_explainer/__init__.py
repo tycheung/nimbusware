@@ -18,13 +18,6 @@ from nimbusware_console.agent_evaluator_workflow_explainer.env import (
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )
-from nimbusware_console.agent_evaluator_workflow_explainer.exports import (
-    _agent_evaluator_explainer_cell,
-    agent_evaluator_explainer_export_json,
-    agent_evaluator_explainer_table_rows,
-    agent_evaluator_explainer_table_rows_csv,
-    agent_evaluator_export_filename_slug,
-)
 from nimbusware_console.agent_evaluator_workflow_explainer.metrics import (
     agent_evaluator_workflow_explainer_operator_metrics,
     agent_evaluator_workflow_explainer_operator_metrics_caption,
@@ -35,4 +28,13 @@ from nimbusware_console.agent_evaluator_workflow_explainer.metrics import (
 )
 from nimbusware_console.agent_evaluator_workflow_explainer.payload import (
     agent_evaluator_workflow_explainer_payload,
+)
+from nimbusware_console.explainer_core.workflow_exports import (
+    install_named_workflow_explainer_exports,
+)
+
+install_named_workflow_explainer_exports(
+    globals(),
+    "agent_evaluator",
+    cell_alias="_agent_evaluator_explainer_cell",
 )

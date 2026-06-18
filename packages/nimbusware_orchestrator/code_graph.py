@@ -68,12 +68,30 @@ def _collect_import_edges(
             target = _resolve_import_target(module_stem, node, ws)
             if target:
                 out.append((rel, target))
+            if node.module:
+                base = node.module.replace(".", "/")
+                for alias in node.names:
+                    if alias.name == "*":
+                        continue
+                    sub_path = f"{base}/{alias.name}.py"
+                    if (ws / sub_path).is_file():
+                        out.append((rel, sub_path.replace("\\", "/")))
+                    elif node.module:
+                        out.append((rel, f"import:{node.module.split('.')[0]}"))
             elif node.module:
                 out.append((rel, f"import:{node.module.split('.')[0]}"))
     return out
 
 
-def build_code_graph(workspace: Path, *, max_files: int = 200) -> CodeGraphIndex:
+def build_code_graph(workspace: Path, *, max_files: int | None = None) -> CodeGraphIndex:
+    if max_files is None:
+        import os
+
+        raw = os.environ.get("NIMBUSWARE_CODE_INTEL_MAX_FILES", "500").strip()
+        try:
+            max_files = max(50, int(raw))
+        except ValueError:
+            max_files = 500
     index = CodeGraphIndex()
     ws = workspace.resolve()
     count = 0
