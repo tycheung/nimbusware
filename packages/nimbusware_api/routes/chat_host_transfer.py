@@ -136,7 +136,7 @@ def accept_host_transfer(
     chat_store.append_turn(
         session_id,
         role="system",
-        text=f"Host transfer accepted; session frozen for cutover",
+        text="Host transfer accepted; session frozen for cutover",
         payload={"host_transfer_frozen": frozen.to_dict()},
     )
     return {"ok": True, "transfer": frozen.to_dict()}

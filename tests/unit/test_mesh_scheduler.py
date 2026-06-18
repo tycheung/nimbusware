@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from nimbusware_compute.work_unit import get_work_unit_queue
 from nimbusware_orchestrator.mesh_pipeline_hook import mesh_assign_parallel_stages
-from nimbusware_orchestrator.mesh_scheduler import MeshScheduler, get_mesh_scheduler
+from nimbusware_orchestrator.mesh_scheduler import MeshScheduler
 
 
 def test_mesh_scheduler_spreads_across_nodes() -> None:

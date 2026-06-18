@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -258,7 +258,7 @@ def get_effective_role(
     collab_store: CollabStoreDep,
     library_store: ChatLibraryStoreDep,
     user: AuthUserDep,
-    target_user_id: UUID | None = Query(default=None),
+    target_user_id: Annotated[UUID | None, Query()] = None,
 ) -> dict[str, Any]:
     require_collab_enabled()
     sess = _session_or_404(chat_store, session_id)

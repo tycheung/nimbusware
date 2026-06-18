@@ -62,6 +62,24 @@ from nimbusware_executor.fetch import EgressResponseTooLarge
 from nimbusware_extensions import SelfRefinementPolicy, load_self_refinement_policy
 from nimbusware_extensions.phase2 import AgentEvaluator, agent_evaluator_score_band
 from nimbusware_extensions.self_refinement import SelfRefinementEvaluator
+from nimbusware_orchestrator._pipeline._helpers_runtime import (
+    _SELF_REFINEMENT_MAX_ITER_REASON,
+    _SELF_REFINEMENT_POLICY_STAGE,
+    _agent_evaluator_auto_create_env_disabled,
+    _agent_evaluator_auto_promote_env_disabled,
+    _coerce_samples_ms,
+    _last_self_refinement_loop_should_continue,
+    _persona_id_from_assignment_slot,
+    _self_refinement_auto_promote_env_disabled,
+    _self_refinement_marker_count,
+    _self_refinement_max_iterations_exceeded,
+    _self_refinement_stage_marker_env_disabled,
+    gate_fail_for_stage,
+    ollama_runtime_from_host,
+    optional_meta_section,
+    optional_rows_and_profile,
+    optional_tri_allows_emit,
+)
 from nimbusware_orchestrator._pipeline.role_critique_emit import (
     RoleCritiqueEmitSpec,
     emit_role_critique_optional_for_host,
@@ -250,26 +268,6 @@ from nimbusware_orchestrator.workflow_universal_critique import (
 )
 from nimbusware_store.memory import InMemoryEventStore
 from nimbusware_store.protocol import EventStore, serialized_event_from_row
-
-from nimbusware_orchestrator._pipeline._helpers_runtime import (
-    _SELF_REFINEMENT_MAX_ITER_REASON,
-    _SELF_REFINEMENT_POLICY_STAGE,
-    _agent_evaluator_auto_create_env_disabled,
-    _agent_evaluator_auto_promote_env_disabled,
-    _coerce_samples_ms,
-    _last_self_refinement_loop_should_continue,
-    _persona_id_from_assignment_slot,
-    _self_refinement_auto_promote_env_disabled,
-    _self_refinement_marker_count,
-    _self_refinement_max_iterations_exceeded,
-    _self_refinement_stage_marker_env_disabled,
-    gate_fail_for_stage,
-    ollama_runtime_from_host,
-    optional_meta_section,
-    optional_rows_and_profile,
-    optional_tri_allows_emit,
-)
-
 
 __all__ = (
     "_SELF_REFINEMENT_MAX_ITER_REASON",

@@ -296,9 +296,9 @@ class WritersMixin:
         workload = "host_only"
         node_ids: list[UUID] = []
         try:
-            from nimbusware_maker.chat_store import build_chat_store
             from nimbusware_compute.node_store import build_compute_node_store
             from nimbusware_env.env_flags import nimbusware_database_url
+            from nimbusware_maker.chat_store import build_chat_store
 
             chat_store = build_chat_store(nimbusware_database_url())
             sess = chat_store.find_session_by_run_id(run_id)
