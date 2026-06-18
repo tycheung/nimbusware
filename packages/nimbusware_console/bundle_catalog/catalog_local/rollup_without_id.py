@@ -12,6 +12,10 @@ from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _BUNDLE_CATALOG_LOCAL_SUMMARY_OPERATOR_METRICS_CSV_COLUMNS,
     _bundle_catalog_local_summary_cell,
 )
+from nimbusware_console.bundle_catalog.catalog_local._load import (
+    catalog_bundle_rows,
+    load_catalog_doc,
+)
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
 )
@@ -188,27 +192,16 @@ def bundle_catalog_bundles_without_id_caption(repo_root: Path) -> str | None:
     return f"Bundles without id: **{without}** of **{total}**."
 
 
-def bundle_catalog_bundles_without_id_count(repo_root: Path) -> int:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
-        return 0
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return 0
-    if not isinstance(doc, dict):
-        return 0
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
+def bundle_catalog_bundles_without_id_count(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> int:
+    doc = load_catalog_doc(repo_root, config_materializer=config_materializer)
+    if doc is None:
         return 0
     without = 0
-    for b in bundles:
-        if not isinstance(b, dict):
-            continue
+    for b in catalog_bundle_rows(doc):
         raw_id = b.get("id")
         if not isinstance(raw_id, str) or not raw_id.strip():
             without += 1

@@ -424,29 +424,39 @@ def test_critique_pairings_operator_summary_from_repo() -> None:
     assert s["has_critique_pairings_yaml"] is True
     assert s["critique_pairings_yaml_relpath"] == "configs/personas/critique_pairings.yaml"
     assert s["version"] == 1
-    assert s["producer_taxonomy_key_count"] == 7
+    assert s["producer_taxonomy_key_count"] == 12
     assert "agent_evaluator" not in (s.get("producer_taxonomy_keys") or [])
     assert set(s["producer_taxonomy_keys_sample"]) <= {
+        "architect",
         "backend_writer",
+        "code_researcher",
+        "domain_researcher",
         "frontend_writer",
         "integration_adapter_writer",
+        "launch_test_writer",
         "module_integrator",
         "planner",
         "refactorer",
+        "stitcher",
         "test_writer",
     }
     assert s["load_error"] is None
-    assert s["critique_pairing_critic_role_entries_total"] == 21
+    assert s["critique_pairing_critic_role_entries_total"] == 36
     sample_rows = s["critique_pairing_critic_counts_by_producer_sample"]
-    assert isinstance(sample_rows, list) and len(sample_rows) == 7
+    assert isinstance(sample_rows, list) and len(sample_rows) == 12
     by_p = {r["producer"]: int(r["critic_roles"]) for r in sample_rows}
     assert by_p == {
+        "architect": 2,
         "backend_writer": 5,
-        "frontend_writer": 4,
+        "code_researcher": 3,
+        "domain_researcher": 3,
+        "frontend_writer": 5,
         "integration_adapter_writer": 2,
+        "launch_test_writer": 3,
         "module_integrator": 4,
         "planner": 2,
         "refactorer": 2,
+        "stitcher": 3,
         "test_writer": 2,
     }
 

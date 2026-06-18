@@ -12,16 +12,23 @@ from nimbusware_console.components.operator_metrics import (
 )
 
 
-def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
-    import yaml
+def critique_pairings_operator_summary(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> dict[str, Any]:
+    from nimbusware_console.persona_catalog._pairings_load import (
+        _CRITIQUE_PAIRINGS_RELPATH,
+        critique_pairings_yaml_path,
+        load_critique_pairings_doc,
+    )
 
-    from nimbusware_orchestrator.merge import load_yaml
-
-    rel = "configs/personas/critique_pairings.yaml"
-    path = repo_root / "configs" / "personas" / "critique_pairings.yaml"
+    path = critique_pairings_yaml_path(repo_root)
+    doc = load_critique_pairings_doc(repo_root, config_materializer=config_materializer)
+    has = doc is not None or path.is_file()
     out: dict[str, Any] = {
-        "has_critique_pairings_yaml": path.is_file(),
-        "critique_pairings_yaml_relpath": rel if path.is_file() else None,
+        "has_critique_pairings_yaml": has,
+        "critique_pairings_yaml_relpath": _CRITIQUE_PAIRINGS_RELPATH if has else None,
         "version": None,
         "producer_taxonomy_key_count": 0,
         "producer_taxonomy_keys": [],
@@ -31,15 +38,9 @@ def critique_pairings_operator_summary(repo_root: Path) -> dict[str, Any]:
         "critique_pairing_critic_counts_by_producer_sample": [],
         "load_error": None,
     }
-    if not path.is_file():
-        return out
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError) as exc:
-        out["load_error"] = str(exc)
-        return out
-    if not isinstance(doc, dict):
-        out["load_error"] = "root is not a mapping"
+    if doc is None:
+        if path.is_file():
+            out["load_error"] = "critique pairings load failed"
         return out
     ver = doc.get("version")
     if type(ver) is int:

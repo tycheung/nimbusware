@@ -10,29 +10,23 @@ from typing import Any
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _bundle_search_hit_cell,
 )
+from nimbusware_console.bundle_catalog.catalog_local._load import (
+    catalog_bundle_rows,
+    load_catalog_doc,
+)
 from nimbusware_console.bundle_catalog.catalog_local.search.metrics import (
     _BUNDLE_LOCAL_CSV_COLUMNS,
 )
 
 
-def bundle_catalog_local_bundles(repo_root: Path) -> list[dict[str, Any]]:
-    path = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if not path.is_file():
-        return []
-    import yaml
-
-    from nimbusware_orchestrator.merge import load_yaml
-
-    try:
-        doc = load_yaml(path)
-    except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-        return []
-    if not isinstance(doc, dict):
-        return []
-    bundles = doc.get("bundles")
-    if not isinstance(bundles, list):
-        return []
-    return [b for b in bundles if isinstance(b, dict)]
+def bundle_catalog_local_bundles(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> list[dict[str, Any]]:
+    return catalog_bundle_rows(
+        load_catalog_doc(repo_root, config_materializer=config_materializer),
+    )
 
 
 def bundle_catalog_local_bundles_table_rows(

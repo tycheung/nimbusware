@@ -117,21 +117,14 @@ def bundle_faiss_index_operator_drilldown(repo_root: Path) -> dict[str, Any]:
     base["bundle_order_json_file_bytes"] = (
         int(_bo_b) if type(_bo_b) is int and not isinstance(_bo_b, bool) else None
     )
-    import yaml
-
-    from agent_core.yaml_io import load_yaml
+    from nimbusware_console.bundle_catalog.catalog_local._load import load_catalog_doc
 
     catalog_yaml_top_level_version_int: int | None = None
-    cat_yaml_p = repo_root / "configs" / "bundles" / "catalog.yaml"
-    if cat_yaml_p.is_file():
-        try:
-            cdoc = load_yaml(cat_yaml_p)
-            if isinstance(cdoc, dict):
-                cver = cdoc.get("version")
-                if type(cver) is int and not isinstance(cver, bool):
-                    catalog_yaml_top_level_version_int = cver
-        except (OSError, ValueError, UnicodeDecodeError, yaml.YAMLError):
-            pass
+    cdoc = load_catalog_doc(repo_root)
+    if isinstance(cdoc, dict):
+        cver = cdoc.get("version")
+        if type(cver) is int and not isinstance(cver, bool):
+            catalog_yaml_top_level_version_int = cver
     base["catalog_yaml_top_level_version_int"] = catalog_yaml_top_level_version_int
     return base
 
