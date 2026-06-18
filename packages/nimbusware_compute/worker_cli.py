@@ -88,7 +88,7 @@ def run_worker_loop(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Nimbusware compute mesh worker (register + heartbeat stub)",
+        description="Nimbusware compute mesh worker (register + heartbeat loop)",
     )
     parser.add_argument("--host-url", required=True, help="Host API base URL")
     parser.add_argument("--token", default="", help="Session compute token")

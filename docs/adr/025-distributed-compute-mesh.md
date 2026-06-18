@@ -19,5 +19,5 @@ Parallel writer and critic stages today run via `asyncio.gather` on a single hos
 ## Consequences
 
 - `docs/compute-mesh.md` operator + worker runbook; `docs/audits/parallel-inventory.md` remote-eligibility matrix (fo1701).
-- Phases D1–D8 ship incrementally; MVP stubs registry, queue, scheduler hook points, opt-in API, and UI placeholders.
+- Phases D1–D8 shipped for Individual + Enterprise MVP (registry, in-memory queue, MeshScheduler hook, opt-in API, Fleet/Chat UI).
 - Host transfer (ADR 026) handles canonical host migration without multi-master Postgres.
