@@ -18,12 +18,12 @@ Normative mitigations for peanut-gallery sessions. Scope: invite links, LAN expo
 | **Cross-project session access** | Data leakage | Invites scoped to `session_id` + `project_id`; join validates token session |
 | **Privilege escalation** | Guest becomes admin | Role changes `session_admin` only; promotion emits `system` turn |
 | **Credential stuffing** | Account takeover | PBKDF2 password hashes; bootstrap owner on first signup only |
-| **Enterprise external collaborators** | Off-org access | Tenant `allow_external_collaborators` default false (config stub B5) |
+| **Enterprise external collaborators** | Off-org access | Tenant `allow_external_collaborators` default false (B5 policy API) |
 
 ## Residual risk
 
 - Host machine compromise exposes local Postgres and event store (same as single-operator).
-- SSE room is stub fan-out without E2E encryption of theater content — acceptable on trusted operator networks; Enterprise uses ingress TLS.
+- Session SSE theater fan-out (0.5s poll, capped backlog) without E2E encryption of theater content — acceptable on trusted operator networks; Enterprise uses ingress TLS.
 
 ## Out of scope (v1.2)
 
