@@ -191,11 +191,31 @@ def _steps_from_llm(
     return _parse_steps(data)
 
 
-def _default_stub_steps(plan: SlicePlan) -> list[AgentStep]:
+def _heuristic_grep_token(rationale: str) -> str | None:
+    tokens = re.findall(r"[A-Za-z]{4,}", rationale)
+    for token in tokens:
+        lower = token.lower()
+        if lower not in {"slice", "implement", "scaffold", "tests", "verification", "project"}:
+            return token
+    return None
+
+
+def _default_heuristic_steps(plan: SlicePlan, workspace: Path) -> list[AgentStep]:
     steps: list[AgentStep] = []
     for rel in plan.target_paths[:3]:
         steps.append(AgentStep("read", {"path": rel}))
+    token = _heuristic_grep_token(plan.rationale or "")
+    if token:
+        search_root = "."
+        if plan.target_paths:
+            first = str(plan.target_paths[0]).replace("\\", "/")
+            search_root = first.rsplit("/", 1)[0] if "/" in first else "."
+        steps.append(AgentStep("grep", {"pattern": token, "path": search_root}))
     return steps
+
+
+def _default_stub_steps(plan: SlicePlan) -> list[AgentStep]:
+    return _default_heuristic_steps(plan, Path("."))
 
 
 def execute_slice_implement_agent(
@@ -285,7 +305,7 @@ def execute_slice_implement_agent(
             ]
 
     if not steps:
-        steps = _default_stub_steps(plan)
+        steps = _default_heuristic_steps(plan, ws)
 
     exit_code = 0
     for step in steps:

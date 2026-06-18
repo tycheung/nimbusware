@@ -4,7 +4,7 @@ factory_tiers:
   T0:
     label: scaffold
     put_preview_enabled: false
-    ism_discovery: stub
+    ism_discovery: static
     max_preview_seconds: 0
   T1:
     label: local_preview

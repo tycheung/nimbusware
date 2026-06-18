@@ -34,6 +34,11 @@ def test_load_factory_tier_policy_has_tiers() -> None:
     assert "T0" in tiers and "T3" in tiers
 
 
+def test_tier_config_t0_uses_static_ism() -> None:
+    cfg = tier_config("T0", REPO)
+    assert cfg.get("ism_discovery") == "static"
+
+
 def test_tier_config_t2_enables_preview() -> None:
     cfg = tier_config("T2", REPO)
     assert cfg.get("put_preview_enabled") is True

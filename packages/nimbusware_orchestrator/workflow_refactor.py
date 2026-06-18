@@ -11,7 +11,7 @@ from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 @dataclass(frozen=True)
 class RefactorWorkflowBlock:
     enabled: bool = False
-    stub_only: bool = True
+    stub_only: bool = False
     max_iterations: int = 1
     llm_enabled: bool = False
     orphan_gate_max: int | None = None
@@ -43,7 +43,7 @@ def parse_refactor_workflow_block(
         orphan_gate_max = raw_og
     return RefactorWorkflowBlock(
         enabled=bool(block.get("enabled", False)),
-        stub_only=bool(block.get("stub_only", True)),
+        stub_only=bool(block.get("stub_only", False)),
         max_iterations=max(1, min(5, max_iter)),
         llm_enabled=bool(block.get("llm_enabled", False)),
         orphan_gate_max=orphan_gate_max,

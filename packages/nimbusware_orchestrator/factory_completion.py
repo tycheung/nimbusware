@@ -94,10 +94,8 @@ def evaluate_factory_gates(
     ism_mode = str(cfg.get("ism_discovery") or "stub")
     surface_count = len(ism.surfaces) if ism is not None else 0
     details["ism_surface_count"] = surface_count
-    if ism_mode == "stub":
-        pass
-    elif ism_mode == "static":
-        if surface_count < 1:
+    if ism_mode in {"stub", "static"}:
+        if surface_count < 1 and tier != "T0":
             blocking.append("ism_static_empty")
     elif ism_mode in {"openapi", "full"}:
         if surface_count < 1:
