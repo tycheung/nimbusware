@@ -7,8 +7,6 @@ from uuid import UUID
 
 @dataclass
 class MeshScheduler:
-    """Host-only scheduler until mesh pipeline assignment ships."""
-
     mode: str = "host_only"
     spread_policy: str = "spread"
     max_remote_units: int = 4
@@ -22,8 +20,27 @@ class MeshScheduler:
         session_id: UUID | None = None,
         claims: dict[str, str] | None = None,
     ) -> dict[str, UUID | None]:
-        _ = parallel_group, session_id, claims
-        return {name: None for name in stage_names}
+        _ = parallel_group
+        claims = claims or {}
+        if self.mode == "host_only" or session_id is None:
+            return {name: None for name in stage_names}
+        nodes = self.online_nodes(session_id)
+        if not nodes:
+            return {name: None for name in stage_names}
+        cap = max(1, self.max_remote_units)
+        remote_nodes = nodes[:cap]
+        out: dict[str, UUID | None] = {}
+        idx = 0
+        for name in stage_names:
+            if claims.get(name):
+                out[name] = None
+                continue
+            if self.mode in {"manual_claim", "auto_share", "auto_optimize"}:
+                out[name] = remote_nodes[idx % len(remote_nodes)]
+                idx += 1
+            else:
+                out[name] = None
+        return out
 
     def register_session_nodes(self, session_id: UUID, node_ids: list[UUID]) -> None:
         self._session_nodes[session_id] = list(node_ids)
@@ -47,3 +64,10 @@ class MeshScheduler:
             "max_remote_units": self.max_remote_units,
             "session_count": len(self._session_nodes),
         }
+
+
+_scheduler = MeshScheduler()
+
+
+def get_mesh_scheduler() -> MeshScheduler:
+    return _scheduler

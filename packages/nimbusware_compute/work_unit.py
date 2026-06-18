@@ -129,6 +129,16 @@ class InMemoryWorkUnitQueue:
         return done
 
 
+_work_unit_queue: InMemoryWorkUnitQueue | None = None
+
+
+def get_work_unit_queue() -> InMemoryWorkUnitQueue:
+    global _work_unit_queue
+    if _work_unit_queue is None:
+        _work_unit_queue = InMemoryWorkUnitQueue()
+    return _work_unit_queue
+
+
 def work_unit_to_public(rec: WorkUnitRecord) -> dict[str, Any]:
     return {
         "work_unit_id": str(rec.work_unit_id),
