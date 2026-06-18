@@ -86,7 +86,7 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
         backlog_slice_id: str | None = None,
     ) -> SliceGateChainResult:
         del slice_index, workspace, plan
-        sid = backlog_slice_id or "slice-stub-001"
+        sid = backlog_slice_id or "slice-001"
         from nimbusware_orchestrator.pipeline import RunOrchestrator
 
         assert isinstance(orchestrator_host, RunOrchestrator)

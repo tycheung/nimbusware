@@ -545,7 +545,7 @@ class CampaignPolicyPayload(BasePayload):
     architecture_every_n_slices: int = Field(default=10, ge=1, le=500)
     deep_eval_every_n_slices: int = Field(default=20, ge=1, le=500)
     tick_idle_seconds: float = Field(default=2.0, ge=0.0, le=300.0)
-    backlog_generator: Literal["stub", "llm"] = "stub"
+    backlog_generator: Literal["stub", "heuristic", "llm"] = "heuristic"
     require_backlog_approval: bool = False
 
 
@@ -577,7 +577,7 @@ class CampaignPausedPayload(BasePayload):
 class DeliveryBacklogGeneratedPayload(BasePayload):
     campaign_id: str = Field(min_length=1, max_length=36)
     backlog: dict[str, Any] = Field(description="Serialized DeliveryBacklog JSON")
-    generator_mode: Literal["stub", "llm"] = "stub"
+    generator_mode: Literal["stub", "heuristic", "llm"] = "heuristic"
 
 
 class DeliveryBacklogRevisedPayload(BasePayload):

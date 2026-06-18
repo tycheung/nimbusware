@@ -9,7 +9,7 @@ campaign:
     max_consecutive_failures: 5
 
 backlog:
-  generator: stub
+  generator: heuristic
   max_slices: 24
   require_backlog_approval: false
 

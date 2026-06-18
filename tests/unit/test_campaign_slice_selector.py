@@ -65,4 +65,4 @@ def test_select_next_slices_respects_dependencies() -> None:
     backlog = generate_stub_backlog("run-deps", max_slices=5)
     batch = select_next_slices(backlog, 5)
     assert len(batch) == 1
-    assert batch[0].slice.slice_id == "slice-stub-001"
+    assert batch[0].slice.slice_id == "slice-001"

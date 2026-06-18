@@ -15,12 +15,16 @@ from nimbusware_orchestrator.campaign_slice_selector import select_next_slice
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
-def test_generate_stub_backlog_has_ten_slices() -> None:
-    backlog = generate_stub_backlog("run-1", max_slices=10)
-    assert backlog.metadata.total_slices_planned == 10
+def test_generate_stub_backlog_has_bounded_slices() -> None:
+    backlog = generate_stub_backlog(
+        "run-1",
+        requirements={"business_prompt": "Build a CRM with contacts"},
+        max_slices=10,
+    )
+    assert backlog.metadata.total_slices_planned == 5
     selected = select_next_slice(backlog)
     assert selected is not None
-    assert selected.slice.slice_id == "slice-stub-001"
+    assert selected.slice.slice_id == "slice-001"
 
 
 @pytest.fixture(autouse=True)

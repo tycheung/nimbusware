@@ -295,7 +295,7 @@ def _overall_status(checks: dict[str, dict[str, Any]]) -> str:
 def _check_campaign_backlog(repo_root: Path) -> dict[str, Any]:
     from nimbusware_orchestrator.backlog_generator import effective_backlog_generator_mode
 
-    mode, reason = effective_backlog_generator_mode("stub")
+    mode, reason = effective_backlog_generator_mode("heuristic")
     if mode == "llm":
         return {
             "status": "ok",
@@ -304,8 +304,8 @@ def _check_campaign_backlog(repo_root: Path) -> dict[str, Any]:
         }
     body: dict[str, Any] = {
         "status": "degraded" if reason else "ok",
-        "message": reason or "Campaign backlog uses stub generator",
-        "generator_mode": "stub",
+        "message": reason or "Campaign backlog uses heuristic generator",
+        "generator_mode": "heuristic",
     }
     return body
 

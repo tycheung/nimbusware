@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -28,11 +29,13 @@ from agent_core.read.campaign import (
     backlog_from_events,
     has_backlog_event,
 )
+from nimbusware_orchestrator.backlog_heuristic import generate_heuristic_backlog
 
 __all__ = [
     "apply_slice_outcomes",
     "backlog_from_events",
     "has_backlog_event",
+    "generate_heuristic_backlog",
     "generate_stub_backlog",
     "ensure_backlog",
     "emit_backlog_generated",
@@ -43,9 +46,11 @@ __all__ = [
 
 
 def effective_backlog_generator_mode(policy_mode: str) -> tuple[str, str | None]:
-    mode = str(policy_mode or "stub").strip().lower()
-    if mode not in ("stub", "llm"):
-        mode = "stub"
+    mode = str(policy_mode or "heuristic").strip().lower()
+    if mode == "stub":
+        mode = "heuristic"
+    if mode not in ("heuristic", "llm"):
+        mode = "heuristic"
     from nimbusware_env.env_flags import nimbusware_use_llm_enabled
     from nimbusware_env.settings_resolve import resolve_str
 
@@ -53,15 +58,11 @@ def effective_backlog_generator_mode(policy_mode: str) -> tuple[str, str | None]
     model = resolve_str("NIMBUSWARE_BACKLOG_GENERATOR_MODEL", default="").strip()
     if mode == "llm":
         if not llm_on:
-            return "stub", "NIMBUSWARE_USE_LLM is off"
+            return "heuristic", "NIMBUSWARE_USE_LLM is off"
         if not model:
-            return "stub", "NIMBUSWARE_BACKLOG_GENERATOR_MODEL is unset"
+            return "heuristic", "NIMBUSWARE_BACKLOG_GENERATOR_MODEL is unset"
         return "llm", None
-    if llm_on and model:
-        return "llm", None
-    if not llm_on:
-        return "stub", "Set NIMBUSWARE_USE_LLM=1 for LLM campaign backlog"
-    return "stub", "Set NIMBUSWARE_BACKLOG_GENERATOR_MODEL for LLM campaign backlog"
+    return "heuristic", None
 
 
 def _requirements_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
@@ -82,54 +83,14 @@ def generate_stub_backlog(
     *,
     requirements: dict[str, Any] | None = None,
     max_slices: int = 10,
+    repo_root: Any | None = None,
 ) -> DeliveryBacklog:
-    prompt = ""
-    if isinstance(requirements, dict):
-        prompt = str(requirements.get("business_prompt") or requirements.get("prompt") or "")
-    title = "Campaign delivery"
-    if prompt.strip():
-        title = prompt.strip()[:120]
-    count = max(1, min(max_slices, 10))
-    default_paths = (
-        "packages/nimbusware_orchestrator/micro_slice.py",
-        "packages/nimbusware_orchestrator/slice_gate.py",
+    return generate_heuristic_backlog(
+        campaign_id,
+        requirements=requirements,
+        max_slices=max_slices,
+        repo_root=repo_root,
     )
-    slices: list[BacklogSlice] = []
-    for i in range(1, count + 1):
-        sid = f"slice-stub-{i:03d}"
-        deps: tuple[str, ...] = ()
-        if i > 1:
-            deps = (f"slice-stub-{i - 1:03d}",)
-        slices.append(
-            BacklogSlice(
-                slice_id=sid,
-                status=SliceStatus.PENDING,
-                target_paths=default_paths,
-                depends_on=deps,
-                estimated_loc=80,
-                rationale=f"Stub slice {i} for campaign: {title[:80]}",
-            ),
-        )
-    backlog = DeliveryBacklog(
-        campaign_id=campaign_id,
-        epics=(
-            BacklogEpic(
-                epic_id="epic-stub",
-                title=title,
-                status=EpicStatus.IN_PROGRESS,
-                features=(
-                    BacklogFeature(
-                        feature_id="feat-stub",
-                        title="Stub feature scaffold",
-                        acceptance_criteria=("All stub slices pass gate",),
-                        slices=tuple(slices),
-                    ),
-                ),
-            ),
-        ),
-        metadata=BacklogMetadata(generator_mode="stub"),
-    )
-    return sync_backlog_metadata(backlog)
 
 
 def emit_backlog_generated(
@@ -137,7 +98,7 @@ def emit_backlog_generated(
     run_id: UUID,
     backlog: DeliveryBacklog,
     *,
-    generator_mode: str = "stub",
+    generator_mode: str = "heuristic",
 ) -> None:
     store.append(
         DeliveryBacklogGeneratedEvent(
@@ -179,7 +140,10 @@ def _generate_backlog_for_run(
     repo_root: Any | None = None,
 ) -> DeliveryBacklog:
     requirements = _requirements_from_rows(rows)
-    if generator_mode == "llm":
+    resolved_mode = generator_mode
+    if resolved_mode == "stub":
+        resolved_mode = "heuristic"
+    if resolved_mode == "llm":
         from nimbusware_env.env_flags import nimbusware_use_llm_enabled
 
         if nimbusware_use_llm_enabled():
@@ -215,10 +179,11 @@ def _generate_backlog_for_run(
                     errors = validate_backlog(llm_backlog, max_slices=max_slices)
                     if not errors:
                         return sync_backlog_metadata(llm_backlog)
-    return generate_stub_backlog(
+    return generate_heuristic_backlog(
         str(run_id),
         requirements=requirements,
         max_slices=max_slices,
+        repo_root=repo_root,
     )
 
 
@@ -227,7 +192,7 @@ def ensure_backlog(
     run_id: UUID,
     rows: list[dict[str, Any]],
     *,
-    generator_mode: str = "stub",
+    generator_mode: str = "heuristic",
     max_slices: int = 10,
     repo_root: Any | None = None,
 ) -> DeliveryBacklog:

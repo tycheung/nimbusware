@@ -31,6 +31,7 @@ def test_campaign_progress_executing_with_slice_and_maintenance_schedule() -> No
     )
     backlog = generate_stub_backlog(str(run_id), max_slices=5)
     emit_backlog_generated(store, run_id, backlog)
+    first_slice = backlog.epics[0].features[0].slices[0]
     store.append(
         SliceQueuedEvent(
             event_type=EventType.SLICE_QUEUED,
@@ -38,9 +39,9 @@ def test_campaign_progress_executing_with_slice_and_maintenance_schedule() -> No
             run_id=run_id,
             occurred_at=datetime.now(timezone.utc),
             payload=SliceQueuedPayload(
-                slice_id="slice-stub-001",
-                backlog_slice_id="slice-stub-001",
-                epic_id="epic-stub",
+                slice_id=first_slice.slice_id,
+                backlog_slice_id=first_slice.slice_id,
+                epic_id=backlog.epics[0].epic_id,
             ),
         ),
     )
@@ -49,8 +50,8 @@ def test_campaign_progress_executing_with_slice_and_maintenance_schedule() -> No
     assert progress is not None
     assert progress["state"] == "executing"
     assert progress["autonomous"] is True
-    assert progress["current_slice_id"] == "slice-stub-001"
-    assert progress["slices_total"] == 5
+    assert progress["current_slice_id"] == first_slice.slice_id
+    assert progress["slices_total"] == backlog.metadata.total_slices_planned
     assert progress["next_maintenance"]["refactor_in_slices"] == 5
     assert progress["next_maintenance"]["architecture_in_slices"] == 10
 

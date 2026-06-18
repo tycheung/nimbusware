@@ -18,7 +18,7 @@ class CampaignWorkflowBlock:
 
 @dataclass(frozen=True)
 class BacklogWorkflowBlock:
-    generator: Literal["stub", "llm"] = "stub"
+    generator: Literal["stub", "heuristic", "llm"] = "heuristic"
     max_slices: int = 500
     require_backlog_approval: bool = False
 
@@ -75,9 +75,11 @@ def parse_backlog_workflow_block(
     raw = wf.get("backlog")
     if not isinstance(raw, dict):
         return BacklogWorkflowBlock()
-    gen = str(raw.get("generator", "stub")).strip().lower()
-    if gen not in ("stub", "llm"):
-        gen = "stub"
+    gen = str(raw.get("generator", "heuristic")).strip().lower()
+    if gen == "stub":
+        gen = "heuristic"
+    if gen not in ("heuristic", "llm"):
+        gen = "heuristic"
     return BacklogWorkflowBlock(
         generator=gen,  # type: ignore[arg-type]
         max_slices=max(1, int(raw.get("max_slices", 500) or 500)),

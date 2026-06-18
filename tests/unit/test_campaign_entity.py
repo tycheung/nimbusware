@@ -21,7 +21,7 @@ def test_campaign_micro_slice_workflow_parses() -> None:
     block = parse_campaign_workflow_block(repo, "campaign_micro_slice")
     assert block.enabled is True
     backlog = parse_backlog_workflow_block(repo, "campaign_micro_slice")
-    assert backlog.generator == "stub"
+    assert backlog.generator == "heuristic"
 
 
 def test_create_run_sets_campaign_effective_metadata() -> None:
@@ -33,7 +33,7 @@ def test_create_run_sets_campaign_effective_metadata() -> None:
     ce = campaign_effective_from_rows(rows)
     assert ce is not None
     assert ce.get("autonomous") is True
-    assert ce.get("policy", {}).get("backlog_generator") == "stub"
+    assert ce.get("policy", {}).get("backlog_generator") == "heuristic"
 
 
 def test_autonomous_campaign_skips_maker_approval() -> None:
