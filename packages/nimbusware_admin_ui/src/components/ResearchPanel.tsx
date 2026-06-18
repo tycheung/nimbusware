@@ -1,33 +1,25 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { apiJson } from "../api/client";
+import { useApiGet } from "../hooks/useApiGet";
+import { briefReviewStatus } from "./researchStatus";
+import { PanelFrame } from "./PanelFrame";
 
 type ResearchBrief = {
   brief_id?: string;
   artifact_id?: string;
   brief_kind?: string;
   status?: string;
+  review_status?: string;
   summary?: string;
 };
 
 export function ResearchPanel({ runId }: { runId: string }) {
-  const [briefs, setBriefs] = useState<ResearchBrief[]>([]);
-  const [msg, setMsg] = useState("");
-
-  const load = useCallback(() => {
-    apiJson<{ briefs?: ResearchBrief[] }>(`/runs/${runId}/research`)
-      .then((body) => {
-        setBriefs(body.briefs || []);
-        setMsg("");
-      })
-      .catch((e) => {
-        setBriefs([]);
-        setMsg(String((e as Error).message || e));
-      });
-  }, [runId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  const [actionMsg, setActionMsg] = useState("");
+  const { data: briefs, error, reload } = useApiGet<ResearchBrief[]>(
+    `/runs/${runId}/research`,
+    (body) => (body as { briefs?: ResearchBrief[] }).briefs || [],
+    [],
+  );
 
   async function review(briefId: string, action: "approve" | "reject") {
     try {
@@ -36,25 +28,20 @@ export function ResearchPanel({ runId }: { runId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes: "" }),
       });
-      load();
+      setActionMsg("");
+      reload();
     } catch (e) {
-      setMsg(String((e as Error).message || e));
+      setActionMsg(String((e as Error).message || e));
     }
   }
 
-  if (msg && !briefs.length) {
-    return <p class="muted">{msg}</p>;
-  }
-  if (!briefs.length) {
-    return <p class="muted">No research briefs for this run.</p>;
-  }
-
   return (
-    <div>
-      <button type="button" class="secondary" onClick={load}>
-        Refresh
-      </button>
-      {msg ? <p class="hint">{msg}</p> : null}
+    <PanelFrame
+      error={error || actionMsg}
+      empty={!briefs.length}
+      emptyMessage="No research briefs for this run."
+      onRefresh={reload}
+    >
       <table class="data-table">
         <thead>
           <tr>
@@ -68,7 +55,7 @@ export function ResearchPanel({ runId }: { runId: string }) {
         <tbody>
           {briefs.map((brief, i) => {
             const bid = brief.brief_id || brief.artifact_id || "";
-            const status = brief.status || "unknown";
+            const status = briefReviewStatus(brief);
             return (
               <tr key={bid || i}>
                 <td>{brief.brief_kind || "—"}</td>
@@ -94,6 +81,6 @@ export function ResearchPanel({ runId }: { runId: string }) {
           })}
         </tbody>
       </table>
-    </div>
+    </PanelFrame>
   );
 }

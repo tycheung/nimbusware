@@ -10,11 +10,7 @@ type Summary = {
   metrics?: Record<string, Record<string, unknown>>;
 };
 
-function fmtRate(v: unknown): string {
-  if (typeof v !== "number") return "—";
-  return `${(v * 100).toFixed(1)}%`;
-}
-
+import { fmtRate } from "../utils/formatters";
 type ChatJourneyCoverage = {
   scenario_count?: number;
   wired_count?: number;

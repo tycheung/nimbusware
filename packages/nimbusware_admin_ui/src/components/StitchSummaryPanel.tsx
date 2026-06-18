@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { useState } from "preact/hooks";
+import { useApiGet } from "../hooks/useApiGet";
+import { PanelFrame } from "./PanelFrame";
 
 type StitchEvent = {
   store_seq?: number;
@@ -8,49 +9,37 @@ type StitchEvent = {
   payload?: Record<string, unknown>;
 };
 
+type StitchSummary = {
+  events: StitchEvent[];
+  outcome: string | null;
+};
+
 export function StitchSummaryPanel({ runId }: { runId: string }) {
-  const [events, setEvents] = useState<StitchEvent[]>([]);
-  const [outcome, setOutcome] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
-  const [msg, setMsg] = useState("");
-
-  const load = useCallback(() => {
-    apiJson<{ events?: StitchEvent[]; transplant_outcome?: string | null }>(
-      `/runs/${runId}/stitch-summary`,
-    )
-      .then((body) => {
-        setEvents(body.events || []);
-        setOutcome(body.transplant_outcome ?? null);
-        setMsg("");
-      })
-      .catch((e) => {
-        setEvents([]);
-        setOutcome(null);
-        setMsg(String((e as Error).message || e));
-      });
-  }, [runId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  if (msg && !events.length) {
-    return <p class="muted">{msg}</p>;
-  }
-  if (!events.length) {
-    return <p class="muted">No stitch events for this run.</p>;
-  }
+  const { data, error, reload } = useApiGet<StitchSummary>(
+    `/runs/${runId}/stitch-summary`,
+    (body) => {
+      const raw = body as { events?: StitchEvent[]; transplant_outcome?: string | null };
+      return {
+        events: raw.events || [],
+        outcome: raw.transplant_outcome ?? null,
+      };
+    },
+    { events: [], outcome: null },
+  );
 
   return (
-    <div>
-      {outcome ? (
+    <PanelFrame
+      error={error}
+      empty={!data.events.length}
+      emptyMessage="No stitch events for this run."
+      onRefresh={reload}
+    >
+      {data.outcome ? (
         <p>
-          Transplant outcome: <strong>{outcome}</strong>
+          Transplant outcome: <strong>{data.outcome}</strong>
         </p>
       ) : null}
-      <button type="button" class="secondary" onClick={load}>
-        Refresh
-      </button>
       <table class="data-table">
         <thead>
           <tr>
@@ -61,7 +50,7 @@ export function StitchSummaryPanel({ runId }: { runId: string }) {
           </tr>
         </thead>
         <tbody>
-          {events.map((ev, i) => {
+          {data.events.map((ev, i) => {
             const seq = ev.store_seq ?? i;
             const open = expanded[seq];
             return (
@@ -90,6 +79,6 @@ export function StitchSummaryPanel({ runId }: { runId: string }) {
           })}
         </tbody>
       </table>
-    </div>
+    </PanelFrame>
   );
 }

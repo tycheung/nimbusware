@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { briefReviewStatus } from "./researchStatus";
+import { scorecardFromTimeline } from "./launchScorecard";
 
 describe("run detail panel contracts", () => {
-  it("research brief status uses pending gate for actions", () => {
-    const pending = { status: "pending" };
-    const approved = { status: "approved" };
-    expect(pending.status === "pending").toBe(true);
-    expect(approved.status === "pending").toBe(false);
+  it("research brief status prefers review_status over status", () => {
+    expect(briefReviewStatus({ review_status: "pending", status: "approved" })).toBe("pending");
+    expect(briefReviewStatus({ status: "approved" })).toBe("approved");
   });
 
   it("stitch event line format matches maker review", () => {
@@ -21,14 +21,18 @@ describe("run detail panel contracts", () => {
     expect(defaultRun.workflow_profile === "campaign_micro_slice").toBe(false);
   });
 
-  it("launch scorecard reads latest launch_eval.completed metadata", async () => {
-    const { scorecardFromTimeline } = await import("./launchScorecard");
+  it("launch scorecard reads latest launch_eval.completed metadata", () => {
     const timeline = {
       events: [
         {
           event_type: "stage.passed",
           payload: { stage_name: "launch_eval.completed" },
-          metadata: { aggregate: 0.82, passed: true, findings: ["ok"] },
+          metadata: {
+            aggregate: 0.82,
+            passed: true,
+            findings: ["ok"],
+            dev_env_ui_regression_passed: true,
+          },
         },
       ],
     };
@@ -36,5 +40,6 @@ describe("run detail panel contracts", () => {
     expect(card?.aggregate).toBe(0.82);
     expect(card?.passed).toBe(true);
     expect(card?.findings).toEqual(["ok"]);
+    expect(card?.dev_env_ui_regression_passed).toBe(true);
   });
 });

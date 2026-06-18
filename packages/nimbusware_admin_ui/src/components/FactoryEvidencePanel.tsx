@@ -1,5 +1,5 @@
-import { useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { useApiGet } from "../hooks/useApiGet";
+import { PanelFrame } from "./PanelFrame";
 
 type FactoryEvidence = {
   run_id: string;
@@ -11,29 +11,30 @@ type FactoryEvidence = {
   } | null;
   put_e2e?: { verdict?: string; flow_id?: string; detail?: string } | null;
   factory_stages?: { stage_name?: string; verdict?: string }[];
-  evidence?: Record<string, unknown>;
   ism_diff?: { added?: string[]; removed?: string[]; changed?: string[] } | null;
 };
 
 export function FactoryEvidencePanel({ runId }: { runId: string }) {
-  const [data, setData] = useState<FactoryEvidence | null>(null);
-  const [err, setErr] = useState("");
+  const { data, error, loading } = useApiGet<FactoryEvidence | null>(
+    `/runs/${runId}/factory-evidence`,
+    (body) => body as FactoryEvidence,
+    null,
+  );
 
-  useEffect(() => {
-    apiJson<FactoryEvidence>(`/runs/${runId}/factory-evidence`)
-      .then((body) => {
-        setData(body);
-        setErr("");
-      })
-      .catch((e) => {
-        setData(null);
-        setErr(String((e as Error).message || e));
-      });
-  }, [runId]);
+  return (
+    <PanelFrame
+      error={error}
+      empty={!data}
+      emptyMessage="Factory evidence unavailable."
+      loading={loading}
+      loadingMessage="Loading factory evidence…"
+    >
+      {data ? <FactoryEvidenceBody data={data} runId={runId} /> : null}
+    </PanelFrame>
+  );
+}
 
-  if (err) return <p class="muted">Factory evidence unavailable.</p>;
-  if (!data) return <p>Loading factory evidence…</p>;
-
+function FactoryEvidenceBody({ data, runId }: { data: FactoryEvidence; runId: string }) {
   const status = data.factory_status;
   const exportHref = `/v1/runs/${encodeURIComponent(runId)}/factory-evidence/export`;
 

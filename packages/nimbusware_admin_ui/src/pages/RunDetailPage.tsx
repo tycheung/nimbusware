@@ -3,6 +3,7 @@ import { apiJson } from "../api/client";
 import { BacklogTreePanel } from "../components/BacklogTreePanel";
 import { CampaignProgressPanel } from "../components/CampaignProgressPanel";
 import { CriticReliabilityPanel } from "../components/CriticReliabilityPanel";
+import { DynamicTable } from "../components/DynamicTable";
 import { MaintenanceEventsPanel } from "../components/MaintenanceEventsPanel";
 import { ProbationNoticePanel } from "../components/ProbationNoticePanel";
 import { ResearchPanel } from "../components/ResearchPanel";
@@ -12,6 +13,7 @@ import { LaunchScorecardPanel } from "../components/LaunchScorecardPanel";
 import { StitchSummaryPanel } from "../components/StitchSummaryPanel";
 import { TheaterPanel } from "../components/TheaterPanel";
 import { TimelineAccordion } from "../components/TimelineAccordion";
+import { CampaignProgressProvider } from "../context/CampaignProgressContext";
 
 type RunDetail = {
   run_id: string;
@@ -259,14 +261,14 @@ export function RunDetailPage({ id }: { id?: string }) {
         <p>No timeline.</p>
       )}
       {run.workflow_profile === "campaign_micro_slice" ? (
-        <>
+        <CampaignProgressProvider campaignId={id}>
           <h3>Campaign progress</h3>
-          <CampaignProgressPanel campaignId={id} />
+          <CampaignProgressPanel />
           <h3>Delivery backlog</h3>
-          <BacklogTreePanel campaignId={id} />
+          <BacklogTreePanel />
           <h3>Maintenance</h3>
-          <MaintenanceEventsPanel campaignId={id} />
-        </>
+          <MaintenanceEventsPanel />
+        </CampaignProgressProvider>
       ) : null}
       <h3>Research briefs</h3>
       <ResearchPanel runId={id} />
@@ -285,9 +287,9 @@ export function RunDetailPage({ id }: { id?: string }) {
       <h3>Probation notices</h3>
       <ProbationNoticePanel rows={findings} />
       <h3>Findings</h3>
-      <FindingsTable rows={findings} />
+      <DynamicTable rows={findings} emptyMessage="No findings." />
       <h3>Critic matrix</h3>
-      <CriticTable rows={critics} />
+      <DynamicTable rows={critics} emptyMessage="No critic verdicts." />
       <h3>Critic reliability</h3>
       <CriticReliabilityPanel runId={id} />
       <h3>Role execute (debug)</h3>
@@ -347,55 +349,5 @@ export function RunDetailPage({ id }: { id?: string }) {
         </table>
       ) : null}
     </section>
-  );
-}
-
-function FindingsTable({ rows }: { rows: Record<string, string>[] }) {
-  if (!rows.length) return <p>No findings.</p>;
-  const cols = Object.keys(rows[0]);
-  return (
-    <table class="data-table">
-      <thead>
-        <tr>
-          {cols.map((c) => (
-            <th key={c}>{c}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i}>
-            {cols.map((c) => (
-              <td key={c}>{r[c]}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function CriticTable({ rows }: { rows: Record<string, string>[] }) {
-  if (!rows.length) return <p>No critic verdicts.</p>;
-  const cols = Object.keys(rows[0]);
-  return (
-    <table class="data-table">
-      <thead>
-        <tr>
-          {cols.map((c) => (
-            <th key={c}>{c}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r, i) => (
-          <tr key={i}>
-            {cols.map((c) => (
-              <td key={c}>{r[c]}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
   );
 }

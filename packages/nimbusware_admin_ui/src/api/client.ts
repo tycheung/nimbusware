@@ -1,3 +1,5 @@
+import { parseApiErrorBody } from "../utils/parseApiError";
+
 export type Bootstrap = {
   api_base: string;
   edition: string;
@@ -111,7 +113,8 @@ export async function apiJson<T>(path: string, init: RequestInit = {}): Promise<
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`${res.status}: ${text.slice(0, 300)}`);
+    const detail = parseApiErrorBody(text);
+    throw new Error(`${res.status}: ${String(detail).slice(0, 400)}`);
   }
   if (res.status === 204) return null as T;
   return res.json() as Promise<T>;

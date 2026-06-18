@@ -9,16 +9,7 @@ type OutcomeRow = {
   avg_fit_on_fail: number | null;
 };
 
-function fmtRate(v: number | null | undefined): string {
-  if (typeof v !== "number") return "—";
-  return `${(v * 100).toFixed(1)}%`;
-}
-
-function fmtFit(v: number | null | undefined): string {
-  if (typeof v !== "number") return "—";
-  return v.toFixed(2);
-}
-
+import { fmtFit, fmtRate } from "../utils/formatters";
 export function BundleOutcomePanel() {
   const [caption, setCaption] = useState("");
   const [rows, setRows] = useState<OutcomeRow[]>([]);

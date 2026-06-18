@@ -1,65 +1,45 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
-import { apiJson } from "../api/client";
+import { useApiGet } from "../hooks/useApiGet";
+import { KeyValueTable } from "./DynamicTable";
+import { PanelFrame } from "./PanelFrame";
 
-type IawRow = { field: string; value: string };
+type IawData = {
+  present: boolean;
+  caption: string;
+  rows: { field: string; value: string }[];
+};
 
 export function IntegrationAdapterPanel({ runId }: { runId: string }) {
-  const [caption, setCaption] = useState("");
-  const [rows, setRows] = useState<IawRow[]>([]);
-  const [present, setPresent] = useState(false);
-  const [msg, setMsg] = useState("");
+  const { data, error, reload } = useApiGet<IawData>(
+    `/admin/ui/runs/${runId}/integration-adapter-writer`,
+    (body) => {
+      const raw = body as {
+        present?: boolean;
+        caption?: string;
+        rows?: { field: string; value: string }[];
+      };
+      return {
+        present: Boolean(raw.present),
+        caption: raw.caption || "",
+        rows: raw.rows || [],
+      };
+    },
+    { present: false, caption: "", rows: [] },
+  );
 
-  const load = useCallback(() => {
-    apiJson<{
-      present?: boolean;
-      caption?: string;
-      rows?: IawRow[];
-    }>(`/admin/ui/runs/${runId}/integration-adapter-writer`)
-      .then((body) => {
-        setPresent(Boolean(body.present));
-        setCaption(body.caption || "");
-        setRows(body.rows || []);
-        setMsg("");
-      })
-      .catch((e) => {
-        setPresent(false);
-        setCaption("");
-        setRows([]);
-        setMsg(String((e as Error).message || e));
-      });
-  }, [runId]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  if (msg) return <p class="muted">{msg}</p>;
-  if (!present) return <p class="muted">{caption || "No Integration Adapter Writer stage."}</p>;
+  if (!data.present) {
+    return <p class="muted">{error || data.caption || "No Integration Adapter Writer stage."}</p>;
+  }
 
   return (
-    <div>
-      <p>{caption}</p>
-      <button type="button" class="secondary" onClick={load}>
-        Refresh
-      </button>
-      {rows.length ? (
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.field}>
-                <td>{row.field}</td>
-                <td>{row.value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : null}
-    </div>
+    <PanelFrame error={error} empty={false} emptyMessage="" onRefresh={reload}>
+      <p>{data.caption}</p>
+      <KeyValueTable
+        rows={data.rows}
+        keyField="field"
+        valueField="value"
+        keyLabel="Field"
+        valueLabel="Value"
+      />
+    </PanelFrame>
   );
 }
