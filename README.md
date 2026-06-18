@@ -88,7 +88,3 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, and typing tranches.
-
-## Acknowledgments
-
-Third-party notices: [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).

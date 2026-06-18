@@ -25,7 +25,7 @@ Local hardware probe, tier classification, resource governor, model fit ranking,
 
 ## Catalog maintenance (offline-first)
 
-Default catalog ships at `configs/hardware/model_catalog.json`. Refresh from a local Odysseus-style export (MIT attribution in repo `ACKNOWLEDGMENTS.md`):
+Default catalog ships at `configs/hardware/model_catalog.json`. Refresh from a local Odysseus-style export:
 
 ```bash
 python scripts/codegen/sync_model_catalog.py --from-json path/to/export.json --dry-run
