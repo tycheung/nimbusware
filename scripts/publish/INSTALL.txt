@@ -1,0 +1,10 @@
+Nimbusware Launcher
+===================
+
+1. Extract this archive anywhere.
+2. Run the launcher binary.
+3. Choose Quick setup (Poetry deps, barebones) or Full setup (Postgres + Ollama when available).
+4. Use Run Nimbusware after setup completes.
+
+Requires Python 3.10+ on PATH for the install step.
+Docs: https://github.com/tycheung/nimbusware/blob/main/docs/getting-started.md

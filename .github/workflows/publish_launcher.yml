@@ -47,19 +47,31 @@ jobs:
         shell: bash
         run: |
           poetry run python scripts/publish/rename_launcher_artifact.py
+      - name: Package release archive
+        shell: bash
+        run: |
+          poetry run python scripts/publish/package_launcher_release.py
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            bash scripts/publish/package_launcher_macos.sh
+          elif [ "${{ runner.os }}" = "Linux" ]; then
+            bash scripts/publish/package_launcher_linux.sh
+          fi
       - name: Upload launcher artifact
         uses: actions/upload-artifact@v4
         with:
           name: launcher-${{ runner.os }}
-          path: dist/NimbuswareLauncher-*
-          if-no-files-found: error
+          path: |
+            dist/NimbuswareLauncher-*
+            dist/release/*
       - name: Publish to GitHub release
         if: >-
           startsWith(github.ref, 'refs/tags/launcher-v') ||
           (github.event_name == 'workflow_dispatch' && inputs.upload_release == true)
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/NimbuswareLauncher-*
+          files: |
+            dist/NimbuswareLauncher-*
+            dist/release/*
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || format('launcher-v{0}', github.run_number) }}
           generate_release_notes: true
         env:
