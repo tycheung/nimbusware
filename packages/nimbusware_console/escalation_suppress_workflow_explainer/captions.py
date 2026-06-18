@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.mapping import load_error_text
+
 
 def escalation_policy_yaml_verification_shape_caption(
     payload: Mapping[str, Any] | None,
@@ -33,8 +35,7 @@ def escalation_policy_yaml_deadlock_minutes_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     if payload.get("escalation_policy_yaml_path_exists") is not True:
         return None
@@ -93,8 +94,7 @@ def escalation_yaml_key_present_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if load_error_text(payload) is not None:
         return None
     present = payload.get("escalation_yaml_key_present")
     if present is not True:
@@ -121,8 +121,7 @@ def escalation_suppress_flag_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_err = payload.get("load_error")
-    if isinstance(load_err, str) and load_err.strip():
+    if load_error_text(payload) is not None:
         return None
     effective = payload.get("suppress_automatic_escalation_effective")
     if not isinstance(effective, bool):

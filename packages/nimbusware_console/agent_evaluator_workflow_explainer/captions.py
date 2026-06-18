@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.mapping import load_error_text
 from nimbusware_console.explainer_core.env_captions import (
     env_disable_flag_gate_caption,
     env_tri_state_gate_caption,
@@ -56,8 +57,7 @@ def agent_evaluator_workflow_yaml_version_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("workflow_yaml_top_level_version_int")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
@@ -88,8 +88,7 @@ def agent_evaluator_yaml_true_bool_count_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("agent_evaluator_yaml_true_bool_value_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
@@ -102,8 +101,7 @@ def agent_evaluator_yaml_raw_type_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("agent_evaluator_yaml_raw_type")
     if not isinstance(raw, str):
@@ -119,8 +117,7 @@ def agent_evaluator_yaml_key_present_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     present = payload.get("agent_evaluator_yaml_key_present")
     if present is not True:
@@ -138,8 +135,7 @@ def agent_evaluator_persona_id_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("yaml_parsed_persona_id")
     if not isinstance(raw, str):
@@ -155,8 +151,7 @@ def agent_evaluator_llm_evaluation_enabled_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     if payload.get("agent_evaluator_yaml_key_present") is not True:
         return None
@@ -179,8 +174,7 @@ def agent_evaluator_yaml_parsed_enabled_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     if payload.get("agent_evaluator_yaml_key_present") is not True:
         return None
@@ -195,8 +189,7 @@ def agent_evaluator_probation_automation_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     enabled = payload.get("yaml_parsed_probation_automation_enabled")
     if enabled is True:
@@ -223,8 +216,7 @@ def agent_evaluator_probation_automation_caption(
 def agent_evaluator_would_emit_caption(payload: Mapping[str, Any] | None) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     would = payload.get("would_emit_stage_started")
     if would is True:

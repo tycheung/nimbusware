@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from agent_core.mapping import load_error_text
 from nimbusware_config.workflow_read import (
     SelfRefinementWorkflowBlock,
     load_yaml,
@@ -105,8 +106,7 @@ def self_refinement_ungated_loop_env_gate_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     env = payload.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
     if not isinstance(env, Mapping):

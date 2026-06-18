@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.mapping import load_error_text
 from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
 
 
@@ -11,8 +12,7 @@ def security_scan_metadata_workflow_yaml_version_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("workflow_yaml_top_level_version_int")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
@@ -25,8 +25,7 @@ def security_scan_metadata_workflow_yaml_string_key_count_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("workflow_yaml_top_level_string_key_count")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
@@ -60,8 +59,7 @@ def security_scan_metadata_workflow_yaml_relpath_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("workflow_yaml_relpath")
     if not isinstance(raw, str):
@@ -77,8 +75,7 @@ def security_scan_metadata_workflow_yaml_file_bytes_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("workflow_yaml_file_bytes")
     if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
@@ -91,8 +88,7 @@ def security_scan_metadata_yaml_raw_type_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw_type = payload.get("security_scan_metadata_on_verify_yaml_raw_type")
     if not isinstance(raw_type, str):
@@ -108,8 +104,7 @@ def security_scan_metadata_effective_enabled_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     yaml_parsed = payload.get("yaml_parsed_bool")
     effective = payload.get("effective_enabled")

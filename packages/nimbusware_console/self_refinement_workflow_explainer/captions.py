@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.mapping import load_error_text
+
 
 def self_refinement_merged_version_caption(
     marker_merge: Mapping[str, Any] | None,
@@ -87,8 +89,7 @@ def self_refinement_workflow_yaml_raw_type_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     raw = payload.get("self_refinement_workflow_yaml_raw_type")
     if not isinstance(raw, str):
@@ -104,8 +105,7 @@ def self_refinement_policy_yaml_file_bytes_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     pol = payload.get("policy_yaml")
     if not isinstance(pol, Mapping):
@@ -121,8 +121,7 @@ def self_refinement_policy_yaml_disk_version_caption(
 ) -> str | None:
     if not isinstance(payload, Mapping):
         return None
-    load_error = payload.get("load_error")
-    if isinstance(load_error, str) and load_error.strip():
+    if load_error_text(payload) is not None:
         return None
     pol = payload.get("policy_yaml")
     if not isinstance(pol, Mapping):
