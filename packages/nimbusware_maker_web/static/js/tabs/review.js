@@ -1,5 +1,5 @@
 import { apiJson, toast } from "../api-client.js";
-import { renderLaunchScorecard, scorecardFromTimeline } from "../launch-scorecard.js";
+import { renderLaunchScorecard, fetchScorecardForRun } from "../launch-scorecard.js";
 import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
 import { formatGateSummary } from "../gate-summary.js";
 
@@ -361,7 +361,7 @@ export async function mountReview(root) {
     const panel = root.querySelector("#rev-launch-eval");
     panel?.classList.remove("hidden");
     const body = root.querySelector("#rev-launch-eval-body");
-    const scorecard = await scorecardFromTimeline(apiJson, id);
+    const scorecard = await fetchScorecardForRun(apiJson, id);
     if (!scorecard) {
       body.replaceChildren();
       body.textContent = "No launch_eval.completed event on this run yet.";

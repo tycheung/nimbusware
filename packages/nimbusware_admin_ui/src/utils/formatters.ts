@@ -1,9 +1,1 @@
-export function fmtRate(v: unknown): string {
-  if (typeof v !== "number") return "—";
-  return `${(v * 100).toFixed(1)}%`;
-}
-
-export function fmtFit(v: unknown): string {
-  if (typeof v !== "number") return "—";
-  return v.toFixed(2);
-}
+export { fmtRate, fmtFit, formatGateSummary } from "@nimbusware/ui-shared/js/formatters.js";

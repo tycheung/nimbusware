@@ -1,4 +1,4 @@
-import { parseApiErrorBody } from "../utils/parseApiError";
+import { fetchJson } from "@nimbusware/ui-shared/js/api-core.js";
 
 export type Bootstrap = {
   api_base: string;
@@ -102,20 +102,5 @@ export async function apiJsonEnterprise<T>(path: string, init: RequestInit = {})
 }
 
 export async function apiJson<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const url = `${apiBase()}${path.startsWith("/") ? path : `/${path}`}`;
-  const res = await fetch(url, {
-    ...init,
-    headers: {
-      Accept: "application/json",
-      ...adminHeaders(),
-      ...(init.headers as Record<string, string>),
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    const detail = parseApiErrorBody(text);
-    throw new Error(`${res.status}: ${String(detail).slice(0, 400)}`);
-  }
-  if (res.status === 204) return null as T;
-  return res.json() as Promise<T>;
+  return fetchJson(apiBase(), adminHeaders(), path, init) as Promise<T>;
 }

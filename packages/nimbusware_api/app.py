@@ -291,7 +291,9 @@ app.include_router(build_v1_router(), prefix="/v1")
 
 from nimbusware_api.routes.admin_web import mount_admin_web  # noqa: E402
 from nimbusware_api.routes.maker_web import mount_maker_web  # noqa: E402
+from nimbusware_api.routes.ui_shared_web import mount_ui_shared  # noqa: E402
 
+mount_ui_shared(app)
 mount_maker_web(app)
 mount_admin_web(app)
 

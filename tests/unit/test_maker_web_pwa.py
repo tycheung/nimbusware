@@ -78,9 +78,10 @@ def test_maker_web_review_progress_approval_paths() -> None:
     assert "mobile-advanced" in review_js
 
     progress_js = (_STATIC / "js" / "tabs" / "progress.js").read_text(encoding="utf-8")
+    progress_tpl = (_STATIC / "js" / "tabs" / "progress" / "template.js").read_text(encoding="utf-8")
     assert "maker-progress" in progress_js or "theater" in progress_js
-    assert "maker-completion-cockpit" in progress_js
-    assert "critic-reliability" in progress_js
+    assert "maker-completion-cockpit" in progress_tpl
+    assert "critic-reliability" in progress_tpl
 
     plan_js = (_STATIC / "js" / "tabs" / "plan.js").read_text(encoding="utf-8")
     assert "/campaigns/" in plan_js and "maker-plan-tree" in plan_js
