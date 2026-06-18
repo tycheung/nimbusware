@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
@@ -49,15 +50,34 @@ def _plan_evidence_refs(store: EventStore, run_id: UUID, *, prefix: str) -> list
     return refs
 
 
-def emit_stub_plan_stage(
+def _plan_deliverables(requirements: dict[str, Any] | None) -> list[str]:
+    if not isinstance(requirements, dict):
+        return ["Deliver bounded slices with tests and gate verification"]
+    prompt = str(requirements.get("business_prompt") or requirements.get("prompt") or "").strip()
+    if not prompt:
+        return ["Deliver bounded slices with tests and gate verification"]
+    try:
+        from nimbusware_orchestrator.backlog_heuristic import _match_template_id, _TEMPLATES
+
+        template = _TEMPLATES.get(_match_template_id(prompt)) or _TEMPLATES["generic"]
+        return [f"{spec.title}: {spec.rationale}" for spec in template.slices]
+    except ImportError:
+        pass
+    parts = [p.strip() for p in prompt.replace("\n", ". ").split(".") if p.strip()]
+    return parts[:6] if parts else [prompt[:240]]
+
+
+def emit_deterministic_plan_stage(
     store: EventStore,
     registry: RoleRegistry,
     critique_router: UniversalCritiqueRouter,
     *,
     run_id: UUID,
+    requirements: dict[str, Any] | None = None,
 ) -> None:
     planner = registry.resolve("planner")
     critic_roles = [registry.resolve(tax_key) for tax_key in critique_router.pairing_for("planner")]
+    deliverables = _plan_deliverables(requirements)
     store.append(
         StageStartedEvent(
             event_type=EventType.STAGE_STARTED,
@@ -68,7 +88,8 @@ def emit_stub_plan_stage(
         ),
     )
     critic_payloads: list[CriticVerdictEmittedPayload] = []
-    evidence_refs = _plan_evidence_refs(store, run_id, prefix="stub://mvp")
+    evidence_refs = _plan_evidence_refs(store, run_id, prefix="requirements://plan")
+    evidence_refs.append(f"requirements://deliverables/{len(deliverables)}")
     for critic_role in critic_roles:
         payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
@@ -94,6 +115,33 @@ def emit_stub_plan_stage(
         run_id=run_id,
         stage_name="plan",
         critic_payloads=critic_payloads,
+    )
+
+
+def emit_stub_plan_stage(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+) -> None:
+    rows = store.list_run_events(str(run_id))
+    requirements: dict[str, Any] | None = None
+    for row in rows:
+        if row.get("event_type") != EventType.RUN_CREATED.value:
+            continue
+        meta = row.get("metadata")
+        if isinstance(meta, dict):
+            req = meta.get("requirements")
+            if isinstance(req, dict):
+                requirements = req
+        break
+    emit_deterministic_plan_stage(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        requirements=requirements,
     )
 
 

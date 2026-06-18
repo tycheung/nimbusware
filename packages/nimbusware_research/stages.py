@@ -32,18 +32,12 @@ from nimbusware_research.prompt_security import wrap_researcher_prompt
 from nimbusware_store.protocol import EventStore
 
 
-def _domain_tag_from_requirements(requirements: dict[str, Any] | None) -> str:
-    if not isinstance(requirements, dict):
-        return "general"
-    prompt = str(requirements.get("business_prompt") or "").strip().lower()
-    if not prompt:
-        return "general"
-    for token in ("golf", "inventory", "scheduling", "fintech", "auth"):
-        if token in prompt:
-            return token
-    return "general"
-
-
+from nimbusware_research.stage_builder import (
+    code_brief_summary,
+    domain_brief_summary,
+    infer_domain_tag,
+    select_research_patterns,
+)
 def _emit_critique_panel(
     store: EventStore,
     registry: RoleRegistry,
@@ -72,7 +66,7 @@ def _emit_critique_panel(
             severity=Severity.LOW,
             owner_role=producer,
             is_in_domain=True,
-            evidence_refs=[f"stub://research/{stage_name}"],
+            evidence_refs=[f"artifact://research/{stage_name}"],
         )
         store.append(
             CriticVerdictEmittedEvent(
@@ -95,7 +89,7 @@ def _emit_critique_panel(
     )
 
 
-def emit_research_stages_stub(
+def emit_research_stages(
     store: EventStore,
     registry: RoleRegistry,
     critique_router: UniversalCritiqueRouter,
@@ -106,20 +100,14 @@ def emit_research_stages_stub(
     research_meta: dict[str, Any],
     live: bool = False,
 ) -> None:
-    domain_tag = _domain_tag_from_requirements(requirements)
+    domain_tag = infer_domain_tag(requirements)
     domain_enabled = bool(research_meta.get("domain_enabled", True))
     code_enabled = bool(research_meta.get("code_enabled", True))
     live = live or bool(research_meta.get("live", False))
+    repo_path = Path(repo_root) if repo_root else Path(".")
 
     if domain_enabled:
-        raw_domain_summary = (
-            f"Domain brief for {domain_tag}: user journeys, constraints, and glossary "
-            + (
-                "derived from run requirements."
-                if live
-                else "derived from requirements (stub; no live crawl in CI)."
-            )
-        )
+        raw_domain_summary = domain_brief_summary(requirements, domain_tag=domain_tag)
         if isinstance(requirements, dict):
             prompt_bit = str(requirements.get("business_prompt") or "")
             if prompt_bit.strip():
@@ -134,13 +122,9 @@ def emit_research_stages_stub(
             artifact_id=str(uuid4()),
             sources=(
                 ResearchBriefSource(
-                    url=(
-                        f"requirements://domain/{domain_tag}"
-                        if live
-                        else f"stub://domain/{domain_tag}"
-                    ),
+                    url=f"requirements://domain/{domain_tag}",
                     license="MIT",
-                    trust_tier="medium",
+                    trust_tier="high" if live else "medium",
                 ),
             ),
         )
@@ -193,23 +177,20 @@ def emit_research_stages_stub(
         )
 
     if code_enabled:
-        code_source_url = "stub://oss/pattern-index"
+        patterns = select_research_patterns(repo_path, requirements=requirements)
+        primary = patterns[0] if patterns else {}
+        code_source_url = str(primary.get("repo_url") or f"requirements://code/{domain_tag}")
         if live:
             from nimbusware_research.pattern_index import pattern_index_path
 
-            idx = pattern_index_path(Path(repo_root) if repo_root else Path("."))
-            code_source_url = (
-                f"pattern-index://{idx.name}" if idx.is_file() else "requirements://code"
-            )
-        raw_summary = "Code research brief: candidate OSS patterns and libraries for the " + (
-            "requested capability (from requirements and pattern index)."
-            if live
-            else "requested capability (stub; indexed for planner context)."
+            idx = pattern_index_path(repo_path)
+            if idx.is_file():
+                code_source_url = f"pattern-index://{idx.name}"
+        raw_summary = code_brief_summary(
+            requirements,
+            domain_tag=domain_tag,
+            patterns=patterns,
         )
-        if isinstance(requirements, dict):
-            prompt_bit = str(requirements.get("business_prompt") or "")
-            if prompt_bit.strip():
-                raw_summary = wrap_researcher_prompt(prompt_bit, role="code_researcher")
         code_brief = ResearchBrief(
             brief_kind="code",
             domain_tag=domain_tag,
@@ -248,13 +229,15 @@ def emit_research_stages_stub(
             ),
         )
         pattern_id = new_pattern_id()
+        seed = patterns[0] if patterns else {}
         pattern = append_pattern_index(
             repo_root,
-            pattern_id=pattern_id,
-            repo_url="stub://oss/example",
-            paths=["packages/example/auth", "packages/example/api"],
-            license_name="MIT",
-            embedding_ref=f"deterministic:{pattern_id[:8]}",
+            pattern_id=str(seed.get("pattern_id") or pattern_id),
+            repo_url=str(seed.get("repo_url") or f"requirements://code/{domain_tag}"),
+            paths=[str(p) for p in (seed.get("paths") or []) if str(p).strip()]
+            or ["src/"],
+            license_name=str(seed.get("license") or "MIT"),
+            embedding_ref=str(seed.get("embedding_ref") or f"requirements:{domain_tag}"),
         )
         store.append(
             ResearchPatternIndexedEvent(
@@ -296,3 +279,26 @@ def emit_research_stages_stub(
             stage_name="code_researcher.critique",
             producer_key="code_researcher",
         )
+
+
+def emit_research_stages_stub(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    repo_root: Any,
+    requirements: dict[str, Any] | None,
+    research_meta: dict[str, Any],
+    live: bool = False,
+) -> None:
+    emit_research_stages(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        repo_root=repo_root,
+        requirements=requirements,
+        research_meta=research_meta,
+        live=live,
+    )
