@@ -241,7 +241,6 @@ def ollama_chat_json_via_plan_patch(
     stage_name: str | None = None,
     agent_role: str | None = None,
 ) -> dict[str, Any]:
-    """Route JSON chat through ModelBindingResolver when role or stage is known."""
     role = (agent_role or "").strip() or None
     if not role and stage_name:
         from nimbusware_orchestrator.binding_preflight import agent_role_for_stage
@@ -287,6 +286,126 @@ def _fixes_from_llm(raw: object) -> list[RequiredFixArtifact]:
         if isinstance(item, dict):
             out.append(RequiredFixArtifact.model_validate(item))
     return out
+
+
+def execute_post_verify_role_critique_llm(
+    store: EventStore,
+    registry: RoleRegistry,
+    critique_router: UniversalCritiqueRouter,
+    *,
+    run_id: UUID,
+    base_url: str,
+    model_id: str,
+    verifier_exit_code: int,
+    log_snippet: str,
+    producer_role: str,
+    stage_name: str,
+    evidence_tag: str,
+    review_label: str | None = None,
+    user_suffix: str | None = None,
+    stage_started_metadata: dict[str, object] | None = None,
+    timeout_seconds: float = 120.0,
+) -> bool:
+    from agent_core.context_budget import truncate_for_llm_history
+
+    owner = registry.resolve(producer_role)
+    tax_keys = critique_router.pairing_for(producer_role)
+    if len(tax_keys) < 2:
+        return False
+    tax_key_union = "|".join(f'"{k}"' for k in tax_keys)
+    system = (
+        "You are a Nimbusware orchestration helper. Reply with JSON only. "
+        f'Schema: {{"critics":[{{"tax_key":{tax_key_union},'
+        '"verdict":"PASS"|"FAIL","severity":"LOW"|"MEDIUM"|"HIGH"|"BLOCKER",'
+        '"is_in_domain":true|false,"evidence_refs":["string"],'
+        '"required_fixes":[]}],"gate":{"verdict":"PASS"|"FAIL"}}. '
+        "For FAIL verdict each critic must include non-empty required_fixes with "
+        "artifact_schema_version=1, format=json_patch, target_files, patch_artifact, "
+        "validation_steps, acceptance_criteria. Prefer PASS when the log looks healthy."
+    )
+    bounded = truncate_for_llm_history(log_snippet or "", max_chars=4000)
+    if review_label:
+        user = (
+            f"Post-verify {review_label} review. Verifier exit_code={verifier_exit_code}. "
+            f"Last lines of verifier log (truncated):\n{bounded}"
+        )
+    else:
+        user = (
+            f"Verifier exit_code={verifier_exit_code}. "
+            f"Last lines of verifier log (truncated):\n{bounded}"
+        )
+    if user_suffix:
+        user = f"{user}\n\n{user_suffix.strip()}"
+    try:
+        data = ollama_chat_json_via_plan_patch(
+            base_url=base_url,
+            model=model_id,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            timeout_seconds=timeout_seconds,
+            stage_name=stage_name,
+        )
+        parsed = LlmPlanResponse.model_validate(data)
+    except (
+        httpx.HTTPError,
+        ValueError,
+        TypeError,
+        json.JSONDecodeError,
+        ValidationError,
+        KeyError,
+    ):
+        return False
+
+    stage_event_kwargs: dict[str, object] = {
+        "event_type": EventType.STAGE_STARTED,
+        "event_id": uuid4(),
+        "run_id": run_id,
+        "occurred_at": datetime.now(timezone.utc),
+        "payload": StageStartedPayload(stage_name=stage_name, attempt=1),
+    }
+    if stage_started_metadata is not None:
+        stage_event_kwargs["metadata"] = stage_started_metadata
+    store.append(StageStartedEvent(**stage_event_kwargs))
+    critic_payloads: list[CriticVerdictEmittedPayload] = []
+    for c in parsed.critics:
+        key = c.tax_key.strip().lower()
+        critic_role = registry.resolve(key)
+        verdict = _parse_verdict(c.verdict)
+        severity = _parse_severity(c.severity)
+        evidence_refs = list(c.evidence_refs) if c.evidence_refs else []
+        fixes = _fixes_from_llm(c.required_fixes)
+        payload = CriticVerdictEmittedPayload(
+            critic_role=critic_role,
+            verdict=verdict,
+            severity=severity,
+            owner_role=owner,
+            is_in_domain=c.is_in_domain,
+            evidence_refs=evidence_refs or [f"llm://{evidence_tag}"],
+            required_fixes=fixes,
+        )
+        critic_payloads.append(payload)
+        store.append(
+            CriticVerdictEmittedEvent(
+                event_type=EventType.CRITIC_VERDICT_EMITTED,
+                event_id=uuid4(),
+                run_id=run_id,
+                occurred_at=datetime.now(timezone.utc),
+                actor_role=critic_role,
+                payload=payload,
+            ),
+        )
+    gv = _parse_verdict(parsed.gate.verdict)
+    _finalize_critique_gate(
+        store,
+        run_id=run_id,
+        stage_name=stage_name,
+        critic_payloads=critic_payloads,
+        llm_fallback_verdict=gv,
+        failure_reason_code="llm_gate_fail" if gv == Verdict.FAIL else None,
+    )
+    return True
 
 
 __all__ = [name for name in globals() if not name.startswith("__")]

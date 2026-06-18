@@ -68,7 +68,7 @@ def test_execute_test_writer_role_critique_llm_success() -> None:
         }
 
     with patch(
-        "nimbusware_orchestrator.llm.test_writer_role_critique._ollama_chat_json",
+        "nimbusware_orchestrator.llm.common.ollama_chat_json_via_plan_patch",
         side_effect=good,
     ):
         ok = execute_test_writer_critique_llm(
