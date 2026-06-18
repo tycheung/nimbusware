@@ -1,6 +1,6 @@
 # nimbusware_store
 
-Append-only event store for Nimbusware agent runs (via Nimbusware): Postgres when `NIMBUSWARE_DATABASE_URL` is set, otherwise in-memory for local development.
+Append-only event store for agent runs: Postgres when `NIMBUSWARE_DATABASE_URL` is set, otherwise in-memory for local development.
 
 ## Layout
 

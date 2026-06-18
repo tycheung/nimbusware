@@ -60,9 +60,7 @@ Architecture is enforced by [`tests/unit/test_import_graph.py`](tests/unit/test_
 - `nimbusware_extensions` must not import `nimbusware_orchestrator` at module level
 - Web UIs call `/v1` via `fetch` or `nimbusware_client`; Python `services/*` remain the server-side pattern — not ad-hoc `httpx` in display helpers
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repo; **Nimbusware** = online agentic system).
-
-Do not use “Nimbusware” to mean the Nimbusware platform, API, Maker, or Admin Console.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full layering map and [nomenclature](ARCHITECTURE.md#nomenclature) (**Nimbusware** = this repository and product). Use **agent runtime** or **run pipeline** when you need to name the orchestration layer without repeating the product name.
 
 ### Linting
 

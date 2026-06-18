@@ -1,6 +1,6 @@
 # External CI bridge (GitHub Checks / GitLab)
 
-Maps Nimbusware gate outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect Nimbusware gate verdicts. Entrypoint: `notify_gate_decision_external` / `attach_external_ci_metadata` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py). Env reads go through `nimbusware_env.env_flags` (`nimbusware_github_token`, `nimbusware_gitlab_token`, `nimbusware_ci_github_repo`, …).
+Maps gate outcomes to GitHub Check Runs or GitLab commit statuses so external CI dashboards reflect those verdicts. Entrypoint: `notify_gate_decision_external` / `attach_external_ci_metadata` in [`packages/nimbusware_orchestrator/ci_bridge/external_ci.py`](../../packages/nimbusware_orchestrator/ci_bridge/external_ci.py). Env reads go through `nimbusware_env.env_flags` (`nimbusware_github_token`, `nimbusware_gitlab_token`, `nimbusware_ci_github_repo`, …).
 
 ## When it fires
 
