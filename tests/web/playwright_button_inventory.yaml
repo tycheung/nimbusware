@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 116
-  clicked: 34
+  total_buttons: 119
+  clicked: 35
   visible_only: 7
-  unwired: 75
-  click_ratio: 0.2931
+  unwired: 77
+  click_ratio: 0.2941
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -18,6 +18,19 @@ buttons:
   label: '{rescanBusy ? "Rescanning…" : "Rescan fleet hosts"}'
   clicked_in:
   - tests/e2e/web/admin_fleet_hardware.spec.ts
+  visible_only_in: []
+- test_id: maker-accessible-compute
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/accessible_compute_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-accessible-compute-trigger
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/accessible_compute_ui.js
+  label: (dynamic)
+  clicked_in:
+  - tests/e2e/web/maker_accessible_compute.spec.ts
   visible_only_in: []
 - test_id: maker-autopilot-profile-save
   app: maker
@@ -58,7 +71,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-agent-popover
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_agents_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -198,6 +211,12 @@ buttons:
 - test_id: maker-chat-library-tag-filter
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_library_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-model-swap-dialog
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_agents_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []

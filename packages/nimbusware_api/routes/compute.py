@@ -162,3 +162,19 @@ def complete_work_unit(
             detail=problem("not_found", "work unit not found"),
         )
     return {"work_unit": work_unit_to_public(rec)}
+
+
+@router.post("/compute/work-units/{work_unit_id}/terminate-restart")
+def terminate_restart_work_unit(work_unit_id: UUID, _: UserDep) -> dict[str, Any]:
+    from nimbusware_compute.work_unit import get_work_unit_queue, work_unit_to_public
+
+    rec = get_work_unit_queue().terminate_restart(work_unit_id)
+    if rec is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "not_found",
+                "work unit not found or already finished",
+            ),
+        )
+    return {"work_unit": work_unit_to_public(rec)}

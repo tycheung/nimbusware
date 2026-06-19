@@ -216,6 +216,22 @@ class RedisWorkUnitQueue:
         self._save(done)
         return done
 
+    def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None:
+        rec = self._load(str(work_unit_id))
+        if rec is None:
+            return None
+        if rec.status in {"ok", "failed", "timeout", "cancelled"}:
+            return None
+        self.complete(work_unit_id, status="cancelled")
+        return self.enqueue(
+            run_id=rec.run_id,
+            session_id=rec.session_id,
+            stage_name=rec.stage_name,
+            agent_role=rec.agent_role,
+            executor_user_id=rec.executor_user_id,
+            payload=dict(rec.payload),
+        )
+
     def stats(self) -> dict[str, int]:
         return {
             "queued": int(self._client.llen(self._queue_key)),

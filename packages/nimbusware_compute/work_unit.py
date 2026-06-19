@@ -63,6 +63,8 @@ class WorkUnitQueuePort(Protocol):
         result: dict[str, Any] | None = None,
     ) -> WorkUnitRecord | None: ...
 
+    def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None: ...
+
     def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]: ...
 
 
@@ -173,6 +175,22 @@ class InMemoryWorkUnitQueue:
         )
         self._units[work_unit_id] = done
         return done
+
+    def terminate_restart(self, work_unit_id: UUID) -> WorkUnitRecord | None:
+        rec = self._units.get(work_unit_id)
+        if rec is None:
+            return None
+        if rec.status in {"ok", "failed", "timeout", "cancelled"}:
+            return None
+        self.complete(work_unit_id, status="cancelled")
+        return self.enqueue(
+            run_id=rec.run_id,
+            session_id=rec.session_id,
+            stage_name=rec.stage_name,
+            agent_role=rec.agent_role,
+            executor_user_id=rec.executor_user_id,
+            payload=dict(rec.payload),
+        )
 
 
 _work_unit_queue: WorkUnitQueuePort | None = None
