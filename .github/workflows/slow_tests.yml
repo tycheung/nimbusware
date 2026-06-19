@@ -91,7 +91,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
-      - run: poetry run playwright install chromium
+      - run: poetry run playwright install --with-deps chromium
       - name: Persistent dev-env journey soak
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
@@ -106,7 +106,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install poetry && poetry install
-      - run: poetry run playwright install chromium
+      - run: poetry run playwright install --with-deps chromium
       - name: Fullstack HTTP+UI launch soak
         env:
           NIMBUSWARE_SKIP_PREFLIGHT: "1"

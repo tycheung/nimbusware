@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from nimbusware_agent_tools.tools import tool_browser_act
+from e2e.harness.playwright_skip import require_playwright_chromium
 
 
 def test_browser_act_rejects_unknown_action() -> None:
@@ -15,10 +16,7 @@ def test_browser_act_rejects_unknown_action() -> None:
 
 @pytest.mark.parametrize("html", ['<html lang="en"><body><h1>Hi</h1></body>'])
 def test_browser_act_goto_expect_text(tmp_path: Path, html: str) -> None:
-    try:
-        import playwright  # noqa: F401
-    except ImportError:
-        pytest.skip("playwright not installed")
+    require_playwright_chromium()
 
     import socket
     from functools import partial

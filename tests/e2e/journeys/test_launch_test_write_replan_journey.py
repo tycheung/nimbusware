@@ -14,6 +14,7 @@ from nimbusware_orchestrator.launch_test_stage import (
     run_launch_test_write,
 )
 from nimbusware_orchestrator.put_runtime import start_put_preview, stop_put_preview
+from e2e.harness.playwright_skip import require_playwright_chromium
 
 _FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_spa_unknown"
 
@@ -41,10 +42,7 @@ def test_launch_test_write_replan_then_ui_and_keyboard() -> None:
         critique = run_launch_test_critique(_FIXTURE, flow_id="launch_draft")
         assert critique.passed is True
 
-        try:
-            import playwright  # noqa: F401
-        except ImportError:
-            pytest.skip("playwright not installed")
+        require_playwright_chromium()
 
         ui_flow = load_workspace_ui_flow(_FIXTURE, "launch_draft")
         assert ui_flow is not None

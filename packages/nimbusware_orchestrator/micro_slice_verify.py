@@ -5,6 +5,7 @@ from typing import Any
 
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.patch_context import (
+    maven_test_class_from_failing_test,
     patch_context_from_run_rows,
     resolve_patch_test_targets,
 )
@@ -60,8 +61,7 @@ def run_slice_verify_and_test(
         selector = None
         if patch_ctx:
             failing = str(patch_ctx.get("failing_test") or "").strip()
-            if failing.endswith("Test.java"):
-                selector = Path(failing).stem
+            selector = maven_test_class_from_failing_test(failing)
         test_code, test_out = run_mvn_test(
             workspace,
             timeout_seconds=timeout_seconds,

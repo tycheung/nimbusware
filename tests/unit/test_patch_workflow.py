@@ -7,6 +7,7 @@ from nimbusware_orchestrator.micro_slice import micro_slice_count_for_run
 from nimbusware_orchestrator.patch_context import (
     implementation_path_from_failing_test,
     infer_patch_implementation_paths,
+    maven_test_class_from_failing_test,
     normalize_patch_context,
     patch_auto_apply_allowed,
     resolve_patch_test_targets,
@@ -100,6 +101,13 @@ def test_agent_risk_caps_from_run_rows() -> None:
 def test_implementation_path_from_failing_test_go() -> None:
     path = implementation_path_from_failing_test("calculator_test.go", stack="go")
     assert path == "calculator.go"
+
+
+def test_maven_test_class_from_failing_test() -> None:
+    selector = maven_test_class_from_failing_test(
+        "src/test/java/com/example/CalculatorTest.java",
+    )
+    assert selector == "com.example.CalculatorTest"
 
 
 def test_infer_patch_implementation_paths_from_go_fixture(tmp_path: Path) -> None:

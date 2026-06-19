@@ -66,6 +66,14 @@ def _workspace_stack(workspace: Path) -> str:
     return "python"
 
 
+def maven_test_class_from_failing_test(failing_test: str) -> str | None:
+    path = failing_test.replace("\\", "/").strip()
+    if not path.endswith("Test.java") or "src/test/java/" not in path:
+        return None
+    rel = path.replace("src/test/java/", "").removesuffix(".java")
+    return rel.replace("/", ".")
+
+
 def implementation_path_from_failing_test(failing_test: str, *, stack: str) -> str | None:
     path = failing_test.replace("\\", "/").strip()
     if not path:

@@ -17,6 +17,14 @@ jobs:
         run: pip install poetry
       - name: Install dependencies
         run: poetry install
+      - name: Install Playwright browser (journey UI checks)
+        run: poetry run playwright install --with-deps chromium
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install Maven
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq maven
       - name: E2E smoke (app profile)
         run: poetry run python scripts/ops/e2e_smoke.py --profile app --skip-install-check
         env:
@@ -48,6 +56,14 @@ jobs:
         run: pip install poetry
       - name: Install dependencies
         run: poetry install
+      - name: Install Playwright browser (journey UI checks)
+        run: poetry run playwright install --with-deps chromium
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install Maven
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq maven
       - name: Apply schema
         run: bash scripts/database/apply_event_store.sh
         env:

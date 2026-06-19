@@ -12,5 +12,9 @@ steps:
     value: Buy milk
   - kind: click
     locator: { strategy: testid, value: todo-add-button }
+  - kind: wait_for
+    locator: { strategy: text, value: Buy milk }
+    timeout_ms: 15000
   - kind: expect_visible
     locator: { strategy: text, value: Buy milk }
+    timeout_ms: 15000

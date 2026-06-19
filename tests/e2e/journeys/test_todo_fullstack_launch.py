@@ -16,6 +16,7 @@ from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
 from nimbusware_orchestrator.launch_flow_resolver import load_catalog_ui_flow
 from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
 from nimbusware_store.memory import InMemoryEventStore
+from e2e.harness.playwright_skip import require_playwright_chromium
 
 _FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_todo_fullstack"
 
@@ -47,15 +48,7 @@ def test_todo_fullstack_http_and_ui_launch() -> None:
         http = run_put_e2e_flow(api_url, "todo_api", workspace=_FIXTURE, require_playwright=False)
         assert http.verdict == "PASS"
 
-        try:
-            import playwright  # noqa: F401
-        except ImportError:
-            pytest.skip("playwright not installed")
-
-        from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
-
-        if not playwright_chromium_launchable():
-            pytest.skip("playwright chromium browser not installed")
+        require_playwright_chromium()
 
         ui_flow = load_catalog_ui_flow("todo_api_ui")
         ui = run_ui_flow(fe_url, ui_flow)

@@ -9,6 +9,7 @@ import pytest
 from nimbusware_orchestrator.dev_env_supervisor import start_dev_environment, stop_dev_environment
 from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
 from nimbusware_store.memory import InMemoryEventStore
+from e2e.harness.playwright_skip import require_playwright_chromium
 
 
 def _free_port() -> int:
@@ -36,12 +37,8 @@ def test_dev_env_session_start_status_stop(tmp_path: Path) -> None:
     started = start_dev_environment(store, run_id, ws, port=port)
     assert started.ok is True, started.error
     try:
-        try:
-            import playwright  # noqa: F401
-
-            fidelity = run_human_fidelity_suite(started.session.base_url if started.session else "")
-            assert fidelity.passed is True
-        except ImportError:
-            pass
+        require_playwright_chromium()
+        fidelity = run_human_fidelity_suite(started.session.base_url if started.session else "")
+        assert fidelity.passed is True
     finally:
         stop_dev_environment(store, run_id, ws)

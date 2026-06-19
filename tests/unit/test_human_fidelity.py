@@ -14,6 +14,7 @@ from nimbusware_orchestrator.human_fidelity import (
     run_axe_smoke,
     run_human_fidelity_suite,
 )
+from e2e.harness.playwright_skip import require_playwright_chromium
 
 
 def _free_port() -> int:
@@ -41,10 +42,7 @@ def _serve(tmp_path: Path, html: str, port: int) -> ThreadingHTTPServer:
     ],
 )
 def test_axe_smoke_lang_and_heading(tmp_path: Path, html: str, expect_ok: bool) -> None:
-    try:
-        import playwright  # noqa: F401
-    except ImportError:
-        pytest.skip("playwright not installed")
+    require_playwright_chromium()
 
     port = _free_port()
     server = _serve(tmp_path, html, port)
@@ -58,10 +56,7 @@ def test_axe_smoke_lang_and_heading(tmp_path: Path, html: str, expect_ok: bool) 
 
 
 def test_human_fidelity_static_site(tmp_path: Path) -> None:
-    try:
-        import playwright  # noqa: F401
-    except ImportError:
-        pytest.skip("playwright not installed")
+    require_playwright_chromium()
 
     port = _free_port()
     html = '<html lang="en"><head><title>Welcome</title></head><body><h1>Welcome</h1></body>'
@@ -77,10 +72,7 @@ def test_human_fidelity_static_site(tmp_path: Path) -> None:
 
 
 def test_axe_rules_disabled_by_default(tmp_path: Path) -> None:
-    try:
-        import playwright  # noqa: F401
-    except ImportError:
-        pytest.skip("playwright not installed")
+    require_playwright_chromium()
 
     port = _free_port()
     html = '<html lang="en"><head><title>T</title></head><body><h1>Hi</h1></body>'

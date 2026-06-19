@@ -32,6 +32,12 @@ def _playwright_required() -> bool:
         if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
             pytest.fail("playwright required for framework pack fidelity gate")
         return False
+    from nimbusware_orchestrator.playwright_probe import playwright_chromium_launchable
+
+    if not playwright_chromium_launchable():
+        if os.environ.get("NIMBUSWARE_FRAMEWORK_PACK_FIDELITY", "").strip() == "1":
+            pytest.fail("playwright chromium required for framework pack fidelity gate")
+        return False
     return True
 
 
