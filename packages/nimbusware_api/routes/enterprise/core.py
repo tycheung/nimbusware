@@ -7,12 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_env.edition import (
-    ENTERPRISE_FEATURES,
     FEATURE_EPICS,
     edition,
     is_enterprise,
 )
-from nimbusware_iam.constants import IMPLEMENTED_ENTERPRISE_FEATURES
+from nimbusware_iam.constants import ENTERPRISE_FEATURES, IMPLEMENTED_ENTERPRISE_FEATURES
 
 router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 

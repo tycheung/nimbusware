@@ -8,7 +8,10 @@ from agent_core.models import EventType
 from agent_core.models.events_payloads import CampaignPausedPayload, SliceQueuedPayload
 from agent_core.models.events_records import CampaignPausedEvent, SliceQueuedEvent
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import emit_backlog_generated, generate_stub_backlog
+from nimbusware_orchestrator.backlog_generator import (
+    emit_backlog_generated,
+    generate_heuristic_backlog,
+)
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_projections.builders.campaign_progress import campaign_progress_from_events
 
@@ -29,7 +32,7 @@ def test_campaign_progress_executing_with_slice_and_maintenance_schedule() -> No
         requirements={"business_prompt": "Build auth"},
         autonomous=True,
     )
-    backlog = generate_stub_backlog(str(run_id), max_slices=5)
+    backlog = generate_heuristic_backlog(str(run_id), max_slices=5)
     emit_backlog_generated(store, run_id, backlog)
     first_slice = backlog.epics[0].features[0].slices[0]
     store.append(

@@ -12,7 +12,7 @@ from agent_core.models.events_payloads import StagePassedPayload
 from agent_core.models.events_records import StagePassedEvent
 from e2e.harness.timeline import assert_timeline_golden
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.backlog_generator import generate_stub_backlog
+from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog
 from nimbusware_orchestrator.campaign import CampaignDriverState
 from nimbusware_orchestrator.campaign_driver import campaign_driver_tick
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
@@ -68,12 +68,12 @@ def test_campaign_multi_tick_reaches_completed(monkeypatch: pytest.MonkeyPatch) 
         _relaxed_policy,
     )
 
-    def _two_slice_stub(campaign_id: str, **kwargs: object):
-        return generate_stub_backlog(campaign_id, max_slices=2)
+    def _two_slice_backlog(campaign_id: str, **kwargs: object):
+        return generate_heuristic_backlog(campaign_id, max_slices=2)
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.backlog_generator.generate_stub_backlog",
-        _two_slice_stub,
+        "nimbusware_orchestrator.backlog_generator.generate_heuristic_backlog",
+        _two_slice_backlog,
     )
 
     def _fast_slice(

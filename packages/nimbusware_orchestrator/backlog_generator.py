@@ -26,7 +26,6 @@ __all__ = [
     "backlog_from_events",
     "has_backlog_event",
     "generate_heuristic_backlog",
-    "generate_stub_backlog",
     "ensure_backlog",
     "emit_backlog_generated",
     "emit_backlog_revised",
@@ -66,21 +65,6 @@ def _requirements_from_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None
                 return req
         break
     return None
-
-
-def generate_stub_backlog(
-    campaign_id: str,
-    *,
-    requirements: dict[str, Any] | None = None,
-    max_slices: int = 10,
-    repo_root: Any | None = None,
-) -> DeliveryBacklog:
-    return generate_heuristic_backlog(
-        campaign_id,
-        requirements=requirements,
-        max_slices=max_slices,
-        repo_root=repo_root,
-    )
 
 
 def emit_backlog_generated(

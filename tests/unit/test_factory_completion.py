@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from agent_core.models.backlog import SliceStatus
-from nimbusware_orchestrator.backlog_generator import generate_stub_backlog
+from nimbusware_orchestrator.backlog_generator import generate_heuristic_backlog
 from nimbusware_orchestrator.factory_completion import (
     PUT_E2E_FIX_CATEGORY,
     append_put_e2e_fix_slice,
@@ -103,7 +103,7 @@ def test_build_put_e2e_fix_slice_category() -> None:
 
 
 def test_append_put_e2e_fix_slice_increments_backlog() -> None:
-    backlog = generate_stub_backlog("camp-1", max_slices=2)
+    backlog = generate_heuristic_backlog("camp-1", max_slices=2)
     before = backlog.metadata.total_slices_planned
     revised = append_put_e2e_fix_slice(
         backlog,
@@ -114,7 +114,7 @@ def test_append_put_e2e_fix_slice_increments_backlog() -> None:
 
 
 def test_handle_put_e2e_failure_only_on_fail() -> None:
-    backlog = generate_stub_backlog("camp-2", max_slices=1)
+    backlog = generate_heuristic_backlog("camp-2", max_slices=1)
     ok = PutE2EResult(verdict="PASS", flow_id="crm", base_url="http://x")
     assert handle_put_e2e_failure(backlog, ok) is backlog
     fail = PutE2EResult(
