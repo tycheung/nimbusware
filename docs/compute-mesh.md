@@ -27,6 +27,13 @@ The worker registers once, then sends heartbeats and **pulls work units** from t
 | POST | `/v1/compute/work-units/{id}/terminate-restart` | Cancel in-flight unit and re-queue (fo1782 handoff) |
 | GET | `/v1/compute/work-units/queue?session_id=` | Host queue depth observability |
 | POST | `/v1/chat/sessions/{id}/compute/opt-in` | Session compute sharing toggle |
+| GET/PUT | `/v1/chat/sessions/{id}/optimizer-weights` | Session drag-priority optimizer weights (fo1788) |
+
+Set `NIMBUSWARE_COMPUTE_WORK_QUEUE=postgres` (requires `NIMBUSWARE_DATABASE_URL`) for durable work units; `redis` for shared fleet queue; default in-memory for solo dev.
+
+## Host merge (ADR 025)
+
+When mesh assigns stages to remote nodes, the host **skips local execution** for those stages and waits on work-unit completion. Critic `gate_fail` and writer verifier results are read from the worker `complete` payload via `mesh_host_sync`.
 
 ## Reachability
 

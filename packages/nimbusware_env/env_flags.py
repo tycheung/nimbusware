@@ -584,6 +584,8 @@ def nimbusware_compute_work_queue_mode() -> str | None:
         return "memory"
     if raw == "redis":
         return "redis"
+    if raw == "postgres":
+        return "postgres"
     return None
 
 
