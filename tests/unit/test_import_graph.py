@@ -170,7 +170,6 @@ def test_api_runs_use_projections_run_summary() -> None:
 _WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST = frozenset(
     {
         "integrator_threshold_explainer.py",  # integrator gate emission helpers
-        "integration_adapter_writer_explainer.py",
     },
 )
 

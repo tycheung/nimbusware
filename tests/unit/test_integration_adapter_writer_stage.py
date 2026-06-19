@@ -71,7 +71,7 @@ def test_explainer_would_emit_stage_started(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
-    from nimbusware_console.integration_adapter_writer_explainer import (
+    from nimbusware_console.integration_adapter_writer_workflow_explainer import (
         integration_adapter_writer_workflow_explainer_operator_metrics,
         integration_adapter_writer_workflow_explainer_payload,
     )
@@ -148,7 +148,7 @@ def test_explainer_live_path_payload_and_metrics(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("NIMBUSWARE_DATABASE_URL", raising=False)
-    from nimbusware_console.integration_adapter_writer_explainer import (
+    from nimbusware_console.integration_adapter_writer_workflow_explainer import (
         integration_adapter_writer_workflow_explainer_operator_metrics,
         integration_adapter_writer_workflow_explainer_operator_metrics_caption,
         integration_adapter_writer_workflow_explainer_payload,
