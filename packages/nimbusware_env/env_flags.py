@@ -218,6 +218,10 @@ def nimbusware_run_bandit_enabled() -> bool:
     return env_truthy_raw("NIMBUSWARE_RUN_BANDIT")
 
 
+def nimbusware_enforcement_depth_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_ENFORCEMENT_DEPTH")
+
+
 def nimbusware_run_semgrep_enabled() -> bool:
     from nimbusware_env.settings_resolve import resolve_bool
 

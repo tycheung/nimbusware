@@ -35,7 +35,13 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 
 Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `campaign_driver.py` generates a delivery backlog, executes **one** micro-slice per `campaign_tick` worker task, runs periodic refactor/architecture maintenance, and finalizes via tiered `completion_evaluator.py` (slice terminal + workflow `completion:` policy). Event-row parsers: `agent_core.read.campaign`. Public safety API: `RunOrchestrator.active_campaigns_for_project()`. Start with `RunOrchestrator.start_campaign(run_id)`; worker steps: `campaign_tick` (see `run_worker.py`).
 
-**Backlog generation** (`backlog_generator.py`, `backlog_heuristic.py`): campaign workflows default to `backlog.generator: heuristic`, which decomposes `business_prompt` into epics/features/slices using launch-eval catalog templates, keyword routing (CRM, todo API, static site, auth), and repo entrypoint discovery. Set `backlog.generator: llm` with `NIMBUSWARE_USE_LLM=1` and `NIMBUSWARE_BACKLOG_GENERATOR_MODEL` for Ollama-backed backlog planning. Legacy YAML `stub` generator mode maps to heuristic at runtime.
+## Enforcement depth
+
+Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 presets; `workspace_layout.py` + `workspace_ci_runner.py` run layout-aware CI bundles on attached workspaces. API: `GET/PUT /v1/runs/{id}/enforcement`. Enable with `NIMBUSWARE_ENFORCEMENT_DEPTH=1`. See ADR [026](../../docs/adr/026-enforcement-depth-slider.md).
+
+## Backlog generation
+
+`backlog_generator.py` and `backlog_heuristic.py`: campaign workflows default to `backlog.generator: heuristic`, which decomposes `business_prompt` into epics/features/slices using launch-eval catalog templates, keyword routing (CRM, todo API, static site, auth), and repo entrypoint discovery. Set `backlog.generator: llm` with `NIMBUSWARE_USE_LLM=1` and `NIMBUSWARE_BACKLOG_GENERATOR_MODEL` for Ollama-backed backlog planning. Legacy YAML `stub` generator mode maps to heuristic at runtime.
 
 ## Testing
 

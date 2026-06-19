@@ -26,6 +26,8 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 
 Failures in bandit or pip-audit block merge the same way as pytest coverage floors.
 
+**Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 mirrors applicable subsets of this table. API: `GET/PUT /v1/runs/{id}/enforcement`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
+
 ## Operator surfacing
 
 - **Admin → Metrics** — competitive run analytics snapshot (not a substitute for SOC tooling).

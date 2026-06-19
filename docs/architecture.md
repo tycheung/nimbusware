@@ -33,6 +33,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [023-collaborative-chat-sessions.md](adr/023-collaborative-chat-sessions.md) | Multi-participant chat sessions (opt-in) |
 | [024-install-profiles.md](adr/024-install-profiles.md) | Recommended vs barebones install profiles |
 | [025-distributed-compute-mesh.md](adr/025-distributed-compute-mesh.md) | Compute node registry and work-unit mesh MVP |
+| [026-enforcement-depth-slider.md](adr/026-enforcement-depth-slider.md) | Enforcement depth 0–10 (workspace CI strictness) |
 
 Tier 3 context-efficiency modules (Pi transplant): `nimbusware_agent_tools` (dual tool output, allowlist, stable prompt file), `nimbusware_projections.builders.context_budget`, `agent_tool_prune`, `GET /v1/runs/{id}/context_budget`, `POST /v1/runs/{id}/compact`.
 

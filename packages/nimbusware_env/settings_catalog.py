@@ -594,6 +594,15 @@ def _defs() -> tuple[SettingDef, ...]:
             "System — verifiers",
         ),
         SettingDef(
+            "NIMBUSWARE_ENFORCEMENT_DEPTH",
+            system,
+            b,
+            "0",
+            "Enforcement depth slider",
+            "Enable per-run enforcement depth API and workspace CI runner.",
+            "System — verifiers",
+        ),
+        SettingDef(
             "NIMBUSWARE_RUN_SEMGREP",
             system,
             b,

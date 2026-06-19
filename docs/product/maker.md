@@ -44,6 +44,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 ## Operator controls
 
 - **Trust/autopilot slider** — `GET/PUT /v1/runs/{id}/autopilot`; presets in `configs/autopilot/presets.yaml`
+- **Enforcement depth slider** — `GET/PUT /v1/runs/{id}/enforcement`; presets in `configs/enforcement/presets.yaml`; level 10 = Nimbusware workspace CI parity (ADR [026](../adr/026-enforcement-depth-slider.md))
 - **Interjection queue** — `[patch]`, `[steer]`, `[skip]`, `[build]` prefixes; ADRs [013](../adr/013-operator-interjection.md)–[015](../adr/015-custom-autopilot-profiles.md)
 - **Compaction** — revert via `POST /v1/runs/{id}/compactions/{compaction_id}/revert`
 - **Dev env ribbon** — start/stop/regression when persistent dev env enabled

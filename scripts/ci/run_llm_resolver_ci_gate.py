@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""fo1401: fail CI when production code imports ollama_chat directly."""
 
 from __future__ import annotations
 

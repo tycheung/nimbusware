@@ -1,0 +1,30 @@
+# Enforcement depth presets (0–10). Level 10 = Nimbusware CI parity on attached workspaces.
+levels:
+  "0":
+    name: Sketch
+    ruff_scope: off
+    tests_mode: skip_ok
+    security_mode: off
+    e2e_mode: skip_ok
+  "5":
+    name: Balanced
+    ruff_scope: workspace
+    tests_mode: mapped_required
+    security_mode: bandit
+    e2e_mode: if_present
+    universal_critique: true
+    skip_verdict_policy: warn
+  "10":
+    name: Nimbusware parity
+    ruff_scope: workspace
+    ruff_format_check: true
+    tests_mode: full_with_coverage
+    coverage_floor: 0.75
+    security_mode: full_scan
+    pip_audit: required
+    e2e_mode: required
+    universal_critique: true
+    fast_slice_allowed: false
+    skip_verdict_policy: fail
+    milestone_full_ci: true
+    terminal_parity_ci: true

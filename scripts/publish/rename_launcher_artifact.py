@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Rename PyInstaller launcher output to a platform-specific release filename."""
 
 from __future__ import annotations
 

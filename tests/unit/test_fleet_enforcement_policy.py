@@ -1,0 +1,30 @@
+from __future__ import annotations
+
+from nimbusware_orchestrator.enforcement_profiles import preset_for_enforcement_level
+from nimbusware_orchestrator.fleet_enforcement_policy import (
+    FleetEnforcementPolicy,
+    clamp_profile_to_policy,
+    load_fleet_enforcement_policies,
+    save_fleet_enforcement_policies,
+)
+
+
+def test_clamp_profile_to_policy(tmp_path) -> None:
+    policy = FleetEnforcementPolicy("ops", min_enforcement_level=6, max_enforcement_level=8)
+    profile = preset_for_enforcement_level(10)
+    clamped = clamp_profile_to_policy(profile, policy)
+    assert clamped.level == 8
+
+
+def test_fleet_enforcement_policies_round_trip(tmp_path) -> None:
+    path = tmp_path / "configs" / "enterprise" / "fleet_enforcement_policies.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        "version: 1\ntenants:\n  ops:\n    min_enforcement_level: 5\n    max_enforcement_level: 9\n",
+        encoding="utf-8",
+    )
+    policies = load_fleet_enforcement_policies(tmp_path)
+    assert policies["ops"].min_enforcement_level == 5
+    save_fleet_enforcement_policies(policies, repo_root=tmp_path)
+    reloaded = load_fleet_enforcement_policies(tmp_path)
+    assert reloaded["ops"].max_enforcement_level == 9

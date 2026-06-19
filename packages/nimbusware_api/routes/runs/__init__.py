@@ -14,6 +14,7 @@ from nimbusware_api.routes.runs.create import CreateRunBody
 from nimbusware_api.routes.runs.create import router as create_router
 from nimbusware_api.routes.runs.detail import router as detail_router
 from nimbusware_api.routes.runs.dev_env import router as dev_env_router
+from nimbusware_api.routes.runs.enforcement import router as enforcement_router
 from nimbusware_api.routes.runs.factory_evidence import router as factory_evidence_router
 from nimbusware_api.routes.runs.interjection import router as interjection_router
 from nimbusware_api.routes.runs.learnings import router as learnings_router
@@ -66,6 +67,7 @@ def build_runs_router() -> APIRouter:
     composed.include_router(dev_env_router)
     composed.include_router(interjection_router)
     composed.include_router(autopilot_router)
+    composed.include_router(enforcement_router)
     composed.include_router(learnings_router)
     composed.include_router(context_budget_router)
     composed.include_router(compact_router)

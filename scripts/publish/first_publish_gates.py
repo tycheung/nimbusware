@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""First-publish gates: build bootstrap wheel + VSIX without uploading (operator preflight)."""
 
 from __future__ import annotations
 

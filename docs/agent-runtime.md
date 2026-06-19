@@ -35,6 +35,7 @@ Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_
 - **Persistent dev env** — session supervisor, incremental regression, UI controller (ADRs [009](adr/009-persistent-dev-environment.md), [010](adr/010-ui-controller.md))
 - **Launch testing** — variable PUT flows, framework packs, human-fidelity checks (ADR [011](adr/011-human-fidelity-e2e.md))
 - **Operator interjection + autopilot** — trust slider 0–10, interjection queue (ADRs [013](adr/013-operator-interjection.md)–[015](adr/015-custom-autopilot-profiles.md))
+- **Enforcement depth** — second 0–10 axis for workspace verify/gate strictness; presets in `configs/enforcement/presets.yaml`, API `GET/PUT /v1/runs/{id}/enforcement` (ADR [026](adr/026-enforcement-depth-slider.md); pipeline wiring Phase 3)
 - **Code intelligence** — code graph (v2 bundle), entrypoint-aware orphans/route reachability, deterministic refactor patches (+ optional LLM patch when `refactor.llm_enabled`), improvement/resolution councils, variant arena (ADRs [016](adr/016-repo-exploration-variants.md)–[019](adr/019-debate-first-resolution.md))
 - **Preflight** — Ollama/model health at run start
 - **Scraper stage** — role-gated HTTP fetch with artifact retention

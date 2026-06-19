@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""CI gate: launcher publish helpers and PyInstaller spec sanity."""
 
 from __future__ import annotations
 

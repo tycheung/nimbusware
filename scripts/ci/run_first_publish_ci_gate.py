@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""CI gate: first-publish contract checks (no wheel/vsix build)."""
 
 from __future__ import annotations
 

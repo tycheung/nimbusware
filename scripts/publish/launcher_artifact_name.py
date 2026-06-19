@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Platform-specific launcher release artifact names."""
 
 from __future__ import annotations
 

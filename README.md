@@ -9,7 +9,7 @@
 | **Default workflow** | `nimbusware_production` |
 | **License** | [GPL-3.0](LICENSE) |
 
-**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
+**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
 **Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
 
 ## Quick start
@@ -42,6 +42,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Understand editions & auth | [docs/product/editions.md](docs/product/editions.md) |
 | Browse API endpoints | [docs/product/api-overview.md](docs/product/api-overview.md) |
 | Understand the agent pipeline | [docs/agent-runtime.md](docs/agent-runtime.md) |
+| Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Configure settings (243 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |

@@ -413,6 +413,7 @@ class CreateRunMixin:
         wts = str(work_type_source or "").strip().lower() or None
         is_patch_run = patch_block.enabled or wt == "patch"
         from nimbusware_orchestrator.autopilot_profiles import autopilot_effective_metadata
+        from nimbusware_orchestrator.enforcement_profiles import enforcement_effective_metadata
 
         ev = RunCreatedEvent(
             event_type=EventType.RUN_CREATED,
@@ -464,6 +465,7 @@ class CreateRunMixin:
                 **({"work_type": wt} if wt else {}),
                 **({"work_type_source": wts} if wts else {}),
                 **({"autopilot_effective": autopilot_effective_metadata(wt)} if wt else {}),
+                **({"enforcement_effective": enforcement_effective_metadata(wt)} if wt else {}),
                 "agent_tools_effective": agent_tools_effective,
                 "memory_effective": {
                     "retrieval_enabled": memory_meta["retrieval_enabled"],

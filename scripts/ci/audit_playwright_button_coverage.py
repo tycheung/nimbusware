@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Scan web UI buttons and Playwright specs; emit button coverage inventory."""
 
 from __future__ import annotations
 

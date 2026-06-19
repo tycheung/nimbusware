@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""CI gate: Playwright button inventory freshness + click wiring contract."""
 
 from __future__ import annotations
 

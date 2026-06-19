@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Remove obvious redundant comment-only lines from Python sources."""
 
 from __future__ import annotations
 

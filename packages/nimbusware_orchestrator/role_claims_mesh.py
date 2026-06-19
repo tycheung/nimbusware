@@ -16,7 +16,6 @@ _STAGE_FOR_AGENT_ROLE = {v: k for k, v in WRITER_STAGE_TAXONOMY.items()}
 
 
 def stage_role_claims(role_claims: dict[str, str] | None) -> dict[str, str]:
-    """Map agent_role keys to pipeline stage names for mesh assignment."""
     if not role_claims:
         return {}
     out: dict[str, str] = {}

@@ -15,7 +15,6 @@ _BINDING_EVENT_TYPES = frozenset(
 
 
 def active_role_claims_from_events(rows: list[dict[str, Any]]) -> dict[str, str]:
-    """Return agent_role → claimer_user_id for still-active claims on a run."""
     claims: dict[str, str] = {}
     for row in rows:
         et = str(row.get("event_type") or "")

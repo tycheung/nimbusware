@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Create a distributable launcher archive (zip) for the current platform."""
 
 from __future__ import annotations
 
