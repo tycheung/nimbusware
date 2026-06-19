@@ -8,8 +8,8 @@ DEFAULT_TENANT_SLUG = "default"
 
 API_KEY_HEADER = "X-Nimbusware-Api-Key"
 
-# Enterprise features with runtime implementations.
-IMPLEMENTED_ENTERPRISE_FEATURES: frozenset[str] = frozenset(
+# Enterprise feature flags (enabled when NIMBUSWARE_EDITION=enterprise).
+ENTERPRISE_FEATURES: frozenset[str] = frozenset(
     {
         "iam",
         "fleet_memory",
@@ -20,3 +20,6 @@ IMPLEMENTED_ENTERPRISE_FEATURES: frozenset[str] = frozenset(
         "enterprise_console",
     },
 )
+
+# Alias for API routes that distinguish planned vs implemented (currently identical).
+IMPLEMENTED_ENTERPRISE_FEATURES: frozenset[str] = ENTERPRISE_FEATURES

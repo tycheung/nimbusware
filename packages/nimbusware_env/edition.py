@@ -3,24 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from nimbusware_env.env_flags import env_str
+from nimbusware_iam.constants import ENTERPRISE_FEATURES, IMPLEMENTED_ENTERPRISE_FEATURES
 
 ENV_EDITION = "NIMBUSWARE_EDITION"
 DEFAULT_EDITION = "individual"
 ENTERPRISE_EDITION = "enterprise"
 VALID_EDITIONS = frozenset({DEFAULT_EDITION, ENTERPRISE_EDITION})
-
-# Enterprise feature flags — enabled only when ``is_enterprise``.
-ENTERPRISE_FEATURES: frozenset[str] = frozenset(
-    {
-        "iam",
-        "fleet_memory",
-        "config_notify",
-        "object_store_primary",
-        "redis_fleet_worker",
-        "fleet_ollama_sli",
-        "enterprise_console",
-    },
-)
 
 _FEATURE_EPICS: dict[str, str] = {
     "iam": "fo201",
@@ -77,8 +65,6 @@ def require_enterprise_feature(feature: str) -> None:
 
 def edition_manifest() -> dict[str, Any]:
     """JSON-safe snapshot for API / install diagnostics."""
-    from nimbusware_iam.constants import IMPLEMENTED_ENTERPRISE_FEATURES
-
     ed = edition()
     features: dict[str, dict[str, str]] = {}
     for name in sorted(ENTERPRISE_FEATURES):
