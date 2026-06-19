@@ -296,12 +296,29 @@ class WritersMixin:
 
         stage_names = [name for name, _ in runners]
         session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
+        role_claims: dict[str, str] = {}
+        node_users: dict[UUID, str] = {}
+        if session_id is not None:
+            from nimbusware_compute.node_store import build_compute_node_store
+            from nimbusware_env.env_flags import nimbusware_database_url
+            from nimbusware_orchestrator.role_claims_mesh import (
+                node_users_for_session,
+                role_claims_for_run,
+            )
+
+            role_claims = role_claims_for_run(self._store, run_id)
+            rows = build_compute_node_store(nimbusware_database_url()).list_for_session(
+                session_id,
+            )
+            node_users = node_users_for_session(rows)
         mesh_assign_parallel_stages(
             run_id=run_id,
             stage_names=stage_names,
             session_id=session_id,
             workload_distribution=workload,
             node_ids=node_ids,
+            role_claims=role_claims,
+            node_users=node_users,
             workspace=ws,
         )
         from nimbusware_env.env_flags import env_force_on
