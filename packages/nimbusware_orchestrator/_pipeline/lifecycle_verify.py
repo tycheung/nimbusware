@@ -181,7 +181,7 @@ class LifecycleVerifyMixin:
                 )
 
                 mesh_sid, mesh_workload, mesh_nodes = resolve_mesh_context_for_run(run_id)
-                mesh_assign_parallel_critics(
+                assignments = mesh_assign_parallel_critics(
                     run_id=run_id,
                     session_id=mesh_sid,
                     workload_distribution=mesh_workload,
@@ -189,27 +189,43 @@ class LifecycleVerifyMixin:
                     workspace=workspace,
                     workflow_profile=wf_prof,
                 )
+                from nimbusware_compute.mesh_host_sync import (
+                    critic_gate_fail_from_mesh,
+                    remote_stage_names,
+                )
+
+                remote = remote_stage_names(assignments)
+
+                def _critic_gate(
+                    stage_name: str,
+                    emit_fn: Any,
+                ) -> bool:
+                    if stage_name in remote:
+                        return critic_gate_fail_from_mesh(run_id, stage_name)
+                    return bool(
+                        emit_fn(
+                            run_id,
+                            workspace=workspace,
+                            workflow_profile=wf_prof,
+                            sg_snapshot=sg_snapshot,
+                        ),
+                    )
+
                 with ThreadPoolExecutor(max_workers=3) as pool:
                     sec_f = pool.submit(
+                        _critic_gate,
+                        "security_critique",
                         self._emit_security_critique_optional,
-                        run_id,
-                        workspace=workspace,
-                        workflow_profile=wf_prof,
-                        sg_snapshot=sg_snapshot,
                     )
                     perf_f = pool.submit(
+                        _critic_gate,
+                        "performance_critique",
                         self._emit_performance_critique_optional,
-                        run_id,
-                        workspace=workspace,
-                        workflow_profile=wf_prof,
-                        sg_snapshot=sg_snapshot,
                     )
                     net_f = pool.submit(
+                        _critic_gate,
+                        "network_resilience_critique",
                         self._emit_network_resilience_critique_optional,
-                        run_id,
-                        workspace=workspace,
-                        workflow_profile=wf_prof,
-                        sg_snapshot=sg_snapshot,
                     )
                     security_gate_fail = sec_f.result()
                     performance_gate_fail = perf_f.result()

@@ -298,20 +298,17 @@ class WritersMixin:
         session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
         role_claims: dict[str, str] = {}
         node_users: dict[UUID, str] = {}
+        node_caps: dict[UUID, dict[str, Any]] | None = None
+        opt_weights: dict[str, float] | None = None
         if session_id is not None:
-            from nimbusware_compute.node_store import build_compute_node_store
-            from nimbusware_env.env_flags import nimbusware_database_url
-            from nimbusware_orchestrator.role_claims_mesh import (
-                node_users_for_session,
-                role_claims_for_run,
-            )
+            from nimbusware_orchestrator.role_claims_mesh import mesh_dispatch_context
 
-            role_claims = role_claims_for_run(self._store, run_id)
-            rows = build_compute_node_store(nimbusware_database_url()).list_for_session(
+            role_claims, node_users, node_caps, opt_weights = mesh_dispatch_context(
+                self._store,
+                run_id,
                 session_id,
             )
-            node_users = node_users_for_session(rows)
-        mesh_assign_parallel_stages(
+        assignments = mesh_assign_parallel_stages(
             run_id=run_id,
             stage_names=stage_names,
             session_id=session_id,
@@ -319,7 +316,14 @@ class WritersMixin:
             node_ids=node_ids,
             role_claims=role_claims,
             node_users=node_users,
+            node_capabilities=node_caps,
+            optimizer_weights=opt_weights,
             workspace=ws,
+        )
+        from nimbusware_compute.mesh_host_sync import (
+            remote_stage_names,
+            wait_for_mesh_units,
+            writer_stage_result_from_mesh,
         )
         from nimbusware_env.env_flags import env_force_on
         from nimbusware_orchestrator.workflow_parallel_writers import (
@@ -346,7 +350,15 @@ class WritersMixin:
                 )
             except ImportError:
                 pass
-        results = asyncio.run(run_parallel_writer_group(runners))
+        remote = remote_stage_names(assignments)
+        local_runners = [(name, fn) for name, fn in runners if name not in remote]
+        results: list[WriterStageResult] = []
+        if local_runners:
+            results.extend(asyncio.run(run_parallel_writer_group(local_runners)))
+        if remote:
+            wait_for_mesh_units(run_id, sorted(remote))
+            for stage_name in sorted(remote):
+                results.append(writer_stage_result_from_mesh(run_id, stage_name))
         impl = next(
             (r for r in results if r.stage_name == "implementation"),
             WriterStageResult(stage_name="implementation"),
