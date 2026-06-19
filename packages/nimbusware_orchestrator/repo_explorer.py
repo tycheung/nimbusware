@@ -1,5 +1,3 @@
-"""Repo exploration stage — graph-guided findings to backlog."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

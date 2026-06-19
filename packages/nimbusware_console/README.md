@@ -28,7 +28,8 @@ nimbusware_console/
 ├── components/               # Shared explainer panel + operator metrics helpers
 ├── explainer_core/           # metrics_scaffold, workflow_payload_header, yaml_version_caption, exports
 ├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
-├── *_display.py              # Top-level display facades (import these from BFF routes)
+├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)
+├── *_display/                # Package-only display modules (no duplicate .py shim)
 ├── operator_chat_core.py     # Operator chat command handling
 ├── admin_gate.py             # Token gate helpers
 ├── integrator_gate/          # Integrator gate latest delta + history
@@ -51,23 +52,23 @@ nimbusware_console/
 | `critic_matrix_display.py` | Live critic matrix |
 | `critic_reliability_display.py` | Critic reliability drilldown |
 | `integrator_gate_display.py` | Integrator gate status |
-| `run_list_pagination_display.py` | Run list + timeline captions |
-| `run_escalated_display.py` | Escalation history |
+| `run_list_pagination_display` | Run list + timeline captions (package) |
+| `run_escalated_display.py` | Escalation history facade → `run_escalated/` |
 | `preflight_history_display.py` | Preflight cross-run history |
-| `preflight_cross_run_display.py` | Preflight trend metrics |
+| `preflight_cross_run_display` | Preflight trend metrics (package) |
 | `memory_display.py` | Memory influence table |
 | `bundle_memory_display.py` | Bundle-scoped memory |
-| `prune_status_display.py` | Memory prune inventory |
+| `prune_status_display` | Memory prune inventory (package) |
 | `scraper_fetch_display.py` | Scraper stage artifacts |
 | `micro_slice_packet_display.py` | Slice context packet |
-| `agent_evaluator_display.py` | Agent evaluator workflow |
-| `universal_critique_timeline_display.py` | Universal critique timeline |
+| `agent_evaluator_display` | Agent evaluator workflow (package) |
+| `universal_critique_timeline_display` | Universal critique timeline (package) |
 | `self_refinement_display.py` | Self-refinement markers |
 | `security_scan_on_verify_display.py` | Security scan on verify |
 | `phase3_critique_display.py` | Phase-3 critique panels |
 | `persona_assignment_display.py` | Persona assignment summary |
 
-Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `*_workflow_explainer/`) hold split implementation modules kept under the 400-line CI limit. Prefer importing the top-level `*_display.py` or `*_workflow_explainer.py` facade unless extending internals.
+Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `*_workflow_explainer/`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
 
 ## Tests
 

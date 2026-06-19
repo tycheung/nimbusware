@@ -1,5 +1,3 @@
-"""POST /campaigns — create autonomous campaign run."""
-
 from __future__ import annotations
 
 from typing import Any

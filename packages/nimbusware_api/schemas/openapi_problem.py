@@ -1,5 +1,3 @@
-"""Shared OpenAPI Problem+JSON response fragments."""
-
 from __future__ import annotations
 
 from typing import Any

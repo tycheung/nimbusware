@@ -1,5 +1,3 @@
-"""Minimal ``.env`` loader (no third-party dependency)."""
-
 from __future__ import annotations
 
 import os
