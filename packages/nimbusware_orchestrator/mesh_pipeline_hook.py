@@ -58,6 +58,8 @@ def mesh_assign_parallel_stages(
     node_ids: list[UUID],
     role_claims: dict[str, str] | None = None,
     node_users: dict[UUID, str] | None = None,
+    node_capabilities: dict[UUID, dict[str, object]] | None = None,
+    optimizer_weights: dict[str, float] | None = None,
     parallel_group: str = "writers",
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
@@ -65,7 +67,13 @@ def mesh_assign_parallel_stages(
     sched = get_mesh_scheduler()
     sched.set_mode(workload_distribution or "host_only")
     if session_id is not None and node_ids:
-        sched.register_session_nodes(session_id, node_ids, node_users=node_users)
+        sched.register_session_nodes(
+            session_id,
+            node_ids,
+            node_users=node_users,
+            node_capabilities=node_capabilities,
+            optimizer_weights=optimizer_weights,
+        )
     assignments = sched.assign(
         parallel_group=parallel_group,
         stage_names=stage_names,

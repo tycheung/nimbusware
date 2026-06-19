@@ -569,6 +569,52 @@ def session_compute_delegate_control(
     return {"node": row_to_public(row)}
 
 
+class SessionOptimizerBody(BaseModel):
+    priority: list[str] = Field(default_factory=list)
+
+
+@router.get("/sessions/{session_id}/optimizer-weights")
+def get_session_optimizer_weights(
+    session_id: UUID,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    sess = _session_or_404(chat_store, session_id)
+    from nimbusware_maker.optimizer_weights_store import DEFAULT_OPTIMIZER_WEIGHTS
+    from nimbusware_orchestrator.role_claims_mesh import optimizer_weights_from_session_metadata
+
+    meta = sess.metadata if isinstance(sess.metadata, dict) else {}
+    priority = meta.get("optimizer_priority")
+    if not isinstance(priority, list):
+        priority = list(DEFAULT_OPTIMIZER_WEIGHTS.keys())
+    weights = optimizer_weights_from_session_metadata(meta)
+    return {"priority": priority, "weights": weights}
+
+
+@router.put("/sessions/{session_id}/optimizer-weights")
+def put_session_optimizer_weights(
+    session_id: UUID,
+    body: SessionOptimizerBody,
+    chat_store: ChatStoreDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    _session_or_404(chat_store, session_id)
+    from nimbusware_maker.optimizer_weights_store import DEFAULT_OPTIMIZER_WEIGHTS
+    from nimbusware_orchestrator.mesh_optimizer import weights_from_priority
+
+    allowed = set(DEFAULT_OPTIMIZER_WEIGHTS.keys())
+    priority = [k for k in body.priority if k in allowed]
+    if not priority:
+        priority = list(DEFAULT_OPTIMIZER_WEIGHTS.keys())
+    weights = weights_from_priority(priority)
+    sess = chat_store.get_session(session_id)
+    meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
+    meta["optimizer_priority"] = priority
+    meta["optimizer_weights"] = weights
+    chat_store.update_session(session_id, metadata=meta)
+    return {"priority": priority, "weights": weights}
+
+
 class SessionComputeOptInBody(BaseModel):
     enabled: bool = False
     share_policy: Literal["off", "claim_only", "managed_by_host", "full_auto"] = "off"

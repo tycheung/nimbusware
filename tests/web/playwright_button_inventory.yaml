@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 119
+  total_buttons: 121
   clicked: 35
   visible_only: 7
-  unwired: 77
-  click_ratio: 0.2941
+  unwired: 79
+  click_ratio: 0.2893
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -224,6 +224,18 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat.js
   label: New session
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-optimizer-panel
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_optimizer_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-optimizer-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_optimizer_ui.js
+  label: Save priority
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-participants

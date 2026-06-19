@@ -23,6 +23,7 @@ import {
 import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
 import { loadRunCardAgents } from "./chat_agents_ui.js";
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
+import { refreshSessionOptimizerPanel } from "./chat_optimizer_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
@@ -178,6 +179,9 @@ async function wireCollabSessionUi(root, sessionId, session) {
   renderMessagesFromSession(root, session);
   mountInviteButton(root, sessionId);
   await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
+  await refreshSessionOptimizerPanel(root, sessionId, {
+    workloadMode: session?.workload_distribution || "host_only",
+  });
   mountCommentaryComposer(root, sessionId, (turn) => {
     const thread = root.querySelector("#chat-thread");
     if (thread && turn) renderTurnLine(thread, turn);
