@@ -21,6 +21,10 @@ REDUNDANT_PATTERNS = (
     re.compile(r"^\s*#\s*fmt: off\s*$"),
     re.compile(r"^\s*#\s*fmt: on\s*$"),
     re.compile(r"^\s*#\s*noqa:\s*[A-Z]+\d+\s*-\s*.*$"),
+    re.compile(r"^\s*#\s*type: ignore\[.*\]\s*-\s*.*$"),
+    re.compile(r"^\s*#\s*Intentionally (empty|silent).*$"),
+    re.compile(r'^\s*"""\s*Re-export.*\.\s*"""\s*$'),
+    re.compile(r'^\s*"""\s*Thin wrapper.*\.\s*"""\s*$'),
 )
 
 

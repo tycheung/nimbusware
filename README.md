@@ -9,7 +9,7 @@
 | **Default workflow** | `nimbusware_production` |
 | **License** | [GPL-3.0](LICENSE) |
 
-**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog).  
+**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
 **Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
 
 ## Quick start
@@ -47,6 +47,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
 | Run tests & CI locally | [CONTRIBUTING.md](CONTRIBUTING.md), [tests/README.md](tests/README.md) |
+| Compute mesh & workers | [docs/compute-mesh.md](docs/compute-mesh.md) |
 | Security & compliance | [SECURITY.md](SECURITY.md), [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
 | **Full doc index** | **[docs/README.md](docs/README.md)** |
 

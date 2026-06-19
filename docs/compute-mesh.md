@@ -24,6 +24,7 @@ The worker registers once, then sends heartbeats and **pulls work units** from t
 | POST | `/v1/compute/nodes/{id}/heartbeat` | Liveness + capabilities update |
 | POST | `/v1/compute/work-units/claim` | Worker claims next queued unit for a session |
 | POST | `/v1/compute/work-units/{id}/complete` | Worker reports stage result |
+| POST | `/v1/compute/work-units/{id}/terminate-restart` | Cancel in-flight unit and re-queue (fo1782 handoff) |
 | GET | `/v1/compute/work-units/queue?session_id=` | Host queue depth observability |
 | POST | `/v1/chat/sessions/{id}/compute/opt-in` | Session compute sharing toggle |
 
