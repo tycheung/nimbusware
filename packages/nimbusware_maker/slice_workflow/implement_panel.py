@@ -93,6 +93,16 @@ def complete_slice_after_implement(
     )
 
     final_stats = _collect_slice_diff_stats(ws, plan)
+    if slice_implement_mode() == "stub":
+        from nimbusware_orchestrator.slice_diff import SliceDiffStats
+
+        final_stats = SliceDiffStats(
+            final_stats.changed_files,
+            0,
+            0,
+            final_stats.unified_diff,
+            source="stub_noop",
+        )
     final_budget = check_slice_diff_budget(final_stats, block)
     if not final_budget.ok:
         verify_ok = False

@@ -10,7 +10,9 @@ from nimbusware_orchestrator.patch_context import (
     maven_test_class_from_failing_test,
     normalize_patch_context,
     patch_auto_apply_allowed,
+    patch_context_from_run_rows,
     resolve_patch_test_targets,
+    work_type_from_run_rows,
 )
 from nimbusware_orchestrator.workflow_patch import (
     parse_patch_workflow_block,
@@ -108,6 +110,26 @@ def test_maven_test_class_from_failing_test() -> None:
         "src/test/java/com/example/CalculatorTest.java",
     )
     assert selector == "com.example.CalculatorTest"
+
+
+def test_patch_context_from_run_rows_uses_run_created_not_first_row() -> None:
+    rows = [
+        {
+            "event_type": "stage.started",
+            "metadata": {"patch_context": {"failing_test": "wrong"}},
+        },
+        {
+            "event_type": "run.created",
+            "metadata": {
+                "patch_context": {"failing_test": "src/test/java/com/example/CalculatorTest.java"},
+                "work_type": "patch",
+            },
+        },
+    ]
+    ctx = patch_context_from_run_rows(rows)
+    assert ctx is not None
+    assert ctx["failing_test"] == "src/test/java/com/example/CalculatorTest.java"
+    assert work_type_from_run_rows(rows) == "patch"
 
 
 def test_infer_patch_implementation_paths_from_go_fixture(tmp_path: Path) -> None:

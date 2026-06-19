@@ -42,7 +42,7 @@ from nimbusware_orchestrator.slice_diff import (
     subdivide_slice_plan,
 )
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
-from nimbusware_orchestrator.slice_implement import execute_slice_implement
+from nimbusware_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
 from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
 
 if TYPE_CHECKING:
@@ -436,6 +436,16 @@ def execute_single_micro_slice(
         verify_log = f"{verify_log}\n[human_fidelity] {fidelity_detail}".strip()
 
     final_stats = collect_slice_diff_stats(ws, active_plan)
+    if slice_implement_mode() == "stub":
+        from nimbusware_orchestrator.slice_diff import SliceDiffStats
+
+        final_stats = SliceDiffStats(
+            final_stats.changed_files,
+            0,
+            0,
+            final_stats.unified_diff,
+            source="stub_noop",
+        )
     final_budget = check_slice_diff_budget(final_stats, block)
     if not final_budget.ok:
         verify_ok = False

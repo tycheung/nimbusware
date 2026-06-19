@@ -4,9 +4,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from agent_core.mapping import mapping_or_empty
+from agent_core.models import EventType
 
 if TYPE_CHECKING:
     from nimbusware_orchestrator.micro_slice import SlicePlan
+
+
+def _run_created_metadata(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    for row in rows:
+        if row.get("event_type") == EventType.RUN_CREATED.value:
+            meta = row.get("metadata")
+            return dict(meta) if isinstance(meta, dict) else {}
+    return {}
 
 
 def normalize_patch_context(raw: Any) -> dict[str, Any] | None:
@@ -31,22 +40,20 @@ def normalize_patch_context(raw: Any) -> dict[str, Any] | None:
 def patch_context_from_run_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not rows:
         return None
-    return normalize_patch_context(
-        mapping_or_empty(rows[0].get("metadata")).get("patch_context"),
-    )
+    return normalize_patch_context(_run_created_metadata(rows).get("patch_context"))
 
 
 def patch_effective_from_run_rows(rows: list[dict[str, Any]]) -> dict[str, Any] | None:
     if not rows:
         return None
-    eff = mapping_or_empty(mapping_or_empty(rows[0].get("metadata")).get("patch_effective"))
+    eff = mapping_or_empty(_run_created_metadata(rows).get("patch_effective"))
     return eff or None
 
 
 def work_type_from_run_rows(rows: list[dict[str, Any]]) -> str | None:
     if not rows:
         return None
-    wt = str(mapping_or_empty(rows[0].get("metadata")).get("work_type") or "").strip().lower()
+    wt = str(mapping_or_empty(_run_created_metadata(rows)).get("work_type") or "").strip().lower()
     return wt or None
 
 

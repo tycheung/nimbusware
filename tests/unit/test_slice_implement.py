@@ -41,3 +41,25 @@ def test_slice_implement_scoped_touches_existing_file() -> None:
         result = execute_slice_implement(root, plan, timeout_seconds=60.0)
     assert result.mode == "scoped"
     assert "slice_implement.py" in "".join(result.paths_touched)
+
+
+def test_slice_implement_scoped_skips_ruff_for_non_python_targets(tmp_path: Path) -> None:
+    ws = tmp_path / "jvm"
+    target = ws / "src/main/java/com/example/Calculator.java"
+    target.parent.mkdir(parents=True)
+    target.write_text(
+        "package com.example;\npublic final class Calculator {\n"
+        "  public static int add(int a, int b) { return a + b; }\n}\n",
+        encoding="utf-8",
+    )
+    plan = parse_slice_plan(
+        {
+            "slice_id": "s1",
+            "target_paths": ["src/main/java/com/example/Calculator.java"],
+        },
+    )
+    with patch.dict(os.environ, {"NIMBUSWARE_SLICE_IMPLEMENT": "scoped"}, clear=False):
+        result = execute_slice_implement(ws, plan, timeout_seconds=30.0)
+    assert result.mode == "scoped"
+    assert result.exit_code == 0
+    assert "non-Python" in result.log

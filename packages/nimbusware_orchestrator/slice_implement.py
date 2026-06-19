@@ -144,10 +144,19 @@ def execute_slice_implement(
             paths_touched=(),
         )
 
+    py_files = [f for f in files if f.suffix == ".py"]
+    if not py_files:
+        return SliceImplementResult(
+            mode=mode,
+            exit_code=0,
+            log="ruff skipped (non-Python target paths)\n",
+            paths_touched=rel_paths,
+        )
+
     sections: list[str] = []
-    fmt_code, fmt_out = _run_ruff_format(workspace, files, timeout_seconds=timeout_seconds)
+    fmt_code, fmt_out = _run_ruff_format(workspace, py_files, timeout_seconds=timeout_seconds)
     sections.append(f"=== ruff format (exit {fmt_code}) ===\n{fmt_out}")
-    fix_code, fix_out = _run_ruff_fix(workspace, files, timeout_seconds=timeout_seconds)
+    fix_code, fix_out = _run_ruff_fix(workspace, py_files, timeout_seconds=timeout_seconds)
     sections.append(f"=== ruff check --fix (exit {fix_code}) ===\n{fix_out}")
     worst = max(fmt_code, fix_code)
     return SliceImplementResult(

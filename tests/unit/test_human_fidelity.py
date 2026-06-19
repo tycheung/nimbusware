@@ -8,13 +8,13 @@ from threading import Thread
 
 import pytest
 
+from e2e.harness.playwright_skip import require_playwright_chromium
 from nimbusware_orchestrator.human_fidelity import (
     PERF_BUDGET_MS,
     run_axe_rules_check,
     run_axe_smoke,
     run_human_fidelity_suite,
 )
-from e2e.harness.playwright_skip import require_playwright_chromium
 
 
 def _free_port() -> int:

@@ -6,6 +6,7 @@ from uuid import uuid4
 
 import pytest
 
+from e2e.harness.playwright_skip import require_playwright_chromium
 from nimbusware_orchestrator.browser_controller import close_persistent_browser_url, run_ui_flow
 from nimbusware_orchestrator.dev_env_supervisor import (
     frontend_base_url,
@@ -16,7 +17,6 @@ from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
 from nimbusware_orchestrator.launch_flow_resolver import load_catalog_ui_flow
 from nimbusware_orchestrator.put_e2e_runner import run_put_e2e_flow
 from nimbusware_store.memory import InMemoryEventStore
-from e2e.harness.playwright_skip import require_playwright_chromium
 
 _FIXTURE = Path(__file__).resolve().parents[2] / "fixtures" / "repos" / "tiny_todo_fullstack"
 

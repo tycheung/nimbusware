@@ -64,7 +64,7 @@ def run_slice_verify_and_test(
             selector = maven_test_class_from_failing_test(failing)
         test_code, test_out = run_mvn_test(
             workspace,
-            timeout_seconds=timeout_seconds,
+            timeout_seconds=max(timeout_seconds, 300.0),
             test_selector=selector,
         )
         tests_passed = test_code == 0

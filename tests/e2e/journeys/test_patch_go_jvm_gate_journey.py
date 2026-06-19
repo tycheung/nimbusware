@@ -11,6 +11,16 @@ from e2e.harness.workspace import copy_fixture_repo
 pytestmark = [pytest.mark.e2e, pytest.mark.e2e_journey, pytest.mark.e2e_fixture_repo]
 
 
+def _gate_failure_detail(journey_client: JourneyClient) -> str:
+    for ev in reversed(journey_client.timeline()):
+        meta = ev.get("metadata") or {}
+        if meta.get("slice_gate_steps"):
+            return str(meta.get("slice_gate_steps"))
+        if meta.get("slice_gate_verdict") == "FAIL":
+            return str(meta)
+    return "no slice gate metadata in timeline"
+
+
 def _fix_go_calculator(ws: Path) -> None:
     target = ws / "calculator.go"
     target.write_text(
@@ -87,4 +97,4 @@ def test_patch_stack_gate_pass_on_fixed_fixture(
     slice_id = prep["pending"]["slice_id"]
     applied = journey_client.apply_slice(slice_id)
     assert applied["status"] == "applied"
-    assert applied.get("gate_passed") is True
+    assert applied.get("gate_passed") is True, _gate_failure_detail(journey_client)

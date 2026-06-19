@@ -48,7 +48,7 @@ def run_mvn_test(
     exe = shutil.which("mvn")
     if not exe:
         return 0, "mvn not on PATH; skipped\n"
-    args = [exe, "-q", "test"]
+    args = [exe, "-B", "-q", "test"]
     if test_selector:
         args.extend(["-Dtest", test_selector])
     proc = subprocess.run(
