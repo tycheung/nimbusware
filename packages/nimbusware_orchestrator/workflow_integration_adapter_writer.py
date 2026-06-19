@@ -13,7 +13,7 @@ DEFAULT_ADAPTER_KIND = "compatibility_shim"
 class IntegrationAdapterWriterWorkflowBlock:
     enabled: bool = False
     target_adapter_kind: str = DEFAULT_ADAPTER_KIND
-    stub_only: bool = True
+    stub_only: bool = False
 
 
 def parse_integration_adapter_writer_workflow_block(

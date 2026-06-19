@@ -41,7 +41,7 @@ universal_critique:
   test_writer: {}
   planner: {}
 integration_adapter_writer:
-  enabled: false
+  enabled: true
   stub_only: false
 escalation:
   suppress_automatic_escalation: false

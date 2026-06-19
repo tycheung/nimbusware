@@ -36,7 +36,7 @@ def emit_stub_integration_adapter_writer_stage(
     run_id: UUID,
     block: IntegrationAdapterWriterWorkflowBlock,
 ) -> None:
-    """Append scaffold ``stage.started``; no adapter I/O (live path deferred)."""
+    """Append scaffold ``stage.started`` when workflow uses stub-only mode."""
     meta = {
         "integration_adapter_writer": {
             "stub_only": block.stub_only,

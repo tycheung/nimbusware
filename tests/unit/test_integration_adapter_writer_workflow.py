@@ -26,7 +26,7 @@ def test_parse_integration_adapter_writer_defaults() -> None:
     block = parse_integration_adapter_writer_workflow_block(Path("/nonexistent"), None)
     assert block.enabled is False
     assert block.target_adapter_kind == DEFAULT_ADAPTER_KIND
-    assert block.stub_only is True
+    assert block.stub_only is False
 
 
 def test_parse_integration_adapter_writer_profile(tmp_path: Path) -> None:
