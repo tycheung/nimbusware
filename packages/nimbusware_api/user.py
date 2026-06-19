@@ -71,4 +71,14 @@ def require_user_access(
     )
 
 
+def maker_user_id_str(request: Request) -> str:
+    if is_enterprise():
+        ctx = get_auth_context()
+        if ctx is not None:
+            return str(ctx.key_id)
+        return ""
+    uid = user_id_from_request(request)
+    return str(uid) if uid is not None else ""
+
+
 UserDep = Annotated[None, Depends(require_user_access)]

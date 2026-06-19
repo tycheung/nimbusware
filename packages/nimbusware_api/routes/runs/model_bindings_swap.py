@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import StoreDep
 from nimbusware_api.errors import problem
-from nimbusware_api.user import UserDep
+from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_orchestrator.model_binding_audit import extract_model_binding_audit_rows
 from nimbusware_orchestrator.model_binding_swap import (
     append_model_binding_override,
@@ -64,6 +64,7 @@ def post_run_role_claim(
     run_id: UUID,
     body: RoleClaimBody,
     store: StoreDep,
+    request: Request,
     _: UserDep,
 ) -> dict[str, Any]:
     _require_run(store, run_id)
@@ -73,6 +74,7 @@ def post_run_role_claim(
         agent_role=body.agent_role,
         provider_id=body.provider_id,
         model_id=body.model_id,
+        claimer_user_id=maker_user_id_str(request),
     )
     return {"ok": True, "event": "workload.role_claimed", "payload": payload}
 

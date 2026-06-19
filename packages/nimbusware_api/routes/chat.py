@@ -35,7 +35,7 @@ from nimbusware_api.routes.chat_handlers import (
     session_or_404 as _session_or_404,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from nimbusware_api.user import UserDep
+from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_auth.permissions import enforce_collab_turn_write, require_session_participant
 from nimbusware_compute.node_store import build_compute_node_store, default_tenant_id, row_to_public
 from nimbusware_env.env_flags import nimbusware_collab_enabled, nimbusware_database_url
@@ -436,6 +436,7 @@ def session_role_claim(
     body: SessionRoleClaimBody,
     chat_store: ChatStoreDep,
     store: StoreDep,
+    request: Request,
     _user: UserDep,
 ) -> dict[str, Any]:
     _session_or_404(chat_store, session_id)
@@ -450,6 +451,7 @@ def session_role_claim(
         agent_role=body.agent_role,
         provider_id=body.provider_id,
         model_id=body.model_id,
+        claimer_user_id=maker_user_id_str(request),
     )
     chat_store.append_turn(
         session_id,

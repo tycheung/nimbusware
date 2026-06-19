@@ -14,6 +14,25 @@ _BINDING_EVENT_TYPES = frozenset(
 )
 
 
+def active_role_claims_from_events(rows: list[dict[str, Any]]) -> dict[str, str]:
+    """Return agent_role → claimer_user_id for still-active claims on a run."""
+    claims: dict[str, str] = {}
+    for row in rows:
+        et = str(row.get("event_type") or "")
+        ev = serialized_event_from_row(row)
+        payload = ev.get("payload") if isinstance(ev, dict) else {}
+        if not isinstance(payload, dict):
+            continue
+        role = str(payload.get("agent_role") or "")
+        if not role:
+            continue
+        if et == EventType.WORKLOAD_ROLE_CLAIMED.value:
+            claims[role] = str(payload.get("claimer_user_id") or "")
+        elif et == EventType.WORKLOAD_ROLE_RELEASED.value:
+            claims.pop(role, None)
+    return claims
+
+
 def extract_model_binding_audit_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for row in rows:

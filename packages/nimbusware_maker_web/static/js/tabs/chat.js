@@ -6,6 +6,7 @@ import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-h
 import { refreshBranchPanel } from "./chat_branch_ui.js";
 import {
   applyComposerForRole,
+  getCollabMyRole,
   refreshComputeNodes,
   refreshSessionSidebar,
   renderParticipantStrip,
@@ -20,6 +21,8 @@ import {
   unbindSessionStream,
 } from "./chat_collab_ui.js";
 import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
+import { loadRunCardAgents } from "./chat_agents_ui.js";
+import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
@@ -174,6 +177,7 @@ async function wireCollabSessionUi(root, sessionId, session) {
   if (!sessionId) return;
   renderMessagesFromSession(root, session);
   mountInviteButton(root, sessionId);
+  await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
   mountCommentaryComposer(root, sessionId, (turn) => {
     const thread = root.querySelector("#chat-thread");
     if (thread && turn) renderTurnLine(thread, turn);
@@ -198,6 +202,7 @@ async function wireCollabSessionUi(root, sessionId, session) {
         });
         mountInviteButton(root, sessionId);
       }
+      await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
       const count = data.turn_count ?? sessionStreamTurnCount;
       if (count > sessionStreamTurnCount) {
         sessionStreamTurnCount = count;
@@ -352,6 +357,20 @@ async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq
   return updated;
 }
 
+async function agentStripContext() {
+  const sessionId = sessionStorage.getItem(SESSION_KEY) || "";
+  let computeNodes = [];
+  if (sessionId) {
+    try {
+      const body = await apiJson(`/compute/nodes?session_id=${encodeURIComponent(sessionId)}`);
+      computeNodes = body.nodes || [];
+    } catch {
+      computeNodes = [];
+    }
+  }
+  return { sessionId: sessionId || null, computeNodes };
+}
+
 function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) {
   const thread = root.querySelector("#chat-thread");
   if (!thread || !runId) return null;
@@ -382,7 +401,7 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   agents.className = "chat-run-card__agents muted";
   agents.dataset.testid = "maker-chat-agents-strip";
   card.appendChild(agents);
-  void loadRunCardAgents(card, runId);
+  void agentStripContext().then((ctx) => loadRunCardAgents(card, runId, ctx));
   const theaterList = document.createElement("ul");
   theaterList.className = "chat-run-card__theater";
   theaterList.dataset.testid = "maker-chat-run-theater";
@@ -390,123 +409,6 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   thread.appendChild(card);
   loadRunCardTrust(root, runId);
   return card;
-}
-
-function showAgentBatteryPopover(anchor, detail) {
-  document.querySelectorAll(".chat-agent-popover").forEach((el) => el.remove());
-  const pop = document.createElement("div");
-  pop.className = "chat-agent-popover";
-  pop.dataset.testid = "maker-chat-agent-popover";
-  const kind =
-    detail.providerKind === "cloud" ? "cloud API" : "Ollama local";
-  pop.innerHTML = `
-    <strong>${detail.displayName}</strong>
-    <div>Model: ${detail.modelId}</div>
-    <div>Provider: ${detail.providerId} (${kind})</div>
-    <div class="chat-agent-popover__actions">
-      <button type="button" class="btn btn--sm" data-action="hub">Open Model Hub</button>
-      ${
-        detail.providerKind !== "cloud"
-          ? `<button type="button" class="btn btn--sm" data-action="pull">Pull ${detail.modelId}</button>`
-          : ""
-      }
-    </div>`;
-  pop.querySelector('[data-action="hub"]')?.addEventListener("click", () => {
-    const section = detail.providerKind === "cloud" ? "api-connections" : "local";
-    window.location.hash = `#/models?section=${section}`;
-    pop.remove();
-  });
-  pop.querySelector('[data-action="pull"]')?.addEventListener("click", async () => {
-    try {
-      await apiJson("/platform/ollama/pull", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: detail.modelId }),
-      });
-      toast(`Pull queued: ${detail.modelId}`, "success");
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-    pop.remove();
-  });
-  const rect = anchor.getBoundingClientRect();
-  pop.style.position = "fixed";
-  pop.style.top = `${rect.bottom + 4}px`;
-  pop.style.left = `${rect.left}px`;
-  document.body.appendChild(pop);
-  const close = (ev) => {
-    if (!pop.contains(ev.target) && ev.target !== anchor) {
-      pop.remove();
-      document.removeEventListener("click", close);
-    }
-  };
-  setTimeout(() => document.addEventListener("click", close), 0);
-}
-
-async function loadRunCardAgents(card, runId) {
-  const strip = card?.querySelector(".chat-run-card__agents");
-  if (!strip) return;
-  try {
-    const body = await apiJson("/platform/model-bindings/defaults");
-    const roles = (body.roles || []).slice(0, 4);
-    strip.replaceChildren();
-    const label = document.createElement("span");
-    label.textContent = "Agents: ";
-    strip.appendChild(label);
-    for (const row of roles) {
-      const binding = row.binding || {};
-      const wrap = document.createElement("span");
-      wrap.className = "chat-agent-badge-wrap";
-      const badge = document.createElement("button");
-      badge.type = "button";
-      badge.className = "chat-agent-badge";
-      badge.dataset.testid = `maker-chat-agent-${row.agent_role}`;
-      const model = binding.model_id || "default";
-      const provider = binding.provider_id || "ollama";
-      badge.textContent = `${row.display_name || row.agent_role} · ${model}`;
-      badge.title = "Swap model";
-      badge.onclick = async () => {
-        const next = window.prompt(`Model id for ${row.agent_role}`, model);
-        if (!next || next === model) return;
-        try {
-          await apiJson(`/runs/${encodeURIComponent(runId)}/model-bindings/swap`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              agent_role: row.agent_role,
-              provider_id: provider,
-              provider_kind: binding.provider_kind || "local",
-              model_id: next,
-            }),
-          });
-          toast(`Swapped ${row.agent_role} to ${next}`, "success");
-          await loadRunCardAgents(card, runId);
-        } catch (e) {
-          toast(String(e.message || e), "error");
-        }
-      };
-      const info = document.createElement("button");
-      info.type = "button";
-      info.className = "chat-agent-info";
-      info.textContent = "ⓘ";
-      info.title = "Battery details";
-      info.dataset.testid = `maker-chat-agent-info-${row.agent_role}`;
-      info.onclick = (ev) => {
-        ev.stopPropagation();
-        showAgentBatteryPopover(info, {
-          agentRole: row.agent_role,
-          displayName: row.display_name || row.agent_role,
-          modelId: model,
-          providerId: provider,
-          providerKind: binding.provider_kind || "local",
-        });
-      };
-      wrap.append(badge, info);
-      strip.appendChild(wrap);
-    }
-  } catch {
-    strip.textContent = "Agents: —";
-  }
 }
 
 async function loadRunCardTrust(root, runId) {
@@ -929,6 +831,7 @@ export async function mountChat(root) {
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
     await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
     await refreshComputeNodes(root, sessionId);
+    await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
   }
 
   async function ensureSession(projectId) {
@@ -945,6 +848,7 @@ export async function mountChat(root) {
           await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
           await refreshSessionSidebar(root, projectId, sessionId, loadSession);
           await refreshComputeNodes(root, sessionId);
+          await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
           return sessionId;
         }
       } catch {
@@ -961,6 +865,7 @@ export async function mountChat(root) {
     await refreshSessionSidebar(root, projectId, sessionId, loadSession);
     await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
     await refreshComputeNodes(root, sessionId);
+    await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
     await wireCollabSessionUi(root, sessionId, session);
     return sessionId;
   }

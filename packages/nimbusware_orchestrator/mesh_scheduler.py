@@ -11,6 +11,7 @@ class MeshScheduler:
     spread_policy: str = "spread"
     max_remote_units: int = 4
     _session_nodes: dict[UUID, list[UUID]] = field(default_factory=dict)
+    _session_node_users: dict[UUID, dict[UUID, str]] = field(default_factory=dict)
 
     def assign(
         self,
@@ -32,8 +33,9 @@ class MeshScheduler:
         out: dict[str, UUID | None] = {}
         idx = 0
         for name in stage_names:
-            if claims.get(name):
-                out[name] = None
+            claimer = claims.get(name) or ""
+            if claimer:
+                out[name] = self._node_for_claimer(session_id, claimer, nodes)
                 continue
             if self.mode in {"manual_claim", "auto_share", "auto_optimize"}:
                 out[name] = remote_nodes[idx % len(remote_nodes)]
@@ -42,8 +44,28 @@ class MeshScheduler:
                 out[name] = None
         return out
 
-    def register_session_nodes(self, session_id: UUID, node_ids: list[UUID]) -> None:
+    def _node_for_claimer(
+        self,
+        session_id: UUID,
+        claimer_user_id: str,
+        nodes: list[UUID],
+    ) -> UUID | None:
+        users = self._session_node_users.get(session_id, {})
+        for node_id in nodes:
+            if users.get(node_id) == claimer_user_id:
+                return node_id
+        return None
+
+    def register_session_nodes(
+        self,
+        session_id: UUID,
+        node_ids: list[UUID],
+        *,
+        node_users: dict[UUID, str] | None = None,
+    ) -> None:
         self._session_nodes[session_id] = list(node_ids)
+        if node_users:
+            self._session_node_users[session_id] = dict(node_users)
 
     def online_nodes(self, session_id: UUID | None = None) -> list[UUID]:
         if session_id is None:
