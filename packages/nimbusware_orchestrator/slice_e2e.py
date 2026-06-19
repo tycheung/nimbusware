@@ -30,7 +30,9 @@ def _playwright_available() -> bool:
 def _is_control_plane_repo_workspace(workspace: Path) -> bool:
     """Nimbusware monorepo: tests/e2e is the product suite, not a slice project."""
     ws = workspace.resolve()
-    return (ws / "packages" / "nimbusware_orchestrator").is_dir() and (ws / "pyproject.toml").is_file()
+    return (ws / "packages" / "nimbusware_orchestrator").is_dir() and (
+        ws / "pyproject.toml"
+    ).is_file()
 
 
 def run_slice_e2e_verify(
