@@ -19,13 +19,42 @@ def _run(label: str, cmd: list[str]) -> bool:
 
 
 def main() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="First-publish build gates")
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Run CI contract gates only (skip wheel/vsix builds)",
+    )
+    parser.add_argument(
+        "--check-secrets",
+        action="store_true",
+        help="Verify PYPI_API_TOKEN and VSCE_PAT are set (no publish)",
+    )
+    args = parser.parse_args()
+    if args.check_secrets:
+        import os
+
+        missing = [k for k in ("PYPI_API_TOKEN", "VSCE_PAT") if not os.environ.get(k)]
+        if missing:
+            print(f"Missing secrets: {', '.join(missing)}", flush=True)
+            return 1
+        print("Publish secrets present (PYPI_API_TOKEN, VSCE_PAT).", flush=True)
+        return 0
     py = sys.executable
-    steps = [
-        ("Bootstrap CI gate", [py, "scripts/ci/run_publish_bootstrap_ci_gate.py"]),
-        ("VS Code extension CI gate", [py, "scripts/ci/run_publish_vscode_ci_gate.py"]),
-        ("Bootstrap wheel build (twine check)", [py, "scripts/publish/publish_bootstrap_release.py"]),
-        ("VS Code .vsix package", [py, "scripts/publish/publish_vscode_extension.py"]),
-    ]
+    if args.quick:
+        steps = [
+            ("Bootstrap CI gate", [py, "scripts/ci/run_publish_bootstrap_ci_gate.py"]),
+            ("VS Code extension CI gate", [py, "scripts/ci/run_publish_vscode_ci_gate.py"]),
+        ]
+    else:
+        steps = [
+            ("Bootstrap CI gate", [py, "scripts/ci/run_publish_bootstrap_ci_gate.py"]),
+            ("VS Code extension CI gate", [py, "scripts/ci/run_publish_vscode_ci_gate.py"]),
+            ("Bootstrap wheel build (twine check)", [py, "scripts/publish/publish_bootstrap_release.py"]),
+            ("VS Code .vsix package", [py, "scripts/publish/publish_vscode_extension.py"]),
+        ]
     failed = 0
     for label, cmd in steps:
         if not _run(label, cmd):

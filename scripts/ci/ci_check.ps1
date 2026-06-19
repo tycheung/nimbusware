@@ -64,6 +64,8 @@ poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_llm_resolver_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_first_publish_ci_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($node) {

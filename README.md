@@ -45,6 +45,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Configure settings (243 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
+| First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
 | Run tests & CI locally | [CONTRIBUTING.md](CONTRIBUTING.md), [tests/README.md](tests/README.md) |
 | Compute mesh & workers | [docs/compute-mesh.md](docs/compute-mesh.md) |

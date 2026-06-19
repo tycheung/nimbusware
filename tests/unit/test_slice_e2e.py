@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.slice_e2e import run_slice_e2e_verify
@@ -43,13 +45,18 @@ def test_run_slice_e2e_custom_command(tmp_path: Path) -> None:
     assert result.verdict == "PASS"
 
 
-def test_run_slice_e2e_skips_without_workspace_tests_e2e(tmp_path: Path) -> None:
+def test_run_slice_e2e_skips_without_workspace_tests_e2e(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("NIMBUSWARE_SLICE_E2E_COMMAND", raising=False)
     result = run_slice_e2e_verify(tmp_path, timeout_seconds=30.0)
     assert result.verdict == "SKIP"
     assert "tests/e2e" in result.detail
 
 
-def test_run_slice_e2e_skips_control_plane_monorepo() -> None:
+def test_run_slice_e2e_skips_control_plane_monorepo(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("NIMBUSWARE_SLICE_E2E_COMMAND", raising=False)
     repo = find_repo_root()
     result = run_slice_e2e_verify(repo, timeout_seconds=30.0)
     assert result.verdict == "SKIP"
