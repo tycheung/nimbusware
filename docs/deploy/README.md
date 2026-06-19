@@ -97,6 +97,16 @@ Use the uploaded `sbom.cdx.json` artifact as the release bill of materials.
 
 Fleet Ollama SLI: `scripts/runbooks/fleet_ollama_sli_runbook.md` and `poetry run nimbusware-fleet-ollama-sli`.
 
+## First publish (PyPI + VSCE)
+
+Build-only preflight (no tokens required):
+
+```bash
+poetry run python scripts/publish/first_publish_gates.py
+```
+
+Upload when secrets are configured (`PYPI_API_TOKEN`, `VSCE_PAT`): [pypi-publish.md](pypi-publish.md), [vscode-marketplace.md](vscode-marketplace.md).
+
 ## Agent sandbox
 
 Individual (`none`/`stub`/`docker`) and Enterprise (`kubernetes`/`e2b`) backends: [agent-sandbox.md](agent-sandbox.md).
