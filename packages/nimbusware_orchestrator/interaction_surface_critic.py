@@ -1,5 +1,3 @@
-"""ISM coverage critic — operational findings."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,5 +1,3 @@
-"""Normalize ``domain_allowlist`` entries at merge/freeze."""
-
 from __future__ import annotations
 
 from ipaddress import AddressValueError, IPv4Address, IPv6Address

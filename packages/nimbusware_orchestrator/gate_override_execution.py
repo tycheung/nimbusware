@@ -1,5 +1,3 @@
-"""Append ``gate.overridden`` for operator audit (no auto-unblock)."""
-
 from __future__ import annotations
 
 from datetime import datetime, timezone

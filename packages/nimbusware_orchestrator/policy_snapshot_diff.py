@@ -1,5 +1,3 @@
-"""Compare frozen ``policy_snapshot`` metadata on two runs."""
-
 from __future__ import annotations
 
 from typing import Any

@@ -12,7 +12,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [product/editions.md](product/editions.md) | Individual vs Enterprise, auth scopes |
 | [product/api-overview.md](product/api-overview.md) | API route map (user vs admin) |
 | [agent-runtime.md](agent-runtime.md) | Pipeline, workflow profiles, critics, gates |
-| [operator-settings.md](operator-settings.md) | Settings catalog (237 `NIMBUSWARE_*` keys) |
+| [operator-settings.md](operator-settings.md) | Settings catalog (243 `NIMBUSWARE_*` keys) |
 
 ## Reference
 

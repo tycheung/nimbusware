@@ -1,5 +1,3 @@
-"""Competing implementation variant arena — worktrees and promotion."""
-
 from __future__ import annotations
 
 import shutil

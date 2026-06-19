@@ -18,6 +18,9 @@ REDUNDANT_PATTERNS = (
     re.compile(r"^\s*#\s*Work files:.*$"),
     re.compile(r"^\s*#\s*Spec:.*$"),
     re.compile(r"^\s*#\s*Place the exe.*$"),
+    re.compile(r"^\s*#\s*fmt: off\s*$"),
+    re.compile(r"^\s*#\s*fmt: on\s*$"),
+    re.compile(r"^\s*#\s*noqa:\s*[A-Z]+\d+\s*-\s*.*$"),
 )
 
 
