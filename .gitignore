@@ -133,6 +133,7 @@ v1.1features.md
 benchmarks/*
 !benchmarks/README.md
 !benchmarks/latest_*.json
+alllms.md
 
 # Diagnose/learn runtime docs (per-workspace; see diagnose_learn.py, ADR 012)
 docs/learnings/
