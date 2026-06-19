@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from uuid import UUID
 
 from nimbusware_compute.work_unit import get_work_unit_queue
@@ -11,6 +12,34 @@ CRITIC_STAGE_NAMES = (
     "network_resilience_critique",
 )
 
+_WRITER_STAGE_TAXONOMY: dict[str, str] = {
+    "implementation": "backend_writer",
+    "test_writer": "test_writer",
+    "frontend_writer": "frontend_writer",
+    "plan": "planner",
+}
+
+
+def _mesh_enqueue_payload(
+    node_id: UUID,
+    *,
+    stage_name: str,
+    workspace: Path | str | None = None,
+    workflow_profile: str | None = None,
+) -> dict[str, str | bool]:
+    payload: dict[str, str | bool] = {
+        "node_id": str(node_id),
+        "mesh_assignment": True,
+    }
+    if workspace is not None:
+        payload["workspace"] = str(workspace)
+    if workflow_profile:
+        payload["workflow_profile"] = workflow_profile
+    taxonomy = _WRITER_STAGE_TAXONOMY.get(stage_name)
+    if taxonomy is not None:
+        payload["taxonomy_key"] = taxonomy
+    return payload
+
 
 def mesh_assign_parallel_stages(
     *,
@@ -21,6 +50,8 @@ def mesh_assign_parallel_stages(
     node_ids: list[UUID],
     role_claims: dict[str, str] | None = None,
     parallel_group: str = "writers",
+    workspace: Path | str | None = None,
+    workflow_profile: str | None = None,
 ) -> dict[str, UUID | None]:
     sched = get_mesh_scheduler()
     sched.set_mode(workload_distribution or "host_only")
@@ -43,7 +74,12 @@ def mesh_assign_parallel_stages(
             session_id=session_id,
             stage_name=stage_name,
             agent_role=stage_name,
-            payload={"node_id": str(node_id), "mesh_assignment": True},
+            payload=_mesh_enqueue_payload(
+                node_id,
+                stage_name=stage_name,
+                workspace=workspace,
+                workflow_profile=workflow_profile,
+            ),
         )
     return assignments
 
@@ -54,6 +90,8 @@ def mesh_assign_parallel_critics(
     session_id: UUID | None,
     workload_distribution: str,
     node_ids: list[UUID],
+    workspace: Path | str | None = None,
+    workflow_profile: str | None = None,
 ) -> dict[str, UUID | None]:
     return mesh_assign_parallel_stages(
         run_id=run_id,
@@ -62,6 +100,8 @@ def mesh_assign_parallel_critics(
         workload_distribution=workload_distribution,
         node_ids=node_ids,
         parallel_group="critics",
+        workspace=workspace,
+        workflow_profile=workflow_profile,
     )
 
 
@@ -72,6 +112,8 @@ def mesh_assign_campaign_slices(
     session_id: UUID | None,
     workload_distribution: str,
     node_ids: list[UUID],
+    workspace: Path | str | None = None,
+    workflow_profile: str | None = None,
 ) -> dict[str, UUID | None]:
     stage_names = [f"campaign.slice:{sid}" for sid in slice_ids]
     raw = mesh_assign_parallel_stages(
@@ -81,6 +123,8 @@ def mesh_assign_campaign_slices(
         workload_distribution=workload_distribution,
         node_ids=node_ids,
         parallel_group="campaign_slices",
+        workspace=workspace,
+        workflow_profile=workflow_profile,
     )
     return {sid: raw.get(f"campaign.slice:{sid}") for sid in slice_ids}
 
@@ -102,3 +146,12 @@ def resolve_mesh_context_for_run(run_id: UUID) -> tuple[UUID | None, str, list[U
         return sess.session_id, workload, node_ids
     except Exception:
         return None, "host_only", []
+
+
+__all__ = [
+    "CRITIC_STAGE_NAMES",
+    "mesh_assign_campaign_slices",
+    "mesh_assign_parallel_critics",
+    "mesh_assign_parallel_stages",
+    "resolve_mesh_context_for_run",
+]

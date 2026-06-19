@@ -576,6 +576,17 @@ def nimbusware_run_dispatch_mode() -> str | None:
     return None
 
 
+def nimbusware_compute_work_queue_mode() -> str | None:
+    raw = env_str("NIMBUSWARE_COMPUTE_WORK_QUEUE").lower()
+    if not raw or raw in _DISPATCH_OFF:
+        return None
+    if raw in _DISPATCH_MEMORY:
+        return "memory"
+    if raw == "redis":
+        return "redis"
+    return None
+
+
 def nimbusware_redis_url() -> str:
     return env_str("NIMBUSWARE_REDIS_URL")
 

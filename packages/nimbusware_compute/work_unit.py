@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Protocol
 from uuid import UUID, uuid4
 
 from nimbusware_compute.worker_policy import sanitize_work_unit_payload
@@ -33,11 +34,49 @@ class WorkUnitRecord:
     created_at: datetime | None = None
 
 
+class WorkUnitQueuePort(Protocol):
+    def queued_count(self, *, session_id: UUID | None = None) -> int: ...
+
+    def enqueue(
+        self,
+        *,
+        run_id: UUID,
+        stage_name: str,
+        session_id: UUID | None = None,
+        agent_role: str = "",
+        executor_user_id: str = "",
+        payload: dict[str, Any] | None = None,
+    ) -> WorkUnitRecord: ...
+
+    def dequeue(
+        self,
+        *,
+        session_id: UUID | None = None,
+        node_id: UUID | None = None,
+    ) -> WorkUnitRecord | None: ...
+
+    def complete(
+        self,
+        work_unit_id: UUID,
+        *,
+        status: str,
+        result: dict[str, Any] | None = None,
+    ) -> WorkUnitRecord | None: ...
+
+    def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]: ...
+
+
 class InMemoryWorkUnitQueue:
-    """In-memory work-unit queue (host enqueue/dequeue/complete; Redis optional later)."""
+    """In-memory work-unit queue (default; use Redis when configured)."""
 
     def __init__(self) -> None:
         self._units: dict[UUID, WorkUnitRecord] = {}
+
+    def list_units(self, *, run_id: UUID | None = None) -> list[WorkUnitRecord]:
+        units = list(self._units.values())
+        if run_id is not None:
+            units = [u for u in units if u.run_id == run_id]
+        return sorted(units, key=lambda u: u.created_at or _utc_now())
 
     def queued_count(self, *, session_id: UUID | None = None) -> int:
         return sum(
@@ -136,14 +175,43 @@ class InMemoryWorkUnitQueue:
         return done
 
 
-_work_unit_queue: InMemoryWorkUnitQueue | None = None
+_work_unit_queue: WorkUnitQueuePort | None = None
+_work_unit_queue_lock = threading.Lock()
 
 
-def get_work_unit_queue() -> InMemoryWorkUnitQueue:
+def compute_work_queue_mode() -> str | None:
+    from nimbusware_env.env_flags import nimbusware_compute_work_queue_mode
+
+    return nimbusware_compute_work_queue_mode()
+
+
+def get_work_unit_queue() -> WorkUnitQueuePort:
     global _work_unit_queue
-    if _work_unit_queue is None:
-        _work_unit_queue = InMemoryWorkUnitQueue()
-    return _work_unit_queue
+    with _work_unit_queue_lock:
+        if _work_unit_queue is not None:
+            return _work_unit_queue
+    mode = compute_work_queue_mode()
+    if mode == "redis":
+        from nimbusware_env.env_flags import nimbusware_redis_url
+
+        url = nimbusware_redis_url()
+        if not url:
+            msg = "NIMBUSWARE_REDIS_URL required when NIMBUSWARE_COMPUTE_WORK_QUEUE=redis"
+            raise ValueError(msg)
+        from nimbusware_compute.work_unit_redis import RedisWorkUnitQueue
+
+        return RedisWorkUnitQueue(url)
+    with _work_unit_queue_lock:
+        if _work_unit_queue is None:
+            _work_unit_queue = InMemoryWorkUnitQueue()
+        return _work_unit_queue
+
+
+def set_work_unit_queue(queue: WorkUnitQueuePort | None) -> None:
+    """Test hook to inject a queue instance."""
+    global _work_unit_queue
+    with _work_unit_queue_lock:
+        _work_unit_queue = queue
 
 
 def work_unit_to_public(rec: WorkUnitRecord) -> dict[str, Any]:

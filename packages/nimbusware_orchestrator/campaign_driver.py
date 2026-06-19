@@ -329,6 +329,7 @@ def _execute_campaign_slices(
             session_id=session_id,
             workload_distribution=workload,
             node_ids=node_ids,
+            workspace=workspace,
         )
 
     last_passed: bool | None = None

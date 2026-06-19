@@ -20,7 +20,7 @@ def test_mesh_scheduler_spreads_across_nodes() -> None:
     assert out["implementation"] != out["test_writer"]
 
 
-def test_mesh_pipeline_hook_enqueues_remote_units() -> None:
+def test_mesh_pipeline_hook_enqueues_remote_units(tmp_path) -> None:
     sid = uuid4()
     run_id = uuid4()
     n1 = uuid4()
@@ -30,11 +30,13 @@ def test_mesh_pipeline_hook_enqueues_remote_units() -> None:
         session_id=sid,
         workload_distribution="auto_share",
         node_ids=[n1],
+        workspace=tmp_path,
     )
     queue = get_work_unit_queue()
-    units = [u for u in queue._units.values() if u.run_id == run_id]
+    units = queue.list_units(run_id=run_id)
     assert len(units) == 1
     assert units[0].stage_name == "implementation"
+    assert units[0].payload.get("workspace") is not None
 
 
 def test_host_only_skips_enqueue() -> None:
@@ -46,7 +48,7 @@ def test_host_only_skips_enqueue() -> None:
         workload_distribution="host_only",
         node_ids=[uuid4()],
     )
-    units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
+    units = get_work_unit_queue().list_units(run_id=run_id)
     assert not units
 
 
@@ -63,7 +65,7 @@ def test_mesh_pipeline_hook_enqueues_campaign_slices() -> None:
         workload_distribution="auto_share",
         node_ids=[n1, n2],
     )
-    units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
+    units = get_work_unit_queue().list_units(run_id=run_id)
     assert len(units) == 2
     assert {u.stage_name for u in units} == {"campaign.slice:slice-a", "campaign.slice:slice-b"}
 
@@ -80,7 +82,7 @@ def test_mesh_pipeline_hook_enqueues_parallel_critics() -> None:
         workload_distribution="auto_share",
         node_ids=[n1, n2, n3],
     )
-    units = [u for u in get_work_unit_queue()._units.values() if u.run_id == run_id]
+    units = get_work_unit_queue().list_units(run_id=run_id)
     assert len(units) == 3
     assert {u.stage_name for u in units} == {
         "security_critique",

@@ -186,6 +186,8 @@ class LifecycleVerifyMixin:
                     session_id=mesh_sid,
                     workload_distribution=mesh_workload,
                     node_ids=mesh_nodes,
+                    workspace=workspace,
+                    workflow_profile=wf_prof,
                 )
                 with ThreadPoolExecutor(max_workers=3) as pool:
                     sec_f = pool.submit(

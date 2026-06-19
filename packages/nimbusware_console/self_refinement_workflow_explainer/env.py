@@ -4,11 +4,11 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from agent_core.mapping import load_error_text
 from nimbusware_config.workflow_read import (
     SelfRefinementWorkflowBlock,
     load_yaml,
 )
+from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
 from nimbusware_env.env_flags import (
     env_falsy,
     env_str,
@@ -95,40 +95,24 @@ def _nimbusware_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
 def self_refinement_ungated_loop_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    env = payload.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("forces_on"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** force-on"
-            f"{detail} — overrides workflow ``ungated_loop`` when set."
-        )
-    if env.get("forces_off"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** force-off"
-            f"{detail}."
-        )
-    if env.get("unset"):
-        return (
-            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** unset — "
+    return env_tri_state_gate_caption(
+        payload,
+        "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
+        label="Self-refinement ungated env",
+        forces_on_text=(
+            "Self-refinement ungated env: **{env_key}** force-on"
+            "{detail} — overrides workflow ``ungated_loop`` when set."
+        ),
+        forces_off_text="Self-refinement ungated env: **{env_key}** force-off{detail}.",
+        unset_text=(
+            "Self-refinement ungated env: **{env_key}** unset — "
             "workflow ``self_refinement.ungated_loop`` controls ungated progression."
-        )
-    if env.get("unrecognised_value"):
-        raw = env.get("raw")
-        detail = f" (raw={raw!r})" if isinstance(raw, str) and raw.strip() else ""
-        return (
-            "Self-refinement ungated env: **NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP** "
-            f"unrecognised value{detail} — treated like unset."
-        )
-    return None
+        ),
+        unrecognised_text=(
+            "Self-refinement ungated env: **{env_key}** "
+            "unrecognised value{detail} — treated like unset."
+        ),
+    )
 
 
 def _nimbusware_self_refinement_stage_marker_env_summary() -> dict[str, Any]:

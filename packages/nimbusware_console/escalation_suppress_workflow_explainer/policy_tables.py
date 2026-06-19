@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from typing import Any
 
 from agent_core.mapping import field_error_text
-from nimbusware_console.components.operator_metrics import (
-    table_rows_csv,
+from nimbusware_console.explainer_core.policy_table_exports import (
+    mapping_rows_csv,
+    mapping_rows_export_json,
+    string_list_table_rows,
 )
 
 _POLICY_KEYS_CSV_COLUMNS: tuple[str, ...] = ("policy_key",)
@@ -17,13 +18,7 @@ _POLICY_KINDS_ORDER: tuple[str, ...] = ("mapping", "scalar", "list", "other")
 
 
 def _escalation_policy_keys_rows_from_list(raw: Any) -> list[dict[str, str]]:
-    if not isinstance(raw, list):
-        return []
-    out: list[dict[str, str]] = []
-    for key in raw:
-        if isinstance(key, str) and key.strip():
-            out.append({"policy_key": key.strip()})
-    return out
+    return string_list_table_rows(raw, column_name="policy_key")
 
 
 def escalation_policy_yaml_keys_all_table_rows(
@@ -42,19 +37,13 @@ def escalation_policy_yaml_keys_all_table_rows(
 def escalation_policy_yaml_keys_all_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
+    return mapping_rows_export_json(rows)
 
 
 def escalation_policy_yaml_keys_all_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return table_rows_csv(rows, _POLICY_KEYS_CSV_COLUMNS)
+    return mapping_rows_csv(rows, _POLICY_KEYS_CSV_COLUMNS)
 
 
 def escalation_policy_yaml_top_level_kinds_table_rows(
@@ -88,16 +77,10 @@ def escalation_policy_yaml_top_level_kinds_table_rows(
 def escalation_policy_yaml_top_level_kinds_export_json(
     rows: Sequence[Mapping[str, Any]],
 ) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
+    return mapping_rows_export_json(rows)
 
 
 def escalation_policy_yaml_top_level_kinds_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    return table_rows_csv(rows, _POLICY_KINDS_CSV_COLUMNS)
+    return mapping_rows_csv(rows, _POLICY_KINDS_CSV_COLUMNS)

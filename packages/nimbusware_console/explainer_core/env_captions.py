@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from agent_core.mapping import load_error_text
+from nimbusware_env.env_flags import env_var_tri_state_summary
 
 
 def _raw_detail(env: Mapping[str, Any]) -> str:
@@ -11,6 +12,12 @@ def _raw_detail(env: Mapping[str, Any]) -> str:
     if isinstance(raw, str) and raw.strip():
         return f" (raw={raw!r})"
     return ""
+
+
+def env_tri_state_yaml_follows_summary(env_key: str) -> dict[str, object]:
+    base = dict(env_var_tri_state_summary(env_key))
+    base["unset_follows_yaml"] = bool(base.get("unset"))
+    return base
 
 
 def env_tri_state_gate_caption(

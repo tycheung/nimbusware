@@ -302,6 +302,7 @@ class WritersMixin:
             session_id=session_id,
             workload_distribution=workload,
             node_ids=node_ids,
+            workspace=ws,
         )
         from nimbusware_env.env_flags import env_force_on
         from nimbusware_orchestrator.workflow_parallel_writers import (
