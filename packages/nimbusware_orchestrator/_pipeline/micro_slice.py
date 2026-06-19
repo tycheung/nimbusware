@@ -58,6 +58,7 @@ class MicroSliceMixin:
         e2e_detail: str = "",
         diff_unified: str = "",
         test_output: str = "",
+        test_detail: str = "",
     ) -> SliceGateChainResult:
         from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from nimbusware_orchestrator.slice_context_packet import build_slice_context_packet
@@ -90,6 +91,7 @@ class MicroSliceMixin:
             verify_ok=verify_ok,
             critique_verdicts=critique_verdicts,
             tests_passed=tests_passed,
+            test_detail=test_detail or test_output[:500],
             e2e_passed=e2e_passed,
             e2e_detail=e2e_detail,
             autopilot_level=profile.level,

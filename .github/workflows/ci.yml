@@ -150,6 +150,9 @@ jobs:
           NIMBUSWARE_DATABASE_URL: postgresql://nimbusware:nimbusware@localhost:5432/nimbusware
           NIMBUSWARE_REPO_ROOT: ${{ github.workspace }}
           NIMBUSWARE_SKIP_PREFLIGHT: "1"
+          NIMBUSWARE_SLICE_IMPLEMENT: stub
+          NIMBUSWARE_SLICE_AUTO_ADVANCE: "0"
+          NIMBUSWARE_USE_LLM: "0"
 
   e2e:
     runs-on: ubuntu-latest

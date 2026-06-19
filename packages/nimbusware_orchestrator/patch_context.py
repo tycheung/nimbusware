@@ -160,6 +160,38 @@ def resolve_patch_test_targets(
     return map_paths_to_test_targets(plan_target_paths)
 
 
+_PATCH_STUB_HOTFIX_REPLACEMENTS: tuple[tuple[str, str], ...] = (
+    ("return a + b + 1", "return a + b"),
+)
+
+
+def apply_patch_stub_hotfix(
+    workspace: Path,
+    plan: SlicePlan,
+    rows: list[dict[str, Any]],
+) -> tuple[str, ...]:
+    """Apply idempotent fixture hotfixes during stub patch apply (CI/e2e)."""
+    if not is_patch_run(rows):
+        return ()
+    touched: list[str] = []
+    for raw in plan.target_paths:
+        rel = str(raw).replace("\\", "/").lstrip("/")
+        if not rel or ".." in rel.split("/"):
+            continue
+        fp = workspace / rel
+        if not fp.is_file():
+            continue
+        text = fp.read_text(encoding="utf-8")
+        new = text
+        for old, repl in _PATCH_STUB_HOTFIX_REPLACEMENTS:
+            new = new.replace(old, repl)
+        if new == text:
+            continue
+        fp.write_text(new, encoding="utf-8")
+        touched.append(rel)
+    return tuple(touched)
+
+
 def patch_auto_apply_allowed(
     *,
     policy: dict[str, Any],

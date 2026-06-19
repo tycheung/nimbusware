@@ -62,13 +62,26 @@ def run_slice_verify_and_test(
         if patch_ctx:
             failing = str(patch_ctx.get("failing_test") or "").strip()
             selector = maven_test_class_from_failing_test(failing)
+        mvn_timeout = max(timeout_seconds, 300.0)
         test_code, test_out = run_mvn_test(
             workspace,
-            timeout_seconds=max(timeout_seconds, 300.0),
+            timeout_seconds=mvn_timeout,
             test_selector=selector,
         )
+        if test_code != 0 and selector:
+            fallback_code, fallback_out = run_mvn_test(
+                workspace,
+                timeout_seconds=mvn_timeout,
+                test_selector=None,
+            )
+            sections.append(
+                f"=== mvn test targeted (exit {test_code}) ===\n{test_out}\n"
+                f"=== mvn test fallback full (exit {fallback_code}) ===\n{fallback_out}",
+            )
+            test_code, test_out = fallback_code, fallback_out
+        else:
+            sections.append(f"=== mvn test (exit {test_code}) ===\n{test_out}")
         tests_passed = test_code == 0
-        sections.append(f"=== mvn test (exit {test_code}) ===\n{test_out}")
     else:
         existing_tests = [t for t in test_targets if (workspace / t).is_file()]
         if existing_tests:

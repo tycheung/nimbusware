@@ -27,6 +27,12 @@ def _playwright_available() -> bool:
     return shutil.which("playwright") is not None or shutil.which("npx") is not None
 
 
+def _is_control_plane_repo_workspace(workspace: Path) -> bool:
+    """Nimbusware monorepo: tests/e2e is the product suite, not a slice project."""
+    ws = workspace.resolve()
+    return (ws / "packages" / "nimbusware_orchestrator").is_dir() and (ws / "pyproject.toml").is_file()
+
+
 def run_slice_e2e_verify(
     workspace: Path,
     *,
@@ -51,6 +57,12 @@ def run_slice_e2e_verify(
     e2e_dir = workspace / "tests" / "e2e"
     if not e2e_dir.is_dir():
         return SliceE2EResult("SKIP", "no tests/e2e directory in workspace")
+
+    if _is_control_plane_repo_workspace(workspace):
+        return SliceE2EResult(
+            "SKIP",
+            "control-plane repo workspace; set slice.e2e.command for attached project workspaces",
+        )
 
     if not _playwright_available():
         return SliceE2EResult(

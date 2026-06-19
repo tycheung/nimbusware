@@ -3,8 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_agent_tools.risk_caps import PATCH_DEFAULT_CAPS, agent_risk_caps_from_run_rows
-from nimbusware_orchestrator.micro_slice import micro_slice_count_for_run
+from nimbusware_orchestrator.micro_slice import micro_slice_count_for_run, parse_slice_plan
 from nimbusware_orchestrator.patch_context import (
+    apply_patch_stub_hotfix,
     implementation_path_from_failing_test,
     infer_patch_implementation_paths,
     maven_test_class_from_failing_test,
@@ -140,3 +141,30 @@ def test_infer_patch_implementation_paths_from_go_fixture(tmp_path: Path) -> Non
         fixture,
     )
     assert paths == ("calculator.go",)
+
+
+def test_apply_patch_stub_hotfix_jvm_calculator(tmp_path: Path) -> None:
+    ws = tmp_path / "tiny_jvm_app"
+    target = ws / "src/main/java/com/example/Calculator.java"
+    target.parent.mkdir(parents=True)
+    target.write_text(
+        "package com.example;\npublic final class Calculator {\n"
+        "  public static int add(int a, int b) { return a + b + 1; }\n}\n",
+        encoding="utf-8",
+    )
+    plan = parse_slice_plan(
+        {
+            "slice_id": "slice-1",
+            "target_paths": ["src/main/java/com/example/Calculator.java"],
+        },
+    )
+    rows = [
+        {
+            "event_type": "run.created",
+            "metadata": {"work_type": "patch", "patch_effective": {"enabled": True}},
+        },
+    ]
+    touched = apply_patch_stub_hotfix(ws, plan, rows)
+    assert touched == ("src/main/java/com/example/Calculator.java",)
+    assert "return a + b + 1" not in target.read_text(encoding="utf-8")
+    assert "return a + b;" in target.read_text(encoding="utf-8")

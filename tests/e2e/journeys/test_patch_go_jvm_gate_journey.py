@@ -15,6 +15,10 @@ def _gate_failure_detail(journey_client: JourneyClient) -> str:
     for ev in reversed(journey_client.timeline()):
         meta = ev.get("metadata") or {}
         if meta.get("slice_gate_steps"):
+            packet = meta.get("slice_context_packet") or {}
+            test_out = str(packet.get("test_output") or "").strip()
+            if test_out:
+                return f"{meta.get('slice_gate_steps')!r}; test_output={test_out[:1200]!r}"
             return str(meta.get("slice_gate_steps"))
         if meta.get("slice_gate_verdict") == "FAIL":
             return str(meta)

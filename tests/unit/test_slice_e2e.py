@@ -49,6 +49,13 @@ def test_run_slice_e2e_skips_without_workspace_tests_e2e(tmp_path: Path) -> None
     assert "tests/e2e" in result.detail
 
 
+def test_run_slice_e2e_skips_control_plane_monorepo() -> None:
+    repo = find_repo_root()
+    result = run_slice_e2e_verify(repo, timeout_seconds=30.0)
+    assert result.verdict == "SKIP"
+    assert "control-plane" in result.detail
+
+
 def test_micro_slice_workflow_parses_e2e_enabled_by_default() -> None:
     repo = find_repo_root()
     block = parse_micro_slice_workflow_block(repo, "micro_slice")

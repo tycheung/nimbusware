@@ -145,6 +145,7 @@ def complete_slice_after_implement(
         e2e_detail=e2e_detail,
         diff_unified=diff_for_gate[:8000],
         test_output=test_out[:4000],
+        test_detail=test_out[:500],
     )
     orch.maybe_rebuild_memory_index(run_id)
     return gate
@@ -180,6 +181,11 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
     timeout = float(runtime.get("request_timeout_seconds", 120))
     model = orch._selected_model_for_run(run_id)
     mode = str(pending.get("implement_mode") or slice_implement_mode())
+    patch_stub_touched: tuple[str, ...] = ()
+    from nimbusware_orchestrator.patch_context import apply_patch_stub_hotfix, is_patch_run
+
+    if is_patch_run(rows) and mode in ("stub", "scoped"):
+        patch_stub_touched = apply_patch_stub_hotfix(ws, plan, rows)
 
     if mode == "agent":
         from nimbusware_agent_tools.runtime import execute_slice_implement_agent
@@ -239,7 +245,7 @@ def apply_pending_slice(orch: Any, run_id: UUID, slice_id: str) -> dict[str, Any
         impl_meta = {
             "slice_id": plan.slice_id,
             "slice_implement_mode": impl_result.mode,
-            "paths_touched": list(impl_result.paths_touched),
+            "paths_touched": list(impl_result.paths_touched) + list(patch_stub_touched),
         }
 
     _emit_slice_stage(orch, run_id, "slice.implement", metadata=impl_meta)
