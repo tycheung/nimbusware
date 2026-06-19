@@ -1,5 +1,5 @@
 from nimbusware_console.explainer_core.workflow_exports import (
-    WorkflowExplainerExports,
+    install_named_workflow_explainer_exports,
     workflow_explainer_payload_export_json,
 )
 from nimbusware_console.integration_adapter_writer_workflow_explainer.captions import (
@@ -24,11 +24,11 @@ from nimbusware_console.integration_adapter_writer_workflow_explainer.payload im
     integration_adapter_writer_workflow_explainer_payload,
 )
 
-_exp = WorkflowExplainerExports("integration_adapter_writer")
-_integration_adapter_writer_explainer_cell = _exp.cell
-integration_adapter_writer_export_filename_slug = _exp.export_filename_slug
-integration_adapter_writer_explainer_table_rows = _exp.explainer_table_rows
-integration_adapter_writer_explainer_table_rows_csv = _exp.explainer_table_rows_csv
+install_named_workflow_explainer_exports(
+    globals(),
+    "integration_adapter_writer",
+    cell_alias="_integration_adapter_writer_explainer_cell",
+)
 
 integration_adapter_writer_explainer_export_json = workflow_explainer_payload_export_json
 
