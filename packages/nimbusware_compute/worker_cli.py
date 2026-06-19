@@ -5,8 +5,12 @@ import json
 import sys
 import time
 from typing import Any
+from uuid import UUID
 
 import httpx
+
+from nimbusware_compute.work_unit import WorkUnitRecord
+from nimbusware_compute.work_unit_execute import execute_work_unit_on_worker
 
 
 def _register(
@@ -15,20 +19,20 @@ def _register(
     host_label: str,
     base_url: str,
     session_token: str,
+    session_id: str,
 ) -> dict[str, Any]:
     headers: dict[str, str] = {}
     if session_token:
         headers["Authorization"] = f"Bearer {session_token}"
-    resp = client.post(
-        "/v1/compute/nodes/register",
-        json={
-            "host_label": host_label,
-            "base_url": base_url,
-            "display_name": host_label,
-            "capabilities": {"stub": True},
-        },
-        headers=headers,
-    )
+    payload: dict[str, Any] = {
+        "host_label": host_label,
+        "base_url": base_url,
+        "display_name": host_label,
+        "capabilities": {"mesh_worker": True},
+    }
+    if session_id:
+        payload["session_id"] = session_id
+    resp = client.post("/v1/compute/nodes/register", json=payload, headers=headers)
     resp.raise_for_status()
     body = resp.json()
     node = body.get("node")
@@ -52,14 +56,66 @@ def _heartbeat(client: httpx.Client, node_id: str) -> dict[str, Any]:
     return node
 
 
+def _claim(
+    client: httpx.Client,
+    *,
+    node_id: str,
+    session_id: str,
+) -> dict[str, Any] | None:
+    body: dict[str, Any] = {"node_id": node_id}
+    if session_id:
+        body["session_id"] = session_id
+    resp = client.post("/v1/compute/work-units/claim", json=body)
+    resp.raise_for_status()
+    data = resp.json()
+    unit = data.get("work_unit")
+    return unit if isinstance(unit, dict) else None
+
+
+def _complete(
+    client: httpx.Client,
+    work_unit_id: str,
+    *,
+    status: str,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+    resp = client.post(
+        f"/v1/compute/work-units/{work_unit_id}/complete",
+        json={"status": status, "result": result},
+    )
+    resp.raise_for_status()
+    body = resp.json()
+    unit = body.get("work_unit")
+    if not isinstance(unit, dict):
+        msg = "complete response missing work_unit"
+        raise RuntimeError(msg)
+    return unit
+
+
+def _work_unit_record_from_public(raw: dict[str, Any]) -> WorkUnitRecord:
+    return WorkUnitRecord(
+        work_unit_id=UUID(str(raw["work_unit_id"])),
+        run_id=UUID(str(raw["run_id"])),
+        session_id=UUID(str(raw["session_id"])) if raw.get("session_id") else None,
+        stage_name=str(raw.get("stage_name") or ""),
+        agent_role=str(raw.get("agent_role") or ""),
+        executor_user_id=str(raw.get("executor_user_id") or ""),
+        status=str(raw.get("status") or "assigned"),
+        payload=dict(raw.get("payload") or {}),
+        node_id=UUID(str(raw["node_id"])) if raw.get("node_id") else None,
+    )
+
+
 def run_worker_loop(
     *,
     host_url: str,
     session_token: str,
     host_label: str,
     worker_base_url: str,
+    session_id: str,
     interval_seconds: float,
     max_heartbeats: int | None,
+    pull_work_units: bool,
 ) -> int:
     base = host_url.rstrip("/")
     with httpx.Client(base_url=base, timeout=30.0) as client:
@@ -68,6 +124,7 @@ def run_worker_loop(
             host_label=host_label,
             base_url=worker_base_url,
             session_token=session_token,
+            session_id=session_id,
         )
         node_id = str(node.get("node_id") or "")
         if not node_id:
@@ -80,18 +137,31 @@ def run_worker_loop(
             try:
                 updated = _heartbeat(client, node_id)
                 print(json.dumps({"heartbeat": updated}), flush=True)
+                if pull_work_units:
+                    claimed = _claim(client, node_id=node_id, session_id=session_id)
+                    if claimed is not None:
+                        rec = _work_unit_record_from_public(claimed)
+                        result = execute_work_unit_on_worker(rec)
+                        completed = _complete(
+                            client,
+                            str(rec.work_unit_id),
+                            status="ok" if result.get("ok") else "failed",
+                            result=result,
+                        )
+                        print(json.dumps({"work_unit_completed": completed}), flush=True)
             except httpx.HTTPError as exc:
-                print(json.dumps({"heartbeat_error": str(exc)}), file=sys.stderr, flush=True)
+                print(json.dumps({"worker_error": str(exc)}), file=sys.stderr, flush=True)
             beats += 1
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Nimbusware compute mesh worker (register + heartbeat loop)",
+        description="Nimbusware compute mesh worker (register, heartbeat, work-unit pull)",
     )
     parser.add_argument("--host-url", required=True, help="Host API base URL")
     parser.add_argument("--token", default="", help="Session compute token")
+    parser.add_argument("--session-id", default="", help="Collaborative session UUID")
     parser.add_argument(
         "--host-label",
         default="",
@@ -113,6 +183,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Register and send one heartbeat then exit",
     )
+    parser.add_argument(
+        "--no-pull",
+        action="store_true",
+        help="Skip work-unit claim/complete loop (heartbeat only)",
+    )
     args = parser.parse_args(argv)
     import socket
 
@@ -124,8 +199,10 @@ def main(argv: list[str] | None = None) -> int:
             session_token=args.token,
             host_label=label,
             worker_base_url=args.worker_base_url,
+            session_id=args.session_id.strip(),
             interval_seconds=args.interval,
             max_heartbeats=max_beats,
+            pull_work_units=not args.no_pull,
         )
     except httpx.HTTPError as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)

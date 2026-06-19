@@ -9,10 +9,11 @@ On a collaborator machine with a full Nimbusware install (LAN or Tailscale reach
 ```bash
 poetry run nimbusware-compute-worker \
   --host-url https://<host>:8787 \
-  --session-token <invite-compute-token>
+  --session-token <invite-compute-token> \
+  --session-id <chat-session-uuid>
 ```
 
-The worker registers once, then sends heartbeats until stopped.
+The worker registers once, then sends heartbeats and **pulls work units** from the host queue until stopped. Use `--no-pull` for heartbeat-only mode.
 
 ## Host APIs (MVP)
 
@@ -21,6 +22,9 @@ The worker registers once, then sends heartbeats until stopped.
 | GET | `/v1/compute/nodes?session_id=` | List nodes registered for a chat session |
 | POST | `/v1/compute/nodes/register` | Register or refresh a compute node |
 | POST | `/v1/compute/nodes/{id}/heartbeat` | Liveness + capabilities update |
+| POST | `/v1/compute/work-units/claim` | Worker claims next queued unit for a session |
+| POST | `/v1/compute/work-units/{id}/complete` | Worker reports stage result |
+| GET | `/v1/compute/work-units/queue?session_id=` | Host queue depth observability |
 | POST | `/v1/chat/sessions/{id}/compute/opt-in` | Session compute sharing toggle |
 
 ## Reachability
@@ -29,7 +33,11 @@ v1.2 requires **LAN or Tailscale** between host and workers. Home readiness shou
 
 ## Scheduler (D3)
 
-`MeshScheduler` hooks `_run_writers_parallel_dispatch` when a chat session’s `workload_distribution` is not `host_only`. Remote stages enqueue `nimbusware_work_unit` rows for session-scoped workers; host still executes locally until workers pull units.
+`MeshScheduler` hooks `_run_writers_parallel_dispatch` when a chat session’s `workload_distribution` is not `host_only`. Remote stages enqueue work units for session-scoped workers; workers claim via `/v1/compute/work-units/claim`, execute on the claimer node (`execute_on: self`), and complete via `/v1/compute/work-units/{id}/complete`.
+
+## Worker execution (MVP)
+
+`nimbusware-compute-worker` pulls queued units after each heartbeat, runs a bounded local ack executor (`work_unit_execute.py`), and posts completion. Full stage runners on remote nodes remain a v1.3+ extension.
 
 ## Future minimal worker agent
 

@@ -102,3 +102,63 @@ def heartbeat_compute_node(
             detail=problem("not_found", "compute node not found"),
         )
     return {"node": row_to_public(row)}
+
+
+class WorkUnitClaimBody(BaseModel):
+    node_id: UUID
+    session_id: UUID | None = None
+
+
+class WorkUnitCompleteBody(BaseModel):
+    status: Literal["ok", "failed", "timeout"] = "ok"
+    result: dict[str, Any] | None = None
+
+
+@router.post("/compute/work-units/claim")
+def claim_work_unit(body: WorkUnitClaimBody, _: UserDep) -> dict[str, Any]:
+    from nimbusware_compute.work_unit import get_work_unit_queue, work_unit_to_public
+
+    rec = get_work_unit_queue().dequeue(
+        session_id=body.session_id,
+        node_id=body.node_id,
+    )
+    if rec is None:
+        return {"work_unit": None}
+    return {"work_unit": work_unit_to_public(rec)}
+
+
+@router.get("/compute/work-units/queue")
+def work_unit_queue_depth(
+    _: UserDep,
+    session_id: UUID | None = None,
+) -> dict[str, Any]:
+    from nimbusware_compute.work_unit import get_work_unit_queue
+
+    queue = get_work_unit_queue()
+    return {
+        "queued": queue.queued_count(session_id=session_id),
+        "session_id": str(session_id) if session_id else None,
+    }
+
+
+@router.post("/compute/work-units/{work_unit_id}/complete")
+def complete_work_unit(
+    work_unit_id: UUID,
+    body: WorkUnitCompleteBody,
+    _: UserDep,
+) -> dict[str, Any]:
+    from nimbusware_compute.work_unit import get_work_unit_queue, work_unit_to_public
+    from nimbusware_compute.worker_policy import sanitize_work_unit_payload
+
+    safe_result = sanitize_work_unit_payload(body.result) if body.result is not None else None
+    rec = get_work_unit_queue().complete(
+        work_unit_id,
+        status=body.status,
+        result=safe_result,
+    )
+    if rec is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("not_found", "work unit not found"),
+        )
+    return {"work_unit": work_unit_to_public(rec)}
