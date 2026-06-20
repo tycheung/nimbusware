@@ -1,6 +1,15 @@
 import { apiJson, toast } from "../api-client.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 
+const DEFAULT_AUTOPILOT_PROFILE_KEY = "maker_default_autopilot_profile_id";
+const DEFAULT_ENFORCEMENT_PROFILE_KEY = "maker_default_enforcement_profile_id";
+
+function defaultProfileIds() {
+  const autopilot = localStorage.getItem(DEFAULT_AUTOPILOT_PROFILE_KEY)?.trim() || "";
+  const enforcement = localStorage.getItem(DEFAULT_ENFORCEMENT_PROFILE_KEY)?.trim() || "";
+  return { autopilot, enforcement };
+}
+
 function campaignModeFromHash() {
   const params = new URLSearchParams(window.location.hash.split("?")[1] || "");
   return params.get("campaign") === "1";
@@ -48,17 +57,22 @@ export async function mountBuild(root) {
     const fd = new FormData(ev.target);
     const quickMode = window.__NIMBUSWARE__?.quick_mode;
     const endpoint = quickMode ? "/runs" : "/campaigns";
+    const { autopilot, enforcement } = defaultProfileIds();
     const payload = quickMode
       ? {
           project_id: fd.get("project_id"),
           requirements: { business_prompt: fd.get("prompt") },
           workflow_profile: "quick_local",
+          ...(autopilot ? { autopilot_profile_id: autopilot } : {}),
+          ...(enforcement ? { enforcement_profile_id: enforcement } : {}),
         }
       : {
           project_id: fd.get("project_id"),
           requirements: { business_prompt: fd.get("prompt") },
           autonomous: true,
           workflow_profile: "campaign_micro_slice",
+          ...(autopilot ? { autopilot_profile_id: autopilot } : {}),
+          ...(enforcement ? { enforcement_profile_id: enforcement } : {}),
         };
     const body = await apiJson(endpoint, {
       method: "POST",

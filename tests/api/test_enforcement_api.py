@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 
@@ -46,3 +48,33 @@ def test_run_created_includes_enforcement_effective(client: TestClient) -> None:
     created = next(r for r in rows if r.get("event_type") == "run.created")
     eff = (created.get("metadata") or {}).get("enforcement_effective") or {}
     assert eff.get("level") == 4
+
+
+def test_campaign_created_with_enforcement_profile(client: TestClient, tmp_path: Path) -> None:
+    ws = tmp_path / "campaign-app"
+    ws.mkdir()
+    project = client.post(
+        "/v1/projects",
+        json={"name": "EnforceCampaign", "workspace_path": str(ws), "template": "attach"},
+    )
+    assert project.status_code == 200
+    profile = client.put(
+        "/v1/platform/enforcement/user-profiles/ship_strict",
+        json={"name": "Ship strict", "level": 8},
+    )
+    assert profile.status_code == 200
+    campaign = client.post(
+        "/v1/campaigns",
+        json={
+            "project_id": project.json()["project_id"],
+            "requirements": {"business_prompt": "Campaign with enforcement"},
+            "autonomous": True,
+            "workflow_profile": "campaign_micro_slice",
+            "enforcement_profile_id": "ship_strict",
+        },
+    )
+    assert campaign.status_code == 200, campaign.text
+    run_id = campaign.json()["run_id"]
+    enf = client.get(f"/v1/runs/{run_id}/enforcement")
+    assert enf.status_code == 200
+    assert enf.json()["level"] == 8

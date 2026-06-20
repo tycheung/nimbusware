@@ -132,11 +132,19 @@ export async function renderGateFailSteps(apiJson, runId) {
     const failed = [];
     for (const ev of timeline.events || []) {
       const stage = String(ev.payload?.stage_name || "");
-      if (stage !== "slice.gate") continue;
-      const verdict = String(ev.metadata?.slice_gate_verdict || "").toUpperCase();
-      if (verdict === "FAIL") {
+      if (stage === "slice.gate") {
+        const verdict = String(ev.metadata?.slice_gate_verdict || "").toUpperCase();
+        if (verdict !== "FAIL") continue;
         const steps = ev.metadata?.slice_gate_steps || ev.metadata?.gate_steps;
         failed.push({ seq: ev.store_seq, steps, detail: ev.metadata?.slice_gate_detail });
+        continue;
+      }
+      if (stage === "enforcement.gate" && String(ev.event_type || "") === "stage.failed") {
+        failed.push({
+          seq: ev.store_seq,
+          steps: ev.metadata?.enforcement_steps,
+          detail: ev.payload?.message || ev.metadata?.enforcement_detail,
+        });
       }
     }
     mount.replaceChildren();

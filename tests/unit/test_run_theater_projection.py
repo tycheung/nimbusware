@@ -377,3 +377,37 @@ def test_theater_slice_gate_and_memory_lines() -> None:
     headlines = [m["headline"] for m in msgs]
     assert any("Recalled 2 memory" in h for h in headlines)
     assert any("Slice gate blocked" in h for h in headlines)
+
+
+def test_run_theater_enforcement_gate_pass_and_fail() -> None:
+    run_id = uuid4()
+    rows = [
+        StagePassedEvent(
+            event_type=EventType.STAGE_PASSED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StagePassedPayload(stage_name="enforcement.gate", duration_ms=0),
+            metadata={"enforcement_passed": True, "enforcement_level": 10},
+        ).model_dump(mode="json"),
+        StageFailedEvent(
+            event_type=EventType.STAGE_FAILED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=StageFailedPayload(
+                stage_name="enforcement.gate",
+                reason_code="enforcement_parity_failed",
+                message="terminal workspace CI parity did not pass",
+            ),
+            metadata={
+                "enforcement_passed": False,
+                "enforcement_level": 10,
+                "enforcement_steps": [{"name": "pytest"}, {"name": "ruff"}],
+            },
+        ).model_dump(mode="json"),
+    ]
+    msgs = build_run_theater_messages(_with_store_seq(rows))
+    headlines = [m["headline"] for m in msgs]
+    assert any("Enforcement gate PASS" in h for h in headlines)
+    assert any("Enforcement gate blocked" in h for h in headlines)

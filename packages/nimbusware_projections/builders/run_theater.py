@@ -358,6 +358,19 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "body_md": None,
                     },
                 )
+            elif sn == "enforcement.gate":
+                passed = row_meta.get("enforcement_passed")
+                verdict = "PASS" if passed is not False else "FAIL"
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Gate",
+                        "message_kind": "gate",
+                        "severity": "pass" if verdict == "PASS" else "block",
+                        "headline": f"Enforcement gate {verdict} (level {row_meta.get('enforcement_level', '?')})",
+                        "body_md": None,
+                    },
+                )
             elif sn in ("plan", "slice.plan"):
                 plan_seq = int(row.get("store_seq") or 0)
                 messages.append(
@@ -472,6 +485,20 @@ def build_run_theater_messages(rows: list[dict[str, Any]]) -> list[dict[str, Any
                         "severity": "block",
                         "headline": f"Slice gate blocked ({slice_id or 'slice'})",
                         "body_md": test_out or None,
+                    },
+                )
+            elif sn == "enforcement.gate":
+                steps = row_meta.get("enforcement_steps") or []
+                step_names = [str(s.get("name") if isinstance(s, dict) else s) for s in steps if s]
+                detail = ", ".join(step_names[:6]) if step_names else str(pl.get("message") or "")
+                messages.append(
+                    {
+                        **base,
+                        "actor_display": "Gate",
+                        "message_kind": "gate",
+                        "severity": "block",
+                        "headline": "Enforcement gate blocked (terminal CI parity)",
+                        "body_md": detail[:400] or None,
                     },
                 )
             elif sn in _SLICE_STAGE_NAMES:

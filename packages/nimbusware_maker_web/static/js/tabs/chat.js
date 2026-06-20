@@ -1,5 +1,6 @@
 import { apiJson, toast } from "../api-client.js";
 import { autopilotRibbonHtml, wireAutopilotRibbon } from "../autopilot-ribbon.js";
+import { enforcementRibbonHtml, wireEnforcementRibbon } from "../enforcement-ribbon.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
 import { appendTheaterLine, theaterPayloadFromSse } from "../theater-renderer.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
@@ -406,7 +407,11 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   trust.className = "chat-run-card__trust muted";
   trust.dataset.runTrust = "1";
   trust.textContent = "Trust …";
-  summary.append(wt, st, trust);
+  const enforcement = document.createElement("span");
+  enforcement.className = "chat-run-card__enforcement muted";
+  enforcement.dataset.runEnforcement = "1";
+  enforcement.textContent = "Enforce …";
+  summary.append(wt, st, trust, enforcement);
   card.appendChild(summary);
   const agents = document.createElement("div");
   agents.className = "chat-run-card__agents muted";
@@ -418,20 +423,34 @@ function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) 
   theaterList.dataset.testid = "maker-chat-run-theater";
   card.appendChild(theaterList);
   thread.appendChild(card);
-  loadRunCardTrust(root, runId);
+  loadRunCardOperatorProfile(root, runId);
   return card;
 }
 
-async function loadRunCardTrust(root, runId) {
+async function loadRunCardOperatorProfile(root, runId) {
   const card = root.querySelector(`[data-run-id="${runId}"]`);
   const trust = card?.querySelector("[data-run-trust]");
-  if (!trust) return;
-  try {
-    const ap = await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`);
-    trust.textContent = `Trust ${ap.level ?? "?"} · ${ap.name || "Custom"}`;
-  } catch {
-    trust.textContent = "Trust —";
+  const enforcement = card?.querySelector("[data-run-enforcement]");
+  if (trust) {
+    try {
+      const ap = await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`);
+      trust.textContent = `Trust ${ap.level ?? "?"} · ${ap.name || "Custom"}`;
+    } catch {
+      trust.textContent = "Trust —";
+    }
   }
+  if (enforcement) {
+    try {
+      const ep = await apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`);
+      enforcement.textContent = `Enforce ${ep.level ?? "?"} · ${ep.name || "Custom"}`;
+    } catch {
+      enforcement.textContent = "Enforce —";
+    }
+  }
+}
+
+async function loadRunCardTrust(root, runId) {
+  await loadRunCardOperatorProfile(root, runId);
 }
 
 function trimTheaterLines(container, cap) {
@@ -657,17 +676,33 @@ function wireChatOperatorRibbons(root, runId) {
   });
 
   wireAutopilotRibbon(root, runId);
+  wireEnforcementRibbon(root, runId);
   root.addEventListener(
     "autopilot-updated",
-    () => loadRunCardTrust(root, runId),
+    () => loadRunCardOperatorProfile(root, runId),
     { once: false },
   );
   root.addEventListener(
     "autopilot-loaded",
     (ev) => {
-      const card = root.querySelector(`[data-run-id="${runId}"] [data-run-trust]`);
-      if (card && ev.detail) {
-        card.textContent = `Trust ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
+      const chip = root.querySelector(`[data-run-id="${runId}"] [data-run-trust]`);
+      if (chip && ev.detail) {
+        chip.textContent = `Trust ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
+      }
+    },
+    { once: true },
+  );
+  root.addEventListener(
+    "enforcement-updated",
+    () => loadRunCardOperatorProfile(root, runId),
+    { once: false },
+  );
+  root.addEventListener(
+    "enforcement-loaded",
+    (ev) => {
+      const chip = root.querySelector(`[data-run-id="${runId}"] [data-run-enforcement]`);
+      if (chip && ev.detail) {
+        chip.textContent = `Enforce ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
       }
     },
     { once: true },
@@ -680,13 +715,14 @@ function mountAutopilotLadderHint(root) {
   const hint = document.createElement("aside");
   hint.className = "panel chat-autopilot-hint";
   hint.dataset.testid = "maker-chat-autopilot-hint";
-  const slider = root.querySelector("[data-autopilot-slider]");
-  const level = slider?.value || "8";
+  const trustLevel = root.querySelector("[data-autopilot-slider]")?.value || "8";
+  const enforceLevel = root.querySelector("[data-enforcement-slider]")?.value || "5";
   const p = document.createElement("p");
   p.innerHTML =
-    `<strong>Autonomy ladder (trust ~${level}):</strong> ` +
-    "Fix a bug (patch) → Build a feature (micro-slice) → Build an app (factory). " +
-    "Adjust trust in the ribbon when a run is active.";
+    `<strong>Operator ladder</strong> — ` +
+    `Trust ~${trustLevel} (autonomy): Fix a bug (patch) → Build a feature (slice) → Build an app (factory). ` +
+    `Enforcement ~${enforceLevel} (CI depth): light checks for fixes (~4), full slice gates (~5), ship parity (~7+). ` +
+    "Adjust both sliders in the ribbon when a run is active.";
   hint.appendChild(p);
   const dismiss = document.createElement("button");
   dismiss.type = "button";
@@ -741,6 +777,7 @@ export async function mountChat(root) {
             </div>
           </div>
           ${autopilotRibbonHtml({ compact: true })}
+          ${enforcementRibbonHtml({ compact: true })}
         </section>
         <form id="chat-form" class="chat-form">
           <label>Project

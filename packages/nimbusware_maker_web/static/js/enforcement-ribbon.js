@@ -1,5 +1,9 @@
 import { apiJson, toast } from "./api-client.js";
 
+function enforcementControl(root, dataAttr, id) {
+  return root.querySelector(`[${dataAttr}]`) || (id ? root.querySelector(`#${id}`) : null);
+}
+
 export async function loadEnforcementUserProfiles() {
   try {
     const body = await apiJson("/platform/enforcement/user-profiles");
@@ -10,9 +14,9 @@ export async function loadEnforcementUserProfiles() {
 }
 
 export function applyEnforcementProfileToControls(root, profile) {
-  const slider = root.querySelector("[data-enforcement-slider]");
-  const label = root.querySelector("[data-enforcement-level-label]");
-  const summary = root.querySelector("[data-enforcement-summary]");
+  const slider = enforcementControl(root, "data-enforcement-slider", "enforcement-slider");
+  const label = enforcementControl(root, "data-enforcement-level-label", "enforcement-level-label");
+  const summary = enforcementControl(root, "data-enforcement-summary", "enforcement-summary");
   if (slider) slider.value = String(profile.level ?? 5);
   if (label) label.textContent = String(profile.level ?? 5);
   if (summary) {
@@ -20,11 +24,35 @@ export function applyEnforcementProfileToControls(root, profile) {
   }
 }
 
+async function populateEnforcementProfileSelect(root, profiles) {
+  const profileSelect = enforcementControl(
+    root,
+    "data-enforcement-profile-select",
+    "enforcement-profile-select",
+  );
+  if (!profileSelect) return;
+  profileSelect.replaceChildren();
+  const custom = document.createElement("option");
+  custom.value = "";
+  custom.textContent = "— custom —";
+  profileSelect.appendChild(custom);
+  profiles.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.profile_id;
+    opt.textContent = p.name || p.profile_id;
+    profileSelect.appendChild(opt);
+  });
+}
+
 export async function wireEnforcementRibbon(root, runId) {
-  const slider = root.querySelector("[data-enforcement-slider]");
-  const label = root.querySelector("[data-enforcement-level-label]");
-  const summary = root.querySelector("[data-enforcement-summary]");
-  const profileSelect = root.querySelector("[data-enforcement-profile-select]");
+  const slider = enforcementControl(root, "data-enforcement-slider", "enforcement-slider");
+  const label = enforcementControl(root, "data-enforcement-level-label", "enforcement-level-label");
+  const summary = enforcementControl(root, "data-enforcement-summary", "enforcement-summary");
+  const profileSelect = enforcementControl(
+    root,
+    "data-enforcement-profile-select",
+    "enforcement-profile-select",
+  );
   if (!slider || !runId) return;
 
   slider.addEventListener("input", async () => {
@@ -40,27 +68,17 @@ export async function wireEnforcementRibbon(root, runId) {
   });
 
   const profiles = await loadEnforcementUserProfiles();
-  if (profileSelect) {
-    profileSelect.replaceChildren();
-    const custom = document.createElement("option");
-    custom.value = "";
-    custom.textContent = "— custom —";
-    profileSelect.appendChild(custom);
-    profiles.forEach((p) => {
-      const opt = document.createElement("option");
-      opt.value = p.profile_id;
-      opt.textContent = p.name || p.profile_id;
-      profileSelect.appendChild(opt);
-    });
-    profileSelect.addEventListener("change", async (ev) => {
-      const pid = ev.target?.value;
-      if (!pid) return;
-      const match = profiles.find((p) => p.profile_id === pid);
-      if (match) applyEnforcementProfileToControls(root, match);
-    });
-  }
+  await populateEnforcementProfileSelect(root, profiles);
+  profileSelect?.addEventListener("change", async (ev) => {
+    const pid = ev.target?.value;
+    if (!pid) return;
+    const match = profiles.find((p) => p.profile_id === pid);
+    if (match) applyEnforcementProfileToControls(root, match);
+  });
 
-  root.querySelector("[data-enforcement-save]")?.addEventListener("click", async () => {
+  enforcementControl(root, "data-enforcement-save", "enforcement-save-btn")?.addEventListener(
+    "click",
+    async () => {
     const level = Number(slider.value || 5);
     try {
       const body = await apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`, {
@@ -74,9 +92,14 @@ export async function wireEnforcementRibbon(root, runId) {
     } catch (e) {
       toast(String(e.message || e), "error");
     }
-  });
+    },
+  );
 
-  root.querySelector("[data-enforcement-profile-save]")?.addEventListener("click", async () => {
+  enforcementControl(
+    root,
+    "data-enforcement-profile-save",
+    "enforcement-profile-save-btn",
+  )?.addEventListener("click", async () => {
     const level = Number(slider.value || 5);
     const profileId = window.prompt("Profile id (slug)", "default")?.trim();
     if (!profileId) return;
@@ -88,6 +111,10 @@ export async function wireEnforcementRibbon(root, runId) {
         body: JSON.stringify({ name, level }),
       });
       toast(`Saved enforcement profile ${profileId}`, "success");
+      const refreshed = await loadEnforcementUserProfiles();
+      profiles.splice(0, profiles.length, ...refreshed);
+      await populateEnforcementProfileSelect(root, profiles);
+      if (profileSelect) profileSelect.value = profileId;
     } catch (e) {
       toast(String(e.message || e), "error");
     }
@@ -106,10 +133,12 @@ export async function wireEnforcementRibbon(root, runId) {
   }
 }
 
-export function enforcementRibbonHtml({ compact = false } = {}) {
+export function enforcementRibbonHtml({ compact = false, rootId = "" } = {}) {
   const tag = compact ? "div" : "section";
+  const idAttr = rootId ? ` id="${rootId}"` : "";
+  const panelClass = compact ? "" : " panel";
   return `
-    <${tag} class="enforcement-ribbon${compact ? " enforcement-ribbon--compact" : ""}" data-testid="maker-enforcement-ribbon">
+    <${tag}${idAttr} class="enforcement-ribbon${panelClass}${compact ? " enforcement-ribbon--compact" : ""}" data-testid="maker-enforcement-ribbon">
       <h4>Enforcement depth</h4>
       <label>Level 0–10
         <input type="range" data-enforcement-slider min="0" max="10" value="5" data-testid="maker-enforcement-slider" />

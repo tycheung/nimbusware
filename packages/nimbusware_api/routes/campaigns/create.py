@@ -12,6 +12,7 @@ from nimbusware_api.errors import problem
 from nimbusware_api.routes.runs.create import RunRequirementsBody
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ class CreateCampaignBody(BaseModel):
     autonomous: bool = True
     workflow_profile: str = Field(default="campaign_micro_slice", min_length=1)
     autopilot_profile_id: str | None = Field(default=None, max_length=120)
+    enforcement_profile_id: str | None = Field(default=None, max_length=120)
 
 
 @router.post("/campaigns")
@@ -87,6 +89,22 @@ def create_campaign(
                         "autopilot_profile_not_found",
                         "Unknown autopilot profile id",
                         details={"profile_id": body.autopilot_profile_id},
+                    ),
+                )
+        if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
+            applied_enf = apply_user_enforcement_at_run_start(
+                store,
+                run_id,
+                str(body.enforcement_profile_id),
+                repo_root=orch.repo_root,
+            )
+            if applied_enf is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail=problem(
+                        "enforcement_profile_not_found",
+                        "Unknown enforcement profile id",
+                        details={"profile_id": body.enforcement_profile_id},
                     ),
                 )
         mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
