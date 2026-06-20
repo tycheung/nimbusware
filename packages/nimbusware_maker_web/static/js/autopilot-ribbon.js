@@ -1,5 +1,9 @@
 import { apiJson, toast } from "./api-client.js";
 
+function autopilotControl(root, dataAttr, id) {
+  return root.querySelector(`[${dataAttr}]`) || (id ? root.querySelector(`#${id}`) : null);
+}
+
 export const AUTOPILOT_CHECKPOINT_CATALOG = [
   "stop_after_run_plan",
   "stop_after_slice_plan",
@@ -47,52 +51,71 @@ export async function loadAutopilotUserProfiles() {
 }
 
 export function applyAutopilotProfileToControls(root, profile) {
-  const slider = root.querySelector("[data-autopilot-slider]");
-  const label = root.querySelector("[data-autopilot-level-label]");
-  const checkpoints = root.querySelector("[data-autopilot-checkpoints]");
+  const slider = autopilotControl(root, "data-autopilot-slider", "autopilot-slider");
+  const label = autopilotControl(root, "data-autopilot-level-label", "autopilot-level-label");
+  const checkpoints = autopilotControl(root, "data-autopilot-checkpoints", "autopilot-checkpoints");
   if (slider) slider.value = String(profile.level ?? 5);
   if (label) label.textContent = String(profile.level ?? 5);
   renderAutopilotCheckpoints(checkpoints, profile.checkpoints || []);
 }
 
+async function populateAutopilotProfileSelect(root, profiles) {
+  const profileSelect = autopilotControl(
+    root,
+    "data-autopilot-profile-select",
+    "autopilot-profile-select",
+  );
+  if (!profileSelect) return;
+  profileSelect.replaceChildren();
+  const custom = document.createElement("option");
+  custom.value = "";
+  custom.textContent = "— custom —";
+  profileSelect.appendChild(custom);
+  profiles.forEach((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.profile_id;
+    opt.textContent = p.name || p.profile_id;
+    profileSelect.appendChild(opt);
+  });
+}
+
 export async function wireAutopilotRibbon(root, runId) {
-  const slider = root.querySelector("[data-autopilot-slider]");
-  const label = root.querySelector("[data-autopilot-level-label]");
-  const checkpointsMount = root.querySelector("[data-autopilot-checkpoints]");
-  const profileSelect = root.querySelector("[data-autopilot-profile-select]");
+  const slider = autopilotControl(root, "data-autopilot-slider", "autopilot-slider");
+  const label = autopilotControl(root, "data-autopilot-level-label", "autopilot-level-label");
+  const checkpointsMount = autopilotControl(
+    root,
+    "data-autopilot-checkpoints",
+    "autopilot-checkpoints",
+  );
+  const profileSelect = autopilotControl(
+    root,
+    "data-autopilot-profile-select",
+    "autopilot-profile-select",
+  );
   if (!slider || !runId) return;
+
+  const syncCheckpointVisibility = () => {
+    if (checkpointsMount) checkpointsMount.hidden = Number(slider.value) >= 9;
+  };
 
   slider.addEventListener("input", () => {
     if (label) label.textContent = String(slider.value);
+    syncCheckpointVisibility();
   });
 
   const profiles = await loadAutopilotUserProfiles();
-  if (profileSelect) {
-    profileSelect.replaceChildren();
-    const custom = document.createElement("option");
-    custom.value = "";
-    custom.textContent = "— custom —";
-    profileSelect.appendChild(custom);
-    profiles.forEach((p) => {
-      const opt = document.createElement("option");
-      opt.value = p.profile_id;
-      opt.textContent = p.name || p.profile_id;
-      profileSelect.appendChild(opt);
-    });
-    profileSelect.addEventListener("change", async (ev) => {
-      const pid = ev.target?.value;
-      if (!pid) return;
-      try {
-        const preset = await apiJson(`/autopilot/presets/${encodeURIComponent(profiles.find((p) => p.profile_id === pid)?.level ?? 5)}`);
-        const match = profiles.find((p) => p.profile_id === pid);
-        if (match) applyAutopilotProfileToControls(root, { ...preset, ...match });
-      } catch (e) {
-        toast(String(e.message || e), "error");
-      }
-    });
-  }
+  await populateAutopilotProfileSelect(root, profiles);
+  profileSelect?.addEventListener("change", async (ev) => {
+    const pid = ev.target?.value;
+    if (!pid) return;
+    const match = profiles.find((p) => p.profile_id === pid);
+    if (match) applyAutopilotProfileToControls(root, match);
+    syncCheckpointVisibility();
+  });
 
-  root.querySelector("[data-autopilot-save]")?.addEventListener("click", async () => {
+  autopilotControl(root, "data-autopilot-save", "autopilot-save-btn")?.addEventListener(
+    "click",
+    async () => {
     const level = Number(slider.value || 5);
     const checkpoints = selectedAutopilotCheckpoints(checkpointsMount);
     try {
@@ -106,9 +129,12 @@ export async function wireAutopilotRibbon(root, runId) {
     } catch (e) {
       toast(String(e.message || e), "error");
     }
-  });
+    },
+  );
 
-  root.querySelector("[data-autopilot-profile-save]")?.addEventListener("click", async () => {
+  autopilotControl(root, "data-autopilot-profile-save", "autopilot-profile-save-btn")?.addEventListener(
+    "click",
+    async () => {
     const level = Number(slider.value || 5);
     const checkpoints = selectedAutopilotCheckpoints(checkpointsMount);
     const profileId = window.prompt("Profile id (slug)", "default")?.trim();
@@ -121,6 +147,10 @@ export async function wireAutopilotRibbon(root, runId) {
         body: JSON.stringify({ name, level, checkpoints }),
       });
       toast(`Saved profile ${profileId}`, "success");
+      const refreshed = await loadAutopilotUserProfiles();
+      profiles.splice(0, profiles.length, ...refreshed);
+      await populateAutopilotProfileSelect(root, profiles);
+      if (profileSelect) profileSelect.value = profileId;
     } catch (e) {
       toast(String(e.message || e), "error");
     }
@@ -131,18 +161,22 @@ export async function wireAutopilotRibbon(root, runId) {
     if (slider) slider.value = String(ap.level ?? 5);
     if (label) label.textContent = String(ap.level ?? 5);
     renderAutopilotCheckpoints(checkpointsMount, ap.checkpoints || []);
+    syncCheckpointVisibility();
     root.dispatchEvent(
       new CustomEvent("autopilot-loaded", { detail: { level: ap.level, name: ap.name } }),
     );
   } catch {
     renderAutopilotCheckpoints(checkpointsMount, []);
+    syncCheckpointVisibility();
   }
 }
 
-export function autopilotRibbonHtml({ compact = false } = {}) {
+export function autopilotRibbonHtml({ compact = false, rootId = "" } = {}) {
   const tag = compact ? "div" : "section";
+  const idAttr = rootId ? ` id="${rootId}"` : "";
+  const panelClass = compact ? "" : " panel";
   return `
-    <${tag} class="autopilot-ribbon${compact ? " autopilot-ribbon--compact" : ""}" data-testid="maker-autopilot-ribbon">
+    <${tag}${idAttr} class="autopilot-ribbon${panelClass}${compact ? " autopilot-ribbon--compact" : ""}" data-testid="maker-autopilot-ribbon">
       <h4>Trust / Autopilot</h4>
       <label>Level 0–10
         <input type="range" data-autopilot-slider min="0" max="10" value="5" data-testid="maker-autopilot-slider" />

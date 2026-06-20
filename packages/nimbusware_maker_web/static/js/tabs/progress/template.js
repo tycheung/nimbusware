@@ -1,7 +1,9 @@
 /** Progress tab mount HTML (injected once on mount). */
+import { autopilotRibbonHtml } from "../../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../../enforcement-ribbon.js";
 
 const ENFORCEMENT_RIBBON = enforcementRibbonHtml({ rootId: "enforcement-ribbon" });
+const AUTOPILOT_RIBBON = autopilotRibbonHtml({ rootId: "autopilot-ribbon" });
 
 export const PROGRESS_MOUNT_HTML = `
       <div id="compact-toolbar" class="actions" data-testid="maker-compact-toolbar" hidden>
@@ -51,21 +53,7 @@ export const PROGRESS_MOUNT_HTML = `
         <p id="interjection-queue-body" class="muted"></p>
       </section>
       ${ENFORCEMENT_RIBBON}
-      <section id="autopilot-ribbon" class="panel" data-testid="maker-autopilot-ribbon">
-        <h4>Autopilot</h4>
-        <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>
-        <span id="autopilot-level-label">5</span>
-        <div id="autopilot-checkpoints" class="autopilot-checkpoints" data-testid="maker-autopilot-checkpoints"></div>
-        <div class="actions">
-          <label>Saved profile
-            <select id="autopilot-profile-select" data-testid="maker-autopilot-profile-select">
-              <option value="">— custom —</option>
-            </select>
-          </label>
-          <button type="button" id="autopilot-profile-save-btn" data-testid="maker-autopilot-profile-save">Save profile</button>
-          <button type="button" id="autopilot-save-btn" data-testid="maker-autopilot-save">Apply to run</button>
-        </div>
-      </section>
+      ${AUTOPILOT_RIBBON}
       <section id="learnings-ribbon" class="panel" data-testid="maker-learnings-ribbon">
         <h4>Learnings</h4>
         <p id="stitch-suggestion" class="hint" hidden data-testid="maker-stitch-suggestion"></p>

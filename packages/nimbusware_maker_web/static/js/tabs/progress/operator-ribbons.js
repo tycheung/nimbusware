@@ -1,17 +1,6 @@
 import { apiJson, toast } from "../../api-client.js";
+import { wireAutopilotRibbon } from "../../autopilot-ribbon.js";
 import { wireEnforcementRibbon } from "../../enforcement-ribbon.js";
-
-const AUTOPILOT_CHECKPOINT_CATALOG = [
-  "stop_after_run_plan",
-  "stop_after_slice_plan",
-  "stop_before_workspace_apply",
-  "stop_on_slice_test_fail",
-  "stop_on_dev_env_regression_fail",
-  "stop_on_ui_regression_fail",
-  "stop_on_gate_fail",
-  "stop_before_factory_complete",
-  "stop_at_terminal_review",
-];
 
 function devEnvRegressionFromTimeline(events) {
   let http = null;
@@ -179,31 +168,6 @@ async function refreshCouncilRibbon(runId) {
   }
 }
 
-function renderAutopilotCheckpoints(selected) {
-  const mount = document.getElementById("autopilot-checkpoints");
-  if (!mount) return;
-  mount.replaceChildren();
-  const selectedSet = new Set(selected || []);
-  AUTOPILOT_CHECKPOINT_CATALOG.forEach((id) => {
-    const label = document.createElement("label");
-    label.className = "autopilot-checkpoint";
-    const box = document.createElement("input");
-    box.type = "checkbox";
-    box.value = id;
-    box.dataset.testid = `maker-autopilot-cp-${id}`;
-    box.checked = selectedSet.has(id);
-    label.appendChild(box);
-    label.append(` ${id.replaceAll("_", " ")}`);
-    mount.appendChild(label);
-  });
-}
-
-function selectedAutopilotCheckpoints() {
-  return [...document.querySelectorAll("#autopilot-checkpoints input[type=checkbox]:checked")]
-    .map((el) => el.value)
-    .filter(Boolean);
-}
-
 async function refreshLearningsPanel(runId) {
   const list = document.getElementById("learnings-list");
   const stitchBanner = document.getElementById("stitch-suggestion");
@@ -243,38 +207,6 @@ async function refreshLearningsPanel(runId) {
     err.textContent = "Learnings unavailable";
     list.appendChild(err);
   }
-}
-
-async function loadAutopilotProfiles() {
-  const select = document.getElementById("autopilot-profile-select");
-  if (!select) return;
-  try {
-    const body = await apiJson("/platform/autopilot/user-profiles");
-    const profiles = body.profiles || [];
-    select.replaceChildren();
-    const custom = document.createElement("option");
-    custom.value = "";
-    custom.textContent = "— custom —";
-    select.appendChild(custom);
-    profiles.forEach((p) => {
-      const opt = document.createElement("option");
-      opt.value = p.profile_id;
-      opt.textContent = p.name || p.profile_id;
-      select.appendChild(opt);
-    });
-  } catch {
-    /* optional */
-  }
-}
-
-function applyAutopilotProfile(profileId, profiles) {
-  const match = (profiles || []).find((p) => p.profile_id === profileId);
-  if (!match) return;
-  const slider = document.getElementById("autopilot-slider");
-  const label = document.getElementById("autopilot-level-label");
-  if (slider) slider.value = String(match.level ?? 5);
-  if (label) label.textContent = String(match.level ?? 5);
-  renderAutopilotCheckpoints(match.checkpoints || []);
 }
 
 export function wireOperatorRibbons(runId) {
@@ -325,67 +257,11 @@ export function wireOperatorRibbons(runId) {
   document.getElementById("interjection-last-btn")?.addEventListener("click", () => postInterjection("last"));
   const enforcementRibbon = document.getElementById("enforcement-ribbon");
   if (enforcementRibbon) void wireEnforcementRibbon(enforcementRibbon, runId);
-  const slider = document.getElementById("autopilot-slider");
-  const label = document.getElementById("autopilot-level-label");
-  slider?.addEventListener("input", () => {
-    if (label) label.textContent = String(slider.value);
-  });
-  document.getElementById("autopilot-save-btn")?.addEventListener("click", async () => {
-    const level = Number(slider?.value || 5);
-    const checkpoints = selectedAutopilotCheckpoints();
-    try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level, checkpoints }),
-      });
-      toast(`Autopilot level ${level} applied`, "success");
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
-  document.getElementById("autopilot-profile-save-btn")?.addEventListener("click", async () => {
-    const level = Number(slider?.value || 5);
-    const checkpoints = selectedAutopilotCheckpoints();
-    const profileId = window.prompt("Profile id (slug)", "default")?.trim();
-    if (!profileId) return;
-    const name = window.prompt("Display name", profileId)?.trim() || profileId;
-    try {
-      await apiJson(`/platform/autopilot/user-profiles/${encodeURIComponent(profileId)}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, level, checkpoints }),
-      });
-      toast(`Saved profile ${profileId}`, "success");
-      await loadAutopilotProfiles();
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
-  document.getElementById("autopilot-profile-select")?.addEventListener("change", async (ev) => {
-    const pid = ev.target?.value;
-    if (!pid) return;
-    try {
-      const body = await apiJson("/platform/autopilot/user-profiles");
-      applyAutopilotProfile(pid, body.profiles || []);
-    } catch {
-      /* ignore */
-    }
-  });
+  const autopilotRibbon = document.getElementById("autopilot-ribbon");
+  if (autopilotRibbon) void wireAutopilotRibbon(autopilotRibbon, runId);
   void refreshDevEnvStatus(runId);
   void refreshInterjectionQueue(runId);
   void refreshCouncilRibbon(runId);
   void refreshVariantRibbon(runId);
   void refreshLearningsPanel(runId);
-  void loadAutopilotProfiles();
-  apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
-    .then((ap) => {
-      const level = ap.level ?? 5;
-      if (slider) slider.value = String(level);
-      if (label) label.textContent = String(level);
-      renderAutopilotCheckpoints(ap.checkpoints || []);
-      const checkpointsMount = document.getElementById("autopilot-checkpoints");
-      if (checkpointsMount) checkpointsMount.hidden = level >= 9;
-    })
-    .catch(() => renderAutopilotCheckpoints([]));
 }
