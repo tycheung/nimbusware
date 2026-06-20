@@ -1,40 +1,25 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import UUID
 
-import httpx
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from agent_core.models import (
-    CriticVerdictEmittedEvent,
-    CriticVerdictEmittedPayload,
-    EventType,
     RequiredFixArtifact,
-    Severity,
-    StageStartedEvent,
-    StageStartedPayload,
-    Verdict,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.common import (
-    append_gate_decision_event,
-    ollama_chat_json_via_plan_patch,
-)
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.scan_stub_critique_emit import (
     ScanStubCritiqueConfig,
     emit_scan_stub_critique_panel,
 )
 from nimbusware_orchestrator.security_scan import run_security_scan, security_scan_tool_summary
-from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_orchestrator.workflow_scan_critique import (
     SecurityCritiqueBlock,
     scan_critique_gate_timeline_summary,
-    severity_for_critique_floor,
 )
 from nimbusware_store.protocol import EventStore
 
@@ -165,108 +150,66 @@ def execute_security_critique_llm(
     timeout_seconds: float = 120.0,
     unanimous_gate_enforce: bool = False,
 ) -> bool:
-    tax_keys = critique_router.pairing_for(producer_tax_key)
-    if len(tax_keys) < 2:
-        return False
-    failed, failing_tools = security_scan_tools_failed(scan_summary)
+    from nimbusware_orchestrator.scan_critique_llm import execute_scan_critique_llm
+
     tools = scan_summary.get("security_scan_tools") or {}
-    try:
-        raw = ollama_chat_json_via_plan_patch(
-            base_url=base_url,
-            model=model_id,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a security critic for Nimbusware. Return JSON only: "
-                        '{"verdict":"PASS"|"FAIL","summary":"string","failing_tools":[]}. '
-                        "FAIL when ruff, bandit, or mypy scans report issues."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": json.dumps(
-                        {
-                            "tools": tools,
-                            "rules_failed": failing_tools,
-                            "snippet": scan_summary.get("security_scan_snippet", "")[:1500],
-                        },
-                    ),
-                },
-            ],
-            timeout_seconds=timeout_seconds,
-            agent_role="security_critic",
-        )
-        parsed = SecurityCritiqueLlmResponse.model_validate(raw)
-    except (
-        httpx.HTTPError,
-        ValueError,
-        TypeError,
-        json.JSONDecodeError,
-        ValidationError,
-        KeyError,
-        RuntimeError,
-    ):
-        return False
 
-    llm_fail = str(parsed.verdict).upper() == "FAIL" or bool(parsed.failing_tools)
-    owner = registry.resolve(producer_tax_key)
-    severity = severity_for_critique_floor(block.severity_floor)
-
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={
-                "security_critique": {
-                    "branch": "llm",
-                    "llm_summary": str(parsed.summary).strip()[:500],
-                    "scan_summary": scan_summary,
-                },
+    def _build_user_content(
+        summary: dict[str, Any],
+        _tool_failed: bool,
+        failing_tools: list[str],
+    ) -> str:
+        return json.dumps(
+            {
+                "tools": tools,
+                "rules_failed": failing_tools,
+                "snippet": summary.get("security_scan_snippet", "")[:1500],
             },
-            payload=StageStartedPayload(stage_name=SECURITY_CRITIQUE_STAGE, attempt=1),
-        ),
-    )
-
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    fixes = (
-        [_required_fix_for_tools(failing_tools or list(parsed.failing_tools))] if llm_fail else []
-    )
-    for tax_key in tax_keys:
-        critic_role = registry.resolve(tax_key)
-        if tax_key == _SECURITY_CRITIC:
-            fail = llm_fail or failed
-        else:
-            fail = llm_fail or failed
-        verdict = Verdict.FAIL if fail else Verdict.PASS
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=verdict,
-            severity=severity if verdict == Verdict.FAIL else Severity.LOW,
-            owner_role=owner,
-            is_in_domain=tax_key == _SECURITY_CRITIC,
-            evidence_refs=[f"scan://{tax_key}"],
-            required_fixes=fixes if verdict == Verdict.FAIL else [],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
         )
 
-    gate = gate_decision_from_critic_verdicts(
-        critic_payloads,
+    def _llm_failed(parsed: SecurityCritiqueLlmResponse, _tf: bool, _failing: list[str]) -> bool:
+        return str(parsed.verdict).upper() == "FAIL" or bool(parsed.failing_tools)
+
+    def _build_fixes(failing_tools: list[str], parsed: SecurityCritiqueLlmResponse) -> list:
+        if str(parsed.verdict).upper() == "FAIL" or bool(parsed.failing_tools):
+            return [_required_fix_for_tools(failing_tools or list(parsed.failing_tools))]
+        return []
+
+    def _stage_metadata(
+        summary: dict[str, Any], parsed: SecurityCritiqueLlmResponse
+    ) -> dict[str, Any]:
+        return {
+            "llm_summary": str(parsed.summary).strip()[:500],
+            "scan_summary": summary,
+        }
+
+    return execute_scan_critique_llm(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
+        producer_tax_key=producer_tax_key,
+        scan_summary=scan_summary,
+        base_url=base_url,
+        model_id=model_id,
+        block=block,
         stage_name=SECURITY_CRITIQUE_STAGE,
-        unanimous_pass_required=True,
-        enforce=unanimous_gate_enforce or llm_fail or failed,
+        metadata_key="security_critique",
+        specialist_tax_key=_SECURITY_CRITIC,
+        response_model=SecurityCritiqueLlmResponse,
+        system_prompt=(
+            "You are a security critic for Nimbusware. Return JSON only: "
+            '{"verdict":"PASS"|"FAIL","summary":"string","failing_tools":[]}. '
+            "FAIL when ruff, bandit, or mypy scans report issues."
+        ),
+        build_user_content=_build_user_content,
+        scan_failed_fn=security_scan_tools_failed,
+        build_fixes_fn=_build_fixes,
+        llm_failed_fn=_llm_failed,
+        build_stage_metadata=_stage_metadata,
+        min_pairing_count=2,
+        require_specialist_in_pairing=False,
+        verdict_mode="uniform",
+        timeout_seconds=timeout_seconds,
+        unanimous_gate_enforce=unanimous_gate_enforce,
     )
-    append_gate_decision_event(store, run_id=run_id, payload=gate)
-    return True
