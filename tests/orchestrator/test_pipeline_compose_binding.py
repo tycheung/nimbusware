@@ -5,21 +5,11 @@ from unittest.mock import patch
 from nimbusware_orchestrator.pipeline import RunOrchestrator, make_dev_orchestrator
 
 
-def test_pipeline_patch_reaches_mixin_method() -> None:
+def test_pipeline_verify_delegates_to_micro_slice_pass() -> None:
     orch, _mem = make_dev_orchestrator()
     assert isinstance(orch, RunOrchestrator)
     run_id = orch.create_run("default")
 
-    seen: list[str] = []
-
-    def _stub_bundle(*_args: object, **_kwargs: object) -> tuple[int, str]:
-        seen.append("stub")
-        return 0, "ok"
-
-    with patch(
-        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
-        side_effect=_stub_bundle,
-    ):
+    with patch.object(orch, "execute_micro_slice_pass") as mock_ms:
         orch.execute_writer_verifier_pass(run_id)
-
-    assert seen == ["stub"]
+    mock_ms.assert_called_once()

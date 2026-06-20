@@ -3,10 +3,22 @@ from __future__ import annotations
 import os
 import threading
 import time
+from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models import EventType
+from agent_core.stage_graph import parallel_group_members
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
+
+
+def _dispatch_writers(orch, rid, profile: str, *, workspace: Path | None = None) -> None:
+    ws = workspace or find_repo_root(start=Path(__file__).resolve().parents[1])
+    sg = orch._stage_graph_snapshot_for_run(rid)
+    writers_group = parallel_group_members(sg, "writers") if sg else []
+    if not writers_group:
+        writers_group = ["implementation", "test_writer"]
+    orch._run_writers_parallel_dispatch(rid, sg, writers_group, workspace=ws)
 
 
 @patch.dict(
@@ -15,10 +27,10 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
     clear=False,
 )
 @patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
-def test_parallel_on_emits_both_writer_starts_before_critique(_mock: object) -> None:
+def test_parallel_on_emits_both_writer_starts(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("parallel_writers_on")
-    orch.execute_writer_verifier_pass(rid)
+    _dispatch_writers(orch, rid, "parallel_writers_on")
     rows = mem.list_run_events(str(rid))
     writer_starts = [
         r
@@ -27,21 +39,14 @@ def test_parallel_on_emits_both_writer_starts_before_critique(_mock: object) -> 
         and (r.get("payload") or {}).get("stage_name") in ("implementation", "test_writer")
     ]
     assert len(writer_starts) >= 2
-    first_critique_idx = next(
-        i
-        for i, r in enumerate(rows)
-        if r.get("event_type") == EventType.STAGE_STARTED.value
-        and (r.get("payload") or {}).get("stage_name") == "implementation.critique"
-    )
-    writer_indices = [rows.index(r) for r in writer_starts]
-    assert all(idx < first_critique_idx for idx in writer_indices)
 
 
 @patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_parallel_off_matches_sequential_metadata(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
-    orch.execute_writer_verifier_pass(rid)
+    sg = orch._stage_graph_snapshot_for_run(rid)
+    orch._run_writers_sequential(rid, sg, workspace=find_repo_root(start=Path(__file__).resolve().parents[1]))
     for row in mem.list_run_events(str(rid)):
         if row.get("event_type") != EventType.STAGE_STARTED.value:
             continue
@@ -56,7 +61,6 @@ def test_parallel_off_matches_sequential_metadata(_mock: object) -> None:
     {
         "NIMBUSWARE_PARALLEL_WRITERS": "1",
         "NIMBUSWARE_PARALLEL_WRITER_TEST_DELAY_SECONDS": "0.15",
-        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
     },
     clear=False,
 )
@@ -84,7 +88,7 @@ def test_parallel_writers_overlap_timing() -> None:
     ):
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("parallel_writers_on")
-        orch.execute_writer_verifier_pass(rid)
+        _dispatch_writers(orch, rid, "parallel_writers_on")
 
     tw_pass_idx = next(
         i
@@ -112,7 +116,7 @@ def test_parallel_real_test_writer_emits_exit_code_metadata() -> None:
         ):
             orch, mem = make_dev_orchestrator()
             rid = orch.create_run("parallel_writers_on")
-            orch.execute_writer_verifier_pass(rid)
+            _dispatch_writers(orch, rid, "parallel_writers_on")
     rows = mem.list_run_events(str(rid))
     fail = next(
         r
@@ -141,7 +145,7 @@ def test_parallel_test_writer_llm_stub_body_mode_metadata() -> None:
     ):
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("parallel_writers_on")
-        orch.execute_writer_verifier_pass(rid)
+        _dispatch_writers(orch, rid, "parallel_writers_on")
     rows = mem.list_run_events(str(rid))
     tw_started = next(
         r

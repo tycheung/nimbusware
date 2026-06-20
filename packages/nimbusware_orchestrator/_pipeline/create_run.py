@@ -447,7 +447,7 @@ class CreateRunMixin:
                 ),
                 "fast_slice_effective": fast_slice_effective_metadata(fs_block),
                 "micro_slice_effective": {
-                    "enabled": ms_block.enabled or campaign_block.enabled,
+                    "enabled": True,
                     "max_files": ms_max_files,
                     "max_loc": ms_max_loc,
                     "e2e_enabled": ms_block.e2e_enabled,

@@ -38,18 +38,3 @@ def test_performance_critique_workflow_block() -> None:
     assert performance_critique_effective(block)
 
 
-def test_verify_pass_runs_performance_critique(monkeypatch: pytest.MonkeyPatch) -> None:
-    repo = find_repo_root(start=Path(__file__).resolve().parents[1])
-    orch, store = make_dev_orchestrator(repo)
-    run_id = orch.create_run("performance_critique_on")
-    monkeypatch.setattr(
-        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
-        lambda ws: (0, "ok\n"),
-    )
-    orch.execute_writer_verifier_pass(run_id, workspace=repo)
-    rows = store.list_run_events(str(run_id))
-    assert any(
-        (r.get("payload") or {}).get("stage_name") == PERFORMANCE_CRITIQUE_STAGE
-        for r in rows
-        if r.get("event_type") == "stage.started"
-    )

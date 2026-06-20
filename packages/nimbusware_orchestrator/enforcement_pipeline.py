@@ -160,31 +160,3 @@ def emit_terminal_enforcement_gate(
             ),
         )
     return meta
-
-
-def legacy_verify_enforcement_passed(
-    workspace: Path,
-    rows: list[dict[str, Any]],
-    *,
-    timeout_seconds: float = 300.0,
-) -> tuple[bool, str]:
-    profile = active_enforcement_profile(rows)
-    if profile is None:
-        return True, ""
-    from nimbusware_orchestrator.workspace_ci_runner import run_enforcement_bundle
-
-    bundle = run_enforcement_bundle(
-        workspace,
-        profile,
-        milestone=False,
-        timeout_seconds=timeout_seconds,
-    )
-    if bundle.passed:
-        return True, ""
-    lines = [
-        f"enforcement depth {profile.level} ({profile.name}) failed",
-    ]
-    for step in bundle.steps:
-        if step.exit_code != 0 and not step.skipped:
-            lines.append(f"{step.name}: exit {step.exit_code}")
-    return False, "\n".join(lines)

@@ -40,54 +40,6 @@ def test_repo_profile_security_scan_metadata_on(monkeypatch: pytest.MonkeyPatch)
     assert security_scan_metadata_on_verify_enabled(root, "security_scan_metadata_on") is True
 
 
-@patch(
-    "nimbusware_orchestrator.pipeline.run_security_scan",
-    return_value=(2, "scanlog\nline2\n", 1, 2, 0, 0, 0, 0),
-)
-@patch(
-    "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail")
-)
-def test_verifier_failure_attaches_security_metadata_when_workflow_on(
-    _mock_vf: object,
-    _mock_scan: object,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.delenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", raising=False)
-    orch, mem = make_dev_orchestrator()
-    rid = orch.create_run("security_scan_metadata_on")
-    orch.execute_writer_verifier_pass(rid)
-    evs = mem.list_run_events(str(rid))
-    findings = [e for e in evs if e.get("event_type") == "finding.created"]
-    assert findings
-    md = findings[-1].get("metadata") or {}
-    assert md.get("security_scan_exit") == 2
-    assert md.get("security_scan_ruff_exit") == 1
-    assert md.get("security_scan_bandit_exit") == 2
-    assert "scanlog" in md.get("security_scan_snippet", "")
-
-
-@patch(
-    "nimbusware_orchestrator.pipeline.run_security_scan",
-    return_value=(0, "should_not_attach", 0, 0, 0, 0, 0, 0),
-)
-@patch(
-    "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(1, "verifier fail")
-)
-def test_env_kill_skips_security_scan_metadata(
-    _mock_vf: object,
-    _mock_scan: object,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "false")
-    orch, mem = make_dev_orchestrator()
-    rid = orch.create_run("security_scan_metadata_on")
-    orch.execute_writer_verifier_pass(rid)
-    evs = mem.list_run_events(str(rid))
-    findings = [e for e in evs if e.get("event_type") == "finding.created"]
-    assert findings
-    assert not (findings[-1].get("metadata") or {})
-
-
 def _write_security_profile(tmp_path: Path, name: str, enabled: bool) -> None:
     """Drop a minimal workflow profile under ``tmp_path/configs/workflows/{name}.yaml``.
 

@@ -185,7 +185,7 @@ def test_nimbusware_api_port(monkeypatch) -> None:
 def test_nimbusware_workflow_profile(monkeypatch) -> None:
     monkeypatch.delenv("NIMBUSWARE_WORKFLOW_PROFILE", raising=False)
     monkeypatch.delenv("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", raising=False)
-    assert nimbusware_workflow_profile() == "nimbusware_production"
+    assert nimbusware_workflow_profile() == "micro_slice"
     monkeypatch.setenv("NIMBUSWARE_WORKFLOW_PROFILE", "micro_slice")
     with pytest.warns(DeprecationWarning, match="NIMBUSWARE_WORKFLOW_PROFILE"):
         assert nimbusware_workflow_profile() == "micro_slice"

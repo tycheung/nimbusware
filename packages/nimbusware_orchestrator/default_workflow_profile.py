@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from nimbusware_env.env_flags import nimbusware_workflow_profile
 
-_PRODUCTION_PROFILE = "nimbusware_production"
+_DEFAULT_PROFILE = "micro_slice"
 
 
 def default_workflow_profile() -> str:
-    return nimbusware_workflow_profile(default=_PRODUCTION_PROFILE)
+    return nimbusware_workflow_profile(default=_DEFAULT_PROFILE)

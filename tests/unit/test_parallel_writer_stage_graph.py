@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from unittest.mock import patch
 
 from agent_core.models import EventType
+from agent_core.stage_graph import parallel_group_members
+from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
+@patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False)
 @patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_writer_stage_started_carries_parallel_group(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
-    rid = orch.create_run("default")
-    orch.execute_writer_verifier_pass(rid)
+    rid = orch.create_run("parallel_writers_on")
+    ws = find_repo_root(start=Path(__file__).resolve().parents[1])
+    sg = orch._stage_graph_snapshot_for_run(rid)
+    writers_group = parallel_group_members(sg, "writers") if sg else []
+    orch._run_writers_parallel_dispatch(rid, sg, writers_group, workspace=ws)
     writer_starts = [
         r
         for r in mem.list_run_events(str(rid))
@@ -25,12 +32,19 @@ def test_writer_stage_started_carries_parallel_group(_mock: object) -> None:
         assert isinstance(meta.get("stage_graph_order_index"), int)
 
 
-@patch.dict(os.environ, {"NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"}, clear=False)
+@patch.dict(
+    os.environ,
+    {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
+    clear=False,
+)
 @patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_stage_graph_order_indices_monotonic_for_writer_starts(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
-    rid = orch.create_run("default")
-    orch.execute_writer_verifier_pass(rid)
+    rid = orch.create_run("parallel_writers_on")
+    ws = find_repo_root(start=Path(__file__).resolve().parents[1])
+    sg = orch._stage_graph_snapshot_for_run(rid)
+    writers_group = parallel_group_members(sg, "writers") if sg else []
+    orch._run_writers_parallel_dispatch(rid, sg, writers_group, workspace=ws)
     indices = [
         (r.get("metadata") or {}).get("stage_graph_order_index")
         for r in mem.list_run_events(str(rid))

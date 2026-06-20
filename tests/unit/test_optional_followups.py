@@ -11,11 +11,11 @@ from nimbusware_env import find_repo_root
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
-def test_default_workflow_profile_is_nimbusware_production() -> None:
+def test_default_workflow_profile_is_micro_slice() -> None:
     from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
 
     os.environ.pop("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE", None)
-    assert default_workflow_profile() == "nimbusware_production"
+    assert default_workflow_profile() == "micro_slice"
 
 
 def test_default_workflow_profile_env_override(monkeypatch: pytest.MonkeyPatch) -> None:

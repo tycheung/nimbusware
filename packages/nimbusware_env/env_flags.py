@@ -187,7 +187,7 @@ def nimbusware_roles_from_db_enabled() -> bool:
     return env_truthy_raw("NIMBUSWARE_ROLES_FROM_DB")
 
 
-def nimbusware_workflow_profile(default: str = "nimbusware_production") -> str:
+def nimbusware_workflow_profile(default: str = "micro_slice") -> str:
     from nimbusware_env.settings_resolve import resolve_explicit_raw
 
     default_raw = resolve_explicit_raw("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE")
