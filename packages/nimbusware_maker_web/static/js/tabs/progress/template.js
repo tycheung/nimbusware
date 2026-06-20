@@ -1,9 +1,11 @@
 /** Progress tab mount HTML (injected once on mount). */
 import { autopilotRibbonHtml } from "../../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../../enforcement-ribbon.js";
+import { interjectionRibbonHtml } from "../../interjection-ribbon.js";
 
 const ENFORCEMENT_RIBBON = enforcementRibbonHtml({ rootId: "enforcement-ribbon" });
 const AUTOPILOT_RIBBON = autopilotRibbonHtml({ rootId: "autopilot-ribbon" });
+const INTERJECTION_RIBBON = interjectionRibbonHtml({ rootId: "interjection-ribbon" });
 
 export const PROGRESS_MOUNT_HTML = `
       <div id="compact-toolbar" class="actions" data-testid="maker-compact-toolbar" hidden>
@@ -43,15 +45,7 @@ export const PROGRESS_MOUNT_HTML = `
           <button type="button" id="dev-env-regression-btn" data-testid="maker-dev-env-regression">Run regression</button>
         </div>
       </section>
-      <section id="interjection-ribbon" class="panel" data-testid="maker-interjection-ribbon">
-        <h4>Interjection queue</h4>
-        <textarea id="interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-interjection-input"></textarea>
-        <div class="actions">
-          <button type="button" id="interjection-next-btn" data-testid="maker-interjection-next">Next in queue</button>
-          <button type="button" id="interjection-last-btn" data-testid="maker-interjection-last">Last in queue</button>
-        </div>
-        <p id="interjection-queue-body" class="muted"></p>
-      </section>
+      ${INTERJECTION_RIBBON}
       ${ENFORCEMENT_RIBBON}
       ${AUTOPILOT_RIBBON}
       <section id="learnings-ribbon" class="panel" data-testid="maker-learnings-ribbon">

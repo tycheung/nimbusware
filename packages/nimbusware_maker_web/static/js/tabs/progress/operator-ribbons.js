@@ -1,6 +1,7 @@
 import { apiJson, toast } from "../../api-client.js";
 import { wireAutopilotRibbon } from "../../autopilot-ribbon.js";
 import { wireEnforcementRibbon } from "../../enforcement-ribbon.js";
+import { wireInterjectionRibbon } from "../../interjection-ribbon.js";
 
 function devEnvRegressionFromTimeline(events) {
   let http = null;
@@ -64,20 +65,6 @@ async function refreshDevEnvStatus(runId) {
   } catch {
     body.textContent = "Dev env status unavailable";
     if (detail) detail.textContent = "";
-  }
-}
-
-async function refreshInterjectionQueue(runId) {
-  const body = document.getElementById("interjection-queue-body");
-  if (!body) return;
-  try {
-    const q = await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`);
-    const items = q.queue?.items || [];
-    body.textContent = items.length
-      ? items.map((i) => `[${i.priority}] ${i.message}`).join(" · ")
-      : "Queue empty";
-  } catch {
-    body.textContent = "";
   }
 }
 
@@ -237,30 +224,13 @@ export function wireOperatorRibbons(runId) {
       toast(String(e.message || e), "error");
     }
   });
-  const postInterjection = async (priority) => {
-    const msg = document.getElementById("interjection-message")?.value?.trim();
-    if (!msg) return toast("Enter a message", "error");
-    try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, priority }),
-      });
-      toast("Queued", "success");
-      document.getElementById("interjection-message").value = "";
-      await refreshInterjectionQueue(runId);
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  };
-  document.getElementById("interjection-next-btn")?.addEventListener("click", () => postInterjection("next"));
-  document.getElementById("interjection-last-btn")?.addEventListener("click", () => postInterjection("last"));
+  const interjectionRibbon = document.getElementById("interjection-ribbon");
+  if (interjectionRibbon) wireInterjectionRibbon(interjectionRibbon, runId);
   const enforcementRibbon = document.getElementById("enforcement-ribbon");
   if (enforcementRibbon) void wireEnforcementRibbon(enforcementRibbon, runId);
   const autopilotRibbon = document.getElementById("autopilot-ribbon");
   if (autopilotRibbon) void wireAutopilotRibbon(autopilotRibbon, runId);
   void refreshDevEnvStatus(runId);
-  void refreshInterjectionQueue(runId);
   void refreshCouncilRibbon(runId);
   void refreshVariantRibbon(runId);
   void refreshLearningsPanel(runId);

@@ -1,6 +1,7 @@
 import { apiJson, toast } from "../api-client.js";
 import { autopilotRibbonHtml, wireAutopilotRibbon } from "../autopilot-ribbon.js";
 import { enforcementRibbonHtml, wireEnforcementRibbon } from "../enforcement-ribbon.js";
+import { chatInterjectionRibbonHtml, queueInterjection, wireInterjectionRibbon } from "../interjection-ribbon.js";
 import {
   defaultAutopilotProfileId,
   defaultEnforcementProfileId,
@@ -618,11 +619,7 @@ async function maybeOfferPatchEscalation(root, runId, sessionId) {
 
 async function steerActiveRun(root, runId, message) {
   const prefixed = message.startsWith("[") ? message : `[steer] ${message}`;
-  await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: prefixed, priority: "next" }),
-  });
+  await queueInterjection(runId, prefixed, "next");
   const thread = root.querySelector("#chat-thread");
   if (thread) {
     renderTurnLine(thread, { role: "system", text: "Steering queued for the active run." });
@@ -637,37 +634,7 @@ function wireChatOperatorRibbons(root, runId) {
   ribbons.dataset.wired = runId;
   ribbons.classList.remove("hidden");
 
-  root.querySelector("#chat-interjection-next")?.addEventListener("click", async () => {
-    const msg = root.querySelector("#chat-interjection-message")?.value?.trim();
-    if (!msg) return toast("Enter a message", "error");
-    try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, priority: "next" }),
-      });
-      toast("Queued", "success");
-      root.querySelector("#chat-interjection-message").value = "";
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
-
-  root.querySelector("#chat-interjection-last")?.addEventListener("click", async () => {
-    const msg = root.querySelector("#chat-interjection-message")?.value?.trim();
-    if (!msg) return toast("Enter a message", "error");
-    try {
-      await apiJson(`/runs/${encodeURIComponent(runId)}/interjection-queue`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, priority: "last" }),
-      });
-      toast("Queued", "success");
-      root.querySelector("#chat-interjection-message").value = "";
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
+  wireInterjectionRibbon(root, runId, { showQueue: false });
 
   wireAutopilotRibbon(root, runId);
   wireEnforcementRibbon(root, runId);
@@ -762,14 +729,7 @@ export async function mountChat(root) {
           <ul id="chat-compute-nodes-list" class="chat-compute-nodes-list"></ul>
         </section>
         <section id="chat-operator-ribbons" class="chat-operator-ribbons hidden" data-testid="maker-chat-operator-ribbons">
-          <div class="chat-interjection-ribbon panel" data-testid="maker-chat-interjection-ribbon">
-            <h4>Interjection</h4>
-            <textarea id="chat-interjection-message" rows="2" placeholder="Steer the next slice…" data-testid="maker-chat-interjection-input"></textarea>
-            <div class="actions">
-              <button type="button" id="chat-interjection-next" data-testid="maker-chat-interjection-next">Next</button>
-              <button type="button" id="chat-interjection-last" data-testid="maker-chat-interjection-last">Last</button>
-            </div>
-          </div>
+          ${chatInterjectionRibbonHtml()}
           ${autopilotRibbonHtml({ compact: true })}
           ${enforcementRibbonHtml({ compact: true })}
         </section>
