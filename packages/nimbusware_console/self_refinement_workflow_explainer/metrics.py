@@ -87,9 +87,6 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows(
             },
         ]
     )
-    merged_max = metrics.get("merged_max_iterations")
-    if isinstance(merged_max, int) and not isinstance(merged_max, bool):
-        rows.append({"field": "Merged max iterations", "value": str(merged_max)})
     ver = metrics.get("policy_version")
     if isinstance(ver, int) and not isinstance(ver, bool):
         rows.append({"field": "Policy version", "value": str(ver)})

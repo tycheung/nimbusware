@@ -106,3 +106,38 @@ def metrics_caption(prefix: str, parts: Sequence[str]) -> str | None:
     if not parts:
         return None
     return prefix + ", ".join(parts) + "."
+
+
+def apply_env_tri_state_metrics(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    env_payload_key: str,
+    *,
+    forces_on_key: str = "env_forces_on",
+    forces_off_key: str = "env_forces_off",
+    unset_key: str = "env_unset",
+) -> None:
+    env = payload.get(env_payload_key)
+    if not isinstance(env, Mapping):
+        return
+    metrics[forces_on_key] = env.get("forces_on") is True
+    metrics[forces_off_key] = env.get("forces_off") is True
+    metrics[unset_key] = env.get("unset") is True
+
+
+def apply_workflow_yaml_file_metrics(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    *,
+    version_payload_key: str = "workflow_yaml_top_level_version_int",
+    bytes_payload_key: str = "workflow_yaml_file_bytes",
+    version_metric_key: str = "workflow_yaml_version_int",
+    bytes_metric_key: str = "workflow_yaml_file_bytes",
+) -> None:
+    apply_optional_int_field(
+        metrics,
+        payload,
+        version_payload_key,
+        version_metric_key,
+    )
+    apply_nonneg_int_fields(metrics, payload, ((bytes_payload_key, bytes_metric_key),))
