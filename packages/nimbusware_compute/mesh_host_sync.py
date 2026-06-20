@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
+from typing import Any
 from uuid import UUID
 
+from nimbusware_compute.mesh_event_replay import replay_events_to_store
+from nimbusware_compute.mesh_workspace_merge import apply_workspace_files
 from nimbusware_compute.work_unit import WorkUnitRecord, get_work_unit_queue
 from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.parallel_writers import WriterStageResult
@@ -107,3 +111,39 @@ def writer_stage_result_from_mesh(run_id: UUID, stage_name: str) -> WriterStageR
     exit_code = int(result.get("verifier_exit_code", 0))
     log = str(result.get("verifier_log") or result.get("status") or "remote_ok")
     return WriterStageResult(stage_name=stage_name, verifier_exit_code=exit_code, verifier_log=log)
+
+
+def absorb_completed_mesh_units(
+    store: Any,
+    run_id: UUID,
+    stage_names: list[str],
+    *,
+    host_workspace: Path | None = None,
+) -> dict[str, int]:
+    """Replay worker theater events and merge remote writer file patches on the host."""
+    if not stage_names:
+        return {"events_replayed": 0, "files_merged": 0}
+    units = get_work_unit_queue().list_units(run_id=run_id)
+    events_replayed = 0
+    files_merged = 0
+    for stage_name in stage_names:
+        rec = _latest_unit(units, stage_name)
+        if rec is None or rec.status not in _TERMINAL:
+            continue
+        result = rec.result if isinstance(rec.result, dict) else {}
+        replay_events = result.get("replay_events")
+        if isinstance(replay_events, list):
+            events_replayed += replay_events_to_store(store, run_id, replay_events)
+        workspace_files = result.get("workspace_files")
+        if (
+            host_workspace is not None
+            and isinstance(workspace_files, dict)
+            and workspace_files
+        ):
+            files_merged += len(
+                apply_workspace_files(
+                    host_workspace,
+                    {str(k): str(v) for k, v in workspace_files.items()},
+                ),
+            )
+    return {"events_replayed": events_replayed, "files_merged": files_merged}

@@ -321,6 +321,7 @@ class WritersMixin:
             workspace=ws,
         )
         from nimbusware_compute.mesh_host_sync import (
+            absorb_completed_mesh_units,
             remote_stage_names,
             wait_for_mesh_units,
             writer_stage_result_from_mesh,
@@ -357,6 +358,12 @@ class WritersMixin:
             results.extend(asyncio.run(run_parallel_writer_group(local_runners)))
         if remote:
             wait_for_mesh_units(run_id, sorted(remote))
+            absorb_completed_mesh_units(
+                self._store,
+                run_id,
+                sorted(remote),
+                host_workspace=ws,
+            )
             for stage_name in sorted(remote):
                 results.append(writer_stage_result_from_mesh(run_id, stage_name))
         impl = next(

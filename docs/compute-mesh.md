@@ -33,7 +33,7 @@ Set `NIMBUSWARE_COMPUTE_WORK_QUEUE=postgres` (requires `NIMBUSWARE_DATABASE_URL`
 
 ## Host merge (ADR 025)
 
-When mesh assigns stages to remote nodes, the host **skips local execution** for those stages and waits on work-unit completion. Critic `gate_fail` and writer verifier results are read from the worker `complete` payload via `mesh_host_sync`.
+When mesh assigns stages to remote nodes, the host **skips local execution** for those stages and waits on work-unit completion. Worker completion payloads carry **`replay_events`** (theater rows appended on the worker during stage execution) and, for writer stages, **`workspace_files`** (UTF-8 file patches). The host merges both via `mesh_host_sync.absorb_completed_mesh_units` after `wait_for_mesh_units`. Critic `gate_fail` and writer verifier results are read from the worker `complete` payload via `mesh_host_sync`.
 
 ## Reachability
 

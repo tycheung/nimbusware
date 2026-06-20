@@ -4,7 +4,7 @@ Matrix: every parallel dispatch site → remote mesh eligibility. **Exit:** sign
 
 | Site | Module / workflow | Parallelism | Remote eligible (v1.2) | Notes |
 |------|-------------------|-------------|------------------------|-------|
-| Writer group | `writers.py`, `parallel_group: writers` | `implementation`, `test_writer`, `frontend_writer` | **Yes** | Disjoint packets; patch merge on host |
+| Writer group | `writers.py`, `parallel_group: writers` | `implementation`, `test_writer`, `frontend_writer` | **Yes** | Disjoint packets; host merges `workspace_files` after remote complete |
 | Parallel critics | `lifecycle_verify.py`, `parallel_critics_enabled` | `security_critic`, `performance_critic`, `network_resilience_critic` | **Yes** | Read-only inputs; JSON verdict |
 | Redis verify dispatch | `run_dispatch.py`, `run_worker.py` | verify shards | **Stretch (Enterprise)** | Existing fleet queue; host merges logs |
 | Campaign ticks | `campaign_driver` | independent ticks | **No (post-v1.2)** | Host-orchestrated chain |

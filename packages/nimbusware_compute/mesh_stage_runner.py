@@ -15,6 +15,8 @@ _WRITER_STAGE_TAXONOMY: dict[str, str] = {
     "plan": "planner",
 }
 
+_WRITER_MESH_STAGES = frozenset(_WRITER_STAGE_TAXONOMY)
+
 _CRITIC_EMITTERS: dict[str, str] = {
     "security_critique": "_emit_security_critique_optional",
     "performance_critique": "_emit_performance_critique_optional",
@@ -170,6 +172,52 @@ def _taxonomy_for_stage(rec: WorkUnitRecord, payload: dict[str, Any]) -> str | N
     return None
 
 
+def _execute_writer_mesh_stage(
+    orch: Any,
+    run_id: UUID,
+    stage_name: str,
+    *,
+    workspace: Path,
+    workflow_profile: str | None,
+    sg_snapshot: dict[str, Any] | None,
+) -> dict[str, Any]:
+    from nimbusware_orchestrator.workflow_parallel_writers import (
+        test_writer_llm_body_enabled,
+        test_writer_llm_stub_fallback,
+        test_writer_stage_enabled,
+    )
+
+    wf = workflow_profile or "default"
+    if stage_name == "implementation":
+        result = orch._parallel_run_implementation(run_id, sg_snapshot, workspace)
+    elif stage_name == "test_writer":
+        result = orch._parallel_run_test_writer(
+            run_id,
+            sg_snapshot,
+            workspace,
+            real_enabled=test_writer_stage_enabled(orch.repo_root, wf),
+            llm_body_enabled=test_writer_llm_body_enabled(orch.repo_root, wf),
+            llm_stub_fallback_enabled=test_writer_llm_stub_fallback(orch.repo_root, wf),
+            llm_model_id=None,
+            llm_base_url=str((orch._base_cfg().get("runtime") or {}).get("base_url", "http://localhost:11434")),
+            llm_timeout_seconds=float(
+                (orch._base_cfg().get("runtime") or {}).get("request_timeout_seconds", 120),
+            ),
+        )
+    elif stage_name == "frontend_writer":
+        result = orch._parallel_run_frontend_writer(run_id, sg_snapshot, workspace)
+    else:
+        msg = f"unsupported writer mesh stage: {stage_name}"
+        raise ValueError(msg)
+    return {
+        "stage_name": stage_name,
+        "status": "executed",
+        "executed": True,
+        "verifier_exit_code": int(result.verifier_exit_code),
+        "verifier_log": str(result.verifier_log),
+    }
+
+
 def execute_mesh_stage(
     orch: Any,
     rec: WorkUnitRecord,
@@ -187,6 +235,16 @@ def execute_mesh_stage(
 
     if stage_name in CRITIC_STAGE_NAMES:
         return _execute_critic_stage(
+            orch,
+            run_id,
+            stage_name,
+            workspace=workspace,
+            workflow_profile=workflow_profile,
+            sg_snapshot=sg_snapshot,
+        )
+
+    if stage_name in _WRITER_MESH_STAGES:
+        return _execute_writer_mesh_stage(
             orch,
             run_id,
             stage_name,
@@ -240,16 +298,37 @@ def execute_mesh_stage_on_worker(rec: WorkUnitRecord) -> dict[str, Any]:
         }
 
     try:
+        from nimbusware_compute.mesh_event_replay import (
+            baseline_event_ids,
+            collect_replay_events,
+        )
+        from nimbusware_compute.mesh_workspace_merge import (
+            diff_workspace_files,
+            workspace_file_digests,
+        )
+
         orch = _mesh_orchestrator(workspace)
+        before_ids = baseline_event_ids(orch._store, rec.run_id)
+        before_digests = (
+            workspace_file_digests(workspace) if rec.stage_name in _WRITER_MESH_STAGES else {}
+        )
         body = execute_mesh_stage(orch, rec, workspace=workspace)
         executed = body.get("status") != "skipped"
-        return {
+        replay_events = collect_replay_events(orch._store, rec.run_id, before_ids)
+        result: dict[str, Any] = {
             **base,
             "ok": True,
             "mesh_ack": True,
             "executed": executed,
             **body,
+            "replay_events": replay_events,
         }
+        if rec.stage_name in _WRITER_MESH_STAGES:
+            after_digests = workspace_file_digests(workspace)
+            patch = diff_workspace_files(before_digests, after_digests, workspace)
+            if patch:
+                result["workspace_files"] = patch
+        return result
     except Exception as exc:
         return {
             **base,
