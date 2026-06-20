@@ -1,0 +1,21 @@
+profiles:
+- profile_id: guided
+  name: Guided (checkpoints on)
+  level: 5
+  checkpoints:
+  - stop_after_slice_plan
+  - stop_on_gate_fail
+  - stop_on_dev_env_regression_fail
+- profile_id: hands_off
+  name: Hands off
+  level: 9
+  checkpoints: []
+- profile_id: pw-profile
+  name: PW Profile
+  level: 5
+  checkpoints:
+  - stop_at_terminal_review
+  - stop_before_factory_complete
+  - stop_on_dev_env_regression_fail
+  - stop_on_gate_fail
+  - stop_on_ui_regression_fail
