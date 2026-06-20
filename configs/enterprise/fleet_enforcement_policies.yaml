@@ -1,0 +1,20 @@
+version: 1
+tenants:
+  bff-enf:
+    min_enforcement_level: 4
+    max_enforcement_level: 8
+  default:
+    min_enforcement_level: 0
+    max_enforcement_level: 10
+  enf-26d538a8:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+  enf-795e4d77:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+  enf-cf393b7e:
+    min_enforcement_level: 5
+    max_enforcement_level: 9
+  enf-policy:
+    min_enforcement_level: 5
+    max_enforcement_level: 9

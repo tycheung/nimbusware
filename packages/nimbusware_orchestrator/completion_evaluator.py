@@ -315,6 +315,21 @@ def evaluate_and_finalize_campaign(
         )
         rows = store.list_run_events(str(run_id))
         result = evaluate_completion(rows)
+    if result.verdict == "PASS":
+        from nimbusware_maker.workspace import resolve_run_workspace
+        from nimbusware_orchestrator.enforcement_pipeline import emit_terminal_enforcement_gate
+
+        ws = resolve_run_workspace(rows)
+        gate_meta = emit_terminal_enforcement_gate(store, run_id, ws, rows)
+        if gate_meta is not None and not gate_meta.get("enforcement_passed", True):
+            result = CompletionEvalResult(
+                verdict="FAIL",
+                remaining_epics=result.remaining_epics,
+                blocking_findings=result.blocking_findings + ("enforcement_parity_failed",),
+                rationale=f"{result.rationale}; terminal enforcement parity failed",
+                slices_completed=result.slices_completed,
+                epics_completed=result.epics_completed,
+            )
     emit_completion_evaluated(store, run_id, result)
     if result.verdict == "PASS":
         from nimbusware_maker.workspace import resolve_run_workspace

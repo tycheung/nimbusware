@@ -52,6 +52,9 @@ export function FleetPage() {
   const [policyCheckpoints, setPolicyCheckpoints] = useState("");
   const [policyCatalog, setPolicyCatalog] = useState<string[]>([]);
   const [policyCaption, setPolicyCaption] = useState("");
+  const [enforcementMin, setEnforcementMin] = useState(0);
+  const [enforcementMax, setEnforcementMax] = useState(10);
+  const [enforcementCaption, setEnforcementCaption] = useState("");
   const [meshSessionId, setMeshSessionId] = useState("");
   const [meshNodes, setMeshNodes] = useState<
     {
@@ -126,6 +129,33 @@ export function FleetPage() {
     loadAutopilotPolicy();
   }, [loadAutopilotPolicy]);
 
+  const loadEnforcementPolicy = useCallback(() => {
+    if (!enterpriseApiKey() || !tenantId) {
+      setEnforcementCaption("");
+      return;
+    }
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    const q = `?tenant_id=${encodeURIComponent(tenantId)}`;
+    apiJson<{
+      min_enforcement_level?: number;
+      max_enforcement_level?: number;
+      tenant_slug?: string;
+    }>(`/admin/ui/enterprise/fleet-enforcement-policy${q}`, {
+      headers: { "X-Nimbusware-Api-Key": key },
+    })
+      .then((body) => {
+        setEnforcementMin(body.min_enforcement_level ?? 0);
+        setEnforcementMax(body.max_enforcement_level ?? 10);
+        setEnforcementCaption(`Enforcement policy: ${body.tenant_slug || slug}`);
+      })
+      .catch(() => setEnforcementCaption(""));
+  }, [tenantId, tenants]);
+
+  useEffect(() => {
+    loadEnforcementPolicy();
+  }, [loadEnforcementPolicy]);
+
   const loadSessionMeshNodes = useCallback(() => {
     const sid = meshSessionId.trim();
     if (!sid) {
@@ -158,6 +188,26 @@ export function FleetPage() {
       }),
     })
       .then(() => loadAutopilotPolicy())
+      .catch((e) => setError(String((e as Error).message || e)));
+  };
+
+  const saveEnforcementPolicy = () => {
+    if (!enterpriseApiKey() || !tenantId) return;
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    const q = `?tenant_id=${encodeURIComponent(tenantId)}`;
+    apiJson(`/admin/ui/enterprise/fleet-enforcement-policy${q}`, {
+      method: "PUT",
+      headers: {
+        "X-Nimbusware-Api-Key": key,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        min_enforcement_level: enforcementMin,
+        max_enforcement_level: enforcementMax,
+      }),
+    })
+      .then(() => loadEnforcementPolicy())
       .catch((e) => setError(String((e as Error).message || e)));
   };
 
@@ -373,6 +423,41 @@ export function FleetPage() {
               </label>{" "}
               <button type="button" class="secondary" onClick={saveAutopilotPolicy}>
                 Save policy
+              </button>
+              <h3>Fleet enforcement policy</h3>
+              <p class="muted">
+                Clamp per-run enforcement depth (0–10) for workspaces in the selected tenant.
+              </p>
+              {enforcementCaption ? <p class="hint">{enforcementCaption}</p> : null}
+              <label>
+                Min enforcement level{" "}
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={enforcementMin}
+                  onInput={(e) => setEnforcementMin(Number((e.target as HTMLInputElement).value) || 0)}
+                  data-testid="admin-fleet-enforcement-min"
+                />
+              </label>{" "}
+              <label>
+                Max enforcement level{" "}
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={enforcementMax}
+                  onInput={(e) => setEnforcementMax(Number((e.target as HTMLInputElement).value) || 0)}
+                  data-testid="admin-fleet-enforcement-max"
+                />
+              </label>{" "}
+              <button
+                type="button"
+                class="secondary"
+                onClick={saveEnforcementPolicy}
+                data-testid="admin-fleet-enforcement-save"
+              >
+                Save enforcement policy
               </button>
             </>
           ) : null}

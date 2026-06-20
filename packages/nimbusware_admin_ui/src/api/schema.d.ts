@@ -3576,6 +3576,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/enterprise/tenants/{tenant_ref}/enforcement-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tenant Enforcement Policy */
+        get: operations["get_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_get"];
+        /** Put Tenant Enforcement Policy */
+        put: operations["put_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/enterprise/fleet/critic-reliability": {
         parameters: {
             query?: never;
@@ -3861,6 +3879,24 @@ export interface paths {
         get: operations["enterprise_fleet_autopilot_policy_get_v1_admin_ui_enterprise_fleet_autopilot_policy_get"];
         /** Enterprise Fleet Autopilot Policy Put */
         put: operations["enterprise_fleet_autopilot_policy_put_v1_admin_ui_enterprise_fleet_autopilot_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/ui/enterprise/fleet-enforcement-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Enterprise Fleet Enforcement Policy Get */
+        get: operations["enterprise_fleet_enforcement_policy_get_v1_admin_ui_enterprise_fleet_enforcement_policy_get"];
+        /** Enterprise Fleet Enforcement Policy Put */
+        put: operations["enterprise_fleet_enforcement_policy_put_v1_admin_ui_enterprise_fleet_enforcement_policy_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -4845,6 +4881,19 @@ export interface components {
             max_autopilot_level: number;
             /** Required Checkpoints */
             required_checkpoints?: string[];
+        };
+        /** FleetEnforcementPolicyBody */
+        FleetEnforcementPolicyBody: {
+            /**
+             * Min Enforcement Level
+             * @default 0
+             */
+            min_enforcement_level: number;
+            /**
+             * Max Enforcement Level
+             * @default 10
+             */
+            max_enforcement_level: number;
         };
         /** FleetRebuildBody */
         FleetRebuildBody: {
@@ -29585,6 +29634,172 @@ export interface operations {
             };
         };
     };
+    get_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetEnforcementPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     fleet_critic_reliability_v1_enterprise_fleet_critic_reliability_get: {
         parameters: {
             query: {
@@ -31244,6 +31459,176 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["FleetAutopilotPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    enterprise_fleet_enforcement_policy_get_v1_admin_ui_enterprise_fleet_enforcement_policy_get: {
+        parameters: {
+            query?: {
+                tenant_id?: string;
+            };
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+                "X-Nimbusware-Api-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    enterprise_fleet_enforcement_policy_put_v1_admin_ui_enterprise_fleet_enforcement_policy_put: {
+        parameters: {
+            query: {
+                tenant_id: string;
+            };
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+                "X-Nimbusware-Api-Key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetEnforcementPolicyBody"];
             };
         };
         responses: {

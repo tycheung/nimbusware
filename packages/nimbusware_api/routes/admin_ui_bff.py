@@ -40,6 +40,12 @@ from nimbusware_orchestrator.fleet_autopilot_policy import (
     save_fleet_autopilot_policies,
     tenant_autopilot_policy,
 )
+from nimbusware_orchestrator.fleet_enforcement_policy import (
+    FleetEnforcementPolicy,
+    load_fleet_enforcement_policies,
+    save_fleet_enforcement_policies,
+    tenant_enforcement_policy,
+)
 from nimbusware_store.protocol import serialized_event_from_row
 
 router = APIRouter(prefix="/admin/ui", tags=["admin-ui"])
@@ -271,6 +277,11 @@ class FleetAutopilotPolicyBody(BaseModel):
     required_checkpoints: list[str] = Field(default_factory=list)
 
 
+class FleetEnforcementPolicyBody(BaseModel):
+    min_enforcement_level: int = Field(ge=0, le=10, default=0)
+    max_enforcement_level: int = Field(ge=0, le=10, default=10)
+
+
 @router.get("/enterprise/fleet-autopilot-policy")
 def enterprise_fleet_autopilot_policy_get(
     _admin: AdminDep,
@@ -319,6 +330,61 @@ def enterprise_fleet_autopilot_policy_put(
     policies = load_fleet_autopilot_policies()
     policies[slug] = policy
     save_fleet_autopilot_policies(policies)
+    return policy.to_dict()
+
+
+@router.get("/enterprise/fleet-enforcement-policy")
+def enterprise_fleet_enforcement_policy_get(
+    _admin: AdminDep,
+    iam: IamStoreDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_id: str = Query(default=""),
+) -> dict[str, Any]:
+    slug = ""
+    if tenant_id.strip():
+        tid = _resolve_tenant_uuid(iam, tenant_id)
+        for tenant in iam.list_tenants():
+            if str(tenant.tenant_id) == tid:
+                slug = tenant.slug
+                break
+        if not slug:
+            slug = tenant_id.strip()
+    policy = tenant_enforcement_policy(slug or None)
+    return policy.to_dict()
+
+
+@router.put("/enterprise/fleet-enforcement-policy")
+def enterprise_fleet_enforcement_policy_put(
+    body: FleetEnforcementPolicyBody,
+    _admin: AdminDep,
+    iam: IamStoreDep,
+    api_key: Annotated[str, Depends(_require_enterprise_api_key)],
+    tenant_id: Annotated[str, Query(min_length=1)],
+) -> dict[str, Any]:
+    if body.min_enforcement_level > body.max_enforcement_level:
+        raise HTTPException(
+            status_code=422,
+            detail=problem(
+                "invalid_request",
+                "min_enforcement_level must be <= max_enforcement_level",
+            ),
+        )
+    slug = ""
+    tid = _resolve_tenant_uuid(iam, tenant_id)
+    for tenant in iam.list_tenants():
+        if str(tenant.tenant_id) == tid:
+            slug = tenant.slug
+            break
+    if not slug:
+        slug = tenant_id.strip()
+    policy = FleetEnforcementPolicy(
+        tenant_slug=slug,
+        min_enforcement_level=body.min_enforcement_level,
+        max_enforcement_level=body.max_enforcement_level,
+    )
+    policies = load_fleet_enforcement_policies()
+    policies[slug] = policy
+    save_fleet_enforcement_policies(policies)
     return policy.to_dict()
 
 

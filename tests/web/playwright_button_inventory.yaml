@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 123
+  total_buttons: 124
   clicked: 36
   visible_only: 7
-  unwired: 80
-  click_ratio: 0.2927
+  unwired: 81
+  click_ratio: 0.2903
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -11,6 +11,12 @@ buttons:
   label: ''
   clicked_in:
   - tests/e2e/web/admin_operator_chat.spec.ts
+  visible_only_in: []
+- test_id: admin-fleet-enforcement-save
+  app: admin
+  source: packages/nimbusware_admin_ui/src/pages/FleetPage.tsx
+  label: Save enforcement policy
+  clicked_in: []
   visible_only_in: []
 - test_id: admin-fleet-rescan-btn
   app: admin

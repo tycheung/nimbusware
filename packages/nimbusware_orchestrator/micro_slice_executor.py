@@ -594,6 +594,11 @@ def execute_micro_slice_pass(
         results,
         emit_stage=_emit_slice_stage,
     )
+    if results and all(r.passed for r in results):
+        rows = orch._store.list_run_events(str(run_id))
+        from nimbusware_orchestrator.enforcement_pipeline import emit_terminal_enforcement_gate
+
+        emit_terminal_enforcement_gate(orch._store, run_id, ws, rows)
     return results
 
 

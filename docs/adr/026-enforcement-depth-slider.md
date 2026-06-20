@@ -30,10 +30,13 @@ Implementation:
 - Feature flag: `NIMBUSWARE_ENFORCEMENT_DEPTH=1` enables pipeline wiring for all runs; explicit `PUT /enforcement` or saved profile also activates per-run
 - `run.created` emits `enforcement_effective` by work type (patch→4, slice→5, factory→7)
 - Maker Progress tab: enforcement depth slider (orthogonal to autopilot trust slider)
+- Enterprise fleet enforcement policy: `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`, Admin Fleet page min/max clamp; `configs/enterprise/fleet_enforcement_policies.yaml`
+- Terminal `enforcement.gate` stage runs workspace CI parity when `terminal_parity_ci` is set; posts external CI check when GitHub/GitLab is configured
 
 Level 10 is **workspace-applicable parity** — not control-plane-only gates (import graph, OpenAPI TS, Playwright button inventory, intent→patch SLO).
 
 ## Consequences
 
 - `micro_slice_verify`, `slice.gate`, and milestone gates consume `EnforcementProfile` when wired.
+- Terminal campaign/micro-slice completion may fail when level-10 parity does not pass.
 - Enterprise fleet policy mirror: `fleet_enforcement_policies.yaml` (`min_enforcement_level`, `max_enforcement_level`).

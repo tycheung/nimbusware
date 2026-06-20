@@ -26,7 +26,7 @@ Nimbusware CI treats static analysis and dependency audit as **blocking** gates 
 
 Failures in bandit or pip-audit block merge the same way as pytest coverage floors.
 
-**Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 mirrors applicable subsets of this table. API: `GET/PUT /v1/runs/{id}/enforcement`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
+**Workspace enforcement depth** (attached projects): `workspace_ci_runner.run_enforcement_bundle` applies layout-aware checks at levels 0–10; level 10 mirrors applicable subsets of this table (see `tests/unit/test_workspace_ci_parity_contract.py` for the step contract). Terminal runs emit `enforcement.gate` with optional GitHub/GitLab status when `terminal_parity_ci` is active. API: `GET/PUT /v1/runs/{id}/enforcement`; enterprise tenants: `GET/PUT /v1/enterprise/tenants/{ref}/enforcement-policy`. See [ADR 026](../adr/026-enforcement-depth-slider.md).
 
 ## Operator surfacing
 
