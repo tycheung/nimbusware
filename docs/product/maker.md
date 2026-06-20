@@ -24,7 +24,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - Rules-first intent classifier with optional LLM (`NIMBUSWARE_INTENT_CLASSIFIER_MODEL`)
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
 - Live **run theater** with severity and evidence toggles in run cards (trust + enforcement chips)
-- Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `enforcement-ribbon.js`)
+- Session sidebar, fork/branch tree; active-run **trust/autopilot** and **enforcement depth** ribbons (shared `autopilot-ribbon.js` / `enforcement-ribbon.js`)
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
 - APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, fork/graph/switch-mode
 - MCP tools: [ide-bridge.md](../ide-bridge.md); ADRs [020](../adr/020-unified-chat-work-type-routing.md), [021](../adr/021-conversation-dag-branching.md)

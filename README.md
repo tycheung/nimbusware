@@ -43,6 +43,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Browse API endpoints | [docs/product/api-overview.md](docs/product/api-overview.md) |
 | Understand the agent pipeline | [docs/agent-runtime.md](docs/agent-runtime.md) |
 | Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
+| Operator ribbons (Maker) | Progress + Chat tabs share `autopilot-ribbon.js` and `enforcement-ribbon.js` |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Configure settings (243 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
