@@ -1,8 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
-
-function enforcementControl(root, dataAttr, id) {
-  return root.querySelector(`[${dataAttr}]`) || (id ? root.querySelector(`#${id}`) : null);
-}
+import { populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export async function loadEnforcementUserProfiles() {
   try {
@@ -14,9 +11,9 @@ export async function loadEnforcementUserProfiles() {
 }
 
 export function applyEnforcementProfileToControls(root, profile) {
-  const slider = enforcementControl(root, "data-enforcement-slider", "enforcement-slider");
-  const label = enforcementControl(root, "data-enforcement-level-label", "enforcement-level-label");
-  const summary = enforcementControl(root, "data-enforcement-summary", "enforcement-summary");
+  const slider = ribbonControl(root, "data-enforcement-slider", "enforcement-slider");
+  const label = ribbonControl(root, "data-enforcement-level-label", "enforcement-level-label");
+  const summary = ribbonControl(root, "data-enforcement-summary", "enforcement-summary");
   if (slider) slider.value = String(profile.level ?? 5);
   if (label) label.textContent = String(profile.level ?? 5);
   if (summary) {
@@ -24,31 +21,11 @@ export function applyEnforcementProfileToControls(root, profile) {
   }
 }
 
-async function populateEnforcementProfileSelect(root, profiles) {
-  const profileSelect = enforcementControl(
-    root,
-    "data-enforcement-profile-select",
-    "enforcement-profile-select",
-  );
-  if (!profileSelect) return;
-  profileSelect.replaceChildren();
-  const custom = document.createElement("option");
-  custom.value = "";
-  custom.textContent = "— custom —";
-  profileSelect.appendChild(custom);
-  profiles.forEach((p) => {
-    const opt = document.createElement("option");
-    opt.value = p.profile_id;
-    opt.textContent = p.name || p.profile_id;
-    profileSelect.appendChild(opt);
-  });
-}
-
 export async function wireEnforcementRibbon(root, runId) {
-  const slider = enforcementControl(root, "data-enforcement-slider", "enforcement-slider");
-  const label = enforcementControl(root, "data-enforcement-level-label", "enforcement-level-label");
-  const summary = enforcementControl(root, "data-enforcement-summary", "enforcement-summary");
-  const profileSelect = enforcementControl(
+  const slider = ribbonControl(root, "data-enforcement-slider", "enforcement-slider");
+  const label = ribbonControl(root, "data-enforcement-level-label", "enforcement-level-label");
+  const summary = ribbonControl(root, "data-enforcement-summary", "enforcement-summary");
+  const profileSelect = ribbonControl(
     root,
     "data-enforcement-profile-select",
     "enforcement-profile-select",
@@ -68,7 +45,7 @@ export async function wireEnforcementRibbon(root, runId) {
   });
 
   const profiles = await loadEnforcementUserProfiles();
-  await populateEnforcementProfileSelect(root, profiles);
+  populateProfileSelect(profileSelect, profiles);
   profileSelect?.addEventListener("change", async (ev) => {
     const pid = ev.target?.value;
     if (!pid) return;
@@ -76,7 +53,7 @@ export async function wireEnforcementRibbon(root, runId) {
     if (match) applyEnforcementProfileToControls(root, match);
   });
 
-  enforcementControl(root, "data-enforcement-save", "enforcement-save-btn")?.addEventListener(
+  ribbonControl(root, "data-enforcement-save", "enforcement-save-btn")?.addEventListener(
     "click",
     async () => {
     const level = Number(slider.value || 5);
@@ -95,7 +72,7 @@ export async function wireEnforcementRibbon(root, runId) {
     },
   );
 
-  enforcementControl(
+  ribbonControl(
     root,
     "data-enforcement-profile-save",
     "enforcement-profile-save-btn",
@@ -113,7 +90,7 @@ export async function wireEnforcementRibbon(root, runId) {
       toast(`Saved enforcement profile ${profileId}`, "success");
       const refreshed = await loadEnforcementUserProfiles();
       profiles.splice(0, profiles.length, ...refreshed);
-      await populateEnforcementProfileSelect(root, profiles);
+      populateProfileSelect(profileSelect, profiles);
       if (profileSelect) profileSelect.value = profileId;
     } catch (e) {
       toast(String(e.message || e), "error");

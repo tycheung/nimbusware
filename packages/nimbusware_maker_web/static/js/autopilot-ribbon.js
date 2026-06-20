@@ -1,8 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
-
-function autopilotControl(root, dataAttr, id) {
-  return root.querySelector(`[${dataAttr}]`) || (id ? root.querySelector(`#${id}`) : null);
-}
+import { populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export const AUTOPILOT_CHECKPOINT_CATALOG = [
   "stop_after_run_plan",
@@ -51,43 +48,23 @@ export async function loadAutopilotUserProfiles() {
 }
 
 export function applyAutopilotProfileToControls(root, profile) {
-  const slider = autopilotControl(root, "data-autopilot-slider", "autopilot-slider");
-  const label = autopilotControl(root, "data-autopilot-level-label", "autopilot-level-label");
-  const checkpoints = autopilotControl(root, "data-autopilot-checkpoints", "autopilot-checkpoints");
+  const slider = ribbonControl(root, "data-autopilot-slider", "autopilot-slider");
+  const label = ribbonControl(root, "data-autopilot-level-label", "autopilot-level-label");
+  const checkpoints = ribbonControl(root, "data-autopilot-checkpoints", "autopilot-checkpoints");
   if (slider) slider.value = String(profile.level ?? 5);
   if (label) label.textContent = String(profile.level ?? 5);
   renderAutopilotCheckpoints(checkpoints, profile.checkpoints || []);
 }
 
-async function populateAutopilotProfileSelect(root, profiles) {
-  const profileSelect = autopilotControl(
-    root,
-    "data-autopilot-profile-select",
-    "autopilot-profile-select",
-  );
-  if (!profileSelect) return;
-  profileSelect.replaceChildren();
-  const custom = document.createElement("option");
-  custom.value = "";
-  custom.textContent = "— custom —";
-  profileSelect.appendChild(custom);
-  profiles.forEach((p) => {
-    const opt = document.createElement("option");
-    opt.value = p.profile_id;
-    opt.textContent = p.name || p.profile_id;
-    profileSelect.appendChild(opt);
-  });
-}
-
 export async function wireAutopilotRibbon(root, runId) {
-  const slider = autopilotControl(root, "data-autopilot-slider", "autopilot-slider");
-  const label = autopilotControl(root, "data-autopilot-level-label", "autopilot-level-label");
-  const checkpointsMount = autopilotControl(
+  const slider = ribbonControl(root, "data-autopilot-slider", "autopilot-slider");
+  const label = ribbonControl(root, "data-autopilot-level-label", "autopilot-level-label");
+  const checkpointsMount = ribbonControl(
     root,
     "data-autopilot-checkpoints",
     "autopilot-checkpoints",
   );
-  const profileSelect = autopilotControl(
+  const profileSelect = ribbonControl(
     root,
     "data-autopilot-profile-select",
     "autopilot-profile-select",
@@ -104,7 +81,7 @@ export async function wireAutopilotRibbon(root, runId) {
   });
 
   const profiles = await loadAutopilotUserProfiles();
-  await populateAutopilotProfileSelect(root, profiles);
+  populateProfileSelect(profileSelect, profiles);
   profileSelect?.addEventListener("change", async (ev) => {
     const pid = ev.target?.value;
     if (!pid) return;
@@ -113,7 +90,7 @@ export async function wireAutopilotRibbon(root, runId) {
     syncCheckpointVisibility();
   });
 
-  autopilotControl(root, "data-autopilot-save", "autopilot-save-btn")?.addEventListener(
+  ribbonControl(root, "data-autopilot-save", "autopilot-save-btn")?.addEventListener(
     "click",
     async () => {
     const level = Number(slider.value || 5);
@@ -132,7 +109,7 @@ export async function wireAutopilotRibbon(root, runId) {
     },
   );
 
-  autopilotControl(root, "data-autopilot-profile-save", "autopilot-profile-save-btn")?.addEventListener(
+  ribbonControl(root, "data-autopilot-profile-save", "autopilot-profile-save-btn")?.addEventListener(
     "click",
     async () => {
     const level = Number(slider.value || 5);
@@ -149,7 +126,7 @@ export async function wireAutopilotRibbon(root, runId) {
       toast(`Saved profile ${profileId}`, "success");
       const refreshed = await loadAutopilotUserProfiles();
       profiles.splice(0, profiles.length, ...refreshed);
-      await populateAutopilotProfileSelect(root, profiles);
+      populateProfileSelect(profileSelect, profiles);
       if (profileSelect) profileSelect.value = profileId;
     } catch (e) {
       toast(String(e.message || e), "error");
