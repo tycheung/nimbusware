@@ -154,7 +154,6 @@ __all__ = (
     "network_resilience_pre_emit",
     "os",
     "parallel_group_members",
-    "parallel_critics_enabled",
     "parallel_writers_enabled",
     "parse_agent_evaluator_workflow_block",
     "parse_escalation_workflow_block",
