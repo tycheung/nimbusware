@@ -32,7 +32,9 @@ def test_nimbusware_production_yaml_enables_p3_blocks() -> None:
     assert network_resilience_critique_effective(net)
 
 
-def test_nimbusware_production_verify_runs_micro_slice_stages(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_nimbusware_production_verify_runs_micro_slice_stages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     root = find_repo_root(start=Path(__file__).resolve().parents[1])
     orch, store = make_dev_orchestrator(root)
     run_id = orch.create_run("nimbusware_production")

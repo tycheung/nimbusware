@@ -2,14 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.network_resilience_critique import (
-    NETWORK_RESILIENCE_CRITIQUE_STAGE,
     scan_summary_failed,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_scan_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
@@ -27,5 +23,3 @@ def test_network_resilience_workflow_block() -> None:
     block = parse_network_resilience_critique_workflow_block(root, "network_resilience_critique_on")
     assert block.enabled is True
     assert network_resilience_critique_effective(block)
-
-

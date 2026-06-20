@@ -6,6 +6,7 @@ from uuid import UUID
 
 from nimbusware_compute.mesh_stage_runner import execute_mesh_stage_on_worker
 from nimbusware_compute.work_unit import WorkUnitRecord
+from nimbusware_orchestrator.parallel_writers import WriterStageResult
 
 
 def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
@@ -24,25 +25,26 @@ def test_execute_mesh_stage_dispatches_writer_role(tmp_path: Path) -> None:
         },
     )
     orch = MagicMock()
+    orch._store.list_run_events.return_value = []
     with patch(
         "nimbusware_compute.mesh_stage_runner._mesh_orchestrator",
         return_value=orch,
     ):
-        with patch(
-            "nimbusware_compute.mesh_stage_runner.dispatch_role_execute",
-            return_value={
-                "status": "executed",
-                "taxonomy_key": "backend_writer",
-                "stage_name": "writers.verify",
-                "run_id": str(rec.run_id),
-            },
-        ) as dispatch:
+        with patch.object(
+            orch,
+            "_parallel_run_implementation",
+            return_value=WriterStageResult(
+                stage_name="implementation",
+                verifier_exit_code=0,
+                verifier_log="ok",
+            ),
+        ) as runner:
             out = execute_mesh_stage_on_worker(rec)
-    dispatch.assert_called_once()
+    runner.assert_called_once()
     assert out["ok"] is True
     assert out["executed"] is True
     assert out["mesh_ack"] is True
-    assert out["taxonomy_key"] == "backend_writer"
+    assert out["verifier_exit_code"] == 0
 
 
 def test_execute_mesh_stage_missing_workspace_mesh_acks() -> None:

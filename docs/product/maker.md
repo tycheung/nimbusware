@@ -59,4 +59,4 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - **Compute mesh** — [compute-mesh.md](../compute-mesh.md)
 - **Conversation library** — [conversation-library.md](../conversation-library.md)
 
-Default workflow profile: `nimbusware_production` (live writers). Slice auto-advance on by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`).
+Default workflow profile: `micro_slice`. Chat projects may override via `default_workflow_profile`. Slice auto-advance on by default (`NIMBUSWARE_SLICE_AUTO_ADVANCE` unset or `1`).

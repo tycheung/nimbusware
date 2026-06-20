@@ -29,9 +29,7 @@ from nimbusware_orchestrator.critique_routing import (
     taxonomy_keys_for_run_lifecycle,
 )
 from nimbusware_orchestrator.llm_plan import (
-    FRONTEND_WRITER_CRITIQUE_STAGE,
     IMPLEMENTATION_CRITIQUE_STAGE,
-    MODULE_INTEGRATOR_CRITIQUE_STAGE,
     PLANNER_CRITIQUE_STAGE,
     TEST_WRITER_CRITIQUE_STAGE,
 )
@@ -72,7 +70,11 @@ def test_plan_stub_emits_verdicts_for_yaml_planner_critics() -> None:
     assert actor_roles == {pr, dc}
 
 
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(
+    os.environ,
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    clear=False,
+)
 def test_stage_failed_emitted_when_last_impl_critique_gate_is_fail() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
@@ -294,7 +296,11 @@ def test_impl_stage_failed_env_overrides_workflow_true() -> None:
     )
 
 
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch.dict(
+    os.environ,
+    {"NIMBUSWARE_UNIVERSAL_CRITIQUE_STAGE_FAILED_ON_GATE_FAIL": "1"},
+    clear=False,
+)
 def test_stage_failed_emitted_when_last_planner_critique_gate_is_fail() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
@@ -611,19 +617,6 @@ def test_emit_finding_env_overrides_yaml_off() -> None:
     assert not any(r.get("event_type") == "finding.created" for r in mem.list_run_events(str(rid)))
 
 
-@patch.dict(
-    os.environ,
-    {
-        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
-        "NIMBUSWARE_UNIVERSAL_CRITIQUE_HARD_BLOCK_ON_GATE_FAIL": "false",
-    },
-    clear=False,
-)
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
-@patch(
-    "nimbusware_orchestrator.pipeline.load_integrator_gate_emit_enabled",
-    return_value=False,
-)
 def test_universal_critique_router_unknown_producer_falls_back_to_default_critics() -> None:
     router = load_critique_router(ROOT)
     assert router.pairing_for("nonexistent_role_taxonomy_key_xyz") == [

@@ -135,11 +135,7 @@ def absorb_completed_mesh_units(
         if isinstance(replay_events, list):
             events_replayed += replay_events_to_store(store, run_id, replay_events)
         workspace_files = result.get("workspace_files")
-        if (
-            host_workspace is not None
-            and isinstance(workspace_files, dict)
-            and workspace_files
-        ):
+        if host_workspace is not None and isinstance(workspace_files, dict) and workspace_files:
             files_merged += len(
                 apply_workspace_files(
                     host_workspace,

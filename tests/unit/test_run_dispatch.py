@@ -72,7 +72,7 @@ def test_process_verify_dispatch_task_drains_queue() -> None:
         get_run_queue().ack(task.task_id)
     assert any(
         r.get("event_type") == "stage.started"
-        and (r.get("payload") or {}).get("stage_name") == "implementation"
+        and (r.get("payload") or {}).get("stage_name") == "slice.plan"
         for r in mem.list_run_events(str(rid))
     )
 
@@ -140,7 +140,7 @@ def test_redis_dispatch_worker_loop_drains_verify() -> None:
     assert processed == 1
     assert any(
         r.get("event_type") == "stage.started"
-        and (r.get("payload") or {}).get("stage_name") == "implementation"
+        and (r.get("payload") or {}).get("stage_name") == "slice.plan"
         for r in mem.list_run_events(str(rid))
     )
 
@@ -178,7 +178,7 @@ def test_worker_loop_processes_verify_tasks() -> None:
     assert processed == 1
     assert any(
         r.get("event_type") == "stage.started"
-        and (r.get("payload") or {}).get("stage_name") == "implementation"
+        and (r.get("payload") or {}).get("stage_name") == "slice.plan"
         for r in mem.list_run_events(str(rid))
     )
 

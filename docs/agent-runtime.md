@@ -4,7 +4,7 @@ The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial ag
 
 ## Core loop
 
-- **Run lifecycle** — `run.created` → plan → implement/verify with frozen `policy_snapshot`
+- **Run lifecycle** — `run.created` → plan → micro-slice loop (plan → implement → verify → critique → test → gate) with frozen `policy_snapshot`
 - **Adversarial critics** — domain-bound critique stages (security, performance, resilience, refactor)
 - **Unanimous gates** — stage progression blocked until critics/verifiers pass (escalation anti-deadlock)
 - **Parallel writers** — frontend/backend/test writers with `asyncio.gather`
@@ -23,7 +23,7 @@ The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial ag
 | `campaign_micro_slice` | Autonomous campaign — heuristic or LLM backlog → one slice/tick → completion |
 | `campaign_factory_zero_touch` | Factory scaffold T0–T3 with PUT E2E |
 
-Configs: [`configs/workflows/`](../../configs/workflows/). Default: `nimbusware_production`.
+Configs: [`configs/workflows/`](../../configs/workflows/). Default: `micro_slice` (all verify passes run the micro-slice loop; `nimbusware_production` remains for extended YAML flags).
 
 ## Notable subsystems
 
@@ -49,9 +49,9 @@ When `refactor.enabled` and `stub_only: false` (production default), the pipelin
 
 `fast_slice: true` or `NIMBUSWARE_FAST_SLICE` skips optional universal critic matrix when max finding severity is below HIGH.
 
-## Parallel critics
+## Parallel critics (mesh)
 
-When `hardware_tier=strong`, set `NIMBUSWARE_ALLOW_PARALLEL_CRITICS=1` to run security/performance/network critiques concurrently during verify.
+When `hardware_tier=strong`, set `NIMBUSWARE_ALLOW_PARALLEL_CRITICS=1` to run security/performance/network critique stages concurrently on remote mesh workers when a session uses compute sharing. Host merges `replay_events` and critic `gate_fail` from work-unit completion payloads.
 
 ## Configuration
 

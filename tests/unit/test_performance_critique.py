@@ -2,14 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.performance_critique import (
-    PERFORMANCE_CRITIQUE_STAGE,
     performance_scan_tools_failed,
 )
-from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_scan_critique import (
     parse_performance_critique_workflow_block,
     performance_critique_effective,
@@ -36,5 +32,3 @@ def test_performance_critique_workflow_block() -> None:
     block = parse_performance_critique_workflow_block(root, "performance_critique_on")
     assert block.enabled is True
     assert performance_critique_effective(block)
-
-

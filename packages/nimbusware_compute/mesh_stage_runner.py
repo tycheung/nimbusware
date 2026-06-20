@@ -199,7 +199,9 @@ def _execute_writer_mesh_stage(
             llm_body_enabled=test_writer_llm_body_enabled(orch.repo_root, wf),
             llm_stub_fallback_enabled=test_writer_llm_stub_fallback(orch.repo_root, wf),
             llm_model_id=None,
-            llm_base_url=str((orch._base_cfg().get("runtime") or {}).get("base_url", "http://localhost:11434")),
+            llm_base_url=str(
+                (orch._base_cfg().get("runtime") or {}).get("base_url", "http://localhost:11434")
+            ),
             llm_timeout_seconds=float(
                 (orch._base_cfg().get("runtime") or {}).get("request_timeout_seconds", 120),
             ),

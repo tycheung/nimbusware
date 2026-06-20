@@ -6,7 +6,7 @@
 |--|--|
 | **Version** | `0.5.0` |
 | **Python** | `>=3.10` (3.11+ recommended) |
-| **Default workflow** | `nimbusware_production` |
+| **Default workflow** | `micro_slice` |
 | **License** | [GPL-3.0](LICENSE) |
 
 **Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
