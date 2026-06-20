@@ -20,6 +20,7 @@ from nimbusware_env.settings_store import validate_patch
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_orchestrator.default_workflow_profile import default_workflow_profile
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 router = APIRouter()
 
@@ -62,6 +63,11 @@ class CreateRunBody(BaseModel):
         default=None,
         max_length=120,
         description="Saved operator autopilot profile to apply at run start",
+    )
+    enforcement_profile_id: str | None = Field(
+        default=None,
+        max_length=120,
+        description="Saved operator enforcement profile to apply at run start",
     )
 
 
@@ -194,6 +200,22 @@ def create_run(
                     "autopilot_profile_not_found",
                     "Unknown autopilot profile id",
                     details={"profile_id": body.autopilot_profile_id},
+                ),
+            )
+    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
+        applied_enf = apply_user_enforcement_at_run_start(
+            store,
+            run_id,
+            str(body.enforcement_profile_id),
+            repo_root=orch.repo_root,
+        )
+        if applied_enf is None:
+            raise HTTPException(
+                status_code=422,
+                detail=problem(
+                    "enforcement_profile_not_found",
+                    "Unknown enforcement profile id",
+                    details={"profile_id": body.enforcement_profile_id},
                 ),
             )
     return {"run_id": str(run_id)}

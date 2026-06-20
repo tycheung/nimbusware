@@ -55,6 +55,12 @@ def _launch_test_enabled(rows: list[dict[str, Any]]) -> bool:
     return launch_test_enabled(rows)
 
 
+def _active_enforcement(rows: list[dict[str, Any]]) -> Any:
+    from nimbusware_orchestrator.enforcement_pipeline import active_enforcement_profile
+
+    return active_enforcement_profile(rows)
+
+
 def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkflowBlock:
     from nimbusware_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
     from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
@@ -319,6 +325,7 @@ def execute_single_micro_slice(
         active_plan,
         timeout_seconds=timeout,
         rows=rows,
+        enforcement_profile=_active_enforcement(rows),
     )
     _emit_slice_stage(
         orch,
@@ -332,7 +339,22 @@ def execute_single_micro_slice(
     critique_meta: dict[str, Any] = {"slice_id": active_plan.slice_id}
     if effective_backlog_slice_id:
         critique_meta["backlog_slice_id"] = effective_backlog_slice_id
-    if nimbusware_slice_p3_evidence_enabled():
+    from nimbusware_orchestrator.enforcement_pipeline import security_scan_required
+
+    enforcement = _active_enforcement(rows)
+    if enforcement and security_scan_required(enforcement):
+        from nimbusware_orchestrator.verifiers import run_bandit_on_layout
+        from nimbusware_orchestrator.workspace_layout import detect_workspace_layout
+
+        layout = detect_workspace_layout(ws)
+        b_code, b_out = run_bandit_on_layout(layout, timeout_seconds=timeout)
+        critique_meta["enforcement_security"] = {
+            "bandit_exit": b_code,
+            "snippet": (b_out or "")[:800],
+        }
+        if b_code != 0:
+            critique_verdicts = ["FAIL"]
+    elif nimbusware_slice_p3_evidence_enabled():
         from nimbusware_orchestrator.performance_scan import run_ruff_perf
         from nimbusware_orchestrator.security_scan import run_security_scan
 
@@ -421,6 +443,17 @@ def execute_single_micro_slice(
         if e2e.verdict == "FAIL":
             verify_ok = False
             verify_log = f"{verify_log}\n[e2e] {e2e_detail}"
+
+    enforcement = _active_enforcement(rows)
+    if enforcement is not None:
+        from nimbusware_orchestrator.enforcement_pipeline import normalize_e2e_for_enforcement
+
+        e2e_passed, e2e_detail = normalize_e2e_for_enforcement(
+            e2e_passed,
+            e2e_detail,
+            enforcement,
+            e2e_enabled=block.e2e_enabled,
+        )
 
     ensure_dev_environment_for_slice(orch._store, run_id, ws, rows)
     pre_regression = run_pre_gate_dev_env_regression(orch._store, run_id, ws, rows, profile)

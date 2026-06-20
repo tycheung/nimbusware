@@ -62779,6 +62779,19 @@
             ],
             "title": "Autopilot Profile Id",
             "description": "Saved operator autopilot profile to apply at run start"
+          },
+          "enforcement_profile_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforcement Profile Id",
+            "description": "Saved operator enforcement profile to apply at run start"
           }
         },
         "type": "object",
@@ -67142,6 +67155,18 @@
               }
             ],
             "title": "Autopilot Profile Id"
+          },
+          "enforcement_profile_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforcement Profile Id"
           },
           "autonomous": {
             "type": "boolean",

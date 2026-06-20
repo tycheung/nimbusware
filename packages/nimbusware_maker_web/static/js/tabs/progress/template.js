@@ -46,6 +46,21 @@ export const PROGRESS_MOUNT_HTML = `
         </div>
         <p id="interjection-queue-body" class="muted"></p>
       </section>
+      <section id="enforcement-ribbon" class="panel" data-testid="maker-enforcement-ribbon">
+        <h4>Enforcement depth</h4>
+        <label>Level 0–10 <input type="range" id="enforcement-slider" min="0" max="10" value="5" data-testid="maker-enforcement-slider" /></label>
+        <span id="enforcement-level-label">5</span>
+        <p id="enforcement-summary" class="muted" data-testid="maker-enforcement-summary"></p>
+        <div class="actions">
+          <label>Saved profile
+            <select id="enforcement-profile-select" data-testid="maker-enforcement-profile-select">
+              <option value="">— custom —</option>
+            </select>
+          </label>
+          <button type="button" id="enforcement-profile-save-btn" data-testid="maker-enforcement-profile-save">Save profile</button>
+          <button type="button" id="enforcement-save-btn" data-testid="maker-enforcement-save">Apply to run</button>
+        </div>
+      </section>
       <section id="autopilot-ribbon" class="panel" data-testid="maker-autopilot-ribbon">
         <h4>Autopilot</h4>
         <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>

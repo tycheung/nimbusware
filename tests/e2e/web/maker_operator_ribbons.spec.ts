@@ -45,6 +45,9 @@ test("progress tab exposes dev-env, interjection, and autopilot ribbons", async 
   await expect(page.getByTestId("maker-autopilot-ribbon")).toBeVisible();
   await expect(page.getByTestId("maker-autopilot-slider")).toBeVisible();
   await expect(page.getByTestId("maker-autopilot-save")).toBeVisible();
+  await expect(page.getByTestId("maker-enforcement-ribbon")).toBeVisible();
+  await expect(page.getByTestId("maker-enforcement-slider")).toBeVisible();
+  await expect(page.getByTestId("maker-enforcement-save")).toBeVisible();
   await expect(page.getByTestId("maker-learnings-ribbon")).toBeVisible();
   await expect(page.getByTestId("maker-autopilot-profile-select")).toBeVisible();
   await expect(page.getByTestId("maker-variant-ribbon")).toBeVisible();
@@ -150,4 +153,59 @@ test("autopilot ribbon applies level via API from UI", async ({ page, request })
   const apResp = await request.get(`/v1/runs/${runId}/autopilot`);
   expect(apResp.ok()).toBeTruthy();
   expect((await apResp.json()).level).toBe(8);
+});
+
+test("enforcement ribbon applies level via API from UI", async ({ page, request }) => {
+  const headers = { "X-Nimbusware-Admin-Token": adminToken };
+  const project = await request.post("/v1/projects", {
+    headers,
+    data: {
+      name: `pw-enforcement-ui-${Date.now()}`,
+      workspace_path: fixtureWorkspace,
+      template: "attach",
+    },
+  });
+  expect(project.ok()).toBeTruthy();
+  const projectId = (await project.json()).project_id as string;
+
+  const runResp = await request.post("/v1/runs", {
+    data: {
+      workflow_profile: "micro_slice",
+      project_id: projectId,
+      requirements: { business_prompt: "Enforcement UI" },
+    },
+  });
+  expect(runResp.ok()).toBeTruthy();
+  const runId = (await runResp.json()).run_id as string;
+
+  await page.goto(`/v1/maker/app/?run_id=${encodeURIComponent(runId)}#/progress`);
+  await page.waitForFunction(() => typeof (window as Window & { Alpine?: unknown }).Alpine !== "undefined");
+  await activateMakerRoute(page, "/progress");
+
+  const slider = page.getByTestId("maker-enforcement-slider");
+  await expect(slider).toBeVisible({ timeout: 15_000 });
+  await page.waitForResponse(
+    (resp) =>
+      resp.url().includes(`/v1/runs/${runId}/enforcement`) && resp.request().method() === "GET",
+    { timeout: 15_000 },
+  );
+  await slider.evaluate((el) => {
+    (el as HTMLInputElement).value = "7";
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  const savePromise = page.waitForResponse(
+    async (resp) => {
+      if (!resp.url().includes(`/v1/runs/${runId}/enforcement`) || resp.request().method() !== "PUT") {
+        return false;
+      }
+      const body = await resp.json();
+      return body.level === 7;
+    },
+  );
+  await page.getByTestId("maker-enforcement-save").click();
+  await savePromise;
+
+  const enfResp = await request.get(`/v1/runs/${runId}/enforcement`);
+  expect(enfResp.ok()).toBeTruthy();
+  expect((await enfResp.json()).level).toBe(7);
 });

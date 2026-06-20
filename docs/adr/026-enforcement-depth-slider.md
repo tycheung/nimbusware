@@ -20,19 +20,20 @@ Add a second 0–10 axis, **enforcement depth**, orthogonal to autopilot:
 | 7 | Pre-production | Format check, full security scan, required E2E |
 | 10 | Nimbusware parity | Terminal workspace CI contract (layout-aware ruff/format/pytest+coverage/bandit/pip-audit/mypy) |
 
-Implementation (Phases 1–2):
+Implementation:
 
 - `enforcement_profiles.py` — presets, persistence via `run.enforcement.updated`
 - `workspace_layout.py` — detect `packages/` vs `src/` layouts, overlay `.nimbusware/enforcement.yaml`
 - `workspace_ci_runner.py` — `run_enforcement_bundle`, `run_workspace_ci_parity`
-- API: `GET/PUT /v1/runs/{id}/enforcement`, `GET /v1/enforcement/presets/{level}`
-- Feature flag: `NIMBUSWARE_ENFORCEMENT_DEPTH=1` (catalog default off until pipeline wiring in Phase 3)
+- `enforcement_pipeline.py` — gate wiring, skip policy, milestone bundles, E2E normalization
+- API: `GET/PUT /v1/runs/{id}/enforcement`, `GET /v1/enforcement/presets/{level}`, user profiles at run start via `enforcement_profile_id`
+- Feature flag: `NIMBUSWARE_ENFORCEMENT_DEPTH=1` enables pipeline wiring for all runs; explicit `PUT /enforcement` or saved profile also activates per-run
 - `run.created` emits `enforcement_effective` by work type (patch→4, slice→5, factory→7)
+- Maker Progress tab: enforcement depth slider (orthogonal to autopilot trust slider)
 
 Level 10 is **workspace-applicable parity** — not control-plane-only gates (import graph, OpenAPI TS, Playwright button inventory, intent→patch SLO).
 
 ## Consequences
 
-- Phase 3 will wire `micro_slice_verify` and `slice.gate` to `EnforcementProfile`.
+- `micro_slice_verify`, `slice.gate`, and milestone gates consume `EnforcementProfile` when wired.
 - Enterprise fleet policy mirror: `fleet_enforcement_policies.yaml` (`min_enforcement_level`, `max_enforcement_level`).
-- UI dual-slider follows in Phase 4.

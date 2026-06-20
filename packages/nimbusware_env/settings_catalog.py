@@ -597,9 +597,9 @@ def _defs() -> tuple[SettingDef, ...]:
             "NIMBUSWARE_ENFORCEMENT_DEPTH",
             system,
             b,
-            "0",
+            "1",
             "Enforcement depth slider",
-            "Enable per-run enforcement depth API and workspace CI runner.",
+            "Enable per-run enforcement depth API, workspace CI runner, and slice gate wiring.",
             "System — verifiers",
         ),
         SettingDef(

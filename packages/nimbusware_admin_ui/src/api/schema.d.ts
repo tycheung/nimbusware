@@ -4633,6 +4633,11 @@ export interface components {
              * @description Saved operator autopilot profile to apply at run start
              */
             autopilot_profile_id?: string | null;
+            /**
+             * Enforcement Profile Id
+             * @description Saved operator enforcement profile to apply at run start
+             */
+            enforcement_profile_id?: string | null;
         };
         /** CustomAgentCreateRequest */
         CustomAgentCreateRequest: {
@@ -6305,6 +6310,8 @@ export interface components {
             patch_context?: components["schemas"]["PatchContextBody"] | null;
             /** Autopilot Profile Id */
             autopilot_profile_id?: string | null;
+            /** Enforcement Profile Id */
+            enforcement_profile_id?: string | null;
             /**
              * Autonomous
              * @default true

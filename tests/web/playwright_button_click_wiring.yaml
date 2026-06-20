@@ -12,6 +12,7 @@ maker:
   maker-interjection-next: tests/e2e/web/maker_operator_ribbons.spec.ts
   maker-interjection-last: tests/e2e/web/maker_button_clicks.spec.ts
   maker-autopilot-save: tests/e2e/web/maker_operator_ribbons.spec.ts
+  maker-enforcement-save: tests/e2e/web/maker_operator_ribbons.spec.ts
   maker-autopilot-profile-save: tests/e2e/web/maker_playwright_extended.spec.ts
   maker-dev-env-start: tests/e2e/web/maker_button_clicks.spec.ts
   maker-dev-env-stop: tests/e2e/web/maker_playwright_extended.spec.ts

@@ -244,6 +244,39 @@ async function refreshLearningsPanel(runId) {
   }
 }
 
+async function loadEnforcementProfiles() {
+  const select = document.getElementById("enforcement-profile-select");
+  if (!select) return;
+  try {
+    const body = await apiJson("/platform/enforcement/user-profiles");
+    const profiles = body.profiles || [];
+    select.replaceChildren();
+    const custom = document.createElement("option");
+    custom.value = "";
+    custom.textContent = "— custom —";
+    select.appendChild(custom);
+    profiles.forEach((p) => {
+      const opt = document.createElement("option");
+      opt.value = p.profile_id;
+      opt.textContent = p.name || p.profile_id;
+      select.appendChild(opt);
+    });
+  } catch {
+    /* optional */
+  }
+}
+
+function applyEnforcementProfile(profileId, profiles) {
+  const match = (profiles || []).find((p) => p.profile_id === profileId);
+  if (!match) return;
+  const slider = document.getElementById("enforcement-slider");
+  const label = document.getElementById("enforcement-level-label");
+  const summary = document.getElementById("enforcement-summary");
+  if (slider) slider.value = String(match.level ?? 5);
+  if (label) label.textContent = String(match.level ?? 5);
+  if (summary) summary.textContent = match.name || `Level ${match.level ?? 5}`;
+}
+
 async function loadAutopilotProfiles() {
   const select = document.getElementById("autopilot-profile-select");
   if (!select) return;
@@ -322,6 +355,62 @@ export function wireOperatorRibbons(runId) {
   };
   document.getElementById("interjection-next-btn")?.addEventListener("click", () => postInterjection("next"));
   document.getElementById("interjection-last-btn")?.addEventListener("click", () => postInterjection("last"));
+  const enforcementSlider = document.getElementById("enforcement-slider");
+  const enforcementLabel = document.getElementById("enforcement-level-label");
+  enforcementSlider?.addEventListener("input", async () => {
+    if (enforcementLabel) enforcementLabel.textContent = String(enforcementSlider.value);
+    const summary = document.getElementById("enforcement-summary");
+    try {
+      const preset = await apiJson(
+        `/enforcement/presets/${encodeURIComponent(enforcementSlider.value)}`,
+      );
+      if (summary) summary.textContent = preset.name || `Level ${enforcementSlider.value}`;
+    } catch {
+      if (summary) summary.textContent = `Level ${enforcementSlider.value}`;
+    }
+  });
+  document.getElementById("enforcement-save-btn")?.addEventListener("click", async () => {
+    const level = Number(enforcementSlider?.value || 5);
+    try {
+      const body = await apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level }),
+      });
+      toast(`Enforcement level ${level} applied`, "success");
+      const summary = document.getElementById("enforcement-summary");
+      if (summary) summary.textContent = body.name || `Level ${level}`;
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  document.getElementById("enforcement-profile-save-btn")?.addEventListener("click", async () => {
+    const level = Number(enforcementSlider?.value || 5);
+    const profileId = window.prompt("Profile id (slug)", "default")?.trim();
+    if (!profileId) return;
+    const name = window.prompt("Display name", profileId)?.trim() || profileId;
+    try {
+      await apiJson(`/platform/enforcement/user-profiles/${encodeURIComponent(profileId)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, level }),
+      });
+      toast(`Saved enforcement profile ${profileId}`, "success");
+      await loadEnforcementProfiles();
+    } catch (e) {
+      toast(String(e.message || e), "error");
+    }
+  });
+  document.getElementById("enforcement-profile-select")?.addEventListener("change", async (ev) => {
+    const pid = ev.target?.value;
+    if (!pid) return;
+    try {
+      const body = await apiJson("/platform/enforcement/user-profiles");
+      applyEnforcementProfile(pid, body.profiles || []);
+    } catch {
+      /* ignore */
+    }
+  });
   const slider = document.getElementById("autopilot-slider");
   const label = document.getElementById("autopilot-level-label");
   slider?.addEventListener("input", () => {
@@ -374,7 +463,17 @@ export function wireOperatorRibbons(runId) {
   void refreshCouncilRibbon(runId);
   void refreshVariantRibbon(runId);
   void refreshLearningsPanel(runId);
+  void loadEnforcementProfiles();
   void loadAutopilotProfiles();
+  apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`)
+    .then((ep) => {
+      const level = ep.level ?? 5;
+      if (enforcementSlider) enforcementSlider.value = String(level);
+      if (enforcementLabel) enforcementLabel.textContent = String(level);
+      const summary = document.getElementById("enforcement-summary");
+      if (summary) summary.textContent = ep.name || `Level ${level}`;
+    })
+    .catch(() => {});
   apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`)
     .then((ap) => {
       const level = ap.level ?? 5;

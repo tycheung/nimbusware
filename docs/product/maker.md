@@ -15,7 +15,7 @@ Launch: `poetry run nimbusware-maker` or `poetry run nimbusware-run` (pywebview)
 | **Review** | Research approve/reject, slice approval, factory evidence, audit export |
 | **Plan** | Campaign backlog tree, steer actions |
 | **Models** | Model Hub — Ollama + API connections |
-| **Settings** | Hardware, Ollama, autopilot, hybrid routing presets |
+| **Settings** | Hardware, Ollama, autopilot, enforcement depth defaults, hybrid routing presets |
 
 PWA manifest + offline service worker; Web Push when VAPID configured. Deep links: `?run_id=`.
 
@@ -24,7 +24,7 @@ PWA manifest + offline service worker; Web Push when VAPID configured. Deep link
 - Rules-first intent classifier with optional LLM (`NIMBUSWARE_INTENT_CLASSIFIER_MODEL`)
 - **Work types:** `quick`, `patch`, `slice`, `campaign`, `factory` → workflow profiles; frozen on `run.created`
 - Live **run theater** with severity and evidence toggles in run cards
-- Session sidebar, fork/branch tree, trust/autopilot ribbons
+- Session sidebar, fork/branch tree, trust/autopilot and enforcement depth ribbons
 - Escalation: patch fail → slice widen; repeated gate fail → campaign promotion
 - APIs: `POST /v1/chat/sessions`, `POST /v1/chat/classify`, `POST /v1/chat/sessions/{id}/start`, fork/graph/switch-mode
 - MCP tools: [ide-bridge.md](../ide-bridge.md); ADRs [020](../adr/020-unified-chat-work-type-routing.md), [021](../adr/021-conversation-dag-branching.md)

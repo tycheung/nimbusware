@@ -37,7 +37,7 @@ Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `cam
 
 ## Enforcement depth
 
-Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 presets; `workspace_layout.py` + `workspace_ci_runner.py` run layout-aware CI bundles on attached workspaces. API: `GET/PUT /v1/runs/{id}/enforcement`. Enable with `NIMBUSWARE_ENFORCEMENT_DEPTH=1`. See ADR [026](../../docs/adr/026-enforcement-depth-slider.md).
+Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 presets; `enforcement_pipeline.py` wires verify/gate/milestone checks; `workspace_layout.py` + `workspace_ci_runner.py` run layout-aware CI bundles on attached workspaces. API: `GET/PUT /v1/runs/{id}/enforcement`. Enable with `NIMBUSWARE_ENFORCEMENT_DEPTH=1` or explicit per-run slider update. See ADR [026](../../docs/adr/026-enforcement-depth-slider.md).
 
 ## Backlog generation
 

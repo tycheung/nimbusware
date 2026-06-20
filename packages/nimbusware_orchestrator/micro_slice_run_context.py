@@ -17,6 +17,11 @@ def run_created_metadata(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def fast_slice_effective_from_rows(rows: list[dict[str, Any]]) -> bool:
+    from nimbusware_orchestrator.enforcement_pipeline import active_enforcement_profile
+
+    profile = active_enforcement_profile(rows)
+    if profile is not None and not profile.fast_slice_allowed:
+        return False
     fs = mapping_or_empty(run_created_metadata(rows).get("fast_slice_effective"))
     if not fs:
         return False

@@ -16,6 +16,7 @@ from nimbusware_maker.intent_classifier import WorkType
 from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW
 from nimbusware_orchestrator.patch_context import normalize_patch_context
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
+from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
 
 
 class CreateChatSessionBody(BaseModel):
@@ -63,6 +64,7 @@ class StartChatSessionBody(BaseModel):
     requirements: RunRequirementsBody | None = None
     patch_context: PatchContextBody | None = None
     autopilot_profile_id: str | None = Field(default=None, max_length=120)
+    enforcement_profile_id: str | None = Field(default=None, max_length=120)
     autonomous: bool = True
     align_run_replay: bool = False
     replay_from_seq: int | None = Field(default=None, ge=0)
@@ -219,6 +221,22 @@ def start_campaign(
                     details={"profile_id": body.autopilot_profile_id},
                 ),
             )
+    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
+        applied_enf = apply_user_enforcement_at_run_start(
+            store,
+            run_id,
+            str(body.enforcement_profile_id),
+            repo_root=orch.repo_root,
+        )
+        if applied_enf is None:
+            raise HTTPException(
+                status_code=422,
+                detail=problem(
+                    "enforcement_profile_not_found",
+                    "Unknown enforcement profile id",
+                    details={"profile_id": body.enforcement_profile_id},
+                ),
+            )
     mode = orch.start_campaign(run_id, workspace=ws, autonomous=body.autonomous)
     return {
         "run_id": str(run_id),
@@ -271,6 +289,22 @@ def start_run(
                     "autopilot_profile_not_found",
                     "Unknown autopilot profile id",
                     details={"profile_id": body.autopilot_profile_id},
+                ),
+            )
+    if body.enforcement_profile_id and str(body.enforcement_profile_id).strip():
+        applied_enf = apply_user_enforcement_at_run_start(
+            store,
+            run_id,
+            str(body.enforcement_profile_id),
+            repo_root=orch.repo_root,
+        )
+        if applied_enf is None:
+            raise HTTPException(
+                status_code=422,
+                detail=problem(
+                    "enforcement_profile_not_found",
+                    "Unknown enforcement profile id",
+                    details={"profile_id": body.enforcement_profile_id},
                 ),
             )
     return {"run_id": str(run_id), "campaign_id": None, "dispatch_mode": None}

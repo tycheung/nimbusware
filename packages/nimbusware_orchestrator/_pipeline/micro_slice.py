@@ -79,22 +79,46 @@ class MicroSliceMixin:
         p: SlicePlan = plan if isinstance(plan, SlicePlan) else parse_slice_plan(plan)
         rows = self._store.list_run_events(str(run_id))
         from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
+        from nimbusware_orchestrator.enforcement_pipeline import (
+            active_enforcement_profile,
+            run_milestone_enforcement,
+        )
         from nimbusware_orchestrator.slice_cycle_integration import resolution_for_gate
 
         profile = autopilot_profile_from_rows(rows)
+        enforcement = active_enforcement_profile(rows)
+        verify_ok_for_gate = verify_ok
+        enforcement_meta: dict[str, Any] = {}
 
         def _resolution_cb(findings: list[dict[str, Any]]) -> Any:
             return resolution_for_gate(self._store, run_id, rows, findings)
 
+        if enforcement is not None:
+            from nimbusware_maker.workspace import resolve_run_workspace
+
+            ws = resolve_run_workspace(rows)
+            milestone = run_milestone_enforcement(
+                ws,
+                enforcement,
+                scope_paths=list(p.target_paths),
+            )
+            if milestone is not None:
+                enforcement_meta["enforcement_steps"] = milestone.get(
+                    "enforcement_steps", milestone
+                )
+                if not milestone.get("enforcement_passed", True):
+                    verify_ok_for_gate = False
+
         gate = run_slice_gate_chain(
             p,
-            verify_ok=verify_ok,
+            verify_ok=verify_ok_for_gate,
             critique_verdicts=critique_verdicts,
             tests_passed=tests_passed,
             test_detail=test_detail or test_output[:500],
             e2e_passed=e2e_passed,
             e2e_detail=e2e_detail,
             autopilot_level=profile.level,
+            enforcement_profile=enforcement,
             resolution_callback=_resolution_cb,
         )
         run_meta = self._run_created_metadata(run_id)
@@ -137,6 +161,7 @@ class MicroSliceMixin:
         now = datetime.now(timezone.utc)
         meta = {
             **gate.to_metadata(),
+            **enforcement_meta,
             "slice_context_packet": packet.model_dump(mode="json"),
             "slice_handoff": handoff.model_dump(mode="json"),
         }

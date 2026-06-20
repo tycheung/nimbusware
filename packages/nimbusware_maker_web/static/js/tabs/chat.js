@@ -31,6 +31,7 @@ const RESUME_KEY = "maker_chat_resume_session";
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
 const FOLLOW_LIVE_KEY = "maker_chat_theater_follow_live";
 const DEFAULT_PROFILE_KEY = "maker_default_autopilot_profile_id";
+const DEFAULT_ENFORCEMENT_PROFILE_KEY = "maker_default_enforcement_profile_id";
 const THEATER_CAP_DIGEST = 12;
 const THEATER_CAP_LIVE = 96;
 
@@ -274,6 +275,10 @@ function defaultAutopilotProfileId() {
   return localStorage.getItem(DEFAULT_PROFILE_KEY)?.trim() || "";
 }
 
+function defaultEnforcementProfileId() {
+  return localStorage.getItem(DEFAULT_ENFORCEMENT_PROFILE_KEY)?.trim() || "";
+}
+
 async function startRunFromSession(
   sessionId,
   workType,
@@ -292,6 +297,8 @@ async function startRunFromSession(
   };
   const profileId = defaultAutopilotProfileId();
   if (profileId) startPayload.autopilot_profile_id = profileId;
+  const enforcementProfileId = defaultEnforcementProfileId();
+  if (enforcementProfileId) startPayload.enforcement_profile_id = enforcementProfileId;
   if (message) {
     startPayload.requirements = { business_prompt: message };
   }

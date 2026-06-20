@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from nimbusware_orchestrator.enforcement_profiles import resolve_enforcement_profile
 from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.slice_gate import map_paths_to_test_targets, run_slice_gate_chain
 
@@ -27,3 +28,18 @@ def test_slice_gate_chain_blocks_on_verify_fail() -> None:
 def test_map_paths_to_test_targets() -> None:
     targets = map_paths_to_test_targets(("packages/nimbusware_api/app.py",))
     assert any("test_" in t for t in targets)
+
+
+def test_slice_gate_skip_becomes_fail_with_enforcement() -> None:
+    plan = parse_slice_plan({"slice_id": "s3", "target_paths": ["packages/foo.py"]})
+    profile = resolve_enforcement_profile(level=6)
+    result = run_slice_gate_chain(
+        plan,
+        verify_ok=True,
+        critique_verdicts=["PASS"],
+        tests_passed=None,
+        enforcement_profile=profile,
+    )
+    assert not result.passed
+    test_step = next(s for s in result.steps if s.name == "slice.test")
+    assert test_step.verdict == "FAIL"

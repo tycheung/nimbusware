@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from nimbusware_orchestrator.enforcement_profiles import EnforcementProfile
 from nimbusware_orchestrator.micro_slice import SlicePlan
 
 
@@ -31,6 +32,38 @@ class SliceGateChainResult:
         }
 
 
+def apply_skip_verdict_policy(
+    steps: tuple[SliceGateStep, ...],
+    policy: str,
+) -> tuple[SliceGateStep, ...]:
+    if policy == "pass":
+        return steps
+    out: list[SliceGateStep] = []
+    for step in steps:
+        if step.verdict != "SKIP":
+            out.append(step)
+            continue
+        if policy == "fail":
+            out.append(
+                SliceGateStep(
+                    step.name,
+                    "FAIL",
+                    step.detail or "skipped step blocked by enforcement depth",
+                ),
+            )
+        elif policy == "warn":
+            out.append(
+                SliceGateStep(
+                    step.name,
+                    "PASS",
+                    f"warn: {step.detail or 'skipped'}",
+                ),
+            )
+        else:
+            out.append(step)
+    return tuple(out)
+
+
 def run_slice_gate_chain(
     plan: SlicePlan,
     *,
@@ -43,6 +76,7 @@ def run_slice_gate_chain(
     e2e_detail: str = "",
     unanimous_required: bool = True,
     autopilot_level: int = 5,
+    enforcement_profile: EnforcementProfile | None = None,
     resolution_callback: Any | None = None,
 ) -> SliceGateChainResult:
     steps: list[SliceGateStep] = []
@@ -100,6 +134,13 @@ def run_slice_gate_chain(
         e_verdict = "PASS" if e2e_passed else "FAIL"
         e_detail = e2e_detail
     steps.append(SliceGateStep("slice.e2e", e_verdict, e_detail))
+
+    if enforcement_profile is not None:
+        steps = list(
+            apply_skip_verdict_policy(tuple(steps), enforcement_profile.skip_verdict_policy),
+        )
+    else:
+        steps = list(steps)
 
     failing = [s for s in steps if s.verdict == "FAIL"]
     if unanimous_required and failing:

@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 121
-  clicked: 35
+  total_buttons: 123
+  clicked: 36
   visible_only: 7
-  unwired: 79
-  click_ratio: 0.2893
+  unwired: 80
+  click_ratio: 0.2927
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -337,6 +337,19 @@ buttons:
   label: Stop session
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
+  visible_only_in: []
+- test_id: maker-enforcement-profile-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/enforcement-ribbon.js
+  label: Save profile
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-enforcement-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/enforcement-ribbon.js
+  label: Apply to run
+  clicked_in:
+  - tests/e2e/web/maker_operator_ribbons.spec.ts
   visible_only_in: []
 - test_id: maker-factory-evidence-download
   app: maker

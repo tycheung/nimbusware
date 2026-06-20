@@ -154,6 +154,16 @@ export async function mountSettings(root) {
         </select>
       </label>
     </section>
+    <section id="settings-enforcement-panel" class="panel" data-testid="maker-settings-enforcement-panel">
+      <h3>Enforcement depth defaults</h3>
+      <p class="muted">Saved enforcement profile applied at Chat run start (orthogonal to trust/autopilot).</p>
+      <label>
+        Default saved profile
+        <select id="settings-default-enforcement-profile" data-testid="maker-settings-default-enforcement-profile">
+          <option value="">— none —</option>
+        </select>
+      </label>
+    </section>
     <section id="settings-memory-library" class="panel" data-testid="maker-settings-memory-library">
       <h3>Memory library</h3>
       <p class="muted" id="settings-memory-caption"></p>
@@ -350,6 +360,30 @@ export async function mountSettings(root) {
       if (val) localStorage.setItem(DEFAULT_PROFILE_KEY, val);
       else localStorage.removeItem(DEFAULT_PROFILE_KEY);
       toast("Default trust profile saved", "success");
+    });
+  }
+
+  const DEFAULT_ENFORCEMENT_PROFILE_KEY = "maker_default_enforcement_profile_id";
+  const enforcementSelect = root.querySelector("#settings-default-enforcement-profile");
+  if (enforcementSelect) {
+    try {
+      const body = await apiJson("/platform/enforcement/user-profiles");
+      for (const p of body.profiles || []) {
+        const opt = document.createElement("option");
+        opt.value = p.profile_id;
+        opt.textContent = p.name || p.profile_id;
+        enforcementSelect.appendChild(opt);
+      }
+    } catch {
+      /* optional */
+    }
+    const savedEnforcement = localStorage.getItem(DEFAULT_ENFORCEMENT_PROFILE_KEY) || "";
+    if (savedEnforcement) enforcementSelect.value = savedEnforcement;
+    enforcementSelect.addEventListener("change", () => {
+      const val = enforcementSelect.value?.trim() || "";
+      if (val) localStorage.setItem(DEFAULT_ENFORCEMENT_PROFILE_KEY, val);
+      else localStorage.removeItem(DEFAULT_ENFORCEMENT_PROFILE_KEY);
+      toast("Default enforcement profile saved", "success");
     });
   }
 

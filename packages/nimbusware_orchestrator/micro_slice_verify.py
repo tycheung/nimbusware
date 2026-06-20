@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from nimbusware_orchestrator.enforcement_profiles import EnforcementProfile
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.patch_context import (
     maven_test_class_from_failing_test,
@@ -15,6 +16,7 @@ from nimbusware_orchestrator.verifiers import (
     run_pytest_targets,
     run_ruff_on_paths,
 )
+from nimbusware_orchestrator.workspace_ci_runner import run_enforcement_bundle
 
 
 def _workspace_stack(workspace: Path) -> str:
@@ -31,7 +33,33 @@ def run_slice_verify_and_test(
     *,
     timeout_seconds: float,
     rows: list[dict[str, Any]] | None = None,
+    enforcement_profile: EnforcementProfile | None = None,
 ) -> tuple[bool, str, bool, str]:
+    if enforcement_profile is not None:
+        bundle = run_enforcement_bundle(
+            workspace,
+            enforcement_profile,
+            scope_paths=list(plan.target_paths),
+            milestone=False,
+            timeout_seconds=timeout_seconds,
+        )
+        verify_ok = bundle.passed
+        bundle_sections = [
+            f"=== enforcement depth {enforcement_profile.level} ({enforcement_profile.name}) ===",
+        ]
+        for step in bundle.steps:
+            bundle_sections.append(f"=== {step.name} (exit {step.exit_code}) ===\n{step.detail}")
+        tests_passed = verify_ok
+        test_out = bundle_sections[-1] if bundle_sections else ""
+        for step in bundle.steps:
+            if step.name.startswith("pytest"):
+                tests_passed = step.exit_code == 0 and not (
+                    enforcement_profile.tests_mode == "mapped_required" and step.skipped
+                )
+                test_out = step.detail
+                break
+        return verify_ok, "\n".join(bundle_sections), tests_passed, test_out
+
     stack = _workspace_stack(workspace)
     missing = [p for p in plan.target_paths if not (workspace / p).is_file()]
     sections: list[str] = []
