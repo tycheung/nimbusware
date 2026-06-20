@@ -1,6 +1,6 @@
 # Common environment variables
 
-Install-only variables: [`.env.example`](../.env.example). Runtime tunables in Postgres: [operator-settings.md](../operator-settings.md) (243-key catalog).
+Install-only variables: [`.env.example`](../.env.example). Runtime tunables in Postgres: [operator-settings.md](../operator-settings.md) (246-key catalog).
 
 Resolve via `packages/nimbusware_env/env_flags.py` helpers — not raw `os.environ` in feature code.
 

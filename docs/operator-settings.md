@@ -32,7 +32,7 @@ Fail-closed §14 keys (`NIMBUSWARE_SKIP_PREFLIGHT`, `NIMBUSWARE_RUN_BANDIT`, `NI
 
 ## Implementation
 
-- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**243** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
+- Catalog: `packages/nimbusware_env/settings_catalog.py` + `settings_catalog_extended.py` (**246** keys; Ollama URL consolidated Jun 2026 — use `NIMBUSWARE_OLLAMA_BASE_URL`)
 
 ### Context budget (`*_MAX_CHARS`)
 

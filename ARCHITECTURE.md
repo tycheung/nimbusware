@@ -55,7 +55,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
 | `nimbusware_console` | Admin display helpers + enterprise fleet formatters; BFF tables via `routes/admin_ui_bff.py` |
-| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **243-key** settings catalog + `env_flags`, admin token guards |
+| `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **246-key** settings catalog + `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 | `nimbusware_auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
 | `nimbusware_compute` | Compute mesh node registry, work-unit queue, worker policy (`nimbusware-compute-worker` CLI) |
@@ -145,6 +145,6 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~2,824+ unit tests / 3,684+ collected, ≥75% line coverage; see `tests/README.md`).
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3009 unit tests in the default job / ~3860 collected, ≥75% line coverage; see `tests/README.md`).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).

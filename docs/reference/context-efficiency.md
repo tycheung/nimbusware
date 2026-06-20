@@ -16,7 +16,7 @@ Token-aware caps keep LLM prompts bounded without deleting raw audit events. ADR
 | `NIMBUSWARE_HANDOFF_LLM_SUMMARY` | 0 | Optional LLM handoff refinement |
 | `NIMBUSWARE_THEATER_LLM_SUMMARY` | off | Optional theater summary when enabled |
 
-Full catalog (243 keys): [operator-settings.md](../operator-settings.md) and `poetry run python scripts/ci/audit_operator_env.py`.
+Full catalog (246 keys): [operator-settings.md](../operator-settings.md) and `poetry run python scripts/ci/audit_operator_env.py`.
 
 ## APIs
 

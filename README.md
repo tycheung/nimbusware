@@ -102,4 +102,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, and typing tranches.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, and typing tranches. Default CI runs **~3009** unit tests (plus 81 Playwright specs); full pytest collection is **~3860** tests.
