@@ -4,6 +4,7 @@ import {
   ENFORCEMENT_PROFILE_STORAGE_KEY,
   writeStoredProfileId,
 } from "../operator-default-profiles.js";
+import { loadPlatformUserProfiles, populateProfileSelect } from "../ribbon-shared.js";
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard } from "../launch-scorecard.js";
 import { getActiveProjectId, hydrateActiveRun, resolveRunId } from "../session-hub.js";
@@ -346,17 +347,8 @@ export async function mountSettings(root) {
 
   const trustSelect = root.querySelector("#settings-default-autopilot-profile");
   if (trustSelect) {
-    try {
-      const body = await apiJson("/platform/autopilot/user-profiles");
-      for (const p of body.profiles || []) {
-        const opt = document.createElement("option");
-        opt.value = p.profile_id;
-        opt.textContent = p.name || p.profile_id;
-        trustSelect.appendChild(opt);
-      }
-    } catch {
-      /* optional */
-    }
+    const profiles = await loadPlatformUserProfiles(apiJson, "/platform/autopilot/user-profiles");
+    populateProfileSelect(trustSelect, profiles);
     const savedProfile = localStorage.getItem(AUTOPILOT_PROFILE_STORAGE_KEY) || "";
     if (savedProfile) trustSelect.value = savedProfile;
     trustSelect.addEventListener("change", () => {
@@ -367,17 +359,8 @@ export async function mountSettings(root) {
 
   const enforcementSelect = root.querySelector("#settings-default-enforcement-profile");
   if (enforcementSelect) {
-    try {
-      const body = await apiJson("/platform/enforcement/user-profiles");
-      for (const p of body.profiles || []) {
-        const opt = document.createElement("option");
-        opt.value = p.profile_id;
-        opt.textContent = p.name || p.profile_id;
-        enforcementSelect.appendChild(opt);
-      }
-    } catch {
-      /* optional */
-    }
+    const profiles = await loadPlatformUserProfiles(apiJson, "/platform/enforcement/user-profiles");
+    populateProfileSelect(enforcementSelect, profiles);
     const savedEnforcement = localStorage.getItem(ENFORCEMENT_PROFILE_STORAGE_KEY) || "";
     if (savedEnforcement) enforcementSelect.value = savedEnforcement;
     enforcementSelect.addEventListener("change", () => {

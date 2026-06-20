@@ -1,5 +1,5 @@
 import { apiJson, toast } from "./api-client.js";
-import { populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
+import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export const AUTOPILOT_CHECKPOINT_CATALOG = [
   "stop_after_run_plan",
@@ -39,12 +39,7 @@ export function selectedAutopilotCheckpoints(mount) {
 }
 
 export async function loadAutopilotUserProfiles() {
-  try {
-    const body = await apiJson("/platform/autopilot/user-profiles");
-    return body.profiles || [];
-  } catch {
-    return [];
-  }
+  return loadPlatformUserProfiles(apiJson, "/platform/autopilot/user-profiles");
 }
 
 export function applyAutopilotProfileToControls(root, profile) {

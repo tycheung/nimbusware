@@ -1,13 +1,8 @@
 import { apiJson, toast } from "./api-client.js";
-import { populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
+import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export async function loadEnforcementUserProfiles() {
-  try {
-    const body = await apiJson("/platform/enforcement/user-profiles");
-    return body.profiles || [];
-  } catch {
-    return [];
-  }
+  return loadPlatformUserProfiles(apiJson, "/platform/enforcement/user-profiles");
 }
 
 export function applyEnforcementProfileToControls(root, profile) {

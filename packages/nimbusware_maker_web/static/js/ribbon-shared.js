@@ -16,3 +16,12 @@ export function populateProfileSelect(select, profiles) {
     select.appendChild(opt);
   }
 }
+
+export async function loadPlatformUserProfiles(apiJsonFn, path) {
+  try {
+    const body = await apiJsonFn(path);
+    return body.profiles || [];
+  } catch {
+    return [];
+  }
+}
