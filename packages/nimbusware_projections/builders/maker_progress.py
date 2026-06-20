@@ -352,6 +352,11 @@ def maker_progress_from_events(events: list[dict[str, Any]]) -> dict[str, Any]:
     factory_status = factory_status_from_events(events)
     if factory_status:
         out["factory_status"] = factory_status
+    from nimbusware_projections.builders.enforcement_status import enforcement_status_from_events
+
+    enforcement_status = enforcement_status_from_events(events)
+    if enforcement_status:
+        out["enforcement_status"] = enforcement_status
 
     latest_stage = _latest_slice_stage(events)
     gate_summary = _gate_summary_plain(

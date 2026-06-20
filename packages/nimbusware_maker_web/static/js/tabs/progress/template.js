@@ -1,4 +1,8 @@
 /** Progress tab mount HTML (injected once on mount). */
+import { enforcementRibbonHtml } from "../../enforcement-ribbon.js";
+
+const ENFORCEMENT_RIBBON = enforcementRibbonHtml({ rootId: "enforcement-ribbon" });
+
 export const PROGRESS_MOUNT_HTML = `
       <div id="compact-toolbar" class="actions" data-testid="maker-compact-toolbar" hidden>
         <button type="button" id="compact-all-btn">Compact all</button>
@@ -46,21 +50,7 @@ export const PROGRESS_MOUNT_HTML = `
         </div>
         <p id="interjection-queue-body" class="muted"></p>
       </section>
-      <section id="enforcement-ribbon" class="panel" data-testid="maker-enforcement-ribbon">
-        <h4>Enforcement depth</h4>
-        <label>Level 0–10 <input type="range" id="enforcement-slider" min="0" max="10" value="5" data-testid="maker-enforcement-slider" /></label>
-        <span id="enforcement-level-label">5</span>
-        <p id="enforcement-summary" class="muted" data-testid="maker-enforcement-summary"></p>
-        <div class="actions">
-          <label>Saved profile
-            <select id="enforcement-profile-select" data-testid="maker-enforcement-profile-select">
-              <option value="">— custom —</option>
-            </select>
-          </label>
-          <button type="button" id="enforcement-profile-save-btn" data-testid="maker-enforcement-profile-save">Save profile</button>
-          <button type="button" id="enforcement-save-btn" data-testid="maker-enforcement-save">Apply to run</button>
-        </div>
-      </section>
+      ${ENFORCEMENT_RIBBON}
       <section id="autopilot-ribbon" class="panel" data-testid="maker-autopilot-ribbon">
         <h4>Autopilot</h4>
         <label>Level 0–10 <input type="range" id="autopilot-slider" min="0" max="10" value="5" data-testid="maker-autopilot-slider" /></label>
@@ -95,6 +85,7 @@ export const PROGRESS_MOUNT_HTML = `
       <span id="work-type-badge" class="work-type-badge" hidden data-testid="maker-work-type-badge"></span>
       <span id="context-budget-chip" class="context-budget-chip" hidden></span>
       <p id="factory-status-chip" class="factory-status-chip" hidden data-testid="maker-factory-status"></p>
+      <p id="enforcement-chip" class="enforcement-chip" hidden data-testid="maker-enforcement-chip"></p>
       <p id="gate-summary-banner" class="gate-summary-banner" hidden></p>
       <span id="role-cost-chip" class="role-cost-chip" hidden></span>
       <p id="handoff-preview" class="handoff-preview" hidden></p>

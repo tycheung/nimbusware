@@ -81,6 +81,23 @@ def test_maker_progress_includes_work_type() -> None:
     assert body["work_type"] == "patch"
 
 
+def test_maker_progress_includes_enforcement_status() -> None:
+    events = [
+        {
+            "event_type": "run.created",
+            "metadata": {
+                "requirements": {"business_prompt": "Slice work"},
+                "work_type": "slice",
+                "enforcement_effective": {"level": 5, "name": "Balanced"},
+            },
+        },
+    ]
+    body = maker_progress_from_events(events)
+    es = body.get("enforcement_status") or {}
+    assert es.get("level") == 5
+    assert "Balanced" in str(es.get("name") or "")
+
+
 def test_maker_progress_surfaces_resource_pressure() -> None:
     events = [
         {"event_type": "run.created", "metadata": {"requirements": {"business_prompt": "x"}}},

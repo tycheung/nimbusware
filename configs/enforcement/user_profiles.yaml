@@ -1,1 +1,13 @@
-profiles: []
+profiles:
+- profile_id: balanced
+  name: Balanced (slice default)
+  level: 5
+- profile_id: nimbusware_parity
+  name: Nimbusware parity
+  level: 10
+- profile_id: platform_grade
+  name: Platform grade
+  level: 9
+- profile_id: ship_strict
+  name: Ship strict
+  level: 8

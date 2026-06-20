@@ -18,6 +18,21 @@ export function renderWorkType(body) {
   badge.textContent = `Work type: ${wt}`;
 }
 
+export function renderEnforcementStatus(body) {
+  const chip = document.getElementById("enforcement-chip");
+  if (!chip) return;
+  const es = body.enforcement_status;
+  if (!es || es.level == null) {
+    chip.hidden = true;
+    chip.textContent = "";
+    return;
+  }
+  chip.hidden = false;
+  const gate =
+    es.gate_passed === true ? " · terminal gate pass" : es.gate_passed === false ? " · terminal gate fail" : "";
+  chip.textContent = `Enforcement ${es.level} · ${es.name || "Custom"}${gate}`;
+}
+
 export function renderFactoryStatus(body) {
   const chip = document.getElementById("factory-status-chip");
   if (!chip) return;
@@ -274,6 +289,7 @@ export function renderProgressBody(body) {
   const list = document.getElementById("slice-list");
   renderPressure(body);
   renderWorkType(body);
+  renderEnforcementStatus(body);
   renderFactoryStatus(body);
   renderContextBudget(body);
   renderGateSummaryBanner(body);
