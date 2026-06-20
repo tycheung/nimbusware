@@ -38,5 +38,7 @@ Level 10 is **workspace-applicable parity** — not control-plane-only gates (im
 ## Consequences
 
 - `micro_slice_verify`, `slice.gate`, and milestone gates consume `EnforcementProfile` when wired.
+- Legacy writer/verifier verify (`lifecycle_verify.py`) runs the enforcement bundle when a profile is active.
 - Terminal campaign/micro-slice completion may fail when level-10 parity does not pass.
+- `parity_contract_steps()` names match runner step ids (`ruff_workspace`, `pytest_coverage`, etc.; `mypy` optional when no config).
 - Enterprise fleet policy mirror: `fleet_enforcement_policies.yaml` (`min_enforcement_level`, `max_enforcement_level`).
