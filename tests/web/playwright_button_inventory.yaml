@@ -174,13 +174,13 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-interjection-last
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
   label: Last
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-interjection-next
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
   label: Next
   clicked_in: []
   visible_only_in: []
@@ -518,16 +518,16 @@ buttons:
   - tests/e2e/web/maker_integrator_ribbon.spec.ts
 - test_id: maker-interjection-last
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
-  label: Last in queue
+  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  label: '${compact ? "Last" : "Last in queue"}'
   clicked_in:
   - tests/e2e/web/maker_button_clicks.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
 - test_id: maker-interjection-next
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/template.js
-  label: Next in queue
+  source: packages/nimbusware_maker_web/static/js/interjection-ribbon.js
+  label: '${compact ? "Next" : "Next in queue"}'
   clicked_in:
   - tests/e2e/web/maker_operator_ribbons.spec.ts
   visible_only_in: []

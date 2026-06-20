@@ -88,6 +88,7 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
-- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
+- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
+- Maker operator ribbons live under `packages/nimbusware_maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

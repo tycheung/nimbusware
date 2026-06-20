@@ -19,7 +19,7 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 
 Shared: `api-client.js`, `sse-client.js`, `app-shell.js`, `tab-loader.js`, `tokens.css`.
 
-Operator UI shared modules: `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` (Progress + Chat ribbons and Settings default profiles).
+Operator UI shared modules: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` (Progress + Chat ribbons and Settings default profiles).
 
 Mount: [`packages/nimbusware_api/routes/maker_web.py`](../nimbusware_api/routes/maker_web.py).
 
