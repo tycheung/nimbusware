@@ -4,7 +4,7 @@ The orchestrator (`nimbusware_orchestrator`, `agent_core`) drives adversarial ag
 
 ## Core loop
 
-- **Run lifecycle** — `run.created` → plan → micro-slice loop (plan → implement → verify → critique → test → gate) with frozen `policy_snapshot`
+- **Run lifecycle** — `run.created` → plan → micro-slice loop (plan → implement → verify → critique → test → gate); when all slices pass, optional integrator gate, integration-adapter writer, agent evaluator, and self-refinement markers run before terminal `enforcement.gate`
 - **Adversarial critics** — domain-bound critique stages (security, performance, resilience, refactor)
 - **Unanimous gates** — stage progression blocked until critics/verifiers pass (escalation anti-deadlock)
 - **Parallel writers** — frontend/backend/test writers with `asyncio.gather`

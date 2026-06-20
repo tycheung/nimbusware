@@ -44,6 +44,7 @@ def _run_pipeline_smoke(repo_root: Path) -> dict[str, object]:
         "NIMBUSWARE_REPO_ROOT": str(repo_root),
         "NIMBUSWARE_SLICE_IMPLEMENT": "stub",
     }
+    env.pop("NIMBUSWARE_SLICE_E2E_COMMAND", None)
     t0 = time.perf_counter()
     proc = subprocess.run(
         [sys.executable, str(repo_root / "scripts" / "benchmarks" / "swe_bench_harness.py"), "--run", "--json"],

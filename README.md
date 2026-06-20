@@ -45,7 +45,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
 | Operator ribbons (Maker) | Progress + Chat: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Configure settings (243 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
+| Configure settings (246 env keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
 | First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |

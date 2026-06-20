@@ -8,7 +8,8 @@
   "benchmark_env": {
     "NIMBUSWARE_USE_LLM": "0",
     "NIMBUSWARE_SLICE_IMPLEMENT": "stub",
-    "NIMBUSWARE_SLICE_P3_EVIDENCE": "0"
+    "NIMBUSWARE_SLICE_P3_EVIDENCE": "0",
+    "NIMBUSWARE_SLICE_E2E_COMMAND": ""
   },
   "min_pass_rate": 1.0
 }

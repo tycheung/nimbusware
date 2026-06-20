@@ -111,7 +111,11 @@ def _apply_benchmark_env(manifest: dict[str, Any]) -> None:
     for key, value in raw.items():
         if value is None:
             continue
-        os.environ[str(key)] = str(value)
+        name = str(key)
+        if str(value) == "":
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = str(value)
 
 
 def _fixture_slice_plan_factory(target_paths: list[str]):

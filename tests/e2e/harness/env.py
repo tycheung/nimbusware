@@ -22,6 +22,7 @@ def apply_e2e_unit_profile(
     repo_root: str | None = None,
     extra: dict[str, str] | None = None,
 ) -> None:
+    monkeypatch.delenv("NIMBUSWARE_SLICE_E2E_COMMAND", raising=False)
     for key, value in DEFAULT_E2E_ENV.items():
         monkeypatch.setenv(key, value)
     if repo_root is not None:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import shlex
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -35,6 +37,12 @@ def _is_control_plane_repo_workspace(workspace: Path) -> bool:
     ).is_file()
 
 
+def _split_shell_command(cmd_line: str) -> list[str]:
+    if os.name == "nt":
+        return shlex.split(cmd_line, posix=False)
+    return shlex.split(cmd_line)
+
+
 def run_slice_e2e_verify(
     workspace: Path,
     *,
@@ -43,7 +51,7 @@ def run_slice_e2e_verify(
 ) -> SliceE2EResult:
     cmd_line = (command or env_str("NIMBUSWARE_SLICE_E2E_COMMAND")).strip()
     if cmd_line:
-        parts = cmd_line.split()
+        parts = _split_shell_command(cmd_line)
         proc = subprocess.run(
             parts,
             cwd=workspace,

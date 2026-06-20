@@ -45,6 +45,18 @@ def test_run_slice_e2e_custom_command(tmp_path: Path) -> None:
     assert result.verdict == "PASS"
 
 
+def test_run_slice_e2e_ci_index_html_command(tmp_path: Path) -> None:
+    (tmp_path / "index.html").write_text("<html></html>", encoding="utf-8")
+    result = run_slice_e2e_verify(
+        tmp_path,
+        command=(
+            "python -c \"import pathlib; assert pathlib.Path('index.html').is_file(); print('ok')\""
+        ),
+        timeout_seconds=30.0,
+    )
+    assert result.verdict == "PASS"
+
+
 def test_run_slice_e2e_skips_without_workspace_tests_e2e(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

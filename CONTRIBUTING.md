@@ -24,7 +24,7 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci/ci_check.sh
 ```
 
-This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **55** Playwright tests across **41** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **81** Playwright tests across **41** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
 
 Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 
