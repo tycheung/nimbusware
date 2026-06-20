@@ -1,4 +1,9 @@
 import { apiJson, toast } from "../api-client.js";
+import {
+  AUTOPILOT_PROFILE_STORAGE_KEY,
+  ENFORCEMENT_PROFILE_STORAGE_KEY,
+  writeStoredProfileId,
+} from "../operator-default-profiles.js";
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard } from "../launch-scorecard.js";
 import { getActiveProjectId, hydrateActiveRun, resolveRunId } from "../session-hub.js";
@@ -339,7 +344,6 @@ export async function mountSettings(root) {
     });
   }
 
-  const DEFAULT_PROFILE_KEY = "maker_default_autopilot_profile_id";
   const trustSelect = root.querySelector("#settings-default-autopilot-profile");
   if (trustSelect) {
     try {
@@ -353,17 +357,14 @@ export async function mountSettings(root) {
     } catch {
       /* optional */
     }
-    const savedProfile = localStorage.getItem(DEFAULT_PROFILE_KEY) || "";
+    const savedProfile = localStorage.getItem(AUTOPILOT_PROFILE_STORAGE_KEY) || "";
     if (savedProfile) trustSelect.value = savedProfile;
     trustSelect.addEventListener("change", () => {
-      const val = trustSelect.value?.trim() || "";
-      if (val) localStorage.setItem(DEFAULT_PROFILE_KEY, val);
-      else localStorage.removeItem(DEFAULT_PROFILE_KEY);
+      writeStoredProfileId(AUTOPILOT_PROFILE_STORAGE_KEY, trustSelect.value);
       toast("Default trust profile saved", "success");
     });
   }
 
-  const DEFAULT_ENFORCEMENT_PROFILE_KEY = "maker_default_enforcement_profile_id";
   const enforcementSelect = root.querySelector("#settings-default-enforcement-profile");
   if (enforcementSelect) {
     try {
@@ -377,12 +378,10 @@ export async function mountSettings(root) {
     } catch {
       /* optional */
     }
-    const savedEnforcement = localStorage.getItem(DEFAULT_ENFORCEMENT_PROFILE_KEY) || "";
+    const savedEnforcement = localStorage.getItem(ENFORCEMENT_PROFILE_STORAGE_KEY) || "";
     if (savedEnforcement) enforcementSelect.value = savedEnforcement;
     enforcementSelect.addEventListener("change", () => {
-      const val = enforcementSelect.value?.trim() || "";
-      if (val) localStorage.setItem(DEFAULT_ENFORCEMENT_PROFILE_KEY, val);
-      else localStorage.removeItem(DEFAULT_ENFORCEMENT_PROFILE_KEY);
+      writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, enforcementSelect.value);
       toast("Default enforcement profile saved", "success");
     });
   }

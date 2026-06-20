@@ -1,6 +1,10 @@
 import { apiJson, toast } from "../api-client.js";
 import { autopilotRibbonHtml, wireAutopilotRibbon } from "../autopilot-ribbon.js";
 import { enforcementRibbonHtml, wireEnforcementRibbon } from "../enforcement-ribbon.js";
+import {
+  defaultAutopilotProfileId,
+  defaultEnforcementProfileId,
+} from "../operator-default-profiles.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
 import { appendTheaterLine, theaterPayloadFromSse } from "../theater-renderer.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
@@ -31,8 +35,6 @@ const SESSION_KEY = "maker_chat_session_id";
 const RESUME_KEY = "maker_chat_resume_session";
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
 const FOLLOW_LIVE_KEY = "maker_chat_theater_follow_live";
-const DEFAULT_PROFILE_KEY = "maker_default_autopilot_profile_id";
-const DEFAULT_ENFORCEMENT_PROFILE_KEY = "maker_default_enforcement_profile_id";
 const THEATER_CAP_DIGEST = 12;
 const THEATER_CAP_LIVE = 96;
 
@@ -270,14 +272,6 @@ function renderClassifierCard(root, classification, { onAccept, onOverride }) {
 
   card.appendChild(chips);
   mount.appendChild(card);
-}
-
-function defaultAutopilotProfileId() {
-  return localStorage.getItem(DEFAULT_PROFILE_KEY)?.trim() || "";
-}
-
-function defaultEnforcementProfileId() {
-  return localStorage.getItem(DEFAULT_ENFORCEMENT_PROFILE_KEY)?.trim() || "";
 }
 
 async function startRunFromSession(
