@@ -353,6 +353,39 @@ class LifecycleVerifyMixin:
         self._maybe_emit_critique_gate_fail_findings(run_id, eff)
         self._maybe_auto_escalate(run_id)
         self._maybe_notice_escalate_findings(run_id)
+        if code == 0:
+            ws = workspace or Path(env_str("NIMBUSWARE_WORKSPACE") or ".").resolve()
+            rows_enf = self._store.list_run_events(str(run_id))
+            from nimbusware_orchestrator.enforcement_pipeline import (
+                legacy_verify_enforcement_passed,
+            )
+
+            enf_ok, enf_log = legacy_verify_enforcement_passed(ws, rows_enf)
+            if not enf_ok:
+                ctx = self._strictness_context(run_id)
+                payload = FindingCreatedPayload.model_validate(
+                    {
+                        "finding_id": str(uuid4()),
+                        "category": "enforcement",
+                        "owner_role": str(writer),
+                        "severity": Severity.HIGH.value,
+                        "source_artifact": "enforcement_bundle",
+                        "repro_steps": enf_log.splitlines()[:40],
+                        "required_fixes": [],
+                    },
+                    context=ctx,
+                )
+                self._store.append(
+                    FindingCreatedEvent(
+                        event_type=EventType.FINDING_CREATED,
+                        event_id=uuid4(),
+                        run_id=run_id,
+                        occurred_at=datetime.now(timezone.utc),
+                        metadata={"enforcement_verify": True},
+                        payload=payload,
+                    ),
+                )
+                return
         skip_critique_downstream = (
             self._should_skip_critique_downstream_tail(
                 run_id,

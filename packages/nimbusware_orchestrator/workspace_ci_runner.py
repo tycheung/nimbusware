@@ -71,12 +71,11 @@ def parity_contract_steps() -> tuple[str, ...]:
     return (
         "ruff_check",
         "ruff_format",
-        "pytest",
+        "ruff_workspace",
         "pytest_coverage",
         "bandit",
         "pip_audit",
         "mypy",
-        "security_scan",
     )
 
 

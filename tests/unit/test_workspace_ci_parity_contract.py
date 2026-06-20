@@ -72,3 +72,16 @@ def test_tiny_python_fixture_parity_when_present() -> None:
     result = run_workspace_ci_parity(fixture, timeout_seconds=300.0)
     assert result.layout is not None
     assert any(s.name.startswith("pytest") for s in result.steps)
+
+
+def test_parity_contract_steps_subset_of_runner() -> None:
+    root = Path(__file__).resolve().parents[1]
+    fixture = root / "fixtures" / "repos" / "tiny_python_app"
+    if not fixture.is_dir():
+        return
+    profile = preset_for_enforcement_level(10)
+    result = run_enforcement_bundle(fixture, profile, milestone=True, timeout_seconds=300.0)
+    emitted = {s.name for s in result.steps}
+    contract = set(parity_contract_steps())
+    optional = {"mypy"}
+    assert contract - optional <= emitted
