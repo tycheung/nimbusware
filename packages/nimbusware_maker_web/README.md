@@ -17,7 +17,9 @@ Alpine.js Maker web app served at `/v1/maker/app/`.
 | Shared | `static/js/launch-scorecard.js` | Re-exports shared launch scorecard renderer |
 | Onboarding (wizard) | `static/js/tabs/wizard.js` | `/platform/onboarding` (first-run; run creation is on **Build**) |
 
-Shared: `api-client.js`, `sse-client.js` (`theaterLineText`, `openSseStream`, `parseSseJson`), `app-shell.js`, `tab-loader.js`, `tokens.css`.
+Shared: `api-client.js`, `sse-client.js`, `app-shell.js`, `tab-loader.js`, `tokens.css`.
+
+Operator UI shared modules: `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` (Progress + Chat ribbons and Settings default profiles).
 
 Mount: [`packages/nimbusware_api/routes/maker_web.py`](../nimbusware_api/routes/maker_web.py).
 
