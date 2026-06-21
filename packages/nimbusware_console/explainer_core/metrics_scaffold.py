@@ -141,3 +141,15 @@ def apply_workflow_yaml_file_metrics(
         version_metric_key,
     )
     apply_nonneg_int_fields(metrics, payload, ((bytes_payload_key, bytes_metric_key),))
+
+
+def apply_env_flag_metric(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    env_payload_key: str,
+    flag_payload_key: str,
+    metric_key: str,
+) -> None:
+    env = payload.get(env_payload_key)
+    if isinstance(env, Mapping):
+        metrics[metric_key] = env.get(flag_payload_key) is True

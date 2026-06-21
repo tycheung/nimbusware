@@ -3,98 +3,91 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    apply_bool_payload_fields,
+    apply_load_error_present,
+    apply_nonneg_int_fields,
+    apply_optional_int_field,
+    default_operator_metrics,
+    metrics_caption,
+    metrics_table_rows,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+
+_DEFAULTS: dict[str, Any] = {
+    "escalation_key_present": False,
+    "suppress_automatic_escalation_effective": False,
+    "policy_yaml_exists": False,
+    "policy_top_level_key_count": 0,
+    "anti_deadlock_mapping_present": False,
+    "anti_deadlock_enabled": False,
+    "anti_deadlock_min_progress_events": None,
+    "policy_yaml_file_bytes": None,
+    "policy_yaml_age_seconds": None,
+    "load_error_present": False,
+}
+
+_BOOL_FIELDS: tuple[tuple[str, str], ...] = (
+    ("escalation_yaml_key_present", "escalation_key_present"),
+    ("suppress_automatic_escalation_effective", "suppress_automatic_escalation_effective"),
+    ("escalation_policy_yaml_path_exists", "policy_yaml_exists"),
+    ("escalation_policy_yaml_has_anti_deadlock_mapping", "anti_deadlock_mapping_present"),
+    ("escalation_policy_yaml_anti_deadlock_enabled", "anti_deadlock_enabled"),
+)
+
+_INT_FIELDS: tuple[tuple[str, str], ...] = (
+    ("escalation_policy_yaml_top_level_key_count", "policy_top_level_key_count"),
+    ("escalation_policy_yaml_file_bytes", "policy_yaml_file_bytes"),
+    ("escalation_policy_yaml_age_seconds", "policy_yaml_age_seconds"),
+)
+
+_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Escalation key present", "escalation_key_present"),
+    ("Suppress automatic (effective)", "suppress_automatic_escalation_effective"),
+    ("Policy YAML exists", "policy_yaml_exists"),
+    ("Policy top-level keys", "policy_top_level_key_count"),
+    ("anti_deadlock mapping", "anti_deadlock_mapping_present"),
+    ("anti_deadlock enabled", "anti_deadlock_enabled"),
+    ("anti_deadlock min_progress_events", "anti_deadlock_min_progress_events"),
+    ("Policy YAML bytes", "policy_yaml_file_bytes"),
+    ("Policy YAML age (s)", "policy_yaml_age_seconds"),
+)
 
 
 def escalation_suppress_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "escalation_key_present": False,
-        "suppress_automatic_escalation_effective": False,
-        "policy_yaml_exists": False,
-        "policy_top_level_key_count": 0,
-        "anti_deadlock_mapping_present": False,
-        "anti_deadlock_enabled": False,
-        "anti_deadlock_min_progress_events": None,
-        "policy_yaml_file_bytes": None,
-        "policy_yaml_age_seconds": None,
-        "load_error_present": False,
-    }
+    metrics = default_operator_metrics(_DEFAULTS)
     if not isinstance(payload, Mapping):
         return metrics
-    metrics["escalation_key_present"] = payload.get("escalation_yaml_key_present") is True
-    metrics["suppress_automatic_escalation_effective"] = (
-        payload.get("suppress_automatic_escalation_effective") is True
+    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
+    apply_nonneg_int_fields(metrics, payload, _INT_FIELDS)
+    apply_optional_int_field(
+        metrics,
+        payload,
+        "escalation_policy_yaml_anti_deadlock_min_progress_events",
+        "anti_deadlock_min_progress_events",
     )
-    metrics["policy_yaml_exists"] = payload.get("escalation_policy_yaml_path_exists") is True
-    raw_kc = payload.get("escalation_policy_yaml_top_level_key_count")
-    if isinstance(raw_kc, int) and not isinstance(raw_kc, bool) and raw_kc >= 0:
-        metrics["policy_top_level_key_count"] = raw_kc
-    metrics["anti_deadlock_mapping_present"] = (
-        payload.get("escalation_policy_yaml_has_anti_deadlock_mapping") is True
-    )
-    if payload.get("escalation_policy_yaml_anti_deadlock_enabled") is True:
-        metrics["anti_deadlock_enabled"] = True
-    raw_mp = payload.get("escalation_policy_yaml_anti_deadlock_min_progress_events")
-    if isinstance(raw_mp, int) and not isinstance(raw_mp, bool) and raw_mp >= 0:
-        metrics["anti_deadlock_min_progress_events"] = raw_mp
-    raw_bytes = payload.get("escalation_policy_yaml_file_bytes")
-    if isinstance(raw_bytes, int) and not isinstance(raw_bytes, bool) and raw_bytes >= 0:
-        metrics["policy_yaml_file_bytes"] = raw_bytes
-    age = payload.get("escalation_policy_yaml_age_seconds")
-    if isinstance(age, int) and not isinstance(age, bool) and age >= 0:
-        metrics["policy_yaml_age_seconds"] = age
-    err = payload.get("load_error")
-    metrics["load_error_present"] = isinstance(err, str) and bool(err.strip())
+    apply_load_error_present(metrics, payload)
     return metrics
 
 
 def escalation_suppress_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "Escalation key present",
-            "value": str(metrics.get("escalation_key_present", False)).lower(),
-        },
-        {
-            "field": "Suppress automatic (effective)",
-            "value": str(
-                metrics.get("suppress_automatic_escalation_effective", False),
-            ).lower(),
-        },
-        {
-            "field": "Policy YAML exists",
-            "value": str(metrics.get("policy_yaml_exists", False)).lower(),
-        },
-        {
-            "field": "Policy top-level keys",
-            "value": str(metrics.get("policy_top_level_key_count", 0)),
-        },
-        {
-            "field": "anti_deadlock mapping",
-            "value": str(metrics.get("anti_deadlock_mapping_present", False)).lower(),
-        },
-        {
-            "field": "anti_deadlock enabled",
-            "value": str(metrics.get("anti_deadlock_enabled", False)).lower(),
-        },
-    ]
-    mp = metrics.get("anti_deadlock_min_progress_events")
-    if isinstance(mp, int) and not isinstance(mp, bool):
-        rows.append(
-            {"field": "anti_deadlock min_progress_events", "value": str(mp)},
-        )
-    raw_bytes = metrics.get("policy_yaml_file_bytes")
-    if isinstance(raw_bytes, int) and not isinstance(raw_bytes, bool):
-        rows.append({"field": "Policy YAML bytes", "value": str(raw_bytes)})
-    age = metrics.get("policy_yaml_age_seconds")
-    if isinstance(age, int) and not isinstance(age, bool):
-        rows.append({"field": "Policy YAML age (s)", "value": str(age)})
-    return rows
+    return metrics_table_rows(
+        metrics,
+        _TABLE_ROWS,
+        include_when=lambda m, key: (
+            key
+            not in {
+                "anti_deadlock_min_progress_events",
+                "policy_yaml_file_bytes",
+                "policy_yaml_age_seconds",
+            }
+            or m.get(key) is not None
+        ),
+    )
 
 
 def escalation_suppress_workflow_explainer_operator_metrics_caption(
@@ -125,7 +118,7 @@ def escalation_suppress_workflow_explainer_operator_metrics_caption(
         parts.append(f"policy YAML **{raw_bytes}** byte(s)")
     if metrics.get("load_error_present") is True:
         parts.append("load error")
-    return "Escalation suppress explainer metrics: " + ", ".join(parts) + "."
+    return metrics_caption("Escalation suppress explainer metrics: ", parts)
 
 
 (

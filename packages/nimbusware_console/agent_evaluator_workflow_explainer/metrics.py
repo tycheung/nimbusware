@@ -3,127 +3,108 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    apply_bool_payload_fields,
+    apply_env_flag_metric,
+    apply_env_tri_state_metrics,
+    apply_load_error_present,
+    apply_nonneg_int_fields,
+    apply_optional_int_field,
+    apply_str_present,
+    default_operator_metrics,
+    metrics_caption,
+    metrics_table_rows,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+
+_DEFAULTS: dict[str, Any] = {
+    "yaml_key_present": False,
+    "yaml_parsed_enabled": False,
+    "llm_evaluation_enabled": False,
+    "would_emit_llm_evaluation": False,
+    "would_emit_stage_started": False,
+    "env_forces_on": False,
+    "env_forces_off": False,
+    "env_unset": True,
+    "auto_promote_disabled": False,
+    "auto_create_disabled": False,
+    "persona_id_present": False,
+    "yaml_true_bool_value_count": 0,
+    "yaml_false_bool_value_count": 0,
+    "load_error_present": False,
+    "workflow_yaml_version_int": None,
+}
+
+_BOOL_FIELDS: tuple[tuple[str, str], ...] = (
+    ("agent_evaluator_yaml_key_present", "yaml_key_present"),
+    ("yaml_parsed_enabled", "yaml_parsed_enabled"),
+    ("yaml_parsed_llm_evaluation_enabled", "llm_evaluation_enabled"),
+    ("would_emit_stage_started", "would_emit_stage_started"),
+    ("would_emit_llm_evaluation", "would_emit_llm_evaluation"),
+)
+
+_INT_FIELDS: tuple[tuple[str, str], ...] = (
+    ("agent_evaluator_yaml_true_bool_value_count", "yaml_true_bool_value_count"),
+    ("agent_evaluator_yaml_false_bool_value_count", "yaml_false_bool_value_count"),
+)
+
+_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("YAML key present", "yaml_key_present"),
+    ("YAML parsed enabled", "yaml_parsed_enabled"),
+    ("Would emit stage", "would_emit_stage_started"),
+    ("Env forces on", "env_forces_on"),
+    ("Env forces off", "env_forces_off"),
+    ("Env unset", "env_unset"),
+    ("Persona id present", "persona_id_present"),
+    ("LLM evaluation enabled", "llm_evaluation_enabled"),
+    ("Would emit LLM branch", "would_emit_llm_evaluation"),
+    ("Auto-promote disabled (env)", "auto_promote_disabled"),
+    ("Auto-create disabled (env)", "auto_create_disabled"),
+    ("YAML true bool count", "yaml_true_bool_value_count"),
+    ("YAML false bool count", "yaml_false_bool_value_count"),
+    ("Workflow YAML version", "workflow_yaml_version_int"),
+)
 
 
 def agent_evaluator_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "yaml_key_present": False,
-        "yaml_parsed_enabled": False,
-        "llm_evaluation_enabled": False,
-        "would_emit_llm_evaluation": False,
-        "would_emit_stage_started": False,
-        "env_forces_on": False,
-        "env_forces_off": False,
-        "env_unset": True,
-        "auto_promote_disabled": False,
-        "auto_create_disabled": False,
-        "persona_id_present": False,
-        "yaml_true_bool_value_count": 0,
-        "yaml_false_bool_value_count": 0,
-        "load_error_present": False,
-        "workflow_yaml_version_int": None,
-    }
+    metrics = default_operator_metrics(_DEFAULTS)
     if not isinstance(payload, Mapping):
         return metrics
-    metrics["yaml_key_present"] = payload.get("agent_evaluator_yaml_key_present") is True
-    metrics["yaml_parsed_enabled"] = payload.get("yaml_parsed_enabled") is True
-    metrics["llm_evaluation_enabled"] = payload.get("yaml_parsed_llm_evaluation_enabled") is True
-    metrics["would_emit_stage_started"] = payload.get("would_emit_stage_started") is True
-    metrics["would_emit_llm_evaluation"] = payload.get("would_emit_llm_evaluation") is True
-    env = payload.get("NIMBUSWARE_AGENT_EVALUATOR")
-    if isinstance(env, dict):
-        metrics["env_forces_on"] = env.get("forces_on") is True
-        metrics["env_forces_off"] = env.get("forces_off") is True
-        metrics["env_unset"] = env.get("unset") is True
-    ap = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE")
-    if isinstance(ap, dict):
-        metrics["auto_promote_disabled"] = ap.get("disables_auto_promote") is True
-    ac = payload.get("NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE")
-    if isinstance(ac, dict):
-        metrics["auto_create_disabled"] = ac.get("disables_auto_create") is True
-    pid = payload.get("yaml_parsed_persona_id")
-    metrics["persona_id_present"] = isinstance(pid, str) and bool(pid.strip())
-    for key, out_key in (
-        ("agent_evaluator_yaml_true_bool_value_count", "yaml_true_bool_value_count"),
-        ("agent_evaluator_yaml_false_bool_value_count", "yaml_false_bool_value_count"),
-    ):
-        raw = payload.get(key)
-        if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
-            metrics[out_key] = raw
-    err = payload.get("load_error")
-    metrics["load_error_present"] = isinstance(err, str) and bool(err.strip())
-    ver = payload.get("workflow_yaml_top_level_version_int")
-    if isinstance(ver, int) and not isinstance(ver, bool):
-        metrics["workflow_yaml_version_int"] = ver
+    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
+    apply_env_tri_state_metrics(metrics, payload, "NIMBUSWARE_AGENT_EVALUATOR")
+    apply_env_flag_metric(
+        metrics,
+        payload,
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
+        "disables_auto_promote",
+        "auto_promote_disabled",
+    )
+    apply_env_flag_metric(
+        metrics,
+        payload,
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
+        "disables_auto_create",
+        "auto_create_disabled",
+    )
+    apply_str_present(metrics, payload, "yaml_parsed_persona_id", "persona_id_present")
+    apply_nonneg_int_fields(metrics, payload, _INT_FIELDS)
+    apply_load_error_present(metrics, payload)
+    apply_optional_int_field(
+        metrics,
+        payload,
+        "workflow_yaml_top_level_version_int",
+        "workflow_yaml_version_int",
+    )
     return metrics
 
 
 def agent_evaluator_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "YAML key present",
-            "value": str(metrics.get("yaml_key_present", False)).lower(),
-        },
-        {
-            "field": "YAML parsed enabled",
-            "value": str(metrics.get("yaml_parsed_enabled", False)).lower(),
-        },
-        {
-            "field": "Would emit stage",
-            "value": str(metrics.get("would_emit_stage_started", False)).lower(),
-        },
-        {
-            "field": "Env forces on",
-            "value": str(metrics.get("env_forces_on", False)).lower(),
-        },
-        {
-            "field": "Env forces off",
-            "value": str(metrics.get("env_forces_off", False)).lower(),
-        },
-        {
-            "field": "Env unset",
-            "value": str(metrics.get("env_unset", True)).lower(),
-        },
-        {
-            "field": "Persona id present",
-            "value": str(metrics.get("persona_id_present", False)).lower(),
-        },
-        {
-            "field": "LLM evaluation enabled",
-            "value": str(metrics.get("llm_evaluation_enabled", False)).lower(),
-        },
-        {
-            "field": "Would emit LLM branch",
-            "value": str(metrics.get("would_emit_llm_evaluation", False)).lower(),
-        },
-        {
-            "field": "Auto-promote disabled (env)",
-            "value": str(metrics.get("auto_promote_disabled", False)).lower(),
-        },
-        {
-            "field": "Auto-create disabled (env)",
-            "value": str(metrics.get("auto_create_disabled", False)).lower(),
-        },
-        {
-            "field": "YAML true bool count",
-            "value": str(metrics.get("yaml_true_bool_value_count", 0)),
-        },
-        {
-            "field": "YAML false bool count",
-            "value": str(metrics.get("yaml_false_bool_value_count", 0)),
-        },
-    ]
-    ver = metrics.get("workflow_yaml_version_int")
-    if isinstance(ver, int) and not isinstance(ver, bool):
-        rows.append({"field": "Workflow YAML version", "value": str(ver)})
-    if metrics.get("load_error_present") is True:
+    rows = metrics_table_rows(metrics, _TABLE_ROWS)
+    if isinstance(metrics, Mapping) and metrics.get("load_error_present") is True:
         rows.append({"field": "Load error", "value": "yes"})
     return rows
 
@@ -155,9 +136,7 @@ def agent_evaluator_workflow_explainer_operator_metrics_caption(
         parts.append(f"**{true_b}** YAML ``true`` bool(s)")
     if metrics.get("load_error_present") is True:
         parts.append("load error")
-    if not parts:
-        return None
-    return "Agent evaluator explainer metrics: " + ", ".join(parts) + "."
+    return metrics_caption("Agent evaluator explainer metrics: ", parts)
 
 
 (
