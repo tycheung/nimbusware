@@ -37,7 +37,14 @@ Long-running autonomous builds use `workflow_profile=campaign_micro_slice`: `cam
 
 ## Enforcement depth
 
-Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 presets; `enforcement_pipeline.py` wires verify/gate/milestone/terminal checks on the micro-slice path; `workspace_layout.py` + `workspace_ci_runner.py` run layout-aware CI bundles on attached workspaces. Terminal `enforcement.gate` runs parity CI and posts external checks when configured. Fleet tenant clamp: `fleet_enforcement_policy.py` + enterprise API. API: `GET/PUT /v1/runs/{id}/enforcement`. Enable with `NIMBUSWARE_ENFORCEMENT_DEPTH=1` or explicit per-run slider update. See ADR [026](../../docs/adr/026-enforcement-depth-slider.md).
+Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 presets; `enforcement_pipeline.py` wires verify/gate/milestone/terminal checks on the micro-slice path; `workspace_layout.py` + `workspace_ci_runner.py` run layout-aware CI bundles on attached workspaces. Terminal `enforcement.gate` runs parity CI and posts external checks when configured. Fleet tenant clamp: `fleet_enforcement_policy.py` + enterprise API. API: `GET/PUT /v1/runs/{id}/enforcement`. Enable with `NIMBUSWARE_ENFORCEMENT_DEPTH=1` or explicit per-run slider update. See ADR [026-enforcement-depth-slider](../../docs/adr/026-enforcement-depth-slider.md).
+
+## Model routing & mesh (v1.2)
+
+- **`ModelBindingResolver`** (`model_binding_resolver.py`) — per-role LLM dispatch; precedence: claim snapshot → swap event → run snapshot → session overrides → user defaults → workflow → global fallback. ADR [022](../../docs/adr/022-per-role-model-routing.md).
+- **`binding_preflight.py`** — provider-aware readiness (`roles_covered`, `providers_reachable`).
+- **Mesh** — `mesh_pipeline_hook.py`, `mesh_scheduler.py`, `role_claims_mesh.py`; host merge via `nimbusware_compute.mesh_host_sync`. Worker CLI: `nimbusware-compute-worker`. See [compute-mesh.md](../../docs/compute-mesh.md).
+- **Legacy shim** — `hybrid_routing.py` retained for `stage_providers` migration (fo1471); new code routes through resolver only.
 
 ## Backlog generation
 
