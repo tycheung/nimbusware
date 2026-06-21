@@ -96,6 +96,7 @@ nimbusware-mcp = "nimbusware_mcp.cli:main"
 nimbusware-git-pr = "nimbusware_env.git_pr_cli:main"
 nimbusware-launcher = "nimbusware_env.launcher_app:main"
 nimbusware-compute-worker = "nimbusware_compute.worker_cli:main"
+nimbusware-mesh-worker-minimal = "nimbusware_compute.minimal_worker_cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

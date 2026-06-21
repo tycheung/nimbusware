@@ -47,9 +47,20 @@ v1.2 requires **LAN or Tailscale** between host and workers. Home readiness shou
 
 `nimbusware-compute-worker` pulls queued units after each heartbeat, runs a bounded local ack executor (`work_unit_execute.py`), and posts completion. Full stage runners on remote nodes remain a v1.3+ extension.
 
-## Future minimal worker agent
+## Minimal mesh worker (v1.2+)
 
-Not shipped in v1.2. A reduced-footprint agent would sync only: node registry client, hardware/Ollama probe, work-unit pull/execute, and bounded stage executors — without full Maker UI or Postgres. Protocol remains the same register/heartbeat/work-unit envelopes documented in `alllms.md` § Track D.
+Shipped as `nimbusware-mesh-worker-minimal` — same register/heartbeat/work-unit protocol as the full worker, without requiring Maker UI or Postgres on the guest machine. On register it advertises `minimal_worker: true` plus a lightweight hardware/Ollama capability probe.
+
+```bash
+poetry run nimbusware-mesh-worker-minimal \
+  --host-url https://<host>:8787 \
+  --token <invite-compute-token> \
+  --session-id <chat-session-uuid>
+```
+
+Use `--probe` to print capability JSON locally. Stage execution still uses bounded mesh executors (`mesh_stage_runner`) when work units are claimed.
+
+## Future extensions
 
 ## Host transfer
 

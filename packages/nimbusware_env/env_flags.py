@@ -542,6 +542,10 @@ _DISPATCH_OFF = frozenset({"0", "false", "no", "off", "sync"})
 _DISPATCH_MEMORY = frozenset({"memory", "1", "true", "yes", "on"})
 
 
+def nimbusware_verify_dispatch_fanout_enabled() -> bool:
+    return env_truthy_raw("NIMBUSWARE_VERIFY_DISPATCH_FANOUT")
+
+
 def nimbusware_run_dispatch_mode() -> str | None:
     raw = env_str("NIMBUSWARE_RUN_DISPATCH").lower()
     if not raw or raw in _DISPATCH_OFF:

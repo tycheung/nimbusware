@@ -20,15 +20,19 @@ def _register(
     base_url: str,
     session_token: str,
     session_id: str,
+    capabilities: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     headers: dict[str, str] = {}
     if session_token:
         headers["Authorization"] = f"Bearer {session_token}"
+    caps = {"mesh_worker": True}
+    if capabilities:
+        caps.update(capabilities)
     payload: dict[str, Any] = {
         "host_label": host_label,
         "base_url": base_url,
         "display_name": host_label,
-        "capabilities": {"mesh_worker": True},
+        "capabilities": caps,
     }
     if session_id:
         payload["session_id"] = session_id
@@ -116,6 +120,7 @@ def run_worker_loop(
     interval_seconds: float,
     max_heartbeats: int | None,
     pull_work_units: bool,
+    capabilities: dict[str, Any] | None = None,
 ) -> int:
     base = host_url.rstrip("/")
     with httpx.Client(base_url=base, timeout=30.0) as client:
@@ -125,6 +130,7 @@ def run_worker_loop(
             base_url=worker_base_url,
             session_token=session_token,
             session_id=session_id,
+            capabilities=capabilities,
         )
         node_id = str(node.get("node_id") or "")
         if not node_id:
