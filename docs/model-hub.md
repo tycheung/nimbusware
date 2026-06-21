@@ -13,7 +13,7 @@ Maker **Models** tab (`#/models`, `data-testid="maker-model-hub"`) is the operat
 
 ### API connections (`#/models?section=api-connections`)
 
-- Provider cards from `GET /v1/platform/provider-presets`
+- Provider cards from `GET /v1/platform/provider-presets` (Ollama, OpenAI, Anthropic Messages API, Google Gemini OpenAI-compat, Grok, OpenRouter, custom)
 - Per-user vault via `PUT /v1/platform/provider-connections` (secrets encrypted in Postgres)
 - **Test** runs `POST /v1/platform/provider-connections/{id}/probe`
 - Subscription-style providers (ChatGPT Plus, Claude Pro) use a local “connected via app” flag — no host-side OAuth

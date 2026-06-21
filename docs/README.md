@@ -73,7 +73,7 @@ Canonical architecture: [ARCHITECTURE.md](../ARCHITECTURE.md). Quick install: [g
 | [deploy/live-writers-soak.md](deploy/live-writers-soak.md) | Live-writer validation |
 | [deploy/pypi-publish.md](deploy/pypi-publish.md) | PyPI publish |
 | [deploy/vscode-marketplace.md](deploy/vscode-marketplace.md) | VS Code extension publish |
-| [deploy/v1.1-ship-checklist.md](deploy/v1.1-ship-checklist.md) | v1.1 ship checklist |
+| [deploy/v1.1-ship-checklist.md](deploy/v1.1-ship-checklist.md) | v1.1 ship checklist (historical; v1.2 features in Features section above) |
 
 Runbooks: [`scripts/runbooks/`](../scripts/runbooks/).
 
