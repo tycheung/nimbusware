@@ -46,6 +46,26 @@ def preset_by_id(repo_root: Path, provider_id: str) -> dict[str, Any] | None:
     return None
 
 
+def probe_anthropic_connection(
+    *,
+    base_url: str,
+    api_key: str,
+    timeout_seconds: float = 10.0,
+) -> dict[str, Any]:
+    root = base_url.strip().rstrip("/")
+    url = f"{root}/v1/models"
+    headers = {
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+    }
+    try:
+        resp = httpx.get(url, headers=headers, timeout=timeout_seconds)
+        resp.raise_for_status()
+    except httpx.HTTPError as exc:
+        return {"ok": False, "message": str(exc), "url": url}
+    return {"ok": True, "message": "provider reachable", "url": url}
+
+
 def probe_api_key_connection(
     *,
     base_url: str,
@@ -96,6 +116,12 @@ def probe_connection_row(
         return {"ok": False, "message": "base_url required for custom provider"}
     if not api_key:
         return {"ok": False, "message": "API key not set"}
+    if provider_id == "anthropic":
+        return probe_anthropic_connection(
+            base_url=resolved_base,
+            api_key=api_key,
+            timeout_seconds=timeout_seconds,
+        )
     health = str(preset.get("probe_health_path") or "/models")
     return probe_api_key_connection(
         base_url=resolved_base,

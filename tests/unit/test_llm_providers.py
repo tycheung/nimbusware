@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from nimbusware_orchestrator.llm.providers import (
+    AnthropicProvider,
     OllamaProvider,
     OpenAICompatibleProvider,
     list_registered_providers,
@@ -36,6 +37,37 @@ def test_openai_provider_probe_missing_key() -> None:
         api_key="",
     )
     assert provider.probe()["ok"] is False
+
+
+def test_provider_for_preset_anthropic() -> None:
+    provider = provider_for_preset(REPO, provider_id="anthropic", api_key="sk-ant-test")
+    assert isinstance(provider, AnthropicProvider)
+
+
+def test_anthropic_provider_probe_missing_key() -> None:
+    provider = AnthropicProvider(
+        base_url="https://api.anthropic.com",
+        api_key="",
+    )
+    assert provider.probe()["ok"] is False
+
+
+def test_anthropic_provider_chat_json_parses_response() -> None:
+    provider = AnthropicProvider(
+        base_url="https://api.anthropic.com",
+        api_key="sk-ant-test",
+    )
+    fake = {
+        "content": [{"type": "text", "text": '{"verdict": "PASS"}'}],
+    }
+    with patch("httpx.post") as post:
+        post.return_value.json.return_value = fake
+        post.return_value.raise_for_status = lambda: None
+        out = provider.chat_json(
+            model_id="claude-sonnet-4-20250514",
+            messages=[{"role": "user", "content": "hi"}],
+        )
+    assert out["verdict"] == "PASS"
 
 
 def test_openai_provider_chat_json_parses_response() -> None:

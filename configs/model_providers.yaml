@@ -20,6 +20,7 @@ providers:
     kind: cloud
     label: Anthropic API
     connection_kind: api_key
+    default_base_url: https://api.anthropic.com
   - id: anthropic_subscription
     kind: cloud
     label: Claude (Subscription)
