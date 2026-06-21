@@ -7,6 +7,7 @@ from pathlib import Path
 from nimbusware_env.settings_catalog import CATALOG, SettingScope
 from nimbusware_env.settings_resolve import (
     FAIL_CLOSED_RAW_KEYS,
+    resolve_bool,
     resolve_int,
     resolve_raw,
     resolve_str,
@@ -28,6 +29,10 @@ def _managed_key(name: str) -> bool:
     if name not in CATALOG:
         return False
     return CATALOG[name].scope not in (SettingScope.INSTALL, SettingScope.INTERNAL)
+
+
+def _catalog_bool(key: str, *, default: bool) -> bool:
+    return resolve_bool(key, default=default)
 
 
 def env_str(name: str, default: str = "") -> str:
@@ -71,9 +76,7 @@ def env_falsy(name: str) -> bool:
 
 
 def nimbusware_slice_auto_advance_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_SLICE_AUTO_ADVANCE", default=True)
+    return _catalog_bool("NIMBUSWARE_SLICE_AUTO_ADVANCE", default=True)
 
 
 def nimbusware_use_llm_enabled() -> bool:
@@ -223,21 +226,15 @@ def nimbusware_enforcement_depth_enabled() -> bool:
 
 
 def nimbusware_run_semgrep_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_RUN_SEMGREP", default=True)
+    return _catalog_bool("NIMBUSWARE_RUN_SEMGREP", default=True)
 
 
 def nimbusware_run_perf_scan_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_RUN_PERF_SCAN", default=True)
+    return _catalog_bool("NIMBUSWARE_RUN_PERF_SCAN", default=True)
 
 
 def nimbusware_run_mypy_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_RUN_MYPY", default=False)
+    return _catalog_bool("NIMBUSWARE_RUN_MYPY", default=False)
 
 
 def nimbusware_use_llm_explicitly_off() -> bool:
@@ -259,39 +256,27 @@ def nimbusware_slice_implement_mode() -> str:
 
 
 def nimbusware_research_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_RESEARCH", default=False)
+    return _catalog_bool("NIMBUSWARE_RESEARCH", default=False)
 
 
 def nimbusware_stitch_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_STITCH", default=False)
+    return _catalog_bool("NIMBUSWARE_STITCH", default=False)
 
 
 def nimbusware_git_native_outputs_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_GIT_NATIVE_OUTPUTS", default=False)
+    return _catalog_bool("NIMBUSWARE_GIT_NATIVE_OUTPUTS", default=False)
 
 
 def nimbusware_git_pr_on_complete_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_GIT_PR_ON_COMPLETE", default=False)
+    return _catalog_bool("NIMBUSWARE_GIT_PR_ON_COMPLETE", default=False)
 
 
 def nimbusware_slice_auto_commit_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_SLICE_AUTO_COMMIT", default=False)
+    return _catalog_bool("NIMBUSWARE_SLICE_AUTO_COMMIT", default=False)
 
 
 def nimbusware_slice_p3_evidence_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_SLICE_P3_EVIDENCE", default=True)
+    return _catalog_bool("NIMBUSWARE_SLICE_P3_EVIDENCE", default=True)
 
 
 def nimbusware_slice_branch_prefix(default: str = "nimbusware/run-") -> str:
@@ -309,9 +294,7 @@ def nimbusware_slice_packet_max_chars(default: int = 12000) -> int:
 
 
 def nimbusware_slice_repo_map_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_SLICE_REPO_MAP_ENABLED", default=True)
+    return _catalog_bool("NIMBUSWARE_SLICE_REPO_MAP_ENABLED", default=True)
 
 
 def nimbusware_slice_repo_map_max_chars(default: int = 4000) -> int:
@@ -319,9 +302,7 @@ def nimbusware_slice_repo_map_max_chars(default: int = 4000) -> int:
 
 
 def nimbusware_slice_lsp_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_SLICE_LSP_ENABLED", default=True)
+    return _catalog_bool("NIMBUSWARE_SLICE_LSP_ENABLED", default=True)
 
 
 def nimbusware_slice_lsp_command() -> str | None:
@@ -363,21 +344,15 @@ def nimbusware_shell_output_max_chars(default: int = 4000) -> int:
 
 
 def nimbusware_agent_jit_loop_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
+    return _catalog_bool("NIMBUSWARE_AGENT_JIT_LOOP", default=True)
 
 
 def nimbusware_agent_compact_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_AGENT_COMPACT", default=True)
+    return _catalog_bool("NIMBUSWARE_AGENT_COMPACT", default=True)
 
 
 def nimbusware_projection_prune_agent_tools_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS", default=True)
+    return _catalog_bool("NIMBUSWARE_PROJECTION_PRUNE_AGENT_TOOLS", default=True)
 
 
 def nimbusware_agent_tools_list(
@@ -397,9 +372,7 @@ def nimbusware_memory_excerpt_max_chars(default: int = 4000) -> int:
 
 
 def nimbusware_handoff_llm_summary_enabled() -> bool:
-    from nimbusware_env.settings_resolve import resolve_bool
-
-    return resolve_bool("NIMBUSWARE_HANDOFF_LLM_SUMMARY", default=False)
+    return _catalog_bool("NIMBUSWARE_HANDOFF_LLM_SUMMARY", default=False)
 
 
 def nimbusware_campaign_keep_recent_tokens(default: int = 12_000) -> int:
