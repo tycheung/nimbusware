@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import json
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
-import httpx
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from agent_core.models import (
     CriticVerdictEmittedEvent,
@@ -19,10 +17,8 @@ from agent_core.models import (
     Verdict,
 )
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
-from nimbusware_orchestrator.llm.common import (
-    append_gate_decision_event,
-    ollama_chat_json_via_plan_patch,
-)
+from nimbusware_orchestrator.llm.common import append_gate_decision_event
+from nimbusware_orchestrator.persona_critique_llm import execute_persona_rules_critique_llm
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.unanimous_gate import gate_decision_from_critic_verdicts
 from nimbusware_store.protocol import EventStore
@@ -73,8 +69,7 @@ def emit_stub_persona_coverage_critique_panel(
     if len(tax_keys) < 2:
         return
     owner = registry.resolve("agent_evaluator")
-    status = _evaluation_status(rules_eval)
-    coverage_fail = status in ("invalid", "gap")
+    coverage_fail = _evaluation_status(rules_eval) in ("invalid", "gap")
 
     store.append(
         StageStartedEvent(
@@ -152,91 +147,54 @@ def execute_persona_coverage_critique_llm(
     timeout_seconds: float = 120.0,
     unanimous_gate_enforce: bool = False,
 ) -> bool:
-    tax_keys = critique_router.pairing_for("agent_evaluator")
-    if len(tax_keys) < 2:
-        return False
-    status = _evaluation_status(rules_eval)
-    gaps = rules_eval.get("gaps") if isinstance(rules_eval, dict) else []
-    gap_list = [str(g).strip() for g in gaps] if isinstance(gaps, list) else []
-    try:
-        raw = ollama_chat_json_via_plan_patch(
-            base_url=base_url,
-            model=model_id,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a persona coverage critic. Return JSON only with "
-                        "status ok|needs_work|invalid, gaps string[], summary string."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": f"rules_status={status!r}; rules_gaps={gap_list!r}",
-                },
-            ],
-            timeout_seconds=timeout_seconds,
-            agent_role="security_critic",
-        )
-        parsed = PersonaCoverageLlmResponse.model_validate(raw)
-    except (
-        httpx.HTTPError,
-        ValueError,
-        TypeError,
-        json.JSONDecodeError,
-        ValidationError,
-        KeyError,
-    ):
-        return False
+    def _specialist_failed(
+        parsed: PersonaCoverageLlmResponse, _rules: dict[str, Any] | None
+    ) -> bool:
+        normalized = str(parsed.status).strip().lower()
+        return normalized in ("needs_work", "invalid") or bool(parsed.gaps)
 
-    normalized_status = str(parsed.status).strip().lower()
-    llm_gap = normalized_status in ("needs_work", "invalid") or bool(parsed.gaps)
-    owner = registry.resolve("agent_evaluator")
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            metadata={
-                "agent_evaluator": {
-                    "persona_coverage_critique_branch": "llm",
-                    "llm_summary": str(parsed.summary).strip()[:500],
-                },
-            },
-            payload=StageStartedPayload(stage_name=AGENT_EVALUATOR_CRITIQUE_STAGE, attempt=1),
-        ),
-    )
-    critic_payloads: list[CriticVerdictEmittedPayload] = []
-    for tax_key in tax_keys:
-        critic_role = registry.resolve(tax_key)
-        fail = llm_gap if tax_key == _PERSONA_COVERAGE_CRITIC else (status in ("invalid", "gap"))
-        verdict = Verdict.FAIL if fail else Verdict.PASS
-        payload = CriticVerdictEmittedPayload(
-            critic_role=critic_role,
-            verdict=verdict,
-            severity=Severity.MEDIUM if verdict == Verdict.FAIL else Severity.LOW,
-            owner_role=owner,
-            is_in_domain=True,
-            evidence_refs=[f"llm://persona_coverage/{normalized_status or 'ok'}"],
-            required_fixes=[_COVERAGE_FAIL_FIX] if verdict == Verdict.FAIL else [],
-        )
-        critic_payloads.append(payload)
-        store.append(
-            CriticVerdictEmittedEvent(
-                event_type=EventType.CRITIC_VERDICT_EMITTED,
-                event_id=uuid4(),
-                run_id=run_id,
-                occurred_at=datetime.now(timezone.utc),
-                actor_role=critic_role,
-                payload=payload,
-            ),
-        )
-    gate = gate_decision_from_critic_verdicts(
-        critic_payloads,
+    def _tax_key_failed(
+        tax_key: str,
+        specialist_fail: bool,
+        rules: dict[str, Any] | None,
+    ) -> bool:
+        if tax_key == _PERSONA_COVERAGE_CRITIC:
+            return specialist_fail
+        return _evaluation_status(rules) in ("invalid", "gap")
+
+    def _user_content(rules: dict[str, Any] | None) -> str:
+        status = _evaluation_status(rules)
+        gaps = rules.get("gaps") if isinstance(rules, dict) else []
+        gap_list = [str(g).strip() for g in gaps] if isinstance(gaps, list) else []
+        return f"rules_status={status!r}; rules_gaps={gap_list!r}"
+
+    return execute_persona_rules_critique_llm(
+        store,
+        registry,
+        critique_router,
+        run_id=run_id,
         stage_name=AGENT_EVALUATOR_CRITIQUE_STAGE,
-        unanimous_pass_required=True,
-        enforce=unanimous_gate_enforce or llm_gap or status in ("invalid", "gap"),
+        producer_tax_key="agent_evaluator",
+        specialist_tax_key=_PERSONA_COVERAGE_CRITIC,
+        rules_eval=rules_eval,
+        base_url=base_url,
+        model_id=model_id,
+        response_model=PersonaCoverageLlmResponse,
+        system_prompt=(
+            "You are a persona coverage critic. Return JSON only with "
+            "status ok|needs_work|invalid, gaps string[], summary string."
+        ),
+        build_user_content=_user_content,
+        specialist_failed=_specialist_failed,
+        tax_key_failed=_tax_key_failed,
+        build_stage_metadata=lambda parsed: {
+            "agent_evaluator": {
+                "persona_coverage_critique_branch": "llm",
+                "llm_summary": str(parsed.summary).strip()[:500],
+            },
+        },
+        coverage_fix=_COVERAGE_FAIL_FIX,
+        evidence_prefix="llm://persona_coverage",
+        timeout_seconds=timeout_seconds,
+        unanimous_gate_enforce=unanimous_gate_enforce,
     )
-    append_gate_decision_event(store, run_id=run_id, payload=gate)
-    return True
