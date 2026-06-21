@@ -10,6 +10,7 @@ from agent_core.models import RequiredFixArtifact
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.scan_critique_llm import execute_scan_critique_llm
+from nimbusware_orchestrator.scan_critique_tools import scan_tools_failed
 from nimbusware_orchestrator.scan_stub_critique_emit import (
     ScanStubCritiqueConfig,
     emit_scan_stub_critique_panel,
@@ -42,18 +43,7 @@ class PerformanceCritiqueLlmResponse(BaseModel):
 
 
 def performance_scan_tools_failed(tool_summary: dict[str, Any]) -> tuple[bool, list[str]]:
-    tools = tool_summary.get("security_scan_tools")
-    if not isinstance(tools, dict):
-        return False, []
-    failing: list[str] = []
-    for name in _PERF_TOOLS:
-        try:
-            code = int(tools.get(name, 0))
-        except (TypeError, ValueError):
-            code = 0
-        if code != 0:
-            failing.append(name)
-    return bool(failing), failing
+    return scan_tools_failed(tool_summary, _PERF_TOOLS)
 
 
 def performance_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
