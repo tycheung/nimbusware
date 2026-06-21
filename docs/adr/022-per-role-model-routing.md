@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed (v1.2 Track A).
+Accepted (v1.2 Track A shipped Jun 2026).
 
 ## Context
 

@@ -65,7 +65,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 - **Model Hub & install profiles** — `recommended` / `barebones` installer profiles; Model Hub tab for Ollama + API connection vault ([`docs/model-hub.md`](docs/model-hub.md), [ADR 024](docs/adr/024-install-profiles.md)).
 - **Per-role model routing** — `ModelBindingResolver`, user defaults in Postgres, mid-chat swap, enterprise model policy ([ADR 022](docs/adr/022-per-role-model-routing.md), [`docs/audits/llm-call-sites.md`](docs/audits/llm-call-sites.md)).
 - **Collaborative chat** — opt-in multi-participant sessions, invites, host transfer MVP ([`docs/collaborative-chat.md`](docs/collaborative-chat.md), [ADR 023](docs/adr/023-collaborative-chat-sessions.md)).
-- **Compute mesh** — node register/heartbeat, work-unit stubs, session compute opt-in ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md)).
+- **Compute mesh** — node register/heartbeat, mesh worker stage execution, session compute opt-in ([`docs/compute-mesh.md`](docs/compute-mesh.md), [ADR 025](docs/adr/025-distributed-compute-mesh.md)).
 
 ## Editions
 
