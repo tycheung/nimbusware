@@ -104,7 +104,11 @@ class WritersMixin:
                 )
                 if code != 0:
                     return code, log
-        return run_writer_verifier_bundle(ws)
+        from nimbusware_orchestrator.verify_fanout import (
+            run_writer_verifier_resolved as _verify_bundle,
+        )
+
+        return _verify_bundle(ws, run_id=str(run_id))
 
     def _parallel_run_implementation(
         self: WritersHost,
@@ -128,7 +132,11 @@ class WritersMixin:
                 payload=StageStartedPayload(stage_name="implementation", attempt=1),
             ),
         )
-        code, log = run_writer_verifier_bundle(ws)
+        from nimbusware_orchestrator.verify_fanout import (
+            run_writer_verifier_resolved as _verify_bundle,
+        )
+
+        code, log = _verify_bundle(ws, run_id=str(run_id))
         duration_ms = int((time.perf_counter() - started) * 1000)
         self._store.append(
             StagePassedEvent(

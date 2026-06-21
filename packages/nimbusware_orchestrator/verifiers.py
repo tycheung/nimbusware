@@ -251,3 +251,28 @@ def run_writer_verifier_bundle(workspace: Path) -> tuple[int, str]:
         worst = max(worst, code)
         sections.append(f"=== {name} (exit {code}) ===\n{out}")
     return worst, "\n".join(sections)
+
+
+VERIFIER_SHARD_NAMES: tuple[str, ...] = ("pytest", "ruff", "bandit")
+_VERIFIER_SHARD_RUNNERS = {
+    "pytest": run_pytest,
+    "ruff": run_ruff_check,
+    "bandit": run_bandit,
+}
+
+
+def run_writer_verifier_shard(workspace: Path, shard: str) -> tuple[int, str]:
+    fn = _VERIFIER_SHARD_RUNNERS.get(str(shard).strip().lower())
+    if fn is None:
+        return 1, f"unknown verify shard: {shard}\n"
+    return fn(workspace)
+
+
+def merge_verifier_shard_logs(shards: dict[str, tuple[int, str]]) -> tuple[int, str]:
+    sections: list[str] = []
+    worst = 0
+    for name in VERIFIER_SHARD_NAMES:
+        code, out = shards.get(name, (1, f"missing shard {name}"))
+        worst = max(worst, code)
+        sections.append(f"=== {name} (exit {code}) ===\n{out}")
+    return worst, "\n".join(sections)

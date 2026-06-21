@@ -60,6 +60,10 @@ def run_worker_loop(
 
             host: Any = orchestrator
             host.process_verify_dispatch_task(task)
+        elif step == "verify_shard":
+            from nimbusware_orchestrator.verify_fanout import process_verify_shard_task
+
+            process_verify_shard_task(task)
         elif step == "campaign_tick":
             orchestrator.process_campaign_dispatch_task(task)
         else:
