@@ -11,7 +11,7 @@ test("chat tab shows live theater lines for active run", async ({ page }) => {
   );
 
   let streamHits = 0;
-  await page.route(`**/v1/runs/${RUN_ID}/theater/stream`, async (route) => {
+  await page.route(`**/v1/runs/${RUN_ID}/theater/stream**`, async (route) => {
     streamHits += 1;
     await route.fulfill({
       contentType: "text/event-stream",

@@ -13,6 +13,9 @@ from nimbusware_api.errors import problem
 from nimbusware_api.read_models.run_theater import build_run_theater_messages
 from nimbusware_api.routes.runs.stream import _sse_pack
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
+from nimbusware_projections.builders.chat_theater import (
+    build_theater_messages_for_profile,
+)
 from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 
 router = APIRouter()
@@ -35,6 +38,8 @@ def get_run_theater(
     store: StoreDep,
     cursor: int = Query(default=0, ge=0),
     limit: int = Query(default=50, ge=1, le=200),
+    profile: str = Query(default="full"),
+    cap: int | None = Query(default=None, ge=1, le=200),
 ) -> TheaterResponse:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -42,7 +47,8 @@ def get_run_theater(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    all_msgs = build_run_theater_messages(rows)
+    theater_profile = "chat" if profile.strip().lower() == "chat" else "full"
+    all_msgs = build_theater_messages_for_profile(rows, profile=theater_profile, cap=cap)
     page = [m for m in all_msgs if int(m.get("store_seq") or 0) > cursor][:limit]
     next_c = int(page[-1]["store_seq"]) if page else None
     return TheaterResponse(
@@ -83,6 +89,8 @@ def get_theater_stream(
     store: StoreDep,
     cursor: int = Query(default=0, ge=0),
     poll_seconds: float = Query(default=1.0, ge=0.25, le=5.0),
+    profile: str = Query(default="full"),
+    cap: int | None = Query(default=None, ge=1, le=200),
 ) -> StreamingResponse:
     rows = store.list_run_events(str(run_id))
     if not rows:
@@ -96,7 +104,8 @@ def get_theater_stream(
         idle = 0
         while idle < 20:
             current = store.list_run_events(str(run_id))
-            msgs = build_run_theater_messages(current)
+            theater_profile = "chat" if profile.strip().lower() == "chat" else "full"
+            msgs = build_theater_messages_for_profile(current, profile=theater_profile, cap=cap)
             new_msgs = [m for m in msgs if int(m.get("store_seq") or 0) > last_seq]
             if new_msgs:
                 idle = 0

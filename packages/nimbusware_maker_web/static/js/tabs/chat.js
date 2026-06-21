@@ -513,7 +513,9 @@ function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
     if (msg.message_kind === "gate" && msg.severity === "block") onGateBlock();
   };
 
-  return openSseStream(`/runs/${encodeURIComponent(runId)}/theater/stream`, {
+  return openSseStream(
+    `/runs/${encodeURIComponent(runId)}/theater/stream?profile=chat&cap=${theaterCap()}`,
+    {
     onEvent: {
       theater: (ev) => {
         const data = parseSseJson(ev);
