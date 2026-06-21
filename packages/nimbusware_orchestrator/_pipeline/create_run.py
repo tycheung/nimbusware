@@ -10,14 +10,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     RunCreatedEvent,
     RunCreatedPayload,
     agent_evaluator_production_default_on,
-    assert_agent_evaluator_persona_in_shelves,
-    assert_bundle_catalog_maps_resolve,
-    assert_critique_coverage_complete,
-    assert_known_workflow,
-    assert_persona_shelves_valid,
-    assert_stage_graph_valid,
-    assert_taxonomy_keys_resolve,
-    critique_coverage_snapshot,
     datetime,
     effective_universal_critique,
     parse_agent_evaluator_workflow_block,
@@ -28,7 +20,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     self_refinement_ungated_loop_effective,
     stage_graph_from_workflow_profile,
     stage_graph_metadata_snapshot,
-    taxonomy_keys_for_run_lifecycle,
     timezone,
     universal_critique_production_default_on,
     uuid4,
@@ -73,39 +64,19 @@ class CreateRunMixin:
         work_type_source: str | None = None,
     ) -> UUID:
         mat = self._config_materializer
-        assert_known_workflow(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=mat,
+        from nimbusware_orchestrator._pipeline.create_run_preflight import (
+            assert_create_run_preflight,
         )
-        assert_stage_graph_valid(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=mat,
-        )
-        assert_bundle_catalog_maps_resolve(self._repo_root)
-        assert_persona_shelves_valid(self._repo_root, config_materializer=mat)
-        assert_agent_evaluator_persona_in_shelves(
-            self._repo_root,
-            workflow_profile,
-            config_materializer=mat,
-        )
-        if business_area_persona_id or development_role_persona_id:
-            from nimbusware_config.persist import load_persona_shelf
-            from nimbusware_orchestrator.ingress import assert_persona_assignment_valid
 
-            shelf = load_persona_shelf(self._repo_root, materializer=mat)
-            assert_persona_assignment_valid(
-                shelf,
-                business_area_persona_id=business_area_persona_id,
-                development_role_persona_id=development_role_persona_id,
-            )
-        assert_taxonomy_keys_resolve(
-            self._registry,
-            taxonomy_keys_for_run_lifecycle(self._registry, self._critique_router),
+        critique_coverage = assert_create_run_preflight(
+            self._repo_root,
+            workflow_profile,
+            config_materializer=mat,
+            registry=self._registry,
+            critique_router=self._critique_router,
+            business_area_persona_id=business_area_persona_id,
+            development_role_persona_id=development_role_persona_id,
         )
-        critique_coverage = critique_coverage_snapshot(self._registry, self._critique_router)
-        assert_critique_coverage_complete(critique_coverage)
         wf_dict = workflow_profile_dict(
             self._repo_root,
             workflow_profile,
