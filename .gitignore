@@ -89,6 +89,7 @@ logs/
 # CI scratch (local ci_check / coverage floors)
 .ci_coverage.json
 .ci_*.log
+.ci_check_log.txt
 
 # Python test coverage (pytest-cov / coverage.py — local only)
 .coverage
