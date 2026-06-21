@@ -85,6 +85,27 @@ def critic_gate_fail_from_mesh(run_id: UUID, stage_name: str) -> bool:
     return bool(result.get("gate_fail"))
 
 
+def campaign_mesh_stage_name(slice_id: str) -> str:
+    return f"campaign.slice:{slice_id}"
+
+
+def campaign_slice_passed_from_mesh(run_id: UUID, slice_id: str) -> bool:
+    stage_name = campaign_mesh_stage_name(slice_id)
+    units = get_work_unit_queue().list_units(run_id=run_id)
+    rec = _latest_unit(units, stage_name)
+    if rec is None:
+        return False
+    if rec.status not in _TERMINAL:
+        wait_for_mesh_units(run_id, [stage_name])
+        rec = _latest_unit(get_work_unit_queue().list_units(run_id=run_id), stage_name)
+    if rec is None or rec.status != "ok":
+        return False
+    result = rec.result if isinstance(rec.result, dict) else {}
+    if "slice_passed" in result:
+        return bool(result.get("slice_passed"))
+    return bool(result.get("executed", True))
+
+
 def writer_stage_result_from_mesh(run_id: UUID, stage_name: str) -> WriterStageResult:
     units = get_work_unit_queue().list_units(run_id=run_id)
     rec = _latest_unit(units, stage_name)

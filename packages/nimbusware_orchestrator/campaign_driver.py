@@ -316,14 +316,22 @@ def _execute_campaign_slices(
     workspace: Any | None,
     policy: Any,
 ) -> CampaignTickResult:
+    from nimbusware_compute.mesh_host_sync import (
+        absorb_completed_mesh_units,
+        campaign_mesh_stage_name,
+        campaign_slice_passed_from_mesh,
+        wait_for_mesh_units,
+    )
     from nimbusware_orchestrator.mesh_pipeline_hook import (
         mesh_assign_campaign_slices,
         resolve_mesh_context_for_run,
     )
 
     session_id, workload, node_ids = resolve_mesh_context_for_run(run_id)
-    if len(selected_list) > 1 and session_id is not None and node_ids:
-        mesh_assign_campaign_slices(
+    assignments: dict[str, UUID | None] = {}
+    mesh_active = len(selected_list) > 1 and session_id is not None and node_ids
+    if mesh_active:
+        assignments = mesh_assign_campaign_slices(
             run_id=run_id,
             slice_ids=[sel.slice.slice_id for sel in selected_list],
             session_id=session_id,
@@ -332,19 +340,57 @@ def _execute_campaign_slices(
             workspace=workspace,
         )
 
-    last_passed: bool | None = None
-    completed = backlog.metadata.slices_completed
-    for selected in selected_list:
-        rows = orch._store.list_run_events(str(run_id))
-        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
-        completed = backlog.metadata.slices_completed
+    remote_by_slice = {
+        sel.slice.slice_id: mesh_active and assignments.get(sel.slice.slice_id) is not None
+        for sel in selected_list
+    }
+    remote_stages = [
+        campaign_mesh_stage_name(sel.slice.slice_id)
+        for sel in selected_list
+        if remote_by_slice[sel.slice.slice_id]
+    ]
 
+    for selected in selected_list:
         _emit_slice_queued(
             orch._store,
             run_id,
             slice_id=selected.slice.slice_id,
             epic_id=selected.epic_id,
         )
+
+    last_passed: bool | None = None
+    completed = backlog.metadata.slices_completed
+
+    def _handle_slice_failure(*, passed: bool) -> CampaignTickResult | None:
+        nonlocal last_passed, completed
+        last_passed = passed
+        if passed:
+            return None
+        rows = orch._store.list_run_events(str(run_id))
+        failures = _consecutive_slice_failures(rows)
+        max_fail = policy.max_consecutive_slice_failures if policy else 5
+        if failures >= max_fail:
+            return CampaignTickResult(
+                state=CampaignDriverState.FAILED,
+                should_continue=False,
+                slices_completed=completed,
+                message=f"slice failed; {failures} consecutive failures",
+                last_slice_passed=False,
+            )
+        return CampaignTickResult(
+            state=CampaignDriverState.EXECUTING,
+            should_continue=True,
+            slices_completed=completed,
+            message="slice failed; will retry next eligible slice",
+            last_slice_passed=False,
+        )
+
+    for selected in selected_list:
+        if remote_by_slice[selected.slice.slice_id]:
+            continue
+        rows = orch._store.list_run_events(str(run_id))
+        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        completed = backlog.metadata.slices_completed
         plan = parse_slice_plan(
             {
                 "slice_id": selected.slice.slice_id,
@@ -363,25 +409,29 @@ def _execute_campaign_slices(
         rows = orch._store.list_run_events(str(run_id))
         backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
         completed = backlog.metadata.slices_completed
-        last_passed = gate.passed
-        if not gate.passed:
-            failures = _consecutive_slice_failures(rows)
-            max_fail = policy.max_consecutive_slice_failures if policy else 5
-            if failures >= max_fail:
-                return CampaignTickResult(
-                    state=CampaignDriverState.FAILED,
-                    should_continue=False,
-                    slices_completed=completed,
-                    message=f"slice failed; {failures} consecutive failures",
-                    last_slice_passed=False,
-                )
-            return CampaignTickResult(
-                state=CampaignDriverState.EXECUTING,
-                should_continue=True,
-                slices_completed=completed,
-                message="slice failed; will retry next eligible slice",
-                last_slice_passed=False,
-            )
+        failure = _handle_slice_failure(passed=gate.passed)
+        if failure is not None:
+            return failure
+
+    if remote_stages:
+        ws_path = Path(workspace).resolve() if workspace is not None else None
+        wait_for_mesh_units(run_id, remote_stages)
+        absorb_completed_mesh_units(
+            orch._store,
+            run_id,
+            remote_stages,
+            host_workspace=ws_path,
+        )
+        rows = orch._store.list_run_events(str(run_id))
+        backlog = apply_slice_outcomes(backlog_from_events(rows) or backlog, rows)
+        completed = backlog.metadata.slices_completed
+        for selected in selected_list:
+            if not remote_by_slice[selected.slice.slice_id]:
+                continue
+            passed = campaign_slice_passed_from_mesh(run_id, selected.slice.slice_id)
+            failure = _handle_slice_failure(passed=passed)
+            if failure is not None:
+                return failure
 
     rows = orch._store.list_run_events(str(run_id))
     if all_slices_terminal(apply_slice_outcomes(backlog, rows)):
