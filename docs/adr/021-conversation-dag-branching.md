@@ -28,5 +28,5 @@ Accepted.
 
 | Shipped | Not yet in Chat UI |
 |---------|-------------------|
-| Active-path thread, fork, sibling branch list + badges | Visual tree of turns; session history browser (`GET /chat/sessions` is API-only) |
+| Active-path thread, fork, sibling badges, visual DAG tree, session sidebar | Per-`actor_display` labels and full `body_md` (see Progress theater) |
 | Inline theater SSE (last 12 lines, text digest) | Per-`actor_display` labels and full `body_md` (see Progress theater) |
