@@ -9,7 +9,7 @@ from nimbusware_env.env_flags import (
     env_str,
     env_truthy_raw,
 )
-from nimbusware_env.settings_resolve import resolve_int, resolve_raw
+from nimbusware_env.settings_resolve import resolve_explicit_raw, resolve_int, resolve_raw
 
 
 def nimbusware_embed_dispatch_worker_enabled() -> bool:
@@ -72,41 +72,29 @@ def nimbusware_ci_head_sha(*, default: str = "") -> str:
     return env_str("NIMBUSWARE_CI_HEAD_SHA") or default
 
 
-def env_var_tri_state_summary(name: str) -> dict[str, object]:
-    from nimbusware_env.settings_resolve import resolve_explicit_raw
-
+def _env_explicit_raw(name: str) -> tuple[str, str]:
     raw = resolve_explicit_raw(name) or ""
-    low = raw.strip().lower()
+    return raw, raw.strip().lower()
+
+
+def env_var_tri_state_summary(name: str) -> dict[str, object]:
+    raw, low = _env_explicit_raw(name)
     if not low:
         return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True}
     if low in FALSY_VALUES:
         return {"raw": raw, "forces_off": True, "forces_on": False, "unset": False}
     if low in TRUTHY_VALUES:
         return {"raw": raw, "forces_off": False, "forces_on": True, "unset": False}
-    return {
-        "raw": raw,
-        "forces_off": False,
-        "forces_on": False,
-        "unset": True,
-        "unrecognised_value": True,
-    }
+    return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True, "unrecognised_value": True}
 
 
 def env_var_disable_flag_summary(name: str, *, disable_key: str) -> dict[str, object]:
-    from nimbusware_env.settings_resolve import resolve_explicit_raw
-
-    raw = resolve_explicit_raw(name) or ""
-    low = raw.strip().lower()
+    raw, low = _env_explicit_raw(name)
     if not low:
         return {"raw": raw, disable_key: False, "unset": True}
     if low in FALSY_VALUES:
         return {"raw": raw, disable_key: True, "unset": False}
-    return {
-        "raw": raw,
-        disable_key: False,
-        "unset": False,
-        "unrecognised_value": True,
-    }
+    return {"raw": raw, disable_key: False, "unset": False, "unrecognised_value": True}
 
 
 def env_over_yaml(key: str, yaml_value: bool) -> bool:
