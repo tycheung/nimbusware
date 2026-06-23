@@ -3,18 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_load_error_present,
-    apply_nonneg_int_fields,
-    apply_optional_int_field,
-    default_operator_metrics,
-    metrics_caption,
-    metrics_table_rows,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _DEFAULTS: dict[str, Any] = {
     "escalation_key_present": False,
@@ -59,19 +52,19 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def escalation_suppress_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
-    apply_nonneg_int_fields(metrics, payload, _INT_FIELDS)
-    apply_optional_int_field(
-        metrics,
+    return build_operator_metrics(
         payload,
-        "escalation_policy_yaml_anti_deadlock_min_progress_events",
-        "anti_deadlock_min_progress_events",
+        _DEFAULTS,
+        bool_fields=_BOOL_FIELDS,
+        int_fields=_INT_FIELDS,
+        optional_int=(
+            (
+                "escalation_policy_yaml_anti_deadlock_min_progress_events",
+                "anti_deadlock_min_progress_events",
+            ),
+        ),
+        load_error=True,
     )
-    apply_load_error_present(metrics, payload)
-    return metrics
 
 
 def escalation_suppress_workflow_explainer_operator_metrics_table_rows(

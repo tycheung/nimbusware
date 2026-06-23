@@ -3,18 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_env_tri_state_metrics,
-    apply_load_error_present,
-    apply_workflow_yaml_file_metrics,
-    default_operator_metrics,
-    metrics_caption,
-    metrics_table_rows,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -54,22 +47,21 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def security_scan_metadata_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
-    matches = payload.get("security_scan_metadata_yaml_parsed_bool_matches_effective")
-    metrics["yaml_matches_effective"] = matches is True
-    if matches is False:
-        metrics["yaml_effective_mismatch"] = True
-    apply_env_tri_state_metrics(
-        metrics,
+    return build_operator_metrics(
         payload,
-        "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",
+        _DEFAULTS,
+        bool_fields=_BOOL_FIELDS,
+        bool_match_fields=(
+            (
+                "security_scan_metadata_yaml_parsed_bool_matches_effective",
+                "yaml_matches_effective",
+                "yaml_effective_mismatch",
+            ),
+        ),
+        env_tri_state=("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",),
+        workflow_yaml_file=True,
+        load_error=True,
     )
-    apply_load_error_present(metrics, payload)
-    apply_workflow_yaml_file_metrics(metrics, payload)
-    return metrics
 
 
 def security_scan_metadata_workflow_explainer_operator_metrics_table_rows(

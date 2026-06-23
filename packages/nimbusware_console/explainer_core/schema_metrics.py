@@ -20,6 +20,30 @@ EnvTriStateSpec = str | tuple[str, str, str, str]
 EnvFlagSpec = tuple[str, str, str]
 NestedBoolSpec = tuple[str, Sequence[tuple[str, str]]]
 OptionalIntSpec = tuple[str, str] | tuple[str, str, bool]
+BoolMatchSpec = tuple[str, str, str]
+
+
+def _apply_list_len_fields(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    fields: Sequence[tuple[str, str]],
+) -> None:
+    for payload_key, metric_key in fields:
+        raw = payload.get(payload_key)
+        if isinstance(raw, list):
+            metrics[metric_key] = len(raw)
+
+
+def _apply_bool_match_fields(
+    metrics: dict[str, Any],
+    payload: Mapping[str, Any],
+    fields: Sequence[BoolMatchSpec],
+) -> None:
+    for payload_key, match_metric, mismatch_metric in fields:
+        matches = payload.get(payload_key)
+        metrics[match_metric] = matches is True
+        if matches is False:
+            metrics[mismatch_metric] = True
 
 
 def build_operator_metrics(
@@ -29,6 +53,8 @@ def build_operator_metrics(
     bool_fields: Sequence[tuple[str, str]] = (),
     int_fields: Sequence[tuple[str, str]] = (),
     nested_bool_fields: Sequence[NestedBoolSpec] = (),
+    list_len_fields: Sequence[tuple[str, str]] = (),
+    bool_match_fields: Sequence[BoolMatchSpec] = (),
     str_present: Sequence[tuple[str, str]] = (),
     optional_int: Sequence[OptionalIntSpec] = (),
     env_tri_state: Sequence[EnvTriStateSpec] = (),
@@ -47,6 +73,10 @@ def build_operator_metrics(
         apply_nested_bool_fields(metrics, payload, nested_key, fields)
     if int_fields:
         apply_nonneg_int_fields(metrics, payload, int_fields)
+    if list_len_fields:
+        _apply_list_len_fields(metrics, payload, list_len_fields)
+    if bool_match_fields:
+        _apply_bool_match_fields(metrics, payload, bool_match_fields)
     for opt_spec in optional_int:
         if len(opt_spec) == 3:
             payload_key, metric_key, positive_only = opt_spec

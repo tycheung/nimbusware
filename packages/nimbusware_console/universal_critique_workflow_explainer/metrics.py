@@ -3,18 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_load_error_present,
-    apply_nested_bool_fields,
-    apply_nonneg_int_fields,
-    default_operator_metrics,
-    metrics_caption,
-    metrics_table_rows,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_present": False,
@@ -65,32 +58,25 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def universal_critique_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
-    keys = payload.get("universal_critique_yaml_top_level_keys")
-    if isinstance(keys, list):
-        metrics["top_level_key_count"] = len(keys)
-    apply_nonneg_int_fields(metrics, payload, _INT_FIELDS)
-    apply_nested_bool_fields(
-        metrics,
+    return build_operator_metrics(
         payload,
-        "yaml_only",
-        (("default_enabled", "default_enabled_on"),),
-    )
-    apply_nested_bool_fields(
-        metrics,
-        payload,
-        "effective_with_env",
-        (
-            ("unanimous_gate_enforce", "unanimous_gate_enforce"),
-            ("fw_enabled", "fw_enabled"),
-            ("mi_enabled", "mi_enabled"),
+        _DEFAULTS,
+        bool_fields=_BOOL_FIELDS,
+        int_fields=_INT_FIELDS,
+        list_len_fields=(("universal_critique_yaml_top_level_keys", "top_level_key_count"),),
+        nested_bool_fields=(
+            ("yaml_only", (("default_enabled", "default_enabled_on"),)),
+            (
+                "effective_with_env",
+                (
+                    ("unanimous_gate_enforce", "unanimous_gate_enforce"),
+                    ("fw_enabled", "fw_enabled"),
+                    ("mi_enabled", "mi_enabled"),
+                ),
+            ),
         ),
+        load_error=True,
     )
-    apply_load_error_present(metrics, payload)
-    return metrics
 
 
 def universal_critique_workflow_explainer_operator_metrics_table_rows(
