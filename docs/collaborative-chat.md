@@ -33,7 +33,9 @@ Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{to
 
 | Module | Responsibility |
 |--------|----------------|
-| `chat.js` | Composer, theater, run cards, classifier |
+| `chat.js` | Session lifecycle, form submit, run start |
+| `chat_shell_html.js` | Layout markup |
+| `chat_collab_wiring.js` | Collab session stream + host transfer wiring |
 | `chat_join.js` | `#/chat/join/{token}` sign-in + redeem |
 | `chat_session_ui.js` | Participants strip, session sidebar, compute nodes |
 | `chat_branch_ui.js` | Conversation branch tree |
