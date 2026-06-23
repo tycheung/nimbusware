@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-)
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
 def persona_catalog_operator_summary_operator_metrics(
@@ -88,16 +85,11 @@ def persona_catalog_operator_summary_operator_metrics_table_rows(
     ]
 
 
-def persona_catalog_operator_summary_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def persona_catalog_operator_summary_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+(
+    persona_catalog_operator_summary_operator_metrics_export_json,
+    persona_catalog_operator_summary_operator_metrics_table_rows_csv,
+    persona_catalog_operator_summary_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(export_slug="persona_operator_summary_metrics")
 
 
 def persona_catalog_operator_summary_operator_metrics_caption(
@@ -115,10 +107,6 @@ def persona_catalog_operator_summary_operator_metrics_caption(
         f"Persona operator summary metrics: **{total}** entr(y/ies), "
         f"**{woi}** without instructions."
     )
-
-
-def persona_catalog_operator_summary_operator_metrics_export_filename_slug() -> str:
-    return "persona_operator_summary_metrics"
 
 
 def persona_catalog_without_instructions_caption(

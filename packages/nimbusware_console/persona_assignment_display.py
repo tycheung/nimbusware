@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
 from typing import Any
+
+from nimbusware_console.components.operator_metrics import field_value_table_rows_csv
 
 _PERSONA_ASSIGNMENT_FIELDS: tuple[tuple[str, str], ...] = (
     ("business_area.id", "Business area id"),
@@ -90,15 +90,7 @@ def persona_assignment_caption(pa: Mapping[str, Any] | None) -> str | None:
 def persona_assignment_timeline_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(buf, fieldnames=["field", "value"], extrasaction="ignore")
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({"field": r.get("field", ""), "value": r.get("value", "")})
-    return buf.getvalue()
+    return field_value_table_rows_csv(rows)
 
 
 def persona_assignment_timeline_export_json(pa: Mapping[str, Any] | None) -> str:

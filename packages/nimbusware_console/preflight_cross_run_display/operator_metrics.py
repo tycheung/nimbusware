@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import csv
-import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.preflight_cross_run_display.trend import (
     preflight_cross_run_trend_export_filename_slug,
 )
@@ -58,38 +56,11 @@ def preflight_cross_run_operator_metrics_caption(
     return "Cross-run preflight metrics: " + ", ".join(parts) + "."
 
 
-_PREFLIGHT_CROSS_RUN_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
-)
-
-
-def preflight_cross_run_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def preflight_cross_run_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_PREFLIGHT_CROSS_RUN_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _PREFLIGHT_CROSS_RUN_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+(
+    preflight_cross_run_operator_metrics_export_json,
+    preflight_cross_run_operator_metrics_table_rows_csv,
+    _preflight_cross_run_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="preflight_cross_run_operator_metrics")
 
 
 def preflight_cross_run_operator_metrics_export_filename_slug() -> str:

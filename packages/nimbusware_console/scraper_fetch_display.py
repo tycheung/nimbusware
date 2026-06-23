@@ -7,6 +7,8 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+
 _SCRAPER_FETCH_FIELDS: tuple[tuple[str, str], ...] = (
     ("outcome", "Outcome"),
     ("fetch_count", "Fetch count"),
@@ -283,35 +285,11 @@ def scraper_fetch_operator_metrics_caption(
     return "Scraper fetch metrics: " + ", ".join(parts) + "."
 
 
-_SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def scraper_fetch_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def scraper_fetch_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _SCRAPER_FETCH_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+(
+    scraper_fetch_operator_metrics_export_json,
+    scraper_fetch_operator_metrics_table_rows_csv,
+    _scraper_fetch_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="scraper_fetch_operator_metrics")
 
 
 def scraper_fetch_operator_metrics_export_filename_slug(
