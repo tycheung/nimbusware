@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Any
-from uuid import UUID
 
 from nimbusware_api.routes.runs import (
     _finding_has_security_scan_metadata,
@@ -11,88 +10,19 @@ from nimbusware_api.routes.runs import (
     security_scan_on_verify_timeline_summary,
     self_refinement_timeline_summary,
 )
-
-_EVENT_TYPE_GATE = "gate.decision.emitted"
-_EVENT_TYPE_STAGE = "stage.started"
-_EVENT_TYPE_ESCALATED = "run.escalated"
-_EVENT_TYPE_FINDING = "finding.created"
-_EVENT_TYPE_RUN_CREATED = "run.created"
-
-_RID1 = UUID("11111111-1111-4111-8111-111111111111")
-_RID2 = UUID("22222222-2222-4222-8222-222222222222")
-_RID3 = UUID("33333333-3333-4333-8333-333333333333")
-_RID4 = UUID("44444444-4444-4444-8444-444444444444")
-_ISO_NOW = "2026-05-12T12:34:56+00:00"
-_ISO_LATER = "2026-05-12T12:35:00+00:00"
-
-
-def _gate_decision_event(
-    *,
-    event_id: UUID,
-    metadata: Any,
-    payload: Any,
-    event_type: str = _EVENT_TYPE_GATE,
-    occurred_at: str = _ISO_NOW,
-) -> dict[str, Any]:
-    return {
-        "event_type": event_type,
-        "event_id": str(event_id),
-        "occurred_at": occurred_at,
-        "metadata": metadata,
-        "payload": payload,
-    }
-
-
-def _stage_started_event(
-    *,
-    event_id: UUID,
-    payload: Any,
-    metadata: Any = None,
-    event_type: str = _EVENT_TYPE_STAGE,
-    occurred_at: str = _ISO_NOW,
-) -> dict[str, Any]:
-    """Construct a minimal dict-shaped ``stage.started`` event."""
-    return {
-        "event_type": event_type,
-        "event_id": str(event_id),
-        "occurred_at": occurred_at,
-        "metadata": metadata,
-        "payload": payload,
-    }
-
-
-def _run_escalated_event(
-    *,
-    event_id: UUID,
-    payload: Any,
-    event_type: str = _EVENT_TYPE_ESCALATED,
-    occurred_at: str = _ISO_NOW,
-) -> dict[str, Any]:
-    """Construct a minimal dict-shaped ``run.escalated`` event."""
-    return {
-        "event_type": event_type,
-        "event_id": str(event_id),
-        "occurred_at": occurred_at,
-        "payload": payload,
-    }
-
-
-def _finding_created_event(
-    *,
-    event_id: UUID,
-    metadata: Any,
-    payload: Any,
-    event_type: str = _EVENT_TYPE_FINDING,
-    occurred_at: str = _ISO_NOW,
-) -> dict[str, Any]:
-    """Construct a minimal dict-shaped ``finding.created`` event."""
-    return {
-        "event_type": event_type,
-        "event_id": str(event_id),
-        "occurred_at": occurred_at,
-        "metadata": metadata,
-        "payload": payload,
-    }
+from unit.composite_contract_fixtures import (
+    _ISO_LATER,
+    _ISO_NOW,
+    EVENT_TYPE_RUN_CREATED,
+    RID1,
+    RID2,
+    RID3,
+    RID4,
+    finding_created_event,
+    gate_decision_event,
+    run_escalated_event,
+    stage_started_event,
+)
 
 
 def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
@@ -104,13 +34,13 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
     )
 
     non_matching_events = [
-        _stage_started_event(
-            event_id=_RID1,
+        stage_started_event(
+            event_id=RID1,
             payload={"stage_name": "plan:initial"},
         ),
-        {"event_type": _EVENT_TYPE_RUN_CREATED, "event_id": str(_RID2)},
-        _finding_created_event(event_id=_RID3, metadata={}, payload={}),
-        _run_escalated_event(event_id=_RID4, payload={}),
+        {"event_type": EVENT_TYPE_RUN_CREATED, "event_id": str(RID2)},
+        finding_created_event(event_id=RID3, metadata={}, payload={}),
+        run_escalated_event(event_id=RID4, payload={}),
     ]
     assert integrator_gate_timeline_summary(non_matching_events) is None, (
         "A2: a list of events whose ``event_type`` is never "
@@ -132,8 +62,8 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
     ]
     for name, meta_variant in metadata_skip_variants:
         events = [
-            _gate_decision_event(
-                event_id=_RID1,
+            gate_decision_event(
+                event_id=RID1,
                 metadata=meta_variant,
                 payload={"stage_name": "bundle_compatibility", "verdict": "PASS"},
             ),
@@ -164,8 +94,8 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
         "failure_reason_code": None,
     }
     happy_events = [
-        _gate_decision_event(
-            event_id=_RID1,
+        gate_decision_event(
+            event_id=RID1,
             metadata=happy_meta,
             payload=happy_payload,
             occurred_at=_ISO_NOW,
@@ -193,7 +123,7 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
         f"happy ``test_api.py`` test but break this axis. Got "
         f"keys={set(got.keys())!r}"
     )
-    assert got["event_id"] == str(_RID1)
+    assert got["event_id"] == str(RID1)
     assert got["occurred_at"] == _ISO_NOW
     assert got["stage_name"] == "bundle_compatibility"
     assert got["verdict"] == "PASS"
@@ -210,15 +140,15 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
     second_meta["bundle_id"] = "search-fts-starter"
     second_meta["integrator_score"] = 0.42
     latest_wins_events = [
-        _gate_decision_event(
-            event_id=_RID1,
+        gate_decision_event(
+            event_id=RID1,
             metadata=happy_meta,
             payload=happy_payload,
             occurred_at=_ISO_NOW,
         ),
-        _stage_started_event(event_id=_RID3, payload={"stage_name": "verify"}),
-        _gate_decision_event(
-            event_id=_RID2,
+        stage_started_event(event_id=RID3, payload={"stage_name": "verify"}),
+        gate_decision_event(
+            event_id=RID2,
             metadata=second_meta,
             payload={
                 "stage_name": "bundle_compatibility",
@@ -230,7 +160,7 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
     ]
     got_latest = integrator_gate_timeline_summary(latest_wins_events)
     assert got_latest is not None
-    assert got_latest["event_id"] == str(_RID2), (
+    assert got_latest["event_id"] == str(RID2), (
         "A5: latest-wins -- the SECOND matching event's ``event_id`` must "
         "win. The interleaved ``stage.started`` event must not affect the "
         "loop. A refactor that ``break``ed on the first match would emit "
@@ -244,13 +174,13 @@ def test_integrator_gate_timeline_summary_direct_contract_5_axis() -> None:
 
 def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     wrong_type_events = [
-        _gate_decision_event(
-            event_id=_RID1,
+        gate_decision_event(
+            event_id=RID1,
             metadata={"integrator_gate": True, "bundle_id": "x"},
             payload={"stage_name": "agent_eval:default", "verdict": "PASS"},
         ),
-        _finding_created_event(
-            event_id=_RID2,
+        finding_created_event(
+            event_id=RID2,
             metadata={"security_scan_exit": 0},
             payload={"stage_name": "agent_eval:default"},
         ),
@@ -272,7 +202,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
         ("non_dict_payload_list", ["agent_eval:default"]),
     ]
     for name, payload_variant in prefix_skip_variants:
-        events = [_stage_started_event(event_id=_RID1, payload=payload_variant)]
+        events = [stage_started_event(event_id=RID1, payload=payload_variant)]
         assert agent_evaluator_timeline_summary(events) is None, (
             f"B2 case={name!r} payload={payload_variant!r}: compound "
             f"``isinstance(sn, str) AND sn.startswith('agent_eval:')`` gate "
@@ -293,7 +223,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     ]
     for name, stage_name, expected_persona in persona_cases:
         events = [
-            _stage_started_event(event_id=_RID1, payload={"stage_name": stage_name, "attempt": 3}),
+            stage_started_event(event_id=RID1, payload={"stage_name": stage_name, "attempt": 3}),
         ]
         got = agent_evaluator_timeline_summary(events)
         assert got is not None, f"B3 case={name!r}: expected emission"
@@ -310,7 +240,7 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
         assert got["attempt"] == 3
 
     empty_suffix_events = [
-        _stage_started_event(event_id=_RID2, payload={"stage_name": "agent_eval:", "attempt": 0}),
+        stage_started_event(event_id=RID2, payload={"stage_name": "agent_eval:", "attempt": 0}),
     ]
     got_empty = agent_evaluator_timeline_summary(empty_suffix_events)
     assert got_empty is not None, (
@@ -329,13 +259,13 @@ def test_agent_evaluator_timeline_summary_persona_split_5_axis() -> None:
     assert got_empty["attempt"] == 0
 
     latest_wins_events = [
-        _stage_started_event(event_id=_RID1, payload={"stage_name": "agent_eval:a", "attempt": 1}),
-        _stage_started_event(event_id=_RID2, payload="non-dict-payload-oops"),
-        _stage_started_event(event_id=_RID3, payload={"stage_name": "agent_eval:c", "attempt": 2}),
+        stage_started_event(event_id=RID1, payload={"stage_name": "agent_eval:a", "attempt": 1}),
+        stage_started_event(event_id=RID2, payload="non-dict-payload-oops"),
+        stage_started_event(event_id=RID3, payload={"stage_name": "agent_eval:c", "attempt": 2}),
     ]
     got_latest = agent_evaluator_timeline_summary(latest_wins_events)
     assert got_latest is not None
-    assert got_latest["event_id"] == str(_RID3), (
+    assert got_latest["event_id"] == str(RID3), (
         "B5: latest-wins -- the third event's id must win. The middle "
         "event's non-dict payload is coerced to ``{}`` and then filtered "
         "out by the stage_name gate (since ``pl.get('stage_name') is "
@@ -350,8 +280,8 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
     sr_metadata = {"self_refinement": {"version": "v2", "description": "second pass"}}
     sr_payload = {"stage_name": "self_refinement:policy", "attempt": 2}
     events_happy = [
-        _stage_started_event(
-            event_id=_RID1, payload=sr_payload, metadata=sr_metadata, occurred_at=_ISO_NOW
+        stage_started_event(
+            event_id=RID1, payload=sr_payload, metadata=sr_metadata, occurred_at=_ISO_NOW
         ),
     ]
     got_sr = self_refinement_timeline_summary(events_happy)
@@ -367,7 +297,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         "first_marker_occurred_at",
         "last_marker_occurred_at",
     }, f"C1: emitted summary must have exactly 9 keys; got {set(got_sr.keys())!r}"
-    assert got_sr["event_id"] == str(_RID1)
+    assert got_sr["event_id"] == str(RID1)
     assert got_sr["occurred_at"] == _ISO_NOW
     assert got_sr["stage_name"] == "self_refinement:policy"
     assert got_sr["attempt"] == 2
@@ -386,8 +316,8 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
     ]
     for name, sn in exact_match_skip_variants:
         events = [
-            _stage_started_event(
-                event_id=_RID1,
+            stage_started_event(
+                event_id=RID1,
                 payload={"stage_name": sn, "attempt": 1},
                 metadata=sr_metadata,
             ),
@@ -411,8 +341,8 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
     ]
     for name, meta_variant in degraded_meta_variants:
         events = [
-            _stage_started_event(
-                event_id=_RID2,
+            stage_started_event(
+                event_id=RID2,
                 payload={"stage_name": "self_refinement:policy", "attempt": 7},
                 metadata=meta_variant,
             ),
@@ -426,7 +356,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
             f"that unified the two would silently flip the emission policy. "
             f"Got: None"
         )
-        assert got["event_id"] == str(_RID2)
+        assert got["event_id"] == str(RID2)
         assert got["stage_name"] == "self_refinement:policy"
         assert got["attempt"] == 7, (
             f"C3 case={name!r}: ``attempt`` must come from payload (NOT "
@@ -453,14 +383,14 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         )
 
     events_two_sr = [
-        _stage_started_event(
-            event_id=_RID1,
+        stage_started_event(
+            event_id=RID1,
             payload=sr_payload,
             metadata=sr_metadata,
             occurred_at=_ISO_NOW,
         ),
-        _stage_started_event(
-            event_id=_RID2,
+        stage_started_event(
+            event_id=RID2,
             payload=sr_payload,
             metadata={"self_refinement": {"version": "v3", "description": "last row"}},
             occurred_at=_ISO_LATER,
@@ -480,7 +410,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         "notes": "literal note from operator",
     }
     esc_events = [
-        _run_escalated_event(event_id=_RID3, payload=esc_payload, occurred_at=_ISO_LATER),
+        run_escalated_event(event_id=RID3, payload=esc_payload, occurred_at=_ISO_LATER),
     ]
     got_esc = run_escalated_timeline_summary(esc_events)
     assert got_esc is not None
@@ -495,7 +425,7 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         f"C4: emitted summary must have exactly 6 keys (payload-only -- "
         f"no metadata extraction); got {set(got_esc.keys())!r}"
     )
-    assert got_esc["event_id"] == str(_RID3)
+    assert got_esc["event_id"] == str(RID3)
     assert got_esc["occurred_at"] == _ISO_LATER
     assert got_esc["actor_id"] == "human:ops"
     assert got_esc["reason_code"] == "cumulative_stage_failures"
@@ -509,14 +439,14 @@ def test_self_refinement_and_run_escalated_summary_5_axis() -> None:
         ("payload_int", 42),
     ]
     for name, payload_variant in bad_payload_variants:
-        events = [_run_escalated_event(event_id=_RID4, payload=payload_variant)]
+        events = [run_escalated_event(event_id=RID4, payload=payload_variant)]
         got = run_escalated_timeline_summary(events)
         assert got is not None, (
             f"C5 case={name!r}: KEY DIVERGENCE from integrator_gate -- "
             f"run_escalated has NO metadata guard and emits ANY event "
             f"with the right event_type, even on bad payload. Got: None"
         )
-        assert got["event_id"] == str(_RID4)
+        assert got["event_id"] == str(RID4)
         assert got["actor_id"] is None, (
             f"C5 case={name!r}: ``actor_id`` defaults to None via the "
             f"``pl = {{}} if not isinstance(payload, dict) else payload`` "
@@ -572,8 +502,8 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
         )
 
     wrong_type_with_scan_meta = [
-        _stage_started_event(
-            event_id=_RID1,
+        stage_started_event(
+            event_id=RID1,
             payload={"stage_name": "verify"},
             metadata={
                 "security_scan_exit": 0,
@@ -587,8 +517,8 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
     )
 
     finding_without_scan_meta = [
-        _finding_created_event(
-            event_id=_RID2,
+        finding_created_event(
+            event_id=RID2,
             metadata={"category": "lint", "unrelated": True},
             payload={"finding_id": "f-99", "category": "lint", "severity": "low"},
         ),
@@ -612,8 +542,8 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
         "source_artifact": "src/app.py",
     }
     happy_events = [
-        _finding_created_event(
-            event_id=_RID3,
+        finding_created_event(
+            event_id=RID3,
             metadata=happy_meta,
             payload=happy_payload,
             occurred_at=_ISO_NOW,
@@ -633,7 +563,7 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
         "security_scan_bandit_exit",
         "security_scan_snippet",
     }, f"D4: emitted summary must have exactly 10 keys; got {set(got_ss.keys())!r}"
-    assert got_ss["event_id"] == str(_RID3)
+    assert got_ss["event_id"] == str(RID3)
     assert got_ss["occurred_at"] == _ISO_NOW
     assert got_ss["finding_id"] == "f-1"
     assert got_ss["category"] == "security"
@@ -657,20 +587,20 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
         "source_artifact": "src/db.py",
     }
     latest_wins_events = [
-        _finding_created_event(
-            event_id=_RID1,
+        finding_created_event(
+            event_id=RID1,
             metadata=happy_meta,
             payload=happy_payload,
             occurred_at=_ISO_NOW,
         ),
-        _finding_created_event(
-            event_id=_RID3,
+        finding_created_event(
+            event_id=RID3,
             metadata={"category": "lint", "unrelated": True},
             payload={"finding_id": "f-99", "category": "lint"},
             occurred_at=_ISO_LATER,
         ),
-        _finding_created_event(
-            event_id=_RID2,
+        finding_created_event(
+            event_id=RID2,
             metadata=second_meta,
             payload=second_payload,
             occurred_at=_ISO_LATER,
@@ -678,7 +608,7 @@ def test_security_scan_summary_and_guard_5_axis() -> None:
     ]
     got_latest = security_scan_on_verify_timeline_summary(latest_wins_events)
     assert got_latest is not None
-    assert got_latest["event_id"] == str(_RID2), (
+    assert got_latest["event_id"] == str(RID2), (
         "D5: latest-wins -- the LAST scan-bearing finding must win. The "
         "interleaved finding WITHOUT scan keys must be silently skipped "
         "(NOT overwrite the first match with null fields)."

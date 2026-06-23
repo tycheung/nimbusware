@@ -4,66 +4,27 @@ import json
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel
-
-from agent_core.models import RequiredFixArtifact
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
-from nimbusware_orchestrator.scan_critique_llm import execute_scan_critique_llm
-from nimbusware_orchestrator.scan_critique_tools import scan_tools_failed
-from nimbusware_orchestrator.scan_stub_critique_emit import (
-    ScanStubCritiqueConfig,
-    emit_scan_stub_critique_panel,
+from nimbusware_orchestrator.scan_critique_kinds import (
+    PERFORMANCE_KIND,
+    PerformanceCritiqueLlmResponse,
+    emit_stub_panel,
+    execute_llm,
+    required_fix_artifact,
+    timeline_summary,
+    tools_failed,
 )
-from nimbusware_orchestrator.workflow_scan_critique import (
-    PerformanceCritiqueBlock,
-    scan_critique_gate_timeline_summary,
-)
+from nimbusware_orchestrator.workflow_scan_critique import PerformanceCritiqueBlock
 from nimbusware_store.protocol import EventStore
 
-PERFORMANCE_CRITIQUE_STAGE = "implementation.performance_critique"
-_PERFORMANCE_CRITIC = "performance_critic"
-_PERF_TOOLS = ("ruff_perf", "n_plus_one_heuristic", "sql_profiler")
-
-_PERFORMANCE_STUB_CONFIG = ScanStubCritiqueConfig(
-    stage_name=PERFORMANCE_CRITIQUE_STAGE,
-    metadata_key="performance_critique",
-    specialist_tax_key=_PERFORMANCE_CRITIC,
-    evidence_scheme="perf",
-    evidence_ok="perf://clean",
-    mirror_evidence="perf://paired_mirror",
-)
-
-
-class PerformanceCritiqueLlmResponse(BaseModel):
-    model_config = {"extra": "ignore"}
-
-    verdict: str = "PASS"
-    summary: str = ""
+PERFORMANCE_CRITIQUE_STAGE = PERFORMANCE_KIND.stage_name
+performance_critique_timeline_summary = timeline_summary(PERFORMANCE_CRITIQUE_STAGE)
 
 
 def performance_scan_tools_failed(tool_summary: dict[str, Any]) -> tuple[bool, list[str]]:
-    return scan_tools_failed(tool_summary, _PERF_TOOLS)
-
-
-def performance_critique_timeline_summary(events: list[dict[str, Any]]) -> dict[str, Any] | None:
-    return scan_critique_gate_timeline_summary(
-        events,
-        stage_name=PERFORMANCE_CRITIQUE_STAGE,
-    )
-
-
-def _required_fix_for_perf(failing: list[str]) -> RequiredFixArtifact:
-    return RequiredFixArtifact.model_validate(
-        {
-            "artifact_schema_version": 1,
-            "format": "json_patch",
-            "target_files": ["packages/"],
-            "patch_artifact": "[]",
-            "validation_steps": [f"resolve performance findings: {', '.join(failing)}"],
-            "acceptance_criteria": "ruff_perf and N+1 heuristic pass",
-        },
-    )
+    assert PERFORMANCE_KIND.tool_names is not None
+    return tools_failed(tool_summary, PERFORMANCE_KIND.tool_names)
 
 
 def emit_stub_performance_critique_panel(
@@ -77,20 +38,21 @@ def emit_stub_performance_critique_panel(
     block: PerformanceCritiqueBlock,
     unanimous_gate_enforce: bool = False,
 ) -> None:
-    failed, failing = performance_scan_tools_failed(scan_summary)
-    fixes = [_required_fix_for_perf(failing)] if failing else []
-    emit_scan_stub_critique_panel(
-        store,
-        registry,
-        critique_router,
+    emit_stub_panel(
+        PERFORMANCE_KIND,
+        store=store,
+        registry=registry,
+        critique_router=critique_router,
         run_id=run_id,
         producer_tax_key=producer_tax_key,
         scan_summary=scan_summary,
         block=block,
-        config=_PERFORMANCE_STUB_CONFIG,
-        failed=failed,
-        failing_items=failing,
-        fixes=fixes,
+        scan_failed_fn=performance_scan_tools_failed,
+        build_fix=lambda failing: required_fix_artifact(
+            failing=failing,
+            validation_prefix="resolve performance findings",
+            acceptance="ruff_perf and N+1 heuristic pass",
+        ),
         unanimous_gate_enforce=unanimous_gate_enforce,
     )
 
@@ -109,19 +71,17 @@ def execute_performance_critique_llm(
     timeout_seconds: float = 120.0,
     unanimous_gate_enforce: bool = False,
 ) -> bool:
-    return execute_scan_critique_llm(
-        store,
-        registry,
-        critique_router,
+    return execute_llm(
+        PERFORMANCE_KIND,
+        store=store,
+        registry=registry,
+        critique_router=critique_router,
         run_id=run_id,
         producer_tax_key=producer_tax_key,
         scan_summary=scan_summary,
         base_url=base_url,
         model_id=model_id,
         block=block,
-        stage_name=PERFORMANCE_CRITIQUE_STAGE,
-        metadata_key="performance_critique",
-        specialist_tax_key=_PERFORMANCE_CRITIC,
         response_model=PerformanceCritiqueLlmResponse,
         system_prompt=(
             'Return JSON only: {"verdict":"PASS"|"FAIL","summary":"string"}. '
@@ -131,7 +91,13 @@ def execute_performance_critique_llm(
             {"tools": summary.get("security_scan_tools"), "failing": failing},
         ),
         scan_failed_fn=performance_scan_tools_failed,
-        build_fixes_fn=lambda failing, _parsed: [_required_fix_for_perf(failing or ["llm"])],
+        build_fixes_fn=lambda failing, _parsed: [
+            required_fix_artifact(
+                failing=failing or ["llm"],
+                validation_prefix="resolve performance findings",
+                acceptance="ruff_perf and N+1 heuristic pass",
+            ),
+        ],
         llm_failed_fn=lambda parsed, _tf, _failing: str(parsed.verdict).upper() == "FAIL",
         evidence_ref_fn=lambda _tax_key: "perf://llm",
         timeout_seconds=timeout_seconds,
