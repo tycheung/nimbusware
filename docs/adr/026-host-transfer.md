@@ -18,6 +18,6 @@ Track B collaborative sessions designate a **host** (canonical Postgres, workspa
 
 ## Consequences
 
-- Table `nimbusware_host_transfer_request` (see `alllms.md` § D8); decline API shipped.
+- Table `nimbusware_host_transfer_request` (see normative plan **§20.30.4**); decline API shipped.
 - Compute mesh workers re-register against new host base URL after cutover.
 - Declined or expired requests leave host unchanged.

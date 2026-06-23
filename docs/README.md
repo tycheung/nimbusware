@@ -109,7 +109,9 @@ Catalogs: `configs/launch_eval/catalog.yaml`, `configs/factory/flows/`.
 
 ## Local planning (gitignored)
 
-Normative product contract and maturity backlog live outside git:
+Two-file model (consolidated Jun 2026 — `v1.1features.md` and `alllms.md` merged, deleted):
 
-- `nimbusware-orchestrator-local-plan.md`
-- `PLAN_GAP.md`
+| File | Role |
+|------|------|
+| `nimbusware-orchestrator-local-plan.md` | Normative contract §1–§20.32 (architecture, gates, epics, product intent) |
+| `PLAN_GAP.md` | Maturity rating, open backlog, shipped ledger, audit archive |

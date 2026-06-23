@@ -10,7 +10,7 @@ v1.1 hybrid routing binds **stage keys** (`plan`, `slice.critique`) to a single 
 
 ## Decision
 
-1. **Binding schema** — each role resolves to `provider_kind`, `provider_id`, `model_id`, optional `base_url`, `api_key_ref` / vault `connection_id`, and generation params (see `alllms.md` § Track A).
+1. **Binding schema** — each role resolves to `provider_kind`, `provider_id`, `model_id`, optional `base_url`, `api_key_ref` / vault `connection_id`, and generation params (see normative plan **§20.30.2**).
 2. **Resolution precedence** (highest first): workload claimer snapshot → `model.binding.overridden` event → run `model_bindings_snapshot` → session overrides → user profile defaults → workflow profile → global `model-routing.models.primary`.
 3. **`ModelBindingResolver`** in orchestrator is the **only** dispatch path for agent LLM calls after Track A2; direct `ollama_chat_json` is forbidden in feature code (audit: `docs/audits/llm-call-sites.md`).
 4. **Preflight** reports `roles_covered` and per-provider reachability; missing Ollama does **not** block runs when all active workflow roles have healthy cloud bindings.

@@ -126,15 +126,16 @@ secrets.json
 *.rej
 *~
 
-# Nimbusware planning docs (local only — two-file model: normative plan + epics ledger)
+# Nimbusware planning docs (local only — two-file model: normative plan + backlog)
 nimbusware-orchestrator-local-plan.md
 PLAN_GAP.md
 plan_gap.md
-v1.1features.md
 benchmarks/*
 !benchmarks/README.md
 !benchmarks/latest_*.json
-alllms.md
+
+# Local CI log dumps (not committed)
+ci_*.log
 
 # Diagnose/learn runtime docs (per-workspace; see diagnose_learn.py, ADR 012)
 docs/learnings/
