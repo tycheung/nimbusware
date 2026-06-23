@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from nimbusware_env import env_flags, settings_resolve
-
-TRUTHY_VALUES = settings_resolve.TRUTHY_VALUES
-FALSY_VALUES = settings_resolve.FALSY_VALUES
+from nimbusware_env import env_flags
+from nimbusware_env.settings_resolve import FALSY_VALUES, TRUTHY_VALUES, resolve_raw
 
 __all__ = [
     "env_bool",
@@ -13,9 +11,9 @@ __all__ = [
 
 
 def resolve_operator_setting(name: str) -> str | None:
-    resolve_setting = getattr(settings_resolve, "resolve_setting", None)
-    if resolve_setting is not None:
-        return resolve_setting(name)
+    catalog_val = resolve_raw(name)
+    if catalog_val is not None:
+        return catalog_val
     val = env_flags.env_str(name, default="")
     return val if val else None
 

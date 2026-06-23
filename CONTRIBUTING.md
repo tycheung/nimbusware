@@ -24,7 +24,7 @@ Before opening a PR, run the full unit CI job locally:
 ./scripts/ci/ci_check.sh
 ```
 
-This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **81** Playwright tests across **48** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
+This runs: ruff check, [`scripts/ci/audit_operator_env.py`](scripts/ci/audit_operator_env.py), [`scripts/ci/run_openapi_ts_ci_gate.py`](scripts/ci/run_openapi_ts_ci_gate.py), format check, **prune-comments gate** (`run_prune_comments_ci_gate.py`), **explainer-export lint** (`run_explainer_export_lint_gate.py`), **LOC budget** (`run_loc_budget_ci_gate.py`), mypy (targets from [`scripts/ci/mypy_ci_targets.py`](scripts/ci/mypy_ci_targets.py)), bandit, pip-audit, pytest with **75%** coverage floor and per-package floors for core libs, Maker/Admin vitest when `node` is available (`npm run build` for Admin UI before vitest/Playwright), the `slice.e2e` apply journey gate, and **81** Playwright tests across **48** spec files in [`tests/e2e/web`](tests/e2e/web) when `package-lock.json` is present. On Linux/macOS, pass `--skip-web` to `ci_check.sh` to skip the optional Node block.
 
 Optional Postgres jobs (slower; require `NIMBUSWARE_DATABASE_URL`):
 
@@ -88,7 +88,7 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
-- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` on `packages/`, `tests/`, `scripts/` (review diff before commit)
+- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` on `packages/` and `scripts/` (CI enforces prune gate; review diff before bulk local runs)
 - Maker operator ribbons live under `packages/nimbusware_maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)

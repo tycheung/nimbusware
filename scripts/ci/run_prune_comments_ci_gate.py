@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""CI gate: fail when prune_verbose_comments would modify tracked source."""
 
 from __future__ import annotations
 

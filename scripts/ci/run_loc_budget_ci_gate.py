@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""CI gate: fail when packages/ Python LOC exceeds the committed baseline."""
 
 from __future__ import annotations
 

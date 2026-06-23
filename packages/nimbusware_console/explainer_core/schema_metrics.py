@@ -47,9 +47,9 @@ def build_operator_metrics(
         apply_nested_bool_fields(metrics, payload, nested_key, fields)
     if int_fields:
         apply_nonneg_int_fields(metrics, payload, int_fields)
-    for spec in optional_int:
-        if len(spec) == 3:
-            payload_key, metric_key, positive_only = spec
+    for opt_spec in optional_int:
+        if len(opt_spec) == 3:
+            payload_key, metric_key, positive_only = opt_spec
             apply_optional_int_field(
                 metrics,
                 payload,
@@ -58,15 +58,15 @@ def build_operator_metrics(
                 positive_only=positive_only,
             )
         else:
-            payload_key, metric_key = spec
+            payload_key, metric_key = opt_spec
             apply_optional_int_field(metrics, payload, payload_key, metric_key)
     for payload_key, metric_key in str_present:
         apply_str_present(metrics, payload, payload_key, metric_key)
-    for spec in env_tri_state:
-        if isinstance(spec, str):
-            apply_env_tri_state_metrics(metrics, payload, spec)
+    for tri_spec in env_tri_state:
+        if isinstance(tri_spec, str):
+            apply_env_tri_state_metrics(metrics, payload, tri_spec)
         else:
-            env_key, forces_on_key, forces_off_key, unset_key = spec
+            env_key, forces_on_key, forces_off_key, unset_key = tri_spec
             apply_env_tri_state_metrics(
                 metrics,
                 payload,

@@ -2295,40 +2295,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/platform/edition": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Platform Edition */
-        get: operations["get_platform_edition_v1_platform_edition_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/platform/readiness": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Platform Readiness */
-        get: operations["get_platform_readiness_v1_platform_readiness_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/v1/platform/hardware": {
         parameters: {
             query?: never;
@@ -2391,24 +2357,6 @@ export interface paths {
         put?: never;
         /** Post Platform Hardware Fleet Rescan */
         post: operations["post_platform_hardware_fleet_rescan_v1_platform_hardware_fleet_rescan_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/v1/platform/onboarding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Platform Onboarding */
-        get: operations["get_platform_onboarding_v1_platform_onboarding_get"];
-        put?: never;
-        /** Post Platform Onboarding */
-        post: operations["post_platform_onboarding_v1_platform_onboarding_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2613,6 +2561,58 @@ export interface paths {
         get: operations["get_model_dependencies_v1_platform_models_dependencies_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/edition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Platform Edition */
+        get: operations["get_platform_edition_v1_platform_edition_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Platform Readiness */
+        get: operations["get_platform_readiness_v1_platform_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Platform Onboarding */
+        get: operations["get_platform_onboarding_v1_platform_onboarding_get"];
+        put?: never;
+        /** Post Platform Onboarding */
+        post: operations["post_platform_onboarding_v1_platform_onboarding_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -22997,162 +22997,6 @@ export interface operations {
             };
         };
     };
-    get_platform_edition_v1_platform_edition_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_platform_readiness_v1_platform_readiness_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
     get_platform_hardware_v1_platform_hardware_get: {
         parameters: {
             query?: {
@@ -23396,162 +23240,6 @@ export interface operations {
         };
     };
     post_platform_hardware_fleet_rescan_v1_platform_hardware_fleet_rescan_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    get_platform_onboarding_v1_platform_onboarding_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        [key: string]: unknown;
-                    };
-                };
-            };
-            /** @description Structured error (``code``, ``message``, optional ``details``) */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                    "application/problem+json": {
-                        /** Code */
-                        code: string;
-                        /** Message */
-                        message: string;
-                        /** Details */
-                        details?: {
-                            [key: string]: unknown;
-                        } | null;
-                    };
-                };
-            };
-        };
-    };
-    post_platform_onboarding_v1_platform_onboarding_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -24517,6 +24205,318 @@ export interface operations {
         };
     };
     get_model_dependencies_v1_platform_models_dependencies_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_platform_edition_v1_platform_edition_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_platform_readiness_v1_platform_readiness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_platform_onboarding_v1_platform_onboarding_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_platform_onboarding_v1_platform_onboarding_post: {
         parameters: {
             query?: never;
             header?: never;
