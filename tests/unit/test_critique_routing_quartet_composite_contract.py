@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-from uuid import UUID
 
 import pytest
 
@@ -15,45 +14,19 @@ from nimbusware_orchestrator.critique_routing import (
     taxonomy_keys_for_run_lifecycle,
 )
 from nimbusware_orchestrator.registry import RoleRegistry
+from unit.composite_orchestrator_fixtures import (
+    CANONICAL_CRITICS,
+    CANONICAL_DEFAULT_CRITICS,
+    CANONICAL_PRODUCERS,
+    canonical_critique_router,
+    canonical_role_registry,
+    deterministic_uuid,
+)
 
 # Builder helpers (no fixtures beyond pytest built-ins)
 
 # Real-repo workspace root (parent of `tests/`).
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
-
-# The canonical 5-role registry that matches `configs/roles.yaml`.
-_CANONICAL_PRODUCERS = ("planner", "backend_writer", "test_writer")
-_CANONICAL_CRITICS = ("product_reference_critic", "domain_critic")
-_CANONICAL_DEFAULT_CRITICS = ("product_reference_critic", "domain_critic")
-
-
-def _uuid(n: int) -> UUID:
-    """Deterministic UUID for test fixtures (no real role IDs needed)."""
-    return UUID(int=n)
-
-
-def _canonical_registry() -> RoleRegistry:
-    """Registry matching the real `configs/roles.yaml` keys."""
-    return RoleRegistry.from_mapping(
-        {
-            "planner": _uuid(1),
-            "backend_writer": _uuid(2),
-            "test_writer": _uuid(3),
-            "product_reference_critic": _uuid(4),
-            "domain_critic": _uuid(5),
-        }
-    )
-
-
-def _canonical_router() -> UniversalCritiqueRouter:
-    """Router matching the real `configs/personas/critique_pairings.yaml`."""
-    return UniversalCritiqueRouter(
-        {
-            "planner": list(_CANONICAL_CRITICS),
-            "backend_writer": list(_CANONICAL_CRITICS),
-            "test_writer": list(_CANONICAL_CRITICS),
-        }
-    )
 
 
 # Part A -- default_critique_pairings_path path-composition matrix
@@ -136,7 +109,7 @@ class TestPartBLoadCritiqueRouter:
         assert isinstance(router, UniversalCritiqueRouter)
 
         _repo_pairings = {
-            "planner": _CANONICAL_CRITICS,
+            "planner": CANONICAL_CRITICS,
             "backend_writer": (
                 "product_reference_critic",
                 "domain_critic",
@@ -144,7 +117,7 @@ class TestPartBLoadCritiqueRouter:
                 "performance_critic",
                 "network_resilience_critic",
             ),
-            "test_writer": _CANONICAL_CRITICS,
+            "test_writer": CANONICAL_CRITICS,
         }
         for producer, expected in _repo_pairings.items():
             paired = router.pairing_for(producer)
@@ -158,7 +131,7 @@ class TestPartBLoadCritiqueRouter:
         # Any producer -> default critics fallback.
         for producer in ("any-producer", "planner", "unknown_role"):
             paired = router.pairing_for(producer)
-            assert tuple(paired) == _CANONICAL_DEFAULT_CRITICS
+            assert tuple(paired) == CANONICAL_DEFAULT_CRITICS
 
     def test_b3_missing_file_propagates_filenotfounderror(self, tmp_path: Path) -> None:
         # tmp_path has NO configs/personas/critique_pairings.yaml.
@@ -197,11 +170,11 @@ class TestPartCProducerSuffixFilter:
     """``endswith("_critic")`` filter and immutable frozenset return."""
 
     def test_c1_canonical_filter_drops_critic_suffixed_keys(self) -> None:
-        result = registry_producer_taxonomy_keys(_canonical_registry())
-        assert result == frozenset(_CANONICAL_PRODUCERS)
+        result = registry_producer_taxonomy_keys(canonical_role_registry())
+        assert result == frozenset(CANONICAL_PRODUCERS)
 
     def test_c2_return_type_is_frozenset_and_immutable(self) -> None:
-        result = registry_producer_taxonomy_keys(_canonical_registry())
+        result = registry_producer_taxonomy_keys(canonical_role_registry())
         assert type(result) is frozenset
 
         # Immutable: frozenset has no `.add` method at all.
@@ -225,10 +198,10 @@ class TestPartCProducerSuffixFilter:
     def test_c4_all_critic_registry_returns_empty_frozenset(self) -> None:
         all_critics = RoleRegistry.from_mapping(
             {
-                "a_critic": _uuid(10),
-                "b_critic": _uuid(11),
-                "domain_critic": _uuid(12),
-                "product_reference_critic": _uuid(13),
+                "a_critic": deterministic_uuid(10),
+                "b_critic": deterministic_uuid(11),
+                "domain_critic": deterministic_uuid(12),
+                "product_reference_critic": deterministic_uuid(13),
             }
         )
         result = registry_producer_taxonomy_keys(all_critics)
@@ -238,15 +211,15 @@ class TestPartCProducerSuffixFilter:
         registry = RoleRegistry.from_mapping(
             {
                 # NOT filtered (no `_critic` suffix):
-                "critic": _uuid(20),  # no underscore
-                "critic_helper": _uuid(21),  # contains, not endswith
-                "x_critic_y": _uuid(22),  # contains, not endswith
-                "criticism_team": _uuid(23),  # different word entirely
+                "critic": deterministic_uuid(20),  # no underscore
+                "critic_helper": deterministic_uuid(21),  # contains, not endswith
+                "x_critic_y": deterministic_uuid(22),  # contains, not endswith
+                "criticism_team": deterministic_uuid(23),  # different word entirely
                 # Filtered (endswith `_critic`):
-                "_critic": _uuid(30),  # bare suffix
-                "super_critic": _uuid(31),
-                "planner_critic": _uuid(32),
-                "domain_critic": _uuid(33),
+                "_critic": deterministic_uuid(30),  # bare suffix
+                "super_critic": deterministic_uuid(31),
+                "planner_critic": deterministic_uuid(32),
+                "domain_critic": deterministic_uuid(33),
             }
         )
         result = registry_producer_taxonomy_keys(registry)
@@ -259,9 +232,9 @@ class TestPartCProducerSuffixFilter:
     def test_c6_agent_evaluator_producer_excluded_from_lifecycle_accounting(self) -> None:
         registry = RoleRegistry.from_mapping(
             {
-                "planner": _uuid(40),
-                "agent_evaluator": _uuid(41),
-                "product_reference_critic": _uuid(42),
+                "planner": deterministic_uuid(40),
+                "agent_evaluator": deterministic_uuid(41),
+                "product_reference_critic": deterministic_uuid(42),
             }
         )
         result = registry_producer_taxonomy_keys(registry)
@@ -276,7 +249,7 @@ class TestPartDLifecycleUnionSorted:
     """Set-union dedup, sorted-list contract, default-critics fallback."""
 
     def test_d1_canonical_set_union_dedup(self) -> None:
-        result = taxonomy_keys_for_run_lifecycle(_canonical_registry(), _canonical_router())
+        result = taxonomy_keys_for_run_lifecycle(canonical_role_registry(), canonical_critique_router())
         assert result == [
             "backend_writer",
             "domain_critic",
@@ -288,8 +261,8 @@ class TestPartDLifecycleUnionSorted:
         assert len(result) == len(set(result)) == 5
 
     def test_d2_sorted_list_contract_and_idempotent(self) -> None:
-        registry = _canonical_registry()
-        router = _canonical_router()
+        registry = canonical_role_registry()
+        router = canonical_critique_router()
 
         result_a = taxonomy_keys_for_run_lifecycle(registry, router)
         result_b = taxonomy_keys_for_run_lifecycle(registry, router)
@@ -307,7 +280,7 @@ class TestPartDLifecycleUnionSorted:
         assert result_a == result_b
 
     def test_d3_default_critics_fallback_for_unpinned_producer(self) -> None:
-        registry = RoleRegistry.from_mapping({"unknown_producer": _uuid(100)})
+        registry = RoleRegistry.from_mapping({"unknown_producer": deterministic_uuid(100)})
         empty_router = UniversalCritiqueRouter({})
 
         result = taxonomy_keys_for_run_lifecycle(registry, empty_router)
@@ -339,7 +312,7 @@ class TestPartDLifecycleUnionSorted:
             }
         )
         cross_registry = RoleRegistry.from_mapping(
-            {"planner": _uuid(40), "backend_writer": _uuid(41)}
+            {"planner": deterministic_uuid(40), "backend_writer": deterministic_uuid(41)}
         )
         result_a = taxonomy_keys_for_run_lifecycle(cross_registry, cross_router)
         assert result_a == ["backend_writer", "planner"]
@@ -347,6 +320,6 @@ class TestPartDLifecycleUnionSorted:
 
         # (b) External critic name appearing only in pairings (not in registry).
         external_router = UniversalCritiqueRouter({"planner": ["external_critic_xyz"]})
-        external_registry = RoleRegistry.from_mapping({"planner": _uuid(50)})
+        external_registry = RoleRegistry.from_mapping({"planner": deterministic_uuid(50)})
         result_b = taxonomy_keys_for_run_lifecycle(external_registry, external_router)
         assert result_b == ["external_critic_xyz", "planner"]
