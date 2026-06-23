@@ -7,13 +7,17 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-)
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.integrator_gate._helpers import (
     _INTEGRATOR_GATE_FIELDS,
     _stringify,
 )
+
+(
+    _integrator_gate_latest_operator_metrics_export_json_impl,
+    integrator_gate_latest_operator_metrics_table_rows_csv,
+    _integrator_gate_latest_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="integrator_gate_latest_operator_metrics")
 
 
 def integrator_gate_latest_operator_metrics_export_json(
@@ -21,13 +25,7 @@ def integrator_gate_latest_operator_metrics_export_json(
 ) -> str:
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def integrator_gate_latest_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+    return _integrator_gate_latest_operator_metrics_export_json_impl(metrics)
 
 
 def integrator_gate_latest_operator_metrics_export_filename_slug(
@@ -38,18 +36,19 @@ def integrator_gate_latest_operator_metrics_export_filename_slug(
     return integrator_gate_latest_export_filename_slug(run_id, max_len=max_len)
 
 
+(
+    _integrator_gate_delta_operator_metrics_export_json_impl,
+    integrator_gate_delta_operator_metrics_table_rows_csv,
+    _integrator_gate_delta_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="integrator_gate_delta_operator_metrics")
+
+
 def integrator_gate_delta_operator_metrics_export_json(
     metrics: Mapping[str, Any] | None,
 ) -> str:
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def integrator_gate_delta_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+    return _integrator_gate_delta_operator_metrics_export_json_impl(metrics)
 
 
 def integrator_gate_delta_operator_metrics_export_filename_slug(
