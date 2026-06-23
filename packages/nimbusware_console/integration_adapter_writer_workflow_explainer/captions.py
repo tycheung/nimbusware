@@ -3,31 +3,31 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+
 
 def integration_adapter_writer_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    env = payload.get("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER")
-    if not isinstance(env, Mapping):
-        return None
-    if env.get("forces_off"):
-        return (
-            "Integration Adapter Writer env: **NIMBUSWARE_INTEGRATION_ADAPTER_WRITER** "
-            "kill-switch active — workflow enable ignored."
-        )
-    if env.get("forces_on"):
-        return (
-            "Integration Adapter Writer env: **NIMBUSWARE_INTEGRATION_ADAPTER_WRITER** "
-            "force-on — scaffold may activate when pipeline wiring lands."
-        )
-    if env.get("unset"):
-        return (
+    cap = env_tri_state_gate_caption(
+        payload,
+        "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER",
+        label="Integration Adapter Writer env",
+        forces_off_text=(
+            "Integration Adapter Writer env: **{env_key}** "
+            "kill-switch active{detail} — workflow enable ignored."
+        ),
+        forces_on_text=(
+            "Integration Adapter Writer env: **{env_key}** "
+            "force-on{detail} — scaffold may activate when pipeline wiring lands."
+        ),
+        unset_text=(
             "Integration Adapter Writer env: unset — "
             "workflow ``integration_adapter_writer.enabled`` controls scaffold."
-        )
-    return None
+        ),
+        unrecognised_text="",
+    )
+    return cap or None
 
 
 def integration_adapter_writer_effective_caption(
