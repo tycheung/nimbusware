@@ -19,7 +19,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     select_bundle_id_for_workflow,
     timezone,
     uuid4,
-    workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegratorOptionalStagesHost
 
@@ -94,9 +93,9 @@ class IntegratorOptionalStagesMixin:
         if tri == "off":
             return
         from nimbusware_extensions.phase2 import ModuleIntegrator
+        from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
 
-        rows = self._store.list_run_events(str(run_id))
-        wf = workflow_profile_from_run_created_rows(rows) or ""
+        rows, wf = optional_rows_and_profile(self, run_id)
         mat = self._config_materializer
         yaml_on = load_integrator_gate_emit_enabled(
             self._repo_root,

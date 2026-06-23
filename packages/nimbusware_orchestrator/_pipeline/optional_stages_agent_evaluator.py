@@ -24,7 +24,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     run_probation_automation,
     try_auto_create_persona_if_missing,
     try_auto_promote_probation_persona,
-    workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import AgentEvaluatorOptionalStagesHost
 
@@ -39,12 +38,9 @@ class AgentEvaluatorOptionalStagesMixin:
         tri = env_tri_state("NIMBUSWARE_AGENT_EVALUATOR")
         if tri == "off":
             return
-        wf = (
-            workflow_profile_from_run_created_rows(
-                self._store.list_run_events(str(run_id)),
-            )
-            or ""
-        )
+        from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
+
+        rows, wf = optional_rows_and_profile(self, run_id)
         block = parse_agent_evaluator_workflow_block(
             self._repo_root,
             wf,
@@ -73,7 +69,6 @@ class AgentEvaluatorOptionalStagesMixin:
         from nimbusware_config.persist import load_persona_shelf
         from nimbusware_orchestrator.read_models import persona_assignment_from_run_created_metadata
 
-        rows = self._store.list_run_events(str(run_id))
         pa_for_eval: dict[str, Any] | None = None
         for row in rows:
             if row.get("event_type") != EventType.RUN_CREATED.value:

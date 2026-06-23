@@ -6,7 +6,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     emit_stub_integration_adapter_writer_stage,
     integration_adapter_writer_stage_would_emit,
     parse_integration_adapter_writer_workflow_block,
-    workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegrationOptionalStagesHost
 
@@ -16,8 +15,9 @@ class IntegrationOptionalStagesMixin:
         self: IntegrationOptionalStagesHost,
         run_id: UUID,
     ) -> None:
-        rows = self._store.list_run_events(str(run_id))
-        wf = workflow_profile_from_run_created_rows(rows) or ""
+        from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
+
+        _, wf = optional_rows_and_profile(self, run_id)
         mat = self._config_materializer
         if not integration_adapter_writer_stage_would_emit(
             self._repo_root,
