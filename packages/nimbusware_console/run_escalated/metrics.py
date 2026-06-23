@@ -1,45 +1,84 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.run_escalated.rows import (
     run_escalated_delta_export_filename_slug,
     run_escalated_export_filename_slug,
     run_escalated_history_export_filename_slug,
 )
 
+_RUN_ESCALATED_DEFAULTS: dict[str, Any] = {
+    "notes_present": False,
+    "actor_id_present": False,
+    "reason_code_present": False,
+    "policy_snapshot_id_present": False,
+    "event_id_present": False,
+    "severity": None,
+}
+
+_RUN_ESCALATED_STR_PRESENT: tuple[tuple[str, str], ...] = (
+    ("notes", "notes_present"),
+    ("actor_id", "actor_id_present"),
+)
+
+_RUN_ESCALATED_BOOL_ROWS: tuple[tuple[str, str], ...] = (
+    ("Reason code present", "reason_code_present"),
+    ("Actor id present", "actor_id_present"),
+    ("Policy snapshot id present", "policy_snapshot_id_present"),
+    ("Event id present", "event_id_present"),
+    ("Notes present", "notes_present"),
+)
+
+_HISTORY_DEFAULTS: dict[str, Any] = {
+    "entry_count": 0,
+    "distinct_reason_codes": 0,
+    "distinct_actor_ids": 0,
+    "notes_present_count": 0,
+}
+
+_HISTORY_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Entry count", "entry_count"),
+    ("Distinct reason codes", "distinct_reason_codes"),
+    ("Distinct actor ids", "distinct_actor_ids"),
+    ("Notes present", "notes_present_count"),
+)
+
+_DELTA_BOOL_ROWS: tuple[tuple[str, str], ...] = (
+    ("Has previous event", "has_previous"),
+    ("Has current event", "has_current"),
+)
+
+_DELTA_CHANGED_ROWS: tuple[tuple[str, str], ...] = (
+    ("Reason code changed", "reason_code_changed"),
+    ("Actor id changed", "actor_id_changed"),
+    ("Policy snapshot id changed", "policy_snapshot_id_changed"),
+)
+
 
 def run_escalated_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "notes_present": False,
-        "actor_id_present": False,
-        "reason_code_present": False,
-        "policy_snapshot_id_present": False,
-        "event_id_present": False,
-        "severity": None,
-    }
-    if not isinstance(summary, Mapping):
-        return metrics
-    notes = summary.get("notes")
-    metrics["notes_present"] = isinstance(notes, str) and bool(notes.strip())
-    actor = summary.get("actor_id")
-    metrics["actor_id_present"] = isinstance(actor, str) and bool(actor.strip())
-    rc = summary.get("reason_code")
-    metrics["reason_code_present"] = rc is not None and str(rc).strip() != ""
-    policy = summary.get("policy_snapshot_id")
-    metrics["policy_snapshot_id_present"] = policy is not None and str(policy).strip() != ""
-    eid = summary.get("event_id")
-    metrics["event_id_present"] = eid is not None and str(eid).strip() != ""
-    sev = summary.get("severity")
-    if isinstance(sev, str) and sev.strip():
-        metrics["severity"] = sev.strip()
+    metrics = build_operator_metrics(
+        summary,
+        _RUN_ESCALATED_DEFAULTS,
+        str_present=_RUN_ESCALATED_STR_PRESENT,
+    )
+    if isinstance(summary, Mapping):
+        for payload_key, metric_key in (
+            ("reason_code", "reason_code_present"),
+            ("policy_snapshot_id", "policy_snapshot_id_present"),
+            ("event_id", "event_id_present"),
+        ):
+            raw = summary.get(payload_key)
+            metrics[metric_key] = raw is not None and str(raw).strip() != ""
+        sev = summary.get("severity")
+        if isinstance(sev, str) and sev.strip():
+            metrics["severity"] = sev.strip()
     return metrics
 
 
@@ -52,15 +91,13 @@ def run_escalated_operator_metrics_table_rows(
     sev = metrics.get("severity")
     if isinstance(sev, str) and sev.strip():
         rows.append({"field": "Severity", "value": sev.strip()})
-    for key, label in (
-        ("reason_code_present", "Reason code present"),
-        ("actor_id_present", "Actor id present"),
-        ("policy_snapshot_id_present", "Policy snapshot id present"),
-        ("event_id_present", "Event id present"),
-        ("notes_present", "Notes present"),
-    ):
-        if metrics.get(key) is True:
-            rows.append({"field": label, "value": "yes"})
+    rows.extend(
+        metrics_table_rows(
+            metrics,
+            _RUN_ESCALATED_BOOL_ROWS,
+            include_when=lambda m, k: m.get(k) is True,
+        ),
+    )
     return rows
 
 
@@ -88,18 +125,6 @@ def run_escalated_operator_metrics_caption(
     return "Run escalated metrics: " + ", ".join(present) + " present."
 
 
-def run_escalated_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def run_escalated_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
-
-
 def run_escalated_operator_metrics_export_filename_slug(
     run_id: str,
     *,
@@ -111,12 +136,7 @@ def run_escalated_operator_metrics_export_filename_slug(
 def run_escalated_history_operator_metrics(
     history: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "entry_count": 0,
-        "distinct_reason_codes": 0,
-        "distinct_actor_ids": 0,
-        "notes_present_count": 0,
-    }
+    metrics = build_operator_metrics(None, _HISTORY_DEFAULTS)
     if not history:
         return metrics
     reasons: set[str] = set()
@@ -142,24 +162,7 @@ def run_escalated_history_operator_metrics(
 def run_escalated_history_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {"field": "Entry count", "value": str(metrics.get("entry_count", 0))},
-        {
-            "field": "Distinct reason codes",
-            "value": str(metrics.get("distinct_reason_codes", 0)),
-        },
-        {
-            "field": "Distinct actor ids",
-            "value": str(metrics.get("distinct_actor_ids", 0)),
-        },
-        {
-            "field": "Notes present",
-            "value": str(metrics.get("notes_present_count", 0)),
-        },
-    ]
-    return rows
+    return metrics_table_rows(metrics, _HISTORY_TABLE_ROWS, bool_lower=False)
 
 
 def run_escalated_history_operator_metrics_caption(
@@ -181,19 +184,7 @@ def run_escalated_history_operator_metrics_caption(
     if isinstance(dac, int) and not isinstance(dac, bool) and dac > 0:
         word = "actor" if dac == 1 else "actors"
         parts.append(f"**{dac}** distinct {word}")
-    return "Run escalated history metrics: " + ", ".join(parts) + "."
-
-
-def run_escalated_history_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def run_escalated_history_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+    return metrics_caption("Run escalated history metrics: ", parts)
 
 
 def run_escalated_history_operator_metrics_export_filename_slug(
@@ -232,19 +223,18 @@ def run_escalated_delta_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping) or not metrics.get("present"):
         return []
-    rows: list[dict[str, str]] = []
-    if metrics.get("has_previous") is True:
-        rows.append({"field": "Has previous event", "value": "yes"})
-    if metrics.get("has_current") is True:
-        rows.append({"field": "Has current event", "value": "yes"})
-    for key, label in (
-        ("reason_code_changed", "Reason code changed"),
-        ("actor_id_changed", "Actor id changed"),
-        ("policy_snapshot_id_changed", "Policy snapshot id changed"),
-    ):
-        val = metrics.get(key)
-        if isinstance(val, bool):
-            rows.append({"field": label, "value": str(val).lower()})
+    rows = metrics_table_rows(
+        metrics,
+        _DELTA_BOOL_ROWS,
+        include_when=lambda m, k: m.get(k) is True,
+    )
+    rows.extend(
+        metrics_table_rows(
+            metrics,
+            _DELTA_CHANGED_ROWS,
+            include_when=lambda _m, k: isinstance(metrics.get(k), bool),
+        ),
+    )
     return rows
 
 
@@ -270,19 +260,7 @@ def run_escalated_delta_operator_metrics_caption(
         if not stable:
             return None
         return "Run escalated delta metrics: no field changes (" + ", ".join(stable) + ")."
-    return "Run escalated delta metrics: changed " + ", ".join(changed) + "."
-
-
-def run_escalated_delta_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def run_escalated_delta_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+    return metrics_caption("Run escalated delta metrics: changed ", changed)
 
 
 def run_escalated_delta_operator_metrics_export_filename_slug(
@@ -291,3 +269,22 @@ def run_escalated_delta_operator_metrics_export_filename_slug(
     max_len: int = 36,
 ) -> str:
     return run_escalated_delta_export_filename_slug(run_id, max_len=max_len)
+
+
+(
+    run_escalated_operator_metrics_export_json,
+    run_escalated_operator_metrics_table_rows_csv,
+    _run_escalated_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="run_escalated_operator_metrics")
+
+(
+    run_escalated_history_operator_metrics_export_json,
+    run_escalated_history_operator_metrics_table_rows_csv,
+    _run_escalated_history_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="run_escalated_history_operator_metrics")
+
+(
+    run_escalated_delta_operator_metrics_export_json,
+    run_escalated_delta_operator_metrics_table_rows_csv,
+    _run_escalated_delta_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="run_escalated_delta_operator_metrics")

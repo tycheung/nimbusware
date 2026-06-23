@@ -7,6 +7,10 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
+
 _CRITIC_MATRIX_COLUMNS: tuple[str, ...] = (
     "critic_role",
     "verdict",
@@ -49,15 +53,24 @@ def critic_matrix_rows_from_events(events: Sequence[Any]) -> list[dict[str, str]
     return rows
 
 
+_CRITIC_MATRIX_OPERATOR_METRICS_DEFAULTS: dict[str, Any] = {
+    "verdict_count": 0,
+    "fail_count": 0,
+    "pass_count": 0,
+    "other_verdict_count": 0,
+}
+
+_CRITIC_MATRIX_OPERATOR_METRICS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Verdict count", "verdict_count"),
+    ("FAIL", "fail_count"),
+    ("PASS", "pass_count"),
+)
+
+
 def critic_matrix_operator_metrics(
     rows: Sequence[Mapping[str, str]],
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "verdict_count": 0,
-        "fail_count": 0,
-        "pass_count": 0,
-        "other_verdict_count": 0,
-    }
+    metrics = build_operator_metrics(None, _CRITIC_MATRIX_OPERATOR_METRICS_DEFAULTS)
     for row in rows:
         if not isinstance(row, Mapping):
             continue
@@ -81,11 +94,11 @@ def critic_matrix_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
         return []
-    rows: list[dict[str, str]] = [
-        {"field": "Verdict count", "value": str(metrics.get("verdict_count", 0))},
-        {"field": "FAIL", "value": str(metrics.get("fail_count", 0))},
-        {"field": "PASS", "value": str(metrics.get("pass_count", 0))},
-    ]
+    rows = metrics_table_rows(
+        metrics,
+        _CRITIC_MATRIX_OPERATOR_METRICS_TABLE_ROWS,
+        bool_lower=False,
+    )
     other = metrics.get("other_verdict_count", 0)
     if isinstance(other, int) and not isinstance(other, bool) and other > 0:
         rows.append({"field": "Other verdict", "value": str(other)})
@@ -104,7 +117,7 @@ def critic_matrix_operator_metrics_caption(
     fail = metrics.get("fail_count", 0)
     if isinstance(fail, int) and not isinstance(fail, bool) and fail > 0:
         parts.append(f"**{fail}** FAIL")
-    return "Critic matrix: " + ", ".join(parts) + "."
+    return metrics_caption("Critic matrix: ", parts)
 
 
 def critic_matrix_export_json(rows: Sequence[Mapping[str, str]]) -> str:
@@ -134,43 +147,19 @@ def critic_matrix_export_filename_slug(run_id: str, *, max_len: int = 36) -> str
     return slug[:max_len]
 
 
-_CRITIC_MATRIX_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def critic_matrix_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def critic_matrix_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_CRITIC_MATRIX_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _CRITIC_MATRIX_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
-
-
 def critic_matrix_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return critic_matrix_export_filename_slug(run_id, max_len=max_len)
+
+
+(
+    critic_matrix_operator_metrics_export_json,
+    critic_matrix_operator_metrics_table_rows_csv,
+    _critic_matrix_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="critic_matrix_operator_metrics")
 
 
 _CRITIC_MATRIX_LIVE_COLUMNS: tuple[str, ...] = (

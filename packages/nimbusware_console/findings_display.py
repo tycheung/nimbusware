@@ -7,6 +7,10 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
+
 _FINDINGS_TABLE_COLUMNS: tuple[str, ...] = (
     "#",
     "severity",
@@ -56,18 +60,34 @@ def findings_table_rows(findings: Sequence[Mapping[str, Any]]) -> list[dict[str,
     return rows
 
 
+_FINDINGS_OPERATOR_METRICS_DEFAULTS: dict[str, Any] = {
+    "finding_count": 0,
+    "severity_blocker": 0,
+    "severity_high": 0,
+    "severity_medium": 0,
+    "severity_low": 0,
+    "severity_other": 0,
+    "distinct_categories": 0,
+}
+
+_FINDINGS_OPERATOR_METRICS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Finding count", "finding_count"),
+    ("Distinct categories", "distinct_categories"),
+)
+
+_FINDINGS_SEVERITY_ROWS: tuple[tuple[str, str], ...] = (
+    ("BLOCKER", "severity_blocker"),
+    ("HIGH", "severity_high"),
+    ("MEDIUM", "severity_medium"),
+    ("LOW", "severity_low"),
+    ("Other severity", "severity_other"),
+)
+
+
 def findings_operator_metrics(
     findings: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "finding_count": 0,
-        "severity_blocker": 0,
-        "severity_high": 0,
-        "severity_medium": 0,
-        "severity_low": 0,
-        "severity_other": 0,
-        "distinct_categories": 0,
-    }
+    metrics = build_operator_metrics(None, _FINDINGS_OPERATOR_METRICS_DEFAULTS)
     categories: set[str] = set()
     for ev in findings:
         if not isinstance(ev, Mapping):
@@ -100,23 +120,21 @@ def findings_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
         return []
-    rows: list[dict[str, str]] = [
-        {"field": "Finding count", "value": str(metrics.get("finding_count", 0))},
-        {
-            "field": "Distinct categories",
-            "value": str(metrics.get("distinct_categories", 0)),
-        },
-    ]
-    for bucket, label in (
-        ("severity_blocker", "BLOCKER"),
-        ("severity_high", "HIGH"),
-        ("severity_medium", "MEDIUM"),
-        ("severity_low", "LOW"),
-        ("severity_other", "Other severity"),
-    ):
-        n = metrics.get(bucket, 0)
-        if isinstance(n, int) and not isinstance(n, bool) and n > 0:
-            rows.append({"field": label, "value": str(n)})
+    rows = metrics_table_rows(
+        metrics,
+        _FINDINGS_OPERATOR_METRICS_TABLE_ROWS,
+        bool_lower=False,
+    )
+    rows.extend(
+        metrics_table_rows(
+            metrics,
+            _FINDINGS_SEVERITY_ROWS,
+            bool_lower=False,
+            include_when=lambda _m, k: isinstance(metrics.get(k), int)
+            and not isinstance(metrics.get(k), bool)
+            and int(metrics[k]) > 0,
+        ),
+    )
     return rows
 
 
@@ -141,7 +159,7 @@ def findings_operator_metrics_caption(
         n = metrics.get(bucket, 0)
         if isinstance(n, int) and not isinstance(n, bool) and n > 0:
             parts.append(f"**{n}** {label}")
-    return "Findings: " + ", ".join(parts) + "."
+    return metrics_caption("Findings: ", parts)
 
 
 def findings_empty_caption() -> str:
@@ -176,40 +194,16 @@ def findings_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
     return slug[:max_len]
 
 
-_FINDINGS_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def findings_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def findings_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_FINDINGS_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _FINDINGS_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
-
-
 def findings_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return findings_export_filename_slug(run_id, max_len=max_len)
+
+
+(
+    findings_operator_metrics_export_json,
+    findings_operator_metrics_table_rows_csv,
+    _findings_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="findings_operator_metrics")

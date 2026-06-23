@@ -1,30 +1,53 @@
 from __future__ import annotations
 
-import csv
-import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.universal_critique_timeline_display.rows import (
     universal_critique_timeline_export_filename_slug,
+)
+
+_DEFAULTS: dict[str, Any] = {
+    "stage_count": 0,
+    "fail_count": 0,
+    "pass_count": 0,
+    "fail_rate": None,
+    "other_verdict_count": 0,
+    "distinct_fail_stages": [],
+    "default_enabled_effective": None,
+    "unanimous_gate_effective": None,
+    "failing_critics_total_count": 0,
+}
+
+_BASE_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Stage count", "stage_count"),
+    ("FAIL", "fail_count"),
+    ("PASS", "pass_count"),
+)
+
+_BOOL_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Default-on effective", "default_enabled_effective"),
+    ("Unanimous gate effective", "unanimous_gate_effective"),
+)
+
+_COVERAGE_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Registry producers", "registry_producer_count"),
+    ("Paired producers", "paired_producer_count"),
+    ("Unpaired producers", "unpaired_producer_count"),
 )
 
 
 def universal_critique_timeline_operator_metrics(
     summary: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "stage_count": 0,
-        "fail_count": 0,
-        "pass_count": 0,
-        "fail_rate": None,
-        "other_verdict_count": 0,
-        "distinct_fail_stages": [],
-        "default_enabled_effective": None,
-        "unanimous_gate_effective": None,
-        "failing_critics_total_count": 0,
-    }
+    metrics = build_operator_metrics(
+        summary,
+        _DEFAULTS,
+        float_fields=(("fail_rate", "fail_rate"),),
+    )
     if not isinstance(summary, Mapping):
         return metrics
     stages = summary.get("stages")
@@ -66,10 +89,7 @@ def universal_critique_timeline_operator_metrics(
         bool,
     ):
         metrics["pass_count"] = int(summary["pass_count"])
-    fail_rate = summary.get("fail_rate")
-    if isinstance(fail_rate, (int, float)) and not isinstance(fail_rate, bool):
-        metrics["fail_rate"] = float(fail_rate)
-    elif (
+    if metrics.get("fail_rate") is None and (
         isinstance(metrics.get("stage_count"), int)
         and metrics["stage_count"] > 0
         and isinstance(metrics.get("fail_count"), int)
@@ -108,11 +128,7 @@ def universal_critique_timeline_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
         return []
-    rows: list[dict[str, str]] = [
-        {"field": "Stage count", "value": str(metrics.get("stage_count", 0))},
-        {"field": "FAIL", "value": str(metrics.get("fail_count", 0))},
-        {"field": "PASS", "value": str(metrics.get("pass_count", 0))},
-    ]
+    rows = metrics_table_rows(metrics, _BASE_TABLE_ROWS, bool_lower=False)
     fail_rate = metrics.get("fail_rate")
     if isinstance(fail_rate, (int, float)) and not isinstance(fail_rate, bool):
         rows.append({"field": "FAIL rate", "value": f"{100.0 * float(fail_rate):.1f}%"})
@@ -127,21 +143,23 @@ def universal_critique_timeline_operator_metrics_table_rows(
                 "value": ", ".join(str(x) for x in fail_stages if isinstance(x, str)),
             },
         )
-    for label, key in (
-        ("Default-on effective", "default_enabled_effective"),
-        ("Unanimous gate effective", "unanimous_gate_effective"),
-    ):
-        val = metrics.get(key)
-        if isinstance(val, bool):
-            rows.append({"field": label, "value": str(val)})
-    for label, key in (
-        ("Registry producers", "registry_producer_count"),
-        ("Paired producers", "paired_producer_count"),
-        ("Unpaired producers", "unpaired_producer_count"),
-    ):
-        n = metrics.get(key)
-        if isinstance(n, int) and not isinstance(n, bool):
-            rows.append({"field": label, "value": str(n)})
+    rows.extend(
+        metrics_table_rows(
+            metrics,
+            _BOOL_TABLE_ROWS,
+            bool_lower=False,
+            include_when=lambda _m, k: isinstance(metrics.get(k), bool),
+        ),
+    )
+    rows.extend(
+        metrics_table_rows(
+            metrics,
+            _COVERAGE_TABLE_ROWS,
+            bool_lower=False,
+            include_when=lambda _m, k: isinstance(metrics.get(k), int)
+            and not isinstance(metrics.get(k), bool),
+        ),
+    )
     fc_total = metrics.get("failing_critics_total_count")
     if isinstance(fc_total, int) and not isinstance(fc_total, bool) and fc_total > 0:
         rows.append({"field": "Failing critics (total)", "value": str(fc_total)})
@@ -244,40 +262,16 @@ def universal_critique_unanimous_gate_caption(summary: Mapping[str, Any] | None)
     return None
 
 
-_UNIVERSAL_CRITIQUE_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def universal_critique_timeline_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def universal_critique_timeline_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_UNIVERSAL_CRITIQUE_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _UNIVERSAL_CRITIQUE_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
-
-
 def universal_critique_timeline_operator_metrics_export_filename_slug(
     run_id: str,
     *,
     max_len: int = 36,
 ) -> str:
     return universal_critique_timeline_export_filename_slug(run_id, max_len=max_len)
+
+
+(
+    universal_critique_timeline_operator_metrics_export_json,
+    universal_critique_timeline_operator_metrics_table_rows_csv,
+    _universal_critique_timeline_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="universal_critique_timeline_operator_metrics")

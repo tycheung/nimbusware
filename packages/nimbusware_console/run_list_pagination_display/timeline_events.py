@@ -6,8 +6,23 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.run_list_pagination_display.run_detail_summary import (
     run_detail_summary_export_filename_slug,
+)
+
+_TIMELINE_EVENTS_DEFAULTS: dict[str, Any] = {
+    "event_count": 0,
+    "distinct_event_type_count": 0,
+    "top_event_type": None,
+    "top_event_type_count": 0,
+}
+
+_TIMELINE_EVENTS_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Event count", "event_count"),
+    ("Distinct event types", "distinct_event_type_count"),
 )
 
 
@@ -106,12 +121,7 @@ def timeline_events_export_filename_slug(run_id: str, *, max_len: int = 36) -> s
 def timeline_events_operator_metrics(
     events: Sequence[Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "event_count": 0,
-        "distinct_event_type_count": 0,
-        "top_event_type": None,
-        "top_event_type_count": 0,
-    }
+    metrics = build_operator_metrics(None, _TIMELINE_EVENTS_DEFAULTS)
     if not events:
         return metrics
     type_counts: dict[str, int] = {}
@@ -136,13 +146,7 @@ def timeline_events_operator_metrics_table_rows(
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
         return []
-    rows: list[dict[str, str]] = [
-        {"field": "Event count", "value": str(metrics.get("event_count", 0))},
-        {
-            "field": "Distinct event types",
-            "value": str(metrics.get("distinct_event_type_count", 0)),
-        },
-    ]
+    rows = metrics_table_rows(metrics, _TIMELINE_EVENTS_TABLE_ROWS, bool_lower=False)
     top = metrics.get("top_event_type")
     tc = metrics.get("top_event_type_count", 0)
     if isinstance(top, str) and top.strip() and isinstance(tc, int) and not isinstance(tc, bool):
@@ -165,38 +169,7 @@ def timeline_events_operator_metrics_caption(
     top = metrics.get("top_event_type")
     if isinstance(top, str) and top.strip():
         parts.append(f"top type `{top.strip()}`")
-    return "Timeline events metrics: " + ", ".join(parts) + "."
-
-
-_TIMELINE_EVENTS_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def timeline_events_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def timeline_events_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_TIMELINE_EVENTS_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _TIMELINE_EVENTS_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+    return metrics_caption("Timeline events metrics: ", parts)
 
 
 def timeline_events_operator_metrics_export_filename_slug(
@@ -205,3 +178,10 @@ def timeline_events_operator_metrics_export_filename_slug(
     max_len: int = 36,
 ) -> str:
     return timeline_events_export_filename_slug(run_id, max_len=max_len)
+
+
+(
+    timeline_events_operator_metrics_export_json,
+    timeline_events_operator_metrics_table_rows_csv,
+    _timeline_events_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="timeline_events_operator_metrics")

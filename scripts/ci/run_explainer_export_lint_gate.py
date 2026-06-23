@@ -40,7 +40,6 @@ ALLOWLISTED_HAND_WRITTEN_TABLE_ROWS_CSV: frozenset[str] = frozenset(
         "packages/nimbusware_console/preflight_cross_run_display/operator_metrics.py",
         "packages/nimbusware_console/preflight_history_display.py",
         "packages/nimbusware_console/prune_status_display/metrics.py",
-        "packages/nimbusware_console/run_escalated/metrics.py",
         "packages/nimbusware_console/run_escalated/rows.py",
         "packages/nimbusware_console/run_list_pagination_display/run_detail_summary.py",
         "packages/nimbusware_console/run_list_pagination_display/timeline_events.py",
@@ -50,7 +49,6 @@ ALLOWLISTED_HAND_WRITTEN_TABLE_ROWS_CSV: frozenset[str] = frozenset(
         "packages/nimbusware_console/self_refinement/latest.py",
         "packages/nimbusware_console/self_refinement/marker_history.py",
         "packages/nimbusware_console/self_refinement_workflow_explainer/marker_exports.py",
-        "packages/nimbusware_console/universal_critique_timeline_display/metrics.py",
     }
 )
 
