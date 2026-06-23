@@ -40,7 +40,8 @@ def test_load_provider_presets_includes_gemini() -> None:
     presets = load_provider_presets(REPO)
     ids = {p["id"] for p in presets}
     assert "google" in ids
-    assert "openai_subscription" in ids
+    assert "openai_subscription" not in ids
+    assert "anthropic_subscription" not in ids
     google = next(p for p in presets if p["id"] == "google")
     assert "generativelanguage.googleapis.com" in (google.get("default_base_url") or "")
 

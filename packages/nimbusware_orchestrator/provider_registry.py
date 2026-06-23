@@ -26,12 +26,15 @@ def load_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
         pid = str(raw.get("id") or "").strip()
         if not pid:
             continue
+        connection_kind = str(raw.get("connection_kind") or "api_key")
+        if connection_kind == "subscription":
+            continue
         out.append(
             {
                 "id": pid,
                 "kind": str(raw.get("kind") or "cloud"),
                 "label": str(raw.get("label") or pid),
-                "connection_kind": str(raw.get("connection_kind") or "api_key"),
+                "connection_kind": connection_kind,
                 "default_base_url": raw.get("default_base_url"),
                 "probe_health_path": str(raw.get("probe_health_path") or "/models"),
             },

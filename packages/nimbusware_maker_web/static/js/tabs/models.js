@@ -425,7 +425,9 @@ export async function mountModels(root) {
         apiJson("/platform/provider-presets"),
         apiJson("/platform/provider-connections"),
       ]);
-      providerPresets = presetsBody.providers || [];
+      providerPresets = (presetsBody.providers || []).filter(
+        (p) => p.connection_kind !== "subscription",
+      );
       savedConnections = connBody.connections || [];
       renderApiCards();
     } catch (e) {

@@ -1,5 +1,6 @@
 # Provider presets for Model Hub and ModelBindingResolver (v1.2).
 # API keys are stored per-user in nimbusware_provider_connection — not in this file.
+# Subscription OAuth (ChatGPT/Claude desktop) is deferred — use API-key providers only.
 
 providers:
   - id: ollama
@@ -12,19 +13,11 @@ providers:
     label: OpenAI API
     connection_kind: api_key
     default_base_url: https://api.openai.com/v1
-  - id: openai_subscription
-    kind: cloud
-    label: ChatGPT (Subscription)
-    connection_kind: subscription
   - id: anthropic
     kind: cloud
     label: Anthropic API
     connection_kind: api_key
     default_base_url: https://api.anthropic.com
-  - id: anthropic_subscription
-    kind: cloud
-    label: Claude (Subscription)
-    connection_kind: subscription
   - id: google
     kind: cloud
     label: Google Gemini
