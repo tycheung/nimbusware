@@ -16,7 +16,7 @@ Maker **Models** tab (`#/models`, `data-testid="maker-model-hub"`) is the operat
 - Provider cards from `GET /v1/platform/provider-presets` (Ollama, OpenAI, Anthropic Messages API, Google Gemini OpenAI-compat, Grok, OpenRouter, custom)
 - Per-user vault via `PUT /v1/platform/provider-connections` (secrets encrypted in Postgres)
 - **Test** runs `POST /v1/platform/provider-connections/{id}/probe`
-- Subscription-style providers (ChatGPT Plus, Claude Pro) use a local “connected via app” flag — no host-side OAuth
+- API-key providers only (subscription OAuth presets removed)
 
 ### Cursor card
 
@@ -25,6 +25,15 @@ Static explainer: Cursor Composer is IDE-only; use [`docs/ide-bridge.md`](ide-br
 ## Home integration
 
 Readiness actions `start_ollama` / `pull_model` deep-link to Model Hub instead of terminal toasts. Barebones install profile shows a Model Hub CTA on Home.
+
+## Implementation
+
+| Module | Role |
+|--------|------|
+| `models.js` | Tab shell and section wiring |
+| `models_hub_nav.js` | Section hash navigation |
+| `models_local_ui.js` | Ollama panel, ranked wizard, hardware strip |
+| `models_connections_ui.js` | API connection vault cards |
 
 ## Gitops
 

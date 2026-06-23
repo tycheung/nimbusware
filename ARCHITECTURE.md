@@ -145,6 +145,8 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3020 unit tests in the default job / 3871 collected, ≥75% line coverage; see `tests/README.md`).
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3020 unit tests in the default job / 3873 collected, ≥75% line coverage; see `tests/README.md`).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).
+
+**Maker web modules:** Model Hub (`models.js` + `models_local_ui.js`, `models_connections_ui.js`), Review (`review.js` + `review_*_ui.js`), Settings (`settings.js` + `settings_*_ui.js`), Chat (`chat.js` + `chat_*_ui.js`). **API platform routes:** `platform.py` composes `platform_hardware.py`, `platform_user_profiles.py`, `platform_model_routing.py`. **Theater projections:** `run_theater_handlers.py` delegates stage events to `run_theater_stage_handlers.py`.
