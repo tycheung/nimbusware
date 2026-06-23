@@ -1,4 +1,7 @@
 from nimbusware_console.components.operator_metrics import FIELD_VALUE_COLUMNS
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
@@ -28,10 +31,9 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.payload import
     security_scan_metadata_workflow_explainer_payload,
 )
 
-install_named_workflow_explainer_exports(
-    globals(),
-    "security_scan_metadata",
-    cell_alias="_security_scan_metadata_explainer_cell",
-)
 _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS = FIELD_VALUE_COLUMNS
 _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS = FIELD_VALUE_COLUMNS
+
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "security_scan_metadata")
+# codegen: workflow_explainer_exports end

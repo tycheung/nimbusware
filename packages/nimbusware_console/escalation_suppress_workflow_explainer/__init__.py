@@ -36,16 +36,14 @@ from nimbusware_console.escalation_suppress_workflow_explainer.policy_tables imp
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
 )
 from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
-from nimbusware_console.explainer_core.workflow_exports import (
-    install_named_workflow_explainer_exports,
-)
-
-install_named_workflow_explainer_exports(
-    globals(),
-    "escalation_suppress",
-    cell_alias="_escalation_suppress_explainer_cell",
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
 )
 
 
 def escalation_policy_export_filename_slug() -> str:
     return "escalation_policy"
+
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "escalation_suppress")
+# codegen: workflow_explainer_exports end

@@ -1,3 +1,6 @@
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
@@ -42,8 +45,6 @@ from nimbusware_console.self_refinement_workflow_explainer.payload import (
     self_refinement_workflow_explainer_payload,
 )
 
-install_named_workflow_explainer_exports(
-    globals(),
-    "self_refinement",
-    cell_alias="_self_refinement_explainer_cell",
-)
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "self_refinement")
+# codegen: workflow_explainer_exports end

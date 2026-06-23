@@ -1,3 +1,6 @@
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
     workflow_explainer_payload_export_json,
@@ -24,12 +27,6 @@ from nimbusware_console.integration_adapter_writer_workflow_explainer.payload im
     integration_adapter_writer_workflow_explainer_payload,
 )
 
-install_named_workflow_explainer_exports(
-    globals(),
-    "integration_adapter_writer",
-    cell_alias="_integration_adapter_writer_explainer_cell",
-)
-
 integration_adapter_writer_explainer_export_json = workflow_explainer_payload_export_json
 
 __all__ = [
@@ -52,3 +49,7 @@ __all__ = [
     "integration_adapter_writer_workflow_explainer_operator_metrics_table_rows_csv",
     "integration_adapter_writer_workflow_explainer_payload",
 ]
+
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "integration_adapter_writer")
+# codegen: workflow_explainer_exports end

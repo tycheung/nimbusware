@@ -1,3 +1,6 @@
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
@@ -27,8 +30,6 @@ from nimbusware_console.integrator_threshold_explainer.snapshots import (
     _thresholds_snapshot,
 )
 
-install_named_workflow_explainer_exports(
-    globals(),
-    "integrator_threshold",
-    cell_alias="_integrator_threshold_explainer_cell",
-)
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "integrator_threshold")
+# codegen: workflow_explainer_exports end

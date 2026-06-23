@@ -29,12 +29,10 @@ from nimbusware_console.agent_evaluator_workflow_explainer.metrics import (
 from nimbusware_console.agent_evaluator_workflow_explainer.payload import (
     agent_evaluator_workflow_explainer_payload,
 )
-from nimbusware_console.explainer_core.workflow_exports import (
-    install_named_workflow_explainer_exports,
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
 )
 
-install_named_workflow_explainer_exports(
-    globals(),
-    "agent_evaluator",
-    cell_alias="_agent_evaluator_explainer_cell",
-)
+# codegen: workflow_explainer_exports begin
+install_package_workflow_explainer_exports(globals(), "agent_evaluator")
+# codegen: workflow_explainer_exports end
