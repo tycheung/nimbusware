@@ -570,7 +570,7 @@ buttons:
   - tests/e2e/web/maker_model_hub.spec.ts
 - test_id: maker-ollama-install
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/models_local_ui.js
+  source: packages/nimbusware_maker_web/static/js/tabs/models_ollama_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -811,7 +811,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-variant-candidate
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/operator-ribbons.js
+  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_ribbon_refresh.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
