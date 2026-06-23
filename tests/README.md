@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers **~3,868** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~3,019** tests at **≥75%** coverage (~80% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`). Playwright specs use a **120s** timeout (`tests/e2e/web/playwright.config.ts`) so campaign/API flows stay stable under CI parallel workers.
+Pytest discovers **3873** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~3028** tests at **≥75%** coverage (~80% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`). Playwright specs use a **120s** timeout (`tests/e2e/web/playwright.config.ts`) so campaign/API flows stay stable under CI parallel workers.
 
 | Directory | Purpose |
 |-----------|---------|
@@ -29,7 +29,7 @@ Pytest discovers **~3,868** items under `tests/` with `pythonpath = ["packages",
 - Add new tests under the themed folder above, not at the `tests/` root (enforced by `tests/unit/test_test_layout.py`).
 - Mark slow suites with `@pytest.mark.slow`; integration with `@pytest.mark.integration`.
 - Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `nimbusware_env.admin_token` instead of hardcoding dev token strings.
-- Composite contract tests share helpers in `tests/unit/composite_contract_fixtures.py` (dict event builders, gate/finding scans), `tests/unit/composite_store_fixtures.py` (`InMemoryEventStore` append helpers), `tests/unit/composite_orchestrator_fixtures.py` (canonical role registry / critique router), and `tests/unit/composite_repo_fixtures.py` (config YAML writers for integrator, escalation, workflows, critique pairings).
+- Composite contract tests share helpers in `tests/unit/composite_contract_fixtures.py` (dict event builders, gate/finding scans), `tests/unit/composite_store_fixtures.py` (`InMemoryEventStore` append helpers), `tests/unit/composite_orchestrator_fixtures.py` (canonical role registry / critique router), `tests/unit/composite_repo_fixtures.py` (config YAML writers for integrator, escalation, workflows, critique pairings), and `tests/unit/composite_api_fixtures.py` (cursor base64 and filesystem mtime helpers for API contract tests).
 
 ## Postgres adapter coverage
 
