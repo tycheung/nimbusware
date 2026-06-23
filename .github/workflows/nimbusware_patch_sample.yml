@@ -16,7 +16,7 @@ jobs:
     if: ${{ secrets.NIMBUSWARE_API_BASE != '' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Create patch run
         env:
           API: ${{ secrets.NIMBUSWARE_API_BASE }}
