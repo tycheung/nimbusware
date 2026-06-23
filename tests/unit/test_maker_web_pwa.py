@@ -52,7 +52,8 @@ def test_maker_models_preset_wizard_paths() -> None:
     tabs = _STATIC / "js" / "tabs"
     models_js = (tabs / "models.js").read_text(encoding="utf-8")
     local_js = (tabs / "models_local_ui.js").read_text(encoding="utf-8")
-    combined = models_js + local_js
+    ollama_js = (tabs / "models_ollama_ui.js").read_text(encoding="utf-8")
+    combined = models_js + local_js + ollama_js
     assert "/platform/models/ranked" in combined
     assert "/platform/models/apply-preset" in combined
     assert "/platform/hardware" in combined
