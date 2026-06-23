@@ -99,3 +99,41 @@ def run_created_event(
         "metadata": metadata,
         "payload": payload,
     }
+
+
+FINDING_CREATED = EVENT_TYPE_FINDING
+SYNTHETIC_GATE_FAIL_CODE = "fo103_synthetic_fail"
+
+
+def append_fail_gate(mem: Any, run_id: UUID, stage: str) -> None:
+    from datetime import datetime, timezone
+    from uuid import uuid4
+
+    from agent_core.models import (
+        EventType,
+        GateDecisionEmittedEvent,
+        GateDecisionEmittedPayload,
+        Verdict,
+    )
+
+    mem.append(
+        GateDecisionEmittedEvent(
+            event_type=EventType.GATE_DECISION_EMITTED,
+            event_id=uuid4(),
+            run_id=run_id,
+            occurred_at=datetime.now(timezone.utc),
+            payload=GateDecisionEmittedPayload(
+                stage_name=stage,
+                verdict=Verdict.FAIL,
+                failure_reason_code=SYNTHETIC_GATE_FAIL_CODE,
+            ),
+        ),
+    )
+
+
+def findings_for_run(mem: Any, run_id: UUID) -> list[dict[str, Any]]:
+    return [r for r in mem.list_run_events(str(run_id)) if r.get("event_type") == FINDING_CREATED]
+
+
+def stage_names_from_findings(findings: list[dict[str, Any]]) -> list[str | None]:
+    return [(f.get("metadata") or {}).get("stage_name") for f in findings]

@@ -1,18 +1,13 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
-from uuid import UUID, uuid4
 
 from agent_core.models import (
     EventType,
     FindingCreatedPayload,
-    GateDecisionEmittedEvent,
-    GateDecisionEmittedPayload,
-    Verdict,
 )
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.llm_plan import (
@@ -26,12 +21,16 @@ from nimbusware_orchestrator.workflow_universal_critique import (
 )
 
 if TYPE_CHECKING:
-    from nimbusware_store.memory import InMemoryEventStore
+    pass
 
+from unit.composite_contract_fixtures import (
+    FINDING_CREATED,
+    append_fail_gate,
+    findings_for_run,
+    stage_names_from_findings,
+)
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
-
-_FINDING_CREATED = "finding.created"
 
 _ENV_ALL_ON = {
     "NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1",
@@ -40,38 +39,14 @@ _ENV_ALL_ON = {
 _ENV_IMPL_ONLY = {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
 
 
-def _append_fail_gate(mem: InMemoryEventStore, rid: UUID, stage: str) -> None:
-    mem.append(
-        GateDecisionEmittedEvent(
-            event_type=EventType.GATE_DECISION_EMITTED,
-            event_id=uuid4(),
-            run_id=rid,
-            occurred_at=datetime.now(timezone.utc),
-            payload=GateDecisionEmittedPayload(
-                stage_name=stage,
-                verdict=Verdict.FAIL,
-                failure_reason_code="fo103_synthetic_fail",
-            ),
-        ),
-    )
-
-
-def _findings(mem: InMemoryEventStore, rid: UUID) -> list[dict[str, Any]]:
-    return [r for r in mem.list_run_events(str(rid)) if r.get("event_type") == _FINDING_CREATED]
-
-
-def _stage_names(findings: list[dict[str, Any]]) -> list[str | None]:
-    return [(f.get("metadata") or {}).get("stage_name") for f in findings]
-
-
 def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("default")
-    _append_fail_gate(mem_a1, rid_a1, IMPLEMENTATION_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a1, rid_a1, TEST_WRITER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a1, rid_a1, PLANNER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a1, rid_a1, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_a1, rid_a1, TEST_WRITER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a1, rid_a1, PLANNER_CRITIQUE_STAGE)
     orch_a1._maybe_emit_critique_gate_fail_findings(rid_a1)  # noqa: SLF001
-    assert _findings(mem_a1, rid_a1) == [], (
+    assert findings_for_run(mem_a1, rid_a1) == [], (
         "A1: eff=None + default workflow + no env -> fallback resolves to "
         "no-emit eff (all 3 emit_finding_on_gate_fail flags False) -> "
         "0 findings even with 3 FAIL gates present"
@@ -79,13 +54,13 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
 
     orch_a2, mem_a2 = make_dev_orchestrator()
     rid_a2 = orch_a2.create_run("default")
-    _append_fail_gate(mem_a2, rid_a2, IMPLEMENTATION_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a2, rid_a2, TEST_WRITER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a2, rid_a2, PLANNER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a2, rid_a2, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_a2, rid_a2, TEST_WRITER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a2, rid_a2, PLANNER_CRITIQUE_STAGE)
     with patch.dict(os.environ, _ENV_IMPL_ONLY, clear=False):
         orch_a2._maybe_emit_critique_gate_fail_findings(rid_a2)  # noqa: SLF001
-    findings_a2 = _findings(mem_a2, rid_a2)
-    assert _stage_names(findings_a2) == [
+    findings_a2 = findings_for_run(mem_a2, rid_a2)
+    assert stage_names_from_findings(findings_a2) == [
         IMPLEMENTATION_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
@@ -93,12 +68,12 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
 
     orch_a3, mem_a3 = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("default")
-    _append_fail_gate(mem_a3, rid_a3, IMPLEMENTATION_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a3, rid_a3, TEST_WRITER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_a3, rid_a3, PLANNER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a3, rid_a3, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_a3, rid_a3, TEST_WRITER_CRITIQUE_STAGE)
+    append_fail_gate(mem_a3, rid_a3, PLANNER_CRITIQUE_STAGE)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         orch_a3._maybe_emit_critique_gate_fail_findings(rid_a3)  # noqa: SLF001
-    findings_a3 = _findings(mem_a3, rid_a3)
+    findings_a3 = findings_for_run(mem_a3, rid_a3)
     assert len(findings_a3) == 3, "A3: eff=None + all 3 envs on -> 3 findings"
 
     orch_a4_none, mem_a4_none = make_dev_orchestrator()
@@ -110,8 +85,8 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_a4_none, rid_a4_none, stage)
-        _append_fail_gate(mem_a4_expl, rid_a4_expl, stage)
+        append_fail_gate(mem_a4_none, rid_a4_none, stage)
+        append_fail_gate(mem_a4_expl, rid_a4_expl, stage)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         orch_a4_none._maybe_emit_critique_gate_fail_findings(rid_a4_none)  # noqa: SLF001
         eff_explicit = effective_universal_critique(ROOT, "default")
@@ -119,8 +94,8 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
             rid_a4_expl,
             eff_explicit,
         )
-    assert _stage_names(_findings(mem_a4_none, rid_a4_none)) == _stage_names(
-        _findings(mem_a4_expl, rid_a4_expl),
+    assert stage_names_from_findings(findings_for_run(mem_a4_none, rid_a4_none)) == stage_names_from_findings(
+        findings_for_run(mem_a4_expl, rid_a4_expl),
     ), (
         "A4: eff=None fallback path yields IDENTICAL stage_name order as "
         "explicit-eff path (parity confirmation); pins fallback is "
@@ -134,7 +109,7 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_a5, rid_a5, stage)
+        append_fail_gate(mem_a5, rid_a5, stage)
     with (
         patch.dict(os.environ, _ENV_ALL_ON, clear=False),
         patch.object(
@@ -154,12 +129,12 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
 def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() -> None:
     orch_b1, mem_b1 = make_dev_orchestrator()
     rid_b1 = orch_b1.create_run("default")
-    _append_fail_gate(mem_b1, rid_b1, PLANNER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_b1, rid_b1, TEST_WRITER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_b1, rid_b1, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_b1, rid_b1, PLANNER_CRITIQUE_STAGE)
+    append_fail_gate(mem_b1, rid_b1, TEST_WRITER_CRITIQUE_STAGE)
+    append_fail_gate(mem_b1, rid_b1, IMPLEMENTATION_CRITIQUE_STAGE)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         orch_b1._maybe_emit_critique_gate_fail_findings(rid_b1)  # noqa: SLF001
-    assert _stage_names(_findings(mem_b1, rid_b1)) == [
+    assert stage_names_from_findings(findings_for_run(mem_b1, rid_b1)) == [
         IMPLEMENTATION_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
@@ -176,12 +151,12 @@ def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() ->
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_b2, rid_b2, stage)
+        append_fail_gate(mem_b2, rid_b2, stage)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         orch_b2._maybe_emit_critique_gate_fail_findings(rid_b2)  # noqa: SLF001
-        first_count = len(_findings(mem_b2, rid_b2))
+        first_count = len(findings_for_run(mem_b2, rid_b2))
         orch_b2._maybe_emit_critique_gate_fail_findings(rid_b2)  # noqa: SLF001
-        second_count = len(_findings(mem_b2, rid_b2))
+        second_count = len(findings_for_run(mem_b2, rid_b2))
     assert first_count == 3 and second_count == 3, (
         f"B2: double-call idempotence -- first call 3 findings, second still 3 "
         f"(got first={first_count}, second={second_count}); pins per-stage "
@@ -195,11 +170,11 @@ def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() ->
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_b3, rid_b3, stage)
+        append_fail_gate(mem_b3, rid_b3, stage)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         for _ in range(3):
             orch_b3._maybe_emit_critique_gate_fail_findings(rid_b3)  # noqa: SLF001
-    assert len(_findings(mem_b3, rid_b3)) == 3, (
+    assert len(findings_for_run(mem_b3, rid_b3)) == 3, (
         "B3: triple-call -- third call STILL emits 0; pins idempotence holds "
         "beyond one repeat (no edge-case slip after multiple retries)"
     )
@@ -211,12 +186,12 @@ def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() ->
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_b4, rid_b4, stage)
+        append_fail_gate(mem_b4, rid_b4, stage)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         orch_b4._maybe_emit_critique_gate_fail_findings(rid_b4)  # noqa: SLF001
-        _append_fail_gate(mem_b4, rid_b4, IMPLEMENTATION_CRITIQUE_STAGE)
+        append_fail_gate(mem_b4, rid_b4, IMPLEMENTATION_CRITIQUE_STAGE)
         orch_b4._maybe_emit_critique_gate_fail_findings(rid_b4)  # noqa: SLF001
-    assert len(_findings(mem_b4, rid_b4)) == 3, (
+    assert len(findings_for_run(mem_b4, rid_b4)) == 3, (
         "B4: a new FAIL gate for impl appended BETWEEN calls does NOT cause "
         "a second impl finding; pins per-stage dedup is 'any prior finding "
         "for stage' (metadata.stage_name match), NOT 'matched against the "
@@ -225,13 +200,13 @@ def test_critique_gate_fail_findings_iteration_order_and_idempotence_5_axis() ->
 
     orch_b5, mem_b5 = make_dev_orchestrator()
     rid_b5 = orch_b5.create_run("default")
-    _append_fail_gate(mem_b5, rid_b5, PLANNER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_b5, rid_b5, TEST_WRITER_CRITIQUE_STAGE)
-    _append_fail_gate(mem_b5, rid_b5, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_b5, rid_b5, PLANNER_CRITIQUE_STAGE)
+    append_fail_gate(mem_b5, rid_b5, TEST_WRITER_CRITIQUE_STAGE)
+    append_fail_gate(mem_b5, rid_b5, IMPLEMENTATION_CRITIQUE_STAGE)
     with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
         eff_b5 = effective_universal_critique(ROOT, "default")
         orch_b5._maybe_emit_critique_gate_fail_findings(rid_b5, eff_b5)  # noqa: SLF001
-    assert _stage_names(_findings(mem_b5, rid_b5)) == [
+    assert stage_names_from_findings(findings_for_run(mem_b5, rid_b5)) == [
         IMPLEMENTATION_CRITIQUE_STAGE,
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
@@ -249,7 +224,7 @@ def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> 
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_c1, rid_c1, stage)
+        append_fail_gate(mem_c1, rid_c1, stage)
     with (
         patch.dict(os.environ, _ENV_ALL_ON, clear=False),
         patch.object(
@@ -267,7 +242,7 @@ def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> 
 
     orch_c2, mem_c2 = make_dev_orchestrator()
     rid_c2 = orch_c2.create_run("default")
-    _append_fail_gate(mem_c2, rid_c2, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_c2, rid_c2, IMPLEMENTATION_CRITIQUE_STAGE)
     with (
         patch.dict(os.environ, _ENV_ALL_ON, clear=False),
         patch.object(
@@ -307,7 +282,7 @@ def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> 
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_c4, rid_c4, stage)
+        append_fail_gate(mem_c4, rid_c4, stage)
     original_validate = FindingCreatedPayload.model_validate
     captured_c4: list[dict[str, Any]] = []
 
@@ -335,7 +310,7 @@ def test_critique_gate_fail_findings_strictness_context_propagation_5_axis() -> 
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_c5, rid_c5, stage)
+        append_fail_gate(mem_c5, rid_c5, stage)
     captured_c5: list[Any] = []
 
     def spy_validate_c5(*args: Any, **kwargs: Any) -> Any:
@@ -367,7 +342,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_d1, rid_d1, stage)
+        append_fail_gate(mem_d1, rid_d1, stage)
     with (
         patch.object(orch_d1, "_strictness_context", return_value={}),
         patch.object(
@@ -404,7 +379,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
 
     orch_d3, mem_d3 = make_dev_orchestrator()
     rid_d3 = orch_d3.create_run("default")
-    _append_fail_gate(mem_d3, rid_d3, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_d3, rid_d3, IMPLEMENTATION_CRITIQUE_STAGE)
     with (
         patch.object(orch_d3, "_strictness_context", return_value={}),
         patch.object(
@@ -428,7 +403,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
         TEST_WRITER_CRITIQUE_STAGE,
         PLANNER_CRITIQUE_STAGE,
     ):
-        _append_fail_gate(mem_d4, rid_d4, stage)
+        append_fail_gate(mem_d4, rid_d4, stage)
     with (
         patch.dict(os.environ, _ENV_ALL_ON, clear=False),
         patch.object(
@@ -445,7 +420,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
         return [
             r
             for r in rows
-            if r.get("event_type") == _FINDING_CREATED
+            if r.get("event_type") == FINDING_CREATED
             and (r.get("metadata") or {}).get("critique_gate_fail_finding") is True
         ]
 
@@ -469,7 +444,7 @@ def test_critique_gate_fail_findings_rows_refresh_invariant_5_axis() -> None:
 
     orch_d5, mem_d5 = make_dev_orchestrator()
     rid_d5 = orch_d5.create_run("default")
-    _append_fail_gate(mem_d5, rid_d5, IMPLEMENTATION_CRITIQUE_STAGE)
+    append_fail_gate(mem_d5, rid_d5, IMPLEMENTATION_CRITIQUE_STAGE)
     parent = MagicMock()
     with (
         patch.object(orch_d5, "_strictness_context", return_value={}),
