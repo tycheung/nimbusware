@@ -14,6 +14,7 @@ from nimbusware_orchestrator.integrator_gate import (
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_integrator_gate_workflow_enabled_false_when_missing_block(
@@ -149,18 +150,6 @@ def test_parse_integrator_gate_project_tags_explicit_list(tmp_path: Path) -> Non
     assert parse_integrator_gate_project_tags(tmp_path, "tags") == ["billing", "stripe"]
 
 
-def _write_integrator_gate_profile(repo: Path, name: str, body: str) -> None:
-    """Write ``configs/workflows/{name}.yaml`` under ``repo`` with the given body.
-
-    Uses ``exist_ok=True`` so a single test can drop many per-case profiles into the
-    same tmp directory; mirrors ``_write_agent_evaluator_profile`` from follow-on 55
-    and the ``_write_profile`` helper in ``tests/test_workflow_security_metadata.py``.
-    """
-    wf_dir = repo / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
-
-
 def test_parse_integrator_gate_project_tags_empty_list_returns_none(
     tmp_path: Path,
 ) -> None:
@@ -175,7 +164,7 @@ def test_parse_integrator_gate_project_tags_empty_list_returns_none(
     the explicit-empty-list intent (e.g. returning ``[]``) must update this test on
     purpose.
     """
-    _write_integrator_gate_profile(
+    write_workflow_profile(
         tmp_path,
         "empty",
         "version: 1\nintegrator_gate:\n  enabled: true\n  project_tags: []\n",
@@ -195,7 +184,7 @@ def test_parse_integrator_gate_project_tags_whitespace_only_entries_return_none(
     silent-drop semantics so operators can't accidentally "disable" project-tag
     override by typing only whitespace and assuming an empty-list signal survives.
     """
-    _write_integrator_gate_profile(
+    write_workflow_profile(
         tmp_path,
         "ws",
         'version: 1\nintegrator_gate:\n  enabled: true\n  project_tags: ["  ", "", "\\t"]\n',
@@ -223,7 +212,7 @@ def test_parse_integrator_gate_project_tags_filters_and_coerces_mixed_entries(
     and an unquoted empty string sibling are included to confirm strip + empty-filter
     still run alongside the coercion path.
     """
-    _write_integrator_gate_profile(
+    write_workflow_profile(
         tmp_path,
         "mixed",
         "version: 1\nintegrator_gate:\n  enabled: true\n"
@@ -249,12 +238,12 @@ def test_parse_integrator_gate_project_tags_malformed_block_returns_none(
     52 / 53 / 55 so any refactor that wants to accept scalar shortcuts must update
     this test on purpose.
     """
-    _write_integrator_gate_profile(
+    write_workflow_profile(
         tmp_path,
         "block_scalar",
         "version: 1\nintegrator_gate: true\n",
     )
-    _write_integrator_gate_profile(
+    write_workflow_profile(
         tmp_path,
         "block_list",
         "version: 1\nintegrator_gate: []\n",
@@ -297,7 +286,7 @@ def test_parse_integrator_gate_min_score_clamping_and_malformed(
         ("dict_val", "{nested: 0.5}", None),
     ]
     for name, raw, expected in cases:
-        _write_integrator_gate_profile(
+        write_workflow_profile(
             tmp_path,
             name,
             f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {raw}\n",

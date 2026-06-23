@@ -6,6 +6,7 @@ import pytest
 
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.workflow_security import security_scan_metadata_on_verify_enabled
+from unit.composite_repo_fixtures import write_security_scan_workflow_profile
 
 
 def test_security_scan_env_forces_true(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -38,23 +39,6 @@ def test_repo_profile_security_scan_metadata_on(monkeypatch: pytest.MonkeyPatch)
     assert security_scan_metadata_on_verify_enabled(root, "security_scan_metadata_on") is True
 
 
-def _write_security_profile(tmp_path: Path, name: str, enabled: bool) -> None:
-    """Drop a minimal workflow profile under ``tmp_path/configs/workflows/{name}.yaml``.
-
-    Shared by the three follow-on 62 string-arm contract tests below so each test
-    can write both an ``off`` and an ``on`` profile uniformly without repeating the
-    boilerplate ``mkdir`` + ``write_text`` dance. ``parents=True, exist_ok=True``
-    so subsequent calls within the same test do not fail.
-    """
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    val = "true" if enabled else "false"
-    (wf_dir / f"{name}.yaml").write_text(
-        f"version: 1\nsecurity_scan_metadata_on_verify: {val}\n",
-        encoding="utf-8",
-    )
-
-
 def test_security_scan_metadata_env_force_on_string_arm_contract(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -73,7 +57,7 @@ def test_security_scan_metadata_env_force_on_string_arm_contract(
     whitespace coverage for the YAML coercion ladder. Per-case
     ``force_on raw=<raw>`` message identifies the failing env scalar.
     """
-    _write_security_profile(tmp_path, "off", enabled=False)
+    write_security_scan_workflow_profile(tmp_path, "off", enabled=False)
     cases: list[tuple[str, str]] = [
         ("canon_one", "1"),
         ("canon_true", "true"),
@@ -109,7 +93,7 @@ def test_security_scan_metadata_env_kill_switch_string_arm_contract(
     whitespace-trimmed variants. Per-case ``kill_switch raw=<raw>`` message
     identifies the failing env scalar.
     """
-    _write_security_profile(tmp_path, "on", enabled=True)
+    write_security_scan_workflow_profile(tmp_path, "on", enabled=True)
     cases: list[tuple[str, str]] = [
         ("canon_zero", "0"),
         ("canon_false", "false"),
@@ -168,8 +152,8 @@ def test_security_scan_metadata_env_fallthrough_to_yaml_string_arm_contract(
     semantics of ``NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA=on`` from "follow
     YAML" to "force on" — this test fails loudly on exactly that change.
     """
-    _write_security_profile(tmp_path, "off", enabled=False)
-    _write_security_profile(tmp_path, "on", enabled=True)
+    write_security_scan_workflow_profile(tmp_path, "off", enabled=False)
+    write_security_scan_workflow_profile(tmp_path, "on", enabled=True)
     cases: list[tuple[str, str]] = [
         ("fall_on", "on"),
         ("fall_off", "off"),

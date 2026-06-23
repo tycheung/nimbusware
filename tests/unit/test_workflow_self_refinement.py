@@ -8,6 +8,7 @@ from nimbusware_orchestrator.workflow_self_refinement import (
     SelfRefinementWorkflowBlock,
     parse_self_refinement_workflow_block,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -20,7 +21,7 @@ def test_parse_self_refinement_workflow_block_repo_profile() -> None:
 
 
 def test_parse_self_refinement_workflow_max_iterations_and_auto_promote(tmp_path: Path) -> None:
-    _write_self_refinement_profile(
+    write_workflow_profile(
         tmp_path,
         "sr_depth",
         "version: 1\nself_refinement:\n  enabled: true\n"
@@ -60,18 +61,6 @@ def test_self_refinement_marker_off_for_default_when_policy_disabled() -> None:
     )
 
 
-def _write_self_refinement_profile(repo: Path, name: str, body: str) -> None:
-    """Write ``configs/workflows/{name}.yaml`` under ``repo`` with the given body.
-
-    Mirrors the ``_write_profile`` style in ``tests/test_workflow_security_metadata.py``
-    but uses ``exist_ok=True`` so a single test can drop many per-case profiles into the
-    same tmp directory without re-creating fixture scaffolding.
-    """
-    wf_dir = repo / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
-
-
 def test_parse_self_refinement_malformed_block_yields_defaults(
     tmp_path: Path,
 ) -> None:
@@ -84,12 +73,12 @@ def test_parse_self_refinement_malformed_block_yields_defaults(
     purpose. Mirrors the malformed-shape style of follow-on 52
     (``test_parse_escalation_malformed_root_or_block_yields_defaults``).
     """
-    _write_self_refinement_profile(
+    write_workflow_profile(
         tmp_path,
         "block_scalar",
         "version: 1\nself_refinement: true\n",
     )
-    _write_self_refinement_profile(
+    write_workflow_profile(
         tmp_path,
         "block_list",
         "version: 1\nself_refinement: []\n",
@@ -124,7 +113,7 @@ def test_parse_self_refinement_field_coercion_contract(tmp_path: Path) -> None:
             if name == "en_missing"
             else f"version: 1\nself_refinement:\n  enabled: {raw}\n"
         )
-        _write_self_refinement_profile(tmp_path, name, body)
+        write_workflow_profile(tmp_path, name, body)
         block = parse_self_refinement_workflow_block(tmp_path, name)
         assert block.enabled is expected, name
 
@@ -137,7 +126,7 @@ def test_parse_self_refinement_field_coercion_contract(tmp_path: Path) -> None:
     ]
     for name, raw, expected in version_cases:
         body = f"version: 1\nself_refinement:\n  enabled: true\n  version: {raw}\n"
-        _write_self_refinement_profile(tmp_path, name, body)
+        write_workflow_profile(tmp_path, name, body)
         block = parse_self_refinement_workflow_block(tmp_path, name)
         assert block.version == expected, name
 
@@ -154,7 +143,7 @@ def test_parse_self_refinement_field_coercion_contract(tmp_path: Path) -> None:
             if name == "desc_missing"
             else f"version: 1\nself_refinement:\n  enabled: true\n  description: {raw}\n"
         )
-        _write_self_refinement_profile(tmp_path, name, body)
+        write_workflow_profile(tmp_path, name, body)
         block = parse_self_refinement_workflow_block(tmp_path, name)
         assert block.description == expected, name
 
@@ -198,7 +187,7 @@ def test_self_refinement_enabled_bool_ladder_boundary_cases(tmp_path: Path) -> N
         ("zero_int", "0", False),
     ]
     for name, raw, expected in cases:
-        _write_self_refinement_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nself_refinement:\n  enabled: {raw}\n",

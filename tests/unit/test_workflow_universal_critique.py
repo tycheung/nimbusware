@@ -11,6 +11,7 @@ from nimbusware_orchestrator.workflow_universal_critique import (
     effective_universal_critique,
     parse_universal_critique_workflow_block,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -259,18 +260,6 @@ def test_parse_universal_critique_yaml_string_on_enables_knob(
     assert block.tw_enabled is True
 
 
-def _write_universal_critique_profile(repo: Path, name: str, body: str) -> None:
-    """Write ``configs/workflows/{name}.yaml`` under ``repo`` with the given body.
-
-    Uses ``exist_ok=True`` so a single test can drop many per-case profiles into the
-    same tmp directory; mirrors ``_write_integrator_gate_profile`` (follow-on 56) and
-    ``_write_agent_evaluator_profile`` (follow-on 55).
-    """
-    wf_dir = repo / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
-
-
 def test_coerce_yaml_bool_numeric_strict_one_via_parse(tmp_path: Path) -> None:
     """Pin §14 #16 ``_coerce_yaml_bool`` strict ``raw == 1`` numeric semantics.
 
@@ -294,7 +283,7 @@ def test_coerce_yaml_bool_numeric_strict_one_via_parse(tmp_path: Path) -> None:
         ("num_neg_one", "-1", False),
     ]
     for name, raw, expected in cases:
-        _write_universal_critique_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
@@ -338,7 +327,7 @@ def test_coerce_yaml_bool_truthy_case_insensitive_strings_via_parse(
         ("mixed_yes", '"yEs"'),
     ]
     for name, raw in cases:
-        _write_universal_critique_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
@@ -378,7 +367,7 @@ def test_coerce_yaml_bool_truthy_whitespace_trimmed_strings_via_parse(
         ("ws_trailing", '"yes\\t"'),
     ]
     for name, raw in cases:
-        _write_universal_critique_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
@@ -435,7 +424,7 @@ def test_coerce_yaml_bool_falsy_and_unknown_strings_via_parse(
         ("only_whitespace", '"   "'),
     ]
     for name, raw in cases:
-        _write_universal_critique_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nuniversal_critique:\n  implementation:\n    llm: {raw}\n",
@@ -504,7 +493,7 @@ def test_universal_critique_yaml_field_wiring_contract(tmp_path: Path) -> None:
     all_attrs = [row[3] for row in _WIRING_MAP]
     for stage, leaf, _env_key, attr in _WIRING_MAP:
         profile = f"yaml_{attr}"
-        _write_universal_critique_profile(repo, profile, _one_knob_on_yaml(stage, leaf))
+        write_workflow_profile(repo, profile, _one_knob_on_yaml(stage, leaf))
         block = parse_universal_critique_workflow_block(repo, profile)
         case_id = f"{stage}.{leaf} -> {attr}"
         assert getattr(block, attr) is True, case_id
@@ -530,7 +519,7 @@ def test_universal_critique_env_truthy_overrides_yaml_wiring_contract(
     calls would introduce.
     """
     repo = tmp_path / "repo"
-    _write_universal_critique_profile(repo, "all_false", "version: 1\n")
+    write_workflow_profile(repo, "all_false", "version: 1\n")
     all_attrs = [row[3] for row in _WIRING_MAP]
     for _stage, _leaf, env_key, attr in _WIRING_MAP:
         _clear_all_wiring_envs(monkeypatch)
@@ -566,7 +555,7 @@ def test_universal_critique_env_non_truthy_disables_yaml_wiring_contract(
     repo = tmp_path / "repo"
     for stage, leaf, env_key, attr in _WIRING_MAP:
         profile = f"env_disable_{attr}"
-        _write_universal_critique_profile(repo, profile, _one_knob_on_yaml(stage, leaf))
+        write_workflow_profile(repo, profile, _one_knob_on_yaml(stage, leaf))
         _clear_all_wiring_envs(monkeypatch)
         sanity = effective_universal_critique(repo, profile)
         assert getattr(sanity, attr) is True, f"YAML-only sanity for {env_key} -> {attr}"
@@ -603,7 +592,7 @@ def test_leaf_bool_null_value_and_missing_key_via_parse(tmp_path: Path) -> None:
         ("leaf_dict_value", "  implementation:\n    llm: {nested: 1}\n"),
     ]
     for name, impl_body in cases:
-        _write_universal_critique_profile(
+        write_workflow_profile(
             repo,
             name,
             f"version: 1\nuniversal_critique:\n{impl_body}",

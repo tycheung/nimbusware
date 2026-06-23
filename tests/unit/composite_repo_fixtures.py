@@ -31,3 +31,12 @@ def write_critique_pairings(repo: Path, body: str) -> Path:
 def write_workflow_integrator_min_score(repo: Path, name: str, value: str) -> Path:
     body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
     return write_workflow_profile(repo, name, body)
+
+
+def write_security_scan_workflow_profile(repo: Path, name: str, *, enabled: bool) -> Path:
+    val = "true" if enabled else "false"
+    return write_workflow_profile(
+        repo,
+        name,
+        f"version: 1\nsecurity_scan_metadata_on_verify: {val}\n",
+    )
