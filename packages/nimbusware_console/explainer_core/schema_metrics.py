@@ -18,32 +18,10 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
 
 EnvTriStateSpec = str | tuple[str, str, str, str]
 EnvFlagSpec = tuple[str, str, str]
-NestedBoolSpec = tuple[str, Sequence[tuple[str, str]]]
+NestedFieldSpec = tuple[str, Sequence[tuple[str, str]]]
+NestedOptionalInt = tuple[str, str, str]
 OptionalIntSpec = tuple[str, str] | tuple[str, str, bool]
 BoolMatchSpec = tuple[str, str, str]
-
-
-def _apply_list_len_fields(
-    metrics: dict[str, Any],
-    payload: Mapping[str, Any],
-    fields: Sequence[tuple[str, str]],
-) -> None:
-    for payload_key, metric_key in fields:
-        raw = payload.get(payload_key)
-        if isinstance(raw, list):
-            metrics[metric_key] = len(raw)
-
-
-def _apply_bool_match_fields(
-    metrics: dict[str, Any],
-    payload: Mapping[str, Any],
-    fields: Sequence[BoolMatchSpec],
-) -> None:
-    for payload_key, match_metric, mismatch_metric in fields:
-        matches = payload.get(payload_key)
-        metrics[match_metric] = matches is True
-        if matches is False:
-            metrics[mismatch_metric] = True
 
 
 def build_operator_metrics(
@@ -52,7 +30,12 @@ def build_operator_metrics(
     *,
     bool_fields: Sequence[tuple[str, str]] = (),
     int_fields: Sequence[tuple[str, str]] = (),
-    nested_bool_fields: Sequence[NestedBoolSpec] = (),
+    nested_bool_fields: Sequence[NestedFieldSpec] = (),
+    nested_int_fields: Sequence[NestedFieldSpec] = (),
+    nested_optional_int: Sequence[NestedOptionalInt] = (),
+    nested_exists: Sequence[tuple[str, str]] = (),
+    list_nonempty_flags: Sequence[tuple[str, str]] = (),
+    float_fields: Sequence[tuple[str, str]] = (),
     list_len_fields: Sequence[tuple[str, str]] = (),
     bool_match_fields: Sequence[BoolMatchSpec] = (),
     str_present: Sequence[tuple[str, str]] = (),
@@ -71,12 +54,37 @@ def build_operator_metrics(
         apply_bool_payload_fields(metrics, payload, bool_fields)
     for nested_key, fields in nested_bool_fields:
         apply_nested_bool_fields(metrics, payload, nested_key, fields)
+    for nested_key, fields in nested_int_fields:
+        nested = payload.get(nested_key)
+        if isinstance(nested, Mapping):
+            apply_nonneg_int_fields(metrics, nested, fields)
+    for nested_key, field, metric_key in nested_optional_int:
+        nested = payload.get(nested_key)
+        if isinstance(nested, Mapping):
+            apply_optional_int_field(metrics, nested, field, metric_key)
+    for nested_key, metric_key in nested_exists:
+        nested = payload.get(nested_key)
+        if isinstance(nested, Mapping) and nested.get("exists") is True:
+            metrics[metric_key] = True
+    for payload_key, metric_key in list_nonempty_flags:
+        raw = payload.get(payload_key)
+        if isinstance(raw, list) and raw:
+            metrics[metric_key] = True
+    for payload_key, metric_key in float_fields:
+        raw = payload.get(payload_key)
+        if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+            metrics[metric_key] = float(raw)
     if int_fields:
         apply_nonneg_int_fields(metrics, payload, int_fields)
-    if list_len_fields:
-        _apply_list_len_fields(metrics, payload, list_len_fields)
-    if bool_match_fields:
-        _apply_bool_match_fields(metrics, payload, bool_match_fields)
+    for payload_key, metric_key in list_len_fields:
+        raw = payload.get(payload_key)
+        if isinstance(raw, list):
+            metrics[metric_key] = len(raw)
+    for payload_key, match_metric, mismatch_metric in bool_match_fields:
+        matches = payload.get(payload_key)
+        metrics[match_metric] = matches is True
+        if matches is False:
+            metrics[mismatch_metric] = True
     for opt_spec in optional_int:
         if len(opt_spec) == 3:
             payload_key, metric_key, positive_only = opt_spec

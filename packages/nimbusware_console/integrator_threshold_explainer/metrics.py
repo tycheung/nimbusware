@@ -4,15 +4,13 @@ from collections.abc import Mapping
 from typing import Any
 
 from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_nonneg_int_fields,
-    default_operator_metrics,
     metrics_caption,
     metrics_table_rows,
 )
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.integrator_threshold_explainer.keys import (
     get_preview_effective_min_score,
 )
@@ -45,42 +43,37 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def integrator_threshold_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    emission = payload.get("gate_event_emission")
-    if isinstance(emission, Mapping):
-        apply_bool_payload_fields(
-            metrics,
-            emission,
+    metrics = build_operator_metrics(
+        payload,
+        _DEFAULTS,
+        nested_bool_fields=(
             (
-                ("would_emit_integrator_gate_event", "would_emit_gate_event"),
-                ("thresholds_yaml_exists", "thresholds_yaml_exists"),
-                ("forces_on", "env_forces_on"),
-                ("forces_off", "env_forces_off"),
+                "gate_event_emission",
+                (
+                    ("would_emit_integrator_gate_event", "would_emit_gate_event"),
+                    ("thresholds_yaml_exists", "thresholds_yaml_exists"),
+                    ("forces_on", "env_forces_on"),
+                    ("forces_off", "env_forces_off"),
+                ),
             ),
-        )
-    thr = payload.get("thresholds_yaml")
-    if isinstance(thr, Mapping) and thr.get("exists") is True:
-        metrics["thresholds_yaml_exists"] = True
-    pipe = payload.get("pipeline_effective_min_score_to_pass")
-    preview = get_preview_effective_min_score(payload)
-    if isinstance(pipe, (int, float)) and not isinstance(pipe, bool):
-        metrics["min_score_pipeline"] = float(pipe)
+        ),
+        nested_exists=(("thresholds_yaml", "thresholds_yaml_exists"),),
+        float_fields=(("pipeline_effective_min_score_to_pass", "min_score_pipeline"),),
+        nested_int_fields=(
+            (
+                "workflow_integrator_gate",
+                (("project_tags_list_length", "project_tags_list_length"),),
+            ),
+        ),
+        list_nonempty_flags=(("paste_parse_errors", "load_error_present"),),
+    )
+    preview = get_preview_effective_min_score(payload) if isinstance(payload, Mapping) else None
     if isinstance(preview, (int, float)) and not isinstance(preview, bool):
         metrics["min_score_preview"] = float(preview)
-    if metrics["min_score_pipeline"] is not None and metrics["min_score_preview"] is not None:
-        metrics["min_scores_agree"] = metrics["min_score_pipeline"] == metrics["min_score_preview"]
-    wf_gate = payload.get("workflow_integrator_gate")
-    if isinstance(wf_gate, Mapping):
-        apply_nonneg_int_fields(
-            metrics,
-            wf_gate,
-            (("project_tags_list_length", "project_tags_list_length"),),
-        )
-    paste_errs = payload.get("paste_parse_errors")
-    if isinstance(paste_errs, list) and paste_errs:
-        metrics["load_error_present"] = True
+    pipe = metrics.get("min_score_pipeline")
+    prev = metrics.get("min_score_preview")
+    if pipe is not None and prev is not None:
+        metrics["min_scores_agree"] = pipe == prev
     return metrics
 
 

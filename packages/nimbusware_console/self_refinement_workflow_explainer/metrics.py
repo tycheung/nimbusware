@@ -4,18 +4,13 @@ from collections.abc import Mapping
 from typing import Any
 
 from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_env_tri_state_metrics,
-    apply_load_error_present,
-    apply_nonneg_int_fields,
-    apply_optional_int_field,
-    default_operator_metrics,
     metrics_caption,
     metrics_table_rows,
 )
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_present": False,
@@ -48,44 +43,35 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def self_refinement_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    apply_bool_payload_fields(
-        metrics,
+    return build_operator_metrics(
         payload,
-        (("self_refinement_yaml_present", "yaml_present"),),
-    )
-    apply_nonneg_int_fields(
-        metrics,
-        payload,
-        (("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),),
-    )
-    pol = payload.get("policy_yaml")
-    if isinstance(pol, dict):
-        metrics["policy_enabled"] = pol.get("enabled") is True
-        apply_optional_int_field(metrics, pol, "version", "policy_version")
-    mm = payload.get("marker_merge")
-    if isinstance(mm, dict):
-        apply_bool_payload_fields(
-            metrics,
-            mm,
+        _DEFAULTS,
+        bool_fields=(("self_refinement_yaml_present", "yaml_present"),),
+        int_fields=(
+            ("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),
+        ),
+        nested_bool_fields=(
+            ("policy_yaml", (("enabled", "policy_enabled"),)),
             (
-                ("would_emit_self_refinement_marker", "would_emit_marker"),
-                ("would_emit_marker_after_env", "would_emit_marker_after_env"),
+                "marker_merge",
+                (
+                    ("would_emit_self_refinement_marker", "would_emit_marker"),
+                    ("would_emit_marker_after_env", "would_emit_marker_after_env"),
+                ),
             ),
-        )
-    apply_optional_int_field(metrics, payload, "merged_max_iterations", "merged_max_iterations")
-    apply_env_tri_state_metrics(
-        metrics,
-        payload,
-        "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
-        forces_on_key="ungated_loop_forces_on",
-        forces_off_key="ungated_loop_forces_off",
-        unset_key="ungated_loop_unset",
+        ),
+        nested_optional_int=(("policy_yaml", "version", "policy_version"),),
+        optional_int=(("merged_max_iterations", "merged_max_iterations"),),
+        env_tri_state=(
+            (
+                "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
+                "ungated_loop_forces_on",
+                "ungated_loop_forces_off",
+                "ungated_loop_unset",
+            ),
+        ),
+        load_error=True,
     )
-    apply_load_error_present(metrics, payload)
-    return metrics
 
 
 def self_refinement_workflow_explainer_operator_metrics_table_rows(
