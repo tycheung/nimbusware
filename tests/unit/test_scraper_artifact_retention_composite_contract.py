@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import os
-import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
@@ -12,23 +10,13 @@ import pytest
 
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.scraper_artifacts import prune_scraper_artifacts
-
-
-def _local_removed(*args: object, **kwargs: object) -> int:
-    return int(prune_scraper_artifacts(*args, **kwargs)["local_removed"])  # type: ignore[arg-type]
-
+from unit.composite_api_fixtures import set_mtime_days_ago, set_mtime_to
 
 _VALUE_ERROR_MSG = "max_age_days must be >= 1"
 
 
-def _set_mtime(path: Path, *, days_ago: float) -> None:
-    ts = time.time() - days_ago * 86400
-    os.utime(path, (ts, ts))
-
-
-def _set_mtime_to(path: Path, when: datetime) -> None:
-    ts = when.timestamp()
-    os.utime(path, (ts, ts))
+def _local_removed(*args: object, **kwargs: object) -> int:
+    return int(prune_scraper_artifacts(*args, **kwargs)["local_removed"])  # type: ignore[arg-type]
 
 
 def test_prune_scraper_artifacts_value_error_boundary_contract(tmp_path: Path) -> None:
@@ -81,12 +69,12 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     run_a.mkdir()
     stale_a = run_a / "url00_aaaa.bin"
     stale_a.write_bytes(b"a")
-    _set_mtime(stale_a, days_ago=10)
+    set_mtime_days_ago(stale_a, days_ago=10)
     run_b_sub = base_b1 / "run_b" / "sub"
     run_b_sub.mkdir(parents=True)
     stale_b = run_b_sub / "url00_bbbb.bin"
     stale_b.write_bytes(b"b")
-    _set_mtime(stale_b, days_ago=10)
+    set_mtime_days_ago(stale_b, days_ago=10)
     now = datetime.now(timezone.utc)
     removed_b1 = _local_removed(base_b1, max_age_days=7, now=now)
     assert removed_b1 == 2, (
@@ -104,7 +92,7 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     run_dir.mkdir()
     stale_b2 = run_dir / "url00_stale.bin"
     stale_b2.write_bytes(b"old")
-    _set_mtime(stale_b2, days_ago=10)
+    set_mtime_days_ago(stale_b2, days_ago=10)
     fresh_b2 = run_dir / "url01_fresh.bin"
     fresh_b2.write_bytes(b"new")
     removed_b2 = _local_removed(base_b2, max_age_days=7, now=now)
@@ -124,7 +112,7 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     deep_dir.mkdir(parents=True)
     stale_deep = deep_dir / "url00_deep.bin"
     stale_deep.write_bytes(b"deep")
-    _set_mtime(stale_deep, days_ago=10)
+    set_mtime_days_ago(stale_deep, days_ago=10)
     removed_b3 = _local_removed(base_b3, max_age_days=7, now=now)
     assert removed_b3 == 1, (
         f"B3: 3-deep nested stale file -> removed==1, got {removed_b3!r}; "
@@ -141,10 +129,10 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     cutoff = fixed_now - timedelta(days=7)
     at_cutoff = run_dir_b4 / "url00_at_cutoff.bin"
     at_cutoff.write_bytes(b"at")
-    _set_mtime_to(at_cutoff, cutoff)
+    set_mtime_to(at_cutoff, cutoff)
     just_before = run_dir_b4 / "url01_before_cutoff.bin"
     just_before.write_bytes(b"before")
-    _set_mtime_to(just_before, cutoff - timedelta(seconds=1))
+    set_mtime_to(just_before, cutoff - timedelta(seconds=1))
     removed_b4 = _local_removed(base_b4, max_age_days=7, now=fixed_now)
     assert removed_b4 == 1, (
         f"B4: cutoff inclusive boundary -- 1 file AT cutoff (preserved) "
@@ -167,7 +155,7 @@ def test_prune_scraper_artifacts_nested_and_cutoff_contract(tmp_path: Path) -> N
     run_dir_b5.mkdir()
     stale_b5 = run_dir_b5 / "url00_old.bin"
     stale_b5.write_bytes(b"old")
-    _set_mtime(stale_b5, days_ago=30)
+    set_mtime_days_ago(stale_b5, days_ago=30)
     fresh_b5 = run_dir_b5 / "url01_new.bin"
     fresh_b5.write_bytes(b"new")
     removed_b5 = _local_removed(base_b5, max_age_days=7)
@@ -193,7 +181,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     run_dir_c1.mkdir()
     stale_c1 = run_dir_c1 / "url00.bin"
     stale_c1.write_bytes(b"x")
-    _set_mtime(stale_c1, days_ago=10)
+    set_mtime_days_ago(stale_c1, days_ago=10)
     removed_c1 = _local_removed(base_c1, max_age_days=7, now=now)
     assert removed_c1 == 1
     assert not stale_c1.exists(), "C1: stale file removed"
@@ -209,7 +197,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     run_dir_c2.mkdir()
     stale_c2 = run_dir_c2 / "url00.bin"
     stale_c2.write_bytes(b"x")
-    _set_mtime(stale_c2, days_ago=10)
+    set_mtime_days_ago(stale_c2, days_ago=10)
     removed_c2 = _local_removed(
         base_c2,
         max_age_days=7,
@@ -232,7 +220,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     run_dir_c3.mkdir()
     stale_c3 = run_dir_c3 / "url00_stale.bin"
     stale_c3.write_bytes(b"x")
-    _set_mtime(stale_c3, days_ago=10)
+    set_mtime_days_ago(stale_c3, days_ago=10)
     fresh_c3 = run_dir_c3 / "url01_fresh.bin"
     fresh_c3.write_bytes(b"y")
     removed_c3 = _local_removed(base_c3, max_age_days=7, now=now)
@@ -252,7 +240,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     deep.mkdir(parents=True)
     stale_c4 = deep / "url00.bin"
     stale_c4.write_bytes(b"x")
-    _set_mtime(stale_c4, days_ago=10)
+    set_mtime_days_ago(stale_c4, days_ago=10)
     removed_c4 = _local_removed(base_c4, max_age_days=7, now=now)
     assert removed_c4 == 1
     assert not (base_c4 / "a" / "b" / "c").is_dir(), (
@@ -277,7 +265,7 @@ def test_prune_scraper_artifacts_cleanup_and_dry_run_divergence_contract(
     run_dir_c5.mkdir()
     stale_c5 = run_dir_c5 / "url00.bin"
     stale_c5.write_bytes(b"x")
-    _set_mtime(stale_c5, days_ago=10)
+    set_mtime_days_ago(stale_c5, days_ago=10)
     for _ in range(2):
         removed_dry = _local_removed(
             base_c5,

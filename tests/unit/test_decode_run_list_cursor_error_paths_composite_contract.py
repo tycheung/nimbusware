@@ -9,12 +9,9 @@ from fastapi.testclient import TestClient
 
 from nimbusware_api.app import app
 from nimbusware_api.routes.runs import _decode_run_list_cursor
+from unit.composite_api_fixtures import urlsafe_b64_encode
 
 _SAMPLE_UUID_STR = "11111111-1111-4111-8111-111111111111"
-
-
-def _encode_for_cursor(raw: bytes) -> str:
-    return base64.urlsafe_b64encode(raw).decode().rstrip("=")
 
 
 @pytest.fixture
@@ -72,7 +69,7 @@ def test_part_a_decode_layer_errors_5_axis() -> None:
         with pytest.raises(binascii.Error):
             _decode_run_list_cursor(single)
 
-    non_utf8_cursor = _encode_for_cursor(b"\xff\xfe\xfd")
+    non_utf8_cursor = urlsafe_b64_encode(b"\xff\xfe\xfd")
     with pytest.raises(UnicodeDecodeError) as exc_a2:
         _decode_run_list_cursor(non_utf8_cursor)
     assert exc_a2.value.encoding == "utf-8", (
@@ -94,7 +91,7 @@ def test_part_a_decode_layer_errors_5_axis() -> None:
         f"Got message: {str(exc_a3.value)!r}"
     )
 
-    non_json_text_cursor = _encode_for_cursor(b"hello not json")
+    non_json_text_cursor = urlsafe_b64_encode(b"hello not json")
     with pytest.raises(json.JSONDecodeError) as exc_a4:
         _decode_run_list_cursor(non_json_text_cursor)
     a4_msg = str(exc_a4.value)
@@ -111,7 +108,7 @@ def test_part_a_decode_layer_errors_5_axis() -> None:
         b"[",
     ]
     for payload in malformed_json_payloads:
-        cursor = _encode_for_cursor(payload)
+        cursor = urlsafe_b64_encode(payload)
         with pytest.raises(json.JSONDecodeError):
             _decode_run_list_cursor(cursor)
 
@@ -120,7 +117,7 @@ def test_part_a_decode_layer_errors_5_axis() -> None:
 
 
 def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> None:
-    cursor_b1_int = _encode_for_cursor(b"5")
+    cursor_b1_int = urlsafe_b64_encode(b"5")
     with pytest.raises(TypeError) as exc_b1:
         _decode_run_list_cursor(cursor_b1_int)
     assert "subscriptable" in str(exc_b1.value), (
@@ -130,7 +127,7 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
         f"-> TypeError (different message). Got: {str(exc_b1.value)!r}"
     )
 
-    cursor_b2_null = _encode_for_cursor(b"null")
+    cursor_b2_null = urlsafe_b64_encode(b"null")
     with pytest.raises(TypeError) as exc_b2:
         _decode_run_list_cursor(cursor_b2_null)
     assert "NoneType" in str(exc_b2.value), (
@@ -139,7 +136,7 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
         f"Got: {str(exc_b2.value)!r}"
     )
 
-    cursor_b3_list = _encode_for_cursor(b"[1, 2, 3]")
+    cursor_b3_list = urlsafe_b64_encode(b"[1, 2, 3]")
     with pytest.raises(TypeError) as exc_b3:
         _decode_run_list_cursor(cursor_b3_list)
     b3_msg = str(exc_b3.value)
@@ -151,7 +148,7 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
         f"Got: {b3_msg!r}"
     )
 
-    cursor_b4_str = _encode_for_cursor(b'"plain_string"')
+    cursor_b4_str = urlsafe_b64_encode(b'"plain_string"')
     with pytest.raises(TypeError) as exc_b4:
         _decode_run_list_cursor(cursor_b4_str)
     assert "string indices" in str(exc_b4.value), (
@@ -168,7 +165,7 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
         (b'{"r": "%s"}' % _SAMPLE_UUID_STR.encode(), "s"),
     ]
     for payload, expected_missing_key in missing_key_payloads:
-        cursor = _encode_for_cursor(payload)
+        cursor = urlsafe_b64_encode(payload)
         with pytest.raises(KeyError) as exc_b5:
             _decode_run_list_cursor(cursor)
         assert exc_b5.value.args == (expected_missing_key,), (
@@ -185,7 +182,7 @@ def test_part_b_json_non_dict_typeerror_and_missing_key_keyerror_5_axis() -> Non
 
 
 def test_part_c_field_coercion_errors_5_axis() -> None:
-    cursor_c1 = _encode_for_cursor(b'{"s": "abc", "r": "%s"}' % _SAMPLE_UUID_STR.encode())
+    cursor_c1 = urlsafe_b64_encode(b'{"s": "abc", "r": "%s"}' % _SAMPLE_UUID_STR.encode())
     with pytest.raises(ValueError) as exc_c1:
         _decode_run_list_cursor(cursor_c1)
     assert "invalid literal for int" in str(exc_c1.value), (
@@ -202,7 +199,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
         "for a LIST value -- same field, different exception class."
     )
 
-    cursor_c2 = _encode_for_cursor(b'{"s": [1, 2], "r": "%s"}' % _SAMPLE_UUID_STR.encode())
+    cursor_c2 = urlsafe_b64_encode(b'{"s": [1, 2], "r": "%s"}' % _SAMPLE_UUID_STR.encode())
     with pytest.raises(TypeError) as exc_c2:
         _decode_run_list_cursor(cursor_c2)
     c2_msg = str(exc_c2.value)
@@ -218,7 +215,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
         "reason the route catch tuple lists TypeError explicitly."
     )
 
-    cursor_c3 = _encode_for_cursor(b'{"s": 1, "r": "not-a-uuid"}')
+    cursor_c3 = urlsafe_b64_encode(b'{"s": 1, "r": "not-a-uuid"}')
     with pytest.raises(ValueError) as exc_c3:
         _decode_run_list_cursor(cursor_c3)
     assert "badly formed" in str(exc_c3.value) or "UUID" in str(exc_c3.value), (
@@ -228,7 +225,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
         f"Got: {str(exc_c3.value)!r}"
     )
 
-    cursor_c4 = _encode_for_cursor(b'{"s": 1, "r": 5}')
+    cursor_c4 = urlsafe_b64_encode(b'{"s": 1, "r": 5}')
     with pytest.raises(ValueError) as exc_c4:
         _decode_run_list_cursor(cursor_c4)
     assert not isinstance(exc_c4.value, TypeError), (
@@ -242,7 +239,7 @@ def test_part_c_field_coercion_errors_5_axis() -> None:
         f"flip. Got: {type(exc_c4.value).__name__}: {str(exc_c4.value)!r}"
     )
 
-    cursor_c5 = _encode_for_cursor(b'{"s": 1, "r": null}')
+    cursor_c5 = urlsafe_b64_encode(b'{"s": 1, "r": null}')
     with pytest.raises(ValueError) as exc_c5:
         _decode_run_list_cursor(cursor_c5)
     assert not isinstance(exc_c5.value, TypeError), (

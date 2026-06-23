@@ -14,15 +14,11 @@ from nimbusware_api.routes.runs import (
     _parse_query_datetime,
     _sanitize_workflow_profile_prefix,
 )
+from unit.composite_api_fixtures import restore_b64_padding
 
 _SAMPLE_RID = UUID("11111111-1111-4111-8111-111111111111")
 _SAMPLE_RID_ALT = UUID("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee")
 _URLSAFE_ALPHABET_RE = re.compile(r"^[A-Za-z0-9_-]+$")
-
-
-def _restore_b64_padding(value: str) -> str:
-    pad = "=" * ((4 - len(value) % 4) % 4)
-    return value + pad
 
 
 def _self_check_urlsafe_vs_standard_alphabet_differ() -> None:
@@ -48,7 +44,7 @@ def test_encode_run_list_cursor_wire_format_5_axis() -> None:
     )
     assert not isinstance(out_basic, bytes), "A1: not bytes"
 
-    decoded_json = base64.urlsafe_b64decode(_restore_b64_padding(out_basic)).decode()
+    decoded_json = base64.urlsafe_b64decode(restore_b64_padding(out_basic)).decode()
     parsed = json.loads(decoded_json)
     assert parsed == {"s": 1, "r": str(_SAMPLE_RID)}, (
         f"A2: decoded JSON must equal exact 2-key dict ``{{'s': seq, 'r': str(uuid)}}`` "
