@@ -16,16 +16,11 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     IntegrationAdapterWriterWorkflowBlock,
 )
-
-
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_integration_adapter_writer_stage_would_emit_stub_only(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_on",
         """version: 1
@@ -40,7 +35,7 @@ integration_adapter_writer:
 def test_integration_adapter_writer_stage_would_emit_live(
     tmp_path: Path,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_live",
         """version: 1
@@ -76,7 +71,7 @@ def test_explainer_would_emit_stage_started(
         integration_adapter_writer_workflow_explainer_payload,
     )
 
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_on",
         "version: 1\nintegration_adapter_writer:\n  enabled: true\n  stub_only: true\n",
@@ -154,7 +149,7 @@ def test_explainer_live_path_payload_and_metrics(
         integration_adapter_writer_workflow_explainer_payload,
     )
 
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_live",
         "version: 1\nintegration_adapter_writer:\n  enabled: true\n  stub_only: false\n",

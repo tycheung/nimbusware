@@ -23,18 +23,13 @@ from nimbusware_console.security_scan_metadata_workflow_explainer import (
     security_scan_metadata_yaml_effective_mismatch_caption,
     security_scan_metadata_yaml_raw_type_caption,
 )
-
-
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_security_scan_metadata_workflow_yaml_relpath_caption(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -54,7 +49,7 @@ def test_security_scan_metadata_workflow_yaml_relpath_caption(
 def test_security_scan_metadata_workflow_yaml_version_caption(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 2\n")
+    write_workflow_profile(tmp_path, "wf", "version: 2\n")
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -86,7 +81,7 @@ def test_security_scan_metadata_workflow_yaml_version_caption(
 def test_security_scan_metadata_workflow_yaml_string_key_count_caption(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\nname: demo\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\nname: demo\n")
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -108,7 +103,7 @@ def test_security_scan_metadata_workflow_yaml_string_key_count_caption(
 def test_security_scan_metadata_workflow_yaml_file_bytes_caption(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -214,7 +209,7 @@ def test_security_scan_metadata_env_gate_caption() -> None:
 
 
 def test_explainer_scalar_true(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_scalar",
         "version: 1\nsecurity_scan_metadata_on_verify: true\n",
@@ -237,7 +232,7 @@ def test_explainer_scalar_true(tmp_path: Path) -> None:
 
 
 def test_explainer_dict_enabled_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_off",
         "version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: false\n",
@@ -257,7 +252,7 @@ def test_explainer_dict_enabled_false(tmp_path: Path) -> None:
 
 
 def test_explainer_mapping_empty_counts_zero(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_empty_map",
         "version: 1\nsecurity_scan_metadata_on_verify: {}\n",
@@ -274,7 +269,7 @@ def test_explainer_mapping_empty_counts_zero(tmp_path: Path) -> None:
 
 
 def test_explainer_missing_key(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "bare", "version: 1\n")
+    write_workflow_profile(tmp_path, "bare", "version: 1\n")
     pl = security_scan_metadata_workflow_explainer_payload(
         tmp_path,
         workflow_profile="bare",
@@ -290,7 +285,7 @@ def test_explainer_missing_key(tmp_path: Path) -> None:
 
 
 def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "no_ver",
         "security_scan_metadata_on_verify: true\n",
@@ -306,7 +301,7 @@ def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> No
 
 
 def test_explainer_workflow_yaml_top_level_version_non_int_returns_none(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "v_bad",
         'version: "1"\nsecurity_scan_metadata_on_verify: false\n',
@@ -328,7 +323,7 @@ def test_explainer_workflow_yaml_top_level_string_key_count_none_without_profile
 
 def test_explainer_env_force_on_overrides_yaml_off(monkeypatch: object, tmp_path: Path) -> None:
     monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "1")
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_off",
         "version: 1\nsecurity_scan_metadata_on_verify: false\n",
@@ -348,7 +343,7 @@ def test_explainer_env_force_on_overrides_yaml_off(monkeypatch: object, tmp_path
 
 
 def test_explainer_yaml_raw_type_for_explicit_null(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_null",
         "version: 1\nsecurity_scan_metadata_on_verify: null\n",
@@ -365,7 +360,7 @@ def test_explainer_yaml_raw_type_for_explicit_null(tmp_path: Path) -> None:
 
 
 def test_explainer_yaml_raw_type_for_string_scalar(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_str",
         "version: 1\nsecurity_scan_metadata_on_verify: 'yes'\n",
@@ -381,7 +376,7 @@ def test_explainer_yaml_raw_type_for_string_scalar(tmp_path: Path) -> None:
 
 def test_explainer_env_kill_switch_overrides_yaml_on(monkeypatch: object, tmp_path: Path) -> None:
     monkeypatch.setenv("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA", "0")
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_on",
         "version: 1\nsecurity_scan_metadata_on_verify: true\n",
@@ -469,7 +464,7 @@ def test_mapping_key_count_caption_none_for_bad_payload() -> None:
 def test_security_scan_metadata_explainer_table_rows_export_json_and_csv(
     tmp_path: Path,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "wf",
         "version: 1\nsecurity_scan_metadata_on_verify: true\n",

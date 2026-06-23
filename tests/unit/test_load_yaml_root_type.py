@@ -12,6 +12,7 @@ from nimbusware_orchestrator.workflow_escalation import (
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 _VALUE_ERROR_PREFIX = "YAML root must be a mapping: "
 
@@ -20,19 +21,6 @@ def _write_yaml(tmp_path: Path, body: str, name: str = "root.yaml") -> Path:
     path = tmp_path / name
     path.write_text(body, encoding="utf-8")
     return path
-
-
-def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
-    """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
-
-    Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](packages\\nimbusware_orchestrator\\workflow_profiles.py)
-    expectations: file must exist at
-    ``{repo_root}/configs/workflows/{profile}.yaml``.
-    """
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{profile}.yaml").write_text(body, encoding="utf-8")
 
 
 def test_load_yaml_dict_root_accept_arm_contract(tmp_path: Path) -> None:
@@ -182,7 +170,7 @@ def test_load_yaml_non_dict_root_cascades_to_sibling_parser_default_contract(
         ("null_root", "null\n"),
     ]
     for block_id, body in blocks:
-        _write_profile(tmp_path, profile, body)
+        write_workflow_profile(tmp_path, profile, body)
 
         esc_result = parse_escalation_workflow_block(tmp_path, profile)
         assert esc_result == default_escalation, (

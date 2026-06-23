@@ -45,16 +45,11 @@ from nimbusware_console.escalation_suppress_workflow_explainer import (
     escalation_suppress_workflow_explainer_payload,
     escalation_yaml_key_present_caption,
 )
-
-
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_explainer_no_escalation_key(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "bare", "version: 1\n")
+    write_workflow_profile(tmp_path, "bare", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="bare",
@@ -66,7 +61,7 @@ def test_explainer_no_escalation_key(tmp_path: Path) -> None:
     assert pl["load_error"] is None
     assert pl["suppress_automatic_escalation_yaml_raw_type"] is None
     assert pl["workflow_yaml_top_level_version_int"] == 1
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sup_on",
         "version: 1\nescalation:\n  suppress_automatic_escalation: true\n",
@@ -83,7 +78,7 @@ def test_explainer_no_escalation_key(tmp_path: Path) -> None:
 
 
 def test_explainer_suppress_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sup_off",
         "version: 1\nescalation:\n  suppress_automatic_escalation: false\n",
@@ -99,7 +94,7 @@ def test_explainer_suppress_false(tmp_path: Path) -> None:
 
 
 def test_explainer_string_yes_truthy(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "yes_str",
         'version: 1\nescalation:\n  suppress_automatic_escalation: "yes"\n',
@@ -114,7 +109,7 @@ def test_explainer_string_yes_truthy(tmp_path: Path) -> None:
 
 
 def test_explainer_malformed_escalation_scalar_collapses(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "bad_esc", "version: 1\nescalation: true\n")
+    write_workflow_profile(tmp_path, "bad_esc", "version: 1\nescalation: true\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="bad_esc",
@@ -128,7 +123,7 @@ def test_explainer_malformed_escalation_scalar_collapses(tmp_path: Path) -> None
 
 
 def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "no_ver",
         "escalation:\n  suppress_automatic_escalation: false\n",
@@ -144,7 +139,7 @@ def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> No
 def test_explainer_workflow_yaml_top_level_version_non_int_returns_none(
     tmp_path: Path,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "v_bad",
         'version: "1"\nescalation:\n  suppress_automatic_escalation: false\n',
@@ -157,7 +152,7 @@ def test_explainer_workflow_yaml_top_level_version_non_int_returns_none(
 
 
 def test_explainer_escalation_policy_yaml_absent(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "bare", "version: 1\n")
+    write_workflow_profile(tmp_path, "bare", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="bare",
@@ -181,7 +176,7 @@ def test_explainer_escalation_policy_yaml_absent(tmp_path: Path) -> None:
 
 
 def test_explainer_escalation_policy_yaml_peek_when_present(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -219,7 +214,7 @@ def test_explainer_escalation_policy_yaml_peek_when_present(tmp_path: Path) -> N
 
 
 def test_explainer_escalation_policy_yaml_scalar_retry_fields(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -234,7 +229,7 @@ def test_explainer_escalation_policy_yaml_scalar_retry_fields(tmp_path: Path) ->
 
 
 def test_explainer_escalation_policy_yaml_scalars_ignore_non_int(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -250,7 +245,7 @@ def test_explainer_escalation_policy_yaml_scalars_ignore_non_int(tmp_path: Path)
 
 
 def test_explainer_escalation_policy_yaml_anti_deadlock_enabled_false(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -266,7 +261,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_enabled_false(tmp_path: 
 def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_only(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -282,7 +277,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_only
 def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_non_int(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -294,7 +289,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_non_
 
 
 def test_explainer_escalation_policy_yaml_anti_deadlock_mapping_true(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -309,7 +304,7 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_mapping_true(tmp_path: P
 
 
 def test_explainer_escalation_policy_yaml_anti_deadlock_scalar_false(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -439,7 +434,7 @@ def test_escalation_policy_yaml_anti_deadlock_shape_caption_none_unknown() -> No
 
 
 def test_explainer_escalation_policy_yaml_verification_mapping_true(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -451,7 +446,7 @@ def test_explainer_escalation_policy_yaml_verification_mapping_true(tmp_path: Pa
 
 
 def test_explainer_escalation_policy_yaml_malformed_surfaces_load_error(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(": not valid yaml :\n", encoding="utf-8")
@@ -476,7 +471,7 @@ def test_explainer_escalation_policy_yaml_malformed_surfaces_load_error(tmp_path
 
 
 def test_explainer_escalation_policy_yaml_mtime_iso_when_present(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     before = datetime.now(timezone.utc)
@@ -497,7 +492,7 @@ def test_explainer_escalation_policy_yaml_mtime_iso_when_present(tmp_path: Path)
 def test_explainer_escalation_policy_yaml_top_level_kinds_mixed_types(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -522,7 +517,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_none_for_non_mapping() -
 def test_escalation_policy_yaml_top_level_kinds_caption_none_when_policy_absent(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -534,7 +529,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_none_when_policy_absent(
 def test_escalation_policy_yaml_top_level_kinds_caption_none_on_load_error(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(": : not yaml\n", encoding="utf-8")
@@ -563,7 +558,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_none_when_all_zero() -> 
 def test_escalation_policy_yaml_top_level_kinds_caption_mixed(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -581,7 +576,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_mixed(
 def test_escalation_policy_yaml_top_level_kinds_caption_mapping_only(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -620,7 +615,7 @@ def test_escalation_policy_yaml_top_level_kinds_caption_treats_non_int_as_zero()
 def test_escalation_policy_yaml_age_seconds_absent_policy_returns_none(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -632,7 +627,7 @@ def test_escalation_policy_yaml_age_seconds_absent_policy_returns_none(
 def test_escalation_policy_yaml_age_seconds_load_error_returns_none(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(": : not yaml\n", encoding="utf-8")
@@ -647,7 +642,7 @@ def test_escalation_policy_yaml_age_seconds_load_error_returns_none(
 def test_escalation_policy_yaml_age_seconds_freshly_written_is_small_non_negative(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text("version: 1\n", encoding="utf-8")
@@ -664,7 +659,7 @@ def test_escalation_policy_yaml_age_seconds_freshly_written_is_small_non_negativ
 def test_escalation_policy_yaml_age_seconds_past_mtime_within_tolerance(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     pol_path = pol_dir / "policy.yaml"
@@ -685,7 +680,7 @@ def test_escalation_policy_yaml_age_seconds_past_mtime_within_tolerance(
 def test_escalation_policy_yaml_age_seconds_future_mtime_returns_none(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     pol_path = pol_dir / "policy.yaml"
@@ -701,7 +696,7 @@ def test_escalation_policy_yaml_age_seconds_future_mtime_returns_none(
 
 
 def test_escalation_policy_yaml_file_bytes_caption(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text("version: 1\n", encoding="utf-8")
@@ -730,7 +725,7 @@ def test_escalation_policy_yaml_file_bytes_caption(tmp_path: Path) -> None:
 
 
 def test_escalation_policy_yaml_age_caption(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text("version: 1\n", encoding="utf-8")
@@ -761,7 +756,7 @@ def test_escalation_policy_yaml_mtime_caption_none_for_non_mapping() -> None:
 def test_escalation_policy_yaml_mtime_caption_none_when_policy_absent(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -773,7 +768,7 @@ def test_escalation_policy_yaml_mtime_caption_none_when_policy_absent(
 def test_escalation_policy_yaml_mtime_caption_none_on_load_error(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(": : not yaml\n", encoding="utf-8")
@@ -818,7 +813,7 @@ def test_escalation_policy_yaml_mtime_caption_none_when_age_missing_or_bool() ->
 def test_escalation_policy_yaml_mtime_caption_freshly_written_caption(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text("version: 1\n", encoding="utf-8")
@@ -837,7 +832,7 @@ def test_escalation_policy_yaml_mtime_caption_freshly_written_caption(
 def test_escalation_policy_yaml_mtime_caption_past_mtime_within_tolerance(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     pol_path = pol_dir / "policy.yaml"
@@ -975,7 +970,7 @@ def test_escalation_suppress_flag_caption_bare_when_raw_type_empty_string() -> N
 def test_escalation_suppress_flag_caption_freshly_written_workflow_prefix(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",
@@ -1112,7 +1107,7 @@ def test_escalation_policy_yaml_key_count_caption_emits_for_positive_count() -> 
 def test_escalation_policy_yaml_key_count_caption_freshly_written_two_key_policy(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -1317,7 +1312,7 @@ def test_escalation_policy_yaml_keys_sample_caption_mixed_skips_non_strings() ->
 def test_escalation_policy_yaml_keys_sample_caption_fresh_three_key_policy_sorted(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text(
@@ -1365,7 +1360,7 @@ def test_escalation_policy_yaml_relpath_caption_none_when_relpath_blank() -> Non
 
 
 def test_escalation_policy_yaml_relpath_caption_fresh_policy(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True, exist_ok=True)
     (pol_dir / "policy.yaml").write_text("a: 1\n", encoding="utf-8")
@@ -1382,7 +1377,7 @@ def test_escalation_policy_yaml_relpath_caption_fresh_policy(tmp_path: Path) -> 
 def test_escalation_policy_yaml_keys_all_table_rows_thirteen_keys(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True)
     yaml_body = ""
@@ -1414,7 +1409,7 @@ def test_escalation_policy_yaml_keys_all_table_rows_thirteen_keys(
 def test_escalation_policy_yaml_keys_all_table_rows_at_most_twelve(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True)
     (pol_dir / "policy.yaml").write_text(
@@ -1452,7 +1447,7 @@ def test_escalation_policy_yaml_keys_all_table_rows_real_repo() -> None:
 def test_escalation_policy_yaml_top_level_kinds_table_rows_mixed_policy(
     tmp_path: Path,
 ) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pol_dir = tmp_path / "configs" / "escalation"
     pol_dir.mkdir(parents=True)
     (pol_dir / "policy.yaml").write_text(
@@ -1557,7 +1552,7 @@ def test_escalation_suppress_explainer_table_rows_export_json_and_csv() -> None:
 
 
 def test_escalation_suppress_explainer_table_rows_tmp_path(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "wf", "version: 1\n")
+    write_workflow_profile(tmp_path, "wf", "version: 1\n")
     pl = escalation_suppress_workflow_explainer_payload(
         tmp_path,
         workflow_profile="wf",

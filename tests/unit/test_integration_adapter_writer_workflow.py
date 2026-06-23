@@ -14,12 +14,7 @@ from nimbusware_orchestrator.workflow_integration_adapter_writer import (
     integration_adapter_writer_effective,
     parse_integration_adapter_writer_workflow_block,
 )
-
-
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_parse_integration_adapter_writer_defaults() -> None:
@@ -30,7 +25,7 @@ def test_parse_integration_adapter_writer_defaults() -> None:
 
 
 def test_parse_integration_adapter_writer_profile(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_on",
         """version: 1
@@ -50,7 +45,7 @@ def test_integration_adapter_writer_effective_env_kill_switch(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_on",
         "integration_adapter_writer:\n  enabled: true\n",
@@ -61,7 +56,7 @@ def test_integration_adapter_writer_effective_env_kill_switch(
 
 
 def test_integration_adapter_writer_explainer_payload(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "adapter_on",
         """integration_adapter_writer:

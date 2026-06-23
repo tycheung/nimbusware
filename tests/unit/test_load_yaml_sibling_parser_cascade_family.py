@@ -27,6 +27,7 @@ from nimbusware_orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     parse_universal_critique_workflow_block,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 _NON_DICT_ROOT_BLOCKS: list[tuple[str, str]] = [
     ("list_root", "- a: 1\n- b: 2\n"),
@@ -91,19 +92,6 @@ _ALL_FAMILY_PARSERS: list[tuple[str, _ParserCallable, object]] = [
 ]
 
 
-def _write_profile(tmp_path: Path, profile: str, body: str) -> None:
-    """Write a workflow profile YAML under ``{tmp_path}/configs/workflows/``.
-
-    Mirrors ``workflow_profile_path`` in
-    [workflow_profiles.py](packages\\nimbusware_orchestrator\\workflow_profiles.py)
-    expectations: file must exist at
-    ``{repo_root}/configs/workflows/{profile}.yaml``.
-    """
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{profile}.yaml").write_text(body, encoding="utf-8")
-
-
 def test_non_dict_root_cascades_to_default_across_sibling_parser_family_contract(
     tmp_path: Path,
 ) -> None:
@@ -138,7 +126,7 @@ def test_non_dict_root_cascades_to_default_across_sibling_parser_family_contract
     """
     profile = "fo77_cascade"
     for block_id, body in _NON_DICT_ROOT_BLOCKS:
-        _write_profile(tmp_path, profile, body)
+        write_workflow_profile(tmp_path, profile, body)
         for parser_name, parser_callable, expected_default in _FAMILY_PARSERS:
             result = parser_callable(tmp_path, profile)
             assert result == expected_default, (
@@ -176,7 +164,7 @@ def test_malformed_yaml_propagates_through_sibling_parser_family_contract(
     """
     profile = "fo77_propagate"
     for case_id, body in _MALFORMED_BODIES:
-        _write_profile(tmp_path, profile, body)
+        write_workflow_profile(tmp_path, profile, body)
         for parser_name, parser_callable, _expected_default in _FAMILY_PARSERS:
             with pytest.raises(yaml.YAMLError) as exc_info:
                 parser_callable(tmp_path, profile)
@@ -225,7 +213,7 @@ def test_sibling_parser_family_cascade_tuple_uniformity_contract(
     canonical_yaml_error_body = "{"
 
     for parser_name, parser_callable, expected_default in _ALL_FAMILY_PARSERS:
-        _write_profile(tmp_path, "fo77_uniform_ve", canonical_value_error_body)
+        write_workflow_profile(tmp_path, "fo77_uniform_ve", canonical_value_error_body)
         result = parser_callable(tmp_path, "fo77_uniform_ve")
         assert result == expected_default, (
             f"uniformity parser={parser_name}: ValueError cascade "
@@ -233,7 +221,7 @@ def test_sibling_parser_family_cascade_tuple_uniformity_contract(
             f"{result!r}"
         )
 
-        _write_profile(tmp_path, "fo77_uniform_ye", canonical_yaml_error_body)
+        write_workflow_profile(tmp_path, "fo77_uniform_ye", canonical_yaml_error_body)
         with pytest.raises(yaml.YAMLError) as exc_info:
             parser_callable(tmp_path, "fo77_uniform_ye")
         assert isinstance(exc_info.value, yaml.YAMLError), (

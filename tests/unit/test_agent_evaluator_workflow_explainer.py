@@ -26,12 +26,7 @@ from nimbusware_console.agent_evaluator_workflow_explainer import (
     agent_evaluator_yaml_raw_type_caption,
     agent_evaluator_yaml_true_bool_count_caption,
 )
-
-
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_workflow_profile
 
 
 def test_agent_evaluator_env_gate_caption() -> None:
@@ -238,7 +233,7 @@ def test_agent_evaluator_llm_evaluation_enabled_caption() -> None:
 def test_agent_evaluator_workflow_explainer_payload_llm_evaluation_enabled(
     tmp_path: Path,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_llm",
         "version: 1\nagent_evaluator:\n  enabled: true\n  llm_evaluation_enabled: true\n",
@@ -259,7 +254,7 @@ def test_agent_evaluator_would_emit_caption() -> None:
 
 
 def test_agent_evaluator_yaml_raw_type_caption(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae",
         "version: 1\nagent_evaluator:\n  enabled: true\n",
@@ -277,7 +272,7 @@ def test_agent_evaluator_yaml_raw_type_caption(tmp_path: Path) -> None:
 
 
 def test_agent_evaluator_yaml_true_bool_count_caption(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae",
         "version: 1\nagent_evaluator:\n  enabled: true\n  auto_promote_probation: true\n",
@@ -328,7 +323,7 @@ def test_agent_evaluator_workflow_yaml_version_caption() -> None:
 
 
 def test_explainer_missing_agent_evaluator_key(tmp_path: Path) -> None:
-    _write_profile(tmp_path, "bare", "version: 1\n")
+    write_workflow_profile(tmp_path, "bare", "version: 1\n")
     pl = agent_evaluator_workflow_explainer_payload(
         tmp_path,
         workflow_profile="bare",
@@ -355,7 +350,7 @@ def test_explainer_missing_agent_evaluator_key(tmp_path: Path) -> None:
 
 
 def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "no_ver",
         "agent_evaluator:\n  enabled: false\n  persona_id: x\n",
@@ -365,7 +360,7 @@ def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> No
         workflow_profile="no_ver",
     )
     assert pl["workflow_yaml_top_level_version_int"] is None
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_on",
         "version: 1\nagent_evaluator:\n  enabled: true\n  persona_id: custom-p\n",
@@ -386,7 +381,7 @@ def test_explainer_workflow_yaml_top_level_version_missing(tmp_path: Path) -> No
 
 
 def test_explainer_workflow_disabled(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_off",
         "version: 1\nagent_evaluator:\n  enabled: false\n",
@@ -404,7 +399,7 @@ def test_explainer_workflow_disabled(tmp_path: Path) -> None:
 
 
 def test_explainer_auto_promote_probation_yaml_true(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_promo",
         "version: 1\nagent_evaluator:\n  enabled: true\n"
@@ -424,7 +419,7 @@ def test_explainer_auto_promote_probation_yaml_true(tmp_path: Path) -> None:
 
 
 def test_explainer_auto_create_persona_yaml_block(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_create",
         "version: 1\nagent_evaluator:\n  enabled: true\n"
@@ -452,7 +447,7 @@ def test_explainer_auto_create_persona_yaml_block(tmp_path: Path) -> None:
 
 def test_explainer_env_force_on_overrides_workflow_off(monkeypatch: object, tmp_path: Path) -> None:
     monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "1")
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_off",
         "version: 1\nagent_evaluator:\n  enabled: false\n",
@@ -473,7 +468,7 @@ def test_explainer_env_kill_switch_overrides_workflow_on(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setenv("NIMBUSWARE_AGENT_EVALUATOR", "0")
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae_on",
         "version: 1\nagent_evaluator:\n  enabled: true\n",
@@ -492,7 +487,7 @@ def test_explainer_env_kill_switch_overrides_workflow_on(
 def test_agent_evaluator_explainer_table_rows_export_json_and_csv(
     tmp_path: Path,
 ) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "ae",
         "version: 1\nagent_evaluator:\n  enabled: true\n  persona_id: p1\n",

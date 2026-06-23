@@ -6,6 +6,7 @@ from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
@@ -24,14 +25,9 @@ def test_parse_security_scan_missing_profile() -> None:
     assert not parse_security_scan_metadata_on_verify_workflow(ROOT, None)
 
 
-def _write_profile(tmp_path: Path, name: str, body: str) -> None:
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
-
 
 def test_parse_security_scan_dict_enabled_true(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_on",
         "version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: true\n",
@@ -40,7 +36,7 @@ def test_parse_security_scan_dict_enabled_true(tmp_path: Path) -> None:
 
 
 def test_parse_security_scan_dict_enabled_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_off",
         "version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: false\n",
@@ -49,7 +45,7 @@ def test_parse_security_scan_dict_enabled_false(tmp_path: Path) -> None:
 
 
 def test_parse_security_scan_dict_empty_returns_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_empty",
         "version: 1\nsecurity_scan_metadata_on_verify: {}\n",
@@ -58,7 +54,7 @@ def test_parse_security_scan_dict_empty_returns_false(tmp_path: Path) -> None:
 
 
 def test_parse_security_scan_dict_enabled_maybe_string_returns_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_badstr",
         "version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: maybe\n",
@@ -67,7 +63,7 @@ def test_parse_security_scan_dict_enabled_maybe_string_returns_false(tmp_path: P
 
 
 def test_parse_security_scan_dict_enabled_list_returns_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_dict_badnest",
         "version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: []\n",
@@ -76,7 +72,7 @@ def test_parse_security_scan_dict_enabled_list_returns_false(tmp_path: Path) -> 
 
 
 def test_parse_security_scan_top_level_list_returns_false(tmp_path: Path) -> None:
-    _write_profile(
+    write_workflow_profile(
         tmp_path,
         "sec_list_top",
         "version: 1\nsecurity_scan_metadata_on_verify: []\n",
@@ -110,7 +106,7 @@ def test_parse_security_scan_top_level_scalar_coercion(tmp_path: Path) -> None:
         ("top_null", "null", False),
     ]
     for name, raw, expected in cases:
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             name,
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
@@ -146,7 +142,7 @@ def test_parse_security_scan_dict_enabled_numeric_and_str_truthy_arms(
         ("dict_null", "null", False),
     ]
     for name, raw, expected in cases:
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             name,
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
@@ -193,7 +189,7 @@ def test_security_scan_metadata_truthy_case_insensitive_strings_round_trip(
         ("mixed_true", '"trUE"'),
     ]
     for name, raw in cases:
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
@@ -205,7 +201,7 @@ def test_security_scan_metadata_truthy_case_insensitive_strings_round_trip(
             )
             is True
         ), f"top:{raw}"
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
@@ -250,7 +246,7 @@ def test_security_scan_metadata_truthy_whitespace_trimmed_strings_round_trip(
         ("ws_yes_tab", '"yes\\t"'),
     ]
     for name, raw in cases:
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
@@ -262,7 +258,7 @@ def test_security_scan_metadata_truthy_whitespace_trimmed_strings_round_trip(
             )
             is True
         ), f"top:{raw}"
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",
@@ -316,7 +312,7 @@ def test_security_scan_metadata_falsy_and_unknown_strings_round_trip(
         ("only_whitespace", '"   "'),
     ]
     for name, raw in cases:
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"top_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify: {raw}\n",
@@ -328,7 +324,7 @@ def test_security_scan_metadata_falsy_and_unknown_strings_round_trip(
             )
             is False
         ), f"top:{raw}"
-        _write_profile(
+        write_workflow_profile(
             tmp_path,
             f"nested_{name}",
             f"version: 1\nsecurity_scan_metadata_on_verify:\n  enabled: {raw}\n",

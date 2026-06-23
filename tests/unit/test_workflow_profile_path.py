@@ -28,6 +28,7 @@ from nimbusware_orchestrator.workflow_universal_critique import (
     UniversalCritiqueWorkflowBlock,
     parse_universal_critique_workflow_block,
 )
+from unit.composite_repo_fixtures import write_workflow_profile
 
 _VALUE_ERROR_PREFIX = "invalid workflow_profile: "
 _FILE_NOT_FOUND_PREFIX = "unknown workflow_profile (no file): "
@@ -104,22 +105,6 @@ def _make_workflows_dir(tmp_path: Path) -> Path:
     return wf_dir
 
 
-def _write_profile(
-    tmp_path: Path,
-    name: str,
-    body: str = "version: 1\n",
-) -> Path:
-    """Write a minimal valid profile file under ``configs/workflows``.
-
-    Returns the path written. The default body is a valid mapping root
-    so any caller of ``load_yaml`` on this file succeeds.
-    """
-    wf_dir = _make_workflows_dir(tmp_path)
-    path = wf_dir / f"{name}.yaml"
-    path.write_text(body, encoding="utf-8")
-    return path
-
-
 def test_workflow_profile_path_accept_arm_normalizes_and_returns_path_contract(
     tmp_path: Path,
 ) -> None:
@@ -158,7 +143,7 @@ def test_workflow_profile_path_accept_arm_normalizes_and_returns_path_contract(
         ("strip_rescue_whitespace", "  foo_strip  ", "foo_strip"),
     ]
     for case_id, profile_input, stripped_name in cases:
-        expected = _write_profile(tmp_path, stripped_name)
+        expected = write_workflow_profile(tmp_path, stripped_name, "version: 1\n")
         result = workflow_profile_path(tmp_path, profile_input)
         assert isinstance(result, Path), (
             f"accept {case_id} input={profile_input!r}: result type "
