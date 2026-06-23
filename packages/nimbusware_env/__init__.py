@@ -13,6 +13,7 @@ from nimbusware_env.edition import (
     normalize_edition,
     require_enterprise_feature,
 )
+from nimbusware_env.settings_facade import env_bool, env_str, resolve_operator_setting
 
 __all__ = [
     "DEFAULT_NIMBUSWARE_ADMIN_TOKEN",
@@ -24,11 +25,14 @@ __all__ = [
     "edition_manifest",
     "enterprise_feature_enabled",
     "enterprise_install_hints",
+    "env_bool",
+    "env_str",
     "find_repo_root",
     "is_enterprise",
     "is_individual",
     "load_dotenv",
     "normalize_edition",
     "require_enterprise_feature",
+    "resolve_operator_setting",
     "set_env_var",
 ]

@@ -3,19 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_bool_payload_fields,
-    apply_env_flag_metric,
-    apply_env_tri_state_metrics,
-    apply_load_error_present,
-    apply_nonneg_int_fields,
-    apply_optional_int_field,
-    apply_str_present,
-    default_operator_metrics,
-    metrics_caption,
-    metrics_table_rows,
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -69,35 +61,28 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def agent_evaluator_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_DEFAULTS)
-    if not isinstance(payload, Mapping):
-        return metrics
-    apply_bool_payload_fields(metrics, payload, _BOOL_FIELDS)
-    apply_env_tri_state_metrics(metrics, payload, "NIMBUSWARE_AGENT_EVALUATOR")
-    apply_env_flag_metric(
-        metrics,
+    return build_operator_metrics(
         payload,
-        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
-        "disables_auto_promote",
-        "auto_promote_disabled",
+        _DEFAULTS,
+        bool_fields=_BOOL_FIELDS,
+        int_fields=_INT_FIELDS,
+        env_tri_state=("NIMBUSWARE_AGENT_EVALUATOR",),
+        env_flags=(
+            (
+                "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
+                "disables_auto_promote",
+                "auto_promote_disabled",
+            ),
+            (
+                "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
+                "disables_auto_create",
+                "auto_create_disabled",
+            ),
+        ),
+        str_present=(("yaml_parsed_persona_id", "persona_id_present"),),
+        optional_int=(("workflow_yaml_top_level_version_int", "workflow_yaml_version_int"),),
+        load_error=True,
     )
-    apply_env_flag_metric(
-        metrics,
-        payload,
-        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
-        "disables_auto_create",
-        "auto_create_disabled",
-    )
-    apply_str_present(metrics, payload, "yaml_parsed_persona_id", "persona_id_present")
-    apply_nonneg_int_fields(metrics, payload, _INT_FIELDS)
-    apply_load_error_present(metrics, payload)
-    apply_optional_int_field(
-        metrics,
-        payload,
-        "workflow_yaml_top_level_version_int",
-        "workflow_yaml_version_int",
-    )
-    return metrics
 
 
 def agent_evaluator_workflow_explainer_operator_metrics_table_rows(
@@ -143,6 +128,8 @@ def agent_evaluator_workflow_explainer_operator_metrics_caption(
     agent_evaluator_workflow_explainer_operator_metrics_export_json,
     agent_evaluator_workflow_explainer_operator_metrics_table_rows_csv,
     agent_evaluator_workflow_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "agent_evaluator_workflow_explainer",
     export_slug="agent_evaluator_workflow_explainer_operator_metrics",
 )

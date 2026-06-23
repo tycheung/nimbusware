@@ -13,7 +13,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
         "packages/agent_core/models",
         450,
-        frozenset({"events_payloads.py"}),
+        frozenset(),
     ),
 )
 
