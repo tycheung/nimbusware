@@ -13666,6 +13666,34 @@
               "default": 50,
               "title": "Limit"
             }
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "full",
+              "title": "Profile"
+            }
+          },
+          {
+            "name": "cap",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 200,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cap"
+            }
           }
         ],
         "responses": {
@@ -14193,6 +14221,34 @@
               "minimum": 0.25,
               "default": 1.0,
               "title": "Poll Seconds"
+            }
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "full",
+              "title": "Profile"
+            }
+          },
+          {
+            "name": "cap",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 200,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cap"
             }
           }
         ],
@@ -32136,7 +32192,6 @@
           "maker"
         ],
         "summary": "Session Compute Delegate Control",
-        "description": "Per-session opt-in for host-managed compute bindings (fo1786).",
         "operationId": "session_compute_delegate_control_v1_chat_sessions__session_id__compute_delegate_control_post",
         "parameters": [
           {
@@ -32749,7 +32804,6 @@
           "maker"
         ],
         "summary": "Session Compute Opt In",
-        "description": "Register or update the caller's compute node for a collaborative session.",
         "operationId": "session_compute_opt_in_v1_chat_sessions__session_id__compute_opt_in_post",
         "parameters": [
           {
@@ -63417,6 +63471,18 @@
               }
             ],
             "title": "Autopilot Profile Id"
+          },
+          "enforcement_profile_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enforcement Profile Id"
           }
         },
         "type": "object",

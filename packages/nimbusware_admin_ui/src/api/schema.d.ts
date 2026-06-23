@@ -1848,10 +1848,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Session Compute Delegate Control
-         * @description Per-session opt-in for host-managed compute bindings (fo1786).
-         */
+        /** Session Compute Delegate Control */
         post: operations["session_compute_delegate_control_v1_chat_sessions__session_id__compute_delegate_control_post"];
         delete?: never;
         options?: never;
@@ -1886,10 +1883,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Session Compute Opt In
-         * @description Register or update the caller's compute node for a collaborative session.
-         */
+        /** Session Compute Opt In */
         post: operations["session_compute_opt_in_v1_chat_sessions__session_id__compute_opt_in_post"];
         delete?: never;
         options?: never;
@@ -4627,6 +4621,8 @@ export interface components {
             workflow_profile: string;
             /** Autopilot Profile Id */
             autopilot_profile_id?: string | null;
+            /** Enforcement Profile Id */
+            enforcement_profile_id?: string | null;
         };
         /** CreateChatSessionBody */
         CreateChatSessionBody: {
@@ -12205,6 +12201,8 @@ export interface operations {
             query?: {
                 cursor?: number;
                 limit?: number;
+                profile?: string;
+                cap?: number | null;
             };
             header?: never;
             path: {
@@ -12421,6 +12419,8 @@ export interface operations {
             query?: {
                 cursor?: number;
                 poll_seconds?: number;
+                profile?: string;
+                cap?: number | null;
             };
             header?: never;
             path: {
