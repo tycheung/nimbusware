@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 124
+  total_buttons: 125
   clicked: 36
   visible_only: 7
-  unwired: 81
-  click_ratio: 0.2903
+  unwired: 82
+  click_ratio: 0.288
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -70,7 +70,7 @@ buttons:
   - tests/e2e/web/maker_campaign_progress.spec.ts
 - test_id: maker-chat-accept-chip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
@@ -89,21 +89,27 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-autopilot-hint
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
 - test_id: maker-chat-autopilot-hint-dismiss
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_patch.spec.ts
   visible_only_in: []
+- test_id: maker-chat-branch-tree
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_branch_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
 - test_id: maker-chat-classifier-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_composer_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -564,7 +570,7 @@ buttons:
   - tests/e2e/web/maker_model_hub.spec.ts
 - test_id: maker-ollama-install
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/models.js
+  source: packages/nimbusware_maker_web/static/js/tabs/models_local_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -591,7 +597,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-review-copy-branch
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -616,7 +622,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-review-last-snapshot
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
@@ -645,38 +651,38 @@ buttons:
   visible_only_in: []
 - test_id: maker-review-open-pr
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in:
   - tests/e2e/web/maker_apply_flow.spec.ts
 - test_id: maker-review-pending-gate-fail
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-paths
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-pending-rationale
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-plan-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -706,19 +712,19 @@ buttons:
   - tests/e2e/web/maker_launch_scorecard.spec.ts
 - test_id: maker-review-slice-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-status-card
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_cards_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-review-view-pr
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/review.js
+  source: packages/nimbusware_maker_web/static/js/tabs/review_git_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -743,13 +749,13 @@ buttons:
   visible_only_in: []
 - test_id: maker-settings-memory-chunk
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings.js
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-memory-insert
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings.js
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -787,13 +793,13 @@ buttons:
   visible_only_in: []
 - test_id: maker-settings-stitch-candidate
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings.js
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-stitch-promote-one
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/settings.js
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_memory_stitch_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
