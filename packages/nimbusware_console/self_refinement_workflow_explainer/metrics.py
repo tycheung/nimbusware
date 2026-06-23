@@ -13,7 +13,9 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
     metrics_caption,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_present": False,
@@ -130,6 +132,8 @@ def self_refinement_workflow_explainer_operator_metrics_caption(
     self_refinement_workflow_explainer_operator_metrics_export_json,
     self_refinement_workflow_explainer_operator_metrics_table_rows_csv,
     self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "self_refinement_workflow_explainer",
     export_slug="self_refinement_workflow_explainer_operator_metrics",
 )

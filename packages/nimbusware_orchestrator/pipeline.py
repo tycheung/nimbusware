@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from nimbusware_orchestrator._pipeline import _helpers
-from nimbusware_orchestrator._pipeline.compose import (
-    RunOrchestrator,
-    _finalize_run_orchestrator_class,
-)
+from nimbusware_orchestrator._pipeline.compose import RunOrchestrator
 from nimbusware_orchestrator._pipeline.dev_factory import default_paths, make_dev_orchestrator
 
 for _name, _value in vars(_helpers).items():
@@ -19,8 +16,6 @@ from nimbusware_orchestrator.binding_preflight import (  # noqa: E402
 
 globals()["build_binding_preflight_report"] = build_binding_preflight_report
 globals()["cloud_only_roles_satisfied"] = cloud_only_roles_satisfied
-
-_finalize_run_orchestrator_class(RunOrchestrator)
 
 __all__ = [
     "RunOrchestrator",

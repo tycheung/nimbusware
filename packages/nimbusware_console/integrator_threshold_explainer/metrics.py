@@ -10,7 +10,9 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
     metrics_caption,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 from nimbusware_console.integrator_threshold_explainer.keys import (
     get_preview_effective_min_score,
 )
@@ -134,6 +136,8 @@ def integrator_threshold_explainer_operator_metrics_caption(
     integrator_threshold_explainer_operator_metrics_export_json,
     integrator_threshold_explainer_operator_metrics_table_rows_csv,
     integrator_threshold_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "integrator_threshold_explainer",
     export_slug="integrator_threshold_explainer_operator_metrics",
 )

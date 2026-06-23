@@ -22,6 +22,12 @@ poetry run python scripts/ci/run_openapi_ts_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run ruff format --check packages tests
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_prune_comments_ci_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_explainer_export_lint_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_loc_budget_ci_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $mypyTargets = (poetry run python scripts/ci/mypy_ci_targets.py).Split(" ")
 poetry run mypy @mypyTargets
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

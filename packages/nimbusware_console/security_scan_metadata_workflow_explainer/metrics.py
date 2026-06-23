@@ -12,7 +12,9 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
     metrics_caption,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -110,6 +112,8 @@ def security_scan_metadata_workflow_explainer_operator_metrics_caption(
     security_scan_metadata_workflow_explainer_operator_metrics_export_json,
     security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv,
     security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "security_scan_metadata_workflow_explainer",
     export_slug="security_scan_metadata_workflow_explainer_operator_metrics",
 )

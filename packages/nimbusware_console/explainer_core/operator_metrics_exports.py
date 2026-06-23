@@ -37,3 +37,24 @@ def bind_operator_metrics_exports(
         exports.table_rows_csv,
         exports.export_filename_slug,
     )
+
+
+def install_named_operator_metrics_exports(
+    namespace: dict[str, object],
+    prefix: str,
+    *,
+    export_slug: str | None = None,
+) -> tuple[
+    Callable[[Mapping[str, Any] | None], str],
+    Callable[[Sequence[Mapping[str, str]]], str],
+    Callable[[], str],
+]:
+    slug = export_slug or f"{prefix}_operator_metrics"
+    exports = WorkflowExplainerOperatorMetricsExports(slug)
+    export_json = exports.export_json
+    table_rows_csv = exports.table_rows_csv
+    export_filename_slug = exports.export_filename_slug
+    namespace[f"{prefix}_operator_metrics_export_json"] = export_json
+    namespace[f"{prefix}_operator_metrics_table_rows_csv"] = table_rows_csv
+    namespace[f"{prefix}_operator_metrics_export_filename_slug"] = export_filename_slug
+    return export_json, table_rows_csv, export_filename_slug

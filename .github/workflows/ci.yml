@@ -37,6 +37,12 @@ jobs:
         run: poetry run python scripts/ci/run_openapi_ts_ci_gate.py
       - name: Ruff format
         run: poetry run ruff format --check packages tests
+      - name: Prune verbose comments gate
+        run: poetry run python scripts/ci/run_prune_comments_ci_gate.py
+      - name: Explainer export lint gate
+        run: poetry run python scripts/ci/run_explainer_export_lint_gate.py
+      - name: LOC budget gate
+        run: poetry run python scripts/ci/run_loc_budget_ci_gate.py
       - name: Mypy
         run: poetry run mypy $(poetry run python scripts/ci/mypy_ci_targets.py)
       - name: Bandit

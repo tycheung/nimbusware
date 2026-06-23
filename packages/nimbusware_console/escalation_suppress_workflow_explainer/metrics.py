@@ -12,7 +12,9 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
     metrics_caption,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 
 _DEFAULTS: dict[str, Any] = {
     "escalation_key_present": False,
@@ -125,6 +127,8 @@ def escalation_suppress_workflow_explainer_operator_metrics_caption(
     escalation_suppress_workflow_explainer_operator_metrics_export_json,
     escalation_suppress_workflow_explainer_operator_metrics_table_rows_csv,
     escalation_suppress_workflow_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "escalation_suppress_workflow_explainer",
     export_slug="escalation_suppress_workflow_explainer_operator_metrics",
 )

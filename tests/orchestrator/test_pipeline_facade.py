@@ -31,10 +31,10 @@ def test_make_dev_orchestrator_returns_orchestrator() -> None:
     assert hasattr(mem, "append")
 
 
-def test_pipeline_internal_package_exists() -> None:
+def test_pipeline_internal_compose_exports_run_orchestrator() -> None:
     from nimbusware_orchestrator._pipeline import compose
 
-    assert hasattr(compose, "build_run_orchestrator_class")
+    assert compose.RunOrchestrator is RunOrchestrator
 
 
 def test_pipeline_mixin_modules_exist() -> None:

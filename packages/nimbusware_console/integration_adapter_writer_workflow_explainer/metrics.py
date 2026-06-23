@@ -8,7 +8,9 @@ from nimbusware_console.explainer_core.metrics_scaffold import (
     default_operator_metrics,
     metrics_table_rows,
 )
-from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.operator_metrics_exports import (
+    install_named_operator_metrics_exports,
+)
 
 _IAW_METRIC_DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -131,6 +133,8 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_caption(
     integration_adapter_writer_workflow_explainer_operator_metrics_export_json,
     integration_adapter_writer_workflow_explainer_operator_metrics_table_rows_csv,
     integration_adapter_writer_workflow_explainer_operator_metrics_export_filename_slug,
-) = bind_operator_metrics_exports(
+) = install_named_operator_metrics_exports(
+    globals(),
+    "integration_adapter_writer_workflow_explainer",
     export_slug="integration_adapter_writer_workflow_explainer_operator_metrics",
 )
