@@ -7,6 +7,7 @@ from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.security_scan_on_verify._helpers import (
     _SECURITY_SCAN_ON_VERIFY_FIELDS,
     _stringify,
@@ -157,41 +158,13 @@ def security_scan_on_verify_latest_operator_metrics_caption(
     return "Security scan finding metrics: " + ", ".join(parts) + "."
 
 
-_SECURITY_SCAN_ON_VERIFY_LATEST_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
+(
+    security_scan_on_verify_latest_operator_metrics_export_json,
+    security_scan_on_verify_latest_operator_metrics_table_rows_csv,
+    _security_scan_on_verify_latest_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(
+    export_slug="security_scan_on_verify_latest_operator_metrics",
 )
-
-
-def security_scan_on_verify_latest_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def security_scan_on_verify_latest_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SECURITY_SCAN_ON_VERIFY_LATEST_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _SECURITY_SCAN_ON_VERIFY_LATEST_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
 
 
 def security_scan_on_verify_latest_operator_metrics_export_filename_slug(
@@ -202,35 +175,11 @@ def security_scan_on_verify_latest_operator_metrics_export_filename_slug(
     return security_scan_on_verify_latest_export_filename_slug(run_id, max_len=max_len)
 
 
-_SECURITY_SCAN_LINTER_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def security_scan_linter_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def security_scan_linter_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SECURITY_SCAN_LINTER_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _SECURITY_SCAN_LINTER_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+(
+    security_scan_linter_operator_metrics_export_json,
+    security_scan_linter_operator_metrics_table_rows_csv,
+    _security_scan_linter_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(export_slug="security_scan_linter_operator_metrics")
 
 
 def security_scan_linter_operator_metrics_export_filename_slug(
