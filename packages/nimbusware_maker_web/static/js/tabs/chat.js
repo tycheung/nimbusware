@@ -30,9 +30,14 @@ import { refreshSessionOptimizerPanel } from "./chat_optimizer_ui.js";
 
 import { branchPanelCallbacks, renderMessagesFromSession, renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
 import { switchWorkType } from "./chat_work_type.js";
-import { steerActiveRun } from "./chat_escalation_ui.js";
+import {
+  maybeOfferPatchEscalation,
+  maybeOfferSliceCampaignPromotion,
+  steerActiveRun,
+} from "./chat_escalation_ui.js";
 import {
   bindChatTheaterForRun,
+  ensureRunCard,
   wireChatOperatorRibbons,
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";

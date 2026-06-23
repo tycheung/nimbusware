@@ -38,6 +38,11 @@ from nimbusware_orchestrator.slice_cycle_emits import (
     emit_repo_explore,
     emit_resolution_council,
 )
+from nimbusware_orchestrator.slice_cycle_improvement import (
+    execute_improvement_track,
+    maybe_run_improvement_council_tick,
+    run_research_transplant_track,
+)
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult, SliceGateStep
 from nimbusware_orchestrator.ui_flow_dsl import DEFAULT_TINY_WEB_LOGIN_FLOW
 
@@ -266,12 +271,6 @@ def resolution_for_gate(
     emit_resolution_council(store, run_id, resolution)
     return resolution
 
-
-from nimbusware_orchestrator.slice_cycle_improvement import (
-    execute_improvement_track,
-    maybe_run_improvement_council_tick,
-    run_research_transplant_track,
-)
 
 __all__ = [
     "PreGateRegression",
