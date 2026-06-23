@@ -19,10 +19,10 @@ from nimbusware_console.bundle_catalog.faiss_status.index_status import (
 )
 from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
-    mapping_export_json,
     mapping_to_sorted_table_rows,
     table_rows_csv,
 )
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
 def bundle_faiss_readiness_summary(repo_root: Path) -> dict[str, Any]:
@@ -182,16 +182,13 @@ def bundle_faiss_readiness_summary_operator_metrics_table_rows(
     return rows
 
 
-def bundle_faiss_readiness_summary_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def bundle_faiss_readiness_summary_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+(
+    bundle_faiss_readiness_summary_operator_metrics_export_json,
+    bundle_faiss_readiness_summary_operator_metrics_table_rows_csv,
+    bundle_faiss_readiness_summary_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(
+    export_slug="bundle_faiss_readiness_summary_operator_metrics",
+)
 
 
 def bundle_faiss_readiness_summary_operator_metrics_caption(
@@ -223,10 +220,6 @@ def bundle_faiss_readiness_summary_operator_metrics_caption(
     if metrics.get("headline_present") is True:
         parts.append("headline present")
     return ", ".join(parts) + "."
-
-
-def bundle_faiss_readiness_summary_operator_metrics_export_filename_slug() -> str:
-    return "bundle_faiss_readiness_summary_operator_metrics"
 
 
 def bundle_faiss_readiness_export_filename_slug(

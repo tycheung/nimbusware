@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import csv
-import json
 import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
+
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
 def bundle_search_operator_metrics(
@@ -65,39 +64,11 @@ def bundle_search_operator_metrics_table_rows(
     return rows
 
 
-_BUNDLE_SEARCH_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def bundle_search_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def bundle_search_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_BUNDLE_SEARCH_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _BUNDLE_SEARCH_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
-
-
-def bundle_search_operator_metrics_export_filename_slug() -> str:
-    return "bundle_search_operator_metrics"
+(
+    bundle_search_operator_metrics_export_json,
+    bundle_search_operator_metrics_table_rows_csv,
+    bundle_search_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(export_slug="bundle_search_operator_metrics")
 
 
 def bundle_search_operator_metrics_caption(
