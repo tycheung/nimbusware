@@ -31,6 +31,18 @@ Pytest discovers **3873** items under `tests/` with `pythonpath = ["packages", "
 - Prefer importing shared constants (e.g. `DEFAULT_NIMBUSWARE_ADMIN_TOKEN`) from `nimbusware_env.admin_token` instead of hardcoding dev token strings.
 - Composite contract tests share helpers in `tests/unit/composite_contract_fixtures.py` (dict event builders, gate/finding scans), `tests/unit/composite_store_fixtures.py` (`InMemoryEventStore` append helpers), `tests/unit/composite_orchestrator_fixtures.py` (canonical role registry / critique router), `tests/unit/composite_repo_fixtures.py` (config YAML writers for integrator, escalation, workflows, critique pairings), and `tests/unit/composite_api_fixtures.py` (cursor base64 and filesystem mtime helpers for API contract tests).
 
+**Composite fixture boundaries (round 7):**
+
+| Module | Use when |
+|--------|----------|
+| `composite_contract_fixtures` | Building raw event dicts or scanning gate/finding rows without a live store |
+| `composite_store_fixtures` | Appending typed events through `InMemoryEventStore` / run lifecycle |
+| `composite_repo_fixtures` | Writing `configs/**` YAML (workflows, thresholds, escalation, catalog, shelves) |
+| `composite_orchestrator_fixtures` | Canonical `RoleRegistry` / critique router for orchestrator contract tests |
+| `composite_api_fixtures` | API-layer helpers (base64 cursor padding, mtime) |
+
+Prefer `composite_repo_fixtures.write_workflow_profile` over local `_write_*_profile` helpers in new tests.
+
 ## Postgres adapter coverage
 
 `packages/nimbusware_store/postgres.py` is **omitted from the unit-test coverage denominator** (`pyproject.toml` `[tool.coverage.run] omit`). It is exercised only via `@pytest.mark.integration` tests (for example `tests/integration/test_event_store_postgres_integration.py`, config/IAM/projection integration modules). Do not add unit tests that mock Postgres solely to inflate coverage on that module; extend integration tests when changing the adapter.
