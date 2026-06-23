@@ -7,48 +7,13 @@ import pytest
 from nimbusware_orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
 )
+from unit.composite_repo_fixtures import (
+    write_integrator_thresholds_min_score,
+    write_workflow_integrator_min_score,
+)
 
 _ENV_NAME = "NIMBUSWARE_INTEGRATOR_MIN_SCORE_TO_PASS"
 _PROFILE = "ms"
-
-
-def _write_workflow_min_score(tmp_path: Path, value: float | None) -> None:
-    """Write ``configs/workflows/ms.yaml`` under ``tmp_path``.
-
-    ``value`` is the ``integrator_gate.min_score_to_pass`` to embed.
-    ``None`` writes the profile WITHOUT the key (only ``enabled: true``)
-    so ``parse_integrator_gate_min_score_to_pass`` in
-    [integrator_gate.py](packages\\nimbusware_orchestrator\\integrator_gate.py)
-    returns ``None`` and the wf layer falls through to thresholds.yaml.
-
-    ``mkdir(parents=True, exist_ok=True)`` permits multiple
-    re-writes within a single ``tmp_path`` test (Part B rewrites
-    workflow and thresholds across blocks).
-    """
-    wf_dir = tmp_path / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    if value is None:
-        body = "version: 1\nintegrator_gate:\n  enabled: true\n"
-    else:
-        body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
-    (wf_dir / f"{_PROFILE}.yaml").write_text(body, encoding="utf-8")
-
-
-def _write_thresholds(tmp_path: Path, value: float | None) -> None:
-    """Write ``configs/integrator/thresholds.yaml`` under ``tmp_path``.
-
-    ``value`` ``None`` writes the file WITHOUT ``min_score_to_pass``
-    so ``load_integrator_min_score_from_thresholds`` in
-    [integrator_gate.py](packages\\nimbusware_orchestrator\\integrator_gate.py)
-    returns the ``raw.get(..., 0.0)`` factory default.
-    """
-    ig_dir = tmp_path / "configs" / "integrator"
-    ig_dir.mkdir(parents=True, exist_ok=True)
-    if value is None:
-        body = "version: 1\nenabled: false\n"
-    else:
-        body = f"version: 1\nenabled: false\nmin_score_to_pass: {value}\n"
-    (ig_dir / "thresholds.yaml").write_text(body, encoding="utf-8")
 
 
 def test_integrator_min_score_env_accept_arm_numeric_contract(
@@ -76,8 +41,8 @@ def test_integrator_min_score_env_accept_arm_numeric_contract(
        there). A future refactor dropping ``.strip()`` would silently
        flip the last two cases.
     """
-    _write_workflow_min_score(tmp_path, 0.1)
-    _write_thresholds(tmp_path, 0.5)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, 0.1)
+    write_integrator_thresholds_min_score(tmp_path, 0.5)
     cases: list[tuple[str, str, float]] = [
         ("boundary_zero", "0.0", 0.0),
         ("boundary_one", "1.0", 1.0),
@@ -136,8 +101,8 @@ def test_integrator_min_score_env_three_layer_precedence_contract(
       (e.g. returning ``0.0`` directly) would flip Block 6 from 0.5
       to 0.0.
     """
-    _write_workflow_min_score(tmp_path, 0.1)
-    _write_thresholds(tmp_path, 0.5)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, 0.1)
+    write_integrator_thresholds_min_score(tmp_path, 0.5)
     monkeypatch.setenv(_ENV_NAME, "0.99")
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.99), (
@@ -150,27 +115,27 @@ def test_integrator_min_score_env_three_layer_precedence_contract(
         f"block_2_env_empty_with_wf_and_thresholds: expected 0.1 (wf), got {actual!r}"
     )
 
-    _write_workflow_min_score(tmp_path, None)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, None)
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.5), (
         f"block_3_env_empty_no_wf_with_thresholds: expected 0.5 (thresholds), got {actual!r}"
     )
 
-    _write_thresholds(tmp_path, None)
+    write_integrator_thresholds_min_score(tmp_path, None)
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.0), (
         f"block_4_env_empty_no_wf_no_thresholds: expected 0.0 (factory floor), got {actual!r}"
     )
 
-    _write_workflow_min_score(tmp_path, 0.1)
-    _write_thresholds(tmp_path, 0.5)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, 0.1)
+    write_integrator_thresholds_min_score(tmp_path, 0.5)
     monkeypatch.setenv(_ENV_NAME, "abc")
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.1), (
         f"block_5_env_invalid_with_wf: expected 0.1 (wf via fail-closed proof), got {actual!r}"
     )
 
-    _write_workflow_min_score(tmp_path, None)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, None)
     actual = effective_integrator_min_score_to_pass(tmp_path, _PROFILE)
     assert actual == pytest.approx(0.5), (
         "block_6_env_invalid_no_wf_with_thresholds: expected 0.5 "
@@ -214,8 +179,8 @@ def test_integrator_min_score_env_fail_closed_string_arm_contract(
        strips to ``"0.5 abc"`` (no leading/trailing whitespace) which
        ``float()``-rejects. Distinct from Part A's rescue case.
     """
-    _write_workflow_min_score(tmp_path, 0.1)
-    _write_thresholds(tmp_path, 0.5)
+    write_workflow_integrator_min_score(tmp_path, _PROFILE, 0.1)
+    write_integrator_thresholds_min_score(tmp_path, 0.5)
     cases: list[tuple[str, str]] = [
         ("empty", ""),
         ("ws_only_spaces", "   "),
