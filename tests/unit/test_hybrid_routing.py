@@ -5,17 +5,17 @@ from pathlib import Path
 import pytest
 import yaml
 
+from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
+from nimbusware_orchestrator.routing_cost_summary import summarize_run_role_cost
 from nimbusware_orchestrator.routing_presets import (
     apply_routing_preset,
     list_routing_preset_summaries,
 )
-from nimbusware_orchestrator.routing_cost_summary import summarize_run_role_cost
 from nimbusware_orchestrator.stage_provider_routing import (
     probe_cloud_runtime,
     resolve_stage_provider,
     stage_chat_json,
 )
-from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
 
 
 def test_list_and_apply_routing_presets(tmp_path: Path) -> None:

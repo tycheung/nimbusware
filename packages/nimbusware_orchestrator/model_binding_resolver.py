@@ -8,8 +8,8 @@ import yaml
 
 from agent_core.mapping import mapping_or_empty
 from nimbusware_config.persist import load_model_routing_dict
-from nimbusware_orchestrator.stage_provider_routing import resolve_stage_provider
 from nimbusware_orchestrator.llm.providers import provider_for_preset
+from nimbusware_orchestrator.stage_provider_routing import resolve_stage_provider
 
 
 @dataclass(frozen=True)

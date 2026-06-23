@@ -391,5 +391,3 @@ def execute_improvement_track(
             ),
         )
         return
-
-

@@ -18,19 +18,16 @@ from nimbusware_orchestrator.campaign import (
     campaign_enabled_for_run,
     campaign_policy_from_rows,
 )
-from nimbusware_orchestrator.campaign_slice_selector import (
-    SelectedSlice,
-    all_slices_terminal,
-    select_next_slice,
-    select_next_slices,
-)
-from nimbusware_orchestrator.context_compaction import maybe_emit_compaction_event
-from nimbusware_orchestrator.micro_slice import parse_slice_plan
 from nimbusware_orchestrator.campaign_driver_execute import (
     CampaignTickResult,
+    _count_passed_slices,
     _execute_campaign_slices,
     _select_slices_for_tick,
 )
+from nimbusware_orchestrator.campaign_slice_selector import (
+    all_slices_terminal,
+)
+from nimbusware_orchestrator.context_compaction import maybe_emit_compaction_event
 from nimbusware_projections.builders.context_budget import estimate_context_budget
 
 if TYPE_CHECKING:

@@ -1,23 +1,14 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from agent_core.models import (
-    EventType,
-    StagePassedEvent,
-    StagePassedPayload,
-    StageStartedEvent,
-    StageStartedPayload,
-)
 from nimbusware_env.env_flags import (
-    nimbusware_slice_p3_evidence_enabled,
     nimbusware_use_llm_enabled,
 )
-from nimbusware_orchestrator.llm_slice import execute_slice_critique_llm, execute_slice_replan_llm
+from nimbusware_orchestrator.llm_slice import execute_slice_replan_llm
 from nimbusware_orchestrator.micro_slice import SlicePlan, micro_slice_count_for_run
 from nimbusware_orchestrator.micro_slice_plan import (
     custom_agent_system_prompt as _custom_agent_system_prompt,
@@ -29,8 +20,6 @@ from nimbusware_orchestrator.micro_slice_plan import (
     plan_one_slice as _plan_one_slice,
 )
 from nimbusware_orchestrator.micro_slice_run_context import (
-    fast_slice_effective_from_rows,
-    micro_slice_effective_from_rows,
     slice_replan_max_for_run,
 )
 from nimbusware_orchestrator.micro_slice_verify import (
@@ -42,20 +31,18 @@ from nimbusware_orchestrator.slice_diff import (
     subdivide_slice_plan,
 )
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
-from nimbusware_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
-from nimbusware_orchestrator.workflow_micro_slice import MicroSliceWorkflowBlock
+from nimbusware_orchestrator.slice_implement import execute_slice_implement
 
 if TYPE_CHECKING:
     from nimbusware_orchestrator.pipeline import RunOrchestrator
 
 
 from nimbusware_orchestrator.micro_slice_executor_context import (
-    _active_enforcement,
     _emit_slice_stage,
-    _launch_test_enabled,
     _resolve_slice_block,
 )
 from nimbusware_orchestrator.micro_slice_executor_gate import finish_micro_slice_gate_chain
+
 
 def execute_single_micro_slice(
     orch: RunOrchestrator,
@@ -79,13 +66,7 @@ def execute_single_micro_slice(
     from nimbusware_orchestrator.autopilot_profiles import autopilot_profile_from_rows
     from nimbusware_orchestrator.diagnose_learn import latest_learning_excerpt_from_rows
     from nimbusware_orchestrator.slice_cycle_integration import (
-        apply_operator_pause,
-        ensure_dev_environment_for_slice,
-        handle_gate_failure_learning,
-        maybe_run_human_fidelity_pre_gate,
         maybe_run_repo_explore_slice_stage,
-        merge_pre_gate_into_verify,
-        run_pre_gate_dev_env_regression,
     )
     from nimbusware_orchestrator.slice_interjection import (
         _infer_patch_target_paths,

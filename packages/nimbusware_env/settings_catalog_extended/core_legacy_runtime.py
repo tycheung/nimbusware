@@ -3,7 +3,6 @@ from __future__ import annotations
 from nimbusware_env.settings_catalog import SettingDef, SettingKind, SettingScope
 
 
-
 def core_legacy_runtime_defs() -> tuple[SettingDef, ...]:
     install = SettingScope.INSTALL
     system = SettingScope.SYSTEM

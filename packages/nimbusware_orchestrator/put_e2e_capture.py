@@ -5,6 +5,7 @@ import subprocess
 
 from nimbusware_orchestrator.put_e2e_types import PutE2EFinding
 
+
 def _playwright_available() -> bool:
     return shutil.which("playwright") is not None or shutil.which("npx") is not None
 

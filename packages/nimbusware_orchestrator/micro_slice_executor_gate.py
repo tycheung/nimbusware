@@ -4,7 +4,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from nimbusware_env.env_flags import nimbusware_slice_p3_evidence_enabled, nimbusware_use_llm_enabled
+from nimbusware_env.env_flags import (
+    nimbusware_slice_p3_evidence_enabled,
+    nimbusware_use_llm_enabled,
+)
+from nimbusware_orchestrator.llm_slice import execute_slice_critique_llm
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.micro_slice_executor_context import (
     _active_enforcement,
@@ -12,11 +16,20 @@ from nimbusware_orchestrator.micro_slice_executor_context import (
     _launch_test_enabled,
 )
 from nimbusware_orchestrator.micro_slice_run_context import fast_slice_effective_from_rows
-from nimbusware_orchestrator.micro_slice_verify import run_slice_verify_and_test as _run_slice_verify_and_test
+from nimbusware_orchestrator.micro_slice_verify import (
+    run_slice_verify_and_test as _run_slice_verify_and_test,
+)
+from nimbusware_orchestrator.slice_cycle_integration import (
+    apply_operator_pause,
+    ensure_dev_environment_for_slice,
+    handle_gate_failure_learning,
+    maybe_run_human_fidelity_pre_gate,
+    merge_pre_gate_into_verify,
+    run_pre_gate_dev_env_regression,
+)
 from nimbusware_orchestrator.slice_diff import check_slice_diff_budget, collect_slice_diff_stats
 from nimbusware_orchestrator.slice_gate import SliceGateChainResult
 from nimbusware_orchestrator.slice_implement import slice_implement_mode
-from nimbusware_orchestrator.llm_slice import execute_slice_critique_llm
 
 if TYPE_CHECKING:
     from nimbusware_orchestrator.pipeline import RunOrchestrator

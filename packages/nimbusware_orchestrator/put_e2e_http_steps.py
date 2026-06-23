@@ -7,6 +7,7 @@ import httpx
 
 from nimbusware_orchestrator.put_e2e_types import PutE2EFinding
 
+
 def _url(base_url: str, path: str) -> str:
     return f"{base_url.rstrip('/')}{path if path.startswith('/') else '/' + path}"
 

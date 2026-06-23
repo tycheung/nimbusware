@@ -7,6 +7,7 @@ import yaml
 
 from nimbusware_env import find_repo_root
 
+
 def factory_flows_root(repo_root: Path | None = None) -> Path:
     root = repo_root or find_repo_root()
     return root / "configs" / "factory" / "flows"

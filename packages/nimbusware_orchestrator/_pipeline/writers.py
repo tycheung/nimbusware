@@ -27,8 +27,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     uuid4,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import WritersHost
-
-
 from nimbusware_orchestrator._pipeline.writers_parallel import WritersParallelMixin
 
 
@@ -250,4 +248,3 @@ class WritersMixin(WritersParallelMixin):
             verifier_exit_code=code,
             verifier_log=log,
         )
-

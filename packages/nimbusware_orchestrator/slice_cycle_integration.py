@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
-from agent_core.mapping import mapping_or_empty
 from agent_core.models import EventType, StagePassedEvent
 from agent_core.models.events_payloads import StagePassedPayload
 from nimbusware_orchestrator.autopilot_profiles import (
@@ -27,10 +26,6 @@ from nimbusware_orchestrator.diagnose_learn import (
     diagnose_from_failure,
 )
 from nimbusware_orchestrator.human_fidelity import run_human_fidelity_suite
-from nimbusware_orchestrator.improvement_council import (
-    ImprovementTrack,
-    run_improvement_council,
-)
 from nimbusware_orchestrator.launch_flow_resolver import resolve_launch_flows
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.repo_explorer import run_repo_explore
@@ -40,7 +35,6 @@ from nimbusware_orchestrator.resolution_council import (
 )
 from nimbusware_orchestrator.slice_cycle_emits import (
     emit_diagnose_learn,
-    emit_improvement_council,
     emit_repo_explore,
     emit_resolution_council,
 )
@@ -261,12 +255,6 @@ def apply_operator_pause(
     )
 
 
-from nimbusware_orchestrator.slice_cycle_improvement import (
-    execute_improvement_track,
-    maybe_run_improvement_council_tick,
-    run_research_transplant_track,
-)
-
 def resolution_for_gate(
     store: Any,
     run_id: UUID | str,
@@ -277,3 +265,25 @@ def resolution_for_gate(
     resolution = run_resolution_council(findings=findings, autopilot_level=profile.level)
     emit_resolution_council(store, run_id, resolution)
     return resolution
+
+
+from nimbusware_orchestrator.slice_cycle_improvement import (
+    execute_improvement_track,
+    maybe_run_improvement_council_tick,
+    run_research_transplant_track,
+)
+
+__all__ = [
+    "PreGateRegression",
+    "apply_operator_pause",
+    "ensure_dev_environment_for_slice",
+    "execute_improvement_track",
+    "handle_gate_failure_learning",
+    "maybe_run_human_fidelity_pre_gate",
+    "maybe_run_improvement_council_tick",
+    "maybe_run_repo_explore_slice_stage",
+    "merge_pre_gate_into_verify",
+    "resolution_for_gate",
+    "run_pre_gate_dev_env_regression",
+    "run_research_transplant_track",
+]

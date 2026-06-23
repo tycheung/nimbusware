@@ -35,7 +35,6 @@ def _active_enforcement(rows: list[dict[str, Any]]) -> Any:
 
 def _resolve_slice_block(orch: RunOrchestrator, run_id: UUID) -> MicroSliceWorkflowBlock:
     from nimbusware_orchestrator.integrator_gate import workflow_profile_from_run_created_rows
-    from nimbusware_orchestrator.workflow_micro_slice import parse_micro_slice_workflow_block
 
     rows = orch._store.list_run_events(str(run_id))
     wf = workflow_profile_from_run_created_rows(rows)
@@ -86,5 +85,3 @@ def _emit_slice_stage(
             payload=StagePassedPayload(stage_name=stage_name, duration_ms=duration_ms),
         ),
     )
-
-

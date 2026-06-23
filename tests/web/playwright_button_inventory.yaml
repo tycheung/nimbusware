@@ -83,7 +83,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-agents-strip
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_theater_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -123,14 +123,14 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-escalate-campaign
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_chat_escalation.spec.ts
   visible_only_in: []
 - test_id: maker-chat-escalate-slice
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
@@ -138,13 +138,13 @@ buttons:
   - tests/e2e/web/maker_chat_escalation.spec.ts
 - test_id: maker-chat-escalation-campaign
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-escalation-slice
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_escalation_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -258,13 +258,13 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-run-card-header
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_theater_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-chat-run-theater
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_theater_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
