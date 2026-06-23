@@ -1,30 +1,17 @@
 import { apiJson, toast } from "../api-client.js";
-import { autopilotRibbonHtml } from "../autopilot-ribbon.js";
-import { enforcementRibbonHtml } from "../enforcement-ribbon.js";
-import { chatInterjectionRibbonHtml, queueInterjection, wireInterjectionRibbon } from "../interjection-ribbon.js";
 import { refreshBranchPanel } from "./chat_branch_ui.js";
 import {
-  applyComposerForRole,
   getCollabMyRole,
   refreshComputeNodes,
   refreshSessionSidebar,
-  renderParticipantStrip,
-  setCollabMyRole,
 } from "./chat_session_ui.js";
 import { refreshChatLibrary } from "./chat_library_ui.js";
-import {
-  bindSessionStream,
-  closeInviteModal,
-  mountCommentaryComposer,
-  mountInviteButton,
-  unbindSessionStream,
-} from "./chat_collab_ui.js";
-import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
+import { closeInviteModal, unbindSessionStream } from "./chat_collab_ui.js";
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
-import { refreshSessionOptimizerPanel } from "./chat_optimizer_ui.js";
+import { wireCollabSessionUi } from "./chat_collab_wiring.js";
+import { CHAT_WORK_TYPES, chatLayoutHtml } from "./chat_shell_html.js";
 
-import { branchPanelCallbacks, renderMessagesFromSession, renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
-import { switchWorkType } from "./chat_work_type.js";
+import { branchPanelCallbacks, renderMessagesFromSession } from "./chat_thread_ui.js";
 import {
   maybeOfferPatchEscalation,
   maybeOfferSliceCampaignPromotion,
@@ -43,143 +30,11 @@ import {
   wireChatOperatorRibbons,
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
-const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
+
 const SESSION_KEY = "maker_chat_session_id";
-const RESUME_KEY = "maker_chat_resume_session";
-
-let sessionStreamTurnCount = 0;
-let cachedCurrentUserId = null;
-
-async function resolveCurrentUserId() {
-  if (cachedCurrentUserId) return cachedCurrentUserId;
-  try {
-    const me = await apiJson("/auth/me");
-    cachedCurrentUserId = me.user_id || null;
-  } catch {
-    cachedCurrentUserId = null;
-  }
-  return cachedCurrentUserId;
-}
-
-async function wireCollabSessionUi(root, sessionId, session) {
-  if (!sessionId) return;
-  renderMessagesFromSession(root, session);
-  mountInviteButton(root, sessionId);
-  await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-  await refreshSessionOptimizerPanel(root, sessionId, {
-    workloadMode: session?.workload_distribution || "host_only",
-  });
-  mountCommentaryComposer(root, sessionId, (turn) => {
-    const thread = root.querySelector("#chat-thread");
-    if (thread && turn) renderTurnLine(thread, turn);
-  });
-  const userId = await resolveCurrentUserId();
-  await refreshHostTransferPanel(root, sessionId, {
-    currentUserId: userId,
-    onReload: async () => {
-      const existing = await apiJson(
-        `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-      );
-      renderMessagesFromSession(root, existing);
-    },
-  });
-  sessionStreamTurnCount = session?.turns?.length || 0;
-  bindSessionStream(root, sessionId, {
-    onSession: async (data) => {
-      if (data.participants?.length) {
-        renderParticipantStrip(root, {
-          participants: data.participants,
-          host_user_id: session?.host_user_id,
-        });
-        mountInviteButton(root, sessionId);
-      }
-      await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-      const count = data.turn_count ?? sessionStreamTurnCount;
-      if (count > sessionStreamTurnCount) {
-        sessionStreamTurnCount = count;
-        try {
-          const existing = await apiJson(
-            `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-          );
-          renderMessagesFromSession(root, existing);
-        } catch {
-          /* ignore */
-        }
-      }
-    },
-  });
-}
 
 export async function mountChat(root) {
-  root.innerHTML = `
-    <div class="chat-layout">
-      <aside class="chat-library panel" data-testid="maker-chat-library"></aside>
-      <aside class="chat-session-sidebar panel" data-testid="maker-chat-session-sidebar">
-        <h4>Sessions</h4>
-        <ul id="chat-session-list" class="chat-session-list"></ul>
-        <button type="button" id="chat-new-session" class="linkish" data-testid="maker-chat-new-session">New session</button>
-      </aside>
-      <div class="chat-main">
-        <section
-          id="chat-compute-nodes"
-          class="panel chat-compute-nodes muted"
-          data-testid="maker-chat-compute-nodes"
-          hidden
-        >
-          <h4>Compute</h4>
-          <p class="chat-compute-nodes-caption">Session compute nodes</p>
-          <ul id="chat-compute-nodes-list" class="chat-compute-nodes-list"></ul>
-        </section>
-        <section id="chat-operator-ribbons" class="chat-operator-ribbons hidden" data-testid="maker-chat-operator-ribbons">
-          ${chatInterjectionRibbonHtml()}
-          ${autopilotRibbonHtml({ compact: true })}
-          ${enforcementRibbonHtml({ compact: true })}
-        </section>
-        <form id="chat-form" class="chat-form">
-          <label>Project
-            <select name="project_id" id="chat-project-select" data-testid="maker-chat-project-select" required></select>
-          </label>
-          <label>Work type
-            <select name="work_type" id="chat-work-type" data-testid="maker-chat-work-type-select">
-              ${WORK_TYPES.map((wt) => `<option value="${wt}">${workTypeLabel(wt)}</option>`).join("")}
-            </select>
-          </label>
-          <label>Message
-            <textarea name="message" id="chat-message" rows="4" required
-              data-testid="maker-chat-message" placeholder="Describe the change, bug, or feature…"></textarea>
-          </label>
-          <fieldset class="chat-attachments">
-            <legend>Attachments (optional)</legend>
-            <label>File paths
-              <textarea name="target_paths" id="chat-target-paths" rows="2"
-                data-testid="maker-chat-target-path" placeholder="src/foo.py"></textarea>
-            </label>
-            <label>Failing test
-              <input name="failing_test" id="chat-failing-test" type="text"
-                data-testid="maker-chat-failing-test" placeholder="tests/test_foo.py::test_bar" />
-            </label>
-            <label>Stack trace
-              <textarea name="stack_trace" id="chat-stack-trace" rows="3"
-                data-testid="maker-chat-stack-trace" placeholder="AssertionError: …"></textarea>
-            </label>
-          </fieldset>
-          <button type="submit" class="primary" data-testid="maker-chat-start">Send</button>
-        </form>
-        <aside id="chat-branch-panel" class="panel chat-branch-panel hidden" data-testid="maker-chat-branch-panel"></aside>
-        <details id="chat-theater-mount" class="chat-theater-mount hidden" data-testid="maker-chat-theater-mount">
-          <summary>
-            Full run log (archive)
-            <label class="chat-follow-live">
-              <input type="checkbox" id="chat-theater-follow-live" data-testid="maker-chat-theater-follow-live" checked />
-              Follow live
-            </label>
-            <a class="chat-theater-export linkish" href="#" download>Export transcript</a>
-          </summary>
-        </details>
-        <ul id="chat-thread" class="chat-thread" data-testid="maker-chat-thread"></ul>
-        <div id="chat-classifier-mount"></div>
-      </div>
-    </div>`;
+  root.innerHTML = chatLayoutHtml();
 
   wireFollowLiveToggle(root);
   mountAutopilotLadderHint(root);
@@ -208,7 +63,7 @@ export async function mountChat(root) {
     slice: "Describe the feature to add or change…",
     factory: "Describe the app you want (e.g. todo API with REST endpoints)…",
   };
-  if (intent && WORK_TYPES.includes(intent) && workSel) {
+  if (intent && CHAT_WORK_TYPES.includes(intent) && workSel) {
     workSel.value = intent;
     if (msgEl && INTENT_HINTS[intent]) msgEl.placeholder = INTENT_HINTS[intent];
   }
