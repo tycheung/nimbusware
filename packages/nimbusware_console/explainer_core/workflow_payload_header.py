@@ -16,13 +16,9 @@ def workflow_payload_header(
     snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
     header: dict[str, Any] = {
         "workflow_profile": snap.workflow_profile,
+        "workflow_yaml_relpath": snap.workflow_yaml_relpath,
+        "load_error": snap.load_error,
+        "workflow_yaml_top_level_version_int": snap.version_int,
+        "workflow_yaml_file_bytes": snap.file_bytes,
     }
-    if snap.workflow_yaml_relpath:
-        header["workflow_yaml_relpath"] = snap.workflow_yaml_relpath
-    if snap.load_error:
-        header["load_error"] = snap.load_error
-    if snap.version_int is not None:
-        header["workflow_yaml_top_level_version_int"] = snap.version_int
-    if snap.file_bytes is not None:
-        header["workflow_yaml_file_bytes"] = snap.file_bytes
     return snap, header

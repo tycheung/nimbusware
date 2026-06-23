@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 from uuid import UUID
 
@@ -92,6 +93,28 @@ def _persona_id_from_assignment_slot(raw: object) -> str | None:
 
 def optional_tri_allows_emit(tri: str | None) -> bool:
     return tri != "off"
+
+
+def optional_stage_yaml_gate(
+    env_key: str,
+    host: Any,
+    run_id: UUID,
+    parse_block: Callable[..., Any],
+) -> tuple[str | None, list[dict[str, Any]], str, Any] | None:
+    from nimbusware_env.env_flags import env_tri_state
+
+    tri = env_tri_state(env_key)
+    if not optional_tri_allows_emit(tri):
+        return None
+    rows, wf = optional_rows_and_profile(host, run_id)
+    block = parse_block(
+        host._repo_root,
+        wf,
+        config_materializer=host._config_materializer,
+    )
+    if tri != "on" and not block.enabled:
+        return None
+    return tri, rows, wf, block
 
 
 def optional_rows_and_profile(host: Any, run_id: UUID) -> tuple[list[dict[str, Any]], str]:

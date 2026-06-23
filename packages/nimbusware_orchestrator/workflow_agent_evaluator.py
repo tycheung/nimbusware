@@ -108,6 +108,27 @@ def parse_agent_evaluator_workflow_block(
     )
 
 
+def agent_evaluator_stage_would_emit(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    from nimbusware_orchestrator._pipeline._helpers_runtime import optional_tri_allows_emit
+
+    tri = env_tri_state("NIMBUSWARE_AGENT_EVALUATOR")
+    if not optional_tri_allows_emit(tri):
+        return False
+    block = parse_agent_evaluator_workflow_block(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    if tri != "on" and not block.enabled:
+        return False
+    return True
+
+
 def persona_coverage_critique_effective(block: AgentEvaluatorWorkflowBlock) -> bool:
     """Env ``NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE=0`` kill-switch overrides workflow YAML."""
     tri = env_tri_state("NIMBUSWARE_PERSONA_COVERAGE_CRITIQUE")

@@ -8,11 +8,8 @@ from nimbusware_console.explainer_core.env_summaries import (
     env_disable_flag_summary,
     env_tri_state_summary,
 )
-from nimbusware_env.env_flags import (
-    env_force_off,
-    env_force_on,
-    nimbusware_use_llm_enabled,
-)
+from nimbusware_env.env_flags import nimbusware_use_llm_enabled
+from nimbusware_orchestrator.workflow_agent_evaluator import agent_evaluator_stage_would_emit
 
 
 def _nimbusware_agent_evaluator_env_summary() -> dict[str, Any]:
@@ -34,10 +31,7 @@ def _nimbusware_agent_evaluator_auto_create_env_summary() -> dict[str, Any]:
 
 
 def _would_emit_agent_evaluator_stage(repo_root: Path, workflow_profile: str | None) -> bool:
-    if env_force_off("NIMBUSWARE_AGENT_EVALUATOR"):
-        return False
-    block = parse_agent_evaluator_workflow_block(repo_root, workflow_profile)
-    return env_force_on("NIMBUSWARE_AGENT_EVALUATOR") or block.enabled
+    return agent_evaluator_stage_would_emit(repo_root, workflow_profile)
 
 
 def _would_emit_llm_evaluation(repo_root: Path, workflow_profile: str | None) -> bool:

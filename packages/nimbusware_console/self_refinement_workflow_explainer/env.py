@@ -19,9 +19,8 @@ from nimbusware_env.env_flags import (
 )
 from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
-    load_self_refinement_policy,
-    self_refinement_policy_from_mapping,
 )
+from nimbusware_orchestrator.self_refinement_policy import resolve_self_refinement_policy
 
 
 def _load_policy_or_default(
@@ -44,13 +43,6 @@ def _load_policy_or_default(
         }
         try:
             raw = config_materializer.get_self_refinement_policy()
-            pol = self_refinement_policy_from_mapping(raw)
-            snap["policy_yaml_file_bytes"] = disk_bytes
-            rv = raw.get("version") if isinstance(raw, dict) else None
-            snap["policy_yaml_top_level_version_int"] = (
-                int(rv) if type(rv) is int and not isinstance(rv, bool) else None
-            )
-            return pol, snap
         except KeyError:
             pol = SelfRefinementPolicy(version=1, enabled=False, description="")
             snap["exists"] = False
@@ -58,6 +50,13 @@ def _load_policy_or_default(
             snap["policy_yaml_file_bytes"] = None
             snap["policy_yaml_top_level_version_int"] = None
             return pol, snap
+        pol = resolve_self_refinement_policy(repo_root, config_materializer=config_materializer)
+        snap["policy_yaml_file_bytes"] = disk_bytes
+        rv = raw.get("version") if isinstance(raw, dict) else None
+        snap["policy_yaml_top_level_version_int"] = (
+            int(rv) if type(rv) is int and not isinstance(rv, bool) else None
+        )
+        return pol, snap
     path = repo_root / "configs" / "self_refinement" / "policy.yaml"
     snap: dict[str, Any] = {
         "relpath": "configs/self_refinement/policy.yaml",
@@ -82,7 +81,7 @@ def _load_policy_or_default(
                 snap["policy_yaml_top_level_version_int"] = rv
     except (OSError, ValueError, UnicodeDecodeError):
         pass
-    pol = load_self_refinement_policy(path)
+    pol = resolve_self_refinement_policy(repo_root, config_materializer=config_materializer)
     return pol, snap
 
 

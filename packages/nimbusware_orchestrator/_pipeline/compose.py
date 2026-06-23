@@ -11,6 +11,9 @@ from nimbusware_orchestrator._pipeline.optional_critique import OptionalCritique
 from nimbusware_orchestrator._pipeline.optional_stages import OptionalStagesMixin
 from nimbusware_orchestrator._pipeline.optional_stages_research import ResearchOptionalStagesMixin
 from nimbusware_orchestrator._pipeline.optional_stages_stitch import StitchOptionalStagesMixin
+
+# Research/stitch mixins live here (not in optional_stages.py) so OptionalStagesMixin
+# stays free of nimbusware_research imports and RunOrchestrator controls MRO order.
 from nimbusware_orchestrator._pipeline.pipeline_scraper import PipelineScraperMixin
 from nimbusware_orchestrator._pipeline.role_execute import RoleExecuteMixin
 from nimbusware_orchestrator._pipeline.writers import WritersMixin

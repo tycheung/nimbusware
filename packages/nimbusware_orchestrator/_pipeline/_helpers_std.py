@@ -78,6 +78,7 @@ from nimbusware_orchestrator._pipeline._helpers_runtime import (
     ollama_runtime_from_host,
     optional_meta_section,
     optional_rows_and_profile,
+    optional_stage_yaml_gate,
     optional_tri_allows_emit,
 )
 
@@ -151,6 +152,7 @@ __all__ = (
     "ollama_runtime_from_host",
     "optional_meta_section",
     "optional_rows_and_profile",
+    "optional_stage_yaml_gate",
     "optional_tri_allows_emit",
     "os",
     "time",

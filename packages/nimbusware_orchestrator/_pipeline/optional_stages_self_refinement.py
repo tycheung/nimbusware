@@ -12,7 +12,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     SelfRefinementEvaluator,
     SelfRefinementLoopSignalledEvent,
     SelfRefinementLoopSignalledPayload,
-    SelfRefinementPolicy,
     StageFailedEvent,
     StageFailedPayload,
     StageStartedEvent,
@@ -27,7 +26,6 @@ from nimbusware_orchestrator._pipeline._helpers import (
     datetime,
     emit_stub_self_refinement_critique_panel,
     execute_self_refinement_critique_llm,
-    load_self_refinement_policy,
     os,
     parse_probation_automation_workflow_block,
     parse_self_refinement_workflow_block,
@@ -40,6 +38,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import SelfRefinementOptionalStagesHost
+from nimbusware_orchestrator.self_refinement_policy import resolve_self_refinement_policy
 
 _SelfRefinementOrchestrationBranch = Literal["rules", "rules_with_llm_critique"]
 _LlmGateDecision = Literal["proceed", "hold"]
@@ -76,22 +75,10 @@ class SelfRefinementOptionalStagesMixin:
             config_materializer=self._config_materializer,
         )
 
-        mat = self._config_materializer
-        if mat is not None and getattr(mat, "use_db", False):
-            from nimbusware_extensions.self_refinement import self_refinement_policy_from_mapping
-
-            try:
-                pol = self_refinement_policy_from_mapping(
-                    mat.get_self_refinement_policy(),
-                )
-            except KeyError:
-                pol = SelfRefinementPolicy(version=1, enabled=False, description="")
-        else:
-            path = self._repo_root / "configs" / "self_refinement" / "policy.yaml"
-            if path.is_file():
-                pol = load_self_refinement_policy(path)
-            else:
-                pol = SelfRefinementPolicy(version=1, enabled=False, description="")
+        pol = resolve_self_refinement_policy(
+            self._repo_root,
+            config_materializer=self._config_materializer,
+        )
 
         if not pol.enabled and not wf_sr.enabled:
             return

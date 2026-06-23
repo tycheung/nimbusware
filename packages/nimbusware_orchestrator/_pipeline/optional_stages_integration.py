@@ -4,7 +4,7 @@ from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     emit_live_integration_adapter_writer_stage,
     emit_stub_integration_adapter_writer_stage,
-    integration_adapter_writer_stage_would_emit,
+    optional_stage_yaml_gate,
     parse_integration_adapter_writer_workflow_block,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegrationOptionalStagesHost
@@ -15,21 +15,15 @@ class IntegrationOptionalStagesMixin:
         self: IntegrationOptionalStagesHost,
         run_id: UUID,
     ) -> None:
-        from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
-
-        _, wf = optional_rows_and_profile(self, run_id)
-        mat = self._config_materializer
-        if not integration_adapter_writer_stage_would_emit(
-            self._repo_root,
-            wf,
-            config_materializer=mat,
-        ):
-            return
-        block = parse_integration_adapter_writer_workflow_block(
-            self._repo_root,
-            wf,
-            config_materializer=mat,
+        gated = optional_stage_yaml_gate(
+            "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER",
+            self,
+            run_id,
+            parse_integration_adapter_writer_workflow_block,
         )
+        if gated is None:
+            return
+        _tri, _rows, _wf, block = gated
         if block.stub_only:
             emit_stub_integration_adapter_writer_stage(
                 self._store,

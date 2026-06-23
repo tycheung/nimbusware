@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import env_tri_state
 from nimbusware_orchestrator._pipeline._helpers import (
     UUID,
     optional_meta_section,
-    optional_rows_and_profile,
-    optional_tri_allows_emit,
+    optional_stage_yaml_gate,
     parse_research_workflow_block,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import ResearchOptionalStagesHost
@@ -13,17 +11,15 @@ from nimbusware_orchestrator._pipeline.protocol_hosts import ResearchOptionalSta
 
 class ResearchOptionalStagesMixin:
     def _maybe_emit_research_stages(self: ResearchOptionalStagesHost, run_id: UUID) -> None:
-        tri = env_tri_state("NIMBUSWARE_RESEARCH")
-        if not optional_tri_allows_emit(tri):
-            return
-        _rows, wf = optional_rows_and_profile(self, run_id)
-        block = parse_research_workflow_block(
-            self._repo_root,
-            wf,
-            config_materializer=self._config_materializer,
+        gated = optional_stage_yaml_gate(
+            "NIMBUSWARE_RESEARCH",
+            self,
+            run_id,
+            parse_research_workflow_block,
         )
-        if tri != "on" and not block.enabled:
+        if gated is None:
             return
+        _tri, _rows, _wf, block = gated
         research_meta = optional_meta_section(self, run_id, "research")
         meta = self._run_created_metadata(run_id)
         requirements = meta.get("requirements")
