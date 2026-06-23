@@ -65,11 +65,14 @@ def test_maker_models_preset_wizard_paths() -> None:
 
 
 def test_maker_settings_governor_panel_paths() -> None:
-    settings_js = (_STATIC / "js" / "tabs" / "settings.js").read_text(encoding="utf-8")
+    tabs = _STATIC / "js" / "tabs"
+    settings_js = (tabs / "settings.js").read_text(encoding="utf-8")
+    gov_js = (tabs / "settings_governor_ui.js").read_text(encoding="utf-8")
+    combined = settings_js + gov_js
     assert "governor-panel" in settings_js
-    assert "NIMBUSWARE_MAX_VRAM_PCT" in settings_js
-    assert "max_parallel_writer_stages" in settings_js
-    assert "/platform/hardware" in settings_js
+    assert "NIMBUSWARE_MAX_VRAM_PCT" in combined
+    assert "max_parallel_writer_stages" in combined
+    assert "/platform/hardware" in combined
 
 
 def test_maker_web_review_progress_approval_paths() -> None:
