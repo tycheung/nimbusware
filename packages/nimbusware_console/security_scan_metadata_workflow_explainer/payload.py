@@ -7,7 +7,7 @@ from nimbusware_config.workflow_read import (
     parse_security_scan_metadata_on_verify_workflow,
     security_scan_metadata_on_verify_enabled,
 )
-from nimbusware_console.explainer_core.workflow_profile import load_workflow_disk_snapshot
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
 from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
     _nimbusware_attach_security_scan_metadata_env_summary,
 )
@@ -18,12 +18,8 @@ def security_scan_metadata_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
     wf_sel = snap.workflow_profile
-    workflow_yaml_relpath = snap.workflow_yaml_relpath
-    load_error = snap.load_error
-    workflow_yaml_top_level_version_int = snap.version_int
-    workflow_yaml_file_bytes = snap.file_bytes
     workflow_yaml_top_level_string_key_count = (
         sum(1 for k in snap.disk_doc if isinstance(k, str)) if snap.disk_doc else None
     )
@@ -54,11 +50,8 @@ def security_scan_metadata_workflow_explainer_payload(
         ssm_mapping_string_key_count = sum(1 for k in yaml_raw if isinstance(k, str))
 
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
-        "workflow_yaml_top_level_version_int": workflow_yaml_top_level_version_int,
+        **header,
         "workflow_yaml_top_level_string_key_count": workflow_yaml_top_level_string_key_count,
-        "workflow_yaml_file_bytes": workflow_yaml_file_bytes,
         "security_scan_metadata_on_verify_yaml_key_present": yaml_key_present,
         "security_scan_metadata_on_verify_yaml_value": yaml_raw,
         "security_scan_metadata_on_verify_yaml_raw_type": yaml_raw_type,
@@ -69,5 +62,4 @@ def security_scan_metadata_workflow_explainer_payload(
             yaml_parsed_bool_matches_effective
         ),
         "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA": _nimbusware_attach_security_scan_metadata_env_summary(),
-        "load_error": load_error,
     }

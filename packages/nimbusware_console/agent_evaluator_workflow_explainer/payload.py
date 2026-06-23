@@ -12,10 +12,8 @@ from nimbusware_console.agent_evaluator_workflow_explainer.env import (
     _would_emit_llm_evaluation,
 )
 from nimbusware_console.components.workflow_explainer_helpers import json_safe_yaml_fragment
-from nimbusware_console.explainer_core.workflow_profile import (
-    load_workflow_disk_snapshot,
-    yaml_section,
-)
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.explainer_core.workflow_profile import yaml_section
 
 
 def agent_evaluator_workflow_explainer_payload(
@@ -23,11 +21,8 @@ def agent_evaluator_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
     wf_sel = snap.workflow_profile
-    workflow_yaml_relpath = snap.workflow_yaml_relpath
-    load_error = snap.load_error
-    workflow_yaml_top_level_version_int = snap.version_int
     yaml_key_present = "agent_evaluator" in snap.disk_doc
     yaml_value = snap.disk_doc.get("agent_evaluator") if yaml_key_present else None
 
@@ -60,9 +55,7 @@ def agent_evaluator_workflow_explainer_payload(
 
     ac = block.auto_create_persona
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
-        "workflow_yaml_top_level_version_int": workflow_yaml_top_level_version_int,
+        **header,
         "agent_evaluator_yaml_key_present": yaml_key_present,
         "agent_evaluator_yaml_value": json_safe_yaml_fragment(yaml_value),
         "agent_evaluator_yaml_raw_type": yaml_raw_type,
@@ -83,5 +76,4 @@ def agent_evaluator_workflow_explainer_payload(
         "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE": _nimbusware_agent_evaluator_auto_create_env_summary(),
         "would_emit_stage_started": would_emit,
         "would_emit_llm_evaluation": would_emit_llm,
-        "load_error": load_error,
     }
