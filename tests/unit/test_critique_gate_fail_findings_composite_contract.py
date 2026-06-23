@@ -94,7 +94,9 @@ def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
             rid_a4_expl,
             eff_explicit,
         )
-    assert stage_names_from_findings(findings_for_run(mem_a4_none, rid_a4_none)) == stage_names_from_findings(
+    assert stage_names_from_findings(
+        findings_for_run(mem_a4_none, rid_a4_none)
+    ) == stage_names_from_findings(
         findings_for_run(mem_a4_expl, rid_a4_expl),
     ), (
         "A4: eff=None fallback path yields IDENTICAL stage_name order as "

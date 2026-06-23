@@ -58,12 +58,12 @@ def test_agent_evaluator_llm_policy_branch_metadata(
     rid = orch.create_run("agent_evaluator_on")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.parse_agent_evaluator_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator.parse_agent_evaluator_workflow_block",
             return_value=block,
         ),
         patch.object(orch, "_selected_model_for_run", return_value="stub-model"),
         patch(
-            "nimbusware_orchestrator.pipeline.execute_agent_evaluator_policy_llm",
+            "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator.execute_agent_evaluator_policy_llm",
             return_value=None,
         ),
     ):

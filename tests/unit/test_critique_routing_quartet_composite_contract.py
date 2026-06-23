@@ -241,7 +241,9 @@ class TestPartDLifecycleUnionSorted:
     """Set-union dedup, sorted-list contract, default-critics fallback."""
 
     def test_d1_canonical_set_union_dedup(self) -> None:
-        result = taxonomy_keys_for_run_lifecycle(canonical_role_registry(), canonical_critique_router())
+        result = taxonomy_keys_for_run_lifecycle(
+            canonical_role_registry(), canonical_critique_router()
+        )
         assert result == [
             "backend_writer",
             "domain_critic",

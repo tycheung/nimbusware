@@ -29,10 +29,5 @@ def write_critique_pairings(repo: Path, body: str) -> Path:
 
 
 def write_workflow_integrator_min_score(repo: Path, name: str, value: str) -> Path:
-    body = (
-        "version: 1\n"
-        "integrator_gate:\n"
-        "  enabled: true\n"
-        f"  min_score_to_pass: {value}\n"
-    )
+    body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
     return write_workflow_profile(repo, name, body)

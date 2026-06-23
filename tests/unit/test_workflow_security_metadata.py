@@ -25,7 +25,6 @@ def test_parse_security_scan_missing_profile() -> None:
     assert not parse_security_scan_metadata_on_verify_workflow(ROOT, None)
 
 
-
 def test_parse_security_scan_dict_enabled_true(tmp_path: Path) -> None:
     write_workflow_profile(
         tmp_path,

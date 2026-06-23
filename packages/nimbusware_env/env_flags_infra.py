@@ -85,7 +85,13 @@ def env_var_tri_state_summary(name: str) -> dict[str, object]:
         return {"raw": raw, "forces_off": True, "forces_on": False, "unset": False}
     if low in TRUTHY_VALUES:
         return {"raw": raw, "forces_off": False, "forces_on": True, "unset": False}
-    return {"raw": raw, "forces_off": False, "forces_on": False, "unset": True, "unrecognised_value": True}
+    return {
+        "raw": raw,
+        "forces_off": False,
+        "forces_on": False,
+        "unset": True,
+        "unrecognised_value": True,
+    }
 
 
 def env_var_disable_flag_summary(name: str, *, disable_key: str) -> dict[str, object]:

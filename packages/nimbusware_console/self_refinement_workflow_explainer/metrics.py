@@ -47,9 +47,7 @@ def self_refinement_workflow_explainer_operator_metrics(
         payload,
         _DEFAULTS,
         bool_fields=(("self_refinement_yaml_present", "yaml_present"),),
-        int_fields=(
-            ("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),
-        ),
+        int_fields=(("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),),
         nested_bool_fields=(
             ("policy_yaml", (("enabled", "policy_enabled"),)),
             (
