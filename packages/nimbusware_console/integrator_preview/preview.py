@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from nimbusware_console.integrator_core import integrator_gate_emission_breakdown
 from nimbusware_console.integrator_preview.parse import (
     parse_integrator_gate_yaml_fragment,
     validate_integrator_gate_block,
@@ -11,9 +12,7 @@ from nimbusware_console.integrator_preview.parse import (
 from nimbusware_env.env_flags import env_str
 from nimbusware_extensions.phase2 import ModuleIntegrator
 from nimbusware_orchestrator.integrator_gate import (
-    integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,
-    load_integrator_gate_emit_enabled,
     parse_integrator_gate_min_score_to_pass,
     parse_integrator_gate_project_tags,
 )
@@ -103,8 +102,9 @@ def integrator_preview_payload(
     wf_key = str(workflow_profile).strip() if workflow_profile else ""
     wf_sel = wf_key if wf_key else None
 
-    disk_enabled = integrator_gate_workflow_enabled(repo_root, wf_sel)
-    catalog_emit_enabled = load_integrator_gate_emit_enabled(repo_root)
+    emission = integrator_gate_emission_breakdown(repo_root, wf_sel)
+    disk_enabled = emission["workflow_integrator_gate_enabled"]
+    catalog_emit_enabled = emission["catalog_thresholds_yaml_enabled"]
     eff_min = preview_effective_min_score_to_pass(repo_root, wf_sel, pasted_block)
     integrator = ModuleIntegrator(min_score_to_pass=eff_min)
 
