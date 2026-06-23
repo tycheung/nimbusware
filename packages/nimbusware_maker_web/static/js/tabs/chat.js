@@ -6,8 +6,6 @@ import {
   defaultAutopilotProfileId,
   defaultEnforcementProfileId,
 } from "../operator-default-profiles.js";
-import { openSseStream, parseSseJson } from "../sse-client.js";
-import { appendTheaterLine, theaterPayloadFromSse } from "../theater-renderer.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 import { refreshBranchPanel } from "./chat_branch_ui.js";
 import {
@@ -27,43 +25,29 @@ import {
   unbindSessionStream,
 } from "./chat_collab_ui.js";
 import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
-import { loadRunCardAgents } from "./chat_agents_ui.js";
 import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 import { refreshSessionOptimizerPanel } from "./chat_optimizer_ui.js";
 
+import { branchPanelCallbacks, renderMessagesFromSession, renderTurnLine, workTypeLabel } from "./chat_thread_ui.js";
+import { switchWorkType } from "./chat_work_type.js";
+import { steerActiveRun } from "./chat_escalation_ui.js";
+import {
+  bindChatTheaterForRun,
+  wireChatOperatorRibbons,
+  wireFollowLiveToggle,
+} from "./chat_theater_ui.js";
 const WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
 const SESSION_KEY = "maker_chat_session_id";
 const RESUME_KEY = "maker_chat_resume_session";
 const AUTOPILOT_LADDER_HINT_KEY = "maker_chat_autopilot_ladder_dismissed";
-const FOLLOW_LIVE_KEY = "maker_chat_theater_follow_live";
-const THEATER_CAP_DIGEST = 12;
-const THEATER_CAP_LIVE = 96;
 
-const TURN_ROLE_LABELS = {
-  user: "You",
-  participant: "Guest",
-  classifier: "Classifier",
-  work_type_switch: "Mode",
-  run_status: "Run",
-  theater: "Agent",
-  system: "System",
-};
 
-function theaterCap() {
-  const follow = localStorage.getItem(FOLLOW_LIVE_KEY);
-  if (follow == null || follow === "1" || follow === "true") return THEATER_CAP_LIVE;
-  return THEATER_CAP_DIGEST;
-}
 
 function chatResumeEnabled() {
   const raw = localStorage.getItem(RESUME_KEY);
   return raw == null || raw === "1" || raw === "true";
 }
 
-function workTypeLabel(value) {
-  if (!value || value === "auto") return "Auto";
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
 
 function attachmentFields(root) {
   const targetRaw = root.querySelector("#chat-target-paths")?.value?.trim() || "";
@@ -85,85 +69,7 @@ function attachmentPayload(root) {
   return Object.keys(fields).length ? [fields] : [];
 }
 
-const ESCALATION_SLICE_OFFER =
-  "Patch did not pass — widen to a micro-slice run? Switch work type to Slice or use Restore from here to branch.";
 
-const ESCALATION_CAMPAIGN_OFFER =
-  "Slice keeps replanning or failing — promote to an autonomous campaign for broader delivery?";
-
-function turnRoleLabel(turn) {
-  const role = turn.role || turn.kind || "system";
-  return TURN_ROLE_LABELS[role] || "System";
-}
-
-function renderTurnLine(thread, turn) {
-  const role = turn.role || turn.kind || "system";
-  const li = document.createElement("li");
-  const cssRole = role === "participant" ? "participant" : role === "user" ? "user" : "system";
-  li.className = `chat-thread-line chat-thread-line--${cssRole}`;
-  if (role !== "user" && role !== "participant") li.classList.add(`chat-thread-line--${role}`);
-  if (role === "participant") li.classList.add("chat-thread-line--participant");
-  li.dataset.turnId = turn.turn_id || "";
-  if (turn.turn_id) li.dataset.testid = `maker-chat-turn-${turn.turn_id}`;
-
-  const label = document.createElement("strong");
-  label.textContent = turnRoleLabel(turn);
-  li.appendChild(label);
-  li.appendChild(document.createTextNode(` ${turn.text || ""}`));
-
-  if (role === "classifier" && turn.payload?.work_type) {
-    const meta = document.createElement("span");
-    meta.className = "muted";
-    meta.textContent = ` → ${workTypeLabel(turn.payload.work_type)}`;
-    li.appendChild(meta);
-  }
-
-  if (role === "user" && turn.turn_id) {
-    const actions = document.createElement("span");
-    actions.className = "chat-turn-actions";
-    const forkBtn = document.createElement("button");
-    forkBtn.type = "button";
-    forkBtn.className = "linkish";
-    forkBtn.textContent = "Restore from here";
-    forkBtn.dataset.testid = `maker-chat-fork-${turn.turn_id}`;
-    forkBtn.addEventListener("click", () => li.dispatchEvent(new CustomEvent("chat-fork", { bubbles: true })));
-    actions.appendChild(forkBtn);
-    li.appendChild(actions);
-  }
-  thread.appendChild(li);
-  thread.scrollTop = thread.scrollHeight;
-}
-
-function renderMessagesFromSession(root, session) {
-  if (session?.my_participant_role != null) {
-    setCollabMyRole(session.my_participant_role);
-  }
-  renderParticipantStrip(root, session);
-  applyComposerForRole(root);
-  const thread = root.querySelector("#chat-thread");
-  if (!thread) return;
-  thread.replaceChildren();
-  const turns = session.turns?.length ? session.turns : null;
-  if (turns) {
-    for (const turn of turns) {
-      renderTurnLine(thread, turn);
-    }
-    return;
-  }
-  for (const msg of session.messages || []) {
-    renderTurnLine(thread, {
-      turn_id: msg.turn_id,
-      role: msg.role === "user" ? "user" : msg.kind || "system",
-      kind: msg.kind,
-      text: msg.text,
-      payload: msg.payload,
-    });
-  }
-}
-
-function branchPanelCallbacks(root) {
-  return { onSessionUpdated: (session) => renderMessagesFromSession(root, session) };
-}
 
 let sessionStreamTurnCount = 0;
 let cachedCurrentUserId = null;
@@ -339,338 +245,10 @@ async function startRunFromSession(
   return runId;
 }
 
-async function switchWorkType(root, sessionId, turnId, workType, { replayFromSeq } = {}) {
-  const payload = { work_type: workType };
-  if (replayFromSeq != null) {
-    payload.align_run_replay = true;
-    payload.replay_from_seq = replayFromSeq;
-  }
-  const updated = await apiJson(
-    `/chat/sessions/${encodeURIComponent(sessionId)}/turns/${encodeURIComponent(turnId)}/switch-mode`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    },
-  );
-  const select = root.querySelector("#chat-work-type");
-  if (select) select.value = workType;
-  renderMessagesFromSession(root, updated);
-  if (replayFromSeq != null) {
-    toast(`Mode: ${workTypeLabel(workType)} (replay seq ${replayFromSeq} on next start)`, "success");
-  } else {
-    toast(`Mode: ${workTypeLabel(workType)}`, "success");
-  }
-  return updated;
-}
 
-async function agentStripContext() {
-  const sessionId = sessionStorage.getItem(SESSION_KEY) || "";
-  let computeNodes = [];
-  if (sessionId) {
-    try {
-      const body = await apiJson(`/compute/nodes?session_id=${encodeURIComponent(sessionId)}`);
-      computeNodes = body.nodes || [];
-    } catch {
-      computeNodes = [];
-    }
-  }
-  return { sessionId: sessionId || null, computeNodes };
-}
 
-function ensureRunCard(root, runId, { workType = "", status = "running" } = {}) {
-  const thread = root.querySelector("#chat-thread");
-  if (!thread || !runId) return null;
-  let card = thread.querySelector(`[data-run-id="${runId}"]`);
-  if (card) return card;
-  card = document.createElement("details");
-  card.className = "chat-run-card";
-  card.dataset.runId = runId;
-  card.dataset.testid = `maker-chat-run-card-${runId}`;
-  card.open = true;
-  const summary = document.createElement("summary");
-  summary.className = "chat-run-card__header";
-  summary.dataset.testid = "maker-chat-run-card-header";
-  const wt = document.createElement("span");
-  wt.className = "chat-run-card__work-type";
-  wt.textContent = workTypeLabel(workType) || "Run";
-  const st = document.createElement("span");
-  st.className = "chat-run-card__status muted";
-  st.dataset.runStatus = "1";
-  st.textContent = status;
-  const trust = document.createElement("span");
-  trust.className = "chat-run-card__trust muted";
-  trust.dataset.runTrust = "1";
-  trust.textContent = "Trust …";
-  const enforcement = document.createElement("span");
-  enforcement.className = "chat-run-card__enforcement muted";
-  enforcement.dataset.runEnforcement = "1";
-  enforcement.textContent = "Enforce …";
-  summary.append(wt, st, trust, enforcement);
-  card.appendChild(summary);
-  const agents = document.createElement("div");
-  agents.className = "chat-run-card__agents muted";
-  agents.dataset.testid = "maker-chat-agents-strip";
-  card.appendChild(agents);
-  void agentStripContext().then((ctx) => loadRunCardAgents(card, runId, ctx));
-  const theaterList = document.createElement("ul");
-  theaterList.className = "chat-run-card__theater";
-  theaterList.dataset.testid = "maker-chat-run-theater";
-  card.appendChild(theaterList);
-  thread.appendChild(card);
-  loadRunCardOperatorProfile(root, runId);
-  return card;
-}
 
-async function loadRunCardOperatorProfile(root, runId) {
-  const card = root.querySelector(`[data-run-id="${runId}"]`);
-  const trust = card?.querySelector("[data-run-trust]");
-  const enforcement = card?.querySelector("[data-run-enforcement]");
-  if (trust) {
-    try {
-      const ap = await apiJson(`/runs/${encodeURIComponent(runId)}/autopilot`);
-      trust.textContent = `Trust ${ap.level ?? "?"} · ${ap.name || "Custom"}`;
-    } catch {
-      trust.textContent = "Trust —";
-    }
-  }
-  if (enforcement) {
-    try {
-      const ep = await apiJson(`/runs/${encodeURIComponent(runId)}/enforcement`);
-      enforcement.textContent = `Enforce ${ep.level ?? "?"} · ${ep.name || "Custom"}`;
-    } catch {
-      enforcement.textContent = "Enforce —";
-    }
-  }
-}
 
-async function loadRunCardTrust(root, runId) {
-  await loadRunCardOperatorProfile(root, runId);
-}
-
-function trimTheaterLines(container, cap) {
-  if (!container) return;
-  const lines = container.querySelectorAll(".theater-line, .chat-thread-line--theater");
-  while (lines.length > cap) {
-    lines[0].remove();
-  }
-}
-
-function appendTheaterToThread(root, runId, msg) {
-  const card = ensureRunCard(root, runId, {});
-  const list = card?.querySelector(".chat-run-card__theater") || root.querySelector("#chat-thread");
-  const li = appendTheaterLine(list, msg, {
-    testid: msg.data_testid,
-    lineClass: "theater-line chat-thread-line--theater",
-  });
-  if (msg.message_kind === "gate" && msg.severity === "block") {
-    li?.classList.add("chat-thread-line--gate-block");
-  }
-  if (
-    msg.data_testid?.includes("compaction") ||
-    (msg.message_kind === "context" && /compact/i.test(String(msg.headline || "")))
-  ) {
-    li?.classList.add("theater-line--compaction");
-  }
-  const cap = theaterCap();
-  trimTheaterLines(list, cap);
-  const thread = root.querySelector("#chat-thread");
-  if (thread) thread.scrollTop = thread.scrollHeight;
-  const archive = root.querySelector("#chat-theater-mount .chat-theater-lines");
-  if (archive && li) {
-    archive.appendChild(li.cloneNode(true));
-  }
-}
-
-function bindChatTheaterForRun(root, runId, sessionId, onStartRun) {
-  if (!runId) return null;
-  const mount = root.querySelector("#chat-theater-mount");
-  if (mount) {
-    mount.removeAttribute("hidden");
-    if (!mount.querySelector(".chat-theater-lines")) {
-      const ul = document.createElement("ul");
-      ul.className = "chat-theater-lines";
-      mount.appendChild(ul);
-    }
-    const exportLink = mount.querySelector(".chat-theater-export");
-    if (exportLink) {
-      exportLink.href = `/v1/runs/${encodeURIComponent(runId)}/theater/export`;
-    }
-  }
-  let escalationQueued = false;
-
-  const onGateBlock = () => {
-    if (escalationQueued) return;
-    escalationQueued = true;
-    maybeOfferPatchEscalation(root, runId, sessionId).catch(() => {});
-    maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun).catch(() => {});
-  };
-
-  const handleTheaterPayload = (data) => {
-    const msg = theaterPayloadFromSse(data);
-    if (!msg || (!msg.headline && !msg.body_md)) return;
-    appendTheaterToThread(root, runId, msg);
-    if (msg.message_kind === "gate" && msg.severity === "block") onGateBlock();
-  };
-
-  return openSseStream(
-    `/runs/${encodeURIComponent(runId)}/theater/stream?profile=chat&cap=${theaterCap()}`,
-    {
-    onEvent: {
-      theater: (ev) => {
-        const data = parseSseJson(ev);
-        if (data) handleTheaterPayload(data);
-      },
-    },
-    onMessage: (ev) => {
-      const data = parseSseJson(ev);
-      if (data) handleTheaterPayload(data);
-    },
-  });
-}
-
-async function maybeOfferSliceCampaignPromotion(root, runId, sessionId, onStartRun) {
-  if (!runId) return;
-  try {
-    const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
-    const events = timeline.events || [];
-    let sliceRun = false;
-    let gateFail = false;
-    let replanCount = 0;
-    for (const ev of events) {
-      const meta = ev.metadata || {};
-      if (ev.event_type === "run.created") {
-        sliceRun = String(meta.work_type || "").toLowerCase() === "slice";
-      }
-      const payload = ev.payload || {};
-      if (String(payload.stage_name || "") === "slice.gate") {
-        if (String(meta.slice_gate_verdict || "").toUpperCase() === "FAIL") gateFail = true;
-      }
-      if (ev.event_type === "slice.replan" || String(payload.stage_name || "") === "slice.replan") {
-        replanCount += 1;
-      }
-    }
-    if (!sliceRun || (!gateFail && replanCount < 2)) return;
-    const thread = root.querySelector("#chat-thread");
-    if (!thread || thread.querySelector('[data-testid="maker-chat-escalation-campaign"]')) return;
-    const li = document.createElement("li");
-    li.className = "chat-thread-line chat-thread-line--system";
-    li.dataset.testid = "maker-chat-escalation-campaign";
-    li.appendChild(document.createTextNode(ESCALATION_CAMPAIGN_OFFER));
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = "Switch to Campaign";
-    btn.dataset.testid = "maker-chat-escalate-campaign";
-    btn.addEventListener("click", async () => {
-      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast((el) =>
-        el.classList.contains("chat-thread-line--user"),
-      );
-      const turnId = userTurn?.dataset?.turnId;
-      if (sessionId && turnId) {
-        await switchWorkType(root, sessionId, turnId, "campaign");
-        const select = root.querySelector("#chat-work-type");
-        if (select) select.value = "campaign";
-        if (onStartRun) await onStartRun("campaign");
-      }
-    });
-    li.appendChild(btn);
-    thread.appendChild(li);
-  } catch {}
-}
-
-async function maybeOfferPatchEscalation(root, runId, sessionId) {
-  if (!runId) return;
-  try {
-    const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline`);
-    const events = timeline.events || [];
-    let patchRun = false;
-    let patchFailed = false;
-    for (const ev of events) {
-      const meta = ev.metadata || {};
-      if (ev.event_type === "run.created") {
-        const wt = String(meta.work_type || "").toLowerCase();
-        patchRun = wt === "patch" || Boolean(meta.patch_effective?.enabled);
-      }
-      const payload = ev.payload || {};
-      if (String(payload.stage_name || "") === "slice.gate") {
-        if (String(meta.slice_gate_verdict || "").toUpperCase() === "FAIL") patchFailed = true;
-      }
-    }
-    if (!patchRun || !patchFailed) return;
-    const thread = root.querySelector("#chat-thread");
-    if (!thread || thread.querySelector('[data-testid="maker-chat-escalation-slice"]')) return;
-    const li = document.createElement("li");
-    li.className = "chat-thread-line chat-thread-line--system";
-    li.dataset.testid = "maker-chat-escalation-slice";
-    li.textContent = ESCALATION_SLICE_OFFER;
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = "Switch to Slice";
-    btn.dataset.testid = "maker-chat-escalate-slice";
-    btn.addEventListener("click", async () => {
-      const userTurn = [...thread.querySelectorAll("[data-turn-id]")].findLast((el) =>
-        el.classList.contains("chat-thread-line--user"),
-      );
-      const turnId = userTurn?.dataset?.turnId;
-      if (sessionId && turnId) await switchWorkType(root, sessionId, turnId, "slice");
-    });
-    li.appendChild(btn);
-    thread.appendChild(li);
-  } catch {}
-}
-
-async function steerActiveRun(root, runId, message) {
-  const prefixed = message.startsWith("[") ? message : `[steer] ${message}`;
-  await queueInterjection(runId, prefixed, "next");
-  const thread = root.querySelector("#chat-thread");
-  if (thread) {
-    renderTurnLine(thread, { role: "system", text: "Steering queued for the active run." });
-  }
-  toast("Steering queued", "success");
-}
-
-function wireChatOperatorRibbons(root, runId) {
-  const ribbons = root.querySelector("#chat-operator-ribbons");
-  if (!ribbons || !runId) return;
-  if (ribbons.dataset.wired === runId) return;
-  ribbons.dataset.wired = runId;
-  ribbons.classList.remove("hidden");
-
-  wireInterjectionRibbon(root, runId, { showQueue: false });
-
-  wireAutopilotRibbon(root, runId);
-  wireEnforcementRibbon(root, runId);
-  root.addEventListener(
-    "autopilot-updated",
-    () => loadRunCardOperatorProfile(root, runId),
-    { once: false },
-  );
-  root.addEventListener(
-    "autopilot-loaded",
-    (ev) => {
-      const chip = root.querySelector(`[data-run-id="${runId}"] [data-run-trust]`);
-      if (chip && ev.detail) {
-        chip.textContent = `Trust ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
-      }
-    },
-    { once: true },
-  );
-  root.addEventListener(
-    "enforcement-updated",
-    () => loadRunCardOperatorProfile(root, runId),
-    { once: false },
-  );
-  root.addEventListener(
-    "enforcement-loaded",
-    (ev) => {
-      const chip = root.querySelector(`[data-run-id="${runId}"] [data-run-enforcement]`);
-      if (chip && ev.detail) {
-        chip.textContent = `Enforce ${ev.detail.level} · ${ev.detail.name || "Custom"}`;
-      }
-    },
-    { once: true },
-  );
-}
 
 function mountAutopilotLadderHint(root) {
   if (localStorage.getItem(AUTOPILOT_LADDER_HINT_KEY) === "1") return;
@@ -700,15 +278,6 @@ function mountAutopilotLadderHint(root) {
   root.prepend(hint);
 }
 
-function wireFollowLiveToggle(root) {
-  const box = root.querySelector("#chat-theater-follow-live");
-  if (!box) return;
-  const stored = localStorage.getItem(FOLLOW_LIVE_KEY);
-  box.checked = stored == null || stored === "1" || stored === "true";
-  box.addEventListener("change", () => {
-    localStorage.setItem(FOLLOW_LIVE_KEY, box.checked ? "1" : "0");
-  });
-}
 
 export async function mountChat(root) {
   root.innerHTML = `
