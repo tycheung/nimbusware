@@ -3,14 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    apply_str_present,
-    default_operator_metrics,
-    metrics_table_rows,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_named_operator_metrics_exports,
 )
+from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 
 _IAW_METRIC_DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -41,14 +38,22 @@ _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
 def integration_adapter_writer_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics = default_operator_metrics(_IAW_METRIC_DEFAULTS)
+    metrics = build_operator_metrics(
+        payload,
+        _IAW_METRIC_DEFAULTS,
+        nested_bool_fields=(("workflow_block", (("enabled", "workflow_enabled"),)),),
+        bool_fields=(
+            ("effective_enabled", "effective_enabled"),
+            ("would_emit_stage_started", "would_emit_stage_started"),
+        ),
+        str_present=(("workflow_yaml_path", "workflow_yaml_path_present"),),
+        int_fields=(("fleet_workspace_manifest_count", "fleet_manifest_count"),),
+    )
     if not isinstance(payload, Mapping):
         return metrics
     block = payload.get("workflow_block")
     if isinstance(block, Mapping):
         metrics["yaml_key_present"] = True
-        if block.get("enabled") is True:
-            metrics["workflow_enabled"] = True
         stub = block.get("stub_only")
         if isinstance(stub, bool):
             metrics["stub_only"] = stub
@@ -57,17 +62,9 @@ def integration_adapter_writer_workflow_explainer_operator_metrics(
         kind = block.get("target_adapter_kind")
         if isinstance(kind, str) and kind.strip():
             metrics["target_adapter_kind"] = kind.strip()
-    if payload.get("effective_enabled") is True:
-        metrics["effective_enabled"] = True
-    if payload.get("would_emit_stage_started") is True:
-        metrics["would_emit_stage_started"] = True
     status = payload.get("scaffold_status")
     if isinstance(status, str) and status.strip():
         metrics["scaffold_status"] = status.strip()
-    apply_str_present(metrics, payload, "workflow_yaml_path", "workflow_yaml_path_present")
-    fcount = payload.get("fleet_workspace_manifest_count")
-    if isinstance(fcount, int) and fcount >= 0:
-        metrics["fleet_manifest_count"] = fcount
     return metrics
 
 
