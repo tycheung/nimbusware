@@ -8,21 +8,12 @@ from nimbusware_orchestrator.escalation_threshold import (
     load_escalate_after_cumulative_stage_failures,
     load_notice_escalate_at_cumulative_findings,
 )
-
-_POLICY_REL = ("configs", "escalation", "policy.yaml")
+from unit.composite_repo_fixtures import write_escalation_policy
 
 _KEY_AUTO = "auto_escalate_after_cumulative_findings"
 _KEY_NOTICE = "notice_escalate_at_cumulative_findings"
 _KEY_STAGE = "escalate_after_cumulative_stage_failures"
 _KEY_GATE = "escalate_after_cumulative_gate_failures"
-
-
-def _write_policy(repo: Path, body: str) -> Path:
-    pol_dir = repo / _POLICY_REL[0] / _POLICY_REL[1]
-    pol_dir.mkdir(parents=True, exist_ok=True)
-    path = pol_dir / _POLICY_REL[2]
-    path.write_text(body, encoding="utf-8")
-    return path
 
 
 def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
@@ -45,7 +36,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
     for name, body in non_dict_verification_cases:
         repo = tmp_path / f"a2_nondict_{name}"
         repo.mkdir()
-        _write_policy(repo, f"version: 1\n{body}")
+        write_escalation_policy(repo, f"version: 1\n{body}")
         actual = load_auto_escalate_after_cumulative_findings(repo)
         assert actual is None, (
             f"A2 {name}: verification non-dict (`{body.strip()}`) -> "
@@ -57,7 +48,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
 
     a3_empty_repo = tmp_path / "a3_empty_verification"
     a3_empty_repo.mkdir()
-    _write_policy(a3_empty_repo, "version: 1\nverification: {}\n")
+    write_escalation_policy(a3_empty_repo, "version: 1\nverification: {}\n")
     assert load_auto_escalate_after_cumulative_findings(a3_empty_repo) is None, (
         "A3(a): verification is `{}` (empty dict) -> "
         "`ver.get(KEY)` returns None -> fails the `isinstance(n, int)` "
@@ -67,7 +58,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
 
     a3_missing_repo = tmp_path / "a3_key_missing"
     a3_missing_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         a3_missing_repo,
         "version: 1\nverification:\n  unrelated_key: 7\n",
     )
@@ -87,7 +78,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
     for name, raw in non_int_cases:
         repo = tmp_path / f"a4_nonint_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_AUTO}: {raw}\n",
         )
@@ -109,7 +100,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
     for name, value in boundary_reject_cases:
         repo = tmp_path / f"a5_reject_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_AUTO}: {value}\n",
         )
@@ -129,7 +120,7 @@ def test_load_auto_escalate_after_cumulative_findings_defensive_arms_contract(
     for name, value in boundary_accept_cases:
         repo = tmp_path / f"a5_accept_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_AUTO}: {value}\n",
         )
@@ -155,7 +146,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 
     b2_repo = tmp_path / "b2_verification_non_dict"
     b2_repo.mkdir()
-    _write_policy(b2_repo, "version: 1\nverification: 7\n")
+    write_escalation_policy(b2_repo, "version: 1\nverification: 7\n")
     assert load_notice_escalate_at_cumulative_findings(b2_repo) is None, (
         "B2: verification as scalar int -> None. Representative "
         "non-dict sample; the full non-dict matrix is in A2"
@@ -163,7 +154,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 
     b3_missing_repo = tmp_path / "b3_key_missing"
     b3_missing_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         b3_missing_repo,
         "version: 1\nverification:\n  other_key: 9\n",
     )
@@ -174,7 +165,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 
     b3_nonint_repo = tmp_path / "b3_value_non_int"
     b3_nonint_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         b3_nonint_repo,
         f'version: 1\nverification:\n  {_KEY_NOTICE}: "2"\n',
     )
@@ -191,7 +182,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
     for name, value, expected in boundary_cases:
         repo = tmp_path / f"b4_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_NOTICE}: {value}\n",
         )
@@ -206,7 +197,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 
     b5_only_auto = tmp_path / "b5_only_auto"
     b5_only_auto.mkdir()
-    _write_policy(
+    write_escalation_policy(
         b5_only_auto,
         f"version: 1\nverification:\n  {_KEY_AUTO}: 10\n",
     )
@@ -228,7 +219,7 @@ def test_load_notice_escalate_at_cumulative_findings_defensive_and_key_divergenc
 
     b5_only_notice = tmp_path / "b5_only_notice"
     b5_only_notice.mkdir()
-    _write_policy(
+    write_escalation_policy(
         b5_only_notice,
         f"version: 1\nverification:\n  {_KEY_NOTICE}: 20\n",
     )
@@ -256,7 +247,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 
     c2_repo = tmp_path / "c2_verification_non_dict"
     c2_repo.mkdir()
-    _write_policy(c2_repo, "version: 1\nverification:\n  - a\n  - b\n")
+    write_escalation_policy(c2_repo, "version: 1\nverification:\n  - a\n  - b\n")
     assert load_escalate_after_cumulative_stage_failures(c2_repo) is None, (
         "C2: verification as list -> None. Representative non-dict "
         "sample; complement to B2's scalar-int case"
@@ -264,7 +255,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 
     c3_missing_repo = tmp_path / "c3_key_missing"
     c3_missing_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         c3_missing_repo,
         "version: 1\nverification:\n  unrelated: 11\n",
     )
@@ -274,7 +265,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 
     c3_nonint_repo = tmp_path / "c3_value_non_int"
     c3_nonint_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         c3_nonint_repo,
         f"version: 1\nverification:\n  {_KEY_STAGE}: 3.0\n",
     )
@@ -293,7 +284,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
     for name, value, expected in boundary_cases:
         repo = tmp_path / f"c4_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_STAGE}: {value}\n",
         )
@@ -306,7 +297,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 
     c5_only_stage = tmp_path / "c5_only_stage"
     c5_only_stage.mkdir()
-    _write_policy(
+    write_escalation_policy(
         c5_only_stage,
         f"version: 1\nverification:\n  {_KEY_STAGE}: 4\n",
     )
@@ -325,7 +316,7 @@ def test_load_escalate_after_cumulative_stage_failures_defensive_and_key_diverge
 
     c5_only_gate = tmp_path / "c5_only_gate"
     c5_only_gate.mkdir()
-    _write_policy(
+    write_escalation_policy(
         c5_only_gate,
         f"version: 1\nverification:\n  {_KEY_GATE}: 5\n",
     )
@@ -352,14 +343,14 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
 
     d1_nondict = tmp_path / "d1_nondict"
     d1_nondict.mkdir()
-    _write_policy(d1_nondict, "version: 1\nverification: 99\n")
+    write_escalation_policy(d1_nondict, "version: 1\nverification: 99\n")
     assert load_escalate_after_cumulative_gate_failures(d1_nondict) is None, (
         "D1(nondict): verification scalar -> None"
     )
 
     d1_missing = tmp_path / "d1_missing"
     d1_missing.mkdir()
-    _write_policy(
+    write_escalation_policy(
         d1_missing,
         "version: 1\nverification:\n  unrelated: 13\n",
     )
@@ -369,7 +360,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
 
     d1_nonint = tmp_path / "d1_nonint"
     d1_nonint.mkdir()
-    _write_policy(
+    write_escalation_policy(
         d1_nonint,
         f'version: 1\nverification:\n  {_KEY_GATE}: "5"\n',
     )
@@ -385,7 +376,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
     for name, value, expected in d1_boundary_cases:
         repo = tmp_path / f"d1_boundary_{name}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {_KEY_GATE}: {value}\n",
         )
@@ -405,7 +396,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
     for yaml_key, label, loader in bool_true_quartet_cases:
         repo = tmp_path / f"d2_true_{label}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {yaml_key}: true\n",
         )
@@ -422,7 +413,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
     for yaml_key, label, loader in bool_true_quartet_cases:
         repo = tmp_path / f"d2_false_{label}"
         repo.mkdir()
-        _write_policy(
+        write_escalation_policy(
             repo,
             f"version: 1\nverification:\n  {yaml_key}: false\n",
         )
@@ -437,7 +428,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
 
     d3_repo = tmp_path / "d3_isolation_matrix"
     d3_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         d3_repo,
         "version: 1\n"
         "verification:\n"
@@ -462,7 +453,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
 
     d4_repo = tmp_path / "d4_fault_isolation"
     d4_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         d4_repo,
         "version: 1\n"
         "verification:\n"
@@ -490,7 +481,7 @@ def test_escalation_threshold_quartet_cross_loader_matrix_contract(
 
     d5_repo = tmp_path / "d5_call_order"
     d5_repo.mkdir()
-    _write_policy(
+    write_escalation_policy(
         d5_repo,
         "version: 1\n"
         "verification:\n"

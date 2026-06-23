@@ -9,24 +9,12 @@ from nimbusware_orchestrator.integrator_gate import (
     load_integrator_min_score_from_thresholds,
     parse_integrator_gate_min_score_to_pass,
 )
+from unit.composite_repo_fixtures import (
+    write_integrator_thresholds,
+    write_workflow_integrator_min_score,
+)
 
-_THRESHOLDS_REL = ("configs", "integrator", "thresholds.yaml")
 _YAML_ROOT_MAPPING_PREFIX = "YAML root must be a mapping:"
-
-
-def _write_thresholds(repo: Path, body: str) -> Path:
-    ig_dir = repo / _THRESHOLDS_REL[0] / _THRESHOLDS_REL[1]
-    ig_dir.mkdir(parents=True, exist_ok=True)
-    path = ig_dir / _THRESHOLDS_REL[2]
-    path.write_text(body, encoding="utf-8")
-    return path
-
-
-def _write_workflow_min_score(repo: Path, name: str, value: str) -> None:
-    wf_dir = repo / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    body = f"version: 1\nintegrator_gate:\n  enabled: true\n  min_score_to_pass: {value}\n"
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
 
 
 def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
@@ -42,7 +30,7 @@ def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
 
     a2_repo = tmp_path / "a2_key_missing"
     a2_repo.mkdir()
-    _write_thresholds(a2_repo, "version: 1\nmin_score_to_pass: 0.5\n")
+    write_integrator_thresholds(a2_repo, "version: 1\nmin_score_to_pass: 0.5\n")
     assert load_integrator_gate_emit_enabled(a2_repo) is False, (
         "A2: file present without `enabled` key -> `raw.get('enabled', "
         "False)` returns the default False -> `bool(False) is False`. "
@@ -52,7 +40,7 @@ def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
 
     a3_repo = tmp_path / "a3_explicit_null"
     a3_repo.mkdir()
-    _write_thresholds(a3_repo, "version: 1\nenabled: null\n")
+    write_integrator_thresholds(a3_repo, "version: 1\nenabled: null\n")
     assert load_integrator_gate_emit_enabled(a3_repo) is False, (
         "A3: `enabled: null` -> `raw.get` returns None (key present, "
         "value None; NOT the default) -> `bool(None) is False`. "
@@ -63,7 +51,7 @@ def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
 
     a4_repo = tmp_path / "a4_explicit_true"
     a4_repo.mkdir()
-    _write_thresholds(a4_repo, "version: 1\nenabled: true\n")
+    write_integrator_thresholds(a4_repo, "version: 1\nenabled: true\n")
     assert load_integrator_gate_emit_enabled(a4_repo) is True, (
         "A4: `enabled: true` -> happy explicit True path. Mirrors the "
         "fo21 sample but co-locates with the defensive matrix so a "
@@ -73,7 +61,7 @@ def test_load_integrator_gate_emit_enabled_defensive_arms_contract(
 
     a5_repo = tmp_path / "a5_explicit_false"
     a5_repo.mkdir()
-    _write_thresholds(a5_repo, "version: 1\nenabled: false\n")
+    write_integrator_thresholds(a5_repo, "version: 1\nenabled: false\n")
     assert load_integrator_gate_emit_enabled(a5_repo) is False, (
         "A5: `enabled: false` -> happy explicit False path. Distinct "
         "from A2/A3 because the YAML scalar reaches `bool(False)` "
@@ -93,7 +81,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     for name, body, expected in int_cases:
         repo = tmp_path / f"b1_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_gate_emit_enabled(repo)
         assert actual is expected, (
             f"B1 {name}: `{body}` -> bool() of int -> expected "
@@ -110,7 +98,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     for name, body, expected in float_cases:
         repo = tmp_path / f"b2_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_gate_emit_enabled(repo)
         assert actual is expected, (
             f"B2 {name}: `{body}` -> bool() of float -> expected "
@@ -128,7 +116,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     for name, body, expected in string_divergence_cases:
         repo = tmp_path / f"b3_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_gate_emit_enabled(repo)
         assert actual is expected, (
             f"B3 KEY DIVERGENCE {name}: `{body}` -> Python `bool()` "
@@ -150,7 +138,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     for name, body, expected in falsy_container_cases:
         repo = tmp_path / f"b4_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_gate_emit_enabled(repo)
         assert actual is expected, (
             f"B4 {name}: `{body}` -> Python `bool()` treats empty "
@@ -167,7 +155,7 @@ def test_load_integrator_gate_emit_enabled_python_bool_ladder_contract(
     for name, body, expected in truthy_container_cases:
         repo = tmp_path / f"b5_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_gate_emit_enabled(repo)
         assert actual is expected, (
             f"B5 {name}: `{body}` -> Python `bool()` treats non-empty "
@@ -191,7 +179,7 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
 
     c2_repo = tmp_path / "c2_key_missing"
     c2_repo.mkdir()
-    _write_thresholds(c2_repo, "version: 1\nenabled: true\n")
+    write_integrator_thresholds(c2_repo, "version: 1\nenabled: true\n")
     assert load_integrator_min_score_from_thresholds(c2_repo) == 0.0, (
         "C2: file present without `min_score_to_pass` -> "
         "`raw.get('min_score_to_pass', 0.0)` returns the default 0.0 -> "
@@ -201,7 +189,7 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
 
     c3_repo = tmp_path / "c3_explicit_null"
     c3_repo.mkdir()
-    _write_thresholds(c3_repo, "version: 1\nmin_score_to_pass: null\n")
+    write_integrator_thresholds(c3_repo, "version: 1\nmin_score_to_pass: null\n")
     assert load_integrator_min_score_from_thresholds(c3_repo) == 0.0, (
         "C3: `min_score_to_pass: null` -> `raw.get` returns None (key "
         "PRESENT, value None; NOT the default) -> `float(None)` raises "
@@ -217,7 +205,7 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
     for name, body in type_error_cases:
         repo = tmp_path / f"c4_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_min_score_from_thresholds(repo)
         assert actual == 0.0, (
             f"C4 {name}: `{body}` -> `float()` raises TypeError on "
@@ -235,7 +223,7 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
     for name, body in value_error_cases:
         repo = tmp_path / f"c5_ve_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_min_score_from_thresholds(repo)
         assert actual == 0.0, (
             f"C5(ve) {name}: `{body}` -> `float()` raises ValueError "
@@ -252,7 +240,7 @@ def test_load_integrator_min_score_from_thresholds_defensive_arms_contract(
     for name, body, expected in happy_cases:
         repo = tmp_path / f"c5_happy_{name}"
         repo.mkdir()
-        _write_thresholds(repo, f"version: 1\n{body}\n")
+        write_integrator_thresholds(repo, f"version: 1\n{body}\n")
         actual = load_integrator_min_score_from_thresholds(repo)
         assert actual == pytest.approx(expected), (
             f"C5(happy) {name}: `{body}` -> `float()` passthrough -> "
@@ -267,7 +255,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
 ) -> None:
     d1_repo = tmp_path / "d1_shared_path"
     d1_repo.mkdir()
-    _write_thresholds(
+    write_integrator_thresholds(
         d1_repo,
         "version: 1\nenabled: true\nmin_score_to_pass: 0.75\n",
     )
@@ -294,7 +282,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
         "independently. Pins that neither short-circuit depends on the "
         "other"
     )
-    _write_thresholds(d2_repo, "version: 1\nenabled: true\n")
+    write_integrator_thresholds(d2_repo, "version: 1\nenabled: true\n")
     assert load_integrator_gate_emit_enabled(d2_repo) is True
     assert load_integrator_min_score_from_thresholds(d2_repo) == 0.0, (
         "D2(partial): file present with only `enabled` -> emit-enabled "
@@ -312,7 +300,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
     for name, raw, expected in no_clamp_cases:
         repo = tmp_path / f"d3_noclamp_{name}"
         repo.mkdir()
-        _write_thresholds(
+        write_integrator_thresholds(
             repo,
             f"version: 1\nenabled: true\nmin_score_to_pass: {raw}\n",
         )
@@ -326,7 +314,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
             "would FLIP every case in D3"
         )
 
-        _write_workflow_min_score(repo, name, raw)
+        write_workflow_integrator_min_score(repo, name, raw)
         wf_value = parse_integrator_gate_min_score_to_pass(repo, name)
         clamped_expected = max(0.0, min(1.0, expected))
         assert wf_value == pytest.approx(clamped_expected), (
@@ -339,7 +327,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
 
     d4_repo = tmp_path / "d4_return_types"
     d4_repo.mkdir()
-    _write_thresholds(d4_repo, "version: 1\nenabled: true\n")
+    write_integrator_thresholds(d4_repo, "version: 1\nenabled: true\n")
     thresholds_no_key = load_integrator_min_score_from_thresholds(d4_repo)
     assert isinstance(thresholds_no_key, float), (
         f"D4(thresholds): missing-key returns float ({thresholds_no_key!r}, "
@@ -349,7 +337,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
         "for missing-key would break that terminal-floor invariant)"
     )
     assert thresholds_no_key == 0.0
-    _write_workflow_min_score(d4_repo, "d4_no_key", "")
+    write_workflow_integrator_min_score(d4_repo, "d4_no_key", "")
     wf_dir = d4_repo / "configs" / "workflows"
     (wf_dir / "d4_no_key.yaml").write_text(
         "version: 1\nintegrator_gate:\n  enabled: true\n",
@@ -367,7 +355,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
 
     d5_repo = tmp_path / "d5_propagate_non_mapping"
     d5_repo.mkdir()
-    _write_thresholds(d5_repo, '"just a string"\n')
+    write_integrator_thresholds(d5_repo, '"just a string"\n')
     with pytest.raises(ValueError) as exc_emit:
         load_integrator_gate_emit_enabled(d5_repo)
     assert str(exc_emit.value).startswith(_YAML_ROOT_MAPPING_PREFIX), (
