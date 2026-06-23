@@ -4,6 +4,7 @@ from uuid import UUID
 
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.registry import RoleRegistry
+from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
 CANONICAL_PRODUCERS = ("planner", "backend_writer", "test_writer")
 CANONICAL_CRITICS = ("product_reference_critic", "domain_critic")
@@ -36,4 +37,26 @@ def canonical_critique_router() -> UniversalCritiqueRouter:
             "backend_writer": list(CANONICAL_CRITICS),
             "test_writer": list(CANONICAL_CRITICS),
         }
+    )
+
+
+def all_false_effective_critique() -> EffectiveUniversalCritique:
+    return EffectiveUniversalCritique(
+        impl_llm=False,
+        impl_stub=False,
+        impl_stage_failed_on_gate_fail=False,
+        impl_emit_finding_on_gate_fail=False,
+        impl_hard_block_on_gate_fail=False,
+        tw_enabled=False,
+        tw_llm=False,
+        tw_stub=False,
+        tw_stage_failed_on_gate_fail=False,
+        tw_emit_finding_on_gate_fail=False,
+        tw_hard_block_on_gate_fail=False,
+        pll_enabled=False,
+        pll_llm=False,
+        pll_stub=False,
+        pll_stage_failed_on_gate_fail=False,
+        pll_emit_finding_on_gate_fail=False,
+        pll_hard_block_on_gate_fail=False,
     )

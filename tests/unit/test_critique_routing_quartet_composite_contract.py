@@ -22,6 +22,7 @@ from unit.composite_orchestrator_fixtures import (
     canonical_role_registry,
     deterministic_uuid,
 )
+from unit.composite_repo_fixtures import write_critique_pairings
 
 # Builder helpers (no fixtures beyond pytest built-ins)
 
@@ -92,15 +93,6 @@ class TestPartADefaultPathComposition:
 # Part B -- load_critique_router YAML factory matrix
 
 
-def _write_pairings_yaml(repo_root: Path, body: str) -> Path:
-    """Create `<repo_root>/configs/personas/critique_pairings.yaml`."""
-    pairings_dir = repo_root / "configs" / "personas"
-    pairings_dir.mkdir(parents=True, exist_ok=True)
-    pairings_path = pairings_dir / "critique_pairings.yaml"
-    pairings_path.write_text(body, encoding="utf-8")
-    return pairings_path
-
-
 class TestPartBLoadCritiqueRouter:
     """YAML factory; exception passthrough; path-composition wiring."""
 
@@ -124,7 +116,7 @@ class TestPartBLoadCritiqueRouter:
             assert sorted(paired) == sorted(expected), f"producer {producer!r} pairing drift"
 
     def test_b2_empty_pairings_yaml_returns_empty_router(self, tmp_path: Path) -> None:
-        _write_pairings_yaml(tmp_path, "version: 1\n")
+        write_critique_pairings(tmp_path, "version: 1\n")
         router = load_critique_router(tmp_path)
         assert isinstance(router, UniversalCritiqueRouter)
 
@@ -140,12 +132,12 @@ class TestPartBLoadCritiqueRouter:
 
     def test_b4_non_dict_yaml_root_propagates_valueerror(self, tmp_path: Path) -> None:
         # List at root.
-        _write_pairings_yaml(tmp_path, "- a\n- b\n")
+        write_critique_pairings(tmp_path, "- a\n- b\n")
         with pytest.raises(ValueError, match="YAML root must be a mapping"):
             load_critique_router(tmp_path)
 
     def test_b5_path_composition_wiring_via_from_yaml(self, tmp_path: Path) -> None:
-        _write_pairings_yaml(tmp_path, "version: 1\npairings:\n  planner:\n    - x\n")
+        write_critique_pairings(tmp_path, "version: 1\npairings:\n  planner:\n    - x\n")
 
         with patch.object(
             UniversalCritiqueRouter,

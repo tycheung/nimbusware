@@ -139,3 +139,34 @@ def append_finding_created(store: InMemoryEventStore, run_id: UUID) -> None:
             ),
         ),
     )
+
+
+def inject_raw_run_created_row(
+    store: Any,
+    run_id: UUID,
+    *,
+    workflow_profile: Any,
+) -> None:
+    store._seq += 1  # noqa: SLF001
+    store._rows.append(  # noqa: SLF001
+        {
+            "store_seq": store._seq,  # noqa: SLF001
+            "event_id": uuid4(),
+            "run_id": run_id,
+            "stage_id": None,
+            "task_id": None,
+            "event_type": "run.created",
+            "event_version": 1,
+            "occurred_at": datetime.now(timezone.utc),
+            "correlation_id": None,
+            "idempotency_key": None,
+            "actor_role_id": None,
+            "previous_event_id": None,
+            "payload": {
+                "workflow_profile": workflow_profile,
+                "policy_version": "1",
+                "config_snapshot_id": str(uuid4()),
+            },
+            "metadata": {},
+        }
+    )

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import patch
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
@@ -12,62 +11,8 @@ from agent_core.models.events import FindingFixStrictnessSettings, Severity
 from nimbusware_orchestrator._pipeline import base as orchestrator_base
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
-
-
-def _all_false_effective_critique() -> EffectiveUniversalCritique:
-    return EffectiveUniversalCritique(
-        impl_llm=False,
-        impl_stub=False,
-        impl_stage_failed_on_gate_fail=False,
-        impl_emit_finding_on_gate_fail=False,
-        impl_hard_block_on_gate_fail=False,
-        tw_enabled=False,
-        tw_llm=False,
-        tw_stub=False,
-        tw_stage_failed_on_gate_fail=False,
-        tw_emit_finding_on_gate_fail=False,
-        tw_hard_block_on_gate_fail=False,
-        pll_enabled=False,
-        pll_llm=False,
-        pll_stub=False,
-        pll_stage_failed_on_gate_fail=False,
-        pll_emit_finding_on_gate_fail=False,
-        pll_hard_block_on_gate_fail=False,
-    )
-
-
-def _inject_raw_run_created_row(
-    store: Any,
-    run_id: UUID,
-    *,
-    workflow_profile: Any,
-) -> None:
-    store._seq += 1  # noqa: SLF001
-    store._rows.append(  # noqa: SLF001
-        {
-            "store_seq": store._seq,  # noqa: SLF001
-            "event_id": uuid4(),
-            "run_id": run_id,
-            "stage_id": None,
-            "task_id": None,
-            "event_type": "run.created",
-            "event_version": 1,
-            "occurred_at": datetime.now(timezone.utc),
-            "correlation_id": None,
-            "idempotency_key": None,
-            "actor_role_id": None,
-            "previous_event_id": None,
-            "payload": {
-                "workflow_profile": workflow_profile,
-                "policy_version": "1",
-                "config_snapshot_id": str(uuid4()),
-            },
-            "metadata": {},
-        }
-    )
-
-
-# -- Part A -- _strictness_context fs-input matrix (5 axes) --------------------
+from unit.composite_orchestrator_fixtures import all_false_effective_critique
+from unit.composite_store_fixtures import inject_raw_run_created_row
 
 
 def test_strictness_context_fs_input_matrix_5_axis() -> None:
@@ -310,7 +255,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     def fake_euc(repo_root: Any, wf: Any) -> EffectiveUniversalCritique:
         captured_args["repo_root"] = repo_root
         captured_args["wf"] = wf
-        return _all_false_effective_critique()
+        return all_false_effective_critique()
 
     orch_c1, _ = make_dev_orchestrator()
     captured_args.clear()
@@ -363,7 +308,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
 
     orch_c4, mem_c4 = make_dev_orchestrator()
     rid_c4 = uuid4()
-    _inject_raw_run_created_row(mem_c4, rid_c4, workflow_profile=123)
+    inject_raw_run_created_row(mem_c4, rid_c4, workflow_profile=123)
     captured_args.clear()
     with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         orch_c4._effective_universal_critique_for_run(rid_c4)  # noqa: SLF001
@@ -384,8 +329,8 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
 
     orch_c5, mem_c5 = make_dev_orchestrator()
     rid_c5 = uuid4()
-    _inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="first")
-    _inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="second")
+    inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="first")
+    inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="second")
     captured_args.clear()
     with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         orch_c5._effective_universal_critique_for_run(rid_c5)  # noqa: SLF001
@@ -445,7 +390,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
 
     def fake_euc_d2(repo_root: Any, wf: Any) -> EffectiveUniversalCritique:
         captured_d2["wf"] = wf
-        return _all_false_effective_critique()
+        return all_false_effective_critique()
 
     with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc_d2):
         orch_d2._effective_universal_critique_for_run(rid_d2)  # noqa: SLF001
@@ -487,7 +432,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
     def fake_euc_d4(repo_root: Any, wf: Any) -> EffectiveUniversalCritique:
         captured_d4["repo_root"] = repo_root
         captured_d4["wf"] = wf
-        return _all_false_effective_critique()
+        return all_false_effective_critique()
 
     with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc_d4):
         orch_d4._effective_universal_critique_for_run(uuid4())  # noqa: SLF001
