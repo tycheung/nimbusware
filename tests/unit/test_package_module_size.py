@@ -8,7 +8,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
         "packages/nimbusware_orchestrator",
         450,
-        frozenset({"_pipeline/protocol_hosts.py"}),
+        frozenset(),
     ),
     ("packages/nimbusware_api", 450, frozenset()),
     ("packages/nimbusware_memory", 450, frozenset()),
