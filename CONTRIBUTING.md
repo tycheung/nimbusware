@@ -88,7 +88,9 @@ See [SECURITY.md](SECURITY.md) for secret handling and production checklist.
 - Package READMEs: `packages/*/README.md`
 - ADRs: `docs/adr/`
 - Deploy: `docs/deploy/` (integrator external CI: [external-ci-bridge.md](docs/deploy/external-ci-bridge.md))
-- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` on `packages/` and `scripts/` (CI enforces prune gate; review diff before bulk local runs)
+- Optional docstring hygiene: `poetry run python scripts/ci/trim_redundant_docstrings.py` and `scripts/ci/prune_verbose_comments.py` (CI enforces prune gate; review diff before bulk local runs)
+- Console display metrics: prefer `explainer_core.build_operator_metrics` + `bind_operator_metrics_exports` / `install_named_operator_metrics_exports` over hand-written CSV/JSON export blocks; CSV serialization lives in `explainer_core.table_rows_csv` (explainer export lint gate allowlist is zero)
+- Explainer captions: use `explainer_core.field_caption` helpers and `env_captions.ENV_*_TEMPLATES` registry lookups instead of duplicating load-error / int guards
 - Maker operator ribbons live under `packages/nimbusware_maker_web/static/js/*-ribbon.js` and `ribbon-shared.js`
 - Security CI gates: [docs/security-quality-gates.md](docs/security-quality-gates.md)
 - Enterprise buyer checklist: [docs/enterprise-buyer.md](docs/enterprise-buyer.md)
