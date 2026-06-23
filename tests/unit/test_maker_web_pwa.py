@@ -67,9 +67,10 @@ def test_maker_models_preset_wizard_paths() -> None:
 def test_maker_settings_governor_panel_paths() -> None:
     tabs = _STATIC / "js" / "tabs"
     settings_js = (tabs / "settings.js").read_text(encoding="utf-8")
+    shell_js = (tabs / "settings_shell_html.js").read_text(encoding="utf-8")
     gov_js = (tabs / "settings_governor_ui.js").read_text(encoding="utf-8")
-    combined = settings_js + gov_js
-    assert "governor-panel" in settings_js
+    combined = settings_js + shell_js + gov_js
+    assert "governor-panel" in shell_js
     assert "NIMBUSWARE_MAX_VRAM_PCT" in combined
     assert "max_parallel_writer_stages" in combined
     assert "/platform/hardware" in combined
@@ -94,11 +95,13 @@ def test_maker_web_review_progress_approval_paths() -> None:
     plan_js = (_STATIC / "js" / "tabs" / "plan.js").read_text(encoding="utf-8")
     assert "/campaigns/" in plan_js and "maker-plan-tree" in plan_js
 
-    settings_js = (_STATIC / "js" / "tabs" / "settings.js").read_text(encoding="utf-8")
+    settings_shell_js = (_STATIC / "js" / "tabs" / "settings_shell_html.js").read_text(
+        encoding="utf-8"
+    )
     settings_stitch_js = (_STATIC / "js" / "tabs" / "settings_memory_stitch_ui.js").read_text(
         encoding="utf-8"
     )
-    assert "maker-settings-memory-library" in settings_js
+    assert "maker-settings-memory-library" in settings_shell_js
     assert "promote-stitch-pending" in settings_stitch_js
 
     theater_css = (_STATIC / "css" / "theater.css").read_text(encoding="utf-8")
