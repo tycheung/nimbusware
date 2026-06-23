@@ -9,11 +9,13 @@ from nimbusware_config.workflow_read import (
     load_yaml,
 )
 from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+from nimbusware_console.explainer_core.env_summaries import (
+    env_disable_flag_summary,
+    env_tri_state_summary,
+)
 from nimbusware_env.env_flags import (
     env_falsy,
     env_str,
-    env_var_disable_flag_summary,
-    env_var_tri_state_summary,
 )
 from nimbusware_extensions.self_refinement import (
     SelfRefinementPolicy,
@@ -89,7 +91,7 @@ def _self_refinement_stage_marker_env_disabled() -> bool:
 
 
 def _nimbusware_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
-    return dict(env_var_tri_state_summary("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP"))
+    return env_tri_state_summary("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
 
 
 def self_refinement_ungated_loop_env_gate_caption(
@@ -116,11 +118,9 @@ def self_refinement_ungated_loop_env_gate_caption(
 
 
 def _nimbusware_self_refinement_stage_marker_env_summary() -> dict[str, Any]:
-    return dict(
-        env_var_disable_flag_summary(
-            "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER",
-            disable_key="disables_marker",
-        )
+    return env_disable_flag_summary(
+        "NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER",
+        disable_key="disables_marker",
     )
 
 

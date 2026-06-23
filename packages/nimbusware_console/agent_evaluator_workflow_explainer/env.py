@@ -4,34 +4,32 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_config.workflow_read import parse_agent_evaluator_workflow_block
+from nimbusware_console.explainer_core.env_summaries import (
+    env_disable_flag_summary,
+    env_tri_state_summary,
+)
 from nimbusware_env.env_flags import (
     env_force_off,
     env_force_on,
-    env_var_disable_flag_summary,
-    env_var_tri_state_summary,
     nimbusware_use_llm_enabled,
 )
 
 
 def _nimbusware_agent_evaluator_env_summary() -> dict[str, Any]:
-    return dict(env_var_tri_state_summary("NIMBUSWARE_AGENT_EVALUATOR"))
+    return env_tri_state_summary("NIMBUSWARE_AGENT_EVALUATOR")
 
 
 def _nimbusware_agent_evaluator_auto_promote_env_summary() -> dict[str, Any]:
-    return dict(
-        env_var_disable_flag_summary(
-            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
-            disable_key="disables_auto_promote",
-        )
+    return env_disable_flag_summary(
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
+        disable_key="disables_auto_promote",
     )
 
 
 def _nimbusware_agent_evaluator_auto_create_env_summary() -> dict[str, Any]:
-    return dict(
-        env_var_disable_flag_summary(
-            "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
-            disable_key="disables_auto_create",
-        )
+    return env_disable_flag_summary(
+        "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
+        disable_key="disables_auto_create",
     )
 
 

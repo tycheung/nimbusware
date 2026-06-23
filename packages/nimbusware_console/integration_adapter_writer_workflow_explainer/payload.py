@@ -8,7 +8,7 @@ from nimbusware_console.components.workflow_explainer_helpers import (
     relative_under,
 )
 from nimbusware_console.config_materializer import console_config_materializer
-from nimbusware_env.env_flags import env_var_tri_state_summary
+from nimbusware_console.explainer_core.env_summaries import env_tri_state_summary
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
 )
@@ -20,7 +20,7 @@ from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict, wor
 
 
 def _nimbusware_integration_adapter_writer_env_summary() -> dict[str, Any]:
-    return dict(env_var_tri_state_summary("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER"))
+    return env_tri_state_summary("NIMBUSWARE_INTEGRATION_ADAPTER_WRITER")
 
 
 def integration_adapter_writer_fleet_manifest_count(repo_root: Path) -> int:
