@@ -3,11 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from nimbusware_config.workflow_read import (
-    workflow_profile_path,
-)
-from nimbusware_console.components.workflow_explainer_helpers import relative_under
-from nimbusware_console.config_materializer import console_config_materializer
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
 from nimbusware_console.integrator_threshold_explainer.keys import (
     PREVIEW_EFFECTIVE_MIN_SCORE_KEY,
 )
@@ -34,23 +30,12 @@ def integrator_threshold_explainer_payload(
     workflow_profile: str | None,
     pasted_yaml: str,
 ) -> dict[str, Any]:
-    wf_key = str(workflow_profile).strip() if workflow_profile else ""
-    wf_sel: str | None = wf_key if wf_key else None
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
+    wf_sel = snap.workflow_profile
 
     pasted_block, paste_errs = parse_integrator_gate_yaml_fragment(pasted_yaml)
 
-    mat = console_config_materializer(repo_root)
-
-    workflow_yaml_relpath: str | None = None
-    if wf_sel:
-        try:
-            if mat is not None:
-                workflow_yaml_relpath = f"configs/workflows/{wf_sel}.yaml"
-            else:
-                wp = workflow_profile_path(repo_root, wf_sel)
-                workflow_yaml_relpath = relative_under(repo_root, wp)
-        except (FileNotFoundError, OSError, ValueError):
-            workflow_yaml_relpath = None
+    mat = snap.materializer
 
     wf_block = load_integrator_gate_workflow_block(
         repo_root,
@@ -90,8 +75,7 @@ def integrator_threshold_explainer_payload(
         )
 
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
+        **header,
         "paste_parse_errors": list(paste_errs),
         "pasted_min_score_in_fragment": (
             pasted_block.get("min_score_to_pass") if isinstance(pasted_block, dict) else None

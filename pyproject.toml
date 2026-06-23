@@ -303,7 +303,6 @@ module = [
   "nimbusware_console.self_refinement_workflow_explainer.*",
   "nimbusware_console.enterprise_console",
   "nimbusware_console.enterprise_console_ui",
-  "nimbusware_console.explainer_workflow_disk",
   "nimbusware_console.integrator_gate_display",
   "nimbusware_console.integrator_workflow_apply",
   "nimbusware_console.integrator_workflow_preview",
