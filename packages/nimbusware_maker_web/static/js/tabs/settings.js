@@ -7,7 +7,10 @@ import {
 import { loadPlatformUserProfiles, populateProfileSelect } from "../ribbon-shared.js";
 import { renderCriticReliabilityPanel, loadRunOrFleetCriticReliability } from "../critic-reliability-panel.js";
 import { renderLaunchScorecard } from "../launch-scorecard.js";
-import { getActiveProjectId, hydrateActiveRun, resolveRunId } from "../session-hub.js";
+import { hydrateActiveRun, resolveRunId } from "../session-hub.js";
+import { wireAgentModelsPanel, wireRoutingPresetsPanel } from "./settings_agent_routing_ui.js";
+import { wireMemoryLibraryPanel, wireStitchCatalogPanel } from "./settings_memory_stitch_ui.js";
+import { wireOptimizerWeightsPanel } from "./settings_optimizer_ui.js";
 
 const GOVERNOR_KEYS = new Set([
   "NIMBUSWARE_MAX_SYSTEM_RAM_PCT",
@@ -199,140 +202,7 @@ export async function mountSettings(root) {
       when enabled, the pipeline may re-run research after planner missing-context failures.
     </p>`;
 
-  async function refreshRoutingPresets() {
-    const activeEl = root.querySelector("#settings-routing-active");
-    const cloudEl = root.querySelector("#settings-routing-cloud");
-    const select = root.querySelector("#settings-routing-select");
-    if (!select) return;
-    try {
-      const body = await apiJson("/platform/routing-presets");
-      const presets = body.presets || [];
-      const active = String(body.active_preset_id || "local_only");
-      select.replaceChildren();
-      for (const preset of presets) {
-        const opt = document.createElement("option");
-        opt.value = String(preset.id || "");
-        opt.textContent = String(preset.label || preset.id || "");
-        if (opt.value === active) opt.selected = true;
-        select.appendChild(opt);
-      }
-      if (activeEl) {
-        activeEl.textContent = `Active preset: ${active}`;
-      }
-      const probe = body.cloud_preflight || {};
-      if (cloudEl) {
-        const ok = probe.ok === true;
-        cloudEl.textContent = ok
-          ? "Cloud preflight: ready"
-          : `Cloud preflight: ${probe.message || probe.reason || "not configured"}`;
-      }
-    } catch (e) {
-      if (activeEl) activeEl.textContent = "Routing presets unavailable";
-      if (cloudEl) cloudEl.textContent = String(e.message || e);
-    }
-  }
-  await refreshRoutingPresets();
-
-  let agentBindingsState = { version: 1, roles: {} };
-  let agentProviders = [];
-
-  async function refreshAgentModels() {
-    const host = root.querySelector("#settings-agent-models-table");
-    if (!host) return;
-    try {
-      const body = await apiJson("/platform/model-bindings/defaults");
-      agentBindingsState = body.defaults || { version: 1, roles: {} };
-      agentProviders = body.providers || [];
-      const rows = body.roles || [];
-      const table = document.createElement("table");
-      table.className = "data-table";
-      table.innerHTML =
-        "<thead><tr><th>Agent role</th><th>Provider</th><th>Model</th></tr></thead>";
-      const tbody = document.createElement("tbody");
-      for (const row of rows) {
-        const role = row.agent_role || "";
-        const binding = row.binding || agentBindingsState.roles?.[role] || {};
-        const tr = document.createElement("tr");
-        tr.dataset.testid = `maker-settings-agent-row-${role}`;
-        const providerSelect = document.createElement("select");
-        providerSelect.dataset.role = role;
-        providerSelect.dataset.field = "provider_id";
-        const cloudProviders = agentProviders.filter((p) => p.kind !== "local");
-        for (const opt of [{ id: "ollama", label: "Ollama" }, ...cloudProviders]) {
-          const o = document.createElement("option");
-          o.value = opt.id;
-          o.textContent = opt.label || opt.id;
-          if ((binding.provider_id || "ollama") === o.value) o.selected = true;
-          providerSelect.appendChild(o);
-        }
-        const modelInput = document.createElement("input");
-        modelInput.dataset.role = role;
-        modelInput.dataset.field = "model_id";
-        modelInput.value = binding.model_id || "";
-        modelInput.placeholder = "model id";
-        tr.innerHTML = `<td>${row.display_name || role}</td>`;
-        const pCell = document.createElement("td");
-        pCell.appendChild(providerSelect);
-        const mCell = document.createElement("td");
-        mCell.appendChild(modelInput);
-        tr.appendChild(pCell);
-        tr.appendChild(mCell);
-        tbody.appendChild(tr);
-      }
-      table.appendChild(tbody);
-      host.replaceChildren(table);
-    } catch (e) {
-      host.textContent = String(e.message || e);
-    }
-  }
-
-  root.querySelector("#settings-agent-models-save")?.addEventListener("click", async () => {
-    const host = root.querySelector("#settings-agent-models-table");
-    if (!host) return;
-    const roles = { ...(agentBindingsState.roles || {}) };
-    host.querySelectorAll("[data-role][data-field]").forEach((el) => {
-      const role = el.dataset.role;
-      const field = el.dataset.field;
-      if (!role || !field) return;
-      const block = { ...(roles[role] || {}) };
-      if (field === "provider_id") {
-        block.provider_id = el.value;
-        block.provider_kind = el.value === "ollama" ? "local" : "cloud";
-      } else {
-        block[field] = el.value;
-      }
-      roles[role] = block;
-    });
-    try {
-      await apiJson("/platform/model-bindings/defaults", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ version: 1, roles }),
-      });
-      toast("Agent model bindings saved", "success");
-      await refreshAgentModels();
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
-  await refreshAgentModels();
-
-  root.querySelector("#settings-routing-apply")?.addEventListener("click", async () => {
-    const select = root.querySelector("#settings-routing-select");
-    const presetId = select?.value?.trim();
-    if (!presetId) return;
-    try {
-      const applied = await apiJson("/platform/routing-presets/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ preset_id: presetId }),
-      });
-      toast(`Applied routing preset: ${applied.preset_id || presetId}`, "success");
-      await refreshRoutingPresets();
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
+  await Promise.all([wireRoutingPresetsPanel(root), wireAgentModelsPanel(root)]);
 
   const chatResume = root.querySelector("#settings-chat-resume");
   if (chatResume) {
@@ -482,124 +352,7 @@ export async function mountSettings(root) {
     }
   });
 
-  async function loadMemoryChunks() {
-    const projectId = getActiveProjectId();
-    const list = root.querySelector("#settings-memory-chunks");
-    const caption = root.querySelector("#settings-memory-caption");
-    if (!projectId) {
-      if (caption) caption.textContent = "Select a project on Home to browse memory chunks.";
-      list?.replaceChildren();
-      return;
-    }
-    try {
-      const body = await apiJson(`/memory/chunks?project_id=${encodeURIComponent(projectId)}&limit=50`);
-      if (caption) caption.textContent = body.caption || `${body.total || 0} chunks`;
-      list?.replaceChildren();
-      for (const ch of body.chunks || []) {
-        const li = document.createElement("li");
-        li.className = "memory-chunk-card";
-        li.dataset.testid = "maker-settings-memory-chunk";
-        li.innerHTML = `<strong>${ch.category || ch.source_event_type || "chunk"}</strong>
-          <span class="muted">${ch.severity || ""} · run ${String(ch.run_id || "").slice(0, 8)}</span>
-          <p class="memory-chunk-preview">${ch.excerpt || ""}</p>`;
-        const insertBtn = document.createElement("button");
-        insertBtn.type = "button";
-        insertBtn.textContent = "Insert into active run";
-        insertBtn.dataset.testid = "maker-settings-memory-insert";
-        insertBtn.addEventListener("click", async () => {
-          let runId = resolveRunId();
-          if (!runId) runId = await hydrateActiveRun(apiJson);
-          if (!runId) return toast("No active run — open Progress or start a build", "error");
-          try {
-            await apiJson(
-              `/runs/${encodeURIComponent(runId)}/memory-chunks/${encodeURIComponent(ch.chunk_id)}/insert`,
-              { method: "POST" },
-            );
-            toast("Memory chunk inserted into run context", "success");
-          } catch (e) {
-            toast(String(e.message || e), "error");
-          }
-        });
-        li.appendChild(insertBtn);
-        list?.appendChild(li);
-      }
-      if (!(body.chunks || []).length) {
-        const li = document.createElement("li");
-        li.className = "muted";
-        li.textContent = "No memory chunks indexed for this workspace yet.";
-        list?.appendChild(li);
-      }
-    } catch (e) {
-      if (caption) caption.textContent = String(e.message || e);
-    }
-  }
-  root.querySelector("#settings-memory-refresh")?.addEventListener("click", () => {
-    loadMemoryChunks().catch((e) => toast(String(e.message), "error"));
-  });
-  await loadMemoryChunks();
-
-  let catalogVersion = 1;
-  async function loadStitchCandidates() {
-    const ul = root.querySelector("#settings-stitch-candidates");
-    ul?.replaceChildren();
-    try {
-      const [candBody, catalogBody] = await Promise.all([
-        apiJson("/bundles/catalog-candidates?limit=50"),
-        apiJson("/bundles/catalog").catch(() => ({ document_version: 1 })),
-      ]);
-      catalogVersion = catalogBody.document_version ?? 1;
-      for (const c of candBody.candidates || []) {
-        const li = document.createElement("li");
-        li.dataset.testid = "maker-settings-stitch-candidate";
-        const label = `${c.candidate_id || c.id || "?"} (${c.run_id || "?"}) — ${c.status || "pending"}`;
-        li.textContent = label;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = "Promote";
-        btn.dataset.testid = "maker-settings-stitch-promote-one";
-        btn.addEventListener("click", async () => {
-          try {
-            await apiJson(
-              `/bundles/catalog-candidates/${encodeURIComponent(c.run_id)}/${encodeURIComponent(c.candidate_id)}/promote?expected_version=${catalogVersion}`,
-              { method: "POST" },
-            );
-            toast("Candidate promoted", "success");
-            await loadStitchCandidates();
-          } catch (e) {
-            toast(String(e.message || e), "error");
-          }
-        });
-        li.appendChild(btn);
-        ul?.appendChild(li);
-      }
-      if (!(candBody.candidates || []).length) {
-        const li = document.createElement("li");
-        li.className = "muted";
-        li.textContent = "No catalog candidates (admin token may be required).";
-        ul?.appendChild(li);
-      }
-    } catch (e) {
-      const li = document.createElement("li");
-      li.className = "muted";
-      li.textContent = String(e.message || e);
-      ul?.appendChild(li);
-    }
-  }
-  root.querySelector("#settings-stitch-refresh")?.addEventListener("click", () => {
-    loadStitchCandidates().catch((e) => toast(String(e.message), "error"));
-  });
-  root.querySelector("#settings-stitch-batch")?.addEventListener("click", async () => {
-    try {
-      await apiJson(
-        `/bundles/catalog-candidates/promote-stitch-pending?expected_version=${catalogVersion}`,
-        { method: "POST" },
-      );
-      toast("Batch promote complete", "success");
-      await loadStitchCandidates();
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
+  await Promise.all([wireMemoryLibraryPanel(root), wireStitchCatalogPanel(root)]);
 
   if (presetRunId) {
     try {
@@ -629,48 +382,5 @@ export async function mountSettings(root) {
     }
   });
 
-  const optimizerFields = root.querySelector("#settings-optimizer-fields");
-  const optimizerKeys = ["headroom", "model_fit", "latency", "cost"];
-  if (optimizerFields) {
-    optimizerFields.replaceChildren();
-    for (const key of optimizerKeys) {
-      const label = document.createElement("label");
-      label.textContent = `${key} `;
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = "0";
-      input.max = "1";
-      input.step = "0.05";
-      input.dataset.optimizerKey = key;
-      input.dataset.testid = `maker-settings-optimizer-${key}`;
-      label.appendChild(input);
-      optimizerFields.appendChild(label);
-    }
-    try {
-      const body = await apiJson("/platform/optimizer-weights");
-      const weights = body.weights || {};
-      for (const input of optimizerFields.querySelectorAll("input[data-optimizer-key]")) {
-        const k = input.dataset.optimizerKey;
-        if (k && weights[k] != null) input.value = String(weights[k]);
-      }
-    } catch {
-      /* defaults in UI */
-    }
-  }
-  root.querySelector("#settings-optimizer-save")?.addEventListener("click", async () => {
-    const weights = {};
-    for (const input of optimizerFields?.querySelectorAll("input[data-optimizer-key]") || []) {
-      weights[input.dataset.optimizerKey] = Number(input.value) || 0;
-    }
-    try {
-      await apiJson("/platform/optimizer-weights", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ weights }),
-      });
-      toast("Optimizer weights saved", "success");
-    } catch (e) {
-      toast(String(e.message || e), "error");
-    }
-  });
+  await wireOptimizerWeightsPanel(root);
 }
