@@ -2,7 +2,6 @@ from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
 from nimbusware_console.explainer_core.workflow_exports import (
-    install_named_workflow_explainer_exports,
     workflow_explainer_payload_export_json,
 )
 from nimbusware_console.integration_adapter_writer_workflow_explainer.captions import (

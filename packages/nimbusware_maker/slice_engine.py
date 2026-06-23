@@ -3,11 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.micro_slice import (
-    SlicePlan,
-    micro_slice_count_for_run,
-    parse_slice_plan,
-)
 from nimbusware_orchestrator.micro_slice_executor import (
     _custom_agent_system_prompt,
     _emit_slice_stage,
@@ -15,8 +10,15 @@ from nimbusware_orchestrator.micro_slice_executor import (
     _resolve_slice_block,
     _run_slice_verify_and_test,
 )
-from nimbusware_orchestrator.slice_implement import execute_slice_implement, slice_implement_mode
-from nimbusware_orchestrator.slice_patch_apply import apply_slice_file_edits
+from nimbusware_orchestrator.slice import (
+    SlicePlan,
+    apply_slice_file_edits,
+    collect_slice_diff_stats,
+    execute_slice_implement,
+    micro_slice_count_for_run,
+    parse_slice_plan,
+    slice_implement_mode,
+)
 
 __all__ = [
     "SlicePlan",
@@ -80,8 +82,6 @@ def _execute_slice_critique_llm(
 
 
 def _collect_slice_diff_stats(workspace: Path, plan: SlicePlan) -> Any:
-    from nimbusware_orchestrator.slice_diff import collect_slice_diff_stats
-
     return collect_slice_diff_stats(workspace, plan)
 
 
