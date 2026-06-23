@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import csv
 import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +17,7 @@ from nimbusware_console.bundle_catalog.catalog_local._load import (
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
 )
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
@@ -95,24 +95,10 @@ def bundle_catalog_bundles_without_tags_rollup_export_json(
     return json.dumps(dict(rollup), indent=2, ensure_ascii=False)
 
 
-def bundle_catalog_bundles_without_tags_rollup_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+bundle_catalog_bundles_without_tags_rollup_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS,
+)
 
 
 def bundle_catalog_bundles_without_tags_rollup_operator_metrics(

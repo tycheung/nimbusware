@@ -3,10 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
-)
+from nimbusware_console.components.operator_metrics import mapping_export_json
+from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 
 
 class WorkflowExplainerOperatorMetricsExports:

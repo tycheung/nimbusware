@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
+from functools import partial
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
@@ -93,20 +93,7 @@ _TIMELINE_EVENTS_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-def timeline_events_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_TIMELINE_EVENTS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _TIMELINE_EVENTS_CSV_COLUMNS})
-    return buf.getvalue()
+timeline_events_table_rows_csv = partial(table_rows_csv, columns=_TIMELINE_EVENTS_CSV_COLUMNS)
 
 
 def timeline_events_export_json(body: Mapping[str, Any] | None) -> str:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -102,10 +103,7 @@ def bundle_faiss_readiness_summary_table_rows(
     return mapping_to_sorted_table_rows(summary, _bundle_faiss_readiness_summary_cell)
 
 
-def bundle_faiss_readiness_summary_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+bundle_faiss_readiness_summary_table_rows_csv = field_value_table_rows_csv
 
 
 def bundle_faiss_readiness_summary_operator_metrics(
@@ -301,7 +299,6 @@ def bundle_faiss_readiness_missing_paths_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def bundle_faiss_readiness_missing_paths_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _FAISS_READINESS_MISSING_PATHS_CSV_COLUMNS)
+bundle_faiss_readiness_missing_paths_table_rows_csv = partial(
+    table_rows_csv, columns=_FAISS_READINESS_MISSING_PATHS_CSV_COLUMNS
+)

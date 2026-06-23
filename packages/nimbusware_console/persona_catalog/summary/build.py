@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections import Counter
 from collections.abc import Mapping
-from io import StringIO
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import (
     mapping_export_json,
     mapping_to_sorted_table_rows,
+    table_rows_csv,
 )
 
 
@@ -233,19 +232,9 @@ def persona_catalog_operator_summary_table_rows(
     return mapping_to_sorted_table_rows(summary, _persona_operator_summary_cell)
 
 
-def persona_catalog_operator_summary_table_rows_csv(
-    summary: Mapping[str, Any] | None,
-) -> str:
+def _persona_catalog_operator_summary_csv(summary: Mapping[str, Any] | None) -> str:
     rows = persona_catalog_operator_summary_table_rows(summary)
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_PERSONA_OPERATOR_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        w.writerow(r)
-    return buf.getvalue()
+    return table_rows_csv(rows, _PERSONA_OPERATOR_SUMMARY_CSV_COLUMNS)
+
+
+persona_catalog_operator_summary_table_rows_csv = _persona_catalog_operator_summary_csv

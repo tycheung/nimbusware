@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
+from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import (
     mapping_export_json,
+    table_rows_csv,
 )
 
 
@@ -49,19 +49,7 @@ def self_refinement_marker_merge_compare_export_json_rows(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def self_refinement_marker_merge_compare_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_MARKER_MERGE_COMPARE_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _MARKER_MERGE_COMPARE_CSV_COLUMNS})
-    return buf.getvalue()
+self_refinement_marker_merge_compare_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_MARKER_MERGE_COMPARE_CSV_COLUMNS,
+)

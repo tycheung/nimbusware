@@ -4,9 +4,11 @@ import csv
 import json
 import re
 from collections.abc import Mapping, Sequence
+from functools import partial
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 _SCRAPER_FETCH_FIELDS: tuple[tuple[str, str], ...] = (
@@ -140,20 +142,10 @@ _SCRAPER_FETCH_FETCHES_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-def scraper_fetch_fetches_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SCRAPER_FETCH_FETCHES_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _SCRAPER_FETCH_FETCHES_CSV_COLUMNS})
-    return buf.getvalue()
+scraper_fetch_fetches_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_SCRAPER_FETCH_FETCHES_CSV_COLUMNS,
+)
 
 
 def scraper_fetch_fetches_export_json(summary: Mapping[str, Any] | None) -> str:

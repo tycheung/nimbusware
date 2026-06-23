@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +16,7 @@ from nimbusware_console.bundle_catalog.catalog_local._load import (
 from nimbusware_console.bundle_catalog.catalog_local.search.metrics import (
     _BUNDLE_LOCAL_CSV_COLUMNS,
 )
+from nimbusware_console.components.operator_metrics import table_rows_csv
 
 
 def bundle_catalog_local_bundles(
@@ -53,22 +53,10 @@ def bundle_catalog_local_bundles_export_json(
     return json.dumps(rows, indent=2, ensure_ascii=False)
 
 
-def bundle_catalog_local_bundles_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_BUNDLE_LOCAL_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _BUNDLE_LOCAL_CSV_COLUMNS})
-    return buf.getvalue()
+bundle_catalog_local_bundles_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_BUNDLE_LOCAL_CSV_COLUMNS,
+)
 
 
 def bundle_catalog_local_export_filename_slug(

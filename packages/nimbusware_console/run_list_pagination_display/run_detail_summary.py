@@ -50,7 +50,10 @@ def run_detail_summary_operator_metrics(
         _DEFAULTS,
         int_fields=(("event_count", "event_count"), ("findings_count", "findings_count")),
         bool_fields=(("has_escalation", "has_escalation"),),
-        str_present=(("status", "status_present"), ("workflow_profile", "workflow_profile_present")),
+        str_present=(
+            ("status", "status_present"),
+            ("workflow_profile", "workflow_profile_present"),
+        ),
     )
     if isinstance(body, Mapping):
         rid = body.get("run_id")

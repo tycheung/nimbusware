@@ -10,43 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CONSOLE_ROOT = ROOT / "packages" / "nimbusware_console"
 
-# Existing modules with hand-written ``def *_table_rows_csv`` (migrate via explainer_core).
-ALLOWLISTED_HAND_WRITTEN_TABLE_ROWS_CSV: frozenset[str] = frozenset(
-    {
-        "packages/nimbusware_console/agent_evaluator_display/captions.py",
-        "packages/nimbusware_console/agent_evaluator_display/metrics.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/rollup_without_id.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/rollup_without_tags.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/search/hits.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/search/local_bundles.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/summary.py",
-        "packages/nimbusware_console/bundle_catalog/catalog_local/tags.py",
-        "packages/nimbusware_console/bundle_catalog/faiss_status/drilldown/tables.py",
-        "packages/nimbusware_console/bundle_catalog/faiss_status/index_status.py",
-        "packages/nimbusware_console/bundle_catalog/faiss_status/readiness.py",
-        "packages/nimbusware_console/components/operator_metrics.py",
-        "packages/nimbusware_console/components/workflow_explainer_helpers.py",
-        "packages/nimbusware_console/critic_matrix_display.py",
-        "packages/nimbusware_console/escalation_suppress_workflow_explainer/policy_tables.py",
-        "packages/nimbusware_console/findings_display.py",
-        "packages/nimbusware_console/integrator_gate/history.py",
-        "packages/nimbusware_console/integrator_gate/latest_delta/exports.py",
-        "packages/nimbusware_console/integrator_preview/exports.py",
-        "packages/nimbusware_console/persona_assignment_display.py",
-        "packages/nimbusware_console/persona_catalog/pairings.py",
-        "packages/nimbusware_console/persona_catalog/summary/build.py",
-        "packages/nimbusware_console/preflight_history_display.py",
-        "packages/nimbusware_console/run_escalated/rows.py",
-        "packages/nimbusware_console/run_list_pagination_display/run_detail_summary.py",
-        "packages/nimbusware_console/run_list_pagination_display/timeline_events.py",
-        "packages/nimbusware_console/scraper_fetch_display.py",
-        "packages/nimbusware_console/security_scan_on_verify/latest.py",
-        "packages/nimbusware_console/security_scan_on_verify/timeline.py",
-        "packages/nimbusware_console/self_refinement/latest.py",
-        "packages/nimbusware_console/self_refinement/marker_history.py",
-        "packages/nimbusware_console/self_refinement_workflow_explainer/marker_exports.py",
-    }
-)
+# Migrated to explainer_core.table_rows_csv and functools.partial assignments (C46).
+ALLOWLISTED_HAND_WRITTEN_TABLE_ROWS_CSV: frozenset[str] = frozenset()
 
 _TABLE_ROWS_CSV_DEF = re.compile(r"^def \w+_table_rows_csv\b", re.MULTILINE)
 

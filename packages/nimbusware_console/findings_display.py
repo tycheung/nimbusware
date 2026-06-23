@@ -4,9 +4,11 @@ import csv
 import json
 import re
 from collections.abc import Mapping, Sequence
+from functools import partial
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
@@ -130,9 +132,11 @@ def findings_operator_metrics_table_rows(
             metrics,
             _FINDINGS_SEVERITY_ROWS,
             bool_lower=False,
-            include_when=lambda _m, k: isinstance(metrics.get(k), int)
-            and not isinstance(metrics.get(k), bool)
-            and int(metrics[k]) > 0,
+            include_when=lambda _m, k: (
+                isinstance(metrics.get(k), int)
+                and not isinstance(metrics.get(k), bool)
+                and int(metrics[k]) > 0
+            ),
         ),
     )
     return rows
@@ -172,20 +176,7 @@ def findings_export_json(body: Mapping[str, Any] | None) -> str:
     return json.dumps(dict(body), indent=2, ensure_ascii=False)
 
 
-def findings_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_FINDINGS_TABLE_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _FINDINGS_TABLE_COLUMNS})
-    return buf.getvalue()
+findings_table_rows_csv = partial(table_rows_csv, columns=_FINDINGS_TABLE_COLUMNS)
 
 
 def findings_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:

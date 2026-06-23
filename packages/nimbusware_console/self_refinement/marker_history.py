@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import csv
 import json
 import re
 from collections.abc import Mapping, Sequence
 from datetime import datetime
-from io import StringIO
+from functools import partial
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
 
@@ -56,24 +56,10 @@ _SELF_REFINEMENT_MARKER_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-def self_refinement_marker_history_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SELF_REFINEMENT_MARKER_HISTORY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _SELF_REFINEMENT_MARKER_HISTORY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+self_refinement_marker_history_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_SELF_REFINEMENT_MARKER_HISTORY_CSV_COLUMNS,
+)
 
 
 def self_refinement_marker_history_export_json(

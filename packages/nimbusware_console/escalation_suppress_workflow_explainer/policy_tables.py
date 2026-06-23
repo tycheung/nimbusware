@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from functools import partial
 from typing import Any
 
 from agent_core.mapping import field_error_text
@@ -40,10 +41,9 @@ def escalation_policy_yaml_keys_all_export_json(
     return mapping_rows_export_json(rows)
 
 
-def escalation_policy_yaml_keys_all_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return mapping_rows_csv(rows, _POLICY_KEYS_CSV_COLUMNS)
+escalation_policy_yaml_keys_all_table_rows_csv = partial(
+    mapping_rows_csv, columns=_POLICY_KEYS_CSV_COLUMNS
+)
 
 
 def escalation_policy_yaml_top_level_kinds_table_rows(
@@ -80,7 +80,6 @@ def escalation_policy_yaml_top_level_kinds_export_json(
     return mapping_rows_export_json(rows)
 
 
-def escalation_policy_yaml_top_level_kinds_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return mapping_rows_csv(rows, _POLICY_KINDS_CSV_COLUMNS)
+escalation_policy_yaml_top_level_kinds_table_rows_csv = partial(
+    mapping_rows_csv, columns=_POLICY_KINDS_CSV_COLUMNS
+)

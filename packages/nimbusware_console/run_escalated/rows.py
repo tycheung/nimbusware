@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping, Sequence
+from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import (
@@ -89,8 +90,9 @@ _RUN_ESCALATED_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-def run_escalated_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    return table_rows_csv(rows, _RUN_ESCALATED_HISTORY_CSV_COLUMNS)
+run_escalated_history_table_rows_csv = partial(
+    table_rows_csv, columns=_RUN_ESCALATED_HISTORY_CSV_COLUMNS
+)
 
 
 def run_escalated_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:
@@ -137,8 +139,7 @@ def run_escalated_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[di
     return rows
 
 
-def run_escalated_delta_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    return field_value_table_rows_csv(rows)
+run_escalated_delta_table_rows_csv = field_value_table_rows_csv
 
 
 def run_escalated_delta_export_json(delta: Mapping[str, Any] | None) -> str:

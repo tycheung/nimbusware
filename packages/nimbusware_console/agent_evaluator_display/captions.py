@@ -216,7 +216,7 @@ def agent_evaluator_timeline_export_json(ae: Mapping[str, Any] | None) -> str:
     return json.dumps(dict(ae), ensure_ascii=False, indent=2)
 
 
-def agent_evaluator_timeline_table_rows_csv(ae: Mapping[str, Any] | None) -> str:
+def _agent_evaluator_timeline_csv_rows(ae: Mapping[str, Any] | None) -> str:
     summary = agent_evaluator_summary_rows(ae)
     auto_ = agent_evaluator_auto_actions_table_rows(ae)
     if not summary and not auto_:
@@ -245,6 +245,9 @@ def agent_evaluator_timeline_table_rows_csv(ae: Mapping[str, Any] | None) -> str
             },
         )
     return buf.getvalue()
+
+
+agent_evaluator_timeline_table_rows_csv = _agent_evaluator_timeline_csv_rows
 
 
 def agent_evaluator_timeline_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:

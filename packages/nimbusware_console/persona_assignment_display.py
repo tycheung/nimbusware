@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import field_value_table_rows_csv
@@ -87,10 +88,7 @@ def persona_assignment_caption(pa: Mapping[str, Any] | None) -> str | None:
     return "Persona assignment: " + ", ".join(parts) + "."
 
 
-def persona_assignment_timeline_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+persona_assignment_timeline_table_rows_csv = field_value_table_rows_csv
 
 
 def persona_assignment_timeline_export_json(pa: Mapping[str, Any] | None) -> str:

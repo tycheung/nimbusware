@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import csv
 import json
 from collections.abc import Callable, Mapping, Sequence
-from io import StringIO
 from typing import Any
 
-FIELD_VALUE_COLUMNS: tuple[str, ...] = ("field", "value")
+from nimbusware_console.explainer_core.table_rows_csv import (
+    FIELD_VALUE_COLUMNS,
+    field_value_table_rows_csv,
+    table_rows_csv,
+)
 
 
 def json_cell(value: Any) -> str:
@@ -41,20 +43,12 @@ def mapping_to_sorted_table_rows(
     ]
 
 
-def table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-    columns: Sequence[str],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    writer = csv.DictWriter(buf, fieldnames=list(columns), extrasaction="ignore")
-    writer.writeheader()
-    for row in rows:
-        if isinstance(row, Mapping):
-            writer.writerow({k: row.get(k, "") for k in columns})
-    return buf.getvalue()
-
-
-def field_value_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    return table_rows_csv(rows, FIELD_VALUE_COLUMNS)
+__all__ = [
+    "FIELD_VALUE_COLUMNS",
+    "field_value_table_rows_csv",
+    "json_cell",
+    "mapping_export_json",
+    "mapping_to_sorted_table_rows",
+    "sequence_export_json",
+    "table_rows_csv",
+]

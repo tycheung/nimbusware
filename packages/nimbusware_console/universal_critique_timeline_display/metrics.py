@@ -156,8 +156,9 @@ def universal_critique_timeline_operator_metrics_table_rows(
             metrics,
             _COVERAGE_TABLE_ROWS,
             bool_lower=False,
-            include_when=lambda _m, k: isinstance(metrics.get(k), int)
-            and not isinstance(metrics.get(k), bool),
+            include_when=lambda _m, k: (
+                isinstance(metrics.get(k), int) and not isinstance(metrics.get(k), bool)
+            ),
         ),
     )
     fc_total = metrics.get("failing_critics_total_count")

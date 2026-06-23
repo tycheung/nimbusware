@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -112,10 +113,9 @@ def persona_probation_other_by_shelf_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def persona_probation_other_by_shelf_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _PROBATION_OTHER_BY_SHELF_CSV_COLUMNS)
+persona_probation_other_by_shelf_table_rows_csv = partial(
+    table_rows_csv, columns=_PROBATION_OTHER_BY_SHELF_CSV_COLUMNS
+)
 
 
 def persona_probation_other_export_filename_slug() -> str:
@@ -183,10 +183,7 @@ def critique_pairings_operator_summary_operator_metrics_export_json(
     return mapping_export_json(metrics)
 
 
-def critique_pairings_operator_summary_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+critique_pairings_operator_summary_operator_metrics_table_rows_csv = field_value_table_rows_csv
 
 
 def critique_pairings_operator_summary_operator_metrics_caption(
@@ -279,10 +276,9 @@ def critique_pairings_critic_counts_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def critique_pairings_critic_counts_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _CRITIQUE_PAIRINGS_CRITIC_COUNTS_CSV_COLUMNS)
+critique_pairings_critic_counts_table_rows_csv = partial(
+    table_rows_csv, columns=_CRITIQUE_PAIRINGS_CRITIC_COUNTS_CSV_COLUMNS
+)
 
 
 def critique_pairings_critic_counts_all_export_json(
@@ -291,10 +287,7 @@ def critique_pairings_critic_counts_all_export_json(
     return critique_pairings_critic_counts_export_json(rows)
 
 
-def critique_pairings_critic_counts_all_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return critique_pairings_critic_counts_table_rows_csv(rows)
+critique_pairings_critic_counts_all_table_rows_csv = critique_pairings_critic_counts_table_rows_csv
 
 
 _CRITIQUE_PAIRINGS_PRODUCER_KEYS_CSV_COLUMNS: tuple[str, ...] = ("producer_key",)
@@ -349,13 +342,8 @@ def critique_pairings_producer_keys_all_export_json(
     return critique_pairings_producer_keys_export_json(rows)
 
 
-def critique_pairings_producer_keys_all_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return critique_pairings_producer_keys_table_rows_csv(rows)
+critique_pairings_producer_keys_table_rows_csv = partial(
+    table_rows_csv, columns=_CRITIQUE_PAIRINGS_PRODUCER_KEYS_CSV_COLUMNS
+)
 
-
-def critique_pairings_producer_keys_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _CRITIQUE_PAIRINGS_PRODUCER_KEYS_CSV_COLUMNS)
+critique_pairings_producer_keys_all_table_rows_csv = critique_pairings_producer_keys_table_rows_csv

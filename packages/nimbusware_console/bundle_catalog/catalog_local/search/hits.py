@@ -35,7 +35,7 @@ def _bundle_search_hit_cell(value: Any) -> str:
 _BUNDLE_SEARCH_HITS_CSV_COLUMNS: tuple[str, ...] = ("id", "title", "tags", "score")
 
 
-def bundle_search_hits_table_rows_csv(hits: Sequence[Mapping[str, Any]]) -> str:
+def _bundle_search_hits_csv(hits: Sequence[Mapping[str, Any]]) -> str:
     if not hits:
         return ""
     buf = StringIO()
@@ -57,3 +57,6 @@ def bundle_search_hits_table_rows_csv(hits: Sequence[Mapping[str, Any]]) -> str:
             },
         )
     return buf.getvalue()
+
+
+bundle_search_hits_table_rows_csv = _bundle_search_hits_csv

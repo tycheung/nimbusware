@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -65,7 +65,4 @@ def bundle_faiss_index_status_export_json(
     return json.dumps(dict(status), ensure_ascii=False, indent=2)
 
 
-def bundle_faiss_index_status_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+bundle_faiss_index_status_table_rows_csv = field_value_table_rows_csv

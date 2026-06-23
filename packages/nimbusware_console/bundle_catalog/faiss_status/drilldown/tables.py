@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from functools import partial
 from typing import Any
 
 from nimbusware_console.bundle_catalog.faiss_status.drilldown.captions import (
@@ -55,10 +56,9 @@ def bundle_faiss_id_set_mismatch_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def bundle_faiss_id_set_mismatch_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _FAISS_ID_SET_MISMATCH_CSV_COLUMNS)
+bundle_faiss_id_set_mismatch_table_rows_csv = partial(
+    table_rows_csv, columns=_FAISS_ID_SET_MISMATCH_CSV_COLUMNS
+)
 
 
 _FAISS_DUPLICATE_ID_CSV_COLUMNS: tuple[str, ...] = ("bundle_id",)
@@ -93,10 +93,9 @@ def bundle_faiss_duplicate_id_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def bundle_faiss_duplicate_id_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _FAISS_DUPLICATE_ID_CSV_COLUMNS)
+bundle_faiss_duplicate_id_table_rows_csv = partial(
+    table_rows_csv, columns=_FAISS_DUPLICATE_ID_CSV_COLUMNS
+)
 
 
 _FAISS_INDEX_DIR_LISTING_CSV_COLUMNS: tuple[str, ...] = ("name", "bytes", "mtime_iso")
@@ -143,7 +142,6 @@ def bundle_faiss_index_dir_listing_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def bundle_faiss_index_dir_listing_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return table_rows_csv(rows, _FAISS_INDEX_DIR_LISTING_CSV_COLUMNS)
+bundle_faiss_index_dir_listing_table_rows_csv = partial(
+    table_rows_csv, columns=_FAISS_INDEX_DIR_LISTING_CSV_COLUMNS
+)

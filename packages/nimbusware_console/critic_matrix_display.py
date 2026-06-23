@@ -4,9 +4,11 @@ import csv
 import json
 import re
 from collections.abc import Mapping, Sequence
+from functools import partial
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
@@ -125,20 +127,7 @@ def critic_matrix_export_json(rows: Sequence[Mapping[str, str]]) -> str:
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def critic_matrix_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_CRITIC_MATRIX_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _CRITIC_MATRIX_COLUMNS})
-    return buf.getvalue()
+critic_matrix_table_rows_csv = partial(table_rows_csv, columns=_CRITIC_MATRIX_COLUMNS)
 
 
 def critic_matrix_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:

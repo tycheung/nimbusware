@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import csv
 import json
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import field_value_table_rows_csv
 from nimbusware_extensions.phase2 import agent_evaluator_score_band
 
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (
@@ -288,24 +287,7 @@ def agent_evaluator_operator_metrics_export_json(
     return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
 
 
-def agent_evaluator_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_AGENT_EVALUATOR_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _AGENT_EVALUATOR_OPERATOR_METRICS_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+agent_evaluator_operator_metrics_table_rows_csv = field_value_table_rows_csv
 
 
 def agent_evaluator_operator_metrics_export_filename_slug(

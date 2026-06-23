@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import csv
 import json
 import re
 from collections.abc import Mapping, Sequence
-from io import StringIO
+from functools import partial
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.security_scan_on_verify._helpers import _stringify
 
@@ -63,20 +63,10 @@ _SECURITY_SCAN_HISTORY_CSV_COLUMNS: tuple[str, ...] = (
 )
 
 
-def security_scan_history_table_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SECURITY_SCAN_HISTORY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _SECURITY_SCAN_HISTORY_CSV_COLUMNS})
-    return buf.getvalue()
+security_scan_history_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_SECURITY_SCAN_HISTORY_CSV_COLUMNS,
+)
 
 
 def security_scan_history_export_json(history: Sequence[Mapping[str, Any]]) -> str:

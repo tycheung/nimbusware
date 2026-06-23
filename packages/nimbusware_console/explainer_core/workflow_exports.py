@@ -5,10 +5,10 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
     mapping_export_json,
     mapping_to_sorted_table_rows,
 )
+from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 
 
 def explainer_json_cell(value: Any) -> str:

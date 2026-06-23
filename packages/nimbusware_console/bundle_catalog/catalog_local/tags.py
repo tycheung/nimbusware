@@ -88,9 +88,7 @@ def bundle_catalog_top_tag_counts_export_json(
     return json.dumps(out, indent=2, ensure_ascii=False)
 
 
-def bundle_catalog_top_tag_counts_table_rows_csv(
-    rows: Sequence[Mapping[str, Any]],
-) -> str:
+def _bundle_catalog_top_tag_counts_csv(rows: Sequence[Mapping[str, Any]]) -> str:
     if not rows:
         return ""
     buf = StringIO()
@@ -110,6 +108,9 @@ def bundle_catalog_top_tag_counts_table_rows_csv(
             },
         )
     return buf.getvalue()
+
+
+bundle_catalog_top_tag_counts_table_rows_csv = _bundle_catalog_top_tag_counts_csv
 
 
 def bundle_catalog_bundle_ids_sample(
