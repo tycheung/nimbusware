@@ -1,16 +1,8 @@
 import { apiJson, toast } from "../api-client.js";
 import { refreshBranchPanel } from "./chat_branch_ui.js";
-import {
-  getCollabMyRole,
-  refreshComputeNodes,
-  refreshSessionSidebar,
-} from "./chat_session_ui.js";
-import { refreshChatLibrary } from "./chat_library_ui.js";
 import { closeInviteModal, unbindSessionStream } from "./chat_collab_ui.js";
-import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
-import { wireCollabSessionUi } from "./chat_collab_wiring.js";
 import { CHAT_WORK_TYPES, chatLayoutHtml } from "./chat_shell_html.js";
-
+import { createChatSessionApi } from "./chat_session_lifecycle.js";
 import { branchPanelCallbacks, renderMessagesFromSession } from "./chat_thread_ui.js";
 import {
   maybeOfferPatchEscalation,
@@ -30,8 +22,6 @@ import {
   wireChatOperatorRibbons,
   wireFollowLiveToggle,
 } from "./chat_theater_ui.js";
-
-const SESSION_KEY = "maker_chat_session_id";
 
 export async function mountChat(root) {
   root.innerHTML = chatLayoutHtml();
@@ -56,6 +46,7 @@ export async function mountChat(root) {
   const hashParams = new URLSearchParams(hashQuery);
   const intent = hashParams.get("intent");
   const deepPrompt = hashParams.get("prompt");
+  const hashSessionId = hashParams.get("session_id") || "";
   const workSel = root.querySelector("#chat-work-type");
   const msgEl = root.querySelector("#chat-message");
   const INTENT_HINTS = {
@@ -71,85 +62,16 @@ export async function mountChat(root) {
     msgEl.value = deepPrompt;
   }
 
-  let sessionId = chatResumeEnabled() ? sessionStorage.getItem(SESSION_KEY) || "" : "";
-  const hashSessionId = hashParams.get("session_id") || "";
-  if (hashSessionId) sessionId = hashSessionId;
+  const sessionApi = createChatSessionApi(root, { chatResumeEnabled });
+  if (hashSessionId) sessionApi.setSessionId(hashSessionId);
+  sessionApi.wireSessionControls(sel);
+
   let startPending = false;
   let theaterHandle = null;
   let forkReplaySeq = null;
 
-  async function loadSession(sid) {
-    sessionId = sid;
-    sessionStorage.setItem(SESSION_KEY, sessionId);
-    const existing = await apiJson(
-      `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-    );
-    await wireCollabSessionUi(root, sessionId, existing);
-    await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
-    const projectId = String(root.querySelector("#chat-project-select")?.value || "");
-    await refreshSessionSidebar(root, projectId, sessionId, loadSession);
-    await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
-    await refreshComputeNodes(root, sessionId);
-    await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-  }
-
-  async function ensureSession(projectId) {
-    if (!chatResumeEnabled()) {
-      sessionId = "";
-    }
-    if (sessionId) {
-      try {
-        const existing = await apiJson(
-          `/chat/sessions/${encodeURIComponent(sessionId)}?include_turns=true`,
-        );
-        if (existing.project_id === projectId) {
-          await wireCollabSessionUi(root, sessionId, existing);
-          await refreshBranchPanel(root, sessionId, branchPanelCallbacks(root));
-          await refreshSessionSidebar(root, projectId, sessionId, loadSession);
-          await refreshComputeNodes(root, sessionId);
-          await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-          return sessionId;
-        }
-      } catch {
-        sessionId = "";
-      }
-    }
-    const session = await apiJson("/chat/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ project_id: projectId }),
-    });
-    sessionId = String(session.session_id || "");
-    sessionStorage.setItem(SESSION_KEY, sessionId);
-    await refreshSessionSidebar(root, projectId, sessionId, loadSession);
-    await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
-    await refreshComputeNodes(root, sessionId);
-    await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
-    await wireCollabSessionUi(root, sessionId, session);
-    return sessionId;
-  }
-
-  root.querySelector("#chat-new-session")?.addEventListener("click", async () => {
-    const projectId = String(root.querySelector("#chat-project-select")?.value || "");
-    if (!projectId) return toast("Select a project", "error");
-    sessionId = "";
-    sessionStorage.removeItem(SESSION_KEY);
-    await ensureSession(projectId);
-    root.querySelector("#chat-thread")?.replaceChildren();
-    toast("New session", "success");
-  });
-
-  sel?.addEventListener("change", async () => {
-    const projectId = String(sel.value || "");
-    sessionId = "";
-    sessionStorage.removeItem(SESSION_KEY);
-    if (projectId) {
-      await refreshSessionSidebar(root, projectId, "", loadSession);
-      await refreshChatLibrary(root, projectId, { activeSessionId: sessionId, loadSession });
-    }
-  });
-
   async function runStart(workType) {
+    const sessionId = sessionApi.getSessionId();
     if (startPending || !sessionId) return;
     startPending = true;
     const startBtn = root.querySelector('[data-testid="maker-chat-start"]');
@@ -174,6 +96,7 @@ export async function mountChat(root) {
   }
 
   root.querySelector("#chat-thread")?.addEventListener("chat-fork", async (ev) => {
+    const sessionId = sessionApi.getSessionId();
     const turnEl = ev.target?.closest("[data-turn-id]");
     const turnId = turnEl?.dataset?.turnId;
     if (!turnId || !sessionId) return;
@@ -202,6 +125,7 @@ export async function mountChat(root) {
 
   async function offerRunEscalations(runId) {
     if (!runId) return;
+    const sessionId = sessionApi.getSessionId();
     await maybeOfferPatchEscalation(root, runId, sessionId);
     await maybeOfferSliceCampaignPromotion(root, runId, sessionId, (wt) => runStart(wt));
   }
@@ -209,7 +133,12 @@ export async function mountChat(root) {
   if (activeRunId) {
     ensureRunCard(root, activeRunId, { status: "active" });
     theaterHandle?.close();
-    theaterHandle = bindChatTheaterForRun(root, activeRunId, sessionId, (wt) => runStart(wt));
+    theaterHandle = bindChatTheaterForRun(
+      root,
+      activeRunId,
+      sessionApi.getSessionId(),
+      (wt) => runStart(wt),
+    );
     wireChatOperatorRibbons(root, activeRunId);
     mountAutopilotLadderHint(root);
   }
@@ -256,7 +185,8 @@ export async function mountChat(root) {
     if (startBtn) startBtn.disabled = true;
 
     try {
-      await ensureSession(projectId);
+      await sessionApi.ensureSession(projectId);
+      const sessionId = sessionApi.getSessionId();
       const turnResp = await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/turns`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -299,7 +229,7 @@ export async function mountChat(root) {
 
   if (saved && chatResumeEnabled()) {
     try {
-      await ensureSession(saved);
+      await sessionApi.ensureSession(saved);
     } catch {
       /* fresh session on send */
     }
@@ -307,10 +237,9 @@ export async function mountChat(root) {
 
   if (hashSessionId) {
     try {
-      await loadSession(hashSessionId);
+      await sessionApi.loadSession(hashSessionId);
     } catch {
-      sessionId = "";
-      sessionStorage.removeItem(SESSION_KEY);
+      sessionApi.setSessionId("");
     }
   }
 
