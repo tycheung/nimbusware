@@ -89,12 +89,8 @@ def integrator_threshold_explainer_operator_metrics_table_rows(
         metrics,
         _TABLE_ROWS,
         include_when=lambda m, key: (
-            key
-            not in {"min_score_pipeline", "min_score_preview", "load_error_present"}
-            or (
-                key == "load_error_present"
-                and m.get("load_error_present") is True
-            )
+            key not in {"min_score_pipeline", "min_score_preview", "load_error_present"}
+            or (key == "load_error_present" and m.get("load_error_present") is True)
             or m.get(key) is not None
         ),
     )

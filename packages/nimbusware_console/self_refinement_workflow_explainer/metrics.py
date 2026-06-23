@@ -93,12 +93,8 @@ def self_refinement_workflow_explainer_operator_metrics_table_rows(
         metrics,
         _TABLE_ROWS,
         include_when=lambda m, key: (
-            key
-            not in {"merged_max_iterations", "policy_version", "load_error_present"}
-            or (
-                key == "load_error_present"
-                and m.get("load_error_present") is True
-            )
+            key not in {"merged_max_iterations", "policy_version", "load_error_present"}
+            or (key == "load_error_present" and m.get("load_error_present") is True)
             or m.get(key) is not None
         ),
     )
