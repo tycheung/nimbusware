@@ -8,20 +8,9 @@ from nimbusware_orchestrator.anti_deadlock import (
     _first_run_created_at,
     count_progress_events,
 )
+from unit.composite_contract_fixtures import store_event_row
 
 _FIVE_HOURS = timezone(timedelta(hours=5))
-
-
-def _make_row(
-    *,
-    store_seq: int | str,
-    event_type: str,
-    occurred_at: Any = ...,
-) -> dict[str, Any]:
-    row: dict[str, Any] = {"store_seq": store_seq, "event_type": event_type}
-    if occurred_at is not ...:
-        row["occurred_at"] = occurred_at
-    return row
 
 
 def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract() -> None:
@@ -32,17 +21,17 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
     )
 
     a2_rows: list[dict[str, Any]] = [
-        _make_row(
+        store_event_row(
             store_seq=1,
             event_type="stage.started",
             occurred_at=datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=2,
             event_type="model.preflight.passed",
             occurred_at=datetime(2026, 1, 1, 12, 1, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=3,
             event_type="finding.created",
             occurred_at=datetime(2026, 1, 1, 12, 2, tzinfo=timezone.utc),
@@ -61,7 +50,7 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
         ("explicit_none", None),
     ]
     for label, bad_value in non_datetime_cases:
-        rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=bad_value)]
+        rows = [store_event_row(store_seq=1, event_type="run.created", occurred_at=bad_value)]
         assert _first_run_created_at(rows) is None, (
             f"A3 ({label}): single run.created row with occurred_at="
             f"{bad_value!r} (type {type(bad_value).__name__}) -> "
@@ -72,7 +61,7 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
             "the str_iso / int_epoch cases when `.tzinfo` is accessed"
         )
 
-    a3_missing_row = _make_row(store_seq=1, event_type="run.created")
+    a3_missing_row = store_event_row(store_seq=1, event_type="run.created")
     assert "occurred_at" not in a3_missing_row, (
         "A3 setup: the missing-key variant must literally omit the "
         f"occurred_at key. Got keys: {sorted(a3_missing_row.keys())!r}"
@@ -85,7 +74,7 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
     )
 
     a4_dt = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
-    a4_rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=a4_dt)]
+    a4_rows = [store_event_row(store_seq=1, event_type="run.created", occurred_at=a4_dt)]
     a4_result = _first_run_created_at(a4_rows)
     assert a4_result == a4_dt, (
         f"A4: single valid run.created row with tz-aware UTC datetime "
@@ -100,8 +89,8 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
     a5_invalid_dt = datetime(2026, 1, 1, 11, 0, tzinfo=timezone.utc)
     a5_valid_dt = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
     a5_rows = [
-        _make_row(store_seq=1, event_type="run.created", occurred_at="not-a-datetime"),
-        _make_row(store_seq=2, event_type="run.created", occurred_at=a5_valid_dt),
+        store_event_row(store_seq=1, event_type="run.created", occurred_at="not-a-datetime"),
+        store_event_row(store_seq=2, event_type="run.created", occurred_at=a5_valid_dt),
     ]
     a5_result = _first_run_created_at(a5_rows)
     assert a5_result == a5_valid_dt, (
@@ -119,7 +108,7 @@ def test_first_run_created_at_empty_and_no_match_and_isinstance_guard_contract()
 def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> None:
     aware_plus5 = datetime(2026, 1, 1, 12, 0, tzinfo=_FIVE_HOURS)
     expected_b1 = datetime(2026, 1, 1, 7, 0, tzinfo=timezone.utc)
-    b1_rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=aware_plus5)]
+    b1_rows = [store_event_row(store_seq=1, event_type="run.created", occurred_at=aware_plus5)]
     b1_result = _first_run_created_at(b1_rows)
     assert b1_result == expected_b1, (
         f"B1: tz-aware datetime in +05:00 zone (12:00:00+05:00) -> "
@@ -134,7 +123,7 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
 
     naive_dt = datetime(2026, 1, 1, 12, 0)
     expected_b2 = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
-    b2_rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=naive_dt)]
+    b2_rows = [store_event_row(store_seq=1, event_type="run.created", occurred_at=naive_dt)]
     b2_result = _first_run_created_at(b2_rows)
     assert b2_result == expected_b2, (
         f"B2: tz-naive datetime (12:00:00, no tzinfo) -> "
@@ -150,10 +139,10 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
     b3_aware_dt = datetime(2026, 1, 1, 12, 0, tzinfo=_FIVE_HOURS)
     b3_naive_dt = datetime(2026, 1, 1, 12, 0)
     b3_aware_rows = [
-        _make_row(store_seq=1, event_type="run.created", occurred_at=b3_aware_dt),
+        store_event_row(store_seq=1, event_type="run.created", occurred_at=b3_aware_dt),
     ]
     b3_naive_rows = [
-        _make_row(store_seq=1, event_type="run.created", occurred_at=b3_naive_dt),
+        store_event_row(store_seq=1, event_type="run.created", occurred_at=b3_naive_dt),
     ]
     b3_aware_result = _first_run_created_at(b3_aware_rows)
     b3_naive_result = _first_run_created_at(b3_naive_rows)
@@ -180,9 +169,9 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
     b4_dt_1 = datetime(2026, 1, 1, 10, 0, tzinfo=timezone.utc)
     b4_dt_3 = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
     b4_rows = [
-        _make_row(store_seq=5, event_type="run.created", occurred_at=b4_dt_5),
-        _make_row(store_seq=1, event_type="run.created", occurred_at=b4_dt_1),
-        _make_row(store_seq=3, event_type="run.created", occurred_at=b4_dt_3),
+        store_event_row(store_seq=5, event_type="run.created", occurred_at=b4_dt_5),
+        store_event_row(store_seq=1, event_type="run.created", occurred_at=b4_dt_1),
+        store_event_row(store_seq=3, event_type="run.created", occurred_at=b4_dt_3),
     ]
     b4_result = _first_run_created_at(b4_rows)
     assert b4_result == b4_dt_1, (
@@ -197,8 +186,8 @@ def test_first_run_created_at_utc_normalization_and_sort_order_contract() -> Non
     b5_dt_10 = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
     b5_dt_2 = datetime(2026, 1, 1, 11, 0, tzinfo=timezone.utc)
     b5_rows = [
-        _make_row(store_seq="10", event_type="run.created", occurred_at=b5_dt_10),
-        _make_row(store_seq="2", event_type="run.created", occurred_at=b5_dt_2),
+        store_event_row(store_seq="10", event_type="run.created", occurred_at=b5_dt_10),
+        store_event_row(store_seq="2", event_type="run.created", occurred_at=b5_dt_2),
     ]
     b5_result = _first_run_created_at(b5_rows)
     assert b5_result == b5_dt_2, (
@@ -229,7 +218,7 @@ def test_count_progress_events_and_progress_ignore_membership_contract() -> None
         "model.selected.fallback",
     ]
     for et in ignore_members:
-        single = [_make_row(store_seq=1, event_type=et)]
+        single = [store_event_row(store_seq=1, event_type=et)]
         actual = count_progress_events(single)
         assert actual == 0, (
             f"C2 ({et}): single row with event_type in _PROGRESS_IGNORE "
@@ -246,7 +235,7 @@ def test_count_progress_events_and_progress_ignore_membership_contract() -> None
         "gate.decision.emitted",
     ]
     for et in non_ignore_samples:
-        single = [_make_row(store_seq=1, event_type=et)]
+        single = [store_event_row(store_seq=1, event_type=et)]
         actual = count_progress_events(single)
         assert actual == 1, (
             f"C3 ({et}): single row with event_type NOT in "
@@ -256,13 +245,13 @@ def test_count_progress_events_and_progress_ignore_membership_contract() -> None
         )
 
     c4_rows = [
-        _make_row(store_seq=1, event_type="run.created"),
-        _make_row(store_seq=2, event_type="model.preflight.passed"),
-        _make_row(store_seq=3, event_type="model.selected.primary"),
-        _make_row(store_seq=4, event_type="stage.started"),
-        _make_row(store_seq=5, event_type="finding.created"),
-        _make_row(store_seq=6, event_type="finding.created"),
-        _make_row(store_seq=7, event_type="run.escalated"),
+        store_event_row(store_seq=1, event_type="run.created"),
+        store_event_row(store_seq=2, event_type="model.preflight.passed"),
+        store_event_row(store_seq=3, event_type="model.selected.primary"),
+        store_event_row(store_seq=4, event_type="stage.started"),
+        store_event_row(store_seq=5, event_type="finding.created"),
+        store_event_row(store_seq=6, event_type="finding.created"),
+        store_event_row(store_seq=7, event_type="run.escalated"),
     ]
     actual_c4 = count_progress_events(c4_rows)
     assert actual_c4 == 4, (
@@ -272,9 +261,9 @@ def test_count_progress_events_and_progress_ignore_membership_contract() -> None
     )
 
     c5_rows = [
-        _make_row(store_seq=1, event_type="fo116.synthetic"),
-        _make_row(store_seq=2, event_type=""),
-        _make_row(store_seq=3, event_type="unknown.event.type"),
+        store_event_row(store_seq=1, event_type="fo116.synthetic"),
+        store_event_row(store_seq=2, event_type=""),
+        store_event_row(store_seq=3, event_type="unknown.event.type"),
     ]
     actual_c5 = count_progress_events(c5_rows)
     assert actual_c5 == 3, (
@@ -321,7 +310,7 @@ def test_progress_ignore_frozenset_and_cross_helper_dual_purpose_contract() -> N
     )
 
     d3_dt = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
-    d3_rows = [_make_row(store_seq=1, event_type="run.created", occurred_at=d3_dt)]
+    d3_rows = [store_event_row(store_seq=1, event_type="run.created", occurred_at=d3_dt)]
     d3_timestamp = _first_run_created_at(d3_rows)
     d3_progress = count_progress_events(d3_rows)
     assert d3_timestamp == d3_dt, (
@@ -340,12 +329,12 @@ def test_progress_ignore_frozenset_and_cross_helper_dual_purpose_contract() -> N
     )
 
     d4_rows = [
-        _make_row(
+        store_event_row(
             store_seq=1,
             event_type="stage.started",
             occurred_at=datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=2,
             event_type="finding.created",
             occurred_at=datetime(2026, 1, 1, 12, 1, tzinfo=timezone.utc),
@@ -367,28 +356,28 @@ def test_progress_ignore_frozenset_and_cross_helper_dual_purpose_contract() -> N
 
     d5_bootstrap_dt = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
     d5_rows = [
-        _make_row(store_seq=1, event_type="run.created", occurred_at=d5_bootstrap_dt),
-        _make_row(
+        store_event_row(store_seq=1, event_type="run.created", occurred_at=d5_bootstrap_dt),
+        store_event_row(
             store_seq=2,
             event_type="model.preflight.started",
             occurred_at=datetime(2026, 1, 1, 12, 1, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=3,
             event_type="model.preflight.passed",
             occurred_at=datetime(2026, 1, 1, 12, 2, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=4,
             event_type="model.selected.primary",
             occurred_at=datetime(2026, 1, 1, 12, 3, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=5,
             event_type="model.preflight.failed",
             occurred_at=datetime(2026, 1, 1, 12, 4, tzinfo=timezone.utc),
         ),
-        _make_row(
+        store_event_row(
             store_seq=6,
             event_type="model.selected.fallback",
             occurred_at=datetime(2026, 1, 1, 12, 5, tzinfo=timezone.utc),

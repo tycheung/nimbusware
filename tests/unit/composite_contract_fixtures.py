@@ -137,3 +137,32 @@ def findings_for_run(mem: Any, run_id: UUID) -> list[dict[str, Any]]:
 
 def stage_names_from_findings(findings: list[dict[str, Any]]) -> list[str | None]:
     return [(f.get("metadata") or {}).get("stage_name") for f in findings]
+
+
+def store_event_row(
+    *,
+    store_seq: int | str,
+    event_type: str,
+    occurred_at: Any = ...,
+) -> dict[str, Any]:
+    row: dict[str, Any] = {"store_seq": store_seq, "event_type": event_type}
+    if occurred_at is not ...:
+        row["occurred_at"] = occurred_at
+    return row
+
+
+def finding_dict_event(
+    *,
+    event_id: str = "ev-1",
+    occurred_at: str = "2024-01-01T00:00:00Z",
+    metadata: Any = None,
+    payload: Any = None,
+    event_type: str = EVENT_TYPE_FINDING,
+) -> dict[str, Any]:
+    return {
+        "event_type": event_type,
+        "event_id": event_id,
+        "occurred_at": occurred_at,
+        "metadata": metadata,
+        "payload": payload,
+    }

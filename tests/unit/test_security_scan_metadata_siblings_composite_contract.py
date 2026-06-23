@@ -4,12 +4,12 @@ import json
 from collections import Counter, OrderedDict, UserDict, defaultdict
 from dataclasses import dataclass
 from types import MappingProxyType, SimpleNamespace
-from typing import Any
 
 from nimbusware_api.routes.runs import (
     _finding_has_security_scan_metadata,
     security_scan_on_verify_timeline_summary,
 )
+from unit.composite_contract_fixtures import finding_dict_event
 
 # Constants and tiny builder helpers
 
@@ -28,23 +28,6 @@ _EXPECTED_SUMMARY_KEYS = {
     "security_scan_bandit_exit",
     "security_scan_snippet",
 }
-
-
-def _finding_event(
-    *,
-    event_id: str = "ev-1",
-    occurred_at: str = "2024-01-01T00:00:00Z",
-    metadata: Any = None,
-    payload: Any = None,
-    event_type: str = "finding.created",
-) -> dict[str, Any]:
-    return {
-        "event_type": event_type,
-        "event_id": event_id,
-        "occurred_at": occurred_at,
-        "metadata": metadata,
-        "payload": payload,
-    }
 
 
 # Part A -- _finding_has_security_scan_metadata isinstance / subclass matrix
@@ -194,13 +177,13 @@ class TestPartCSummaryOrderingFiltering:
 
     def test_c2_list_order_ordering_not_timestamp_key_divergence(self) -> None:
         events = [
-            _finding_event(
+            finding_dict_event(
                 event_id="ev-LATER-OCCURRED",
                 occurred_at="2099-01-01T00:00:00Z",
                 metadata={_EXIT_KEY: 0, _SNIPPET_KEY: "first"},
                 payload={"finding_id": "f-FIRST"},
             ),
-            _finding_event(
+            finding_dict_event(
                 event_id="ev-EARLIER-OCCURRED",
                 occurred_at="1999-01-01T00:00:00Z",
                 metadata={_EXIT_KEY: 1, _SNIPPET_KEY: "second"},
@@ -228,7 +211,7 @@ class TestPartCSummaryOrderingFiltering:
         ]
         for et in wrong_types:
             events = [
-                _finding_event(
+                finding_dict_event(
                     event_type=et,
                     metadata={_EXIT_KEY: 0, _SNIPPET_KEY: "..."},
                     payload={"finding_id": "f-1"},
@@ -240,9 +223,9 @@ class TestPartCSummaryOrderingFiltering:
 
     def test_c4_mixed_pass_through_keeps_out_none(self) -> None:
         events = [
-            _finding_event(event_id="ev-1", metadata={}, payload={"finding_id": "f-1"}),
-            _finding_event(event_id="ev-2", metadata=None, payload={"finding_id": "f-2"}),
-            _finding_event(
+            finding_dict_event(event_id="ev-1", metadata={}, payload={"finding_id": "f-1"}),
+            finding_dict_event(event_id="ev-2", metadata=None, payload={"finding_id": "f-2"}),
+            finding_dict_event(
                 event_id="ev-3",
                 metadata={"other_key": "x", "another": 42},
                 payload={"finding_id": "f-3"},
@@ -253,7 +236,7 @@ class TestPartCSummaryOrderingFiltering:
     def test_c5_no_category_gate_at_summary_layer(self) -> None:
         for category in ["performance", "style", "lint", "unknown"]:
             events = [
-                _finding_event(
+                finding_dict_event(
                     metadata={_EXIT_KEY: 0},
                     payload={
                         "finding_id": "f-1",
@@ -276,7 +259,7 @@ class TestPartDPayloadSourceReturnType:
 
     def test_d1_payload_none_coerced_to_empty_dict(self) -> None:
         events = [
-            _finding_event(
+            finding_dict_event(
                 event_id="ev-1",
                 occurred_at="2024-01-01T00:00:00Z",
                 metadata={_EXIT_KEY: 0, _SNIPPET_KEY: "ok"},
@@ -299,7 +282,7 @@ class TestPartDPayloadSourceReturnType:
     def test_d2_non_dict_payload_coerced_to_empty_dict(self) -> None:
         for bad_payload in ["not-a-dict", [1, 2, 3], 42, True]:
             events = [
-                _finding_event(
+                finding_dict_event(
                     metadata={_EXIT_KEY: 0},
                     payload=bad_payload,
                 )
@@ -316,7 +299,7 @@ class TestPartDPayloadSourceReturnType:
     def test_d3_source_split_guard_metadata_only_key_divergence(self) -> None:
         # Scan keys in payload only; metadata empty.
         events_payload_only = [
-            _finding_event(
+            finding_dict_event(
                 metadata={},
                 payload={
                     _EXIT_KEY: 1,
@@ -329,7 +312,7 @@ class TestPartDPayloadSourceReturnType:
 
         # Same with metadata explicitly None.
         events_meta_none = [
-            _finding_event(
+            finding_dict_event(
                 metadata=None,
                 payload={_EXIT_KEY: 1, _SNIPPET_KEY: "..."},
             )
@@ -349,7 +332,7 @@ class TestPartDPayloadSourceReturnType:
 
     def test_d4_top_level_event_id_and_occurred_at_attribution(self) -> None:
         events = [
-            _finding_event(
+            finding_dict_event(
                 event_id="ev-TOP-LEVEL",
                 occurred_at="2025-01-01T00:00:00Z",
                 metadata={_EXIT_KEY: 0},
@@ -370,7 +353,7 @@ class TestPartDPayloadSourceReturnType:
 
     def test_d5_return_type_is_plain_dict_key_divergence(self) -> None:
         events = [
-            _finding_event(
+            finding_dict_event(
                 metadata={_EXIT_KEY: 0, _SNIPPET_KEY: "snippet-text"},
                 payload={
                     "finding_id": "f-1",
