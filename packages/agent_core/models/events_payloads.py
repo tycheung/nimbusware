@@ -1,4 +1,13 @@
-"""Event payload models — re-export barrel for backward compatibility."""
+"""Event payload models — compatibility barrel (C65).
+
+Domain modules hold implementations; import those for new code:
+- ``events_payloads_base`` — shared base types
+- ``events_payloads_run`` — run lifecycle / model / hardware payloads
+- ``events_payloads_stage`` — stage / finding / gate payloads
+- ``events_payloads_campaign`` — campaign / stitch / slice payloads
+
+This module re-exports all symbols for ``events.py`` star-import and legacy callers.
+"""
 
 from agent_core.models.events_payloads_base import (
     DEFAULT_FINDING_FIX_STRICTNESS,

@@ -27,6 +27,7 @@ nimbusware_console/
 ├── services/                 # HTTP clients to /v1 (runs, chat, config, ollama, …)
 ├── components/               # Shared explainer panel + operator metrics helpers
 ├── explainer_core/           # metrics_scaffold, workflow_payload_header, yaml_version_caption, exports
+├── integrator_core/          # Shared thresholds / min-score / gate emission (C62)
 ├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
 ├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)
 ├── *_display/                # Package-only display modules (no duplicate .py shim)
@@ -45,6 +46,29 @@ nimbusware_console/
 ```
 
 ## Display modules (facade entry points)
+
+### Flat `*_display.py` barrels (C64 audit)
+
+| Module | Kind | Action |
+|--------|------|--------|
+| `integrator_gate_display.py` | Pure facade → `integrator_gate/` | **Keep** — CI-synced |
+| `run_escalated_display.py` | Pure facade → `run_escalated/` | **Keep** — CI-synced |
+| `self_refinement_display.py` | Pure facade → `self_refinement/` | **Keep** — CI-synced |
+| `security_scan_on_verify_display.py` | Pure facade → `security_scan_on_verify/` | **Keep** — CI-synced |
+| `findings_display.py` | Local implementation | **Keep** — migrate to package when >400 LOC |
+| `critic_matrix_display.py` | Local implementation | **Keep** |
+| `critic_reliability_display.py` | Hybrid facade + formatters | **Keep** |
+| `preflight_history_display.py` | Local implementation | **Keep** |
+| `scraper_fetch_display.py` | Local implementation | **Keep** |
+| `bundle_memory_display.py` | Local implementation | **Keep** |
+| `memory_display.py` | Hybrid re-export + helpers | **Keep** |
+| `persona_assignment_display.py` | Local implementation | **Keep** |
+| `phase3_critique_display.py` | Local implementation | **Keep** |
+| `micro_slice_packet_display.py` | Local implementation | **Keep** |
+
+Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not collapse into a mega-barrel — each maps to one admin tab.
+
+### Admin surface map
 
 | Module | Admin surface |
 |--------|---------------|
