@@ -28,11 +28,11 @@ from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_serv
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_orchestrator.autopilot_profiles import resolve_autopilot_profile
 from nimbusware_orchestrator.enforcement_profiles import resolve_enforcement_profile
-from nimbusware_orchestrator.hybrid_routing import (
+from nimbusware_orchestrator.routing_presets import (
     apply_routing_preset,
     list_routing_preset_summaries,
-    probe_cloud_runtime,
 )
+from nimbusware_orchestrator.stage_provider_routing import probe_cloud_runtime
 from nimbusware_orchestrator.user_autopilot_profiles import (
     load_user_autopilot_profiles,
     upsert_user_autopilot_profile,

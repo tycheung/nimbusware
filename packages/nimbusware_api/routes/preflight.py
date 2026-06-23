@@ -221,7 +221,7 @@ def get_preflight_history(
                 status=list_status_filter,
             ),
         )
-    from nimbusware_orchestrator.hybrid_routing import probe_cloud_runtime
+    from nimbusware_orchestrator.stage_provider_routing import probe_cloud_runtime
 
     routing_path = orch.repo_root / "configs" / "model-routing.yaml"
     cloud_preflight: dict[str, object] | None = None

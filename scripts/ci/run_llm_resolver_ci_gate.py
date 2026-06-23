@@ -11,7 +11,7 @@ PACKAGES = ROOT / "packages"
 
 ALLOWLIST = {
     PACKAGES / "nimbusware_orchestrator" / "ollama_chat.py",
-    PACKAGES / "nimbusware_orchestrator" / "hybrid_routing.py",
+    PACKAGES / "nimbusware_orchestrator" / "stage_provider_routing.py",
     PACKAGES / "nimbusware_orchestrator" / "llm_plan.py",
     PACKAGES / "nimbusware_orchestrator" / "llm" / "common.py",
     PACKAGES / "nimbusware_orchestrator" / "llm" / "providers" / "ollama_provider.py",

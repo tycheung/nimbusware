@@ -44,7 +44,7 @@ Orthogonal to autopilot (ADR 014): `enforcement_profiles.py` resolves 0–10 pre
 - **`ModelBindingResolver`** (`model_binding_resolver.py`) — per-role LLM dispatch; precedence: claim snapshot → swap event → run snapshot → session overrides → user defaults → workflow → global fallback. ADR [022](../../docs/adr/022-per-role-model-routing.md).
 - **`binding_preflight.py`** — provider-aware readiness (`roles_covered`, `providers_reachable`).
 - **Mesh** — `mesh_pipeline_hook.py`, `mesh_scheduler.py`, `role_claims_mesh.py`; host merge via `nimbusware_compute.mesh_host_sync`. Worker CLI: `nimbusware-compute-worker`. See [compute-mesh.md](../../docs/compute-mesh.md).
-- **Legacy shim** — `hybrid_routing.py` retained for `stage_providers` migration (fo1471); new code routes through resolver only.
+- **Stage provider routing** — `routing_presets.py`, `stage_provider_routing.py`, and `routing_cost_summary.py` implement preset apply/list, cloud/local stage routing, and run cost summaries.
 
 ## Backlog generation
 

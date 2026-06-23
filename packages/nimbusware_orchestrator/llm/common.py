@@ -259,7 +259,7 @@ def ollama_chat_json_via_plan_patch(
     if stage_name:
         from nimbusware_config.persist import load_model_routing_dict
         from nimbusware_env import find_repo_root
-        from nimbusware_orchestrator.hybrid_routing import cloud_chat_json, resolve_stage_provider
+        from nimbusware_orchestrator.stage_provider_routing import cloud_chat_json, resolve_stage_provider
 
         routing = load_model_routing_dict(find_repo_root())
         if resolve_stage_provider(routing, stage_name) == "cloud":

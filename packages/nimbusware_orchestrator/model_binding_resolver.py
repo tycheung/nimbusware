@@ -8,7 +8,7 @@ import yaml
 
 from agent_core.mapping import mapping_or_empty
 from nimbusware_config.persist import load_model_routing_dict
-from nimbusware_orchestrator.hybrid_routing import resolve_stage_provider
+from nimbusware_orchestrator.stage_provider_routing import resolve_stage_provider
 from nimbusware_orchestrator.llm.providers import provider_for_preset
 
 
@@ -75,7 +75,7 @@ _ROLE_STAGE_MAP: dict[str, str] = {
 }
 
 
-def _hybrid_routing_binding(repo_root: Path, agent_role: str) -> ResolvedBinding | None:
+def _stage_provider_binding(repo_root: Path, agent_role: str) -> ResolvedBinding | None:
     routing = load_model_routing_dict(repo_root)
     stage = _ROLE_STAGE_MAP.get(agent_role)
     if not stage:
@@ -149,9 +149,9 @@ class ModelBindingResolver:
             if block:
                 return _binding_from_block(role, block, source="workflow.profile")
 
-        hybrid = _hybrid_routing_binding(self._repo_root, role)
-        if hybrid is not None:
-            return hybrid
+        stage = _stage_provider_binding(self._repo_root, role)
+        if stage is not None:
+            return stage
 
         defaults = _load_defaults_yaml(self._repo_root)
         roles = mapping_or_empty(defaults.get("roles"))

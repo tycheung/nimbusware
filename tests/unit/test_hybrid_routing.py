@@ -5,13 +5,15 @@ from pathlib import Path
 import pytest
 import yaml
 
-from nimbusware_orchestrator.hybrid_routing import (
+from nimbusware_orchestrator.routing_presets import (
     apply_routing_preset,
     list_routing_preset_summaries,
+)
+from nimbusware_orchestrator.routing_cost_summary import summarize_run_role_cost
+from nimbusware_orchestrator.stage_provider_routing import (
     probe_cloud_runtime,
     resolve_stage_provider,
     stage_chat_json,
-    summarize_run_role_cost,
 )
 from nimbusware_orchestrator.role_telemetry import merge_role_telemetry_metadata
 
@@ -91,7 +93,7 @@ def test_stage_chat_json_routes_cloud_stage(
             }
 
     monkeypatch.setattr(
-        "nimbusware_orchestrator.hybrid_routing.httpx.post",
+        "nimbusware_orchestrator.stage_provider_routing.httpx.post",
         lambda *a, **k: _Resp(),
     )
     out = stage_chat_json(
