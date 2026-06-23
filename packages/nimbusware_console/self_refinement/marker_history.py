@@ -8,6 +8,7 @@ from datetime import datetime
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.self_refinement._helpers import _parse_iso_utc, _stringify
 
 
@@ -168,41 +169,13 @@ def self_refinement_marker_history_operator_metrics_caption(
     return "Self-refinement marker history metrics: " + ", ".join(parts) + "."
 
 
-_SELF_REFINEMENT_MARKER_HISTORY_OPERATOR_METRICS_CSV_COLUMNS: tuple[str, ...] = (
-    "field",
-    "value",
+(
+    self_refinement_marker_history_operator_metrics_export_json,
+    self_refinement_marker_history_operator_metrics_table_rows_csv,
+    _self_refinement_marker_history_operator_metrics_exports_slug,
+) = bind_operator_metrics_exports(
+    export_slug="self_refinement_marker_history_operator_metrics",
 )
-
-
-def self_refinement_marker_history_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    if not isinstance(metrics, Mapping):
-        return "{}"
-    return json.dumps(dict(metrics), indent=2, ensure_ascii=False)
-
-
-def self_refinement_marker_history_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SELF_REFINEMENT_MARKER_HISTORY_OPERATOR_METRICS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {
-                    k: r.get(k, "")
-                    for k in _SELF_REFINEMENT_MARKER_HISTORY_OPERATOR_METRICS_CSV_COLUMNS
-                },
-            )
-    return buf.getvalue()
 
 
 def self_refinement_marker_history_operator_metrics_export_filename_slug(
