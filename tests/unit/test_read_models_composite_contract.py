@@ -2,151 +2,27 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
 
-from agent_core.models import (
-    EventType,
-    FindingCreatedEvent,
-    FindingCreatedPayload,
-    RunCompletedEvent,
-    RunCompletedPayload,
-    RunCreatedEvent,
-    RunCreatedPayload,
-    RunEscalatedEvent,
-    RunEscalatedPayload,
-    RunFailedEvent,
-    RunFailedPayload,
-    RunStartedEvent,
-    RunStartedPayload,
-    Severity,
-    StageStartedEvent,
-    StageStartedPayload,
-)
+from agent_core.models import EventType
 from nimbusware_orchestrator.read_models import (
     RUN_LIST_FILTER_STATUSES,
     build_run_summary,
     run_has_started,
 )
-from nimbusware_store.memory import InMemoryEventStore
-
-_BACKEND_WRITER = UUID("44444444-4444-4444-8444-444444444404")
-
-
-def _make_store_and_run() -> tuple[InMemoryEventStore, UUID]:
-    """Fresh ``InMemoryEventStore`` + a new run UUID for one axis."""
-    return InMemoryEventStore(), uuid4()
-
-
-def _append_run_created(
-    store: InMemoryEventStore,
-    run_id: UUID,
-    *,
-    workflow_profile: str = "default",
-    metadata: dict[str, Any] | None = None,
-) -> None:
-    store.append(
-        RunCreatedEvent(
-            event_type=EventType.RUN_CREATED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=RunCreatedPayload(
-                workflow_profile=workflow_profile,
-                policy_version="1",
-                config_snapshot_id="snap",
-            ),
-            metadata=metadata or {},
-        ),
-    )
-
-
-def _append_run_started(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        RunStartedEvent(
-            event_type=EventType.RUN_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=RunStartedPayload(started_by="fo115_actor"),
-        ),
-    )
-
-
-def _append_run_failed(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        RunFailedEvent(
-            event_type=EventType.RUN_FAILED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=RunFailedPayload(
-                reason_code="fo115_reason",
-                message="fo115 terminal failure",
-            ),
-        ),
-    )
-
-
-def _append_run_completed(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        RunCompletedEvent(
-            event_type=EventType.RUN_COMPLETED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=RunCompletedPayload(summary="fo115 happy completion"),
-        ),
-    )
-
-
-def _append_run_escalated(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        RunEscalatedEvent(
-            event_type=EventType.RUN_ESCALATED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=RunEscalatedPayload(
-                actor_id="fo115_human",
-                reason_code="fo115_escalation",
-            ),
-        ),
-    )
-
-
-def _append_stage_started(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        StageStartedEvent(
-            event_type=EventType.STAGE_STARTED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=StageStartedPayload(stage_name="fo115_stage", attempt=1),
-        ),
-    )
-
-
-def _append_finding_created(store: InMemoryEventStore, run_id: UUID) -> None:
-    store.append(
-        FindingCreatedEvent(
-            event_type=EventType.FINDING_CREATED,
-            event_id=uuid4(),
-            run_id=run_id,
-            occurred_at=datetime.now(timezone.utc),
-            payload=FindingCreatedPayload(
-                finding_id=uuid4(),
-                category="fo115_category",
-                owner_role=_BACKEND_WRITER,
-                severity=Severity.LOW,
-                source_artifact="fo115",
-                repro_steps=[],
-                required_fixes=[],
-            ),
-        ),
-    )
+from unit.composite_store_fixtures import (
+    append_finding_created,
+    append_run_completed,
+    append_run_created,
+    append_run_escalated,
+    append_run_failed,
+    append_run_started,
+    append_stage_started,
+    make_store_and_run,
+)
 
 
 def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
@@ -204,8 +80,8 @@ def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
         "empty would FLIP this axis"
     )
 
-    a5_store, a5_rid = _make_store_and_run()
-    _append_run_failed(a5_store, a5_rid)
+    a5_store, a5_rid = make_store_and_run()
+    append_run_failed(a5_store, a5_rid)
     a5_rows = a5_store.list_run_events(str(a5_rid))
     assert run_has_started(a5_rows) is False, (
         "A5: run_has_started on rows containing ONLY a RUN_FAILED row "
@@ -216,8 +92,8 @@ def test_read_models_empty_rows_and_filter_set_and_run_has_started_baseline(
 
 
 def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contract() -> None:
-    b1_store, b1_rid = _make_store_and_run()
-    _append_run_created(b1_store, b1_rid, workflow_profile="b1_profile")
+    b1_store, b1_rid = make_store_and_run()
+    append_run_created(b1_store, b1_rid, workflow_profile="b1_profile")
     b1_summary = build_run_summary(b1_store.list_run_events(str(b1_rid)))
     assert b1_summary["status"] == "created", (
         f"B1: RUN_CREATED only -> status='created' (latest is RUN_CREATED, "
@@ -232,9 +108,9 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         f"stays None. Got {b1_summary['terminal_event_type']!r}"
     )
 
-    b2_store, b2_rid = _make_store_and_run()
-    _append_run_created(b2_store, b2_rid)
-    _append_stage_started(b2_store, b2_rid)
+    b2_store, b2_rid = make_store_and_run()
+    append_run_created(b2_store, b2_rid)
+    append_stage_started(b2_store, b2_rid)
     b2_summary = build_run_summary(b2_store.list_run_events(str(b2_rid)))
     assert b2_summary["status"] == "running", (
         f"B2: RUN_CREATED + STAGE_STARTED (NO RUN_STARTED) -> status='running' "
@@ -248,9 +124,9 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         f"B2(latest): latest is STAGE_STARTED. Got {b2_summary['latest_event_type']!r}"
     )
 
-    b3_store, b3_rid = _make_store_and_run()
-    _append_run_created(b3_store, b3_rid)
-    _append_run_started(b3_store, b3_rid)
+    b3_store, b3_rid = make_store_and_run()
+    append_run_created(b3_store, b3_rid)
+    append_run_started(b3_store, b3_rid)
     b3_summary = build_run_summary(b3_store.list_run_events(str(b3_rid)))
     assert b3_summary["status"] == "running", (
         f"B3: RUN_CREATED + RUN_STARTED -> status='running' via the STARTED "
@@ -261,10 +137,10 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         f"B3(latest): latest is RUN_STARTED. Got {b3_summary['latest_event_type']!r}"
     )
 
-    b4_store, b4_rid = _make_store_and_run()
-    _append_run_created(b4_store, b4_rid)
-    _append_run_started(b4_store, b4_rid)
-    _append_run_failed(b4_store, b4_rid)
+    b4_store, b4_rid = make_store_and_run()
+    append_run_created(b4_store, b4_rid)
+    append_run_started(b4_store, b4_rid)
+    append_run_failed(b4_store, b4_rid)
     b4_summary = build_run_summary(b4_store.list_run_events(str(b4_rid)))
     assert b4_summary["status"] == "terminal", (
         f"B4: RUN_CREATED + RUN_STARTED + RUN_FAILED -> status='terminal' "
@@ -278,9 +154,9 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
         f"boolean state. Got {b4_summary['terminal_event_type']!r}"
     )
 
-    b5_store, b5_rid = _make_store_and_run()
-    _append_run_created(b5_store, b5_rid)
-    _append_run_completed(b5_store, b5_rid)
+    b5_store, b5_rid = make_store_and_run()
+    append_run_created(b5_store, b5_rid)
+    append_run_completed(b5_store, b5_rid)
     b5_summary = build_run_summary(b5_store.list_run_events(str(b5_rid)))
     assert b5_summary["status"] == "terminal", (
         f"B5: RUN_CREATED + RUN_COMPLETED (NO RUN_STARTED) -> status='terminal'. "
@@ -297,8 +173,8 @@ def test_build_run_summary_status_ladder_priority_and_terminal_event_type_contra
 
 
 def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contract() -> None:
-    c1_store, c1_rid = _make_store_and_run()
-    _append_run_created(c1_store, c1_rid, workflow_profile="alpha")
+    c1_store, c1_rid = make_store_and_run()
+    append_run_created(c1_store, c1_rid, workflow_profile="alpha")
     c1_summary = build_run_summary(c1_store.list_run_events(str(c1_rid)))
     assert c1_summary["workflow_profile"] == "alpha", (
         f"C1: single RUN_CREATED with workflow_profile='alpha' -> "
@@ -306,9 +182,9 @@ def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contr
         f"{c1_summary['workflow_profile']!r}"
     )
 
-    c2_store, c2_rid = _make_store_and_run()
+    c2_store, c2_rid = make_store_and_run()
     c2_metadata = {"actor": "fo115_test", "trace_id": "xyz"}
-    _append_run_created(c2_store, c2_rid, metadata=c2_metadata)
+    append_run_created(c2_store, c2_rid, metadata=c2_metadata)
     c2_summary = build_run_summary(c2_store.list_run_events(str(c2_rid)))
     assert c2_summary["run_created_metadata"] == c2_metadata, (
         f"C2(value): single RUN_CREATED with metadata={c2_metadata!r} -> "
@@ -322,9 +198,9 @@ def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contr
         "mutate the event's frozen metadata. Pin via `is not` identity"
     )
 
-    c3_store, c3_rid = _make_store_and_run()
-    _append_stage_started(c3_store, c3_rid)
-    _append_finding_created(c3_store, c3_rid)
+    c3_store, c3_rid = make_store_and_run()
+    append_stage_started(c3_store, c3_rid)
+    append_finding_created(c3_store, c3_rid)
     c3_summary = build_run_summary(c3_store.list_run_events(str(c3_rid)))
     assert c3_summary["workflow_profile"] is None, (
         f"C3(workflow): rows with NO RUN_CREATED -> workflow_profile "
@@ -337,14 +213,14 @@ def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contr
         f"{c3_summary['run_created_metadata']!r}"
     )
 
-    c45_store, c45_rid = _make_store_and_run()
-    _append_run_created(
+    c45_store, c45_rid = make_store_and_run()
+    append_run_created(
         c45_store,
         c45_rid,
         workflow_profile="alpha",
         metadata={"order": "first"},
     )
-    _append_run_created(
+    append_run_created(
         c45_store,
         c45_rid,
         workflow_profile="beta",
@@ -372,10 +248,10 @@ def test_build_run_summary_first_vs_last_run_created_extraction_divergence_contr
 def test_read_models_counters_flags_event_count_and_run_has_started_defensive_contract() -> None:
     d1_counts: list[tuple[int, int]] = [(0, 0), (1, 1), (3, 3)]
     for n_findings, expected in d1_counts:
-        d1_store, d1_rid = _make_store_and_run()
-        _append_run_created(d1_store, d1_rid)
+        d1_store, d1_rid = make_store_and_run()
+        append_run_created(d1_store, d1_rid)
         for _ in range(n_findings):
-            _append_finding_created(d1_store, d1_rid)
+            append_finding_created(d1_store, d1_rid)
         d1_summary = build_run_summary(d1_store.list_run_events(str(d1_rid)))
         assert d1_summary["findings_count"] == expected, (
             f"D1 n={n_findings}: findings_count expected {expected}, got "
@@ -387,10 +263,10 @@ def test_read_models_counters_flags_event_count_and_run_has_started_defensive_co
 
     d2_cases: list[tuple[int, bool]] = [(0, False), (1, True), (2, True)]
     for n_escalations, expected_flag in d2_cases:
-        d2_store, d2_rid = _make_store_and_run()
-        _append_run_created(d2_store, d2_rid)
+        d2_store, d2_rid = make_store_and_run()
+        append_run_created(d2_store, d2_rid)
         for _ in range(n_escalations):
-            _append_run_escalated(d2_store, d2_rid)
+            append_run_escalated(d2_store, d2_rid)
         d2_summary = build_run_summary(d2_store.list_run_events(str(d2_rid)))
         assert d2_summary["has_escalation"] is expected_flag, (
             f"D2 n={n_escalations}: has_escalation expected "
@@ -406,14 +282,14 @@ def test_read_models_counters_flags_event_count_and_run_has_started_defensive_co
         ("finding.created", ["run.created", "stage.started", "finding.created"]),
     ]
     for expected_latest, sequence in d3_tails:
-        d3_store, d3_rid = _make_store_and_run()
+        d3_store, d3_rid = make_store_and_run()
         for et in sequence:
             if et == "run.created":
-                _append_run_created(d3_store, d3_rid)
+                append_run_created(d3_store, d3_rid)
             elif et == "stage.started":
-                _append_stage_started(d3_store, d3_rid)
+                append_stage_started(d3_store, d3_rid)
             elif et == "finding.created":
-                _append_finding_created(d3_store, d3_rid)
+                append_finding_created(d3_store, d3_rid)
         d3_rows = d3_store.list_run_events(str(d3_rid))
         d3_summary = build_run_summary(d3_rows)
         assert d3_summary["event_count"] == len(sequence), (
@@ -428,18 +304,18 @@ def test_read_models_counters_flags_event_count_and_run_has_started_defensive_co
             "of which event type the tail is"
         )
 
-    d4_store_simple, d4_rid_simple = _make_store_and_run()
-    _append_run_created(d4_store_simple, d4_rid_simple)
-    _append_run_started(d4_store_simple, d4_rid_simple)
+    d4_store_simple, d4_rid_simple = make_store_and_run()
+    append_run_created(d4_store_simple, d4_rid_simple)
+    append_run_started(d4_store_simple, d4_rid_simple)
     assert run_has_started(d4_store_simple.list_run_events(str(d4_rid_simple))) is True, (
         "D4(happy): RUN_CREATED + RUN_STARTED -> True"
     )
 
-    d4_store_middle, d4_rid_middle = _make_store_and_run()
-    _append_run_created(d4_store_middle, d4_rid_middle)
-    _append_run_started(d4_store_middle, d4_rid_middle)
-    _append_stage_started(d4_store_middle, d4_rid_middle)
-    _append_finding_created(d4_store_middle, d4_rid_middle)
+    d4_store_middle, d4_rid_middle = make_store_and_run()
+    append_run_created(d4_store_middle, d4_rid_middle)
+    append_run_started(d4_store_middle, d4_rid_middle)
+    append_stage_started(d4_store_middle, d4_rid_middle)
+    append_finding_created(d4_store_middle, d4_rid_middle)
     d4_middle_rows = d4_store_middle.list_run_events(str(d4_rid_middle))
     assert run_has_started(d4_middle_rows) is True, (
         f"D4(middle): RUN_STARTED in the MIDDLE of the row sequence "
@@ -494,8 +370,8 @@ def test_read_models_counters_flags_event_count_and_run_has_started_defensive_co
             "metadata": {},
         },
     ]
-    d5b_store, d5b_rid = _make_store_and_run()
-    _append_run_started(d5b_store, d5b_rid)
+    d5b_store, d5b_rid = make_store_and_run()
+    append_run_started(d5b_store, d5b_rid)
     malformed_failed_then_valid_started_rows.extend(
         d5b_store.list_run_events(str(d5b_rid)),
     )
