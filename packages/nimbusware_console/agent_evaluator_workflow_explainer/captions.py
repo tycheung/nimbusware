@@ -5,50 +5,30 @@ from typing import Any
 
 from agent_core.mapping import load_error_text
 from nimbusware_console.explainer_core.env_captions import (
-    env_disable_flag_gate_caption,
-    env_tri_state_gate_caption,
+    env_disable_registry_caption,
+    env_tri_state_registry_caption,
+)
+from nimbusware_console.explainer_core.field_caption import (
+    payload_nonempty_str_caption,
+    payload_nonneg_int_caption,
 )
 
 
 def agent_evaluator_env_gate_caption(payload: Mapping[str, Any] | None) -> str | None:
-    return env_tri_state_gate_caption(
+    return env_tri_state_registry_caption(
         payload,
         "NIMBUSWARE_AGENT_EVALUATOR",
-        label="Agent evaluator",
-        forces_off_text=(
-            "Agent evaluator env: **{env_key}** kill-switch active"
-            "{detail} — stage.started will not emit from env alone."
-        ),
-        forces_on_text=(
-            "Agent evaluator env: **{env_key}** force-on"
-            "{detail} — stage.started may emit when workflow gate allows."
-        ),
-        unset_text=(
-            "Agent evaluator env: **{env_key}** unset — "
-            "workflow YAML ``agent_evaluator.enabled`` controls emission."
-        ),
-        unrecognised_text=(
-            "Agent evaluator env: **{env_key}** unrecognised value"
-            "{detail} — treated like unset; workflow YAML gate applies."
-        ),
+        "agent_evaluator",
     )
 
 
 def agent_evaluator_auto_promote_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    return env_disable_flag_gate_caption(
+    return env_disable_registry_caption(
         payload,
         "NIMBUSWARE_AGENT_EVALUATOR_AUTO_PROMOTE",
-        active_text=("Agent evaluator auto-promote env: **{env_key}** kill-switch active{detail}."),
-        unset_text=(
-            "Agent evaluator auto-promote env: **{env_key}** unset — "
-            "workflow ``agent_evaluator.auto_promote_probation`` controls promotion."
-        ),
-        unrecognised_text=(
-            "Agent evaluator auto-promote env: **{env_key}** unrecognised value"
-            "{detail} — treated like unset."
-        ),
+        "agent_evaluator_auto_promote",
     )
 
 
@@ -63,48 +43,31 @@ def agent_evaluator_workflow_yaml_version_caption(
 def agent_evaluator_auto_create_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    return env_disable_flag_gate_caption(
+    return env_disable_registry_caption(
         payload,
         "NIMBUSWARE_AGENT_EVALUATOR_AUTO_CREATE",
-        active_text=("Agent evaluator auto-create env: **{env_key}** kill-switch active{detail}."),
-        unset_text=(
-            "Agent evaluator auto-create env: **{env_key}** unset — "
-            "workflow ``agent_evaluator.auto_create_persona`` controls creation."
-        ),
-        unrecognised_text=(
-            "Agent evaluator auto-create env: **{env_key}** unrecognised value"
-            "{detail} — treated like unset."
-        ),
+        "agent_evaluator_auto_create",
     )
 
 
 def agent_evaluator_yaml_true_bool_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("agent_evaluator_yaml_true_bool_value_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Agent evaluator workflow YAML enabled: true leaf count: **{raw}**."
+    return payload_nonneg_int_caption(
+        payload,
+        "agent_evaluator_yaml_true_bool_value_count",
+        "Agent evaluator workflow YAML enabled: true leaf count: **{value}**.",
+    )
 
 
 def agent_evaluator_yaml_raw_type_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("agent_evaluator_yaml_raw_type")
-    if not isinstance(raw, str):
-        return None
-    text = raw.strip()
-    if not text:
-        return None
-    return f"Agent evaluator workflow YAML raw type: **{text}**."
+    return payload_nonempty_str_caption(
+        payload,
+        "agent_evaluator_yaml_raw_type",
+        "Agent evaluator workflow YAML raw type: **{value}**.",
+    )
 
 
 def agent_evaluator_yaml_key_present_caption(
@@ -128,17 +91,11 @@ def agent_evaluator_yaml_key_present_caption(
 def agent_evaluator_persona_id_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("yaml_parsed_persona_id")
-    if not isinstance(raw, str):
-        return None
-    text = raw.strip()
-    if not text:
-        return None
-    return f"Agent evaluator persona_id: `{text}`."
+    return payload_nonempty_str_caption(
+        payload,
+        "yaml_parsed_persona_id",
+        "Agent evaluator persona_id: `{value}`.",
+    )
 
 
 def agent_evaluator_llm_evaluation_enabled_caption(

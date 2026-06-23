@@ -3,31 +3,17 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+from nimbusware_console.explainer_core.env_captions import env_tri_state_registry_caption
 
 
 def integration_adapter_writer_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    cap = env_tri_state_gate_caption(
+    return env_tri_state_registry_caption(
         payload,
         "NIMBUSWARE_INTEGRATION_ADAPTER_WRITER",
-        label="Integration Adapter Writer env",
-        forces_off_text=(
-            "Integration Adapter Writer env: **{env_key}** "
-            "kill-switch active{detail} — workflow enable ignored."
-        ),
-        forces_on_text=(
-            "Integration Adapter Writer env: **{env_key}** "
-            "force-on{detail} — scaffold may activate when pipeline wiring lands."
-        ),
-        unset_text=(
-            "Integration Adapter Writer env: unset — "
-            "workflow ``integration_adapter_writer.enabled`` controls scaffold."
-        ),
-        unrecognised_text="",
+        "integration_adapter_writer",
     )
-    return cap or None
 
 
 def integration_adapter_writer_effective_caption(

@@ -3,99 +3,85 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from agent_core.mapping import field_error_text, load_error_text
+from nimbusware_console.explainer_core.field_caption import (
+    escalation_policy_yaml_ready,
+    payload_bool_shape_caption,
+    payload_load_error_clear,
+    payload_mapping,
+    payload_nonempty_str_caption,
+    payload_nonneg_int_caption,
+)
 
 
 def escalation_policy_yaml_verification_shape_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    has_v = payload.get("escalation_policy_yaml_has_verification_mapping")
-    if has_v is True:
-        return (
+    return payload_bool_shape_caption(
+        payload,
+        "escalation_policy_yaml_has_verification_mapping",
+        true_text=(
             "Policy shape: top-level ``verification`` mapping present "
             "(auto-escalate / threshold knobs)."
-        )
-    if has_v is False:
-        return (
+        ),
+        false_text=(
             "Policy shape: no top-level ``verification`` mapping "
             "(unexpected vs standard agent ``policy.yaml``)."
-        )
-    return None
+        ),
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_deadlock_minutes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    raw = payload.get("escalation_policy_yaml_deadlock_escalation_after_minutes")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    unit = "minute" if raw == 1 else "minutes"
-    return f"Escalation policy deadlock_escalation_after_minutes: **{raw}** {unit}."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_deadlock_escalation_after_minutes",
+        "Escalation policy deadlock_escalation_after_minutes: **{value}** {unit}.",
+        guard=escalation_policy_yaml_ready,
+        unit=lambda n: "minute" if n == 1 else "minutes",
+    )
 
 
 def escalation_policy_yaml_anti_deadlock_min_progress_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    raw = payload.get("escalation_policy_yaml_anti_deadlock_min_progress_events")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    unit = "event" if raw == 1 else "events"
-    return f"Escalation policy anti_deadlock.min_progress_events: **{raw}** {unit}."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_anti_deadlock_min_progress_events",
+        "Escalation policy anti_deadlock.min_progress_events: **{value}** {unit}.",
+        guard=escalation_policy_yaml_ready,
+        unit=lambda n: "event" if n == 1 else "events",
+    )
 
 
 def escalation_policy_yaml_anti_deadlock_shape_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    has_ad = payload.get("escalation_policy_yaml_has_anti_deadlock_mapping")
-    if has_ad is True:
-        return (
+    return payload_bool_shape_caption(
+        payload,
+        "escalation_policy_yaml_has_anti_deadlock_mapping",
+        true_text=(
             "Policy shape: top-level ``anti_deadlock`` mapping present (progress / deadlock knobs)."
-        )
-    if has_ad is False:
-        return (
+        ),
+        false_text=(
             "Policy shape: no top-level ``anti_deadlock`` mapping "
             "(unexpected vs standard agent ``policy.yaml``)."
-        )
-    return None
+        ),
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_yaml_key_present_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
+    body = payload_load_error_clear(payload)
+    if body is None:
         return None
-    if load_error_text(payload) is not None:
-        return None
-    present = payload.get("escalation_yaml_key_present")
+    present = body.get("escalation_yaml_key_present")
     if present is not True:
         return "Escalation suppress: workflow YAML **escalation** key **absent**."
-    effective = payload.get("suppress_automatic_escalation_effective")
+    effective = body.get("suppress_automatic_escalation_effective")
     if effective is True:
         return (
             "Escalation suppress: workflow **escalation** key **present**, "
@@ -115,14 +101,13 @@ def escalation_yaml_key_present_caption(
 def escalation_suppress_flag_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
+    body = payload_load_error_clear(payload)
+    if body is None:
         return None
-    if load_error_text(payload) is not None:
-        return None
-    effective = payload.get("suppress_automatic_escalation_effective")
+    effective = body.get("suppress_automatic_escalation_effective")
     if not isinstance(effective, bool):
         return None
-    raw_type = payload.get("suppress_automatic_escalation_yaml_raw_type")
+    raw_type = body.get("suppress_automatic_escalation_yaml_raw_type")
     base = f"Suppress automatic escalation: {effective}"
     if isinstance(raw_type, str) and raw_type.strip():
         return f"{base} (YAML raw type: {raw_type.strip()})."
@@ -132,99 +117,69 @@ def escalation_suppress_flag_caption(
 def escalation_policy_yaml_age_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    raw = payload.get("escalation_policy_yaml_age_seconds")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Escalation policy YAML age: **{raw}** seconds."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_age_seconds",
+        "Escalation policy YAML age: **{value}** seconds.",
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_file_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    raw = payload.get("escalation_policy_yaml_file_bytes")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Escalation policy YAML on disk: **{raw}** bytes."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_file_bytes",
+        "Escalation policy YAML on disk: **{value}** bytes.",
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_key_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    raw = payload.get("escalation_policy_yaml_top_level_key_count")
-    if isinstance(raw, bool) or not isinstance(raw, int):
-        return None
-    if raw < 0:
-        return None
-    return f"Policy YAML top-level keys: {raw}."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_top_level_key_count",
+        "Policy YAML top-level keys: {value}.",
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    ver = payload.get("escalation_policy_yaml_version")
-    if not isinstance(ver, int) or isinstance(ver, bool) or ver < 1:
-        return None
-    return f"Escalation policy YAML version: **{ver}**."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_version",
+        "Escalation policy YAML version: **{value}**.",
+        guard=escalation_policy_yaml_ready,
+        min_value=1,
+    )
 
 
 def escalation_policy_yaml_max_retries_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    raw = payload.get("escalation_policy_yaml_max_retries_per_stage")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Escalation policy max retries per stage: **{raw}**."
+    return payload_nonneg_int_caption(
+        payload,
+        "escalation_policy_yaml_max_retries_per_stage",
+        "Escalation policy max retries per stage: **{value}**.",
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_keys_sample_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
+    body = escalation_policy_yaml_ready(payload)
+    if body is None:
         return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    raw = payload.get("escalation_policy_yaml_top_level_keys_sample")
+    raw = body.get("escalation_policy_yaml_top_level_keys_sample")
     if not isinstance(raw, list) or not raw:
         return None
-    usable: list[str] = []
-    for entry in raw:
-        if not isinstance(entry, str):
-            continue
-        trimmed = entry.strip()
-        if trimmed:
-            usable.append(trimmed)
+    usable = [entry.strip() for entry in raw if isinstance(entry, str) and entry.strip()]
     if not usable:
         return None
     return "Policy YAML top-level keys (sample): " + ", ".join(usable) + "."
@@ -233,34 +188,24 @@ def escalation_policy_yaml_keys_sample_caption(
 def escalation_policy_yaml_relpath_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    if payload.get("escalation_policy_yaml_path_exists") is not True:
-        return None
-    rel = payload.get("escalation_policy_yaml_relpath")
-    if not isinstance(rel, str):
-        return None
-    trimmed = rel.strip()
-    if not trimmed:
-        return None
-    return f"Policy YAML path: {trimmed}."
+    return payload_nonempty_str_caption(
+        payload,
+        "escalation_policy_yaml_relpath",
+        "Policy YAML path: {value}.",
+        guard=escalation_policy_yaml_ready,
+    )
 
 
 def escalation_policy_yaml_mtime_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
+    body = escalation_policy_yaml_ready(payload)
+    if body is None:
         return None
-    if not payload.get("escalation_policy_yaml_path_exists", True):
-        return None
-    if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-        return None
-    iso = payload.get("escalation_policy_yaml_mtime_iso")
+    iso = body.get("escalation_policy_yaml_mtime_iso")
     if not isinstance(iso, str) or not iso.strip():
         return None
-    age = payload.get("escalation_policy_yaml_age_seconds")
+    age = body.get("escalation_policy_yaml_age_seconds")
     if isinstance(age, bool) or not isinstance(age, int):
         return None
     return f"Policy YAML last modified: {iso.strip()} ({age} seconds ago)."
@@ -269,18 +214,18 @@ def escalation_policy_yaml_mtime_caption(
 def escalation_policy_yaml_top_level_kinds_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
+    body = payload_mapping(payload)
+    if body is None:
         return None
 
-    explicit_path = "escalation_policy_yaml_top_level_kinds" in payload
+    explicit_path = "escalation_policy_yaml_top_level_kinds" in body
     if explicit_path:
-        if not payload.get("escalation_policy_yaml_path_exists", True):
+        body = escalation_policy_yaml_ready(body)
+        if body is None:
             return None
-        if field_error_text(payload, "escalation_policy_yaml_load_error") is not None:
-            return None
-        kinds = payload.get("escalation_policy_yaml_top_level_kinds")
+        kinds = body.get("escalation_policy_yaml_top_level_kinds")
     else:
-        kinds = payload
+        kinds = body
 
     if not isinstance(kinds, Mapping):
         return None

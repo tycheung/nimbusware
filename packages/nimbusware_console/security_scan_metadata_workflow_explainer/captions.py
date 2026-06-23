@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from agent_core.mapping import load_error_text
-from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+from nimbusware_console.explainer_core.env_captions import env_tri_state_registry_caption
 
 
 def security_scan_metadata_workflow_yaml_version_caption(
@@ -31,21 +31,10 @@ def security_scan_metadata_workflow_yaml_string_key_count_caption(
 def security_scan_metadata_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    return env_tri_state_gate_caption(
+    return env_tri_state_registry_caption(
         payload,
         "NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",
-        label="Security scan metadata",
-        forces_off_text=("Security scan metadata env: **{env_key}** kill-switch active{detail}."),
-        forces_on_text="Security scan metadata env: **{env_key}** force-on{detail}.",
-        unset_text=(
-            "Security scan metadata env: **{env_key}** unset — "
-            "workflow YAML controls **effective_enabled**."
-        ),
-        unrecognised_text=(
-            "Security scan metadata env: **{env_key}** unrecognised value"
-            "{detail} — treated like unset."
-        ),
-        unset_key="unset_follows_yaml",
+        "security_scan_metadata",
     )
 
 
