@@ -234,7 +234,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-new-session
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_shell_html.js
   label: New session
   clicked_in: []
   visible_only_in: []
@@ -276,7 +276,7 @@ buttons:
   visible_only_in: []
 - test_id: maker-chat-start
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/chat.js
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_shell_html.js
   label: Send
   clicked_in:
   - tests/e2e/web/maker_chat_branch.spec.ts
@@ -365,13 +365,13 @@ buttons:
   visible_only_in: []
 - test_id: maker-factory-evidence-download
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-factory-tier-promotion
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/progress/render-chips.js
+  source: packages/nimbusware_maker_web/static/js/tabs/progress/progress_status_chips.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -454,49 +454,49 @@ buttons:
   visible_only_in: []
 - test_id: maker-home-inference-mode
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-install-profile
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-model-hub-cta
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-model-pick
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-models-first
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-models-wizard
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-readiness
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
 - test_id: maker-home-readiness-status
   app: maker
-  source: packages/nimbusware_maker_web/static/js/tabs/home.js
+  source: packages/nimbusware_maker_web/static/js/tabs/home_readiness_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
