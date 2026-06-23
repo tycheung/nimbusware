@@ -8,7 +8,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 
 | Mixin | Module | Responsibility |
 |-------|--------|----------------|
-| `CreateRunMixin` | `create_run.py` | `run.created`, idempotency, project metadata |
+| `CreateRunMixin` | `create_run.py` (+ `create_run_workflow_blocks.py`, `create_run_metadata.py`, `create_run_preflight.py`) | `run.created`, idempotency, project metadata |
 | `CampaignDispatchMixin` | `campaign_dispatch.py` | `start_campaign`, `campaign_tick` queue dispatch |
 | `MicroSliceMixin` | `micro_slice.py` | Slice plan/implement/verify chain |
 | (packet helper) | `slice_repo_map.py` | Repo tree + import graph for `SliceContextPacket.repo_map_excerpt` |
