@@ -8,7 +8,7 @@ Legacy [`configs/model-routing.yaml`](../configs/model-routing.yaml) `stage_prov
 | backend_writer, frontend_writer | implement |
 | security_critic | critique |
 
-If the stage is set to `cloud` and `cloud_runtime.enabled` is true, the resolver returns a cloud binding with `binding_source: hybrid_routing.stage_providers`.
+If the stage is set to `cloud` and `cloud_runtime.enabled` is true, the resolver returns a cloud binding with `binding_source: hybrid_routing.stage_providers` (legacy label; implementation is `stage_provider_routing`).
 
 **Migration path:** apply a routing preset (`POST /v1/platform/routing-presets/apply`) or configure per-role bindings in Settings **Agent & Models**. Hybrid shim is a fallback only — not the long-term source of truth.
 

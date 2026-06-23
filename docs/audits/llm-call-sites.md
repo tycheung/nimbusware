@@ -18,11 +18,11 @@ Matrix of dispatch vs resolver target. **Exit criteria (A2):** orchestrator and 
 | `test_writer_stage.py` | test writer | via_plan_patch | `test_writer` |
 | `refactor_stage.py` | refactor | via_plan_patch | `backend_writer` |
 | `*_critique.py` (orchestrator root) | stage critics | via_plan_patch | `security_critic` |
-| `hybrid_routing.py` | `cloud_chat_json` | legacy shim when no role map | absorbed into providers layer |
+| `stage_provider_routing.py` | `cloud_chat_json` | stage fallback when no role map | via `ModelBindingResolver` (fo1471) |
 | `ollama_chat.py` | low-level HTTP | adapter only | wrapped by **OllamaProvider** (A1) |
 
 ## Notes
 
-- `ollama_chat_json` remains the Ollama HTTP adapter; production call sites use `ModelBindingResolver` except hybrid fallback for unmapped stages.
+- `ollama_chat_json` remains the Ollama HTTP adapter; production call sites use `ModelBindingResolver` except stage-provider fallback for unmapped stages (`stage_provider_routing`).
 - Stage → role mapping lives in `binding_preflight.agent_role_for_stage` (`plan`, `slice.*`, `*.critique`).
 - Preset `slice.critique` vs critique stage names (`implementation.critique`, etc.) resolved via expanded stage map (fo1471).
