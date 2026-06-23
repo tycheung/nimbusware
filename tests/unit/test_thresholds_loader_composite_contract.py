@@ -11,7 +11,7 @@ from nimbusware_orchestrator.integrator_gate import (
 )
 from unit.composite_repo_fixtures import (
     write_integrator_thresholds,
-    write_workflow_integrator_min_score,
+    write_workflow_integrator_min_score_yaml,
 )
 
 _YAML_ROOT_MAPPING_PREFIX = "YAML root must be a mapping:"
@@ -314,7 +314,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
             "would FLIP every case in D3"
         )
 
-        write_workflow_integrator_min_score(repo, name, raw)
+        write_workflow_integrator_min_score_yaml(repo, name, raw)
         wf_value = parse_integrator_gate_min_score_to_pass(repo, name)
         clamped_expected = max(0.0, min(1.0, expected))
         assert wf_value == pytest.approx(clamped_expected), (
@@ -337,7 +337,7 @@ def test_thresholds_loader_cross_function_composite_and_divergence_contract(
         "for missing-key would break that terminal-floor invariant)"
     )
     assert thresholds_no_key == 0.0
-    write_workflow_integrator_min_score(d4_repo, "d4_no_key", "")
+    write_workflow_integrator_min_score_yaml(d4_repo, "d4_no_key", "")
     wf_dir = d4_repo / "configs" / "workflows"
     (wf_dir / "d4_no_key.yaml").write_text(
         "version: 1\nintegrator_gate:\n  enabled: true\n",

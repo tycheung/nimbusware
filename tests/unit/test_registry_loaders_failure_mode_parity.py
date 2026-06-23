@@ -9,12 +9,7 @@ import pytest
 
 from nimbusware_orchestrator.registry import RoleRegistry
 from nimbusware_orchestrator.registry_db import load_registry_from_postgres
-
-
-def _write_yaml(tmp_path: Path, content: str, *, name: str = "roles.yaml") -> Path:
-    p = tmp_path / name
-    p.write_text(content, encoding="utf-8")
-    return p
+from unit.composite_repo_fixtures import write_tmp_yaml
 
 
 def _mock_psycopg_connect(rows: list[tuple[str, str]]) -> MagicMock:
@@ -44,23 +39,23 @@ def test_from_yaml_structural_error_matrix_5_axis(tmp_path: Path) -> None:
     A4 -- dict missing 'roles' key -> roles-not-list raise (None arm).
     A5 -- dict with 'roles' as dict -> roles-not-list raise (wrong-type arm).
     """
-    a1 = _write_yaml(tmp_path, "", name="a1.yaml")
+    a1 = write_tmp_yaml(tmp_path, "", name="a1.yaml")
     with pytest.raises(ValueError, match="root must be a mapping"):
         RoleRegistry.from_yaml(a1)
 
-    a2 = _write_yaml(tmp_path, "- 1\n- 2\n", name="a2.yaml")
+    a2 = write_tmp_yaml(tmp_path, "- 1\n- 2\n", name="a2.yaml")
     with pytest.raises(ValueError, match="root must be a mapping"):
         RoleRegistry.from_yaml(a2)
 
-    a3 = _write_yaml(tmp_path, "hello\n", name="a3.yaml")
+    a3 = write_tmp_yaml(tmp_path, "hello\n", name="a3.yaml")
     with pytest.raises(ValueError, match="root must be a mapping"):
         RoleRegistry.from_yaml(a3)
 
-    a4 = _write_yaml(tmp_path, "version: 1\n", name="a4.yaml")
+    a4 = write_tmp_yaml(tmp_path, "version: 1\n", name="a4.yaml")
     with pytest.raises(ValueError, match=r"must contain a 'roles' list"):
         RoleRegistry.from_yaml(a4)
 
-    a5 = _write_yaml(tmp_path, "roles:\n  a: b\n", name="a5.yaml")
+    a5 = write_tmp_yaml(tmp_path, "roles:\n  a: b\n", name="a5.yaml")
     with pytest.raises(ValueError, match=r"must contain a 'roles' list"):
         RoleRegistry.from_yaml(a5)
 
@@ -77,7 +72,7 @@ def test_from_yaml_graceful_skip_happy_path_5_axis(tmp_path: Path) -> None:
     B4 -- item missing role_id -> skipped via 'and rid' short-circuit.
     B5 -- non-string taxonomy_key (int) -> skipped via 'isinstance(key, str)'.
     """
-    b1 = _write_yaml(tmp_path, "roles: []\n", name="b1.yaml")
+    b1 = write_tmp_yaml(tmp_path, "roles: []\n", name="b1.yaml")
     reg_b1 = RoleRegistry.from_yaml(b1)
     assert reg_b1.known_taxonomy_keys() == frozenset(), (
         "B1: empty roles list must yield empty registry with no error "
@@ -91,7 +86,7 @@ def test_from_yaml_graceful_skip_happy_path_5_axis(tmp_path: Path) -> None:
         "  - 42\n"
         f"  - {{taxonomy_key: valid_b2, role_id: '{valid_uuid}'}}\n"
     )
-    reg_b2 = RoleRegistry.from_yaml(_write_yaml(tmp_path, b2_content, name="b2.yaml"))
+    reg_b2 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, b2_content, name="b2.yaml"))
     assert reg_b2.known_taxonomy_keys() == frozenset({"valid_b2"}), (
         "B2: non-dict items must be skipped; only the valid dict entry survives"
     )
@@ -101,7 +96,7 @@ def test_from_yaml_graceful_skip_happy_path_5_axis(tmp_path: Path) -> None:
         f"  - {{role_id: '{valid_uuid}'}}\n"
         f"  - {{taxonomy_key: valid_b3, role_id: '{valid_uuid}'}}\n"
     )
-    reg_b3 = RoleRegistry.from_yaml(_write_yaml(tmp_path, b3_content, name="b3.yaml"))
+    reg_b3 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, b3_content, name="b3.yaml"))
     assert reg_b3.known_taxonomy_keys() == frozenset({"valid_b3"}), (
         "B3: item missing taxonomy_key skipped (key=None not isinstance str)"
     )
@@ -111,7 +106,7 @@ def test_from_yaml_graceful_skip_happy_path_5_axis(tmp_path: Path) -> None:
         "  - {taxonomy_key: orphan_b4}\n"
         f"  - {{taxonomy_key: valid_b4, role_id: '{valid_uuid}'}}\n"
     )
-    reg_b4 = RoleRegistry.from_yaml(_write_yaml(tmp_path, b4_content, name="b4.yaml"))
+    reg_b4 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, b4_content, name="b4.yaml"))
     assert reg_b4.known_taxonomy_keys() == frozenset({"valid_b4"}), (
         "B4: item missing role_id skipped via 'and rid' short-circuit"
     )
@@ -121,7 +116,7 @@ def test_from_yaml_graceful_skip_happy_path_5_axis(tmp_path: Path) -> None:
         f"  - {{taxonomy_key: 42, role_id: '{valid_uuid}'}}\n"
         f"  - {{taxonomy_key: valid_b5, role_id: '{valid_uuid}'}}\n"
     )
-    reg_b5 = RoleRegistry.from_yaml(_write_yaml(tmp_path, b5_content, name="b5.yaml"))
+    reg_b5 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, b5_content, name="b5.yaml"))
     assert reg_b5.known_taxonomy_keys() == frozenset({"valid_b5"}), (
         "B5: non-string taxonomy_key (int) skipped via isinstance(key, str) guard"
     )
@@ -138,7 +133,7 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
     """
     valid_uuid = str(uuid4())
     c1_content = f"roles:\n  - {{taxonomy_key: '  BackendWriter  ', role_id: '{valid_uuid}'}}\n"
-    reg_c1 = RoleRegistry.from_yaml(_write_yaml(tmp_path, c1_content, name="c1.yaml"))
+    reg_c1 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, c1_content, name="c1.yaml"))
     resolved_lower = reg_c1.resolve("backendwriter")
     resolved_messy = reg_c1.resolve("  BackendWriter  ")
     assert resolved_lower == UUID(valid_uuid), (
@@ -148,13 +143,13 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
         "C1: resolve() also applies strip+lower so original messy form resolves"
     )
 
-    reg_c2 = RoleRegistry.from_yaml(_write_yaml(tmp_path, "roles: []\n", name="c2.yaml"))
+    reg_c2 = RoleRegistry.from_yaml(write_tmp_yaml(tmp_path, "roles: []\n", name="c2.yaml"))
     assert reg_c2.yaml_version == 0, (
         "C2: version defaults to 0 via int(raw.get('version', 0)) when missing"
     )
 
     reg_c3 = RoleRegistry.from_yaml(
-        _write_yaml(tmp_path, "version: 7\nroles: []\n", name="c3.yaml"),
+        write_tmp_yaml(tmp_path, "version: 7\nroles: []\n", name="c3.yaml"),
     )
     assert reg_c3.yaml_version == 7, "C3: version: 7 propagates from yaml"
     assert isinstance(reg_c3.yaml_version, int), (
@@ -162,7 +157,7 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
     )
 
     c4_text = "version: 1\nroles: []\n"
-    c4_path = _write_yaml(tmp_path, c4_text, name="c4.yaml")
+    c4_path = write_tmp_yaml(tmp_path, c4_text, name="c4.yaml")
     expected_digest = hashlib.sha256(c4_path.read_bytes()).hexdigest()[:16]
     reg_c4 = RoleRegistry.from_yaml(c4_path)
     assert reg_c4.content_digest_sha256_16 == expected_digest, (
@@ -170,10 +165,10 @@ def test_from_yaml_normalization_and_digest_contracts_5_axis(tmp_path: Path) -> 
     )
 
     reg_c5_a = RoleRegistry.from_yaml(
-        _write_yaml(tmp_path, "version: 1\nroles: []\n", name="c5a.yaml"),
+        write_tmp_yaml(tmp_path, "version: 1\nroles: []\n", name="c5a.yaml"),
     )
     reg_c5_b = RoleRegistry.from_yaml(
-        _write_yaml(tmp_path, "version: 2\nroles: []\n", name="c5b.yaml"),
+        write_tmp_yaml(tmp_path, "version: 2\nroles: []\n", name="c5b.yaml"),
     )
     assert reg_c5_a.content_digest_sha256_16 != reg_c5_b.content_digest_sha256_16, (
         "C5: distinct file contents must produce distinct digests "

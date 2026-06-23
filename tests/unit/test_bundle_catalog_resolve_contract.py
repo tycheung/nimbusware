@@ -72,17 +72,7 @@ _EARLY_RETURN_CASES: list[tuple[str, str]] = [
 ]
 
 
-def _write_catalog(tmp_path: Path, body: str) -> Path:
-    """Write ``configs/bundles/catalog.yaml`` under ``tmp_path``.
-
-    Mirrors the directory layout the wrapper expects:
-    ``{repo_root}/configs/bundles/catalog.yaml``.
-    """
-    cat_dir = tmp_path / "configs" / "bundles"
-    cat_dir.mkdir(parents=True, exist_ok=True)
-    cat_path = cat_dir / "catalog.yaml"
-    cat_path.write_text(body, encoding="utf-8")
-    return cat_path
+from unit.composite_repo_fixtures import write_bundle_catalog
 
 
 def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
@@ -115,7 +105,7 @@ def test_assert_bundle_catalog_maps_resolve_3_axis_wrapper_contract(
     ]
     for sub_id, (_case_id, body, _exc_class, prefix, _fragment) in wrapper_ve_cases:
         case_tmp = tmp_path / f"ve_{sub_id}"
-        _write_catalog(case_tmp, body)
+        write_bundle_catalog(case_tmp, body)
         with pytest.raises(ValueError, match=re.escape(prefix)):
             assert_bundle_catalog_maps_resolve(case_tmp)
 
@@ -126,7 +116,7 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
 
     for case_id, body, exc_class, prefix, fragment in _REJECT_CASES:
         case_tmp = tmp_path / f"reject_{case_id}"
-        cat_path = _write_catalog(case_tmp, body)
+        cat_path = write_bundle_catalog(case_tmp, body)
         with pytest.raises(exc_class, match=re.escape(prefix)) as exc_info:
             assert_workflow_bundle_map_ids_resolve(cat_path)
         if fragment:
@@ -141,7 +131,7 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
     trunc_entries = "\n".join(f"  prof_{i:02d}: missing-bundle-{i}" for i in range(15))
     trunc_body = f"bundles: [{{id: known-a}}]\nworkflow_bundle_map:\n{trunc_entries}\n"
     trunc_tmp = tmp_path / "reject_truncation"
-    trunc_path = _write_catalog(trunc_tmp, trunc_body)
+    trunc_path = write_bundle_catalog(trunc_tmp, trunc_body)
     with pytest.raises(ValueError, match=re.escape(_VE_WMAP_PREFIX)) as trunc_info:
         assert_workflow_bundle_map_ids_resolve(trunc_path)
     trunc_msg = str(trunc_info.value)
@@ -153,7 +143,7 @@ def test_assert_workflow_bundle_map_ids_resolve_extended_reject_and_early_return
     # Early-return sub-loop: 3 cases that return None gracefully.
     for case_id, body in _EARLY_RETURN_CASES:
         case_tmp = tmp_path / f"early_{case_id}"
-        cat_path = _write_catalog(case_tmp, body)
+        cat_path = write_bundle_catalog(case_tmp, body)
         result = assert_workflow_bundle_map_ids_resolve(cat_path)
         assert result is None, (
             f"assert_workflow_bundle_map_ids_resolve({cat_path}) returned "
@@ -168,7 +158,7 @@ def test_bundle_catalog_wrapper_vs_helper_consistency_contract(
     # Path plumbing equivalence -- valid body at expected sub-path.
     valid_body = "bundles: [{id: known-a}]\nworkflow_bundle_map: {default: known-a}\n"
     valid_tmp = tmp_path / "valid_path_plumbing"
-    valid_path = _write_catalog(valid_tmp, valid_body)
+    valid_path = write_bundle_catalog(valid_tmp, valid_body)
     assert assert_bundle_catalog_maps_resolve(valid_tmp) is None, (
         f"wrapper failed on valid catalog at {valid_path}"
     )
@@ -193,7 +183,7 @@ def test_bundle_catalog_wrapper_vs_helper_consistency_contract(
         case_tmp = tmp_path / f"parity_{case_id}"
         case_tmp.mkdir(parents=True, exist_ok=True)
         if body is not None:
-            _write_catalog(case_tmp, body)
+            write_bundle_catalog(case_tmp, body)
         # If body is None we deliberately do NOT create the
         # catalog file -- both layers should raise FileNotFoundError.
 

@@ -7,13 +7,7 @@ import pytest
 from nimbusware_orchestrator.verifier_escalation import (
     load_escalate_on_first_verifier_failure,
 )
-
-
-def _write_policy(tmp_path: Path, body: str) -> Path:
-    policy_dir = tmp_path / "configs" / "escalation"
-    policy_dir.mkdir(parents=True, exist_ok=True)
-    (policy_dir / "policy.yaml").write_text(body, encoding="utf-8")
-    return tmp_path
+from unit.composite_repo_fixtures import write_escalation_policy_repo
 
 
 def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
@@ -23,11 +17,11 @@ def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
         "A1: configs/escalation/policy.yaml absent -> path.is_file() False -> return False"
     )
 
-    a2_root = _write_policy(tmp_path / "a2_root", "- a\n- b\n- c\n")
+    a2_root = write_escalation_policy_repo(tmp_path / "a2_root", "- a\n- b\n- c\n")
     with pytest.raises(ValueError, match="YAML root must be a mapping"):
         load_escalate_on_first_verifier_failure(a2_root)
 
-    a3_root = _write_policy(
+    a3_root = write_escalation_policy_repo(
         tmp_path / "a3_no_verification",
         "version: 1\nmax_retries_per_stage: 3\n",
     )
@@ -35,7 +29,7 @@ def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
         "A3: verification key missing -> ver=None -> isinstance(None, dict) False -> False"
     )
 
-    a4_root = _write_policy(
+    a4_root = write_escalation_policy_repo(
         tmp_path / "a4_verification_scalar",
         "verification: 'not a dict'\n",
     )
@@ -45,7 +39,7 @@ def test_load_escalate_structural_type_guards_4_axis(tmp_path: Path) -> None:
 
 
 def test_load_escalate_bool_path_and_missing_key_3_axis(tmp_path: Path) -> None:
-    b1_root = _write_policy(
+    b1_root = write_escalation_policy_repo(
         tmp_path / "b1_bool_true",
         "verification:\n  escalate_on_first_verifier_failure: true\n",
     )
@@ -53,7 +47,7 @@ def test_load_escalate_bool_path_and_missing_key_3_axis(tmp_path: Path) -> None:
         "B1: YAML bool true -> isinstance(v, bool) True -> return v -> True"
     )
 
-    b2_root = _write_policy(
+    b2_root = write_escalation_policy_repo(
         tmp_path / "b2_bool_false",
         "verification:\n  escalate_on_first_verifier_failure: false\n",
     )
@@ -62,7 +56,7 @@ def test_load_escalate_bool_path_and_missing_key_3_axis(tmp_path: Path) -> None:
         "from shipped repo default to pin contract in tmp_path)"
     )
 
-    b3_root = _write_policy(
+    b3_root = write_escalation_policy_repo(
         tmp_path / "b3_target_key_absent",
         "verification:\n  auto_escalate_after_cumulative_findings: null\n",
     )
@@ -76,7 +70,7 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
     c1_dir = tmp_path / "c1"
     c1_dir.mkdir()
     for scalar in ("1", "true", "yes", "on"):
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             c1_dir / scalar,
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -87,7 +81,7 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
     c2_dir = tmp_path / "c2"
     c2_dir.mkdir()
     for i, scalar in enumerate(("TRUE", "YES", "On", "True")):
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             c2_dir / f"case_{i}",
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -99,7 +93,7 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
     c3_dir.mkdir()
     c3_cases = [("c3_pad_true", "  true  "), ("c3_tab_yes", "\\tyes\\n"), ("c3_pad_on", "  on  ")]
     for case_name, scalar in c3_cases:
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             c3_dir / case_name,
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -111,7 +105,7 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
     c4_dir.mkdir()
     c4_cases = [("c4_pad_YES", "  YES  "), ("c4_tab_TRUE", "\\tTRUE\\n")]
     for case_name, scalar in c4_cases:
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             c4_dir / case_name,
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -119,7 +113,7 @@ def test_load_escalate_string_truthy_set_5_axis(tmp_path: Path) -> None:
             f"C4 [{case_name}]: combined case + whitespace via .strip().lower() -> True"
         )
 
-    c5_root = _write_policy(
+    c5_root = write_escalation_policy_repo(
         tmp_path / "c5_empty_string",
         'verification:\n  escalate_on_first_verifier_failure: ""\n',
     )
@@ -132,7 +126,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
     d1_dir = tmp_path / "d1"
     d1_dir.mkdir()
     for scalar in ("0", "false", "no", "off"):
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             d1_dir / scalar,
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -145,7 +139,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
     d2_dir = tmp_path / "d2"
     d2_dir.mkdir()
     for scalar in ("maybe", "perhaps", "truefoo"):
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             d2_dir / scalar,
             f'verification:\n  escalate_on_first_verifier_failure: "{scalar}"\n',
         )
@@ -157,7 +151,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
     d3_dir = tmp_path / "d3"
     d3_dir.mkdir()
     for n in (1, 0):
-        root = _write_policy(
+        root = write_escalation_policy_repo(
             d3_dir / f"int_{n}",
             f"verification:\n  escalate_on_first_verifier_failure: {n}\n",
         )
@@ -167,7 +161,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
             "asymmetric with env-layer _coerce_bool which often accepts string '1'"
         )
 
-    d4_root = _write_policy(
+    d4_root = write_escalation_policy_repo(
         tmp_path / "d4_float",
         "verification:\n  escalate_on_first_verifier_failure: 1.0\n",
     )
@@ -175,7 +169,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
         "D4: float 1.0 -> isinstance(v, bool) False -> isinstance(v, str) False -> False"
     )
 
-    d5_root_list = _write_policy(
+    d5_root_list = write_escalation_policy_repo(
         tmp_path / "d5_list",
         "verification:\n  escalate_on_first_verifier_failure: []\n",
     )
@@ -183,7 +177,7 @@ def test_load_escalate_string_falsy_and_type_reject_5_axis(tmp_path: Path) -> No
         "D5 [list]: empty list -> isinstance False / False -> fallback False"
     )
 
-    d5_root_null = _write_policy(
+    d5_root_null = write_escalation_policy_repo(
         tmp_path / "d5_null",
         "verification:\n  escalate_on_first_verifier_failure: null\n",
     )

@@ -12,15 +12,9 @@ from nimbusware_orchestrator.workflow_escalation import (
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from unit.composite_repo_fixtures import write_workflow_profile
+from unit.composite_repo_fixtures import write_tmp_yaml, write_workflow_profile
 
 _VALUE_ERROR_PREFIX = "YAML root must be a mapping: "
-
-
-def _write_yaml(tmp_path: Path, body: str, name: str = "root.yaml") -> Path:
-    path = tmp_path / name
-    path.write_text(body, encoding="utf-8")
-    return path
 
 
 def test_load_yaml_dict_root_accept_arm_contract(tmp_path: Path) -> None:
@@ -66,7 +60,7 @@ def test_load_yaml_dict_root_accept_arm_contract(tmp_path: Path) -> None:
         ),
     ]
     for i, (_name, body, expected) in enumerate(cases):
-        path = _write_yaml(tmp_path, body, name=f"accept_{i}.yaml")
+        path = write_tmp_yaml(tmp_path, body, name=f"accept_{i}.yaml")
         result = load_yaml(path)
         assert isinstance(result, dict), (
             f"accept body={body!r}: result type {type(result).__name__} (should be dict)"
@@ -111,7 +105,7 @@ def test_load_yaml_non_dict_root_value_error_contract(tmp_path: Path) -> None:
         ("tag_applied_scalar", "!!str 42\n"),
     ]
     for i, (_name, body) in enumerate(cases):
-        path = _write_yaml(tmp_path, body, name=f"reject_{i}.yaml")
+        path = write_tmp_yaml(tmp_path, body, name=f"reject_{i}.yaml")
         with pytest.raises(ValueError) as exc_info:
             load_yaml(path)
         msg = str(exc_info.value)

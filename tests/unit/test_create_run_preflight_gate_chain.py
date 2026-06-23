@@ -84,18 +84,7 @@ _HTTP_TRANSLATION_AXES: list[tuple[str, type[BaseException], str]] = [
 ]
 
 
-def _write_shelves(tmp_path: Path, body: str) -> Path:
-    """Write ``configs/personas/shelves.yaml`` under ``tmp_path``.
-
-    Returns the path written. The directory plumbing matches what
-    ``assert_persona_shelves_valid`` expects:
-    ``{repo_root}/configs/personas/shelves.yaml``.
-    """
-    shelves_dir = tmp_path / "configs" / "personas"
-    shelves_dir.mkdir(parents=True, exist_ok=True)
-    shelves_path = shelves_dir / "shelves.yaml"
-    shelves_path.write_text(body, encoding="utf-8")
-    return shelves_path
+from unit.composite_repo_fixtures import write_persona_shelves
 
 
 def _make_create_run_raising(
@@ -201,7 +190,7 @@ def test_assert_persona_shelves_valid_3_axis_wrapper_contract(tmp_path: Path) ->
     for case_id, body, expected_prefix in _INVALID_SHELVES_BODIES:
         body_tmp = tmp_path / case_id
         body_tmp.mkdir(parents=True, exist_ok=True)
-        _write_shelves(body_tmp, body)
+        write_persona_shelves(body_tmp, body)
         with pytest.raises(ValueError, match=re.escape(expected_prefix)):
             assert_persona_shelves_valid(body_tmp)
 

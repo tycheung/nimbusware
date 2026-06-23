@@ -8,17 +8,7 @@ from nimbusware_orchestrator.integrator_gate import (
     parse_integrator_gate_project_tags,
     select_bundle_id_for_workflow,
 )
-
-
-def _write_catalog(repo: Path, body: str) -> None:
-    """Write ``configs/bundles/catalog.yaml`` under ``repo`` with the given body.
-
-    Uses ``exist_ok=True`` so a single test can drop multiple successive
-    catalogs into the same ``tmp_path`` for sub-axis sweeps.
-    """
-    cat_dir = repo / "configs" / "bundles"
-    cat_dir.mkdir(parents=True, exist_ok=True)
-    (cat_dir / "catalog.yaml").write_text(body, encoding="utf-8")
+from unit.composite_repo_fixtures import write_bundle_catalog
 
 
 def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
@@ -34,7 +24,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
     a2_repo = tmp_path / "a2_no_bundles_list"
     a2_repo.mkdir()
-    _write_catalog(a2_repo, "version: 1\n")
+    write_bundle_catalog(a2_repo, "version: 1\n")
     assert select_bundle_id_for_workflow(a2_repo, "default") == "auth-rbac-starter", (
         "A2: catalog present but no `bundles` key -> final `auth-rbac-starter` "
         "fallback at line 75. Pins the loop-empty branch (bundles=[] yields "
@@ -43,7 +33,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
     a3_repo = tmp_path / "a3_wmap_value_none"
     a3_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         a3_repo,
         "version: 1\n"
         "workflow_bundle_map:\n"
@@ -63,7 +53,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
     a4_repo = tmp_path / "a4_wmap_not_dict"
     a4_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         a4_repo,
         "version: 1\nworkflow_bundle_map:\n  - a\n  - b\nbundles:\n  - id: only-bundle\n",
     )
@@ -77,7 +67,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
     a5a_repo = tmp_path / "a5a_bundles0_not_dict"
     a5a_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         a5a_repo,
         "version: 1\nbundles:\n  - not-a-dict-string\n  - also-string\n",
     )
@@ -92,7 +82,7 @@ def test_select_bundle_id_for_workflow_ladder_defensive_arms_5_axis(
 
     a5b_repo = tmp_path / "a5b_bundles0_no_id"
     a5b_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         a5b_repo,
         "version: 1\nbundles:\n  - tags: [a]\n",
     )
@@ -116,7 +106,7 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
 
     b2_repo = tmp_path / "b2_bundles_missing"
     b2_repo.mkdir()
-    _write_catalog(b2_repo, "version: 1\n")
+    write_bundle_catalog(b2_repo, "version: 1\n")
     assert load_bundle_tags_for_bundle_id(b2_repo, "any-bundle") == [], (
         "B2: catalog present without `bundles` key -> `raw.get('bundles')` "
         "returns None -> ternary at line 95 yields `bundles = []` -> loop "
@@ -125,7 +115,7 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
 
     b3_repo = tmp_path / "b3_bundles_not_a_list"
     b3_repo.mkdir()
-    _write_catalog(b3_repo, "version: 1\nbundles: not-a-list-string\n")
+    write_bundle_catalog(b3_repo, "version: 1\nbundles: not-a-list-string\n")
     assert load_bundle_tags_for_bundle_id(b3_repo, "any-bundle") == [], (
         "B3: `bundles` is a string (not a list) -> "
         "`isinstance(bundles_raw, list)` at line 95 returns False -> "
@@ -139,7 +129,7 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
 
     b4_repo = tmp_path / "b4_non_dict_entries_filtered"
     b4_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         b4_repo,
         "version: 1\n"
         "bundles:\n"
@@ -160,7 +150,7 @@ def test_bundle_entry_for_id_lookup_matrix_5_axis(tmp_path: Path) -> None:
 
     b5_repo = tmp_path / "b5_id_strip_tolerance"
     b5_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         b5_repo,
         "version: 1\nbundles:\n  - id: real-bundle\n    tags: [auth]\n",
     )
@@ -181,7 +171,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 ) -> None:
     c1_repo = tmp_path / "c1_tags_key_missing"
     c1_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c1_repo,
         "version: 1\nbundles:\n  - id: tagless-bundle\n",
     )
@@ -193,7 +183,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 
     c2a_repo = tmp_path / "c2a_tags_string"
     c2a_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c2a_repo,
         "version: 1\nbundles:\n  - id: bad-tags-string\n    tags: not-a-list-string\n",
     )
@@ -204,7 +194,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 
     c2b_repo = tmp_path / "c2b_tags_dict"
     c2b_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c2b_repo,
         "version: 1\n"
         "bundles:\n"
@@ -221,7 +211,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 
     c2c_repo = tmp_path / "c2c_tags_int"
     c2c_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c2c_repo,
         "version: 1\nbundles:\n  - id: bad-tags-int\n    tags: 42\n",
     )
@@ -233,7 +223,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 
     c3_repo = tmp_path / "c3_mixed_tags"
     c3_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c3_repo,
         'version: 1\nbundles:\n  - id: mixed\n    tags: [42, "  billing  ", null, "stripe", ""]\n',
     )
@@ -258,7 +248,7 @@ def test_load_bundle_tags_for_bundle_id_defensive_arms_5_axis(
 
     c4_repo = tmp_path / "c4_whitespace_only_tags"
     c4_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         c4_repo,
         'version: 1\nbundles:\n  - id: ws\n    tags: ["  ", "", "\\t"]\n',
     )
@@ -304,7 +294,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
 
     d2_repo = tmp_path / "d2_bundle_not_found"
     d2_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         d2_repo,
         "version: 1\nbundles:\n  - id: other\n    title: Other Bundle\n",
     )
@@ -319,7 +309,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
 
     d3_repo = tmp_path / "d3_title_key_missing"
     d3_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         d3_repo,
         "version: 1\nbundles:\n  - id: titleless\n    tags: [a]\n",
     )
@@ -331,7 +321,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
 
     d4_repo = tmp_path / "d4_title_yaml_null"
     d4_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         d4_repo,
         "version: 1\nbundles:\n  - id: nulled\n    title: null\n",
     )
@@ -346,7 +336,7 @@ def test_load_bundle_title_for_bundle_id_defensive_arms_5_axis(
 
     d5_repo = tmp_path / "d5_title_whitespace_only"
     d5_repo.mkdir()
-    _write_catalog(
+    write_bundle_catalog(
         d5_repo,
         'version: 1\nbundles:\n  - id: ws_title\n    title: "   "\n',
     )

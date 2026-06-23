@@ -12,7 +12,7 @@ from nimbusware_orchestrator.workflow_escalation import (
 from nimbusware_orchestrator.workflow_security_metadata import (
     parse_security_scan_metadata_on_verify_workflow,
 )
-from unit.composite_repo_fixtures import write_workflow_profile
+from unit.composite_repo_fixtures import write_tmp_yaml, write_workflow_profile
 
 _MALFORMED_BODIES: list[tuple[str, str]] = [
     ("unterminated_flow_map", "{"),
@@ -24,12 +24,6 @@ _MALFORMED_BODIES: list[tuple[str, str]] = [
     ("unclosed_single_quote", "'unclosed"),
     ("undefined_anchor", "*undefined_anchor"),
 ]
-
-
-def _write_yaml(tmp_path: Path, body: str, name: str = "root.yaml") -> Path:
-    path = tmp_path / name
-    path.write_text(body, encoding="utf-8")
-    return path
 
 
 def test_load_yaml_malformed_yaml_propagates_yaml_error_contract(
@@ -59,7 +53,7 @@ def test_load_yaml_malformed_yaml_propagates_yaml_error_contract(
        at the specific malformed body.
     """
     for i, (case_id, body) in enumerate(_MALFORMED_BODIES):
-        path = _write_yaml(tmp_path, body, name=f"malformed_{i}.yaml")
+        path = write_tmp_yaml(tmp_path, body, name=f"malformed_{i}.yaml")
         with pytest.raises(yaml.YAMLError) as exc_info:
             load_yaml(path)
         exc = exc_info.value
