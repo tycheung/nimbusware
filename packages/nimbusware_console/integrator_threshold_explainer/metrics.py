@@ -1,39 +1,63 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.components.operator_metrics import (
-    field_value_table_rows_csv,
-    mapping_export_json,
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    apply_bool_payload_fields,
+    apply_nonneg_int_fields,
+    default_operator_metrics,
+    metrics_caption,
+    metrics_table_rows,
 )
+from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.integrator_threshold_explainer.keys import (
     get_preview_effective_min_score,
+)
+
+_DEFAULTS: dict[str, Any] = {
+    "would_emit_gate_event": False,
+    "thresholds_yaml_exists": False,
+    "env_forces_on": False,
+    "env_forces_off": False,
+    "min_score_pipeline": None,
+    "min_score_preview": None,
+    "min_scores_agree": False,
+    "project_tags_list_length": 0,
+    "load_error_present": False,
+}
+
+_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("Would emit gate event", "would_emit_gate_event"),
+    ("Thresholds YAML exists", "thresholds_yaml_exists"),
+    ("Env forces on", "env_forces_on"),
+    ("Env forces off", "env_forces_off"),
+    ("Min scores agree", "min_scores_agree"),
+    ("Project tags (workflow)", "project_tags_list_length"),
+    ("Min score pipeline", "min_score_pipeline"),
+    ("Min score preview", "min_score_preview"),
+    ("Load error", "load_error_present"),
 )
 
 
 def integrator_threshold_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "would_emit_gate_event": False,
-        "thresholds_yaml_exists": False,
-        "env_forces_on": False,
-        "env_forces_off": False,
-        "min_score_pipeline": None,
-        "min_score_preview": None,
-        "min_scores_agree": False,
-        "project_tags_list_length": 0,
-        "load_error_present": False,
-    }
+    metrics = default_operator_metrics(_DEFAULTS)
     if not isinstance(payload, Mapping):
         return metrics
     emission = payload.get("gate_event_emission")
     if isinstance(emission, Mapping):
-        metrics["would_emit_gate_event"] = emission.get("would_emit_integrator_gate_event") is True
-        metrics["thresholds_yaml_exists"] = emission.get("thresholds_yaml_exists") is True
-        metrics["env_forces_on"] = emission.get("forces_on") is True
-        metrics["env_forces_off"] = emission.get("forces_off") is True
+        apply_bool_payload_fields(
+            metrics,
+            emission,
+            (
+                ("would_emit_integrator_gate_event", "would_emit_gate_event"),
+                ("thresholds_yaml_exists", "thresholds_yaml_exists"),
+                ("forces_on", "env_forces_on"),
+                ("forces_off", "env_forces_off"),
+            ),
+        )
     thr = payload.get("thresholds_yaml")
     if isinstance(thr, Mapping) and thr.get("exists") is True:
         metrics["thresholds_yaml_exists"] = True
@@ -47,9 +71,11 @@ def integrator_threshold_explainer_operator_metrics(
         metrics["min_scores_agree"] = metrics["min_score_pipeline"] == metrics["min_score_preview"]
     wf_gate = payload.get("workflow_integrator_gate")
     if isinstance(wf_gate, Mapping):
-        raw_len = wf_gate.get("project_tags_list_length")
-        if isinstance(raw_len, int) and not isinstance(raw_len, bool) and raw_len >= 0:
-            metrics["project_tags_list_length"] = raw_len
+        apply_nonneg_int_fields(
+            metrics,
+            wf_gate,
+            (("project_tags_list_length", "project_tags_list_length"),),
+        )
     paste_errs = payload.get("paste_parse_errors")
     if isinstance(paste_errs, list) and paste_errs:
         metrics["load_error_present"] = True
@@ -59,55 +85,19 @@ def integrator_threshold_explainer_operator_metrics(
 def integrator_threshold_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {
-            "field": "Would emit gate event",
-            "value": str(metrics.get("would_emit_gate_event", False)).lower(),
-        },
-        {
-            "field": "Thresholds YAML exists",
-            "value": str(metrics.get("thresholds_yaml_exists", False)).lower(),
-        },
-        {
-            "field": "Env forces on",
-            "value": str(metrics.get("env_forces_on", False)).lower(),
-        },
-        {
-            "field": "Env forces off",
-            "value": str(metrics.get("env_forces_off", False)).lower(),
-        },
-        {
-            "field": "Min scores agree",
-            "value": str(metrics.get("min_scores_agree", False)).lower(),
-        },
-        {
-            "field": "Project tags (workflow)",
-            "value": str(metrics.get("project_tags_list_length", 0)),
-        },
-    ]
-    pipe = metrics.get("min_score_pipeline")
-    if isinstance(pipe, (int, float)) and not isinstance(pipe, bool):
-        rows.append({"field": "Min score pipeline", "value": str(pipe)})
-    preview = metrics.get("min_score_preview")
-    if isinstance(preview, (int, float)) and not isinstance(preview, bool):
-        rows.append({"field": "Min score preview", "value": str(preview)})
-    if metrics.get("load_error_present") is True:
-        rows.append({"field": "Load error", "value": "yes"})
-    return rows
-
-
-def integrator_threshold_explainer_operator_metrics_export_json(
-    metrics: Mapping[str, Any] | None,
-) -> str:
-    return mapping_export_json(metrics)
-
-
-def integrator_threshold_explainer_operator_metrics_table_rows_csv(
-    rows: Sequence[Mapping[str, str]],
-) -> str:
-    return field_value_table_rows_csv(rows)
+    return metrics_table_rows(
+        metrics,
+        _TABLE_ROWS,
+        include_when=lambda m, key: (
+            key
+            not in {"min_score_pipeline", "min_score_preview", "load_error_present"}
+            or (
+                key == "load_error_present"
+                and m.get("load_error_present") is True
+            )
+            or m.get(key) is not None
+        ),
+    )
 
 
 def integrator_threshold_explainer_operator_metrics_caption(
@@ -141,10 +131,13 @@ def integrator_threshold_explainer_operator_metrics_caption(
         parts.append(f"**{tags_len}** workflow project_{suffix}")
     if metrics.get("load_error_present") is True:
         parts.append("paste parse error(s)")
-    if not parts:
-        return None
-    return "Integrator threshold explainer metrics: " + ", ".join(parts) + "."
+    return metrics_caption("Integrator threshold explainer metrics: ", parts)
 
 
-def integrator_threshold_explainer_operator_metrics_export_filename_slug() -> str:
-    return "integrator_threshold_explainer_operator_metrics"
+(
+    integrator_threshold_explainer_operator_metrics_export_json,
+    integrator_threshold_explainer_operator_metrics_table_rows_csv,
+    integrator_threshold_explainer_operator_metrics_export_filename_slug,
+) = bind_operator_metrics_exports(
+    export_slug="integrator_threshold_explainer_operator_metrics",
+)

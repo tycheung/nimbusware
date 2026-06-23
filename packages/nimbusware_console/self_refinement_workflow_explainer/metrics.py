@@ -3,96 +3,105 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import (
+    apply_bool_payload_fields,
+    apply_env_tri_state_metrics,
+    apply_load_error_present,
+    apply_nonneg_int_fields,
+    apply_optional_int_field,
+    default_operator_metrics,
+    metrics_caption,
+    metrics_table_rows,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+
+_DEFAULTS: dict[str, Any] = {
+    "yaml_present": False,
+    "yaml_mapping_key_count": 0,
+    "policy_enabled": False,
+    "policy_version": None,
+    "would_emit_marker": False,
+    "would_emit_marker_after_env": False,
+    "merged_max_iterations": None,
+    "ungated_loop_forces_on": False,
+    "ungated_loop_forces_off": False,
+    "ungated_loop_unset": True,
+    "load_error_present": False,
+}
+
+_TABLE_ROWS: tuple[tuple[str, str], ...] = (
+    ("YAML present", "yaml_present"),
+    ("YAML mapping keys", "yaml_mapping_key_count"),
+    ("Policy enabled", "policy_enabled"),
+    ("Would emit marker", "would_emit_marker"),
+    ("Would emit after env", "would_emit_marker_after_env"),
+    ("Merged max iterations", "merged_max_iterations"),
+    ("Ungated loop forces on", "ungated_loop_forces_on"),
+    ("Ungated loop forces off", "ungated_loop_forces_off"),
+    ("Policy version", "policy_version"),
+    ("Load error", "load_error_present"),
+)
 
 
 def self_refinement_workflow_explainer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
-    metrics: dict[str, Any] = {
-        "yaml_present": False,
-        "yaml_mapping_key_count": 0,
-        "policy_enabled": False,
-        "policy_version": None,
-        "would_emit_marker": False,
-        "would_emit_marker_after_env": False,
-        "merged_max_iterations": None,
-        "ungated_loop_forces_on": False,
-        "ungated_loop_forces_off": False,
-        "ungated_loop_unset": True,
-        "load_error_present": False,
-    }
+    metrics = default_operator_metrics(_DEFAULTS)
     if not isinstance(payload, Mapping):
         return metrics
-    metrics["yaml_present"] = payload.get("self_refinement_yaml_present") is True
-    raw_kc = payload.get("self_refinement_yaml_mapping_string_key_count")
-    if isinstance(raw_kc, int) and not isinstance(raw_kc, bool) and raw_kc >= 0:
-        metrics["yaml_mapping_key_count"] = raw_kc
+    apply_bool_payload_fields(
+        metrics,
+        payload,
+        (("self_refinement_yaml_present", "yaml_present"),),
+    )
+    apply_nonneg_int_fields(
+        metrics,
+        payload,
+        (("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),),
+    )
     pol = payload.get("policy_yaml")
     if isinstance(pol, dict):
         metrics["policy_enabled"] = pol.get("enabled") is True
-        ver = pol.get("version")
-        if isinstance(ver, int) and not isinstance(ver, bool):
-            metrics["policy_version"] = ver
+        apply_optional_int_field(metrics, pol, "version", "policy_version")
     mm = payload.get("marker_merge")
     if isinstance(mm, dict):
-        metrics["would_emit_marker"] = mm.get("would_emit_self_refinement_marker") is True
-        metrics["would_emit_marker_after_env"] = mm.get("would_emit_marker_after_env") is True
-    merged = payload.get("merged_max_iterations")
-    if isinstance(merged, int) and not isinstance(merged, bool) and merged >= 0:
-        metrics["merged_max_iterations"] = merged
-    ul = payload.get("NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP")
-    if isinstance(ul, dict):
-        metrics["ungated_loop_forces_on"] = ul.get("forces_on") is True
-        metrics["ungated_loop_forces_off"] = ul.get("forces_off") is True
-        metrics["ungated_loop_unset"] = ul.get("unset") is True
-    err = payload.get("load_error")
-    metrics["load_error_present"] = isinstance(err, str) and bool(err.strip())
+        apply_bool_payload_fields(
+            metrics,
+            mm,
+            (
+                ("would_emit_self_refinement_marker", "would_emit_marker"),
+                ("would_emit_marker_after_env", "would_emit_marker_after_env"),
+            ),
+        )
+    apply_optional_int_field(metrics, payload, "merged_max_iterations", "merged_max_iterations")
+    apply_env_tri_state_metrics(
+        metrics,
+        payload,
+        "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
+        forces_on_key="ungated_loop_forces_on",
+        forces_off_key="ungated_loop_forces_off",
+        unset_key="ungated_loop_unset",
+    )
+    apply_load_error_present(metrics, payload)
     return metrics
 
 
 def self_refinement_workflow_explainer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(metrics, Mapping):
-        return []
-    rows: list[dict[str, str]] = [
-        {"field": "YAML present", "value": str(metrics.get("yaml_present", False)).lower()},
-        {
-            "field": "YAML mapping keys",
-            "value": str(metrics.get("yaml_mapping_key_count", 0)),
-        },
-        {"field": "Policy enabled", "value": str(metrics.get("policy_enabled", False)).lower()},
-        {
-            "field": "Would emit marker",
-            "value": str(metrics.get("would_emit_marker", False)).lower(),
-        },
-        {
-            "field": "Would emit after env",
-            "value": str(metrics.get("would_emit_marker_after_env", False)).lower(),
-        },
-    ]
-    merged = metrics.get("merged_max_iterations")
-    if isinstance(merged, int) and not isinstance(merged, bool):
-        rows.append({"field": "Merged max iterations", "value": str(merged)})
-    rows.extend(
-        [
-            {
-                "field": "Ungated loop forces on",
-                "value": str(metrics.get("ungated_loop_forces_on", False)).lower(),
-            },
-            {
-                "field": "Ungated loop forces off",
-                "value": str(metrics.get("ungated_loop_forces_off", False)).lower(),
-            },
-        ]
+    return metrics_table_rows(
+        metrics,
+        _TABLE_ROWS,
+        include_when=lambda m, key: (
+            key
+            not in {"merged_max_iterations", "policy_version", "load_error_present"}
+            or (
+                key == "load_error_present"
+                and m.get("load_error_present") is True
+            )
+            or m.get(key) is not None
+        ),
     )
-    ver = metrics.get("policy_version")
-    if isinstance(ver, int) and not isinstance(ver, bool):
-        rows.append({"field": "Policy version", "value": str(ver)})
-    if metrics.get("load_error_present") is True:
-        rows.append({"field": "Load error", "value": "yes"})
-    return rows
 
 
 def self_refinement_workflow_explainer_operator_metrics_caption(
@@ -118,9 +127,7 @@ def self_refinement_workflow_explainer_operator_metrics_caption(
         parts.append("YAML block present")
     if metrics.get("load_error_present") is True:
         parts.append("load error")
-    if not parts:
-        return None
-    return "Self-refinement explainer metrics: " + ", ".join(parts) + "."
+    return metrics_caption("Self-refinement explainer metrics: ", parts)
 
 
 (
