@@ -16,10 +16,8 @@ from nimbusware_console.components.workflow_explainer_helpers import (
     relative_under,
 )
 from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
-from nimbusware_console.explainer_core.workflow_profile import (
-    load_workflow_disk_snapshot,
-    yaml_section,
-)
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.explainer_core.workflow_profile import yaml_section
 
 
 def escalation_suppress_workflow_explainer_payload(
@@ -27,13 +25,9 @@ def escalation_suppress_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
     wf_sel = snap.workflow_profile
     policy_breadth = escalation_policy_breadth(repo_root)
-
-    workflow_yaml_relpath = snap.workflow_yaml_relpath
-    load_error = snap.load_error
-    workflow_yaml_top_level_version_int = snap.version_int
     escalation_key_present = "escalation" in snap.disk_doc
     escalation_yaml_value = snap.disk_doc.get("escalation") if escalation_key_present else None
     esc_section = yaml_section(snap.disk_doc, "escalation")
@@ -146,15 +140,12 @@ def escalation_suppress_workflow_explainer_payload(
         )
 
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
-        "workflow_yaml_top_level_version_int": workflow_yaml_top_level_version_int,
+        **header,
         "escalation_yaml_key_present": escalation_key_present,
         "escalation_yaml_value": json_safe_yaml_fragment(escalation_yaml_value),
         "suppress_automatic_escalation_yaml_raw": suppress_yaml_raw,
         "suppress_automatic_escalation_yaml_raw_type": suppress_yaml_raw_type,
         "suppress_automatic_escalation_effective": parsed.suppress_automatic_escalation,
-        "load_error": load_error,
         "escalation_policy_yaml_path_exists": escalation_policy_yaml_path_exists,
         "escalation_policy_yaml_relpath": escalation_policy_yaml_relpath,
         "escalation_policy_yaml_file_bytes": escalation_policy_yaml_file_bytes,

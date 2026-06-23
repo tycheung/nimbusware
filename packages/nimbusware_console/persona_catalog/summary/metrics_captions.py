@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
@@ -103,9 +104,9 @@ def persona_catalog_operator_summary_operator_metrics_caption(
     woi = metrics.get("without_instructions", 0)
     if not isinstance(woi, int) or isinstance(woi, bool):
         woi = 0
-    return (
-        f"Persona operator summary metrics: **{total}** entr(y/ies), "
-        f"**{woi}** without instructions."
+    return metrics_caption(
+        "Persona operator summary metrics: ",
+        [f"**{total}** entr(y/ies)", f"**{woi}** without instructions"],
     )
 
 

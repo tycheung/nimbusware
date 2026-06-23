@@ -7,10 +7,8 @@ from typing import Any
 from nimbusware_config.workflow_read import (
     parse_self_refinement_workflow_block,
 )
-from nimbusware_console.explainer_core.workflow_profile import (
-    load_workflow_disk_snapshot,
-    yaml_section,
-)
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.explainer_core.workflow_profile import yaml_section
 from nimbusware_console.self_refinement_workflow_explainer.env import (
     _load_policy_or_default,
     _marker_preview,
@@ -23,10 +21,8 @@ def self_refinement_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
     wf_sel = snap.workflow_profile
-    workflow_yaml_relpath = snap.workflow_yaml_relpath
-    load_error = snap.load_error
     block = snap.disk_doc.get("self_refinement")
     sr_workflow_yaml_raw_type = type(block).__name__ if block is not None else None
     section = yaml_section(snap.disk_doc, "self_refinement")
@@ -49,9 +45,7 @@ def self_refinement_workflow_explainer_payload(
     marker = _marker_preview(wf_sr, pol)
 
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
-        "load_error": load_error,
+        **header,
         "self_refinement_yaml_present": sr_present,
         "self_refinement_workflow_yaml_raw_type": sr_workflow_yaml_raw_type,
         "self_refinement_yaml_mapping_string_key_count": sr_yaml_mapping_string_key_count,

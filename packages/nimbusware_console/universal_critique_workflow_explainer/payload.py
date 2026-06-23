@@ -29,10 +29,8 @@ from nimbusware_console.explainer_core.universal_critique_counts import (
 from nimbusware_console.explainer_core.universal_critique_counts import (
     universal_critique_top_level_scalar_leaf_count as _universal_critique_top_level_scalar_leaf_count,
 )
-from nimbusware_console.explainer_core.workflow_profile import (
-    load_workflow_disk_snapshot,
-    yaml_section,
-)
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.explainer_core.workflow_profile import yaml_section
 
 
 def universal_critique_workflow_explainer_payload(
@@ -40,10 +38,8 @@ def universal_critique_workflow_explainer_payload(
     *,
     workflow_profile: str | None,
 ) -> dict[str, Any]:
-    snap = load_workflow_disk_snapshot(repo_root, workflow_profile)
+    snap, header = workflow_payload_header(repo_root, workflow_profile)
     wf_sel = snap.workflow_profile
-    workflow_yaml_relpath = snap.workflow_yaml_relpath
-    load_error = snap.load_error
     universal_critique_workflow_yaml_bytes = snap.file_bytes
 
     uc = yaml_section(snap.disk_doc, "universal_critique")
@@ -83,9 +79,7 @@ def universal_critique_workflow_explainer_payload(
     )
 
     return {
-        "workflow_profile": wf_sel,
-        "workflow_yaml_relpath": workflow_yaml_relpath,
-        "load_error": load_error,
+        **header,
         "universal_critique_workflow_yaml_bytes": universal_critique_workflow_yaml_bytes,
         "universal_critique_yaml_present": universal_critique_yaml_present,
         "universal_critique_yaml_top_level_keys": universal_critique_yaml_top_level_keys,
