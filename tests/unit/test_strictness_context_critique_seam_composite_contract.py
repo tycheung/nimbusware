@@ -9,7 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from agent_core.models.events import FindingFixStrictnessSettings, Severity
-from nimbusware_orchestrator import pipeline as pipeline_module
+from nimbusware_orchestrator._pipeline import base as orchestrator_base
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.workflow_universal_critique import EffectiveUniversalCritique
 
@@ -314,7 +314,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
 
     orch_c1, _ = make_dev_orchestrator()
     captured_args.clear()
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         result_c1 = orch_c1._effective_universal_critique_for_run(uuid4())  # noqa: SLF001
     assert captured_args["wf"] is None, (
         f"C1: with NO ``run.created`` rows, "
@@ -334,7 +334,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     orch_c2, _ = make_dev_orchestrator()
     rid_c2 = orch_c2.create_run("default")
     captured_args.clear()
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         orch_c2._effective_universal_critique_for_run(rid_c2)  # noqa: SLF001
     assert captured_args["wf"] == "default", (
         f"C2: after ``create_run('default')``, the seam must receive "
@@ -365,7 +365,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     rid_c4 = uuid4()
     _inject_raw_run_created_row(mem_c4, rid_c4, workflow_profile=123)
     captured_args.clear()
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         orch_c4._effective_universal_critique_for_run(rid_c4)  # noqa: SLF001
     assert captured_args["wf"] == "123", (
         f"C4 KEY DIVERGENCE: non-string ``workflow_profile=123`` must "
@@ -387,7 +387,7 @@ def test_effective_universal_critique_for_run_seam_5_axis() -> None:
     _inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="first")
     _inject_raw_run_created_row(mem_c5, rid_c5, workflow_profile="second")
     captured_args.clear()
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc):
         orch_c5._effective_universal_critique_for_run(rid_c5)  # noqa: SLF001
     assert captured_args["wf"] == "first", (
         f"C5 KEY DIVERGENCE: with TWO ``run.created`` rows, the "
@@ -447,7 +447,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
         captured_d2["wf"] = wf
         return _all_false_effective_critique()
 
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc_d2):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc_d2):
         orch_d2._effective_universal_critique_for_run(rid_d2)  # noqa: SLF001
     fs_d2 = ctx_d2["finding_fix_strictness"]
     assert fs_d2.minimum_severity_requiring_fixes == Severity.HIGH, (
@@ -489,7 +489,7 @@ def test_cross_helper_key_divergences_5_axis() -> None:
         captured_d4["wf"] = wf
         return _all_false_effective_critique()
 
-    with patch.object(pipeline_module, "effective_universal_critique", side_effect=fake_euc_d4):
+    with patch.object(orchestrator_base, "effective_universal_critique", side_effect=fake_euc_d4):
         orch_d4._effective_universal_critique_for_run(uuid4())  # noqa: SLF001
     assert captured_d4["repo_root"] == orch_d4.repo_root, (
         f"D4 KEY DIVERGENCE: ``effective_universal_critique`` must "
