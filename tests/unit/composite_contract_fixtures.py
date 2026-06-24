@@ -1,3 +1,10 @@
+"""Raw event and gate payload dict builders for contract tests.
+
+Use when asserting JSON/event shape without touching ``InMemoryEventStore``.
+For typed store append sequences use :mod:`composite_store_fixtures`; for
+on-disk YAML under a temp repo use :mod:`composite_repo_fixtures`.
+"""
+
 from __future__ import annotations
 
 from typing import Any

@@ -8,6 +8,10 @@ import pytest
 
 from nimbusware_env import find_repo_root
 from nimbusware_orchestrator.ingress import assert_agent_evaluator_persona_in_shelves
+from unit.composite_repo_fixtures import (
+    write_agent_evaluator_workflow_profile,
+    write_persona_shelves,
+)
 
 _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 _REAL_PERSONAS_DIR = _REPO_ROOT / "configs" / "personas"
@@ -57,22 +61,6 @@ _DEGRADATION_CASES: list[tuple[str, str, list[str]]] = [
 ]
 
 
-def _write_workflow(
-    repo: Path,
-    name: str,
-    *,
-    enabled: bool,
-    persona_id: str | None,
-) -> None:
-    wf_dir = repo / "configs" / "workflows"
-    wf_dir.mkdir(parents=True, exist_ok=True)
-    persona_line = f"  persona_id: {persona_id}\n" if persona_id is not None else ""
-    body = (
-        f"version: 1\nagent_evaluator:\n  enabled: {'true' if enabled else 'false'}\n{persona_line}"
-    )
-    (wf_dir / f"{name}.yaml").write_text(body, encoding="utf-8")
-
-
 def _copy_real_personas(tmp_repo: Path) -> None:
     """Mirror the real ``configs/personas`` directory under ``tmp_repo``.
 
@@ -83,36 +71,33 @@ def _copy_real_personas(tmp_repo: Path) -> None:
     shutil.copytree(_REAL_PERSONAS_DIR, tmp_repo / "configs" / "personas")
 
 
-def _write_shelves(tmp_repo: Path, body: str) -> Path:
-    """Overwrite ``tmp_repo/configs/personas/shelves.yaml`` with ``body``."""
-    pdir = tmp_repo / "configs" / "personas"
-    pdir.mkdir(parents=True, exist_ok=True)
-    path = pdir / "shelves.yaml"
-    path.write_text(body, encoding="utf-8")
-    return path
-
-
 def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
     tmp_path: Path,
 ) -> None:
     _copy_real_personas(tmp_path)
 
-    _write_workflow(tmp_path, "disabled_with_garbage", enabled=False, persona_id="nope")
+    write_agent_evaluator_workflow_profile(
+        tmp_path, "disabled_with_garbage", enabled=False, persona_id="nope"
+    )
     assert assert_agent_evaluator_persona_in_shelves(tmp_path, "disabled_with_garbage") is None, (
         "enabled=False with non-shelf persona_id must short-circuit BEFORE persona check"
     )
 
-    _write_workflow(tmp_path, "default_persona", enabled=True, persona_id="default")
+    write_agent_evaluator_workflow_profile(
+        tmp_path, "default_persona", enabled=True, persona_id="default"
+    )
     assert assert_agent_evaluator_persona_in_shelves(tmp_path, "default_persona") is None, (
         "enabled=True + persona_id='default' must short-circuit on reserved-slug"
     )
 
-    _write_workflow(tmp_path, "shelf_commerce", enabled=True, persona_id=_SHELF_BUSINESS_AREA)
+    write_agent_evaluator_workflow_profile(
+        tmp_path, "shelf_commerce", enabled=True, persona_id=_SHELF_BUSINESS_AREA
+    )
     assert assert_agent_evaluator_persona_in_shelves(tmp_path, "shelf_commerce") is None, (
         f"shelf-backed business_area {_SHELF_BUSINESS_AREA!r} must be accepted"
     )
 
-    _write_workflow(
+    write_agent_evaluator_workflow_profile(
         tmp_path,
         "shelf_backend",
         enabled=True,
@@ -122,7 +107,7 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
         f"shelf-backed development_role {_SHELF_DEVELOPMENT_ROLE!r} must be accepted"
     )
 
-    _write_workflow(
+    write_agent_evaluator_workflow_profile(
         tmp_path,
         "unknown_persona",
         enabled=True,
@@ -138,7 +123,7 @@ def test_assert_agent_evaluator_persona_in_shelves_6_axis_direct_contract(
 
     short_circuit_repo = tmp_path / "short_circuit"
     short_circuit_repo.mkdir()
-    _write_workflow(
+    write_agent_evaluator_workflow_profile(
         short_circuit_repo,
         "default_no_shelves",
         enabled=True,
@@ -161,22 +146,24 @@ def test_assert_agent_evaluator_persona_in_shelves_shelves_load_and_degradation_
 ) -> None:
     fnf_repo = tmp_path / "fnf"
     fnf_repo.mkdir()
-    _write_workflow(fnf_repo, "fnf_wf", enabled=True, persona_id="some_id")
+    write_agent_evaluator_workflow_profile(fnf_repo, "fnf_wf", enabled=True, persona_id="some_id")
     with pytest.raises(FileNotFoundError):
         assert_agent_evaluator_persona_in_shelves(fnf_repo, "fnf_wf")
 
     ve_repo = tmp_path / "ve_scalar"
     ve_repo.mkdir()
-    _write_workflow(ve_repo, "ve_wf", enabled=True, persona_id="some_id")
-    _write_shelves(ve_repo, "scalar-not-a-mapping\n")
+    write_agent_evaluator_workflow_profile(ve_repo, "ve_wf", enabled=True, persona_id="some_id")
+    write_persona_shelves(ve_repo, "scalar-not-a-mapping\n")
     with pytest.raises(ValueError, match=re.escape(_VE_LOAD_YAML_PREFIX)):
         assert_agent_evaluator_persona_in_shelves(ve_repo, "ve_wf")
 
     for case_id, shelves_body, expected_known in _DEGRADATION_CASES:
         case_repo = tmp_path / f"deg_{case_id}"
         case_repo.mkdir()
-        _write_workflow(case_repo, "deg_wf", enabled=True, persona_id="not_in_shelves")
-        _write_shelves(case_repo, shelves_body)
+        write_agent_evaluator_workflow_profile(
+            case_repo, "deg_wf", enabled=True, persona_id="not_in_shelves"
+        )
+        write_persona_shelves(case_repo, shelves_body)
         with pytest.raises(
             ValueError,
             match=re.escape(_VE_FRIENDLY_PREFIX),

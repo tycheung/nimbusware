@@ -1,3 +1,10 @@
+"""Typed ``InMemoryEventStore`` append helpers for integration-style unit tests.
+
+Use when the test exercises store read paths or projection rebuilds. For raw
+event dict literals use :mod:`composite_contract_fixtures`; for workflow YAML on
+disk use :mod:`composite_repo_fixtures`.
+"""
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

@@ -1,3 +1,11 @@
+"""On-disk repo layout helpers for unit tests (YAML under ``configs/``).
+
+Use for contract tests that read workflow, escalation, persona, or integrator
+files from a temporary repo root. Prefer :mod:`composite_contract_fixtures` for
+raw event dicts and :mod:`composite_store_fixtures` for typed
+``InMemoryEventStore`` append helpers.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -80,3 +88,42 @@ def write_integrator_thresholds_min_score(repo: Path, value: float | None) -> Pa
     else:
         body = f"version: 1\nenabled: false\nmin_score_to_pass: {value}\n"
     return write_integrator_thresholds(repo, body)
+
+
+def write_anti_deadlock_escalation_policy(
+    repo: Path,
+    *,
+    enabled: bool,
+    min_progress: int,
+    deadlock_minutes: int | float | str | None,
+) -> Path:
+    if deadlock_minutes is None:
+        deadlock_line = ""
+    elif deadlock_minutes == "__null__":
+        deadlock_line = "deadlock_escalation_after_minutes: null\n"
+    elif isinstance(deadlock_minutes, str):
+        deadlock_line = f'deadlock_escalation_after_minutes: "{deadlock_minutes}"\n'
+    else:
+        deadlock_line = f"deadlock_escalation_after_minutes: {deadlock_minutes}\n"
+    body = (
+        "version: 1\n"
+        f"{deadlock_line}"
+        "anti_deadlock:\n"
+        f"  enabled: {'true' if enabled else 'false'}\n"
+        f"  min_progress_events: {min_progress}\n"
+    )
+    return write_escalation_policy(repo, body)
+
+
+def write_agent_evaluator_workflow_profile(
+    repo: Path,
+    name: str,
+    *,
+    enabled: bool,
+    persona_id: str | None,
+) -> Path:
+    persona_line = f"  persona_id: {persona_id}\n" if persona_id is not None else ""
+    body = (
+        f"version: 1\nagent_evaluator:\n  enabled: {'true' if enabled else 'false'}\n{persona_line}"
+    )
+    return write_workflow_profile(repo, name, body)

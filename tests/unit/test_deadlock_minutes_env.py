@@ -5,53 +5,9 @@ from pathlib import Path
 import pytest
 
 from nimbusware_orchestrator.anti_deadlock import load_anti_deadlock_settings
+from unit.composite_repo_fixtures import write_anti_deadlock_escalation_policy
 
 _ENV_NAME = "NIMBUSWARE_DEADLOCK_ESCALATION_MINUTES"
-
-
-def _write_policy(
-    tmp_path: Path,
-    *,
-    enabled: bool,
-    min_progress: int,
-    deadlock_minutes: int | float | str | None,
-) -> None:
-    """Write ``configs/escalation/policy.yaml`` under ``tmp_path``.
-
-    ``deadlock_minutes`` accepts:
-
-    * ``int`` / ``float`` -- written verbatim (PyYAML resolves to
-      int / float).
-    * ``"__null__"`` -- sentinel writing ``key: null`` so
-      ``raw.get(key, 0)`` returns ``None`` and the downstream
-      ``int(None)`` raises ``TypeError`` (Block 4 / 6 of Part B).
-    * other ``str`` -- written as a quoted YAML string so PyYAML does
-      NOT bool-resolve (Block 5: ``"abc"`` stays a string for
-      ``int("abc")`` to raise ``ValueError``).
-    * ``None`` -- omits the key entirely so ``raw.get(..., 0)`` returns
-      the factory ``0`` (Block 3 of Part B).
-
-    ``mkdir(parents=True, exist_ok=True)`` lets Part B re-write the
-    same file across blocks within a single ``tmp_path`` test.
-    """
-    pol_dir = tmp_path / "configs" / "escalation"
-    pol_dir.mkdir(parents=True, exist_ok=True)
-    if deadlock_minutes is None:
-        deadlock_line = ""
-    elif deadlock_minutes == "__null__":
-        deadlock_line = "deadlock_escalation_after_minutes: null\n"
-    elif isinstance(deadlock_minutes, str):
-        deadlock_line = f'deadlock_escalation_after_minutes: "{deadlock_minutes}"\n'
-    else:
-        deadlock_line = f"deadlock_escalation_after_minutes: {deadlock_minutes}\n"
-    body = (
-        "version: 1\n"
-        f"{deadlock_line}"
-        "anti_deadlock:\n"
-        f"  enabled: {'true' if enabled else 'false'}\n"
-        f"  min_progress_events: {min_progress}\n"
-    )
-    (pol_dir / "policy.yaml").write_text(body, encoding="utf-8")
 
 
 def test_deadlock_minutes_env_accept_arm_int_contract(
@@ -85,7 +41,9 @@ def test_deadlock_minutes_env_accept_arm_int_contract(
     5. **`.strip()` rescue** -- whitespace-padded canonical rescued,
        consistent with fo71.
     """
-    _write_policy(tmp_path, enabled=True, min_progress=7, deadlock_minutes=30)
+    write_anti_deadlock_escalation_policy(
+        tmp_path, enabled=True, min_progress=7, deadlock_minutes=30
+    )
     cases: list[tuple[str, str, int]] = [
         ("canon_60", "60", 60),
         ("canon_5", "5", 5),
@@ -133,7 +91,9 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
     * **Block 6** -- env-valid + yaml-null -> env wins WITHOUT
       triggering yaml-null read; pins precedence ordering.
     """
-    _write_policy(tmp_path, enabled=True, min_progress=7, deadlock_minutes=30)
+    write_anti_deadlock_escalation_policy(
+        tmp_path, enabled=True, min_progress=7, deadlock_minutes=30
+    )
     monkeypatch.setenv(_ENV_NAME, "60")
     result = load_anti_deadlock_settings(tmp_path)
     assert result == (True, 60, 7), (
@@ -146,7 +106,7 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
         f"block_2_env_empty_with_yaml: expected (True, 30, 7), got {result!r}"
     )
 
-    _write_policy(
+    write_anti_deadlock_escalation_policy(
         tmp_path,
         enabled=True,
         min_progress=7,
@@ -157,7 +117,7 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
         f"block_3_env_empty_no_yaml_key: expected (True, 0, 7) factory floor, got {result!r}"
     )
 
-    _write_policy(
+    write_anti_deadlock_escalation_policy(
         tmp_path,
         enabled=True,
         min_progress=7,
@@ -172,7 +132,7 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
         f"int() or NoneType; got {str(exc_info_null.value)!r}"
     )
 
-    _write_policy(
+    write_anti_deadlock_escalation_policy(
         tmp_path,
         enabled=True,
         min_progress=7,
@@ -188,7 +148,7 @@ def test_deadlock_minutes_env_two_layer_precedence_contract(
         f"got {str(exc_info_str.value)!r}"
     )
 
-    _write_policy(
+    write_anti_deadlock_escalation_policy(
         tmp_path,
         enabled=True,
         min_progress=7,
@@ -236,7 +196,9 @@ def test_deadlock_minutes_env_fail_raise_string_arm_contract(
     diagnostic** so a refactor wrapping the raise in a custom exception
     with a misleading message surfaces as a test failure.
     """
-    _write_policy(tmp_path, enabled=True, min_progress=7, deadlock_minutes=30)
+    write_anti_deadlock_escalation_policy(
+        tmp_path, enabled=True, min_progress=7, deadlock_minutes=30
+    )
     cases: list[tuple[str, str]] = [
         ("junk_abc", "abc"),
         ("junk_maybe", "maybe"),
