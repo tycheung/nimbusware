@@ -49,7 +49,7 @@ def test_scraper_stage_fails_when_env_off(monkeypatch: pytest.MonkeyPatch) -> No
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         orch.run_optional_scraper_fetch_stage(rid)
@@ -96,7 +96,7 @@ def test_scraper_no_disk_artifact_when_persist_cap_none(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         mock_resp = MagicMock(spec=httpx.Response)
@@ -118,7 +118,7 @@ def test_scraper_stage_success_with_mock_client(monkeypatch: pytest.MonkeyPatch)
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with patch(
-        "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+        "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
         return_value=_DEFAULT_CFG,
     ):
         mock_resp = MagicMock(spec=httpx.Response)
@@ -177,8 +177,14 @@ def test_scraper_multi_url_sequence(monkeypatch: pytest.MonkeyPatch) -> None:
         return mock_resp
 
     with (
-        patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
-        patch("nimbusware_orchestrator.pipeline.egress_checked_get_for_run", side_effect=fake_get),
+        patch(
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
+            return_value=cfg,
+        ),
+        patch(
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.egress_checked_get_for_run",
+            side_effect=fake_get,
+        ),
     ):
         orch.run_optional_scraper_fetch_stage(rid)
     assert len(urls_seen) == 2
@@ -195,11 +201,11 @@ def test_scraper_budget_exceeded_reason(monkeypatch: pytest.MonkeyPatch) -> None
     rid = orch.create_run("default", run_policy_overrides=_RUN_EGRESS)
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
             return_value=_DEFAULT_CFG,
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.egress_checked_get_for_run",
             side_effect=EgressResponseTooLarge("over"),
         ),
     ):
@@ -242,9 +248,12 @@ def test_scraper_retries_then_success(monkeypatch: pytest.MonkeyPatch) -> None:
         return mock_resp
 
     with (
-        patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg),
         patch(
-            "nimbusware_orchestrator.pipeline.egress_checked_get_for_run",
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
+            return_value=cfg,
+        ),
+        patch(
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.egress_checked_get_for_run",
             side_effect=side_effect,
         ),
     ):
@@ -279,7 +288,10 @@ def test_scraper_writes_artifact_when_configured(
     mock_resp.headers = httpx.Headers({})
     client = MagicMock(spec=httpx.Client)
     client.get.return_value = mock_resp
-    with patch("nimbusware_orchestrator.pipeline.load_scraper_fetch_config", return_value=cfg):
+    with patch(
+        "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
+        return_value=cfg,
+    ):
         orch.run_optional_scraper_fetch_stage(rid, client=client)
     evs = mem.list_run_events(str(rid))
     passed = [r for r in evs if r["event_type"] == EventType.STAGE_PASSED.value]
