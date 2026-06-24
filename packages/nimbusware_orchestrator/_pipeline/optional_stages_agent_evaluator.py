@@ -6,15 +6,8 @@ from nimbusware_orchestrator._pipeline._helpers import (
     AgentEvaluator,
     Any,
     EventType,
-    Literal,
     _agent_evaluator_auto_create_env_disabled,
     _agent_evaluator_auto_promote_env_disabled,
-    agent_evaluator_llm_branch_effective,
-    agent_evaluator_llm_stub_env_enabled,
-    agent_evaluator_production_llm_fallback_enabled,
-    agent_evaluator_rules_derived_llm_evaluation,
-    agent_evaluator_score_band,
-    execute_agent_evaluator_policy_llm,
     parse_agent_evaluator_workflow_block,
     parse_probation_automation_workflow_block,
     persona_coverage_critique_effective,
@@ -22,12 +15,16 @@ from nimbusware_orchestrator._pipeline._helpers import (
     try_auto_create_persona_if_missing,
     try_auto_promote_probation_persona,
 )
+from nimbusware_orchestrator._pipeline.agent_evaluator_policy_llm_emit import (
+    AgentEvaluatorPolicyBranch,
+    resolve_agent_evaluator_policy_llm_for_host,
+)
 from nimbusware_orchestrator._pipeline.persona_coverage_critique_emit import (
     emit_persona_coverage_critique_optional_for_host,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import AgentEvaluatorOptionalStagesHost
 
-_AgentEvaluatorBranch = Literal["rules", "rules_with_llm_policy"]
+_AgentEvaluatorBranch = AgentEvaluatorPolicyBranch
 
 
 class AgentEvaluatorOptionalStagesMixin:
@@ -130,61 +127,16 @@ class AgentEvaluatorOptionalStagesMixin:
             )
         evaluation_branch: _AgentEvaluatorBranch = "rules"
         production_scoring_mode = "rules"
-        if agent_evaluator_llm_branch_effective(block):
-            model = self._selected_model_for_run(run_id)
-            llm_result = None
-            if model:
-                base = self._base_cfg()
-                runtime = base.get("runtime") or {}
-                base_url = str(runtime.get("base_url", "http://localhost:11434"))
-                llm_result = execute_agent_evaluator_policy_llm(
-                    self._store,
-                    self._registry,
-                    run_id=run_id,
-                    base_url=base_url,
-                    model_id=model,
-                    rules_eval=rules_eval,
-                    persona_id=block.persona_id,
-                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
-                )
-            if llm_result is None and agent_evaluator_llm_stub_env_enabled():
-                llm_result = {
-                    "status": str(rules_eval.get("status", "ok")),
-                    "gaps": (
-                        list(gaps_raw)
-                        if isinstance((gaps_raw := rules_eval.get("gaps")), list)
-                        else []
-                    ),
-                    "summary": "stub agent-evaluator policy review",
-                    "production_scoring_mode": "stub",
-                }
-            elif llm_result is None and agent_evaluator_production_llm_fallback_enabled(
-                block,
-            ):
-                llm_result = agent_evaluator_rules_derived_llm_evaluation(rules_eval)
-            if llm_result is not None:
-                evaluation_branch = "rules_with_llm_policy"
-                llm_eval_meta: dict[str, Any] = {
-                    "status": llm_result.get("status"),
-                    "gaps": llm_result.get("gaps"),
-                    "summary": llm_result.get("summary"),
-                }
-                mode_raw = llm_result.get("production_scoring_mode")
-                if isinstance(mode_raw, str) and mode_raw.strip():
-                    production_scoring_mode = mode_raw.strip()
-                else:
-                    production_scoring_mode = "llm"
-                rules_score = rules_eval.get("score")
-                if isinstance(rules_score, (int, float)) and not isinstance(
-                    rules_score,
-                    bool,
-                ):
-                    score_f = float(rules_score)
-                    llm_eval_meta["policy_score"] = score_f
-                    llm_eval_meta["policy_score_band"] = agent_evaluator_score_band(
-                        score_f,
-                    )
-                ae_meta["llm_evaluation"] = llm_eval_meta
+        branch, mode, llm_eval_meta = resolve_agent_evaluator_policy_llm_for_host(
+            self,
+            run_id,
+            block=block,
+            rules_eval=rules_eval,
+        )
+        evaluation_branch = branch
+        production_scoring_mode = mode
+        if llm_eval_meta is not None:
+            ae_meta["llm_evaluation"] = llm_eval_meta
         ae_meta["evaluation_branch"] = evaluation_branch
         ae_meta["production_scoring_mode"] = production_scoring_mode
         meta: dict[str, Any] = {}

@@ -63,7 +63,7 @@ def test_agent_evaluator_llm_policy_branch_metadata(
         ),
         patch.object(orch, "_selected_model_for_run", return_value="stub-model"),
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_agent_evaluator.execute_agent_evaluator_policy_llm",
+            "nimbusware_orchestrator._pipeline.agent_evaluator_policy_llm_emit.execute_agent_evaluator_policy_llm",
             return_value=None,
         ),
     ):
