@@ -3,14 +3,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    metrics_caption,
-    metrics_table_rows,
-)
 from nimbusware_console.explainer_core.operator_metrics_exports import (
-    install_named_operator_metrics_exports,
+    build_metrics_fn,
+    caption_from_parts,
+    install_operator_metrics_module,
+    table_rows_fn,
 )
-from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
+
+_PREFIX = "self_refinement_workflow_explainer"
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_present": False,
@@ -39,12 +39,42 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("Load error", "load_error_present"),
 )
 
+_OPTIONAL_METRIC_KEYS = frozenset({"merged_max_iterations", "policy_version", "load_error_present"})
 
-def self_refinement_workflow_explainer_operator_metrics(
-    payload: Mapping[str, Any] | None,
-) -> dict[str, Any]:
-    return build_operator_metrics(
-        payload,
+
+def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
+    parts: list[str] = []
+    if metrics.get("would_emit_marker_after_env") is True:
+        parts.append("marker **would emit** (after env)")
+    elif metrics.get("would_emit_marker") is True:
+        parts.append("marker **would emit**")
+    if metrics.get("ungated_loop_forces_on") is True:
+        parts.append("ungated loop env **forces on**")
+    elif metrics.get("ungated_loop_forces_off") is True:
+        parts.append("ungated loop env **forces off**")
+    if metrics.get("policy_enabled") is True:
+        parts.append("policy enabled")
+    merged_max = metrics.get("merged_max_iterations")
+    if isinstance(merged_max, int) and not isinstance(merged_max, bool):
+        parts.append(f"max iterations **{merged_max}**")
+    elif metrics.get("yaml_present") is True:
+        parts.append("YAML block present")
+    if metrics.get("load_error_present") is True:
+        parts.append("load error")
+    return parts
+
+
+(
+    self_refinement_workflow_explainer_operator_metrics,
+    self_refinement_workflow_explainer_operator_metrics_table_rows,
+    self_refinement_workflow_explainer_operator_metrics_caption,
+    self_refinement_workflow_explainer_operator_metrics_export_json,
+    self_refinement_workflow_explainer_operator_metrics_table_rows_csv,
+    self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
+) = install_operator_metrics_module(
+    globals(),
+    module_prefix=_PREFIX,
+    metrics=build_metrics_fn(
         _DEFAULTS,
         bool_fields=(("self_refinement_yaml_present", "yaml_present"),),
         int_fields=(("self_refinement_yaml_mapping_string_key_count", "yaml_mapping_key_count"),),
@@ -69,55 +99,14 @@ def self_refinement_workflow_explainer_operator_metrics(
             ),
         ),
         load_error=True,
-    )
-
-
-def self_refinement_workflow_explainer_operator_metrics_table_rows(
-    metrics: Mapping[str, Any] | None,
-) -> list[dict[str, str]]:
-    return metrics_table_rows(
-        metrics,
+    ),
+    table_rows=table_rows_fn(
         _TABLE_ROWS,
         include_when=lambda m, key: (
-            key not in {"merged_max_iterations", "policy_version", "load_error_present"}
+            key not in _OPTIONAL_METRIC_KEYS
             or (key == "load_error_present" and m.get("load_error_present") is True)
             or m.get(key) is not None
         ),
-    )
-
-
-def self_refinement_workflow_explainer_operator_metrics_caption(
-    metrics: Mapping[str, Any] | None,
-) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
-    parts: list[str] = []
-    if metrics.get("would_emit_marker_after_env") is True:
-        parts.append("marker **would emit** (after env)")
-    elif metrics.get("would_emit_marker") is True:
-        parts.append("marker **would emit**")
-    if metrics.get("ungated_loop_forces_on") is True:
-        parts.append("ungated loop env **forces on**")
-    elif metrics.get("ungated_loop_forces_off") is True:
-        parts.append("ungated loop env **forces off**")
-    if metrics.get("policy_enabled") is True:
-        parts.append("policy enabled")
-    merged_max = metrics.get("merged_max_iterations")
-    if isinstance(merged_max, int) and not isinstance(merged_max, bool):
-        parts.append(f"max iterations **{merged_max}**")
-    elif metrics.get("yaml_present") is True:
-        parts.append("YAML block present")
-    if metrics.get("load_error_present") is True:
-        parts.append("load error")
-    return metrics_caption("Self-refinement explainer metrics: ", parts)
-
-
-(
-    self_refinement_workflow_explainer_operator_metrics_export_json,
-    self_refinement_workflow_explainer_operator_metrics_table_rows_csv,
-    self_refinement_workflow_explainer_operator_metrics_export_filename_slug,
-) = install_named_operator_metrics_exports(
-    globals(),
-    "self_refinement_workflow_explainer",
-    export_slug="self_refinement_workflow_explainer_operator_metrics",
+    ),
+    caption=caption_from_parts("Self-refinement explainer metrics: ", _caption_parts),
 )

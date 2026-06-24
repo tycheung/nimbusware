@@ -83,3 +83,7 @@ def escalation_policy_yaml_top_level_kinds_export_json(
 escalation_policy_yaml_top_level_kinds_table_rows_csv = partial(
     mapping_rows_csv, columns=_POLICY_KINDS_CSV_COLUMNS
 )
+
+
+def escalation_policy_export_filename_slug() -> str:
+    return "escalation_policy"

@@ -5,9 +5,11 @@ from typing import Any
 
 from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
-    install_named_operator_metrics_exports,
+    install_operator_metrics_module,
 )
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
+
+_PREFIX = "integration_adapter_writer_workflow_explainer"
 
 _IAW_METRIC_DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -35,7 +37,7 @@ _IAW_TABLE_ROWS: tuple[tuple[str, str], ...] = (
 )
 
 
-def integration_adapter_writer_workflow_explainer_operator_metrics(
+def _integration_adapter_writer_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     metrics = build_operator_metrics(
@@ -68,7 +70,7 @@ def integration_adapter_writer_workflow_explainer_operator_metrics(
     return metrics
 
 
-def integration_adapter_writer_workflow_explainer_operator_metrics_table_rows(
+def _integration_adapter_writer_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
     if not isinstance(metrics, Mapping):
@@ -94,7 +96,7 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_table_rows(
     return rows
 
 
-def integration_adapter_writer_workflow_explainer_operator_metrics_caption(
+def _integration_adapter_writer_operator_metrics_caption(
     metrics: Mapping[str, Any] | None,
 ) -> str | None:
     if not isinstance(metrics, Mapping):
@@ -127,11 +129,16 @@ def integration_adapter_writer_workflow_explainer_operator_metrics_caption(
 
 
 (
+    integration_adapter_writer_workflow_explainer_operator_metrics,
+    integration_adapter_writer_workflow_explainer_operator_metrics_table_rows,
+    integration_adapter_writer_workflow_explainer_operator_metrics_caption,
     integration_adapter_writer_workflow_explainer_operator_metrics_export_json,
     integration_adapter_writer_workflow_explainer_operator_metrics_table_rows_csv,
     integration_adapter_writer_workflow_explainer_operator_metrics_export_filename_slug,
-) = install_named_operator_metrics_exports(
+) = install_operator_metrics_module(
     globals(),
-    "integration_adapter_writer_workflow_explainer",
-    export_slug="integration_adapter_writer_workflow_explainer_operator_metrics",
+    module_prefix=_PREFIX,
+    metrics=_integration_adapter_writer_operator_metrics,
+    table_rows=_integration_adapter_writer_operator_metrics_table_rows,
+    caption=_integration_adapter_writer_operator_metrics_caption,
 )

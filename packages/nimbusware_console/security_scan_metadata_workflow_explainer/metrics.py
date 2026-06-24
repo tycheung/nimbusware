@@ -3,11 +3,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import metrics_caption, metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
-    install_named_operator_metrics_exports,
+    build_metrics_fn,
+    caption_from_parts,
+    install_operator_metrics_module,
+    table_rows_fn,
 )
-from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
+
+_PREFIX = "security_scan_metadata_workflow_explainer"
 
 _DEFAULTS: dict[str, Any] = {
     "yaml_key_present": False,
@@ -22,12 +25,6 @@ _DEFAULTS: dict[str, Any] = {
     "workflow_yaml_version_int": None,
     "workflow_yaml_file_bytes": None,
 }
-
-_BOOL_FIELDS: tuple[tuple[str, str], ...] = (
-    ("security_scan_metadata_on_verify_yaml_key_present", "yaml_key_present"),
-    ("yaml_parsed_bool", "yaml_parsed_bool"),
-    ("effective_enabled", "effective_enabled"),
-)
 
 _TABLE_ROWS: tuple[tuple[str, str], ...] = (
     ("YAML key present", "yaml_key_present"),
@@ -44,43 +41,7 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 )
 
 
-def security_scan_metadata_workflow_explainer_operator_metrics(
-    payload: Mapping[str, Any] | None,
-) -> dict[str, Any]:
-    return build_operator_metrics(
-        payload,
-        _DEFAULTS,
-        bool_fields=_BOOL_FIELDS,
-        bool_match_fields=(
-            (
-                "security_scan_metadata_yaml_parsed_bool_matches_effective",
-                "yaml_matches_effective",
-                "yaml_effective_mismatch",
-            ),
-        ),
-        env_tri_state=("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",),
-        workflow_yaml_file=True,
-        load_error=True,
-    )
-
-
-def security_scan_metadata_workflow_explainer_operator_metrics_table_rows(
-    metrics: Mapping[str, Any] | None,
-) -> list[dict[str, str]]:
-    rows = metrics_table_rows(
-        metrics,
-        [r for r in _TABLE_ROWS if r[1] != "load_error_present"],
-    )
-    if isinstance(metrics, Mapping) and metrics.get("load_error_present") is True:
-        rows.append({"field": "Load error", "value": "yes"})
-    return rows
-
-
-def security_scan_metadata_workflow_explainer_operator_metrics_caption(
-    metrics: Mapping[str, Any] | None,
-) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
+def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     parts: list[str] = []
     if metrics.get("yaml_matches_effective") is False:
         parts.append("YAML vs effective **mismatch**")
@@ -97,15 +58,41 @@ def security_scan_metadata_workflow_explainer_operator_metrics_caption(
         parts.append(f"workflow YAML **{raw_bytes}** byte(s)")
     if metrics.get("load_error_present") is True:
         parts.append("load error")
-    return metrics_caption("Security scan metadata explainer metrics: ", parts)
+    return parts
 
 
 (
+    security_scan_metadata_workflow_explainer_operator_metrics,
+    security_scan_metadata_workflow_explainer_operator_metrics_table_rows,
+    security_scan_metadata_workflow_explainer_operator_metrics_caption,
     security_scan_metadata_workflow_explainer_operator_metrics_export_json,
     security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv,
     security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug,
-) = install_named_operator_metrics_exports(
+) = install_operator_metrics_module(
     globals(),
-    "security_scan_metadata_workflow_explainer",
-    export_slug="security_scan_metadata_workflow_explainer_operator_metrics",
+    module_prefix=_PREFIX,
+    metrics=build_metrics_fn(
+        _DEFAULTS,
+        bool_fields=(
+            ("security_scan_metadata_on_verify_yaml_key_present", "yaml_key_present"),
+            ("yaml_parsed_bool", "yaml_parsed_bool"),
+            ("effective_enabled", "effective_enabled"),
+        ),
+        bool_match_fields=(
+            (
+                "security_scan_metadata_yaml_parsed_bool_matches_effective",
+                "yaml_matches_effective",
+                "yaml_effective_mismatch",
+            ),
+        ),
+        env_tri_state=("NIMBUSWARE_ATTACH_SECURITY_SCAN_METADATA",),
+        workflow_yaml_file=True,
+        load_error=True,
+    ),
+    table_rows=table_rows_fn(
+        _TABLE_ROWS,
+        append_load_error_row=True,
+        exclude_keys=frozenset({"load_error_present"}),
+    ),
+    caption=caption_from_parts("Security scan metadata explainer metrics: ", _caption_parts),
 )

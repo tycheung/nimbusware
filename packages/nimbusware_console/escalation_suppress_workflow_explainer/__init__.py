@@ -28,6 +28,7 @@ from nimbusware_console.escalation_suppress_workflow_explainer.payload import (
 )
 from nimbusware_console.escalation_suppress_workflow_explainer.policy_tables import (
     _escalation_policy_keys_rows_from_list,
+    escalation_policy_export_filename_slug,
     escalation_policy_yaml_keys_all_export_json,
     escalation_policy_yaml_keys_all_table_rows,
     escalation_policy_yaml_keys_all_table_rows_csv,
@@ -39,11 +40,6 @@ from nimbusware_console.explainer_core.time import age_seconds_utc as _age_secon
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
     install_package_workflow_explainer_exports,
 )
-
-
-def escalation_policy_export_filename_slug() -> str:
-    return "escalation_policy"
-
 
 # codegen: workflow_explainer_exports begin
 install_package_workflow_explainer_exports(globals(), "escalation_suppress")

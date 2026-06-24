@@ -3,17 +3,17 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.explainer_core.metrics_scaffold import (
-    metrics_caption,
-    metrics_table_rows,
-)
+from nimbusware_console.explainer_core.metrics_scaffold import metrics_table_rows
 from nimbusware_console.explainer_core.operator_metrics_exports import (
-    install_named_operator_metrics_exports,
+    caption_from_parts,
+    install_operator_metrics_module,
 )
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
 from nimbusware_console.integrator_threshold_explainer.keys import (
     get_preview_effective_min_score,
 )
+
+_PREFIX = "integrator_threshold_explainer"
 
 _DEFAULTS: dict[str, Any] = {
     "would_emit_gate_event": False,
@@ -40,7 +40,7 @@ _TABLE_ROWS: tuple[tuple[str, str], ...] = (
 )
 
 
-def integrator_threshold_explainer_operator_metrics(
+def _integrator_threshold_operator_metrics(
     payload: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     metrics = build_operator_metrics(
@@ -77,7 +77,7 @@ def integrator_threshold_explainer_operator_metrics(
     return metrics
 
 
-def integrator_threshold_explainer_operator_metrics_table_rows(
+def _integrator_threshold_operator_metrics_table_rows(
     metrics: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
     return metrics_table_rows(
@@ -91,11 +91,7 @@ def integrator_threshold_explainer_operator_metrics_table_rows(
     )
 
 
-def integrator_threshold_explainer_operator_metrics_caption(
-    metrics: Mapping[str, Any] | None,
-) -> str | None:
-    if not isinstance(metrics, Mapping):
-        return None
+def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     parts: list[str] = []
     if metrics.get("would_emit_gate_event") is True:
         parts.append("gate **would emit**")
@@ -122,15 +118,20 @@ def integrator_threshold_explainer_operator_metrics_caption(
         parts.append(f"**{tags_len}** workflow project_{suffix}")
     if metrics.get("load_error_present") is True:
         parts.append("paste parse error(s)")
-    return metrics_caption("Integrator threshold explainer metrics: ", parts)
+    return parts
 
 
 (
+    integrator_threshold_explainer_operator_metrics,
+    integrator_threshold_explainer_operator_metrics_table_rows,
+    integrator_threshold_explainer_operator_metrics_caption,
     integrator_threshold_explainer_operator_metrics_export_json,
     integrator_threshold_explainer_operator_metrics_table_rows_csv,
     integrator_threshold_explainer_operator_metrics_export_filename_slug,
-) = install_named_operator_metrics_exports(
+) = install_operator_metrics_module(
     globals(),
-    "integrator_threshold_explainer",
-    export_slug="integrator_threshold_explainer_operator_metrics",
+    module_prefix=_PREFIX,
+    metrics=_integrator_threshold_operator_metrics,
+    table_rows=_integrator_threshold_operator_metrics_table_rows,
+    caption=caption_from_parts("Integrator threshold explainer metrics: ", _caption_parts),
 )
