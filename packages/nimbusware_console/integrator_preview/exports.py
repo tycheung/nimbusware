@@ -1,20 +1,18 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
+    sequence_export_json,
     table_rows_csv,
 )
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.explainer_core.workflow_exports import (
-    explainer_json_cell as _full_workflow_merge_diff_cell,
-)
-from nimbusware_console.explainer_core.workflow_exports import (
     workflow_explainer_payload_export_json,
+    workflow_explainer_payload_table_rows,
 )
 from nimbusware_console.integrator_preview.merge import (
     full_workflow_merge_attention_rows,
@@ -28,19 +26,9 @@ def full_workflow_merge_diff_export_filename_slug() -> str:
 def full_workflow_merge_diff_table_rows(
     diff: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(diff, Mapping):
+    if not isinstance(diff, Mapping) or diff.get("error"):
         return []
-    if diff.get("error"):
-        return []
-    rows: list[dict[str, str]] = []
-    for key in sorted(str(k) for k in diff.keys()):
-        rows.append(
-            {
-                "field": key,
-                "value": _full_workflow_merge_diff_cell(diff.get(key)),
-            },
-        )
-    return rows
+    return workflow_explainer_payload_table_rows(diff)
 
 
 def full_workflow_merge_diff_export_json(
@@ -171,8 +159,7 @@ _FULL_WORKFLOW_MERGE_ATTENTION_CSV_COLUMNS: tuple[str, ...] = ("flag", "keys")
 def full_workflow_merge_attention_export_json(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
-    out = [dict(r) for r in rows if isinstance(r, Mapping)]
-    return json.dumps(out, indent=2, ensure_ascii=False)
+    return sequence_export_json([dict(r) for r in rows if isinstance(r, Mapping)])
 
 
 full_workflow_merge_attention_table_rows_csv = partial(

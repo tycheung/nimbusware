@@ -1,6 +1,8 @@
+from nimbusware_console.explainer_core.workflow_exports import (
+    explainer_json_cell as _full_workflow_merge_diff_cell,
+)
 from nimbusware_console.integrator_preview.exports import (
     _full_workflow_merge_attention_subtree_row_count,
-    _full_workflow_merge_diff_cell,
     _full_workflow_merge_diff_list_count,
     full_workflow_merge_attention_export_filename_slug,
     full_workflow_merge_attention_export_json,
