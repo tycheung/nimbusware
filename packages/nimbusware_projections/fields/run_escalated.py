@@ -18,4 +18,20 @@ RUN_ESCALATED_DISPLAY_FIELDS: tuple[tuple[str, str], ...] = (
     ("occurred_at", "Occurred at"),
 )
 
-__all__ = ["RUN_ESCALATED_DISPLAY_FIELDS", "RUN_ESCALATED_ROW_KEYS"]
+RUN_ESCALATED_DELTA_FIELDS: tuple[tuple[str, str], ...] = (
+    ("previous_event_id", "Previous event id"),
+    ("current_event_id", "Current event id"),
+    ("reason_code_changed", "Reason code changed"),
+    ("actor_id_changed", "Actor id changed"),
+    ("policy_snapshot_id_changed", "Policy snapshot id changed"),
+    ("previous_reason_code", "Previous reason code"),
+    ("current_reason_code", "Current reason code"),
+    ("previous_actor_id", "Previous actor id"),
+    ("current_actor_id", "Current actor id"),
+)
+
+__all__ = [
+    "RUN_ESCALATED_DELTA_FIELDS",
+    "RUN_ESCALATED_DISPLAY_FIELDS",
+    "RUN_ESCALATED_ROW_KEYS",
+]

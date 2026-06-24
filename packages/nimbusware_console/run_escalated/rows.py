@@ -12,7 +12,10 @@ from nimbusware_console.components.operator_metrics import (
     table_rows_csv,
 )
 from nimbusware_console.run_escalated._common import _stringify
-from nimbusware_projections.fields.run_escalated import RUN_ESCALATED_DISPLAY_FIELDS
+from nimbusware_projections.fields.run_escalated import (
+    RUN_ESCALATED_DELTA_FIELDS,
+    RUN_ESCALATED_DISPLAY_FIELDS,
+)
 
 
 def run_escalated_from_timeline(
@@ -115,17 +118,7 @@ def run_escalated_delta_from_timeline(
     return raw if isinstance(raw, dict) else None
 
 
-_RUN_ESCALATED_DELTA_FIELDS: tuple[tuple[str, str], ...] = (
-    ("previous_event_id", "Previous event id"),
-    ("current_event_id", "Current event id"),
-    ("reason_code_changed", "Reason code changed"),
-    ("actor_id_changed", "Actor id changed"),
-    ("policy_snapshot_id_changed", "Policy snapshot id changed"),
-    ("previous_reason_code", "Previous reason code"),
-    ("current_reason_code", "Current reason code"),
-    ("previous_actor_id", "Previous actor id"),
-    ("current_actor_id", "Current actor id"),
-)
+_RUN_ESCALATED_DELTA_FIELDS = RUN_ESCALATED_DELTA_FIELDS
 
 
 def run_escalated_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[dict[str, str]]:

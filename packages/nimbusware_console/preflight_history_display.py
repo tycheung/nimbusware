@@ -9,18 +9,9 @@ from typing import Any
 
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_histogram
+from nimbusware_projections.fields.preflight import PREFLIGHT_DISPLAY_FIELDS
 
-_PREFLIGHT_FIELDS: tuple[tuple[str, str], ...] = (
-    ("validated_model_id", "Validated model id"),
-    ("provider", "Provider"),
-    ("context_tokens", "Context tokens"),
-    ("p95_latency_ms", "p95 latency (ms)"),
-    ("preflight_latency_sample_count", "Samples used"),
-    ("p95_latency_source", "p95 source"),
-    ("checks_passed", "Checks passed"),
-    ("event_id", "Event id"),
-    ("occurred_at", "Occurred at"),
-)
+_PREFLIGHT_FIELDS = PREFLIGHT_DISPLAY_FIELDS
 
 
 def _stringify(value: Any) -> str:
