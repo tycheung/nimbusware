@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import csv
 import json
-import re
 from collections.abc import Mapping, Sequence
-from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import mapping_export_json
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
+from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_orchestrator.preflight_histogram import build_histogram, empty_histogram
 from nimbusware_projections.fields.preflight import PREFLIGHT_DISPLAY_FIELDS
 
@@ -44,35 +44,15 @@ def preflight_history_summary_rows(
     return rows
 
 
-_PREFLIGHT_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def preflight_history_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_PREFLIGHT_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: r.get(k, "") for k in _PREFLIGHT_SUMMARY_CSV_COLUMNS})
-    return buf.getvalue()
+preflight_history_summary_rows_csv = field_value_table_rows_csv
 
 
 def preflight_history_export_json(summary: Mapping[str, Any] | None) -> str:
-    if not isinstance(summary, Mapping):
-        return "{}"
-    return json.dumps(dict(summary), ensure_ascii=False, indent=2)
+    return mapping_export_json(summary)
 
 
 def preflight_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    raw = str(run_id).strip().lower()
-    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
-    return slug[:max_len]
+    return run_id_export_filename_slug(run_id, max_len=max_len)
 
 
 def preflight_history_histogram_mode_caption(

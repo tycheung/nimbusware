@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import csv
-import json
 from collections.abc import Mapping, Sequence
 from io import StringIO
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import sequence_export_json
 from nimbusware_console.persona_catalog.load import (
     persona_catalog_flat_rows,
 )
@@ -134,11 +134,7 @@ def persona_catalog_flat_rows_csv(rows: Sequence[Mapping[str, Any]]) -> str:
 def persona_catalog_flat_rows_export_json(rows: Sequence[Mapping[str, Any]]) -> str:
     if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
         return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
+    return sequence_export_json([dict(r) for r in rows if isinstance(r, Mapping)])
 
 
 def persona_catalog_flat_export_filename_slug() -> str:

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import csv
-import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
 from typing import Any
+
+from nimbusware_console.components.operator_metrics import (
+    sequence_export_json,
+    table_rows_csv,
+)
 
 
 def short_run_id_label(run_id: str, *, head: int = 8) -> str:
@@ -75,22 +77,18 @@ def _csv_cell(value: Any) -> str:
 def preflight_cross_run_trend_rows_csv(rows: Sequence[Mapping[str, Any]]) -> str:
     if not rows:
         return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_PREFLIGHT_CROSS_RUN_TREND_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow({k: _csv_cell(r.get(k)) for k in _PREFLIGHT_CROSS_RUN_TREND_CSV_COLUMNS})
-    return buf.getvalue()
+    normalized = [
+        {k: _csv_cell(r.get(k)) for k in _PREFLIGHT_CROSS_RUN_TREND_CSV_COLUMNS}
+        for r in rows
+        if isinstance(r, Mapping)
+    ]
+    return table_rows_csv(normalized, columns=_PREFLIGHT_CROSS_RUN_TREND_CSV_COLUMNS)
 
 
 def preflight_cross_run_trend_export_json(rows: Sequence[Mapping[str, Any]]) -> str:
-    items = [dict(x) for x in rows if isinstance(x, Mapping)]
-    return json.dumps(items, ensure_ascii=False, indent=2)
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return "[]"
+    return sequence_export_json([dict(x) for x in rows if isinstance(x, Mapping)])
 
 
 def preflight_cross_run_trend_export_filename_slug() -> str:

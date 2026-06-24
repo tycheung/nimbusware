@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import csv
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from datetime import datetime, timezone
-from io import StringIO
 from pathlib import Path
 from typing import Any
+
+from nimbusware_console.components.operator_metrics import mapping_export_json
+from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 
 SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 
@@ -78,31 +79,11 @@ def prune_status_summary_rows(
     return rows
 
 
-_PRUNE_STATUS_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
 def prune_status_export_json(status: Mapping[str, Any] | None) -> str:
-    if not isinstance(status, Mapping):
-        return "{}"
-    return json.dumps(dict(status), indent=2, ensure_ascii=False)
+    return mapping_export_json(status)
 
 
-def prune_status_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_PRUNE_STATUS_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _PRUNE_STATUS_SUMMARY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+prune_status_summary_rows_csv = field_value_table_rows_csv
 
 
 def _parse_wrote_at(raw: Any) -> datetime | None:
