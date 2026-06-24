@@ -50,7 +50,7 @@ def test_scan_n_plus_one_heuristic_clean_repo() -> None:
 
 @patch.dict(os.environ, {"NIMBUSWARE_SELF_REFINEMENT_STAGE_MARKER": "1"}, clear=False)
 @patch(
-    "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.execute_self_refinement_critique_llm",
+    "nimbusware_orchestrator._pipeline.self_refinement_critique_emit.execute_self_refinement_critique_llm",
     return_value={
         "verdict": "PASS",
         "gate_decision": "proceed",
