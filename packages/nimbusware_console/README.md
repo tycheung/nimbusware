@@ -27,14 +27,14 @@ nimbusware_console/
 ├── services/                 # HTTP clients to /v1 (runs, chat, config, ollama, …)
 ├── components/               # Shared explainer panel + operator metrics helpers
 ├── explainer_core/           # metrics_scaffold, field_caption, repo_yaml, workflow_exports, table_rows_csv
-├── integrator_core/          # Shared thresholds / min-score / gate emission (C62)
+├── integrator_core/          # Shared thresholds / min-score / gate emission SSOT (C62)
 ├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
 ├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)
 ├── *_display/                # Package-only display modules (no duplicate .py shim)
 ├── operator_chat_core.py     # Operator chat command handling
 ├── admin_gate.py             # Token gate helpers
 ├── integrator_gate/          # Integrator gate latest delta + history
-├── integrator_preview/       # Integrator YAML preview + merge captions
+├── integrator_preview/       # Merge diff exports via workflow_exports + sequence_export_json (C41)
 ├── integrator_threshold_explainer/
 ├── bundle_catalog/           # Local catalog search, FAISS status, tags rollup
 ├── persona_catalog/          # Persona pairings, summary metrics, export

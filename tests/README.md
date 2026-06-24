@@ -1,6 +1,6 @@
 # Test layout
 
-Pytest discovers **3873** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~3028** tests at **≥75%** coverage (~80% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`). Playwright specs use a **120s** timeout (`tests/e2e/web/playwright.config.ts`) so campaign/API flows stay stable under CI parallel workers.
+Pytest discovers **3886** items under `tests/` with `pythonpath = ["packages", "tests"]` (see root `pyproject.toml`). The PR **unit** CI subset runs **~3035** tests at **≥75%** coverage (~80% total line coverage as of Jun 2026). Fixture repos under `tests/fixtures/repos/` are excluded from collection (`norecursedirs`). Playwright specs use a **120s** timeout (`tests/e2e/web/playwright.config.ts`) so campaign/API flows stay stable under CI parallel workers.
 
 | Directory | Purpose |
 |-----------|---------|
