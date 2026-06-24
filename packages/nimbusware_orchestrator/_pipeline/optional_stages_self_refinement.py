@@ -167,25 +167,30 @@ class SelfRefinementOptionalStagesMixin:
                 )
         eval_gaps_raw = sr_eval.get("gaps")
         eval_gaps = [str(g) for g in eval_gaps_raw] if isinstance(eval_gaps_raw, list) else []
-        critique_emit = try_emit_self_refinement_critique_for_host(
-            self,
-            run_id,
-            llm_critique_enabled=llm_critique_enabled,
-            gate_decision=gate_decision,
-            workflow_profile=wf_prof,
-            workflow_block=wf_sr,
-            evaluation_status=eval_status,
-            gaps=eval_gaps,
-            description=bounded,
-        )
-        if critique_emit.get("orchestration_branch"):
-            orchestration_branch = str(critique_emit["orchestration_branch"])
+        if eval_status is not None:
+            critique_emit = try_emit_self_refinement_critique_for_host(
+                self,
+                run_id,
+                llm_critique_enabled=llm_critique_enabled,
+                gate_decision=gate_decision,
+                workflow_profile=wf_prof,
+                workflow_block=wf_sr,
+                evaluation_status=eval_status,
+                gaps=eval_gaps,
+                description=bounded,
+            )
+        else:
+            critique_emit = {}
+        branch_raw = critique_emit.get("orchestration_branch")
+        if branch_raw == "rules_with_llm_critique":
+            orchestration_branch = "rules_with_llm_critique"
         if critique_emit.get("llm_critique_attempted"):
             llm_critique_attempted = True
         if "llm_critique_verdict" in critique_emit:
             llm_critique_verdict = critique_emit["llm_critique_verdict"]
-        if critique_emit.get("llm_gate_decision"):
-            llm_gate_decision = str(critique_emit["llm_gate_decision"])
+        gate_emit = critique_emit.get("llm_gate_decision")
+        if gate_emit in ("proceed", "hold"):
+            llm_gate_decision = gate_emit
         if critique_emit.get("llm_critique_summary"):
             llm_critique_summary = str(critique_emit["llm_critique_summary"])
         sr_meta: dict[str, Any] = {
