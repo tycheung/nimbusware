@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_env.env_flags import env_force_off, env_force_on
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_orchestrator.workflow_profiles import load_profile_subsection
 
 
 @dataclass(frozen=True)
@@ -17,22 +17,7 @@ class RefactorWorkflowBlock:
     orphan_gate_max: int | None = None
 
 
-def parse_refactor_workflow_block(
-    repo_root: Path,
-    workflow_profile: str | None,
-    *,
-    config_materializer: Any | None = None,
-) -> RefactorWorkflowBlock:
-    if workflow_profile is None or not str(workflow_profile).strip():
-        return RefactorWorkflowBlock()
-    key = str(workflow_profile).strip()
-    try:
-        raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
-    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
-        return RefactorWorkflowBlock()
-    block = raw.get("refactor")
-    if not isinstance(block, dict):
-        return RefactorWorkflowBlock()
+def _refactor_from_block(block: dict[str, Any]) -> RefactorWorkflowBlock:
     try:
         max_iter = int(block.get("max_iterations", 1) or 1)
     except (TypeError, ValueError):
@@ -47,6 +32,22 @@ def parse_refactor_workflow_block(
         max_iterations=max(1, min(5, max_iter)),
         llm_enabled=bool(block.get("llm_enabled", False)),
         orphan_gate_max=orphan_gate_max,
+    )
+
+
+def parse_refactor_workflow_block(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> RefactorWorkflowBlock:
+    return load_profile_subsection(
+        repo_root,
+        workflow_profile,
+        "refactor",
+        _refactor_from_block,
+        default=RefactorWorkflowBlock(),
+        config_materializer=config_materializer,
     )
 
 

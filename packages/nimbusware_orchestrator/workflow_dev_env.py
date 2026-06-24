@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_orchestrator.workflow_profiles import load_profile_subsection
 
 
 @dataclass(frozen=True)
@@ -15,19 +15,7 @@ class DevEnvWorkflowBlock:
     ui_controller_required: bool = False
 
 
-def parse_dev_env_workflow_block(
-    repo_root: Path,
-    workflow_profile: str,
-    *,
-    config_materializer: Any | None = None,
-) -> DevEnvWorkflowBlock:
-    try:
-        raw = workflow_profile_dict(repo_root, workflow_profile, materializer=config_materializer)
-    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
-        return DevEnvWorkflowBlock()
-    block = raw.get("dev_env")
-    if not isinstance(block, dict):
-        return DevEnvWorkflowBlock()
+def _dev_env_from_block(block: dict[str, Any]) -> DevEnvWorkflowBlock:
     ui = block.get("ui_controller")
     ui_enabled = False
     ui_required = False
@@ -41,6 +29,22 @@ def parse_dev_env_workflow_block(
         human_fidelity_enabled=hf_enabled,
         ui_controller_enabled=ui_enabled,
         ui_controller_required=ui_required,
+    )
+
+
+def parse_dev_env_workflow_block(
+    repo_root: Path,
+    workflow_profile: str,
+    *,
+    config_materializer: Any | None = None,
+) -> DevEnvWorkflowBlock:
+    return load_profile_subsection(
+        repo_root,
+        workflow_profile,
+        "dev_env",
+        _dev_env_from_block,
+        default=DevEnvWorkflowBlock(),
+        config_materializer=config_materializer,
     )
 
 

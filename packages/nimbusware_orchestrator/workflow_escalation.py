@@ -4,14 +4,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
+from nimbusware_orchestrator.workflow_profiles import (
+    coerce_yaml_bool,
+    load_profile_subsection,
+)
 
 
 @dataclass(frozen=True)
 class EscalationWorkflowBlock:
-    """Parsed ``escalation`` subsection from ``configs/workflows/{profile}.yaml``."""
-
     suppress_automatic_escalation: bool = False
+
+
+def _escalation_from_block(block: dict[str, Any]) -> EscalationWorkflowBlock:
+    return EscalationWorkflowBlock(
+        suppress_automatic_escalation=coerce_yaml_bool(
+            block.get("suppress_automatic_escalation", False)
+        ),
+    )
 
 
 def parse_escalation_workflow_block(
@@ -20,23 +29,11 @@ def parse_escalation_workflow_block(
     *,
     config_materializer: Any | None = None,
 ) -> EscalationWorkflowBlock:
-    if workflow_profile is None or not str(workflow_profile).strip():
-        return EscalationWorkflowBlock()
-    key = str(workflow_profile).strip()
-    try:
-        raw = workflow_profile_dict(repo_root, key, materializer=config_materializer)
-    except (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError):
-        return EscalationWorkflowBlock()
-    block = raw.get("escalation")
-    if not isinstance(block, dict):
-        return EscalationWorkflowBlock()
-    raw_sup = block.get("suppress_automatic_escalation", False)
-    if isinstance(raw_sup, bool):
-        suppress = raw_sup
-    elif isinstance(raw_sup, (int, float)):
-        suppress = bool(raw_sup)
-    elif isinstance(raw_sup, str):
-        suppress = raw_sup.strip().lower() in ("1", "true", "yes", "on")
-    else:
-        suppress = False
-    return EscalationWorkflowBlock(suppress_automatic_escalation=suppress)
+    return load_profile_subsection(
+        repo_root,
+        workflow_profile,
+        "escalation",
+        _escalation_from_block,
+        default=EscalationWorkflowBlock(),
+        config_materializer=config_materializer,
+    )
