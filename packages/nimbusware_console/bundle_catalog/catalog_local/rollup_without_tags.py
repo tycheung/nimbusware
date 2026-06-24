@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
@@ -17,7 +16,11 @@ from nimbusware_console.bundle_catalog.catalog_local._load import (
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
 )
-from nimbusware_console.components.operator_metrics import table_rows_csv
+from nimbusware_console.components.operator_metrics import (
+    mapping_export_json,
+    mapping_to_sorted_table_rows,
+    table_rows_csv,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
@@ -74,25 +77,13 @@ def bundle_catalog_bundles_without_tags_rollup_export_filename_slug() -> str:
 def bundle_catalog_bundles_without_tags_rollup_table_rows(
     rollup: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(rollup, Mapping):
-        return []
-    rows: list[dict[str, str]] = []
-    for key in sorted(str(k) for k in rollup.keys()):
-        rows.append(
-            {
-                "field": key,
-                "value": _bundle_catalog_local_summary_cell(rollup.get(key)),
-            },
-        )
-    return rows
+    return mapping_to_sorted_table_rows(rollup, _bundle_catalog_local_summary_cell)
 
 
 def bundle_catalog_bundles_without_tags_rollup_export_json(
     rollup: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(rollup, Mapping):
-        return "{}"
-    return json.dumps(dict(rollup), indent=2, ensure_ascii=False)
+    return mapping_export_json(rollup)
 
 
 bundle_catalog_bundles_without_tags_rollup_table_rows_csv = partial(

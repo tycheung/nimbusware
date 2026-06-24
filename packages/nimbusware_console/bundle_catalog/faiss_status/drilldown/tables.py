@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
@@ -9,8 +8,15 @@ from nimbusware_console.bundle_catalog.faiss_status.drilldown.captions import (
     _FAISS_ID_SET_MISMATCH_CSV_COLUMNS,
 )
 from nimbusware_console.components.operator_metrics import (
+    sequence_export_json,
     table_rows_csv,
 )
+
+
+def _sequence_mapping_export_json(rows: Sequence[Mapping[str, Any]]) -> str:
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return "[]"
+    return sequence_export_json([dict(r) for r in rows if isinstance(r, Mapping)])
 
 
 def bundle_faiss_id_set_mismatch_table_rows(
@@ -44,17 +50,7 @@ def bundle_faiss_id_set_mismatch_table_rows(
     return out
 
 
-def bundle_faiss_id_set_mismatch_export_json(
-    rows: Sequence[Mapping[str, Any]],
-) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
-
+bundle_faiss_id_set_mismatch_export_json = _sequence_mapping_export_json
 
 bundle_faiss_id_set_mismatch_table_rows_csv = partial(
     table_rows_csv, columns=_FAISS_ID_SET_MISMATCH_CSV_COLUMNS
@@ -81,17 +77,7 @@ def bundle_faiss_duplicate_id_table_rows(
     return out
 
 
-def bundle_faiss_duplicate_id_export_json(
-    rows: Sequence[Mapping[str, Any]],
-) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
-
+bundle_faiss_duplicate_id_export_json = _sequence_mapping_export_json
 
 bundle_faiss_duplicate_id_table_rows_csv = partial(
     table_rows_csv, columns=_FAISS_DUPLICATE_ID_CSV_COLUMNS
@@ -130,17 +116,7 @@ def bundle_faiss_index_dir_listing_table_rows(
     return out
 
 
-def bundle_faiss_index_dir_listing_export_json(
-    rows: Sequence[Mapping[str, Any]],
-) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
-
+bundle_faiss_index_dir_listing_export_json = _sequence_mapping_export_json
 
 bundle_faiss_index_dir_listing_table_rows_csv = partial(
     table_rows_csv, columns=_FAISS_INDEX_DIR_LISTING_CSV_COLUMNS

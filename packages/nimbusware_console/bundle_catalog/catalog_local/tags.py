@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import csv
-import json
 from collections.abc import Mapping, Sequence
-from io import StringIO
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +17,10 @@ from nimbusware_console.bundle_catalog.catalog_local.rollup_without_tags import 
 )
 from nimbusware_console.bundle_catalog.catalog_local.summary import (
     bundle_catalog_local_summary,
+)
+from nimbusware_console.components.operator_metrics import (
+    sequence_export_json,
+    table_rows_csv,
 )
 
 
@@ -76,41 +78,34 @@ def bundle_catalog_top_tag_counts(
     return [{"tag": tag, "count": count} for tag, count in ordered[:top_n]]
 
 
-def bundle_catalog_top_tag_counts_export_json(
+def bundle_catalog_top_tag_counts_table_rows(
     rows: Sequence[Mapping[str, Any]],
-) -> str:
-    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
-        return "[]"
-    out: list[dict[str, Any]] = []
-    for r in rows:
-        if isinstance(r, Mapping):
-            out.append(dict(r))
-    return json.dumps(out, indent=2, ensure_ascii=False)
-
-
-def _bundle_catalog_top_tag_counts_csv(rows: Sequence[Mapping[str, Any]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_BUNDLE_TOP_TAG_COUNTS_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
+) -> list[dict[str, str]]:
+    out: list[dict[str, str]] = []
     for r in rows:
         if not isinstance(r, Mapping):
             continue
-        w.writerow(
+        out.append(
             {
                 "tag": _bundle_search_hit_cell(r.get("tag")),
                 "count": _bundle_search_hit_cell(r.get("count")),
             },
         )
-    return buf.getvalue()
+    return out
 
 
-bundle_catalog_top_tag_counts_table_rows_csv = _bundle_catalog_top_tag_counts_csv
+def bundle_catalog_top_tag_counts_export_json(
+    rows: Sequence[Mapping[str, Any]],
+) -> str:
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return "[]"
+    return sequence_export_json([dict(r) for r in rows if isinstance(r, Mapping)])
+
+
+bundle_catalog_top_tag_counts_table_rows_csv = partial(
+    table_rows_csv,
+    columns=_BUNDLE_TOP_TAG_COUNTS_CSV_COLUMNS,
+)
 
 
 def bundle_catalog_bundle_ids_sample(

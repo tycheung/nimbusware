@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
@@ -18,7 +17,11 @@ from nimbusware_console.bundle_catalog.catalog_local._load import (
     catalog_yaml_path,
     load_catalog_doc,
 )
-from nimbusware_console.components.operator_metrics import table_rows_csv
+from nimbusware_console.components.operator_metrics import (
+    mapping_export_json,
+    mapping_to_sorted_table_rows,
+    table_rows_csv,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 
 
@@ -62,25 +65,13 @@ def bundle_catalog_local_summary_export_filename_slug() -> str:
 def bundle_catalog_local_summary_table_rows(
     summary: Mapping[str, Any] | None,
 ) -> list[dict[str, str]]:
-    if not isinstance(summary, Mapping):
-        return []
-    rows: list[dict[str, str]] = []
-    for key in sorted(str(k) for k in summary.keys()):
-        rows.append(
-            {
-                "field": key,
-                "value": _bundle_catalog_local_summary_cell(summary.get(key)),
-            },
-        )
-    return rows
+    return mapping_to_sorted_table_rows(summary, _bundle_catalog_local_summary_cell)
 
 
 def bundle_catalog_local_summary_export_json(
     summary: Mapping[str, Any] | None,
 ) -> str:
-    if not isinstance(summary, Mapping):
-        return "{}"
-    return json.dumps(dict(summary), indent=2, ensure_ascii=False)
+    return mapping_export_json(summary)
 
 
 bundle_catalog_local_summary_table_rows_csv = partial(
