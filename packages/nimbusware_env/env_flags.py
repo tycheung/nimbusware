@@ -74,21 +74,28 @@ def env_falsy(name: str) -> bool:
     return str(raw).strip().lower() in FALSY_VALUES
 
 
+def env_flag_bool(key: str, *, default: bool = False, raw: bool = False) -> bool:
+    if raw or key in FAIL_CLOSED_RAW_KEYS:
+        return env_truthy_raw(key)
+    if _managed_key(key):
+        return _catalog_bool(key, default=default)
+    return env_bool(key, default=default)
+
+
 def nimbusware_slice_auto_advance_enabled() -> bool:
-    return _catalog_bool("NIMBUSWARE_SLICE_AUTO_ADVANCE", default=True)
+    return env_flag_bool("NIMBUSWARE_SLICE_AUTO_ADVANCE", default=True)
 
 
 def nimbusware_use_llm_enabled() -> bool:
-    """Fail-closed truthy tuple on raw env (no strip)."""
-    return env_truthy_raw("NIMBUSWARE_USE_LLM")
+    return env_flag_bool("NIMBUSWARE_USE_LLM", raw=True)
 
 
 def nimbusware_skip_preflight_enabled() -> bool:
-    return env_truthy_raw("NIMBUSWARE_SKIP_PREFLIGHT")
+    return env_flag_bool("NIMBUSWARE_SKIP_PREFLIGHT", raw=True)
 
 
 def nimbusware_outbound_fetch_enabled() -> bool:
-    return env_truthy_raw("NIMBUSWARE_OUTBOUND_FETCH_ENABLED")
+    return env_flag_bool("NIMBUSWARE_OUTBOUND_FETCH_ENABLED", raw=True)
 
 
 def env_tri_state(name: str) -> str | None:
@@ -119,7 +126,7 @@ def env_force_off(name: str) -> bool:
 
 
 def nimbusware_preflight_json_probe_enabled() -> bool:
-    return env_truthy_raw("NIMBUSWARE_PREFLIGHT_JSON_PROBE")
+    return env_flag_bool("NIMBUSWARE_PREFLIGHT_JSON_PROBE", raw=True)
 
 
 def nimbusware_api_host(default: str = "0.0.0.0") -> str:
@@ -185,8 +192,7 @@ def nimbusware_config_from_files_enabled() -> bool:
 
 
 def nimbusware_roles_from_db_enabled() -> bool:
-    """Fail-closed: no strip (whitespace-padded values stay off)."""
-    return env_truthy_raw("NIMBUSWARE_ROLES_FROM_DB")
+    return env_flag_bool("NIMBUSWARE_ROLES_FROM_DB", raw=True)
 
 
 def nimbusware_workflow_profile(default: str = "micro_slice") -> str:
