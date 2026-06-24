@@ -3,18 +3,35 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from agent_core.mapping import load_error_text
+from nimbusware_console.explainer_core.field_caption import (
+    payload_load_error_clear,
+    payload_nonempty_str_caption,
+    payload_nonneg_int_caption,
+)
+
+
+def _marker_merge_ready(payload: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+    return payload if isinstance(payload, Mapping) else None
+
+
+def _policy_yaml_ready(payload: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+    body = payload_load_error_clear(payload)
+    if body is None:
+        return None
+    pol = body.get("policy_yaml")
+    return pol if isinstance(pol, Mapping) else None
 
 
 def self_refinement_merged_version_caption(
     marker_merge: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(marker_merge, Mapping):
-        return None
-    ver = marker_merge.get("merged_version")
-    if not isinstance(ver, int) or isinstance(ver, bool) or ver < 1:
-        return None
-    return f"Self-refinement merge preview: version=**{ver}**."
+    return payload_nonneg_int_caption(
+        marker_merge,
+        "merged_version",
+        "Self-refinement merge preview: version=**{value}**.",
+        guard=_marker_merge_ready,
+        min_value=1,
+    )
 
 
 def self_refinement_merged_description_preview_caption(
@@ -87,46 +104,31 @@ def self_refinement_would_emit_marker_caption(
 def self_refinement_workflow_yaml_raw_type_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    raw = payload.get("self_refinement_workflow_yaml_raw_type")
-    if not isinstance(raw, str):
-        return None
-    text = raw.strip()
-    if not text:
-        return None
-    return f"Self-refinement workflow YAML raw type: **{text}**."
+    return payload_nonempty_str_caption(
+        payload,
+        "self_refinement_workflow_yaml_raw_type",
+        "Self-refinement workflow YAML raw type: **{value}**.",
+    )
 
 
 def self_refinement_policy_yaml_file_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    pol = payload.get("policy_yaml")
-    if not isinstance(pol, Mapping):
-        return None
-    raw = pol.get("policy_yaml_file_bytes")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Self-refinement policy.yaml on disk: **{raw}** bytes."
+    return payload_nonneg_int_caption(
+        payload,
+        "policy_yaml_file_bytes",
+        "Self-refinement policy.yaml on disk: **{value}** bytes.",
+        guard=_policy_yaml_ready,
+    )
 
 
 def self_refinement_policy_yaml_disk_version_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    if not isinstance(payload, Mapping):
-        return None
-    if load_error_text(payload) is not None:
-        return None
-    pol = payload.get("policy_yaml")
-    if not isinstance(pol, Mapping):
-        return None
-    raw = pol.get("policy_yaml_top_level_version_int")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw <= 0:
-        return None
-    return f"Self-refinement policy.yaml on-disk version: **{raw}**."
+    return payload_nonneg_int_caption(
+        payload,
+        "policy_yaml_top_level_version_int",
+        "Self-refinement policy.yaml on-disk version: **{value}**.",
+        guard=_policy_yaml_ready,
+        min_value=1,
+    )

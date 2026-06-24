@@ -8,7 +8,7 @@ from nimbusware_config.workflow_read import (
     SelfRefinementWorkflowBlock,
     load_yaml,
 )
-from nimbusware_console.explainer_core.env_captions import env_tri_state_gate_caption
+from nimbusware_console.explainer_core.env_captions import env_tri_state_registry_caption
 from nimbusware_console.explainer_core.env_summaries import (
     env_disable_flag_summary,
     env_tri_state_summary,
@@ -96,23 +96,10 @@ def _nimbusware_self_refinement_ungated_loop_env_summary() -> dict[str, Any]:
 def self_refinement_ungated_loop_env_gate_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    return env_tri_state_gate_caption(
+    return env_tri_state_registry_caption(
         payload,
         "NIMBUSWARE_SELF_REFINEMENT_UNGATED_LOOP",
-        label="Self-refinement ungated env",
-        forces_on_text=(
-            "Self-refinement ungated env: **{env_key}** force-on"
-            "{detail} — overrides workflow ``ungated_loop`` when set."
-        ),
-        forces_off_text="Self-refinement ungated env: **{env_key}** force-off{detail}.",
-        unset_text=(
-            "Self-refinement ungated env: **{env_key}** unset — "
-            "workflow ``self_refinement.ungated_loop`` controls ungated progression."
-        ),
-        unrecognised_text=(
-            "Self-refinement ungated env: **{env_key}** "
-            "unrecognised value{detail} — treated like unset."
-        ),
+        "self_refinement_ungated_loop",
     )
 
 

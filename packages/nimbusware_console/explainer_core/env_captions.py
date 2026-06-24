@@ -76,6 +76,22 @@ ENV_TRI_STATE_TEMPLATES: dict[str, EnvTriStateTemplate] = {
         ),
         "unrecognised_text": "",
     },
+    "self_refinement_ungated_loop": {
+        "label": "Self-refinement ungated env",
+        "forces_on_text": (
+            "Self-refinement ungated env: **{env_key}** force-on"
+            "{detail} — overrides workflow ``ungated_loop`` when set."
+        ),
+        "forces_off_text": "Self-refinement ungated env: **{env_key}** force-off{detail}.",
+        "unset_text": (
+            "Self-refinement ungated env: **{env_key}** unset — "
+            "workflow ``self_refinement.ungated_loop`` controls ungated progression."
+        ),
+        "unrecognised_text": (
+            "Self-refinement ungated env: **{env_key}** "
+            "unrecognised value{detail} — treated like unset."
+        ),
+    },
 }
 
 ENV_DISABLE_TEMPLATES: dict[str, EnvDisableTemplate] = {

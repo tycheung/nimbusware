@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from functools import partial
 from typing import Any
 
 from agent_core.mapping import load_error_text
+from nimbusware_console.explainer_core.field_caption import (
+    payload_nonempty_str_caption,
+    payload_nonneg_int_caption,
+)
 from nimbusware_console.universal_critique_workflow_explainer.compare import (
     universal_critique_env_override_deltas,
 )
@@ -21,6 +26,21 @@ def _uc_payload(
     if require_yaml and payload.get("universal_critique_yaml_present") is not True:
         return None
     return payload
+
+
+def _uc_count_caption(
+    payload: Mapping[str, Any] | None,
+    field_key: str,
+    template: str,
+    *,
+    require_yaml: bool = False,
+) -> str | None:
+    return payload_nonneg_int_caption(
+        payload,
+        field_key,
+        template,
+        guard=partial(_uc_payload, require_yaml=require_yaml),
+    )
 
 
 def universal_critique_yaml_present_caption(
@@ -66,88 +86,77 @@ def universal_critique_default_enabled_caption(
 def universal_critique_workflow_yaml_relpath_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload)
-    if pl is None:
-        return None
-    raw = pl.get("workflow_yaml_relpath")
-    if not isinstance(raw, str):
-        return None
-    text = raw.strip()
-    if not text:
-        return None
-    return f"Universal critique workflow YAML: `{text}`."
+    return payload_nonempty_str_caption(
+        payload,
+        "workflow_yaml_relpath",
+        "Universal critique workflow YAML: `{value}`.",
+        guard=_uc_payload,
+    )
 
 
 def universal_critique_yaml_top_level_nonempty_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload, require_yaml=True)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_yaml_top_level_nonempty_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique YAML top-level nonempty value count: **{raw}**."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_yaml_top_level_nonempty_count",
+        "Universal critique YAML top-level nonempty value count: **{value}**.",
+        require_yaml=True,
+    )
 
 
 def universal_critique_yaml_top_level_list_child_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload, require_yaml=True)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_yaml_top_level_list_child_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique YAML top-level list child count: **{raw}**."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_yaml_top_level_list_child_count",
+        "Universal critique YAML top-level list child count: **{value}**.",
+        require_yaml=True,
+    )
 
 
 def universal_critique_yaml_top_level_enabled_true_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload, require_yaml=True)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_yaml_top_level_enabled_true_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique YAML top-level enabled: true count: **{raw}**."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_yaml_top_level_enabled_true_count",
+        "Universal critique YAML top-level enabled: true count: **{value}**.",
+        require_yaml=True,
+    )
 
 
 def universal_critique_yaml_top_level_enabled_false_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload, require_yaml=True)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_yaml_top_level_enabled_false_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique YAML top-level enabled: false count: **{raw}**."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_yaml_top_level_enabled_false_count",
+        "Universal critique YAML top-level enabled: false count: **{value}**.",
+        require_yaml=True,
+    )
 
 
 def universal_critique_yaml_top_level_mapping_child_count_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload, require_yaml=True)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_yaml_top_level_mapping_child_count")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique YAML top-level mapping child count: **{raw}**."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_yaml_top_level_mapping_child_count",
+        "Universal critique YAML top-level mapping child count: **{value}**.",
+        require_yaml=True,
+    )
 
 
 def universal_critique_workflow_yaml_bytes_caption(
     payload: Mapping[str, Any] | None,
 ) -> str | None:
-    pl = _uc_payload(payload)
-    if pl is None:
-        return None
-    raw = pl.get("universal_critique_workflow_yaml_bytes")
-    if not isinstance(raw, int) or isinstance(raw, bool) or raw < 0:
-        return None
-    return f"Universal critique workflow YAML file: **{raw}** bytes."
+    return _uc_count_caption(
+        payload,
+        "universal_critique_workflow_yaml_bytes",
+        "Universal critique workflow YAML file: **{value}** bytes.",
+    )
 
 
 def universal_critique_yaml_enabled_bucket_caption(
