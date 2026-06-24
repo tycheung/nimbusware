@@ -8,7 +8,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     (
         "packages/nimbusware_env",
         450,
-        frozenset({"settings_catalog_extended/core_legacy_runtime.py"}),
+        frozenset({"settings_catalog_extended/core_legacy.py"}),
     ),
     (
         "packages/agent_core/models",
