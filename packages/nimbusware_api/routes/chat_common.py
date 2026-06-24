@@ -8,12 +8,13 @@ from fastapi import HTTPException
 from pydantic import BaseModel, Field
 
 from nimbusware_api.access import assert_project_accessible
-from nimbusware_api.deps import OrchDep, ProjectStoreDep, StoreDep
+from nimbusware_api.deps import ChatStoreDep, OrchDep, ProjectStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.runs.create import PatchContextBody, RunRequirementsBody
+from nimbusware_maker.chat_models import ChatSessionRecord
 from nimbusware_maker.intent import build_requirements_artifact
 from nimbusware_maker.intent_classifier import WorkType
-from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW
+from nimbusware_maker.quick_mode import DEFAULT_QUICK_WORKFLOW, quick_mode_enabled
 from nimbusware_orchestrator.patch_context import normalize_patch_context
 from nimbusware_orchestrator.user_autopilot_profiles import apply_user_autopilot_at_run_start
 from nimbusware_orchestrator.user_enforcement_profiles import apply_user_enforcement_at_run_start
@@ -375,3 +376,43 @@ def resolve_workflow_profile(
         )
     meta = project_metadata(project_store, project_uuid)
     return str(meta.get("default_workflow_profile") or "micro_slice")
+
+
+def platform_hints(extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    hints = dict(extra or {})
+    hints.setdefault("quick_mode", quick_mode_enabled())
+    return hints
+
+
+def session_or_404(chat_store: ChatStoreDep, session_id: UUID) -> ChatSessionRecord:
+    session = chat_store.get_session(session_id)
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem(
+                "chat_session_not_found",
+                "Unknown chat session",
+                details={"session_id": str(session_id)},
+            ),
+        )
+    return session
+
+
+def chat_http_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, KeyError):
+        code = str(exc.args[0]) if exc.args else "not_found"
+        if code == "chat_turn_not_found":
+            return HTTPException(
+                status_code=404,
+                detail=problem(code, "Unknown chat turn"),
+            )
+        return HTTPException(
+            status_code=404,
+            detail=problem("chat_session_not_found", "Unknown chat session"),
+        )
+    if isinstance(exc, ValueError):
+        return HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        )
+    raise exc

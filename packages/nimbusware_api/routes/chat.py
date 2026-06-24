@@ -24,13 +24,13 @@ from nimbusware_api.routes.chat_common import (
     SwitchModeBody,
     project_metadata,
 )
-from nimbusware_api.routes.chat_handlers import (
+from nimbusware_api.routes.chat_common import (
     chat_http_error as _chat_http_error,
 )
-from nimbusware_api.routes.chat_handlers import (
+from nimbusware_api.routes.chat_common import (
     platform_hints as _platform_hints,
 )
-from nimbusware_api.routes.chat_handlers import (
+from nimbusware_api.routes.chat_common import (
     session_or_404 as _session_or_404,
 )
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422

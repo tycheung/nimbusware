@@ -107,7 +107,6 @@ _TRANCHE_F = (
     "packages/nimbusware_api/routes/bundles_helpers.py",
     "packages/nimbusware_api/routes/bundles_search.py",
     "packages/nimbusware_api/routes/chat.py",
-    "packages/nimbusware_api/routes/chat_handlers.py",
     "packages/nimbusware_api/routes/chat_start.py",
 )
 

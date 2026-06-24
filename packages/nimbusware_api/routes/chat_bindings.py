@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import ChatStoreDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.chat_common import ChatMessageResponse
-from nimbusware_api.routes.chat_handlers import session_or_404 as _session_or_404
+from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
 from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_orchestrator.model_binding_swap import (
@@ -55,7 +55,7 @@ def session_model_binding_swap(
         provider_kind=body.provider_kind,
         model_id=body.model_id,
     )
-    label = f"{body.agent_role} → {body.model_id} ({body.provider_id})"
+    label = f"{body.agent_role} â†’ {body.model_id} ({body.provider_id})"
     turn = chat_store.append_turn(
         session_id,
         role="system",
@@ -109,7 +109,7 @@ def session_role_claim(
     chat_store.append_turn(
         session_id,
         role="system",
-        text=f"Role claimed: {body.agent_role} → {body.model_id}",
+        text=f"Role claimed: {body.agent_role} â†’ {body.model_id}",
         payload={"role_claim": payload},
     )
     return {"ok": True, "event": "workload.role_claimed", "payload": payload}
