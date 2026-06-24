@@ -20,7 +20,7 @@ Runtime wiring for the API and run-dispatch worker is centralized in `runtime_bo
 | `RoleExecuteMixin` | `role_execute.py` | `POST /roles/{id}/execute` dispatcher into pipeline stage entry points |
 | `OptionalCritiqueMixin` | `optional_critique.py` | Universal critique, agent evaluator |
 | `EscalationMixin` | `escalation.py` | Anti-deadlock escalation |
-| `OptionalStagesMixin` | `optional_stages.py` | Composed: `optional_stages_{integration,agent_evaluator,self_refinement,integrator}.py` |
+| `OptionalStagesMixin` | `optional_stages.py` | Composed: `optional_stages_{integration,agent_evaluator,self_refinement,integrator}.py`; emit helpers: `*_critique_emit.py`, `agent_evaluator_policy_llm_emit.py` |
 | `RunOrchestratorBase` | `base.py` | Shared store/registry wiring |
 
 ## Layering
