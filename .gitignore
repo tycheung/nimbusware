@@ -136,6 +136,7 @@ benchmarks/*
 
 # Local CI log dumps (not committed)
 ci_*.log
+.pytest_full_unit.log
 
 # Diagnose/learn runtime docs (per-workspace; see diagnose_learn.py, ADR 012)
 docs/learnings/
