@@ -22,6 +22,10 @@ poetry run ruff check packages tests
 poetry run python scripts/ci/audit_operator_env.py
 poetry run python scripts/ci/run_openapi_ts_ci_gate.py
 poetry run ruff format --check packages tests
+poetry run python scripts/ci/run_prune_comments_ci_gate.py
+poetry run python scripts/ci/run_explainer_export_lint_gate.py
+poetry run python scripts/ci/run_workflow_explainer_init_ci_gate.py
+poetry run python scripts/ci/run_loc_budget_ci_gate.py
 mapfile -t _mypy_targets < <(poetry run python scripts/ci/mypy_ci_targets.py)
 poetry run mypy "${_mypy_targets[@]}"
 poetry run bandit -c pyproject.toml -r packages -lll -q

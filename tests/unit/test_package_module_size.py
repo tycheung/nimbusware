@@ -12,6 +12,7 @@ _GUARDS: tuple[tuple[str, int, frozenset[str]], ...] = (
     ),
     ("packages/nimbusware_api", 450, frozenset()),
     ("packages/nimbusware_memory", 450, frozenset()),
+    ("packages/nimbusware_projections", 450, frozenset()),
 )
 
 

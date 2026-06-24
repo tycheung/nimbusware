@@ -75,7 +75,11 @@ Docker agent sandbox (`NIMBUSWARE_SANDBOX_BACKEND=docker`) requires a local Dock
 
 ### Module size
 
-Console `.py` files must stay **≤400 lines** ([`tests/unit/test_console_module_size.py`](tests/unit/test_console_module_size.py)). Maker web tabs use thin `*.js` shells plus `*_ui.js` helpers — see [ARCHITECTURE.md](ARCHITECTURE.md).
+Console `.py` files must stay **≤400 lines** ([`tests/unit/test_console_module_size.py`](tests/unit/test_console_module_size.py)). Orchestrator, API, memory, and projections modules must stay **≤450 lines** ([`tests/unit/test_package_module_size.py`](tests/unit/test_package_module_size.py)). Maker web tabs use thin `*.js` shells plus `*_ui.js` helpers — see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+### LOC budget
+
+`packages/` Python non-blank lines are capped by [`scripts/ci/run_loc_budget_ci_gate.py`](scripts/ci/run_loc_budget_ci_gate.py) (baseline in [`scripts/ci/loc_baseline.json`](scripts/ci/loc_baseline.json)). Prefer net LOC reduction when refactoring; update the baseline only when growth is intentional and justified in the PR.
 
 ## Security
 
