@@ -303,7 +303,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
 
 def test_notice_escalate_findings_once() -> None:
     with patch(
-        "nimbusware_orchestrator.pipeline.load_notice_escalate_at_cumulative_findings",
+        "nimbusware_orchestrator._pipeline.escalation.load_notice_escalate_at_cumulative_findings",
         return_value=1,
     ):
         orch, mem = make_dev_orchestrator()

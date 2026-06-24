@@ -139,6 +139,43 @@ def stage_names_from_findings(findings: list[dict[str, Any]]) -> list[str | None
     return [(f.get("metadata") or {}).get("stage_name") for f in findings]
 
 
+def append_uc_critique_fail_gates(mem: Any, run_id: UUID) -> None:
+    from nimbusware_orchestrator.llm_plan import (
+        IMPLEMENTATION_CRITIQUE_STAGE,
+        PLANNER_CRITIQUE_STAGE,
+        TEST_WRITER_CRITIQUE_STAGE,
+    )
+
+    for stage in (
+        IMPLEMENTATION_CRITIQUE_STAGE,
+        TEST_WRITER_CRITIQUE_STAGE,
+        PLANNER_CRITIQUE_STAGE,
+    ):
+        append_fail_gate(mem, run_id, stage)
+
+
+def emit_critique_gate_fail_findings(
+    orch: Any,
+    mem: Any,
+    run_id: UUID,
+    *,
+    env: dict[str, str] | None = None,
+    eff: Any = None,
+) -> list[dict[str, Any]]:
+    import os
+    from contextlib import nullcontext
+    from unittest.mock import patch
+
+    append_uc_critique_fail_gates(mem, run_id)
+    ctx = patch.dict(os.environ, env, clear=False) if env else nullcontext()
+    with ctx:
+        if eff is not None:
+            orch._maybe_emit_critique_gate_fail_findings(run_id, eff)  # noqa: SLF001
+        else:
+            orch._maybe_emit_critique_gate_fail_findings(run_id)  # noqa: SLF001
+    return findings_for_run(mem, run_id)
+
+
 def store_event_row(
     *,
     store_seq: int | str,

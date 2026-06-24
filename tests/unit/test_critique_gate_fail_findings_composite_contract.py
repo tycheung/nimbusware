@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from agent_core.models import (
     EventType,
     FindingCreatedPayload,
@@ -26,6 +28,7 @@ if TYPE_CHECKING:
 from unit.composite_contract_fixtures import (
     FINDING_CREATED,
     append_fail_gate,
+    emit_critique_gate_fail_findings,
     findings_for_run,
     stage_names_from_findings,
 )
@@ -38,44 +41,36 @@ _ENV_ALL_ON = {
 
 _ENV_IMPL_ONLY = {"NIMBUSWARE_UNIVERSAL_CRITIQUE_EMIT_FINDING_ON_GATE_FAIL": "1"}
 
+_UC_EXPECTED_STAGES = [
+    IMPLEMENTATION_CRITIQUE_STAGE,
+    TEST_WRITER_CRITIQUE_STAGE,
+    PLANNER_CRITIQUE_STAGE,
+]
 
-def test_critique_gate_fail_findings_eff_none_fallback_5_axis() -> None:
-    orch_a1, mem_a1 = make_dev_orchestrator()
-    rid_a1 = orch_a1.create_run("default")
-    append_fail_gate(mem_a1, rid_a1, IMPLEMENTATION_CRITIQUE_STAGE)
-    append_fail_gate(mem_a1, rid_a1, TEST_WRITER_CRITIQUE_STAGE)
-    append_fail_gate(mem_a1, rid_a1, PLANNER_CRITIQUE_STAGE)
-    orch_a1._maybe_emit_critique_gate_fail_findings(rid_a1)  # noqa: SLF001
-    assert findings_for_run(mem_a1, rid_a1) == [], (
-        "A1: eff=None + default workflow + no env -> fallback resolves to "
-        "no-emit eff (all 3 emit_finding_on_gate_fail flags False) -> "
-        "0 findings even with 3 FAIL gates present"
-    )
 
-    orch_a2, mem_a2 = make_dev_orchestrator()
-    rid_a2 = orch_a2.create_run("default")
-    append_fail_gate(mem_a2, rid_a2, IMPLEMENTATION_CRITIQUE_STAGE)
-    append_fail_gate(mem_a2, rid_a2, TEST_WRITER_CRITIQUE_STAGE)
-    append_fail_gate(mem_a2, rid_a2, PLANNER_CRITIQUE_STAGE)
-    with patch.dict(os.environ, _ENV_IMPL_ONLY, clear=False):
-        orch_a2._maybe_emit_critique_gate_fail_findings(rid_a2)  # noqa: SLF001
-    findings_a2 = findings_for_run(mem_a2, rid_a2)
-    assert stage_names_from_findings(findings_a2) == [
-        IMPLEMENTATION_CRITIQUE_STAGE,
-        TEST_WRITER_CRITIQUE_STAGE,
-        PLANNER_CRITIQUE_STAGE,
-    ], "A2: eff=None + global emit env on -> 3 findings; global UC env applies all panels"
+@pytest.mark.parametrize(
+    ("case_id", "env_patch", "expected_len", "expect_stages"),
+    [
+        ("A1", None, 0, False),
+        ("A2", _ENV_IMPL_ONLY, 3, True),
+        ("A3", _ENV_ALL_ON, 3, False),
+    ],
+)
+def test_critique_gate_fail_findings_eff_none_fallback_param(
+    case_id: str,
+    env_patch: dict[str, str] | None,
+    expected_len: int,
+    expect_stages: bool,
+) -> None:
+    orch, mem = make_dev_orchestrator()
+    rid = orch.create_run("default")
+    findings = emit_critique_gate_fail_findings(orch, mem, rid, env=env_patch)
+    assert len(findings) == expected_len, case_id
+    if expect_stages:
+        assert stage_names_from_findings(findings) == _UC_EXPECTED_STAGES, case_id
 
-    orch_a3, mem_a3 = make_dev_orchestrator()
-    rid_a3 = orch_a3.create_run("default")
-    append_fail_gate(mem_a3, rid_a3, IMPLEMENTATION_CRITIQUE_STAGE)
-    append_fail_gate(mem_a3, rid_a3, TEST_WRITER_CRITIQUE_STAGE)
-    append_fail_gate(mem_a3, rid_a3, PLANNER_CRITIQUE_STAGE)
-    with patch.dict(os.environ, _ENV_ALL_ON, clear=False):
-        orch_a3._maybe_emit_critique_gate_fail_findings(rid_a3)  # noqa: SLF001
-    findings_a3 = findings_for_run(mem_a3, rid_a3)
-    assert len(findings_a3) == 3, "A3: eff=None + all 3 envs on -> 3 findings"
 
+def test_critique_gate_fail_findings_eff_none_fallback_parity_and_resolver() -> None:
     orch_a4_none, mem_a4_none = make_dev_orchestrator()
     rid_a4_none = orch_a4_none.create_run("default")
     orch_a4_expl, mem_a4_expl = make_dev_orchestrator()
