@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import csv
-import json
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.self_refinement._helpers import (
     _SELF_REFINEMENT_FIELDS,
     _stringify,
@@ -25,31 +26,11 @@ def self_refinement_summary_rows(sr: Mapping[str, Any] | None) -> list[dict[str,
     return rows
 
 
-_SELF_REFINEMENT_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def self_refinement_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_SELF_REFINEMENT_LATEST_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _SELF_REFINEMENT_LATEST_SUMMARY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+self_refinement_latest_summary_rows_csv = field_value_table_rows_csv
 
 
 def self_refinement_latest_export_json(sr: Mapping[str, Any] | None) -> str:
-    if not isinstance(sr, Mapping):
-        return "{}"
-    return json.dumps(dict(sr), ensure_ascii=False, indent=2)
+    return mapping_export_json(sr)
 
 
 def self_refinement_latest_export_filename_slug(
@@ -57,9 +38,7 @@ def self_refinement_latest_export_filename_slug(
     *,
     max_len: int = 36,
 ) -> str:
-    raw = str(run_id).strip().lower()
-    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
-    return slug[:max_len]
+    return run_id_export_filename_slug(run_id, max_len=max_len)
 
 
 (

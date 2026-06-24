@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import json
-import re
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
 from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.security_scan_on_verify._helpers import _stringify
 
 
@@ -75,9 +75,7 @@ def security_scan_history_export_json(history: Sequence[Mapping[str, Any]]) -> s
 
 
 def security_scan_history_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    raw = str(run_id).strip().lower()
-    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
-    return slug[:max_len]
+    return run_id_export_filename_slug(run_id, max_len=max_len)
 
 
 def security_scan_history_entry_count_caption(
