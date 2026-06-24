@@ -44,6 +44,7 @@ from nimbusware_console.explainer_core.workflow_explainer_registry import (
 def escalation_policy_export_filename_slug() -> str:
     return "escalation_policy"
 
+
 # codegen: workflow_explainer_exports begin
 install_package_workflow_explainer_exports(globals(), "escalation_suppress")
 # codegen: workflow_explainer_exports end

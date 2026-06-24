@@ -76,7 +76,9 @@ def _append_model_selected_primary(
 
 def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
     with (
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_test_writer_critique_llm") as m_llm,
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_test_writer_critique_llm"
+        ) as m_llm,
         patch(
             "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_test_writer_critique_panel",
         ) as m_stub,
@@ -184,7 +186,9 @@ def test_emit_test_writer_critique_optional_path_matrix_6_axis() -> None:
 
 def test_emit_planner_critique_optional_path_matrix_6_axis() -> None:
     with (
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_planner_critique_llm") as m_llm,
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_planner_critique_llm"
+        ) as m_llm,
         patch(
             "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_planner_critique_panel",
         ) as m_stub,
@@ -293,8 +297,12 @@ def test_emit_test_writer_critique_optional_argument_propagation_5_axis() -> Non
     eff = _make_eff(tw_enabled=True, tw_llm=True, tw_stub=False)
 
     with (
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_test_writer_critique_llm") as m_llm,
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_test_writer_critique_panel"),
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_test_writer_critique_llm"
+        ) as m_llm,
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_test_writer_critique_panel"
+        ),
     ):
         m_llm.return_value = True
 
@@ -396,8 +404,12 @@ def test_emit_planner_critique_optional_argument_propagation_5_axis() -> None:
     eff = _make_eff(pll_enabled=True, pll_llm=True, pll_stub=False)
 
     with (
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_planner_critique_llm") as m_llm,
-        patch("nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_planner_critique_panel"),
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.execute_planner_critique_llm"
+        ) as m_llm,
+        patch(
+            "nimbusware_orchestrator._pipeline.critique_gates_optional_emit.emit_stub_planner_critique_panel"
+        ),
     ):
         m_llm.return_value = True
 
