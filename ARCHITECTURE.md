@@ -54,7 +54,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
-| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `operator_metrics_exports.install_operator_metrics_module`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `nimbusware_projections/fields/` where possible; BFF via `admin_ui_bff.py` |
+| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `repo_yaml`, `operator_metrics_exports.install_operator_metrics_module`, `workflow_exports.run_id_export_filename_slug`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `nimbusware_projections/fields/` where possible; BFF via `admin_ui_bff.py` |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **~141-key** settings catalog + `settings_facade` / `settings_resolve` / `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 | `nimbusware_auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
