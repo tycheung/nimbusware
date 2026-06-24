@@ -20,4 +20,9 @@ class OptionalStagesMixin(
     SelfRefinementOptionalStagesMixin,
     IntegratorOptionalStagesMixin,
 ):
-    """Composed optional pipeline stages (agent evaluator, self-refinement, scraper)."""
+    """Composed optional pipeline stages.
+
+    Research and stitch optional stages are mixed into ``compose.py`` directly
+    because they depend on the full pipeline host surface; this barrel covers
+    the self-contained optional emitters only.
+    """
