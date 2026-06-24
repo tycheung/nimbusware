@@ -38,7 +38,7 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
     rid_a1 = orch_a1.create_run("default")
     sentinel_pol_a1 = SelfRefinementPolicy(version=7, enabled=True, description="A1")
     with patch(
-        "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+        "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
         return_value=sentinel_pol_a1,
     ) as loader_spy_a1:
         orch_a1._maybe_emit_self_refinement_stage_marker(rid_a1)  # noqa: SLF001
@@ -69,12 +69,12 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
     wf_a2_on = SelfRefinementWorkflowBlock(enabled=True, version=None, description=None)
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=wf_a2_on,
         ),
         patch.object(Path, "is_file", return_value=False),
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
         ) as loader_spy_a2,
     ):
         orch_a2._maybe_emit_self_refinement_stage_marker(rid_a2)  # noqa: SLF001
@@ -94,7 +94,7 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
     orch_a3, _ = make_dev_orchestrator()
     rid_a3 = orch_a3.create_run("default")
     with patch(
-        "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+        "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
         return_value=SelfRefinementWorkflowBlock(),
     ) as parser_spy_a3:
         orch_a3._maybe_emit_self_refinement_stage_marker(rid_a3)  # noqa: SLF001
@@ -112,7 +112,7 @@ def test_self_refinement_marker_policy_source_resolution_5_axis() -> None:
     rid_a4_default = orch_a4.create_run("default")
     rid_a4_sr_on = orch_a4.create_run("self_refinement_on")
     with patch(
-        "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+        "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
         return_value=SelfRefinementWorkflowBlock(),
     ) as parser_spy_a4:
         orch_a4._maybe_emit_self_refinement_stage_marker(rid_a4_default)  # noqa: SLF001
@@ -146,11 +146,11 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
     rid_b1 = orch_b1.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=False, description=""),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=False),
         ),
     ):
@@ -164,11 +164,11 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
     rid_b2 = orch_b2.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=2, enabled=True, description="pol_b2"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=False),
         ),
     ):
@@ -182,11 +182,11 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
     rid_b3 = orch_b3.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=False, description=""),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=True, version=3, description="wf_b3"),
         ),
     ):
@@ -200,11 +200,11 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
     rid_b4 = orch_b4.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=2, enabled=True, description="pol_b4"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=True, version=5, description="wf_b4"),
         ),
     ):
@@ -217,7 +217,7 @@ def test_self_refinement_marker_or_enable_early_return_5_axis() -> None:
     orch_b5, mem_b5 = make_dev_orchestrator()
     rid_b5 = orch_b5.create_run("default")
     with patch(
-        "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+        "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
         return_value=SelfRefinementWorkflowBlock(),
     ):
         orch_b5._maybe_emit_self_refinement_stage_marker(rid_b5)  # noqa: SLF001
@@ -233,11 +233,11 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
     rid_c1 = orch_c1.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=3, enabled=True, description="from_pol"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=False, version=None, description=None),
         ),
     ):
@@ -253,11 +253,11 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
     rid_c2 = orch_c2.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=3, enabled=True, description="from_pol"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=False, version=5, description=None),
         ),
     ):
@@ -274,11 +274,11 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
     rid_c3 = orch_c3.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=True, description="pol_desc"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(enabled=False, version=None, description=None),
         ),
     ):
@@ -293,11 +293,11 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
     rid_c4 = orch_c4.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=True, description="pol_default"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
                 enabled=False,
                 version=None,
@@ -316,11 +316,11 @@ def test_self_refinement_marker_override_semantics_5_axis() -> None:
     rid_c5 = orch_c5.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=True, description="pol_desc"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
                 enabled=False,
                 version=99,
@@ -344,11 +344,11 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
     rid_d1 = orch_d1.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=42, enabled=True, description="meta_desc"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
                 enabled=False,
                 version=None,
@@ -382,11 +382,11 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
     long_desc = "X" * 3000
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=True, description=long_desc),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
                 enabled=False,
                 version=None,
@@ -411,11 +411,11 @@ def test_self_refinement_marker_emit_shape_bounding_no_dedup_5_axis() -> None:
     rid_d5 = orch_d5.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_self_refinement_policy",
+            "nimbusware_orchestrator.self_refinement_policy.load_self_refinement_policy",
             return_value=SelfRefinementPolicy(version=1, enabled=True, description="d5"),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+            "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
             return_value=SelfRefinementWorkflowBlock(
                 enabled=False,
                 version=None,

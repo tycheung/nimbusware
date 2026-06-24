@@ -28,7 +28,7 @@ def test_cumulative_stage_failures_emits_single_escalation() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)
@@ -58,7 +58,7 @@ def test_cumulative_stage_escalation_suppressed_by_workflow() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)
@@ -86,7 +86,7 @@ def test_cumulative_stage_failures_below_threshold_no_escalation(n_failures: int
             ),
         )
     with patch(
-        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_stage_failures",
+        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_stage_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_stage_failures(rid)

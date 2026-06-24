@@ -44,7 +44,7 @@ def test_self_refinement_marker_llm_critique_branch_when_hold() -> None:
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "nimbusware_orchestrator.pipeline.execute_self_refinement_critique_llm",
+                "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.execute_self_refinement_critique_llm",
                 return_value={
                     "verdict": "PASS",
                     "gate_decision": "proceed",
@@ -78,7 +78,7 @@ def test_self_refinement_stub_critique_panel_when_llm_misses() -> None:
     with patch.dict(os.environ, env, clear=False):
         with patch.object(orch, "_selected_model_for_run", return_value="m"):
             with patch(
-                "nimbusware_orchestrator.pipeline.execute_self_refinement_critique_llm",
+                "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.execute_self_refinement_critique_llm",
                 return_value=None,
             ):
                 orch._maybe_emit_self_refinement_stage_marker(rid)  # noqa: SLF001

@@ -270,7 +270,7 @@ def test_outbound_fetch_env_force_on_at_scraper_fetch_stage_contract(
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             mock_resp = MagicMock(spec=httpx.Response)
@@ -349,7 +349,7 @@ def test_outbound_fetch_env_fail_closed_string_arm_contract(
         orch2, mem2 = make_dev_orchestrator()
         rid2 = orch2.create_run("default", run_policy_overrides=_SITE2_RUN_EGRESS)
         with patch(
-            "nimbusware_orchestrator.pipeline.load_scraper_fetch_config",
+            "nimbusware_orchestrator._pipeline.pipeline_scraper.load_scraper_fetch_config",
             return_value=_SITE2_DEFAULT_CFG,
         ):
             orch2.run_optional_scraper_fetch_stage(rid2)

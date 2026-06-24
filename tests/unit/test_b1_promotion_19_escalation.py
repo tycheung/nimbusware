@@ -32,11 +32,11 @@ def test_anti_deadlock_escalation_includes_policy_breadth_metadata() -> None:
     rid = orch.create_run("default")
     with (
         patch(
-            "nimbusware_orchestrator.pipeline.load_anti_deadlock_settings",
+            "nimbusware_orchestrator._pipeline.escalation.load_anti_deadlock_settings",
             return_value=(True, 1, 99),
         ),
         patch(
-            "nimbusware_orchestrator.pipeline.should_emit_anti_deadlock_escalation",
+            "nimbusware_orchestrator._pipeline.escalation.should_emit_anti_deadlock_escalation",
             return_value=True,
         ),
     ):

@@ -16,7 +16,7 @@ def test_load_escalate_on_first_verifier_failure_default() -> None:
 
 def test_verifier_failure_checkpoint_once() -> None:
     with patch(
-        "nimbusware_orchestrator.pipeline.load_escalate_on_first_verifier_failure",
+        "nimbusware_orchestrator._pipeline.escalation.load_escalate_on_first_verifier_failure",
         return_value=True,
     ):
         orch, mem = make_dev_orchestrator()

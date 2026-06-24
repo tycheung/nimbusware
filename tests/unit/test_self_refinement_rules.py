@@ -150,7 +150,7 @@ def test_self_refinement_max_iterations_emits_stage_failed() -> None:
     rid = orch.create_run("self_refinement_on")
     block = SelfRefinementWorkflowBlock(enabled=True, max_iterations=2)
     with patch(
-        "nimbusware_orchestrator.pipeline.parse_self_refinement_workflow_block",
+        "nimbusware_orchestrator._pipeline.optional_stages_self_refinement.parse_self_refinement_workflow_block",
         return_value=block,
     ):
         for _ in range(3):

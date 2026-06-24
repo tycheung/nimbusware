@@ -36,9 +36,9 @@ def _patched_execute(
     )
     with (
         patch.object(orch, "_selected_model_for_run", return_value=model_id),
-        patch("nimbusware_orchestrator.pipeline.execute_plan_stage_llm", **llm_kwargs) as mock_llm,
+        patch("nimbusware_orchestrator._pipeline.lifecycle_plan.execute_plan_stage_llm", **llm_kwargs) as mock_llm,
         patch(
-            "nimbusware_orchestrator.pipeline.emit_stub_plan_stage",
+            "nimbusware_orchestrator._pipeline.lifecycle_plan.emit_stub_plan_stage",
         ) as mock_stub,
     ):
         yield mock_llm, mock_stub

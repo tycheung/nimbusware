@@ -32,7 +32,7 @@ def test_cumulative_gate_failures_emits_single_escalation() -> None:
             ),
         )
     with patch(
-        "nimbusware_orchestrator.pipeline.load_escalate_after_cumulative_gate_failures",
+        "nimbusware_orchestrator._pipeline.escalation.load_escalate_after_cumulative_gate_failures",
         return_value=2,
     ):
         orch._maybe_escalate_after_cumulative_gate_failures(rid)
