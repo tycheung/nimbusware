@@ -14,16 +14,16 @@ from nimbusware_orchestrator._pipeline._helpers import (
     agent_evaluator_production_llm_fallback_enabled,
     agent_evaluator_rules_derived_llm_evaluation,
     agent_evaluator_score_band,
-    emit_stub_persona_coverage_critique_panel,
     execute_agent_evaluator_policy_llm,
-    execute_persona_coverage_critique_llm,
     parse_agent_evaluator_workflow_block,
     parse_probation_automation_workflow_block,
     persona_coverage_critique_effective,
-    persona_coverage_critique_llm_branch_effective,
     run_probation_automation,
     try_auto_create_persona_if_missing,
     try_auto_promote_probation_persona,
+)
+from nimbusware_orchestrator._pipeline.persona_coverage_critique_emit import (
+    emit_persona_coverage_critique_optional_for_host,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import AgentEvaluatorOptionalStagesHost
 
@@ -201,30 +201,10 @@ class AgentEvaluatorOptionalStagesMixin:
         )
         if persona_coverage_critique_effective(block):
             eff = self._effective_universal_critique_for_run(run_id)
-            emitted = False
-            if persona_coverage_critique_llm_branch_effective(block):
-                model = self._selected_model_for_run(run_id)
-                if model:
-                    base = self._base_cfg()
-                    runtime = base.get("runtime") or {}
-                    base_url = str(runtime.get("base_url", "http://localhost:11434"))
-                    emitted = execute_persona_coverage_critique_llm(
-                        self._store,
-                        self._registry,
-                        self._critique_router,
-                        run_id=run_id,
-                        rules_eval=rules_eval,
-                        base_url=base_url,
-                        model_id=model,
-                        timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
-                        unanimous_gate_enforce=eff.unanimous_gate_enforce,
-                    )
-            if not emitted and block.persona_coverage_critique.stub:
-                emit_stub_persona_coverage_critique_panel(
-                    self._store,
-                    self._registry,
-                    self._critique_router,
-                    run_id=run_id,
-                    rules_eval=rules_eval,
-                    unanimous_gate_enforce=eff.unanimous_gate_enforce,
-                )
+            emit_persona_coverage_critique_optional_for_host(
+                self,
+                run_id,
+                block=block,
+                rules_eval=rules_eval,
+                unanimous_gate_enforce=eff.unanimous_gate_enforce,
+            )

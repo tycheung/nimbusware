@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from nimbusware_env.env_flags import env_truthy
 from nimbusware_orchestrator._pipeline._helpers import (
     _SELF_REFINEMENT_MAX_ITER_REASON,
     _SELF_REFINEMENT_POLICY_STAGE,
@@ -24,13 +23,10 @@ from nimbusware_orchestrator._pipeline._helpers import (
     _self_refinement_max_iterations_exceeded,
     _self_refinement_stage_marker_env_disabled,
     datetime,
-    emit_stub_self_refinement_critique_panel,
-    execute_self_refinement_critique_llm,
     os,
     parse_probation_automation_workflow_block,
     parse_self_refinement_workflow_block,
     run_probation_automation,
-    self_refinement_llm_critique_effective_for_run,
     self_refinement_ungated_loop_effective,
     timezone,
     try_auto_promote_probation_persona,
@@ -38,6 +34,9 @@ from nimbusware_orchestrator._pipeline._helpers import (
     workflow_profile_from_run_created_rows,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import SelfRefinementOptionalStagesHost
+from nimbusware_orchestrator._pipeline.self_refinement_critique_emit import (
+    try_emit_self_refinement_critique_for_host,
+)
 from nimbusware_orchestrator.self_refinement_policy import resolve_self_refinement_policy
 
 _SelfRefinementOrchestrationBranch = Literal["rules", "rules_with_llm_critique"]
@@ -168,49 +167,27 @@ class SelfRefinementOptionalStagesMixin:
                 )
         eval_gaps_raw = sr_eval.get("gaps")
         eval_gaps = [str(g) for g in eval_gaps_raw] if isinstance(eval_gaps_raw, list) else []
-        if (
-            llm_critique_enabled
-            and gate_decision == "hold"
-            and self_refinement_llm_critique_effective_for_run(
-                self._repo_root,
-                wf_prof,
-                wf_sr,
-                config_materializer=self._config_materializer,
-            )
-        ):
-            base = self._base_cfg()
-            runtime = base.get("runtime") or {}
-            base_url = str(runtime.get("base_url", "http://localhost:11434"))
-            model = self._selected_model_for_run(run_id)
-            if model:
-                llm_result = execute_self_refinement_critique_llm(
-                    self._store,
-                    self._registry,
-                    self._critique_router,
-                    run_id=run_id,
-                    base_url=base_url,
-                    model_id=model,
-                    evaluation_status=eval_status,
-                    gaps=eval_gaps,
-                    description=bounded,
-                    timeout_seconds=float(runtime.get("request_timeout_seconds", 120)),
-                )
-                if llm_result is not None:
-                    orchestration_branch = "rules_with_llm_critique"
-                    llm_critique_attempted = True
-                    llm_critique_verdict = Verdict(str(llm_result.get("verdict", "FAIL")))
-                    gate_raw = str(llm_result.get("gate_decision", "hold")).strip().lower()
-                    llm_gate_decision = "proceed" if gate_raw == "proceed" else "hold"
-                    summary_raw = llm_result.get("summary")
-                    if isinstance(summary_raw, str) and summary_raw.strip():
-                        llm_critique_summary = summary_raw.strip()[:500]
-                elif env_truthy("NIMBUSWARE_SELF_REFINEMENT_CRITIQUE_STUB"):
-                    emit_stub_self_refinement_critique_panel(
-                        self._store,
-                        self._registry,
-                        self._critique_router,
-                        run_id=run_id,
-                    )
+        critique_emit = try_emit_self_refinement_critique_for_host(
+            self,
+            run_id,
+            llm_critique_enabled=llm_critique_enabled,
+            gate_decision=gate_decision,
+            workflow_profile=wf_prof,
+            workflow_block=wf_sr,
+            evaluation_status=eval_status,
+            gaps=eval_gaps,
+            description=bounded,
+        )
+        if critique_emit.get("orchestration_branch"):
+            orchestration_branch = str(critique_emit["orchestration_branch"])
+        if critique_emit.get("llm_critique_attempted"):
+            llm_critique_attempted = True
+        if "llm_critique_verdict" in critique_emit:
+            llm_critique_verdict = critique_emit["llm_critique_verdict"]
+        if critique_emit.get("llm_gate_decision"):
+            llm_gate_decision = str(critique_emit["llm_gate_decision"])
+        if critique_emit.get("llm_critique_summary"):
+            llm_critique_summary = str(critique_emit["llm_critique_summary"])
         sr_meta: dict[str, Any] = {
             "version": version,
             "description": bounded,

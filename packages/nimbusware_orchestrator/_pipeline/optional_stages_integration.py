@@ -7,6 +7,9 @@ from nimbusware_orchestrator._pipeline._helpers import (
     optional_stage_yaml_gate,
     parse_integration_adapter_writer_workflow_block,
 )
+from nimbusware_orchestrator._pipeline.optional_stage_stub_live_emit import (
+    emit_stub_or_live_from_gate,
+)
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegrationOptionalStagesHost
 
 
@@ -23,17 +26,17 @@ class IntegrationOptionalStagesMixin:
         )
         if gated is None:
             return
-        _tri, _rows, _wf, block = gated
-        if block.stub_only:
-            emit_stub_integration_adapter_writer_stage(
+        emit_stub_or_live_from_gate(
+            gated,
+            emit_stub=lambda block: emit_stub_integration_adapter_writer_stage(
                 self._store,
                 run_id=run_id,
                 block=block,
-            )
-        else:
-            emit_live_integration_adapter_writer_stage(
+            ),
+            emit_live=lambda block: emit_live_integration_adapter_writer_stage(
                 self._store,
                 run_id=run_id,
                 block=block,
                 repo_root=self._repo_root,
-            )
+            ),
+        )
