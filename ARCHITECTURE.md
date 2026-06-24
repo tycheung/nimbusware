@@ -54,7 +54,7 @@ One-page map of packages, data flow, and auth. Normative Nimbusware agent contra
 | `nimbusware_client` | Shared HTTP client for Maker + Admin UIs |
 | `nimbusware_iam` | Enterprise tenants, API keys, IAM action log for audit export |
 | `nimbusware_maker` | Maker server logic — projects, intent, approval/revert (`services/` + `slice_workflow/`) |
-| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `env_summaries`, `table_rows_csv`, `workflow_payload_header`, `operator_metrics_exports`); display modules use `build_operator_metrics` / `bind_operator_metrics_exports`; BFF via `admin_ui_bff.py` |
+| `nimbusware_console` | Admin display helpers + enterprise fleet formatters; workflow explainers use `explainer_core/` (`schema_metrics`, `field_caption`, `env_captions`, `operator_metrics_exports.install_operator_metrics_module`, `table_rows_csv`, `workflow_payload_header`); display field tuples shared with `nimbusware_projections/fields/` where possible; BFF via `admin_ui_bff.py` |
 | `nimbusware_env` | Edition gate, OIDC config, desktop launchers, dotenv, **~141-key** settings catalog + `settings_facade` / `settings_resolve` / `env_flags`, admin token guards |
 | `nimbusware_hw` | Probe, governor, pressure, catalog fit; local + Enterprise SSH remote probe; `/v1/platform/hardware`, `/v1/platform/hardware/fleet`, `/v1/platform/models/*` |
 | `nimbusware_auth` | Local collaborative-chat auth (register/login, session tokens) when `NIMBUSWARE_COLLAB_ENABLED=1` |
@@ -145,7 +145,7 @@ All `_pipeline` modules are strict-checked mypy islands (including `dev_factory`
 
 **PEP 561:** Core libraries ship `py.typed` markers (`agent_core`, `nimbusware_store`, `nimbusware_orchestrator`, `nimbusware_config`, `nimbusware_projections`, `nimbusware_executor`, `nimbusware_iam`, `nimbusware_env`, plus UI/API packages).
 
-**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3028 unit tests in the default job / 3873 collected, ≥75% line coverage; packages LOC baseline **94,236** via `scripts/ci/loc_baseline.json`; see `tests/README.md`).
+**CI parity:** `ci_check.*` runs ruff check + **blocking** format, openapi TS gate (full schema when Node present), publish VS Code gate, mypy (targets above), bandit (`pyproject.toml`), pip-audit, framework-pack gate (keyboard/mouse fidelity), package coverage floors, pytest @ 75% (~3028 unit tests in the default job / 3873 collected, ≥75% line coverage; packages LOC baseline **94,440** via `scripts/ci/loc_baseline.json`; module size guards cover orchestrator, API, memory, projections (≤450 lines) and console (≤400); see `tests/README.md`).
 
 **Size guards:** `test_console_module_size.py` (400 lines), `test_package_module_size.py` (450 lines), `test_module_integrity.py` (anti-gutted facades), `test_pipeline_helpers_exports.py` (orchestrator mixin surface).
 
