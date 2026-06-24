@@ -10,7 +10,7 @@ from nimbusware_config.workflow_read import (
     load_yaml,
     parse_escalation_workflow_block,
 )
-from nimbusware_console.components.workflow_explainer_helpers import (
+from nimbusware_console.explainer_core.repo_yaml import (
     json_safe_yaml_fragment,
     mtime_iso_utc,
     relative_under,

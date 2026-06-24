@@ -6,8 +6,8 @@ from typing import Any
 
 from agent_core.mapping import mapping_or_empty
 from nimbusware_config.workflow_read import load_yaml, workflow_profile_path
-from nimbusware_console.components.workflow_explainer_helpers import relative_under
 from nimbusware_console.config_materializer import console_config_materializer
+from nimbusware_console.explainer_core.repo_yaml import relative_under
 
 _LOAD_ERRORS = (FileNotFoundError, KeyError, OSError, ValueError, UnicodeDecodeError)
 

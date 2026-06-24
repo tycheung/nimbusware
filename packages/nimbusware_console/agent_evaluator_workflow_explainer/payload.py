@@ -11,7 +11,7 @@ from nimbusware_console.agent_evaluator_workflow_explainer.env import (
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )
-from nimbusware_console.components.workflow_explainer_helpers import json_safe_yaml_fragment
+from nimbusware_console.explainer_core.repo_yaml import json_safe_yaml_fragment
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
 from nimbusware_console.explainer_core.workflow_profile import yaml_section
 

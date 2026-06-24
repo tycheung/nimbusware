@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -33,6 +34,12 @@ def workflow_explainer_payload_table_rows_csv(
     rows: Sequence[Mapping[str, str]],
 ) -> str:
     return field_value_table_rows_csv(rows)
+
+
+def run_id_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
+    raw = str(run_id).strip().lower()
+    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
+    return slug[:max_len]
 
 
 class WorkflowExplainerExports:

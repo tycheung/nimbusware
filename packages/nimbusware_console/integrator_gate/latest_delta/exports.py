@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import csv
-import json
-import re
-from collections.abc import Mapping, Sequence
-from io import StringIO
+from collections.abc import Mapping
 from typing import Any
 
+from nimbusware_console.components.operator_metrics import (
+    field_value_table_rows_csv,
+    mapping_export_json,
+)
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
+from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug
 from nimbusware_console.integrator_gate._helpers import (
     _INTEGRATOR_GATE_FIELDS,
     _stringify,
@@ -79,8 +80,6 @@ _DELTA_FIELDS: tuple[tuple[str, str], ...] = (
     ("current_event_id", "Current event id"),
 )
 
-_INTEGRATOR_GATE_DELTA_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
 
 def integrator_gate_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[dict[str, str]]:
     if not delta:
@@ -93,34 +92,15 @@ def integrator_gate_delta_summary_rows(delta: Mapping[str, Any] | None) -> list[
     return rows
 
 
-def integrator_gate_delta_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_INTEGRATOR_GATE_DELTA_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _INTEGRATOR_GATE_DELTA_SUMMARY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+integrator_gate_delta_summary_rows_csv = field_value_table_rows_csv
 
 
 def integrator_gate_delta_export_json(delta: Mapping[str, Any] | None) -> str:
-    if not isinstance(delta, Mapping):
-        return "{}"
-    return json.dumps(dict(delta), ensure_ascii=False, indent=2)
+    return mapping_export_json(delta)
 
 
 def integrator_gate_delta_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    raw = str(run_id).strip().lower()
-    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
-    return slug[:max_len]
+    return run_id_export_filename_slug(run_id, max_len=max_len)
 
 
 def integrator_gate_summary_rows(ig: Mapping[str, Any] | None) -> list[dict[str, str]]:
@@ -134,34 +114,12 @@ def integrator_gate_summary_rows(ig: Mapping[str, Any] | None) -> list[dict[str,
     return rows
 
 
-_INTEGRATOR_GATE_LATEST_SUMMARY_CSV_COLUMNS: tuple[str, ...] = ("field", "value")
-
-
-def integrator_gate_latest_summary_rows_csv(rows: Sequence[Mapping[str, str]]) -> str:
-    if not rows:
-        return ""
-    buf = StringIO()
-    w = csv.DictWriter(
-        buf,
-        fieldnames=list(_INTEGRATOR_GATE_LATEST_SUMMARY_CSV_COLUMNS),
-        extrasaction="ignore",
-    )
-    w.writeheader()
-    for r in rows:
-        if isinstance(r, Mapping):
-            w.writerow(
-                {k: r.get(k, "") for k in _INTEGRATOR_GATE_LATEST_SUMMARY_CSV_COLUMNS},
-            )
-    return buf.getvalue()
+integrator_gate_latest_summary_rows_csv = field_value_table_rows_csv
 
 
 def integrator_gate_latest_export_json(ig: Mapping[str, Any] | None) -> str:
-    if not isinstance(ig, Mapping):
-        return "{}"
-    return json.dumps(dict(ig), ensure_ascii=False, indent=2)
+    return mapping_export_json(ig)
 
 
 def integrator_gate_latest_export_filename_slug(run_id: str, *, max_len: int = 36) -> str:
-    raw = str(run_id).strip().lower()
-    slug = re.sub(r"[^a-z0-9_.-]+", "_", raw).strip("._-") or "run"
-    return slug[:max_len]
+    return run_id_export_filename_slug(run_id, max_len=max_len)

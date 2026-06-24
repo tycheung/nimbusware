@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from nimbusware_console.components.workflow_explainer_helpers import json_safe_yaml_fragment
 from nimbusware_console.explainer_core.env_summaries import env_tri_state_summary
+from nimbusware_console.explainer_core.repo_yaml import json_safe_yaml_fragment
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
 from nimbusware_orchestrator.integration_adapter_writer_stage import (
     integration_adapter_writer_stage_would_emit,
