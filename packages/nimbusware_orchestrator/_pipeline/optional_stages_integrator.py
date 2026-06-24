@@ -9,18 +9,19 @@ from nimbusware_orchestrator._pipeline._helpers import (
     GateDecisionEmittedPayload,
     Verdict,
     datetime,
-    effective_integrator_min_score_to_pass,
-    integrator_gate_workflow_enabled,
     load_bundle_tags_for_bundle_id,
     load_bundle_title_for_bundle_id,
-    load_integrator_gate_emit_enabled,
-    parse_integrator_gate_project_tags,
     rank_bundle_compatibility_candidates,
     select_bundle_id_for_workflow,
     timezone,
     uuid4,
 )
 from nimbusware_orchestrator._pipeline.protocol_hosts import IntegratorOptionalStagesHost
+from nimbusware_orchestrator.integrator_gate import (
+    effective_integrator_min_score_to_pass,
+    integrator_gate_event_would_emit,
+    parse_integrator_gate_project_tags,
+)
 
 
 class IntegratorOptionalStagesMixin:
@@ -89,29 +90,17 @@ class IntegratorOptionalStagesMixin:
         )
 
     def _emit_bundle_integrator_gate(self: IntegratorOptionalStagesHost, run_id: UUID) -> None:
-        tri = env_tri_state("NIMBUSWARE_EMIT_INTEGRATOR_GATE")
-        if tri == "off":
-            return
         from nimbusware_extensions.phase2 import ModuleIntegrator
         from nimbusware_orchestrator._pipeline._helpers_runtime import optional_rows_and_profile
 
         rows, wf = optional_rows_and_profile(self, run_id)
         mat = self._config_materializer
-        yaml_on = load_integrator_gate_emit_enabled(
-            self._repo_root,
-            config_materializer=mat,
-        )
-        wf_on = integrator_gate_workflow_enabled(
+        if not integrator_gate_event_would_emit(
             self._repo_root,
             wf,
             config_materializer=mat,
-        )
-        if tri != "on" and not yaml_on and not wf_on:
+        ):
             return
-        if mat is None or not getattr(mat, "use_db", False):
-            path = self._repo_root / "configs" / "integrator" / "thresholds.yaml"
-            if not path.is_file():
-                return
         eff_min = effective_integrator_min_score_to_pass(
             self._repo_root,
             wf,

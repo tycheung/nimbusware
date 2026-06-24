@@ -6,6 +6,7 @@ from typing import Any
 from nimbusware_config.workflow_read import load_yaml
 from nimbusware_env.env_flags import env_var_tri_state_summary
 from nimbusware_orchestrator.integrator_gate import (
+    integrator_gate_event_would_emit,
     integrator_gate_workflow_enabled,
     load_integrator_gate_emit_enabled,
 )
@@ -132,20 +133,21 @@ def integrator_gate_emission_breakdown(
     )
     thr_snap = thresholds_config_snapshot(repo_root, config_materializer=config_materializer)
     has_thr = thr_snap.get("exists") is True
+    would_emit = integrator_gate_event_would_emit(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
     if forces_off:
-        would_emit = False
         reason = "NIMBUSWARE_EMIT_INTEGRATOR_GATE forces off (0/false/no)"
     elif not has_thr:
-        would_emit = False
         reason = "configs/integrator/thresholds.yaml missing"
     elif forces_on or yaml_on or wf_on:
-        would_emit = True
         reason = (
             "thresholds file present and at least one of: NIMBUSWARE_EMIT_INTEGRATOR_GATE "
             "force-on, thresholds.yaml enabled, workflow integrator_gate.enabled"
         )
     else:
-        would_emit = False
         reason = (
             "no emission: env not force-on, thresholds.enabled false, "
             "workflow integrator_gate.enabled false"

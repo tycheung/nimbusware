@@ -71,13 +71,7 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a1, mem_a1 = make_dev_orchestrator()
     rid_a1 = orch_a1.create_run("integrator_gate_on")
-    with (
-        patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
-            return_value=False,
-        ),
-        patch.object(Path, "is_file", return_value=False),
-    ):
+    with patch.object(Path, "is_file", return_value=False):
         orch_a1._emit_bundle_integrator_gate(rid_a1)  # noqa: SLF001
     assert _gate_rows(mem_a1, rid_a1) == [], (
         "A1: thresholds.yaml absent + workflow-on (`integrator_gate_on`) -> "
@@ -89,13 +83,7 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", "1")
     orch_a2, mem_a2 = make_dev_orchestrator()
     rid_a2 = orch_a2.create_run("default")
-    with (
-        patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
-            return_value=False,
-        ),
-        patch.object(Path, "is_file", return_value=False),
-    ):
+    with patch.object(Path, "is_file", return_value=False):
         orch_a2._emit_bundle_integrator_gate(rid_a2)  # noqa: SLF001
     assert _gate_rows(mem_a2, rid_a2) == [], (
         "A2: env `NIMBUSWARE_EMIT_INTEGRATOR_GATE=1` (force-on) + thresholds.yaml "
@@ -127,11 +115,7 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     monkeypatch.delenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raising=False)
     orch_a4, mem_a4 = make_dev_orchestrator()
     rid_a4 = orch_a4.create_run("default")
-    with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
-        return_value=False,
-    ):
-        orch_a4._emit_bundle_integrator_gate(rid_a4)  # noqa: SLF001
+    orch_a4._emit_bundle_integrator_gate(rid_a4)  # noqa: SLF001
     assert _gate_rows(mem_a4, rid_a4) == [], (
         "A4: env unset + yaml_on=False + wf_on=False (default workflow has "
         "`integrator_gate.enabled: false`) -> OR-gate at pipeline.py:1494-1495 "
@@ -142,7 +126,7 @@ def test_bundle_integrator_gate_thresholds_absent_and_or_gate_5_axis(
     orch_a5, mem_a5 = make_dev_orchestrator()
     rid_a5 = orch_a5.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_a5._emit_bundle_integrator_gate(rid_a5)  # noqa: SLF001
@@ -164,7 +148,7 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b1 = orch_b1.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -185,7 +169,7 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b2 = orch_b2.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -211,7 +195,7 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b3 = orch_b3.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -237,7 +221,7 @@ def test_bundle_integrator_gate_project_tags_three_arm_ladder_5_axis(
     rid_b4 = orch_b4.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -280,7 +264,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c1 = orch_c1.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch("nimbusware_extensions.phase2.ModuleIntegrator", class_spy_c1),
@@ -302,7 +286,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c2 = orch_c2.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -329,7 +313,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c3 = orch_c3.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -350,7 +334,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c4 = orch_c4.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -373,7 +357,7 @@ def test_bundle_integrator_gate_profile_shape_and_matched_tags_filter_5_axis(
     rid_c5 = orch_c5.create_run("integrator_gate_on")
     with (
         patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ),
         patch(
@@ -405,7 +389,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     orch_pass, mem_pass = make_dev_orchestrator()
     rid_pass = orch_pass.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_pass._emit_bundle_integrator_gate(rid_pass)  # noqa: SLF001
@@ -417,7 +401,7 @@ def test_bundle_integrator_gate_pass_fail_payload_divergence_5_axis(
     orch_fail, mem_fail = make_dev_orchestrator()
     rid_fail = orch_fail.create_run("integrator_gate_mismatch")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch_fail._emit_bundle_integrator_gate(rid_fail)  # noqa: SLF001

@@ -33,7 +33,7 @@ def test_emit_integrator_gate_when_yaml_enabled_via_monkeypatch() -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=True,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -48,7 +48,7 @@ def test_emit_integrator_gate_includes_score_metadata(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -83,7 +83,7 @@ def test_emit_integrator_gate_fail_when_workflow_project_tags_mismatch_bundle(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_mismatch")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -109,7 +109,7 @@ def test_emit_integrator_gate_env_min_score_overrides_threshold_yaml(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -129,7 +129,7 @@ def test_emit_integrator_gate_when_workflow_profile_enables_integrator_gate(
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("integrator_gate_on")
     with patch(
-        "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+        "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
         return_value=False,
     ):
         orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -182,7 +182,7 @@ def test_emit_integrator_gate_env_force_on_string_arm_contract(
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("default")
         with patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
@@ -225,11 +225,7 @@ def test_emit_integrator_gate_env_kill_switch_string_arm_contract(
         monkeypatch.setenv("NIMBUSWARE_EMIT_INTEGRATOR_GATE", raw)
         orch, mem = make_dev_orchestrator()
         rid = orch.create_run("integrator_gate_on")
-        with patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
-            return_value=False,
-        ):
-            orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
+        orch._emit_bundle_integrator_gate(rid)  # noqa: SLF001
         assert not _has_integrator_gate_event(mem.list_run_events(str(rid))), (
             f"kill_switch raw={raw!r}"
         )
@@ -282,7 +278,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
         orch_off, mem_off = make_dev_orchestrator()
         rid_off = orch_off.create_run("default")
         with patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch_off._emit_bundle_integrator_gate(rid_off)  # noqa: SLF001
@@ -292,7 +288,7 @@ def test_emit_integrator_gate_env_fallthrough_to_yaml_string_arm_contract(
         orch_on, mem_on = make_dev_orchestrator()
         rid_on = orch_on.create_run("integrator_gate_on")
         with patch(
-            "nimbusware_orchestrator._pipeline.optional_stages_integrator.load_integrator_gate_emit_enabled",
+            "nimbusware_orchestrator.integrator_gate.load_integrator_gate_emit_enabled",
             return_value=False,
         ):
             orch_on._emit_bundle_integrator_gate(rid_on)  # noqa: SLF001

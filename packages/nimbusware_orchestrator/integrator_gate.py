@@ -76,6 +76,51 @@ def load_integrator_gate_emit_enabled(
     return bool(raw.get("enabled", False))
 
 
+def integrator_gate_thresholds_present(
+    repo_root: Path,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    if config_materializer is not None and getattr(config_materializer, "use_db", False):
+        try:
+            config_materializer.get_integrator_thresholds()
+        except KeyError:
+            return False
+        return True
+    return (repo_root / "configs" / "integrator" / "thresholds.yaml").is_file()
+
+
+def integrator_gate_event_would_emit(
+    repo_root: Path,
+    workflow_profile: str | None,
+    *,
+    config_materializer: Any | None = None,
+) -> bool:
+    """Single source of truth for integrator gate event emission (pipeline + explainers)."""
+    from nimbusware_env.env_flags import env_tri_state
+
+    tri = env_tri_state("NIMBUSWARE_EMIT_INTEGRATOR_GATE")
+    if tri == "off":
+        return False
+    if not integrator_gate_thresholds_present(
+        repo_root,
+        config_materializer=config_materializer,
+    ):
+        return False
+    if tri == "on":
+        return True
+    yaml_on = load_integrator_gate_emit_enabled(
+        repo_root,
+        config_materializer=config_materializer,
+    )
+    wf_on = integrator_gate_workflow_enabled(
+        repo_root,
+        workflow_profile,
+        config_materializer=config_materializer,
+    )
+    return bool(yaml_on or wf_on)
+
+
 def select_bundle_id_for_workflow(
     repo_root: Path,
     workflow_profile: str | None,
