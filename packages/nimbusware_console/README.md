@@ -26,7 +26,7 @@ Build Admin SPA before packaging: `cd packages/nimbusware_admin_ui && npm ci && 
 nimbusware_console/
 ├── services/                 # HTTP clients to /v1 (runs, chat, config, ollama, …)
 ├── components/               # Shared explainer panel + operator metrics helpers
-├── explainer_core/           # metrics_scaffold, workflow_payload_header, yaml_version_caption, exports
+├── explainer_core/           # metrics_scaffold, field_caption, repo_yaml, workflow_exports, table_rows_csv
 ├── integrator_core/          # Shared thresholds / min-score / gate emission (C62)
 ├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
 ├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)

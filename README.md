@@ -102,4 +102,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3028** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3873** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **94,440** non-blank Python lines in `packages/`).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3029** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3873** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **94,440** non-blank Python lines in `packages/`; measured **~94,336** after round 7/8 consolidation).
