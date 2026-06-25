@@ -1,6 +1,5 @@
 # Provider presets for Model Hub and ModelBindingResolver (v1.2).
 # API keys are stored per-user in nimbusware_provider_connection — not in this file.
-# Subscription OAuth (ChatGPT/Claude desktop) is deferred — use API-key providers only.
 
 providers:
   - id: ollama
@@ -38,3 +37,15 @@ providers:
     kind: cloud
     label: Custom OpenAI-compatible
     connection_kind: api_key
+  - id: chatgpt_plus
+    kind: subscription
+    label: ChatGPT Plus (desktop)
+    connection_kind: subscription
+    desktop_app: ChatGPT
+    oauth_hint: Sign in to the ChatGPT desktop app on this machine, then click Connect.
+  - id: claude_pro
+    kind: subscription
+    label: Claude Pro (desktop)
+    connection_kind: subscription
+    desktop_app: Claude
+    oauth_hint: Sign in to the Claude desktop app on this machine, then click Connect.

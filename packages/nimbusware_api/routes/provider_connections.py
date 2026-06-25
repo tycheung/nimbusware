@@ -19,7 +19,9 @@ from nimbusware_env.env_flags import nimbusware_collab_enabled, nimbusware_datab
 from nimbusware_iam.context import get_auth_context, resolve_store_tenant_id
 from nimbusware_orchestrator.provider_registry import (
     load_provider_presets,
+    load_subscription_provider_presets,
     probe_connection_row,
+    subscription_preset_by_id,
 )
 
 router = APIRouter(tags=["platform"])
@@ -63,7 +65,52 @@ def _store() -> ProviderConnectionStore:
 
 @router.get("/platform/provider-presets")
 def list_provider_presets(orch: OrchDep, _: UserDep) -> dict[str, Any]:
-    return {"providers": load_provider_presets(orch.repo_root)}
+    return {
+        "providers": load_provider_presets(orch.repo_root),
+        "subscription_providers": load_subscription_provider_presets(orch.repo_root),
+    }
+
+
+class SubscriptionLinkBody(BaseModel):
+    provider_id: str = Field(min_length=1, max_length=80)
+    subscription_connected: bool = True
+    default_model_id: str | None = Field(default=None, max_length=200)
+
+
+@router.post("/platform/provider-connections/subscription-link")
+def link_subscription_provider(
+    body: SubscriptionLinkBody, request: Request, orch: OrchDep, _: UserDep
+) -> dict[str, Any]:
+    preset = subscription_preset_by_id(orch.repo_root, body.provider_id)
+    if preset is None:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", f"unknown subscription provider: {body.provider_id}"),
+        )
+    store = _store()
+    user_id = _connection_user_id(request)
+    secret_blob = encode_secret_payload(
+        connection_kind="subscription",
+        subscription_connected=body.subscription_connected,
+    )
+    existing = [
+        r
+        for r in store.list_for_user(user_id=user_id, tenant_id=_connection_tenant_id())
+        if r.provider_id == body.provider_id and r.connection_kind == "subscription"
+    ]
+    connection_id = existing[0].connection_id if existing else None
+    row = store.upsert(
+        connection_id=connection_id,
+        user_id=user_id,
+        tenant_id=_connection_tenant_id(),
+        provider_id=body.provider_id,
+        label=str(preset.get("label") or body.provider_id),
+        connection_kind="subscription",
+        base_url=None,
+        default_model_id=body.default_model_id,
+        secret_blob=secret_blob,
+    )
+    return {"connection": _row_to_public(row), "oauth_hint": preset.get("oauth_hint")}
 
 
 @router.get("/platform/provider-connections")

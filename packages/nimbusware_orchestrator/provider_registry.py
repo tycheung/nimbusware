@@ -9,6 +9,26 @@ import yaml
 ConnectionKind = Literal["api_key", "subscription"]
 
 
+def _preset_row(raw: dict[str, Any]) -> dict[str, Any] | None:
+    pid = str(raw.get("id") or "").strip()
+    if not pid:
+        return None
+    connection_kind = str(raw.get("connection_kind") or "api_key")
+    row: dict[str, Any] = {
+        "id": pid,
+        "kind": str(raw.get("kind") or "cloud"),
+        "label": str(raw.get("label") or pid),
+        "connection_kind": connection_kind,
+        "default_base_url": raw.get("default_base_url"),
+        "probe_health_path": str(raw.get("probe_health_path") or "/models"),
+    }
+    if raw.get("desktop_app"):
+        row["desktop_app"] = str(raw["desktop_app"])
+    if raw.get("oauth_hint"):
+        row["oauth_hint"] = str(raw["oauth_hint"])
+    return row
+
+
 def load_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
     path = repo_root / "configs" / "model_providers.yaml"
     if not path.is_file():
@@ -23,27 +43,45 @@ def load_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
     for raw in providers:
         if not isinstance(raw, dict):
             continue
-        pid = str(raw.get("id") or "").strip()
-        if not pid:
+        if str(raw.get("connection_kind") or "api_key") == "subscription":
             continue
-        connection_kind = str(raw.get("connection_kind") or "api_key")
-        if connection_kind == "subscription":
+        row = _preset_row(raw)
+        if row is not None:
+            out.append(row)
+    return out
+
+
+def load_subscription_provider_presets(repo_root: Path) -> list[dict[str, Any]]:
+    path = repo_root / "configs" / "model_providers.yaml"
+    if not path.is_file():
+        return []
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(doc, dict):
+        return []
+    providers = doc.get("providers")
+    if not isinstance(providers, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for raw in providers:
+        if not isinstance(raw, dict):
             continue
-        out.append(
-            {
-                "id": pid,
-                "kind": str(raw.get("kind") or "cloud"),
-                "label": str(raw.get("label") or pid),
-                "connection_kind": connection_kind,
-                "default_base_url": raw.get("default_base_url"),
-                "probe_health_path": str(raw.get("probe_health_path") or "/models"),
-            },
-        )
+        if str(raw.get("connection_kind") or "") != "subscription":
+            continue
+        row = _preset_row(raw)
+        if row is not None:
+            out.append(row)
     return out
 
 
 def preset_by_id(repo_root: Path, provider_id: str) -> dict[str, Any] | None:
     for row in load_provider_presets(repo_root):
+        if row["id"] == provider_id:
+            return row
+    return None
+
+
+def subscription_preset_by_id(repo_root: Path, provider_id: str) -> dict[str, Any] | None:
+    for row in load_subscription_provider_presets(repo_root):
         if row["id"] == provider_id:
             return row
     return None

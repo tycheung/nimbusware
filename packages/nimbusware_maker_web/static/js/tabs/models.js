@@ -1,6 +1,7 @@
 import { wireHubNav } from "./models_hub_nav.js";
 import { wireApiConnectionsPanel } from "./models_connections_ui.js";
 import { wireLocalModelsPanel } from "./models_local_ui.js";
+import { wireSubscriptionConnectionsPanel } from "./models_subscriptions_ui.js";
 
 export async function mountModels(root) {
   root.dataset.testid = "maker-model-hub";
@@ -10,6 +11,7 @@ export async function mountModels(root) {
       <nav class="model-hub-nav" aria-label="Model Hub sections">
         <button type="button" class="model-hub-nav-btn" data-section="local">Local models</button>
         <button type="button" class="model-hub-nav-btn" data-section="api-connections">API connections</button>
+        <button type="button" class="model-hub-nav-btn" data-section="desktop-subscriptions">Desktop subscriptions</button>
       </nav>
     </header>
     <section id="local" class="model-hub-section" data-testid="maker-model-hub-local">
@@ -55,6 +57,11 @@ export async function mountModels(root) {
       <p id="models-pull-status"></p>
       <p id="models-catalog-info" class="muted"></p>
     </section>
+    <section id="desktop-subscriptions" class="model-hub-section" data-testid="maker-model-hub-subscriptions">
+      <h3>Desktop subscriptions</h3>
+      <p class="muted">Link ChatGPT Plus or Claude Pro from the desktop app on this machine. No API keys cross collab sessions.</p>
+      <div id="models-subscription-cards" class="model-hub-api-cards"></div>
+    </section>
     <section id="api-connections" class="model-hub-section" data-testid="maker-model-hub-api">
       <h3>API connections</h3>
       <p class="muted">Store API keys on this machine — secrets never appear in chat or audit exports.</p>
@@ -68,5 +75,9 @@ export async function mountModels(root) {
 
   wireHubNav(root);
   const local = wireLocalModelsPanel(root);
-  await Promise.all([local.init(), wireApiConnectionsPanel(root)]);
+  await Promise.all([
+    local.init(),
+    wireApiConnectionsPanel(root),
+    wireSubscriptionConnectionsPanel(root),
+  ]);
 }
