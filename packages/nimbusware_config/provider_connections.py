@@ -33,6 +33,7 @@ class ProviderConnectionSecret:
     connection_id: UUID
     api_key: str | None
     subscription_connected: bool
+    oauth_refresh_token: str | None = None
 
 
 def _row_from_record(rec: dict[str, Any]) -> ProviderConnectionRow:
@@ -81,8 +82,11 @@ def encode_secret_payload(
     connection_kind: str,
     api_key: str | None = None,
     subscription_connected: bool = False,
+    oauth_refresh_token: str | None = None,
 ) -> bytes:
     if connection_kind == "subscription":
+        if oauth_refresh_token and oauth_refresh_token.strip():
+            return encrypt_secret(f"sub_oauth:{oauth_refresh_token.strip()}")
         flag = "1" if subscription_connected else "0"
         return encrypt_secret(f"subscription:{flag}")
     if not api_key or not api_key.strip():
@@ -98,16 +102,25 @@ def decode_secret_payload(
     if plain is None:
         return None
     if connection_kind == "subscription":
+        if plain.startswith("sub_oauth:"):
+            return ProviderConnectionSecret(
+                connection_id=UUID(int=0),
+                api_key=None,
+                subscription_connected=True,
+                oauth_refresh_token=plain[len("sub_oauth:") :],
+            )
         connected = plain == "subscription:1"
         return ProviderConnectionSecret(
             connection_id=UUID(int=0),
             api_key=None,
             subscription_connected=connected,
+            oauth_refresh_token=None,
         )
     return ProviderConnectionSecret(
         connection_id=UUID(int=0),
         api_key=plain,
         subscription_connected=False,
+        oauth_refresh_token=None,
     )
 
 

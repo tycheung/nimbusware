@@ -30,6 +30,8 @@ def test_build_v1_router_includes_core_routes() -> None:
     assert "/platform/ollama/models" in paths
     assert "/platform/provider-presets" in paths
     assert "/platform/provider-connections" in paths
+    assert "/platform/provider-subscriptions/oauth/status" in paths
+    assert "/platform/provider-subscriptions/{provider_id}/oauth/authorize" in paths
     assert "/platform/ollama/bootstrap" in paths
     assert "/platform/model-bindings/preflight" in paths
     assert "/platform/model-bindings/defaults" in paths

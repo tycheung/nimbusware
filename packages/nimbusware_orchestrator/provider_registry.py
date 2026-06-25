@@ -26,6 +26,9 @@ def _preset_row(raw: dict[str, Any]) -> dict[str, Any] | None:
         row["desktop_app"] = str(raw["desktop_app"])
     if raw.get("oauth_hint"):
         row["oauth_hint"] = str(raw["oauth_hint"])
+    oauth = raw.get("oauth")
+    if isinstance(oauth, dict):
+        row["oauth"] = oauth
     return row
 
 

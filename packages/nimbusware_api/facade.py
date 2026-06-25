@@ -34,6 +34,7 @@ from nimbusware_api.routes import (
     project_context_artifacts,
     projects,
     provider_connections,
+    provider_subscription_oauth,
     runs,
     scraper_artifacts,
 )
@@ -69,6 +70,7 @@ def build_v1_router() -> APIRouter:
     router.include_router(scraper_artifacts.router)
     router.include_router(platform.router)
     router.include_router(provider_connections.router)
+    router.include_router(provider_subscription_oauth.router)
     router.include_router(model_bindings.router)
     router.include_router(compute.router)
     router.include_router(memory_chunks.router)

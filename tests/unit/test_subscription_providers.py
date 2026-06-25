@@ -18,3 +18,6 @@ def test_subscription_provider_presets_include_desktop_apps() -> None:
     assert chatgpt is not None
     assert chatgpt["connection_kind"] == "subscription"
     assert chatgpt.get("desktop_app") == "ChatGPT"
+    oauth = chatgpt.get("oauth")
+    assert isinstance(oauth, dict)
+    assert "offline_access" in str(oauth.get("scopes"))

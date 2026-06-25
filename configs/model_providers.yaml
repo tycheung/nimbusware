@@ -43,9 +43,13 @@ providers:
     connection_kind: subscription
     desktop_app: ChatGPT
     oauth_hint: Sign in to the ChatGPT desktop app on this machine, then click Connect.
+    oauth:
+      scopes: openid profile offline_access
   - id: claude_pro
     kind: subscription
     label: Claude Pro (desktop)
     connection_kind: subscription
     desktop_app: Claude
     oauth_hint: Sign in to the Claude desktop app on this machine, then click Connect.
+    oauth:
+      scopes: openid profile offline_access

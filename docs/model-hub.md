@@ -20,7 +20,13 @@ Maker **Models** tab (`#/models`, `data-testid="maker-model-hub"`) is the operat
 ### Desktop subscriptions (`#/models?section=desktop-subscriptions`)
 
 - ChatGPT Plus and Claude Pro desktop apps (`connection_kind: subscription` in `configs/model_providers.yaml`)
-- **Connect** calls `POST /v1/platform/provider-connections/subscription-link` — marks subscription active on this machine (no API key on the wire)
+- **Connect** (honor system) calls `POST /v1/platform/provider-connections/subscription-link` — marks subscription active on this machine (no API key on the wire); always available even when OAuth is configured
+- **Connect with OAuth** when IdP env is set — universal OIDC redirect (Auth0, Okta, Keycloak, etc.):
+  - `NIMBUSWARE_SUBSCRIPTION_OAUTH_ISSUER`, `NIMBUSWARE_SUBSCRIPTION_OAUTH_CLIENT_ID`, optional `CLIENT_SECRET` and `REDIRECT_URI`
+  - Per-provider overrides: `NIMBUSWARE_SUBSCRIPTION_OAUTH_CHATGPT_PLUS_ISSUER`, etc.
+  - `GET /v1/platform/provider-subscriptions/oauth/status` — readiness per provider
+  - `GET /v1/platform/provider-subscriptions/{provider_id}/oauth/authorize` — PKCE redirect to IdP
+  - `GET /v1/platform/provider-subscriptions/oauth/callback` — token exchange + vault upsert
 - Each collab participant links subscriptions on their own device; secrets never cross session SSE
 
 ### Cursor card
@@ -50,6 +56,9 @@ Readiness actions `start_ollama` / `pull_model` deep-link to Model Hub instead o
 | Method | Path |
 |--------|------|
 | GET | `/v1/platform/provider-presets` (includes `subscription_providers`) |
+| GET | `/v1/platform/provider-subscriptions/oauth/status` |
+| GET | `/v1/platform/provider-subscriptions/{provider_id}/oauth/authorize` |
+| GET | `/v1/platform/provider-subscriptions/oauth/callback` |
 | POST | `/v1/platform/provider-connections/subscription-link` |
 | GET | `/v1/platform/provider-connections` |
 | PUT | `/v1/platform/provider-connections` |

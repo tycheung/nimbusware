@@ -34,6 +34,19 @@ def test_subscription_secret_payload() -> None:
     assert decoded is not None
     assert decoded.subscription_connected is True
     assert decoded.api_key is None
+    assert decoded.oauth_refresh_token is None
+
+
+def test_subscription_oauth_secret_payload() -> None:
+    blob = encode_secret_payload(
+        connection_kind="subscription",
+        subscription_connected=True,
+        oauth_refresh_token="rt-xyz",
+    )
+    decoded = decode_secret_payload(blob, connection_kind="subscription")
+    assert decoded is not None
+    assert decoded.subscription_connected is True
+    assert decoded.oauth_refresh_token == "rt-xyz"
 
 
 def test_load_provider_presets_includes_gemini() -> None:

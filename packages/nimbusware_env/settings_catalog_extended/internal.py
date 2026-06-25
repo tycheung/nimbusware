@@ -97,6 +97,12 @@ def internal_defs() -> tuple[SettingDef, ...]:
             default="0",
         ),
         _internal(
+            "NIMBUSWARE_SUBSCRIPTION_OAUTH_MOCK",
+            "Mock desktop subscription OAuth (dev/tests only)",
+            kind=_BOOL,
+            default="0",
+        ),
+        _internal(
             "NIMBUSWARE_OIDC_ADMIN_GROUPS",
             "Comma-separated IdP groups granting Admin console write access",
         ),
