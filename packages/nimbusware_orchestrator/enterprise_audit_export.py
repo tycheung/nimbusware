@@ -54,7 +54,9 @@ def build_enterprise_audit_bundle_bytes(
                         "metadata": row.get("metadata")
                         if isinstance(row.get("metadata"), dict)
                         else {},
-                        "payload": row.get("payload") if isinstance(row.get("payload"), dict) else {},
+                        "payload": row.get("payload")
+                        if isinstance(row.get("payload"), dict)
+                        else {},
                     },
                 ),
             )

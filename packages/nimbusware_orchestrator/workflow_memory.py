@@ -206,7 +206,7 @@ def retrieve_memory_excerpt_for_slice(
         )
     if hits:
         hits.sort(key=lambda h: h.score, reverse=True)
-        hits = hits[:settings.retrieval_k]
+        hits = hits[: settings.retrieval_k]
     excerpt = format_memory_excerpt(hits, max_chars=settings.excerpt_max_chars)
     return excerpt, hits, scope
 

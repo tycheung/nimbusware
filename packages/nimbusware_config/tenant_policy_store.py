@@ -84,9 +84,7 @@ def audit_redaction(payload: dict[str, Any]) -> dict[str, Any]:
         elif isinstance(value, dict):
             out[key] = audit_redaction(value)
         elif isinstance(value, list):
-            out[key] = [
-                audit_redaction(item) if isinstance(item, dict) else item for item in value
-            ]
+            out[key] = [audit_redaction(item) if isinstance(item, dict) else item for item in value]
         elif isinstance(value, str) and re.search(r"(sk-|api[_-]?key)", value, re.I):
             out[key] = "[redacted]"
         else:
