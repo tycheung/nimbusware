@@ -1,9 +1,11 @@
 import { autopilotRibbonHtml } from "../autopilot-ribbon.js";
 import { enforcementRibbonHtml } from "../enforcement-ribbon.js";
 import { chatInterjectionRibbonHtml } from "../interjection-ribbon.js";
+import { isSafeCodingUx } from "../safe-coding-ux.js";
 import { workTypeLabel } from "./chat_thread_ui.js";
 
 export const CHAT_WORK_TYPES = ["auto", "patch", "slice", "campaign", "factory", "quick"];
+export const SAFE_CODING_WORK_TYPES = ["auto", "patch", "slice", "quick"];
 
 export function chatLayoutHtml() {
   return `
@@ -36,7 +38,9 @@ export function chatLayoutHtml() {
           </label>
           <label>Work type
             <select name="work_type" id="chat-work-type" data-testid="maker-chat-work-type-select">
-              ${CHAT_WORK_TYPES.map((wt) => `<option value="${wt}">${workTypeLabel(wt)}</option>`).join("")}
+              ${(isSafeCodingUx() ? SAFE_CODING_WORK_TYPES : CHAT_WORK_TYPES)
+                .map((wt) => `<option value="${wt}">${workTypeLabel(wt)}</option>`)
+                .join("")}
             </select>
           </label>
           <label>Message

@@ -1,4 +1,5 @@
 import { apiJson } from "../../api-client.js";
+import { isSafeCodingUx } from "../../safe-coding-ux.js";
 
 export function devEnvRegressionFromTimeline(events) {
   let http = null;
@@ -120,6 +121,11 @@ export async function refreshCouncilRibbon(runId) {
   const panel = document.getElementById("council-ribbon");
   const body = document.getElementById("council-body");
   if (!panel || !body || !runId) return;
+  if (isSafeCodingUx()) {
+    panel.hidden = true;
+    body.textContent = "";
+    return;
+  }
   try {
     const timeline = await apiJson(`/runs/${encodeURIComponent(runId)}/timeline?limit=50`);
     const events = timeline.events || [];

@@ -276,4 +276,10 @@ def build_run_created_metadata(
             if business_area_persona_id or development_role_persona_id
             else {}
         ),
+        **(
+            {"consumer_archetype": str(run_policy_overrides.get("consumer_archetype")).strip()}
+            if run_policy_overrides
+            and str(run_policy_overrides.get("consumer_archetype") or "").strip()
+            else {}
+        ),
     }

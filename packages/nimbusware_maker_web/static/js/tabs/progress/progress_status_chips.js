@@ -1,4 +1,5 @@
 import { resolveRunId } from "../../session-hub.js";
+import { isSafeCodingUx } from "../../safe-coding-ux.js";
 
 export function renderWorkType(body) {
   const badge = document.getElementById("work-type-badge");
@@ -33,6 +34,11 @@ export function renderEnforcementStatus(body) {
 export function renderFactoryStatus(body) {
   const chip = document.getElementById("factory-status-chip");
   if (!chip) return;
+  if (isSafeCodingUx()) {
+    chip.hidden = true;
+    chip.textContent = "";
+    return;
+  }
   const fs = body.factory_status;
   if (!fs || !fs.tier) {
     chip.hidden = true;

@@ -69,6 +69,7 @@ class CreateRunBody(BaseModel):
         max_length=120,
         description="Saved operator enforcement profile to apply at run start",
     )
+    consumer_archetype: str | None = Field(default=None, max_length=64)
 
 
 @router.post(
@@ -108,6 +109,10 @@ def create_run(
         run_policy_overrides: dict[str, Any] | None = None
         if memory_overrides:
             run_policy_overrides = {"memory": memory_overrides}
+        if body.consumer_archetype and str(body.consumer_archetype).strip():
+            if run_policy_overrides is None:
+                run_policy_overrides = {}
+            run_policy_overrides["consumer_archetype"] = str(body.consumer_archetype).strip()
         if body.operator_settings:
             try:
                 op = validate_patch(
