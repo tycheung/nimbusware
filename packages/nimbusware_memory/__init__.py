@@ -14,8 +14,9 @@ from nimbusware_memory.models import (
     MemoryRetrievalHit,
 )
 from nimbusware_memory.repo_scope import repo_scope_hash
-from nimbusware_memory.search import format_memory_excerpt, search_memory
+from nimbusware_memory.search import format_memory_excerpt, search_memory, search_user_memory
 from nimbusware_memory.store import InMemoryMemoryChunkStore, PostgresMemoryChunkStore
+from nimbusware_memory.user_scope import user_scope_hash
 
 __all__ = [
     "EmbeddingMode",
@@ -39,5 +40,7 @@ __all__ = [
     "repo_scope_hash",
     "run_index_contribution_enabled",
     "search_memory",
+    "search_user_memory",
+    "user_scope_hash",
     "write_manifest",
 ]

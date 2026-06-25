@@ -10,6 +10,7 @@ from nimbusware_memory.manifest import default_memory_index_dir, latest_generati
 from nimbusware_memory.models import EmbeddingMode, MemoryChunkRecord, MemoryRetrievalHit
 from nimbusware_memory.repo_scope import repo_scope_hash, resolve_repo_root
 from nimbusware_memory.store import MemoryChunkStore
+from nimbusware_memory.user_scope import user_memory_index_dir, user_scope_hash
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
@@ -40,6 +41,42 @@ def search_memory(
         return []
     kk = max(1, min(20, int(k)))
     index_dir = default_memory_index_dir(root)
+    if try_load_memory_faiss(index_dir) is not None:
+        by_id = {ch.chunk_id: ch for ch in chunks}
+        hits: list[MemoryRetrievalHit] = []
+        for cid in faiss_search_chunk_ids(index_dir, qvec, k=kk):
+            ch = by_id.get(cid)
+            if ch is None:
+                continue
+            score = _cosine(qvec, ch.embedding_vector)
+            hits.append(_hit_from_chunk(ch, score))
+        if hits:
+            return hits
+    return _brute_force_search(qvec, chunks, k=kk)
+
+
+def search_user_memory(
+    memory_store: MemoryChunkStore,
+    query: str,
+    *,
+    user_id: str,
+    repo_root: Path | None = None,
+    tenant_id: str | None = None,
+    k: int = 5,
+    embedding_mode: EmbeddingMode = "deterministic",
+) -> list[MemoryRetrievalHit]:
+    """Top-k user-private chunks (user-scoped FAISS when index present)."""
+    uid = user_id.strip()
+    if not uid:
+        return []
+    root = resolve_repo_root(repo_root)
+    scope = user_scope_hash(uid)
+    qvec = embed_text(query.strip(), mode=embedding_mode)
+    chunks = memory_store.list_chunks_for_scope(scope)
+    if not chunks:
+        return []
+    kk = max(1, min(20, int(k)))
+    index_dir = user_memory_index_dir(root, uid, tenant_id=tenant_id)
     if try_load_memory_faiss(index_dir) is not None:
         by_id = {ch.chunk_id: ch for ch in chunks}
         hits: list[MemoryRetrievalHit] = []

@@ -1,6 +1,14 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
+
+
+def user_scope_hash(user_id: str) -> str:
+    uid = user_id.strip()
+    if not uid:
+        raise ValueError("user_id is required")
+    return hashlib.sha256(uid.encode("utf-8")).hexdigest()[:16]
 
 
 def user_memory_index_dir(repo_root: Path, user_id: str, *, tenant_id: str | None = None) -> Path:

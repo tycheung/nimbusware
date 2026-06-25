@@ -56,7 +56,9 @@ def plan_one_slice(
     rows = orch._store.list_run_events(str(run_id))
     memory_excerpt = ""
     run_meta = orch._run_created_metadata(run_id)
+    from nimbusware_orchestrator.collab_binding_resolver import participant_memory_policy
     from nimbusware_orchestrator.workflow_memory import (
+        actor_user_id_from_run_metadata,
         memory_settings_from_run_metadata,
         retrieve_memory_excerpt_for_slice,
         run_memory_retrieval_enabled,
@@ -64,12 +66,16 @@ def plan_one_slice(
 
     if run_memory_retrieval_enabled(run_meta) and orch._memory_chunk_store is not None:
         settings = memory_settings_from_run_metadata(run_meta)
+        actor_id = actor_user_id_from_run_metadata(run_meta)
+        retrieval_policy = participant_memory_policy(run_meta, actor_id)
         stub = default_stub_slice_plan(slice_index)
         memory_excerpt, _, _ = retrieve_memory_excerpt_for_slice(
             orch._memory_chunk_store,
             stub,
             repo_root=orch.repo_root,
             settings=settings,
+            actor_user_id=actor_id,
+            retrieval_policy=retrieval_policy,
         )
     if nimbusware_use_llm_enabled():
         runtime = mapping_or_empty(orch._base_cfg().get("runtime"))

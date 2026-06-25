@@ -60,6 +60,7 @@ class MicroSliceMixin:
         test_output: str = "",
         test_detail: str = "",
     ) -> SliceGateChainResult:
+        from nimbusware_orchestrator.collab_binding_resolver import participant_memory_policy
         from nimbusware_orchestrator.micro_slice import SlicePlan, parse_slice_plan
         from nimbusware_orchestrator.slice_context_packet import build_slice_context_packet
         from nimbusware_orchestrator.slice_gate import run_slice_gate_chain
@@ -69,6 +70,7 @@ class MicroSliceMixin:
             latest_handoff_from_events,
         )
         from nimbusware_orchestrator.workflow_memory import (
+            actor_user_id_from_run_metadata,
             memory_settings_from_run_metadata,
             pinned_generation_for_scope,
             query_digest,
@@ -126,12 +128,16 @@ class MicroSliceMixin:
         memory_hits: list[Any] = []
         memory_scope = ""
         memory_settings = memory_settings_from_run_metadata(run_meta)
+        actor_id = actor_user_id_from_run_metadata(run_meta)
+        retrieval_policy = participant_memory_policy(run_meta, actor_id)
         if run_memory_retrieval_enabled(run_meta) and self._memory_chunk_store is not None:
             memory_excerpt, memory_hits, memory_scope = retrieve_memory_excerpt_for_slice(
                 self._memory_chunk_store,
                 p,
                 repo_root=self._repo_root,
                 settings=memory_settings,
+                actor_user_id=actor_id,
+                retrieval_policy=retrieval_policy,
             )
         prior_handoff = latest_handoff_from_events(
             self._store.list_run_events(str(run_id)),

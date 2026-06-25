@@ -10,8 +10,14 @@ from nimbusware_env.env_flags import nimbusware_memory_excerpt_max_chars
 from nimbusware_memory.manifest import default_memory_index_dir, latest_generation_id
 from nimbusware_memory.models import EmbeddingMode, MemoryRetrievalHit
 from nimbusware_memory.repo_scope import repo_scope_hash
-from nimbusware_memory.search import format_memory_excerpt, pinned_generation_id, search_memory
+from nimbusware_memory.search import (
+    format_memory_excerpt,
+    pinned_generation_id,
+    search_memory,
+    search_user_memory,
+)
 from nimbusware_memory.store import MemoryChunkStore
+from nimbusware_memory.user_scope import memory_retrieval_policy as default_memory_retrieval_policy
 from nimbusware_orchestrator.micro_slice import SlicePlan
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
 
@@ -146,23 +152,61 @@ def query_digest(query: str) -> str:
     return hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
 
 
+def actor_user_id_from_run_metadata(metadata: object) -> str:
+    from agent_core.mapping import mapping_or_empty
+    from nimbusware_orchestrator.collab_mesh_context import mesh_actor_user_id
+
+    mesh = mesh_actor_user_id().strip()
+    if mesh:
+        return mesh
+    if not isinstance(metadata, dict):
+        return ""
+    collab = mapping_or_empty(metadata.get("collab"))
+    host = str(collab.get("host_user_id") or metadata.get("host_user_id") or "").strip()
+    return host
+
+
 def retrieve_memory_excerpt_for_slice(
     memory_store: MemoryChunkStore,
     plan: SlicePlan,
     *,
     repo_root: Path,
     settings: MemoryWorkflowBlock,
+    actor_user_id: str = "",
+    retrieval_policy: dict[str, bool] | None = None,
 ) -> tuple[str, list[MemoryRetrievalHit], str]:
-    """Search repo memory and return excerpt text, hits, and repo scope hash."""
+    """Merge user-private and project-shared memory per retrieval policy."""
     query = memory_query_from_slice_plan(plan)
     scope = repo_scope_hash(repo_root)
-    hits = search_memory(
-        memory_store,
-        query,
-        repo_root=repo_root,
-        k=settings.retrieval_k,
-        embedding_mode=settings.embedding_mode,
-    )
+    policy = retrieval_policy or default_memory_retrieval_policy()
+    use_private = bool(policy.get("private", True))
+    use_shared = bool(policy.get("project_shared", True))
+    actor = actor_user_id.strip()
+    hits: list[MemoryRetrievalHit] = []
+    if use_shared:
+        hits.extend(
+            search_memory(
+                memory_store,
+                query,
+                repo_root=repo_root,
+                k=settings.retrieval_k,
+                embedding_mode=settings.embedding_mode,
+            ),
+        )
+    if use_private and actor:
+        hits.extend(
+            search_user_memory(
+                memory_store,
+                query,
+                user_id=actor,
+                repo_root=repo_root,
+                k=settings.retrieval_k,
+                embedding_mode=settings.embedding_mode,
+            ),
+        )
+    if hits:
+        hits.sort(key=lambda h: h.score, reverse=True)
+        hits = hits[:settings.retrieval_k]
     excerpt = format_memory_excerpt(hits, max_chars=settings.excerpt_max_chars)
     return excerpt, hits, scope
 

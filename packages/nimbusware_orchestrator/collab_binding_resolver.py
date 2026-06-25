@@ -31,3 +31,41 @@ def merge_participant_binding(
     collab["participant_bindings"] = by_user
     meta["collab"] = collab
     return meta
+
+
+def participant_memory_policy(
+    session_metadata: dict[str, Any] | None, user_id: str
+) -> dict[str, bool]:
+    if not session_metadata or not user_id:
+        from nimbusware_memory.user_scope import memory_retrieval_policy
+
+        return memory_retrieval_policy()
+    collab = mapping_or_empty(session_metadata.get("collab"))
+    by_user = mapping_or_empty(collab.get("memory_policy"))
+    raw = by_user.get(user_id)
+    if isinstance(raw, dict):
+        return {
+            "private": bool(raw.get("private", True)),
+            "project_shared": bool(raw.get("project_shared", True)),
+        }
+    from nimbusware_memory.user_scope import memory_retrieval_policy
+
+    return memory_retrieval_policy()
+
+
+def merge_participant_memory_policy(
+    session_metadata: dict[str, Any] | None,
+    *,
+    user_id: str,
+    policy: dict[str, bool],
+) -> dict[str, Any]:
+    meta = dict(session_metadata or {})
+    collab = dict(mapping_or_empty(meta.get("collab")))
+    by_user = dict(mapping_or_empty(collab.get("memory_policy")))
+    by_user[user_id] = {
+        "private": bool(policy.get("private", True)),
+        "project_shared": bool(policy.get("project_shared", True)),
+    }
+    collab["memory_policy"] = by_user
+    meta["collab"] = collab
+    return meta

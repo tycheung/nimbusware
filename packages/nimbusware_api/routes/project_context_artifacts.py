@@ -2,20 +2,20 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from nimbusware_api.access import assert_project_accessible
 from nimbusware_api.deps import ProjectStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404, PROBLEM_RESPONSE_422
-from nimbusware_api.user import UserDep
+from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_orchestrator.context_artifacts import (
     ContextArtifactRecord,
     bridge_artifact_to_memory_index,
     create_context_artifact,
     get_context_artifact,
-    list_context_artifacts,
+    list_context_artifacts_for_actor,
 )
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -28,6 +28,8 @@ class ContextArtifactResponse(BaseModel):
     content: str
     kind: str
     created_at: str
+    owner_user_id: str = ""
+    visibility: str = "private"
 
 
 class ContextArtifactListResponse(BaseModel):
@@ -40,6 +42,7 @@ class ContextArtifactCreateBody(BaseModel):
     title: str = Field(min_length=1, max_length=500)
     content: str = Field(min_length=1, max_length=32000)
     kind: str = Field(default="note", max_length=64)
+    visibility: str = Field(default="private", max_length=32)
 
 
 def _to_response(record: ContextArtifactRecord) -> ContextArtifactResponse:
@@ -54,6 +57,7 @@ def _to_response(record: ContextArtifactRecord) -> ContextArtifactResponse:
 def get_project_context_artifacts(
     project_id: UUID,
     store: ProjectStoreDep,
+    request: Request,
     _user: UserDep,
 ) -> ContextArtifactListResponse:
     record = store.get(project_id)
@@ -63,7 +67,8 @@ def get_project_context_artifacts(
             detail=problem("project_not_found", f"Unknown project id: {project_id}"),
         )
     assert_project_accessible(record)
-    rows = list_context_artifacts(project_id)
+    actor = maker_user_id_str(request)
+    rows = list_context_artifacts_for_actor(project_id, actor)
     return ContextArtifactListResponse(
         project_id=str(project_id),
         artifacts=[_to_response(r) for r in rows],
@@ -80,6 +85,7 @@ def post_project_context_artifact(
     project_id: UUID,
     body: ContextArtifactCreateBody,
     store: ProjectStoreDep,
+    request: Request,
     _user: UserDep,
 ) -> ContextArtifactResponse:
     record = store.get(project_id)
@@ -89,12 +95,18 @@ def post_project_context_artifact(
             detail=problem("project_not_found", f"Unknown project id: {project_id}"),
         )
     assert_project_accessible(record)
+    owner = maker_user_id_str(request)
+    visibility = (body.visibility or "private").strip().lower()
+    if visibility not in ("private", "project", "shared"):
+        visibility = "private"
     try:
         created = create_context_artifact(
             project_id=project_id,
             title=body.title,
             content=body.content,
             kind=body.kind,
+            owner_user_id=owner,
+            visibility=visibility,
         )
     except ValueError as exc:
         raise HTTPException(

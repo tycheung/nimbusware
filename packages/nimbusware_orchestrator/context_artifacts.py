@@ -118,6 +118,23 @@ def list_context_artifacts(project_id: UUID | str) -> list[ContextArtifactRecord
     return _merge_memory_and_disk(str(project_id).strip())
 
 
+def list_context_artifacts_for_actor(
+    project_id: UUID | str,
+    actor_user_id: str,
+) -> list[ContextArtifactRecord]:
+    actor = actor_user_id.strip()
+    rows = list_context_artifacts(project_id)
+    if not actor:
+        return [r for r in rows if r.visibility in ("project", "shared")]
+    visible: list[ContextArtifactRecord] = []
+    for row in rows:
+        if row.visibility in ("project", "shared"):
+            visible.append(row)
+        elif row.owner_user_id == actor or not row.owner_user_id:
+            visible.append(row)
+    return visible
+
+
 def get_context_artifact(project_id: UUID | str, artifact_id: str) -> ContextArtifactRecord | None:
     pid = str(project_id).strip()
     target = artifact_id.strip()
