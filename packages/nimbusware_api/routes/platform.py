@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter
@@ -13,6 +14,7 @@ from nimbusware_api.routes.platform_user_profiles import router as user_profiles
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
+from nimbusware_maker.workspace_readiness import assess_workspace_readiness
 
 router = APIRouter(tags=["platform"])
 router.include_router(hardware_router)
@@ -34,6 +36,14 @@ def get_platform_edition() -> dict[str, Any]:
 @router.get("/platform/readiness")
 def get_platform_readiness(orch: OrchDep, store: StoreDep) -> dict[str, Any]:
     return build_platform_readiness(repo_root=orch.repo_root, store=store)
+
+
+@router.get("/platform/workspace-readiness")
+def get_workspace_readiness(
+    workspace_path: str,
+    orch: OrchDep,
+) -> dict[str, Any]:
+    return assess_workspace_readiness(Path(workspace_path.strip() or orch.repo_root))
 
 
 @router.get("/platform/onboarding")
