@@ -1,0 +1,12 @@
+# Enterprise strict bundle config seeds (with --seed-config).
+bundle_id: enterprise
+fleet_enforcement:
+  default:
+    min_enforcement_level: 8
+    max_enforcement_level: 10
+maker_defaults:
+  autopilot_profile_id: guided
+  enforcement_profile_id: platform_grade
+  workflow_profile: micro_slice
+  slice_budget_preset: tiny
+  slice_auto_commit: true

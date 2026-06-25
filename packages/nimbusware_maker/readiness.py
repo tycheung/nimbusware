@@ -338,11 +338,13 @@ def build_platform_readiness(*, repo_root: Path, store: Any) -> dict[str, Any]:
     manifest = edition_manifest()
     overall = _overall_status(checks)
     install_profile = env_str("NIMBUSWARE_INSTALL_PROFILE").strip() or "recommended"
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     body: dict[str, Any] = {
         "status": overall,
         "checks": checks,
         "edition": manifest.get("edition"),
         "install_profile": install_profile,
+        "setup_bundle": setup_bundle,
         "inference_mode": binding_check.get("inference_mode"),
         "inference_mode_label": binding_check.get("inference_mode_label"),
         "presets": {

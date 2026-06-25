@@ -17,11 +17,21 @@ from nimbusware_env.desktop_common import (
 
 INSTALL_PROFILE_BAREBONES = "barebones"
 INSTALL_PROFILE_FULL = "recommended"
+SETUP_BUNDLE_DEFAULT = "default"
+SETUP_BUNDLE_ENTERPRISE = "enterprise"
 
 
-def install_script_args(profile: str = INSTALL_PROFILE_BAREBONES) -> list[str]:
+def install_script_args(
+    profile: str = INSTALL_PROFILE_BAREBONES,
+    *,
+    setup_bundle: str = SETUP_BUNDLE_DEFAULT,
+) -> list[str]:
+    bundle_args = ["--setup-bundle", setup_bundle]
+    if setup_bundle == SETUP_BUNDLE_ENTERPRISE:
+        bundle_args.extend(["--edition", "enterprise"])
     if profile == INSTALL_PROFILE_FULL:
         return [
+            *bundle_args,
             "--non-interactive",
             "--seed-config",
             "--postgres-choice",
@@ -30,6 +40,7 @@ def install_script_args(profile: str = INSTALL_PROFILE_BAREBONES) -> list[str]:
             INSTALL_PROFILE_FULL,
         ]
     return [
+        *bundle_args,
         "--non-interactive",
         "--skip-postgres",
         "--install-profile",
@@ -164,13 +175,18 @@ def run_install_script(
     root: Path,
     *,
     profile: str = INSTALL_PROFILE_BAREBONES,
+    setup_bundle: str = SETUP_BUNDLE_DEFAULT,
     log: Callable[[str], None] | None = None,
 ) -> int:
     import os
     import subprocess
 
     script = resolve_install_script(root)
-    cmd = [*resolve_bootstrap_python(root), str(script), *install_script_args(profile)]
+    cmd = [
+        *resolve_bootstrap_python(root),
+        str(script),
+        *install_script_args(profile, setup_bundle=setup_bundle),
+    ]
     if log:
         log(f"$ {' '.join(cmd)}")
     env = os.environ.copy()

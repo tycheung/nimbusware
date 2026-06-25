@@ -29,6 +29,8 @@ from nimbusware_env.desktop_common import (
 from nimbusware_env.launcher_fetch import (
     INSTALL_PROFILE_BAREBONES,
     INSTALL_PROFILE_FULL,
+    SETUP_BUNDLE_DEFAULT,
+    SETUP_BUNDLE_ENTERPRISE,
     fetch_nimbusware_source,
     run_install_script,
 )
@@ -63,15 +65,30 @@ class NimbuswareLauncherApp:
         self.install_btn = ttk.Button(
             buttons,
             text="Quick setup",
-            command=lambda: self.run_install(INSTALL_PROFILE_BAREBONES),
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_BAREBONES,
+                setup_bundle=SETUP_BUNDLE_DEFAULT,
+            ),
         )
         self.install_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.install_full_btn = ttk.Button(
             buttons,
             text="Full setup",
-            command=lambda: self.run_install(INSTALL_PROFILE_FULL),
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_FULL,
+                setup_bundle=SETUP_BUNDLE_DEFAULT,
+            ),
         )
         self.install_full_btn.pack(side=tk.LEFT, padx=(0, 8))
+        self.install_enterprise_btn = ttk.Button(
+            buttons,
+            text="Enterprise setup",
+            command=lambda: self.run_install(
+                INSTALL_PROFILE_FULL,
+                setup_bundle=SETUP_BUNDLE_ENTERPRISE,
+            ),
+        )
+        self.install_enterprise_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.run_btn = ttk.Button(buttons, text="Run Nimbusware", command=self.run_nimbusware)
         self.run_btn.pack(side=tk.LEFT, padx=(0, 8))
         self.admin_btn = ttk.Button(
@@ -140,6 +157,7 @@ class NimbuswareLauncherApp:
             self.check_btn.configure(state=tk.DISABLED)
         self.install_btn.configure(state=state)
         self.install_full_btn.configure(state=state)
+        self.install_enterprise_btn.configure(state=state)
         self.run_btn.configure(state=state)
         self.admin_btn.configure(state=state)
 
@@ -213,30 +231,46 @@ class NimbuswareLauncherApp:
 
         threading.Thread(target=_worker, daemon=True).start()
 
-    def run_install(self, profile: str = INSTALL_PROFILE_BAREBONES) -> None:
+    def run_install(
+        self,
+        profile: str = INSTALL_PROFILE_BAREBONES,
+        *,
+        setup_bundle: str = SETUP_BUNDLE_DEFAULT,
+    ) -> None:
         needs_source = not is_nimbusware_checkout(self.repo)
         clone_target = default_clone_target(self.repo)
         clone_url = default_clone_url()
         full = profile == INSTALL_PROFILE_FULL
+        enterprise = setup_bundle == SETUP_BUNDLE_ENTERPRISE
 
         if needs_source:
+            if enterprise:
+                setup_desc = (
+                    "Enterprise setup installs Poetry deps, Docker Postgres when available, "
+                    "Ollama with default models, and Enterprise strict env defaults."
+                )
+            elif full:
+                setup_desc = (
+                    "Full setup installs Poetry deps, Docker Postgres when available, "
+                    "and Ollama with default models."
+                )
+            else:
+                setup_desc = (
+                    "Quick setup installs Poetry deps only (barebones profile, no Postgres/Ollama)."
+                )
             prompt = (
                 "No Nimbusware install was found.\n\n"
                 f"Source: {clone_url}\n"
                 f"Target: {clone_target}\n\n"
-                + (
-                    "Full setup installs Poetry deps, Docker Postgres when available, "
-                    "and Ollama with default models."
-                    if full
-                    else "Quick setup installs Poetry deps only (barebones profile, no Postgres/Ollama)."
-                )
+                + setup_desc
             )
         else:
-            prompt = (
-                "Run full Nimbusware setup (Postgres + Ollama)?"
-                if full
-                else "Run quick Nimbusware setup (Poetry deps, barebones profile)?"
-            )
+            if enterprise:
+                prompt = "Run Enterprise Nimbusware setup (Postgres + Ollama + strict env)?"
+            elif full:
+                prompt = "Run full Nimbusware setup (Postgres + Ollama)?"
+            else:
+                prompt = "Run quick Nimbusware setup (Poetry deps, barebones profile)?"
         if not messagebox.askyesno("Install Nimbusware", prompt):
             return
 
@@ -262,7 +296,12 @@ class NimbuswareLauncherApp:
             label = "full" if full else "quick"
             self._append_log(f"Running {label} Nimbusware setup...")
             try:
-                code = run_install_script(repo, profile=profile, log=self._append_log)
+                code = run_install_script(
+                    repo,
+                    profile=profile,
+                    setup_bundle=setup_bundle,
+                    log=self._append_log,
+                )
             except FileNotFoundError as exc:
                 message = str(exc)
                 self._append_log(message)

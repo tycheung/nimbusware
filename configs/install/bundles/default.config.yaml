@@ -1,0 +1,17 @@
+# Config seeds applied when --seed-config runs (optional on Individual default bundle).
+bundle_id: default
+maker_archetype_subchoices:
+  safe_coding:
+    workflow_profile: safe_coding
+    autopilot_profile_id: guided
+    enforcement_profile_id: balanced
+    collab_enabled: false
+    slice_auto_advance: false
+    maker_approval: true
+  engineer:
+    workflow_profile: micro_slice
+    autopilot_profile_id: guided
+    enforcement_profile_id: balanced
+    collab_enabled: true
+    slice_auto_advance: true
+    maker_approval: false

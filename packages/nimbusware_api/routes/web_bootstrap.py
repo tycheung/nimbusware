@@ -23,12 +23,20 @@ def _api_base(request: Request) -> str:
 
 def maker_bootstrap_payload(request: Request) -> dict[str, Any]:
     api_host = env_str("NIMBUSWARE_API_HOST").strip() or "127.0.0.1"
+    setup_bundle = env_str("NIMBUSWARE_SETUP_BUNDLE").strip() or "default"
     return {
         "api_base": _api_base(request),
         "edition": edition(),
+        "setup_bundle": setup_bundle,
         "quick_mode": quick_mode_enabled(),
         "ui_backend": env_str("NIMBUSWARE_UI_BACKEND") or "web",
         "user_token_required": not is_enterprise() and not is_loopback_host(api_host),
+        "default_profiles": {
+            "autopilot_profile_id": env_str("NIMBUSWARE_DEFAULT_AUTOPILOT_PROFILE").strip() or None,
+            "enforcement_profile_id": env_str("NIMBUSWARE_DEFAULT_ENFORCEMENT_PROFILE").strip()
+            or None,
+            "workflow_profile": env_str("NIMBUSWARE_DEFAULT_WORKFLOW_PROFILE").strip() or None,
+        },
         "features": {
             "maker_web": True,
             "admin_web": True,

@@ -18,6 +18,9 @@ COMPOSE_FILE = "docker-compose.yml"
 INSTALL_PROFILE_RECOMMENDED = "recommended"
 INSTALL_PROFILE_BAREBONES = "barebones"
 _INSTALL_PROFILE_CHOICES = (INSTALL_PROFILE_RECOMMENDED, INSTALL_PROFILE_BAREBONES)
+SETUP_BUNDLE_DEFAULT = "default"
+SETUP_BUNDLE_ENTERPRISE = "enterprise"
+_SETUP_BUNDLE_CHOICES = (SETUP_BUNDLE_DEFAULT, SETUP_BUNDLE_ENTERPRISE)
 
 
 class SetupError(RuntimeError):
@@ -607,6 +610,68 @@ def _fixture_workspace(repo: Path, name: str) -> Path:
     return (repo / "tests" / "fixtures" / "repos" / name).resolve()
 
 
+def _bundle_explicit_in_argv(argv: list[str] | None) -> bool:
+    tokens = argv if argv is not None else sys.argv[1:]
+    return any(
+        token == "--setup-bundle" or token.startswith("--setup-bundle=") for token in tokens
+    )
+
+
+def _prompt_setup_bundle() -> str:
+    _log("")
+    _log("=" * 80)
+    _log("What kind of setup do you want?")
+    _log("=" * 80)
+    _log("")
+    _log("  [1] Default (recommended for solo builders and engineer teams)")
+    _log("      Individual edition — gates, Maker, optional collab after first launch.")
+    _log("")
+    _log("  [2] Enterprise (governed team deployment)")
+    _log("      Enterprise edition — IAM, fleet enforcement seeds, strict slice defaults.")
+    _log("")
+    while True:
+        raw = input("  Enter 1 or 2 [default: 1]: ").strip()
+        if not raw or raw == "1":
+            return SETUP_BUNDLE_DEFAULT
+        if raw == "2":
+            return SETUP_BUNDLE_ENTERPRISE
+        _log("  Please enter 1 or 2.")
+
+
+def _resolve_setup_bundle(args: argparse.Namespace, argv: list[str] | None) -> str:
+    bundle = getattr(args, "setup_bundle", SETUP_BUNDLE_DEFAULT)
+    if bundle not in _SETUP_BUNDLE_CHOICES:
+        raise SetupError(f"Invalid setup bundle: {bundle}")
+    if (
+        not args.non_interactive
+        and not args.check_only
+        and sys.stdin.isatty()
+        and not _bundle_explicit_in_argv(argv)
+    ):
+        bundle = _prompt_setup_bundle()
+    return bundle
+
+
+def _apply_setup_bundle(args: argparse.Namespace, repo: Path, bundle_id: str) -> None:
+    packages = repo / "packages"
+    if str(packages) not in sys.path:
+        sys.path.insert(0, str(packages))
+    from nimbusware_env.install_setup_bundles import (  # noqa: PLC0415
+        apply_setup_bundle_env,
+        bundle_edition,
+        load_setup_bundle,
+        seed_enterprise_fleet_enforcement,
+    )
+
+    bundle = load_setup_bundle(bundle_id, repo_root=repo)
+    args.setup_bundle = bundle_id
+    args.edition = bundle_edition(bundle)
+    _log(f"\nSetup bundle: {bundle_id} (edition={args.edition})")
+    apply_setup_bundle_env(repo, bundle_id, log=_log)
+    if bundle_id == SETUP_BUNDLE_ENTERPRISE:
+        seed_enterprise_fleet_enforcement(repo, bundle)
+
+
 def _profile_explicit_in_argv(argv: list[str] | None) -> bool:
     tokens = argv if argv is not None else sys.argv[1:]
     return any(
@@ -1023,6 +1088,15 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--setup-bundle",
+        choices=_SETUP_BUNDLE_CHOICES,
+        default=os.environ.get("NIMBUSWARE_SETUP_BUNDLE", SETUP_BUNDLE_DEFAULT),
+        help=(
+            "default: Individual safe-lean env (Safe Coding + Engineer); "
+            "enterprise: Enterprise strict env + fleet seeds"
+        ),
+    )
+    parser.add_argument(
         "--skip-ollama",
         action="store_true",
         help="Do not install or configure Ollama (implies barebones LLM posture)",
@@ -1132,6 +1206,8 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     _log(f"\nRepository: {repo}")
+    setup_bundle = _resolve_setup_bundle(args, argv)
+    _apply_setup_bundle(args, repo, setup_bundle)
     install_profile = _resolve_install_profile(args, argv)
     _apply_install_profile_to_args(args, install_profile)
     edition_name = _configure_edition(args, repo)

@@ -1,5 +1,27 @@
 export const AUTOPILOT_PROFILE_STORAGE_KEY = "maker_default_autopilot_profile_id";
 export const ENFORCEMENT_PROFILE_STORAGE_KEY = "maker_default_enforcement_profile_id";
+export const WORKFLOW_PROFILE_STORAGE_KEY = "maker_default_workflow_profile";
+export const ARCHETYPE_SUBCHOICE_STORAGE_KEY = "maker_archetype_subchoice";
+
+let _bootstrapDefaults = null;
+
+export function setBootstrapDefaultProfiles(defaults) {
+  _bootstrapDefaults = defaults && typeof defaults === "object" ? defaults : null;
+}
+
+export function applyBootstrapDefaultProfilesIfUnset() {
+  const d = _bootstrapDefaults;
+  if (!d) return;
+  if (!readStoredProfileId(AUTOPILOT_PROFILE_STORAGE_KEY) && d.autopilot_profile_id) {
+    writeStoredProfileId(AUTOPILOT_PROFILE_STORAGE_KEY, d.autopilot_profile_id);
+  }
+  if (!readStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY) && d.enforcement_profile_id) {
+    writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, d.enforcement_profile_id);
+  }
+  if (!readStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY) && d.workflow_profile) {
+    writeStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY, d.workflow_profile);
+  }
+}
 
 export function readStoredProfileId(key) {
   return localStorage.getItem(key)?.trim() || "";
