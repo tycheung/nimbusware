@@ -16,6 +16,8 @@ class ContextArtifactRecord:
     content: str
     kind: str
     created_at: str
+    owner_user_id: str = ""
+    visibility: str = "private"
 
     def to_dict(self) -> dict[str, str]:
         return asdict(self)
@@ -62,6 +64,8 @@ def _load_project_from_disk(project_id: str) -> list[ContextArtifactRecord]:
                     content=str(data.get("content") or ""),
                     kind=str(data.get("kind") or "note"),
                     created_at=str(data.get("created_at") or ""),
+                    owner_user_id=str(data.get("owner_user_id") or ""),
+                    visibility=str(data.get("visibility") or "private"),
                 ),
             )
         except (KeyError, TypeError, ValueError):
@@ -83,6 +87,8 @@ def create_context_artifact(
     title: str,
     content: str,
     kind: str = "note",
+    owner_user_id: str = "",
+    visibility: str = "private",
 ) -> ContextArtifactRecord:
     pid = str(project_id).strip()
     title_n = title.strip()
@@ -99,6 +105,8 @@ def create_context_artifact(
         content=content_n,
         kind=kind_n,
         created_at=datetime.now(timezone.utc).isoformat(),
+        owner_user_id=owner_user_id.strip(),
+        visibility=(visibility or "private").strip() or "private",
     )
     bucket = _MEMORY.setdefault(pid, [])
     bucket.append(record)
