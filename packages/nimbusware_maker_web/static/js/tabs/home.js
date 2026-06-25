@@ -67,7 +67,7 @@ export async function mountHome(root) {
     </section>
     <section class="guided-campaign panel" data-testid="maker-home-guided-campaign">
       <h3>Factory hero demos</h3>
-      <p class="muted">Catalog zero-touch factory prompts — weekly pass rates appear in Admin Metrics.</p>
+      <p class="muted" id="factory-hero-caption">Catalog zero-touch factory prompts — weekly pass rates appear in Admin Metrics.</p>
       <div class="intent-cards" id="factory-demo-cards"></div>
       <button type="button" id="home-start-factory" class="secondary" data-testid="maker-home-start-factory">Custom app prompt…</button>
       <p class="actions">
@@ -143,12 +143,34 @@ export async function mountHome(root) {
   });
 
   const factoryCards = root.querySelector("#factory-demo-cards");
+  let factoryWeekly = null;
+  try {
+    const summary = await apiJson("/platform/analytics/competitive-summary");
+    factoryWeekly = summary?.metrics?.factory_weekly || summary?.factory_weekly || null;
+    const caption = root.querySelector("#factory-hero-caption");
+    if (caption && factoryWeekly?.pass_rate != null) {
+      const pct = Math.round(Number(factoryWeekly.pass_rate) * 100);
+      const when = factoryWeekly.published_at ? ` (${String(factoryWeekly.published_at).slice(0, 10)})` : "";
+      caption.textContent = `Weekly factory soak: ${pct}% pass rate${when}. Pick a catalog demo or start a custom prompt.`;
+    }
+  } catch {
+    /* metrics optional when store empty */
+  }
+
+  const catalogIds = new Set(
+    Array.isArray(factoryWeekly?.prompt_ids) ? factoryWeekly.prompt_ids.map(String) : [],
+  );
   for (const demo of FACTORY_DEMOS) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "intent-card";
     btn.dataset.testid = demo.testId;
-    btn.innerHTML = `<strong>${demo.title}</strong><span class="muted">${demo.prompt}</span>`;
+    const inCatalog = catalogIds.has(demo.promptId);
+    const catalogNote =
+      factoryWeekly?.pass_rate != null && inCatalog
+        ? ` · catalog ${Math.round(Number(factoryWeekly.pass_rate) * 100)}% weekly`
+        : "";
+    btn.innerHTML = `<strong>${demo.title}</strong><span class="muted">${demo.prompt}${catalogNote}</span>`;
     btn.addEventListener("click", () =>
       openChatIntent("factory", { prompt: demo.prompt, promptId: demo.promptId }),
     );

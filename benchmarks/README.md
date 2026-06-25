@@ -9,6 +9,7 @@ Reference metrics consumed by Admin **Metrics** (`GET /v1/platform/analytics/com
 | `latest_critic_reliability.json` | `scripts/benchmarks/publish_benchmark_snapshots.py` | Fleet critic rollup; `runs_scanned: 0` until regenerated from real runs |
 | `latest_intent_to_patch.json` | `scripts/benchmarks/measure_intent_to_patch.py --json …` | Stub-implement patch on `tiny_python_app`; median target ≤ 180s |
 | `latest_classifier_acceptance.json` | `scripts/benchmarks/measure_classifier_acceptance.py --json …` | Rules-first intent classifier scenarios (no LLM) |
+| `latest_archetype_metrics.json` | `scripts/benchmarks/measure_archetype_fit.py --json …` | Static rubric for Safe Coding + Engineer archetype artifacts |
 
 Regenerate locally:
 

@@ -8,9 +8,10 @@ import json
 import os
 import sys
 import time
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_MANIFEST = REPO_ROOT / "tests" / "fixtures" / "swe_bench" / "manifest.json"
@@ -118,6 +119,43 @@ def _apply_benchmark_env(manifest: dict[str, Any]) -> None:
             os.environ[name] = str(value)
 
 
+@contextmanager
+def _isolated_benchmark_env(
+    repo_root: Path,
+    manifest: dict[str, Any] | None = None,
+) -> Iterator[None]:
+    saved: dict[str, str | None] = {}
+    for key in (
+        "NIMBUSWARE_RUN_DISPATCH",
+        "NIMBUSWARE_REDIS_URL",
+        "NIMBUSWARE_VERIFY_DISPATCH_FANOUT",
+        "NIMBUSWARE_PARALLEL_WRITERS",
+        "NIMBUSWARE_SLICE_E2E_COMMAND",
+    ):
+        saved[key] = os.environ.pop(key, None)
+    defaults = {
+        "NIMBUSWARE_SKIP_PREFLIGHT": "1",
+        "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
+        "NIMBUSWARE_REPO_ROOT": str(repo_root),
+        "NIMBUSWARE_VERIFY_DISPATCH_FANOUT": "0",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "0",
+    }
+    for key, value in defaults.items():
+        saved[key] = os.environ.get(key)
+        os.environ[key] = value
+    if manifest:
+        _apply_benchmark_env(manifest)
+    try:
+        yield
+    finally:
+        for key, value in saved.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+
 def _fixture_slice_plan_factory(target_paths: list[str]):
     from nimbusware_orchestrator.micro_slice import parse_slice_plan
 
@@ -142,12 +180,6 @@ def _run_micro_slice_benchmark(
     manifest: dict[str, Any] | None = None,
 ) -> tuple[SweBenchSummary, Any]:
     checks: list[str] = ["benchmark_start"]
-    os.environ.setdefault("NIMBUSWARE_SKIP_PREFLIGHT", "1")
-    os.environ.setdefault("NIMBUSWARE_MICRO_SLICE_COUNT", "1")
-    os.environ.setdefault("NIMBUSWARE_REPO_ROOT", str(repo_root))
-    if manifest:
-        _apply_benchmark_env(manifest)
-
     from unittest.mock import patch
 
     from nimbusware_orchestrator.pipeline import make_dev_orchestrator
@@ -158,23 +190,28 @@ def _run_micro_slice_benchmark(
         if isinstance(raw_paths, list) and raw_paths:
             target_paths = [str(p) for p in raw_paths]
 
-    t0 = time.perf_counter()
-    orch, _store = make_dev_orchestrator(repo_root)
-    run_id = orch.create_run(workflow_profile)
-    checks.append("run_created")
-    plan_factory = _fixture_slice_plan_factory(target_paths)
-    with (
-        patch(
-            "nimbusware_orchestrator.micro_slice_plan.default_stub_slice_plan",
-            plan_factory,
-        ),
-        patch(
-            "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
-            plan_factory,
-        ),
-    ):
-        results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
-    duration_sec = time.perf_counter() - t0
+    with _isolated_benchmark_env(repo_root, manifest):
+        t0 = time.perf_counter()
+        orch, _store = make_dev_orchestrator(repo_root)
+        run_id = orch.create_run(workflow_profile)
+        checks.append("run_created")
+        plan_factory = _fixture_slice_plan_factory(target_paths)
+        with (
+            patch(
+                "nimbusware_orchestrator.micro_slice_plan.default_stub_slice_plan",
+                plan_factory,
+            ),
+            patch(
+                "nimbusware_orchestrator.micro_slice_executor.default_stub_slice_plan",
+                plan_factory,
+            ),
+            patch(
+                "nimbusware_orchestrator.verify_fanout.run_writer_verifier_resolved",
+                return_value=(0, "benchmark verify ok"),
+            ),
+        ):
+            results = orch.execute_micro_slice_pass(run_id, workspace=fixture.resolve())
+        duration_sec = time.perf_counter() - t0
     slices_total, gates_passed, gates_failed, pass_rate = _score_slice_gates(results)
     checks.append(f"slices_total={slices_total}")
     checks.append(f"gates_passed={gates_passed}")

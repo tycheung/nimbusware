@@ -35,42 +35,39 @@ def _writer_flags(doc: dict) -> dict[str, bool | None]:
 
 
 def _run_pipeline_smoke(repo_root: Path) -> dict[str, object]:
-    import subprocess
+    import importlib.util
+    import time
+    from dataclasses import asdict
 
-    env = {
-        **os.environ,
-        "NIMBUSWARE_SKIP_PREFLIGHT": "1",
-        "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
-        "NIMBUSWARE_REPO_ROOT": str(repo_root),
-        "NIMBUSWARE_SLICE_IMPLEMENT": "stub",
-    }
-    env.pop("NIMBUSWARE_SLICE_E2E_COMMAND", None)
+    harness_path = repo_root / "scripts" / "benchmarks" / "swe_bench_harness.py"
+    manifest = repo_root / "tests" / "fixtures" / "swe_bench" / "manifest.json"
+    spec = importlib.util.spec_from_file_location("swe_bench_harness", harness_path)
+    if spec is None or spec.loader is None:
+        return {"ok": False, "error": "swe_bench_harness.py missing"}
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    spec.loader.exec_module(mod)
+
     t0 = time.perf_counter()
-    proc = subprocess.run(
-        [sys.executable, str(repo_root / "scripts" / "benchmarks" / "swe_bench_harness.py"), "--run", "--json"],
-        cwd=repo_root,
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        summary = mod.run_harness(manifest_path=manifest, dry_run=False, repo_root=repo_root)
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "duration_sec": round(time.perf_counter() - t0, 3), "error": str(exc)[:500]}
+
     duration = round(time.perf_counter() - t0, 3)
-    if proc.returncode != 0:
+    body = asdict(summary)
+    if not body.get("ok"):
         return {
             "ok": False,
             "duration_sec": duration,
-            "stderr": (proc.stderr or proc.stdout or "")[:500],
+            "stderr": json.dumps(body)[:500],
         }
-    try:
-        summary = json.loads(proc.stdout)
-    except json.JSONDecodeError:
-        return {"ok": False, "duration_sec": duration, "parse_error": True}
     return {
-        "ok": bool(summary.get("ok")),
-        "pass_rate": summary.get("pass_rate"),
-        "run_id": summary.get("run_id"),
+        "ok": True,
+        "pass_rate": body.get("pass_rate"),
+        "run_id": body.get("run_id"),
         "duration_sec": duration,
-        "workflow_profile": summary.get("workflow_profile"),
+        "workflow_profile": body.get("workflow_profile"),
     }
 
 

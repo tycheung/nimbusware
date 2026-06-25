@@ -100,6 +100,23 @@ def _write_classifier_acceptance_snapshot() -> Path:
     return out
 
 
+def _write_archetype_metrics_snapshot() -> Path:
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "scripts" / "benchmarks" / "measure_archetype_fit.py"),
+            "--json",
+            str(_BENCH_DIR / "latest_archetype_metrics.json"),
+        ],
+        cwd=_ROOT,
+        check=False,
+    )
+    out = _BENCH_DIR / "latest_archetype_metrics.json"
+    if proc.returncode != 0 and not out.is_file():
+        raise RuntimeError("measure_archetype_fit failed")
+    return out
+
+
 def main() -> int:
     env = {
         **os.environ,
@@ -125,6 +142,9 @@ def main() -> int:
     classifier_out = _write_classifier_acceptance_snapshot()
     if classifier_out.is_file():
         print(f"Wrote {classifier_out.relative_to(_ROOT)}")
+    archetype_out = _write_archetype_metrics_snapshot()
+    if archetype_out.is_file():
+        print(f"Wrote {archetype_out.relative_to(_ROOT)}")
     return proc.returncode
 
 

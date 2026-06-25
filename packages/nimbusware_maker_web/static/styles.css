@@ -270,6 +270,23 @@ body:not(.mobile-mode) .mobile-only-panel {
   display: none;
 }
 
+body.mobile-mode #compact-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+body.mobile-mode #compact-toolbar input[type="number"] {
+  max-width: 3.5rem;
+}
+
+body.mobile-mode #theater-list {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
 .compaction-preview {
   margin: 0.75rem 0;
   padding: 0.75rem;

@@ -16,6 +16,16 @@ from nimbusware_orchestrator.workflow_universal_critique import (
 ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 
+@pytest.fixture(autouse=True)
+def _clear_universal_critique_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in (
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+
 def test_default_on_yaml_enables_panels_without_explicit_enabled() -> None:
     block = parse_universal_critique_workflow_block(ROOT, "universal_critique_on")
     assert block.default_enabled is True

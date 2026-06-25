@@ -221,6 +221,28 @@ def stream_collect_text(
     return "".join(chunks)
 
 
+def get_external_json(url: str, *, timeout: float = 15.0) -> dict[str, Any]:
+    with httpx.Client(timeout=timeout) as client:
+        response = client.get(url)
+        response.raise_for_status()
+        body = response.json()
+    return body if isinstance(body, dict) else {"data": body}
+
+
+def post_form_external(
+    url: str,
+    data: dict[str, str],
+    *,
+    timeout: float = 30.0,
+    headers: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    with httpx.Client(timeout=timeout) as client:
+        response = client.post(url, data=data, headers=headers)
+        response.raise_for_status()
+        body = response.json()
+    return body if isinstance(body, dict) else {"data": body}
+
+
 __all__ = [
     "ADMIN_TOKEN_HEADER",
     "HTTPError",
@@ -230,9 +252,11 @@ __all__ = [
     "api_base",
     "delete",
     "delete_response",
+    "get_external_json",
     "get_json",
     "get_response",
     "patch_response",
+    "post_form_external",
     "post_json",
     "post_response",
     "problem_message",

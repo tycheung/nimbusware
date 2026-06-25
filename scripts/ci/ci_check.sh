@@ -47,6 +47,7 @@ poetry run python scripts/ci/run_playwright_button_ci_gate.py
 poetry run python scripts/ci/run_publish_vscode_ci_gate.py
 poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
 poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
+poetry run python scripts/ci/run_archetype_fit_ci_gate.py
 poetry run python scripts/ci/run_llm_resolver_ci_gate.py
 poetry run python scripts/ci/run_first_publish_ci_gate.py
 

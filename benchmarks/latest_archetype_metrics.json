@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "ok": true,
+  "target_score": 0.85,
+  "measured_at": "2026-06-25T06:58:13.882790+00:00",
+  "mode": "static_rubric",
+  "archetypes": {
+    "safe_coding": {
+      "fit_score": 1.0,
+      "checks_passed": 5,
+      "checks_total": 5,
+      "missing": [],
+      "meets_target": true
+    },
+    "engineer": {
+      "fit_score": 1.0,
+      "checks_passed": 5,
+      "checks_total": 5,
+      "missing": [],
+      "meets_target": true
+    }
+  },
+  "repo_root": "D:\\Nimbusware"
+}

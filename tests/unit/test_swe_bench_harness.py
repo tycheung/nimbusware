@@ -13,22 +13,52 @@ MANIFEST = ROOT / "tests" / "fixtures" / "swe_bench" / "manifest.json"
 SCRIPT = ROOT / "scripts" / "benchmarks" / "swe_bench_harness.py"
 
 
-def test_swe_bench_dry_run_json_ok() -> None:
+def _minimal_benchmark_env(**extra: str) -> dict[str, str]:
+    env: dict[str, str] = {}
+    for key in (
+        "PATH",
+        "SYSTEMROOT",
+        "PATHEXT",
+        "WINDIR",
+        "HOME",
+        "USERPROFILE",
+        "TEMP",
+        "TMP",
+    ):
+        value = os.environ.get(key)
+        if value:
+            env[key] = value
+    env.update(
+        {
+            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
+            "NIMBUSWARE_REPO_ROOT": str(ROOT),
+            "NIMBUSWARE_VERIFY_DISPATCH_FANOUT": "0",
+            "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1",
+            "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE": "0",
+            **extra,
+        }
+    )
+    return env
+
+
+def _run_harness_json(*args: str, **env_extra: str) -> dict:
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--dry-run", "--json"],
+        [sys.executable, str(SCRIPT), *args],
         cwd=ROOT,
         capture_output=True,
         text=True,
-        timeout=60,
+        timeout=180,
         check=False,
-        env={
-            **os.environ,
-            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
-            "NIMBUSWARE_REPO_ROOT": str(ROOT),
-        },
+        env=_minimal_benchmark_env(**env_extra),
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout
-    summary = json.loads(proc.stdout)
+    body = json.loads(proc.stdout)
+    assert isinstance(body, dict)
+    return body
+
+
+def test_swe_bench_dry_run_json_ok() -> None:
+    summary = _run_harness_json("--dry-run", "--json")
     assert summary["ok"] is True
     assert summary["workflow_profile"] == "micro_slice"
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -36,22 +66,7 @@ def test_swe_bench_dry_run_json_ok() -> None:
 
 
 def test_swe_bench_run_json_scores() -> None:
-    proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--run", "--json"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        timeout=180,
-        check=False,
-        env={
-            **os.environ,
-            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
-            "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
-        },
-    )
-    assert proc.returncode == 0, proc.stderr or proc.stdout
-    summary = json.loads(proc.stdout)
+    summary = _run_harness_json("--run", "--json", NIMBUSWARE_MICRO_SLICE_COUNT="1")
     assert summary["mode"] == "run"
     assert summary["slices_total"] >= 1
     assert "pass_rate" in summary
@@ -91,12 +106,7 @@ def test_swe_bench_min_pass_rate_failure(tmp_path: Path) -> None:
         text=True,
         timeout=180,
         check=False,
-        env={
-            **os.environ,
-            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
-            "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
-        },
+        env=_minimal_benchmark_env(NIMBUSWARE_MICRO_SLICE_COUNT="1"),
     )
     assert proc.returncode != 0, proc.stdout
     summary = json.loads(proc.stdout)
@@ -105,25 +115,13 @@ def test_swe_bench_min_pass_rate_failure(tmp_path: Path) -> None:
 
 
 def test_swe_bench_writes_json_snapshot() -> None:
-    proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--run", "--json"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        timeout=180,
-        check=False,
-        env={
-            **os.environ,
-            "NIMBUSWARE_SKIP_PREFLIGHT": "1",
-            "NIMBUSWARE_REPO_ROOT": str(ROOT),
-            "NIMBUSWARE_MICRO_SLICE_COUNT": "1",
-            "NIMBUSWARE_SWE_BENCH_WRITE_JSON": "1",
-            "NIMBUSWARE_SWE_BENCH_MANIFEST": str(MANIFEST),
-        },
+    summary = _run_harness_json(
+        "--run",
+        "--json",
+        NIMBUSWARE_MICRO_SLICE_COUNT="1",
+        NIMBUSWARE_SWE_BENCH_WRITE_JSON="1",
+        NIMBUSWARE_SWE_BENCH_MANIFEST=str(MANIFEST),
     )
-    assert proc.returncode == 0, proc.stderr or proc.stdout
-    # Harness writes under repo benchmarks/; verify flag recorded in summary.
-    summary = json.loads(proc.stdout)
     assert any(str(c).startswith("wrote=") for c in summary.get("checks", []))
     swe_path = ROOT / "benchmarks" / "latest_swe_bench.json"
     assert swe_path.is_file()

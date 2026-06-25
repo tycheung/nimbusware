@@ -23,7 +23,7 @@ def _dispatch_writers(orch, rid, profile: str, *, workspace: Path | None = None)
     {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
     clear=False,
 )
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_parallel_on_emits_both_writer_starts(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("parallel_writers_on")
@@ -38,7 +38,7 @@ def test_parallel_on_emits_both_writer_starts(_mock: object) -> None:
     assert len(writer_starts) >= 2
 
 
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_parallel_off_matches_sequential_metadata(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("default")
@@ -82,7 +82,7 @@ def test_parallel_writers_overlap_timing() -> None:
         return 0, "ok"
 
     with patch(
-        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle",
         side_effect=fast_impl,
     ):
         orch, mem = make_dev_orchestrator()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from nimbusware_console.services.oauth_connector import (
     accept_oauth_callback,
@@ -45,16 +45,6 @@ def test_accept_oauth_callback_validates_state() -> None:
 
 def test_exchange_authorization_code_posts_to_token_endpoint() -> None:
     cfg = _cfg()
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.return_value = None
-    mock_resp.json.return_value = {
-        "access_token": "at",
-        "refresh_token": "rt",
-        "token_type": "Bearer",
-    }
-    mock_client = MagicMock()
-    mock_client.__enter__.return_value = mock_client
-    mock_client.post.return_value = mock_resp
     with patch(
         "nimbusware_console.services.oauth_connector.issuer_endpoints",
         return_value={
@@ -63,12 +53,17 @@ def test_exchange_authorization_code_posts_to_token_endpoint() -> None:
         },
     ):
         with patch(
-            "nimbusware_console.services.oauth_connector.httpx.Client", return_value=mock_client
-        ):
+            "nimbusware_console.services.oauth_connector.post_form_external",
+            return_value={
+                "access_token": "at",
+                "refresh_token": "rt",
+                "token_type": "Bearer",
+            },
+        ) as mock_post:
             tokens = exchange_authorization_code(cfg, code="code-1", code_verifier="verifier-1")
     assert tokens["refresh_token"] == "rt"
-    mock_client.post.assert_called_once()
-    call_kwargs = mock_client.post.call_args
-    assert call_kwargs[0][0] == "https://tenant.auth0.com/oauth/token"
-    assert call_kwargs[1]["data"]["code"] == "code-1"
-    assert call_kwargs[1]["data"]["code_verifier"] == "verifier-1"
+    mock_post.assert_called_once()
+    call_args = mock_post.call_args
+    assert call_args[0][0] == "https://tenant.auth0.com/oauth/token"
+    assert call_args[0][1]["code"] == "code-1"
+    assert call_args[0][1]["code_verifier"] == "verifier-1"

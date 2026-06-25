@@ -60,6 +60,7 @@ test("progress variant ribbon lists candidate fitness rows", async ({ page }) =>
   await expect(page.getByTestId("maker-variant-body")).toContainText("2 candidate(s)");
   await expect(page.getByTestId("maker-variant-body")).toContainText("crossover_baseline+refactor");
   await expect(page.getByTestId("maker-variant-body")).toContainText("crossover merged");
+  await expect(page.getByTestId("maker-variant-body")).toContainText("crossover: a.py, b.py");
   const rows = page.getByTestId("maker-variant-candidate");
   await expect(rows).toHaveCount(2);
   await expect(rows.first()).toContainText("baseline: fitness 0.72");

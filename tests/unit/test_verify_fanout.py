@@ -65,12 +65,42 @@ def test_verify_fanout_worker_merge(tmp_path: Path) -> None:
 
 def test_verify_fanout_sync_fallback_without_dispatch(tmp_path: Path) -> None:
     with patch(
-        "nimbusware_orchestrator.pipeline.run_writer_verifier_bundle",
+        "nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle",
         return_value=(0, "sync bundle"),
     ):
         code, log = run_writer_verifier_resolved(tmp_path, run_id=str(uuid4()))
     assert code == 0
     assert log == "sync bundle"
+
+
+@patch.dict(
+    os.environ,
+    {"NIMBUSWARE_VERIFY_DISPATCH_FANOUT": "1", "NIMBUSWARE_RUN_DISPATCH": "memory"},
+    clear=False,
+)
+def test_verify_fanout_timeout_merges_partial_shards(tmp_path: Path) -> None:
+    fanout_id = str(uuid4())
+    run_id = str(uuid4())
+    record_verify_shard_result(fanout_id, "pytest", 0, "pytest ok")
+    record_verify_shard_result(fanout_id, "ruff", 0, "ruff ok")
+    with (
+        patch(
+            "nimbusware_orchestrator.verify_fanout.dispatch_verify_shards",
+            return_value=fanout_id,
+        ),
+        patch(
+            "nimbusware_orchestrator.verify_fanout.wait_verify_fanout",
+            return_value=False,
+        ),
+    ):
+        code, log = run_writer_verifier_resolved(
+            tmp_path,
+            run_id=run_id,
+            timeout_seconds=0.01,
+        )
+    assert code == 1
+    assert "incomplete (2/3 shards)" in log
+    assert "pytest ok" in log
 
 
 def test_record_and_merge_verify_fanout() -> None:

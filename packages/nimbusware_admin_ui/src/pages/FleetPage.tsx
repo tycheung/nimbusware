@@ -40,6 +40,7 @@ export function FleetPage() {
   const [dashboard, setDashboard] = useState<FleetDashboard | null>(null);
   const [tenants, setTenants] = useState<{ id: string; slug: string; label: string }[]>([]);
   const [tenantId, setTenantId] = useState(selectedEnterpriseTenantSlug);
+  const [tenantSearch, setTenantSearch] = useState("");
   const [tenantA, setTenantA] = useState("");
   const [tenantB, setTenantB] = useState("");
   const [compareRows, setCompareRows] = useState<
@@ -217,6 +218,16 @@ export function FleetPage() {
     setEnterpriseTenantSlug(slug);
   };
 
+  const filteredTenants = tenants.filter((t) => {
+    const q = tenantSearch.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      t.label.toLowerCase().includes(q) ||
+      t.slug.toLowerCase().includes(q) ||
+      t.id.toLowerCase().includes(q)
+    );
+  });
+
   const loadCompare = useCallback(() => {
     if (!enterpriseApiKey() || !tenantA || !tenantB) {
       return;
@@ -287,20 +298,57 @@ export function FleetPage() {
         <a href="/v1/admin/app/preflight">Preflight history</a> is on the Preflight tab.
       </p>
       {tenants.length > 0 ? (
-        <label class="fleet-tenant">
-          Tenant{" "}
-          <select
-            value={tenantId}
-            onChange={(e) => onTenantChange((e.target as HTMLSelectElement).value)}
-          >
-            <option value="">(primary API key)</option>
-            {tenants.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <>
+          <label class="fleet-tenant">
+            Tenant{" "}
+            <input
+              type="search"
+              placeholder="Filter org directory…"
+              value={tenantSearch}
+              onInput={(e) => setTenantSearch((e.target as HTMLInputElement).value)}
+              data-testid="admin-fleet-tenant-search"
+            />
+            <select
+              value={tenantId}
+              onChange={(e) => onTenantChange((e.target as HTMLSelectElement).value)}
+              data-testid="admin-fleet-tenant-select"
+            >
+              <option value="">(primary API key)</option>
+              {filteredTenants.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <details class="org-directory panel" data-testid="admin-org-directory">
+            <summary>Org directory ({filteredTenants.length})</summary>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Tenant id</th>
+                  <th>Label</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTenants.map((t) => (
+                  <tr key={t.id}>
+                    <td>{t.slug}</td>
+                    <td>{t.id}</td>
+                    <td>{t.label}</td>
+                    <td>
+                      <button type="button" class="linkish" onClick={() => onTenantChange(t.id)}>
+                        Select
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        </>
       ) : null}
       <button type="button" class="secondary" onClick={loadDashboard}>
         Refresh

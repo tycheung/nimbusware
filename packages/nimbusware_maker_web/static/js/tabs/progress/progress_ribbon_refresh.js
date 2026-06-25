@@ -85,6 +85,8 @@ export async function refreshVariantRibbon(runId) {
       if (winner?.label) bits.push(`winner: ${winner.label} (${winner.fitness ?? "?"})`);
       if (arena.promoted_to_workspace) bits.push("promoted");
       if (arena.crossover_merged) bits.push("crossover merged");
+      const crossoverPaths = Array.isArray(arena.crossover_paths) ? arena.crossover_paths : [];
+      if (crossoverPaths.length) bits.push(`crossover: ${crossoverPaths.join(", ")}`);
       let explore = progress?.repo_explore;
       if (!explore) {
         for (const row of timeline.events || []) {

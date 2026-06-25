@@ -1,82 +1,88 @@
-"""Measure consumer archetype fit metrics from recent run timelines."""
+"""Measure consumer archetype fit via static rubric (CI-stable)."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+_REPO = Path(__file__).resolve().parents[2]
+if str(_REPO / "packages") not in sys.path:
+    sys.path.insert(0, str(_REPO / "packages"))
+
 from nimbusware_env import find_repo_root
 
+_TARGET_SCORE = 0.85
 
-def _archetype_from_metadata(meta: dict) -> str:
-    raw = str(meta.get("consumer_archetype") or "").strip()
-    if raw:
-        return raw
-    wf = str(meta.get("workflow_profile") or meta.get("work_type") or "").strip()
-    if wf == "safe_coding":
-        return "safe_coding"
-    return "engineer"
+_SAFE_CODING_CHECKS: tuple[str, ...] = (
+    "configs/workflows/safe_coding.yaml",
+    "docs/product/safe-coding.md",
+    "packages/nimbusware_maker_web/static/js/archetype-picker.js",
+    "packages/nimbusware_maker_web/static/js/safe-coding-ux.js",
+    "configs/install/bundles/default.env.yaml",
+)
+
+_ENGINEER_CHECKS: tuple[str, ...] = (
+    "packages/nimbusware_orchestrator/participant_output_packet.py",
+    "packages/nimbusware_orchestrator/collab_output_redaction.py",
+    "configs/autopilot/user_profiles.yaml",
+    "packages/nimbusware_api/routes/provider_subscription_oauth.py",
+    "configs/install/bundles/enterprise.env.yaml",
+)
 
 
-def measure_archetype_fit(
-    *,
-    repo_root: Path | None = None,
-    run_limit: int = 200,
-) -> dict:
-    root = repo_root or find_repo_root()
-    from nimbusware_store.memory import InMemoryEventStore
-
-    store = InMemoryEventStore()
-    counts: dict[str, int] = {"safe_coding": 0, "engineer": 0, "other": 0}
-    rows = store.list_all_event_rows() if hasattr(store, "list_all_event_rows") else []
-    seen: set[str] = set()
-    for row in reversed(rows[-run_limit:]):
-        if row.get("event_type") != "run.created":
-            continue
-        run_id = str(row.get("run_id") or "")
-        if not run_id or run_id in seen:
-            continue
-        seen.add(run_id)
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
-        arch = _archetype_from_metadata(meta)
-        if arch in counts:
-            counts[arch] += 1
+def _rubric_score(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
+    passed = 0
+    missing: list[str] = []
+    for rel in rel_paths:
+        if (root / rel).is_file():
+            passed += 1
         else:
-            counts["other"] += 1
-    total = sum(counts.values()) or 1
+            missing.append(rel)
+    total = len(rel_paths) or 1
+    fit = round(passed / total, 3)
+    return {
+        "fit_score": fit,
+        "checks_passed": passed,
+        "checks_total": total,
+        "missing": missing,
+        "meets_target": fit >= _TARGET_SCORE,
+    }
+
+
+def measure_archetype_fit(*, repo_root: Path | None = None) -> dict[str, object]:
+    root = repo_root or find_repo_root()
+    safe = _rubric_score(root, _SAFE_CODING_CHECKS)
+    engineer = _rubric_score(root, _ENGINEER_CHECKS)
+    ok = bool(safe.get("meets_target")) and bool(engineer.get("meets_target"))
     return {
         "version": 1,
+        "ok": ok,
+        "target_score": _TARGET_SCORE,
         "measured_at": datetime.now(timezone.utc).isoformat(),
+        "mode": "static_rubric",
         "archetypes": {
-            "safe_coding": {
-                "fit_score": round(counts["safe_coding"] / total, 3),
-                "run_count": counts["safe_coding"],
-            },
-            "engineer": {
-                "fit_score": round(counts["engineer"] / total, 3),
-                "run_count": counts["engineer"],
-            },
+            "safe_coding": safe,
+            "engineer": engineer,
         },
-        "other_run_count": counts["other"],
         "repo_root": str(root),
     }
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Measure archetype fit metrics")
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=Path("scripts/benchmarks/latest_archetype_metrics.json"),
-    )
-    args = parser.parse_args()
+    parser.add_argument("--json", dest="json_path", default="")
+    args = parser.parse_args(argv)
     metrics = measure_archetype_fit()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    if args.json_path:
+        out = Path(args.json_path)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(metrics, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(metrics, indent=2))
+    return 0 if metrics.get("ok") else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

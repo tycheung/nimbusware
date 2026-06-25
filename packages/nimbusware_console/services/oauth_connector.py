@@ -7,8 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlencode
 
-import httpx
-
+from nimbusware_client.http import HTTPError, get_external_json, post_form_external
 from nimbusware_env.subscription_oauth_config import SubscriptionOAuthConfig
 
 
@@ -32,10 +31,7 @@ def discover_oidc_endpoints(issuer: str) -> dict[str, str]:
     if cached is not None:
         return cached
     url = f"{base}/.well-known/openid-configuration"
-    with httpx.Client(timeout=10.0) as client:
-        resp = client.get(url)
-        resp.raise_for_status()
-        doc = resp.json()
+    doc = get_external_json(url, timeout=10.0)
     endpoints = {
         "authorization_endpoint": str(doc["authorization_endpoint"]),
         "token_endpoint": str(doc["token_endpoint"]),
@@ -48,7 +44,7 @@ def issuer_endpoints(issuer: str) -> dict[str, str]:
     base = issuer.rstrip("/")
     try:
         return discover_oidc_endpoints(base)
-    except (httpx.HTTPError, KeyError, TypeError, ValueError):
+    except (HTTPError, KeyError, TypeError, ValueError):
         return {
             "authorization_endpoint": f"{base}/authorize",
             "token_endpoint": f"{base}/oauth/token",
@@ -104,14 +100,12 @@ def exchange_authorization_code(
     }
     if config.client_secret:
         data["client_secret"] = config.client_secret
-    with httpx.Client(timeout=30.0) as client:
-        resp = client.post(
-            endpoints["token_endpoint"],
-            data=data,
-            headers={"Accept": "application/json"},
-        )
-        resp.raise_for_status()
-        body = resp.json()
+    body = post_form_external(
+        endpoints["token_endpoint"],
+        data,
+        timeout=30.0,
+        headers={"Accept": "application/json"},
+    )
     if not isinstance(body, dict):
         msg = "token endpoint returned non-object JSON"
         raise ValueError(msg)

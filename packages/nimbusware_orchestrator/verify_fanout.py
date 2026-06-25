@@ -18,6 +18,7 @@ from nimbusware_orchestrator.verifiers import (
 
 _FANOUT_LOCK = threading.Lock()
 _FANOUT_RESULTS: dict[str, dict[str, tuple[int, str]]] = {}
+_REDIS_FANOUT_TTL_SECONDS = 3600
 
 
 def verify_dispatch_fanout_enabled() -> bool:
@@ -49,11 +50,13 @@ def _fanout_key(fanout_id: str) -> str:
 def record_verify_shard_result(fanout_id: str, shard: str, code: int, log: str) -> None:
     client = _redis_client()
     if client is not None:
+        key = _fanout_key(fanout_id)
         client.hset(
-            _fanout_key(fanout_id),
+            key,
             shard,
             json.dumps({"code": code, "log": log}, separators=(",", ":")),
         )
+        client.expire(key, _REDIS_FANOUT_TTL_SECONDS)
         return
     with _FANOUT_LOCK:
         bucket = _FANOUT_RESULTS.setdefault(fanout_id, {})
@@ -137,6 +140,12 @@ def run_writer_verifier_resolved(
     if fanout_id is None:
         return run_writer_verifier_bundle(workspace)
     if not wait_verify_fanout(fanout_id, timeout_seconds=timeout_seconds):
+        partial = _fanout_shard_results(fanout_id)
+        if partial:
+            code, log = merge_verify_fanout(fanout_id)
+            n = len(partial)
+            total = len(VERIFIER_SHARD_NAMES)
+            return code, f"verify fan-out incomplete ({n}/{total} shards): {log}"
         _clear_fanout(fanout_id)
         return 1, "verify fan-out timed out waiting for worker shards"
     return merge_verify_fanout(fanout_id)

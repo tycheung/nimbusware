@@ -11,7 +11,7 @@ from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 
 
 @patch.dict(os.environ, {"NIMBUSWARE_PARALLEL_WRITERS": "1"}, clear=False)
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_writer_stage_started_carries_parallel_group(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("parallel_writers_on")
@@ -37,7 +37,7 @@ def test_writer_stage_started_carries_parallel_group(_mock: object) -> None:
     {"NIMBUSWARE_PARALLEL_WRITERS": "1", "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS": "1"},
     clear=False,
 )
-@patch("nimbusware_orchestrator.pipeline.run_writer_verifier_bundle", return_value=(0, "ok"))
+@patch("nimbusware_orchestrator.verify_fanout.run_writer_verifier_bundle", return_value=(0, "ok"))
 def test_stage_graph_order_indices_monotonic_for_writer_starts(_mock: object) -> None:
     orch, mem = make_dev_orchestrator()
     rid = orch.create_run("parallel_writers_on")

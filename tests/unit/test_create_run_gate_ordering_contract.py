@@ -13,13 +13,15 @@ _REPO_ROOT = find_repo_root(start=Path(__file__).resolve().parents[1])
 
 _GATE_NAMES: list[str] = [
     "assert_known_workflow",
+    "assert_stage_graph_valid",
     "assert_bundle_catalog_maps_resolve",
     "assert_persona_shelves_valid",
     "assert_agent_evaluator_persona_in_shelves",
     "assert_taxonomy_keys_resolve",
+    "assert_critique_coverage_complete",
 ]
 
-_GATE_MODULE = "nimbusware_orchestrator.pipeline"
+_GATE_MODULE = "nimbusware_orchestrator._pipeline.create_run_preflight"
 
 
 # Sentinel exception classes/messages, one per gate, so each test
@@ -28,10 +30,12 @@ _GATE_MODULE = "nimbusware_orchestrator.pipeline"
 # KeyError for the taxonomy lookup gate, ValueError otherwise).
 _GATE_EXCEPTIONS: list[tuple[str, type[Exception], str]] = [
     ("assert_known_workflow", ValueError, "fo83-gate1-sentinel"),
-    ("assert_bundle_catalog_maps_resolve", FileNotFoundError, "fo83-gate2-sentinel"),
-    ("assert_persona_shelves_valid", ValueError, "fo83-gate3-sentinel"),
-    ("assert_agent_evaluator_persona_in_shelves", ValueError, "fo83-gate4-sentinel"),
-    ("assert_taxonomy_keys_resolve", KeyError, "fo83-gate5-sentinel"),
+    ("assert_stage_graph_valid", ValueError, "fo83-gate2-sentinel"),
+    ("assert_bundle_catalog_maps_resolve", FileNotFoundError, "fo83-gate3-sentinel"),
+    ("assert_persona_shelves_valid", ValueError, "fo83-gate4-sentinel"),
+    ("assert_agent_evaluator_persona_in_shelves", ValueError, "fo83-gate5-sentinel"),
+    ("assert_taxonomy_keys_resolve", KeyError, "fo83-gate6-sentinel"),
+    ("assert_critique_coverage_complete", ValueError, "fo83-gate7-sentinel"),
 ]
 
 

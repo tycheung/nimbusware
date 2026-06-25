@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,26 @@ SCRIPT = ROOT / "scripts" / "ops" / "run_live_writers_soak.py"
 OUT = ROOT / "benchmarks" / "latest_live_writers_soak.json"
 
 
+def _minimal_soak_env() -> dict[str, str]:
+    env: dict[str, str] = {}
+    for key in (
+        "PATH",
+        "SYSTEMROOT",
+        "PATHEXT",
+        "WINDIR",
+        "HOME",
+        "USERPROFILE",
+        "TEMP",
+        "TMP",
+    ):
+        value = os.environ.get(key)
+        if value:
+            env[key] = value
+    env["NIMBUSWARE_SKIP_PREFLIGHT"] = "1"
+    env["NIMBUSWARE_REPO_ROOT"] = str(ROOT)
+    return env
+
+
 def test_run_live_writers_soak_writes_benchmark() -> None:
     proc = subprocess.run(
         [sys.executable, str(SCRIPT)],
@@ -20,6 +41,7 @@ def test_run_live_writers_soak_writes_benchmark() -> None:
         text=True,
         timeout=180,
         check=False,
+        env=_minimal_soak_env(),
     )
     assert proc.returncode == 0, proc.stderr or proc.stdout
     assert OUT.is_file()

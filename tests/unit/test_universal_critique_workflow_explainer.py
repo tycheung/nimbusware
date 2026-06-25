@@ -38,6 +38,16 @@ from nimbusware_console.universal_critique_workflow_explainer import (
 from nimbusware_env import find_repo_root
 
 
+@pytest.fixture(autouse=True)
+def _clear_universal_critique_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in (
+        "NIMBUSWARE_ENABLE_TEST_WRITER_CRITIQUE",
+        "NIMBUSWARE_ENABLE_PLANNER_CRITIQUE",
+        "NIMBUSWARE_STUB_IMPLEMENTATION_CRITICS",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+
 @pytest.fixture()
 def repo_uc_stub(tmp_path: Path) -> Path:
     (tmp_path / "configs" / "workflows").mkdir(parents=True)

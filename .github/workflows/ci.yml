@@ -85,6 +85,8 @@ jobs:
         run: poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
       - name: Classifier acceptance SLO gate
         run: poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
+      - name: Archetype fit CI gate
+        run: poetry run python scripts/ci/run_archetype_fit_ci_gate.py
 
   web:
     runs-on: ubuntu-latest

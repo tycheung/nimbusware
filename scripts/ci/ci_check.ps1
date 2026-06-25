@@ -67,6 +67,8 @@ poetry run python scripts/ci/run_intent_to_patch_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_classifier_acceptance_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+poetry run python scripts/ci/run_archetype_fit_ci_gate.py
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_llm_resolver_ci_gate.py
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 poetry run python scripts/ci/run_first_publish_ci_gate.py
