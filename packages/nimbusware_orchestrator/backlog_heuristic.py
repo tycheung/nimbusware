@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from agent_core.models.backlog import (
     BacklogEpic,
@@ -20,7 +20,7 @@ from nimbusware_orchestrator.backlog_heuristic_templates import (
     match_template_id,
 )
 
-_BACKLOG_GENERATOR_MODE = "heuristic"
+_BACKLOG_GENERATOR_MODE: Literal["heuristic"] = "heuristic"
 
 
 def _normalize_prompt(requirements: dict[str, Any] | None) -> str:
@@ -87,14 +87,14 @@ def _discover_workspace_paths(repo_root: Path | None) -> list[str]:
         if (ws / rel).is_file():
             paths.append(rel)
     for pattern in ("src/**/*.py", "src/**/*.tsx", "app/**/*.py", "packages/**/*.py"):
-        for p in sorted(ws.glob(pattern))[:12]:
-            if any(part.startswith(".") for part in p.parts):
+        for glob_path in sorted(ws.glob(pattern))[:12]:
+            if any(part.startswith(".") for part in glob_path.parts):
                 continue
-            paths.append(str(p.relative_to(ws)).replace("\\", "/"))
+            paths.append(str(glob_path.relative_to(ws)).replace("\\", "/"))
     seen: set[str] = set()
     out: list[str] = []
-    for p in paths:
-        key = p.replace("\\", "/")
+    for rel_path in paths:
+        key = rel_path.replace("\\", "/")
         if key not in seen:
             seen.add(key)
             out.append(key)

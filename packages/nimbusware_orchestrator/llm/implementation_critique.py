@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from typing import cast
 from uuid import UUID
 
+from agent_core.critique_stages import IMPLEMENTATION_CRITIQUE_STAGE
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.llm.common import (
-    IMPLEMENTATION_CRITIQUE_STAGE,
     emit_stub_role_critique_panel,
     execute_post_verify_role_critique_llm,
 )
@@ -64,6 +65,6 @@ def execute_implementation_critique_llm(
         stage_name=IMPLEMENTATION_CRITIQUE_STAGE,
         evidence_tag="implementation",
         user_suffix=suffix,
-        stage_started_metadata=meta,
+        stage_started_metadata=cast(dict[str, object], meta) if meta is not None else None,
         timeout_seconds=timeout_seconds,
     )

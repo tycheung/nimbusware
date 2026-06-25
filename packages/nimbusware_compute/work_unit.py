@@ -222,13 +222,13 @@ def get_work_unit_queue() -> WorkUnitQueuePort:
     if mode == "postgres":
         from nimbusware_env.env_flags import nimbusware_database_url
 
-        url = nimbusware_database_url()
-        if not url:
+        postgres_url = nimbusware_database_url()
+        if not postgres_url:
             msg = "NIMBUSWARE_DATABASE_URL required when NIMBUSWARE_COMPUTE_WORK_QUEUE=postgres"
             raise ValueError(msg)
         from nimbusware_compute.work_unit_postgres import PostgresWorkUnitQueue
 
-        return PostgresWorkUnitQueue(url)
+        return PostgresWorkUnitQueue(postgres_url)
     with _work_unit_queue_lock:
         if _work_unit_queue is None:
             _work_unit_queue = InMemoryWorkUnitQueue()

@@ -176,7 +176,7 @@ def run_research_transplant_track(
     brief = ResearchBrief(
         brief_kind="code",
         domain_tag="transplant",
-        summary=brief_summary,
+        summary=brief_summary or "",
         artifact_id=str(uuid4()),
         sources=(
             ResearchBriefSource(

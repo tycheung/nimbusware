@@ -48,7 +48,9 @@ def _parse_sse_chunks(text: str) -> list[dict]:
     for block in re.split(r"\n\n+", text.strip()):
         if not block.strip():
             continue
-        data_line = next((ln[5:].strip() for ln in block.splitlines() if ln.startswith("data:")), "")
+        data_line = next(
+            (ln[5:].strip() for ln in block.splitlines() if ln.startswith("data:")), ""
+        )
         if data_line:
             events.append(json.loads(data_line))
     return events

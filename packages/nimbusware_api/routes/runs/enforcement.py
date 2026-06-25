@@ -10,6 +10,7 @@ from nimbusware_api.errors import problem
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_iam.context import get_auth_context
 from nimbusware_orchestrator.enforcement_profiles import (
+    EnforcementProfile,
     enforcement_profile_from_rows,
     persist_run_enforcement,
     resolve_enforcement_profile,
@@ -41,7 +42,7 @@ class RunEnforcementResponse(BaseModel):
     custom: bool = False
 
 
-def _response_from_profile(run_id: str, profile) -> RunEnforcementResponse:
+def _response_from_profile(run_id: str, profile: EnforcementProfile) -> RunEnforcementResponse:
     d = profile.to_dict()
     return RunEnforcementResponse(run_id=run_id, **d)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.llm.common import TEST_WRITER_CRITIQUE_STAGE
+from agent_core.critique_stages import TEST_WRITER_CRITIQUE_STAGE
 from nimbusware_orchestrator.llm.post_verify_role_critique import bind_post_verify_role_critique
 
 emit_stub_test_writer_critique_panel, execute_test_writer_critique_llm = (

@@ -293,6 +293,9 @@ class PostgresComputeNodeStore:
                     )
                 rec = cur.fetchone()
             conn.commit()
+        if rec is None:
+            msg = f"compute node registration failed for {node_id}"
+            raise RuntimeError(msg)
         return _row_from_record(rec)
 
     def heartbeat(

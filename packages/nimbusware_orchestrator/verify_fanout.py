@@ -12,6 +12,7 @@ from nimbusware_orchestrator.run_dispatch import RunDispatchTask, get_run_queue
 from nimbusware_orchestrator.verifiers import (
     VERIFIER_SHARD_NAMES,
     merge_verifier_shard_logs,
+    run_writer_verifier_bundle,
     run_writer_verifier_shard,
 )
 
@@ -130,13 +131,11 @@ def run_writer_verifier_resolved(
     run_id: str | None = None,
     timeout_seconds: float = 300.0,
 ) -> tuple[int, str]:
-    import nimbusware_orchestrator.pipeline as pipeline
-
     if run_id is None:
-        return pipeline.run_writer_verifier_bundle(workspace)
+        return run_writer_verifier_bundle(workspace)
     fanout_id = dispatch_verify_shards(run_id, workspace)
     if fanout_id is None:
-        return pipeline.run_writer_verifier_bundle(workspace)
+        return run_writer_verifier_bundle(workspace)
     if not wait_verify_fanout(fanout_id, timeout_seconds=timeout_seconds):
         _clear_fanout(fanout_id)
         return 1, "verify fan-out timed out waiting for worker shards"

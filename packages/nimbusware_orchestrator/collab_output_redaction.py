@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 _KEY_LIKE = re.compile(
     r"(?i)(api[_-]?key|secret|token|password|authorization|bearer\s+[a-z0-9._-]+)",
@@ -16,7 +17,7 @@ def redact_collab_output(text: str) -> str:
     return out
 
 
-def redact_participant_packet(payload: dict) -> dict:
+def redact_participant_packet(payload: dict[str, Any]) -> dict[str, Any]:
     from nimbusware_orchestrator.participant_output_packet import ParticipantOutputPacket
 
     pkt = ParticipantOutputPacket.model_validate(payload)

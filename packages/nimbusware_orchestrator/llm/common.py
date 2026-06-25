@@ -367,7 +367,7 @@ def execute_post_verify_role_critique_llm(
     ):
         return False
 
-    stage_event_kwargs: dict[str, object] = {
+    stage_event_kwargs: dict[str, Any] = {
         "event_type": EventType.STAGE_STARTED,
         "event_id": uuid4(),
         "run_id": run_id,

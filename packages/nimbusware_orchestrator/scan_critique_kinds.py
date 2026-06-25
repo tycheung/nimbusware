@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Literal, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -33,7 +33,7 @@ class ScanCritiqueKind:
     default_producer: str = "backend_writer"
     min_pairing_count: int = 0
     require_specialist_in_pairing: bool = True
-    verdict_mode: str = "default"
+    verdict_mode: Literal["mirror", "uniform", "default"] = "default"
 
 
 def timeline_summary(stage_name: str) -> Callable[[list[dict[str, Any]]], dict[str, Any] | None]:
@@ -114,11 +114,11 @@ def execute_llm(
     block: Any,
     response_model: type[TResponse],
     system_prompt: str,
-    build_user_content: Callable[[dict[str, Any], bool, list[str]], str],
+    build_user_content: Callable[[Mapping[str, Any], bool, list[str]], str],
     scan_failed_fn: Callable[[dict[str, Any]], tuple[bool, list[str]]],
     build_fixes_fn: Callable[[list[str], TResponse], list[Any]],
     llm_failed_fn: Callable[[TResponse, bool, list[str]], bool],
-    build_stage_metadata: Callable[[dict[str, Any], TResponse], dict[str, Any]] | None = None,
+    build_stage_metadata: Callable[[Mapping[str, Any], TResponse], dict[str, Any]] | None = None,
     evidence_ref_fn: Callable[[str], str] | None = None,
     timeout_seconds: float = 120.0,
     unanimous_gate_enforce: bool = False,
@@ -146,7 +146,7 @@ def execute_llm(
         evidence_ref_fn=evidence_ref_fn,
         min_pairing_count=kind.min_pairing_count,
         require_specialist_in_pairing=kind.require_specialist_in_pairing,
-        verdict_mode=kind.verdict_mode,
+        verdict_mode=("mirror" if kind.verdict_mode == "default" else kind.verdict_mode),
         timeout_seconds=timeout_seconds,
         unanimous_gate_enforce=unanimous_gate_enforce,
     )

@@ -252,7 +252,7 @@ def emit_refactor_stage_and_critique(
                     },
                 ),
             ]
-        payload = CriticVerdictEmittedPayload(
+        verdict_payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
             verdict=verdict,
             severity=Severity.LOW if verdict == Verdict.PASS else Severity.MEDIUM,
@@ -261,7 +261,7 @@ def emit_refactor_stage_and_critique(
             evidence_refs=[f"refactor://{tax_key}"],
             required_fixes=fixes,
         )
-        critic_payloads.append(payload)
+        critic_payloads.append(verdict_payload)
         store.append(
             CriticVerdictEmittedEvent(
                 event_type=EventType.CRITIC_VERDICT_EMITTED,
@@ -269,7 +269,7 @@ def emit_refactor_stage_and_critique(
                 run_id=run_id,
                 occurred_at=datetime.now(timezone.utc),
                 actor_role=critic_role,
-                payload=payload,
+                payload=verdict_payload,
             ),
         )
 
@@ -352,7 +352,7 @@ def emit_refactor_post_stitch_stage_and_critique(
         fail = force_fail and tax_key in (_REFACTOR_CRITIC, _CODE_QUALITY_CRITIC)
         verdict = Verdict.FAIL if fail else Verdict.PASS
         fixes = [_REFACTOR_FAIL_FIX] if verdict == Verdict.FAIL else []
-        payload = CriticVerdictEmittedPayload(
+        verdict_payload = CriticVerdictEmittedPayload(
             critic_role=critic_role,
             verdict=verdict,
             severity=Severity.LOW if verdict == Verdict.PASS else Severity.MEDIUM,
@@ -361,7 +361,7 @@ def emit_refactor_post_stitch_stage_and_critique(
             evidence_refs=[f"refactor://post_stitch/{tax_key}"],
             required_fixes=fixes,
         )
-        critic_payloads.append(payload)
+        critic_payloads.append(verdict_payload)
         store.append(
             CriticVerdictEmittedEvent(
                 event_type=EventType.CRITIC_VERDICT_EMITTED,
@@ -369,7 +369,7 @@ def emit_refactor_post_stitch_stage_and_critique(
                 run_id=run_id,
                 occurred_at=datetime.now(timezone.utc),
                 actor_role=critic_role,
-                payload=payload,
+                payload=verdict_payload,
             ),
         )
 

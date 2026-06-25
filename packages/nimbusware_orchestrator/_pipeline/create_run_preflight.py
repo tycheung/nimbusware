@@ -3,6 +3,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from nimbusware_orchestrator.critique_routing import (
+    assert_critique_coverage_complete,
+    critique_coverage_snapshot,
+    taxonomy_keys_for_run_lifecycle,
+)
+from nimbusware_orchestrator.ingress import (
+    assert_agent_evaluator_persona_in_shelves,
+    assert_bundle_catalog_maps_resolve,
+    assert_known_workflow,
+    assert_persona_shelves_valid,
+    assert_stage_graph_valid,
+    assert_taxonomy_keys_resolve,
+)
 from nimbusware_orchestrator.registry import RoleRegistry
 
 
@@ -16,21 +29,19 @@ def assert_create_run_preflight(
     business_area_persona_id: str | None = None,
     development_role_persona_id: str | None = None,
 ) -> dict[str, Any]:
-    import nimbusware_orchestrator.pipeline as pipeline
-
-    pipeline.assert_known_workflow(
+    assert_known_workflow(
         repo_root,
         workflow_profile,
         config_materializer=config_materializer,
     )
-    pipeline.assert_stage_graph_valid(
+    assert_stage_graph_valid(
         repo_root,
         workflow_profile,
         config_materializer=config_materializer,
     )
-    pipeline.assert_bundle_catalog_maps_resolve(repo_root)
-    pipeline.assert_persona_shelves_valid(repo_root, config_materializer=config_materializer)
-    pipeline.assert_agent_evaluator_persona_in_shelves(
+    assert_bundle_catalog_maps_resolve(repo_root)
+    assert_persona_shelves_valid(repo_root, config_materializer=config_materializer)
+    assert_agent_evaluator_persona_in_shelves(
         repo_root,
         workflow_profile,
         config_materializer=config_materializer,
@@ -45,10 +56,10 @@ def assert_create_run_preflight(
             business_area_persona_id=business_area_persona_id,
             development_role_persona_id=development_role_persona_id,
         )
-    pipeline.assert_taxonomy_keys_resolve(
+    assert_taxonomy_keys_resolve(
         registry,
-        pipeline.taxonomy_keys_for_run_lifecycle(registry, critique_router),
+        taxonomy_keys_for_run_lifecycle(registry, critique_router),
     )
-    critique_coverage = pipeline.critique_coverage_snapshot(registry, critique_router)
-    pipeline.assert_critique_coverage_complete(critique_coverage)
+    critique_coverage = critique_coverage_snapshot(registry, critique_router)
+    assert_critique_coverage_complete(critique_coverage)
     return critique_coverage

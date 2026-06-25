@@ -26,13 +26,25 @@ def weights_from_priority(priority: list[str]) -> dict[str, float]:
 
 
 def score_node(caps: dict[str, object], weights: dict[str, float]) -> float:
-    total = float(caps.get("claims_total") or caps.get("max_parallel_claims") or 4)
-    used = float(caps.get("claims_used") or caps.get("active_claims") or 0)
+    def _cap_float(*keys: str, default: float = 0.5) -> float:
+        for key in keys:
+            val = caps.get(key)
+            if isinstance(val, (int, float)):
+                return float(val)
+            if isinstance(val, str):
+                try:
+                    return float(val)
+                except ValueError:
+                    continue
+        return default
+
+    total = _cap_float("claims_total", "max_parallel_claims", default=4.0)
+    used = _cap_float("claims_used", "active_claims", default=0.0)
     headroom = max(0.0, (total - used) / total) if total > 0 else 0.5
-    fit = float(caps.get("model_fit_score") or 0.5)
-    latency_ms = float(caps.get("latency_p95_ms") or 0)
+    fit = _cap_float("model_fit_score", default=0.5)
+    latency_ms = _cap_float("latency_p95_ms", default=0.0)
     latency = 1.0 - min(1.0, latency_ms / 5000.0)
-    cost = float(caps.get("cost_score") or 0.5)
+    cost = _cap_float("cost_score", default=0.5)
     w = normalize_optimizer_weights(weights)
     return (
         w["headroom"] * headroom + w["model_fit"] * fit + w["latency"] * latency + w["cost"] * cost

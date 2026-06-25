@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 from nimbusware_compute.work_unit import get_work_unit_queue
@@ -69,7 +70,7 @@ def mesh_assign_parallel_stages(
     parallel_group: str = "writers",
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
-    session_metadata: dict | None = None,
+    session_metadata: dict[str, Any] | None = None,
 ) -> dict[str, UUID | None]:
     sched = get_mesh_scheduler()
     sched.set_mode(workload_distribution or "host_only")

@@ -130,7 +130,13 @@ def accept_host_transfer(
         transfer_id=transfer_id,
     )
     frozen = transfer_store.accept_and_freeze(transfer_id, manifest=manifest)
-    meta = dict(chat_store.get_session(session_id).metadata or {})
+    session = chat_store.get_session(session_id)
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("session_not_found", "chat session not found"),
+        )
+    meta = dict(session.metadata or {})
     meta["transfer_frozen"] = True
     chat_store.update_session(session_id, metadata=meta)
     chat_store.append_turn(
@@ -166,7 +172,13 @@ def import_host_transfer_bundle(
     import_transfer_bundle(chat_store, body.manifest)
     completed = transfer_store.complete(transfer_id, new_host_user_id=user.user_id)
     chat_store.update_session(session_id, host_user_id=user.user_id)
-    meta = dict(chat_store.get_session(session_id).metadata or {})
+    session = chat_store.get_session(session_id)
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("session_not_found", "chat session not found"),
+        )
+    meta = dict(session.metadata or {})
     meta.pop("transfer_frozen", None)
     chat_store.update_session(session_id, metadata=meta)
     chat_store.append_turn(
@@ -201,7 +213,13 @@ def complete_host_transfer(
         )
     completed = transfer_store.complete(transfer_id, new_host_user_id=row.to_user_id)
     chat_store.update_session(session_id, host_user_id=row.to_user_id)
-    meta = dict(chat_store.get_session(session_id).metadata or {})
+    session = chat_store.get_session(session_id)
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail=problem("session_not_found", "chat session not found"),
+        )
+    meta = dict(session.metadata or {})
     meta.pop("transfer_frozen", None)
     chat_store.update_session(session_id, metadata=meta)
     return {"ok": True, "transfer": completed.to_dict()}

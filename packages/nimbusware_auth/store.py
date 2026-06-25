@@ -327,7 +327,7 @@ class PostgresCollabStore:
             session_id=session_id,
             user_id=user_id,
             role=role_n,
-            joined_at=row["joined_at"],  # type: ignore[arg-type]
+            joined_at=row["joined_at"],
             username=str(user_row["username"]) if user_row else None,
             display_name=str(user_row["display_name"]) if user_row else None,
         )
@@ -400,13 +400,13 @@ class PostgresCollabStore:
             )
             conn.commit()
         return InviteRecord(
-            invite_id=row["invite_id"],  # type: ignore[arg-type]
-            session_id=row["session_id"],  # type: ignore[arg-type]
+            invite_id=row["invite_id"],
+            session_id=row["session_id"],
             role=str(row["role"]),
             token=token,
-            expires_at=row["expires_at"],  # type: ignore[arg-type]
-            created_by=row["created_by"],  # type: ignore[arg-type]
-            created_at=row["created_at"],  # type: ignore[arg-type]
+            expires_at=row["expires_at"],
+            created_by=row["created_by"],
+            created_at=row["created_at"],
         )
 
 

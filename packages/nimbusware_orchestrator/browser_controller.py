@@ -146,10 +146,11 @@ def _run_ui_flow_sync(
                 }
                 ephemeral_mgr = ephemeral_browser = ephemeral_context = None
         except Exception:
-            try:
-                ephemeral_mgr.stop()
-            except _BROWSER_IO_ERRORS:
-                pass
+            if ephemeral_mgr is not None:
+                try:
+                    ephemeral_mgr.stop()
+                except _BROWSER_IO_ERRORS:
+                    pass
             raise
 
     try:

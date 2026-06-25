@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from nimbusware_orchestrator.llm.providers.anthropic_provider import AnthropicProvider
@@ -20,7 +21,7 @@ __all__ = [
 
 
 def provider_for_preset(
-    repo_root,
+    repo_root: Path,
     *,
     provider_id: str,
     base_url: str | None = None,
@@ -44,5 +45,5 @@ def provider_for_preset(
     )
 
 
-def list_registered_providers(repo_root) -> list[dict[str, Any]]:
+def list_registered_providers(repo_root: Path) -> list[dict[str, Any]]:
     return load_provider_presets(repo_root)

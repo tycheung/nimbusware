@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.errors import problem
 from nimbusware_api.user import UserDep
 from nimbusware_compute.node_store import (
+    ComputeNodeStore,
     build_compute_node_store,
     default_tenant_id,
     row_to_public,
@@ -50,7 +51,7 @@ def _tenant_uuid() -> UUID:
     return tid if isinstance(tid, UUID) else default_tenant_id()
 
 
-def _store():
+def _store() -> ComputeNodeStore:
     return build_compute_node_store(nimbusware_database_url())
 
 

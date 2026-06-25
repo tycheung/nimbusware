@@ -207,7 +207,7 @@ def get_participant_bindings(
 
     return {
         "user_id": actor_id,
-        "roles": participant_binding_overrides(meta, actor_id),
+        "roles": participant_binding_overrides(meta, str(actor_id)),
     }
 
 
@@ -241,12 +241,12 @@ def put_participant_binding(
         binding["connection_id"] = body.connection_id
     meta = merge_participant_binding(
         meta,
-        user_id=actor_id,
+        user_id=str(actor_id),
         agent_role=body.agent_role,
         binding=binding,
     )
     chat_store.update_session(session_id, metadata=meta)
     return {
         "user_id": actor_id,
-        "roles": participant_binding_overrides(meta, actor_id),
+        "roles": participant_binding_overrides(meta, str(actor_id)),
     }

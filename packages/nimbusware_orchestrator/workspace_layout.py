@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -7,6 +8,11 @@ from typing import Any
 import yaml
 
 from agent_core.mapping import mapping_or_empty
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 @dataclass(frozen=True)
@@ -64,10 +70,6 @@ def _has_mypy_config(workspace: Path) -> bool:
     if not pyproject.is_file():
         return False
     try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
-    try:
         data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
@@ -82,10 +84,6 @@ def _has_bandit_config(workspace: Path) -> bool:
     if not pyproject.is_file():
         return False
     try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
-    try:
         data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
@@ -97,10 +95,6 @@ def _coverage_floor_from_pyproject(workspace: Path) -> float | None:
     pyproject = workspace / "pyproject.toml"
     if not pyproject.is_file():
         return None
-    try:
-        import tomllib
-    except ImportError:
-        import tomli as tomllib  # type: ignore[no-redef]
     try:
         data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     except (OSError, ValueError):

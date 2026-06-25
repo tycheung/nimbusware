@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Query
@@ -47,7 +47,9 @@ def get_run_theater(
             status_code=404,
             detail=problem("run_not_found", "run not found", details={"run_id": str(run_id)}),
         )
-    theater_profile = "chat" if profile.strip().lower() == "chat" else "full"
+    theater_profile: Literal["full", "chat"] = (
+        "chat" if profile.strip().lower() == "chat" else "full"
+    )
     all_msgs = build_theater_messages_for_profile(rows, profile=theater_profile, cap=cap)
     page = [m for m in all_msgs if int(m.get("store_seq") or 0) > cursor][:limit]
     next_c = int(page[-1]["store_seq"]) if page else None
@@ -104,7 +106,9 @@ def get_theater_stream(
         idle = 0
         while idle < 20:
             current = store.list_run_events(str(run_id))
-            theater_profile = "chat" if profile.strip().lower() == "chat" else "full"
+            theater_profile: Literal["full", "chat"] = (
+                "chat" if profile.strip().lower() == "chat" else "full"
+            )
             msgs = build_theater_messages_for_profile(current, profile=theater_profile, cap=cap)
             new_msgs = [m for m in msgs if int(m.get("store_seq") or 0) > last_seq]
             if new_msgs:

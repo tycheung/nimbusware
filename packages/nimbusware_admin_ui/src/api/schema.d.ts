@@ -4362,7 +4362,9 @@ export interface components {
             /** Text */
             text: string;
             /** Attachments */
-            attachments?: Record<string, never>[];
+            attachments?: {
+                [key: string]: unknown;
+            }[];
             /**
              * Role
              * @default user
@@ -4498,27 +4500,41 @@ export interface components {
             /** Active Leaf Turn Id */
             active_leaf_turn_id?: string | null;
             /** Nodes */
-            nodes: Record<string, never>[];
+            nodes: {
+                [key: string]: unknown;
+            }[];
             /** Edges */
-            edges: Record<string, never>[];
+            edges: {
+                [key: string]: unknown;
+            }[];
             /** Branches */
-            branches: Record<string, never>[];
+            branches: {
+                [key: string]: unknown;
+            }[];
         };
         /** ChatMessageBody */
         ChatMessageBody: {
             /** Text */
             text: string;
             /** Attachments */
-            attachments?: Record<string, never>[];
+            attachments?: {
+                [key: string]: unknown;
+            }[];
         };
         /** ChatMessageResponse */
         ChatMessageResponse: {
             /** Message */
-            message: Record<string, never>;
+            message: {
+                [key: string]: unknown;
+            };
             /** Classification */
-            classification: Record<string, never>;
+            classification: {
+                [key: string]: unknown;
+            };
             /** Turn */
-            turn?: Record<string, never> | null;
+            turn?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** ChatSessionResponse */
         ChatSessionResponse: {
@@ -4533,13 +4549,19 @@ export interface components {
             /** Title */
             title?: string | null;
             /** Messages */
-            messages: Record<string, never>[];
+            messages: {
+                [key: string]: unknown;
+            }[];
             /** Turns */
-            turns?: Record<string, never>[] | null;
+            turns?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Active Leaf Turn Id */
             active_leaf_turn_id?: string | null;
             /** Last Classification */
-            last_classification?: Record<string, never> | null;
+            last_classification?: {
+                [key: string]: unknown;
+            } | null;
             /** Work Type Override */
             work_type_override?: string | null;
             /** Run Id */
@@ -4551,9 +4573,13 @@ export interface components {
             /** Workload Distribution */
             workload_distribution?: string | null;
             /** Metadata */
-            metadata?: Record<string, never> | null;
+            metadata?: {
+                [key: string]: unknown;
+            } | null;
             /** Participants */
-            participants?: Record<string, never>[] | null;
+            participants?: {
+                [key: string]: unknown;
+            }[] | null;
             /** My Participant Role */
             my_participant_role?: string | null;
         };
@@ -4578,18 +4604,24 @@ export interface components {
         /** ClassificationResponse */
         ClassificationResponse: {
             /** Classification */
-            classification: Record<string, never>;
+            classification: {
+                [key: string]: unknown;
+            };
         };
         /** ClassifyIntentBody */
         ClassifyIntentBody: {
             /** Message */
             message: string;
             /** Attachments */
-            attachments?: Record<string, never>[];
+            attachments?: {
+                [key: string]: unknown;
+            }[];
             /** Project Id */
             project_id?: string | null;
             /** Platform Hints */
-            platform_hints?: Record<string, never>;
+            platform_hints?: {
+                [key: string]: unknown;
+            };
         };
         /** CollabPolicyBody */
         CollabPolicyBody: {
@@ -4683,7 +4715,9 @@ export interface components {
             /** Status */
             status?: ("unknown" | "online" | "degraded" | "offline") | null;
             /** Capabilities */
-            capabilities?: Record<string, never> | null;
+            capabilities?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** ComputeNodeRegisterBody */
         ComputeNodeRegisterBody: {
@@ -4704,7 +4738,9 @@ export interface components {
             /** Base Url */
             base_url: string;
             /** Capabilities */
-            capabilities?: Record<string, never>;
+            capabilities?: {
+                [key: string]: unknown;
+            };
             /**
              * Share Policy
              * @default off
@@ -4984,11 +5020,15 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Session */
-            session?: Record<string, never> | null;
+            session?: {
+                [key: string]: unknown;
+            } | null;
             /** Error */
             error?: string | null;
             /** Probe */
-            probe?: Record<string, never>;
+            probe?: {
+                [key: string]: unknown;
+            };
         };
         /** DevEnvRegressionResponse */
         DevEnvRegressionResponse: {
@@ -5000,7 +5040,9 @@ export interface components {
              */
             detail: string;
             /** Put E2E */
-            put_e2e?: Record<string, never> | null;
+            put_e2e?: {
+                [key: string]: unknown;
+            } | null;
             /** Flow Id */
             flow_id?: string | null;
         };
@@ -5014,11 +5056,17 @@ export interface components {
              */
             active: boolean;
             /** Session */
-            session?: Record<string, never> | null;
+            session?: {
+                [key: string]: unknown;
+            } | null;
             /** Probe */
-            probe?: Record<string, never>;
+            probe?: {
+                [key: string]: unknown;
+            };
             /** Logs */
-            logs?: Record<string, never>;
+            logs?: {
+                [key: string]: unknown;
+            };
         };
         /** EscalateBody */
         EscalateBody: {
@@ -5074,15 +5122,25 @@ export interface components {
              */
             factory_complete: boolean;
             /** Factory Status */
-            factory_status?: Record<string, never> | null;
+            factory_status?: {
+                [key: string]: unknown;
+            } | null;
             /** Put E2E */
-            put_e2e?: Record<string, never> | null;
+            put_e2e?: {
+                [key: string]: unknown;
+            } | null;
             /** Factory Stages */
-            factory_stages?: Record<string, never>[];
+            factory_stages?: {
+                [key: string]: unknown;
+            }[];
             /** Put Artifacts */
-            put_artifacts?: Record<string, never>;
+            put_artifacts?: {
+                [key: string]: unknown;
+            };
             /** Evidence */
-            evidence?: Record<string, never>;
+            evidence?: {
+                [key: string]: unknown;
+            };
             /** Scorecard Rows */
             scorecard_rows?: {
                 [key: string]: string;
@@ -5221,7 +5279,9 @@ export interface components {
         /** ImportBundleBody */
         ImportBundleBody: {
             /** Manifest */
-            manifest: Record<string, never>;
+            manifest: {
+                [key: string]: unknown;
+            };
         };
         /** InterjectionEnqueueBody */
         InterjectionEnqueueBody: {
@@ -5243,7 +5303,9 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Queue */
-            queue?: Record<string, never>;
+            queue?: {
+                [key: string]: unknown;
+            };
         };
         /** InviteBody */
         InviteBody: {
@@ -5306,23 +5368,39 @@ export interface components {
             /** Sentences */
             sentences?: string[];
             /** Slices */
-            slices?: Record<string, never>[];
+            slices?: {
+                [key: string]: unknown;
+            }[];
             /** Requirements */
-            requirements?: Record<string, never> | null;
+            requirements?: {
+                [key: string]: unknown;
+            } | null;
             /** Resource Pressure */
-            resource_pressure?: Record<string, never> | null;
+            resource_pressure?: {
+                [key: string]: unknown;
+            } | null;
             /** Context Budget */
-            context_budget?: Record<string, never> | null;
+            context_budget?: {
+                [key: string]: unknown;
+            } | null;
             /** Campaign Progress */
-            campaign_progress?: Record<string, never> | null;
+            campaign_progress?: {
+                [key: string]: unknown;
+            } | null;
             /** Latest Handoff */
-            latest_handoff?: Record<string, never> | null;
+            latest_handoff?: {
+                [key: string]: unknown;
+            } | null;
             /** Factory Status */
-            factory_status?: Record<string, never> | null;
+            factory_status?: {
+                [key: string]: unknown;
+            } | null;
             /** Gate Summary */
             gate_summary?: string | null;
             /** Role Cost Summary */
-            role_cost_summary?: Record<string, never> | null;
+            role_cost_summary?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Simple Mode
              * @default true
@@ -5486,7 +5564,9 @@ export interface components {
              */
             last_run_id: string;
             /** Classification */
-            classification?: Record<string, never> | null;
+            classification?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** OperatorProfilesBody */
         OperatorProfilesBody: {
@@ -5572,9 +5652,13 @@ export interface components {
             /** Awaiting Approval */
             awaiting_approval: boolean;
             /** Pending */
-            pending?: Record<string, never> | null;
+            pending?: {
+                [key: string]: unknown;
+            } | null;
             /** Last Snapshot */
-            last_snapshot?: Record<string, never> | null;
+            last_snapshot?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * PersonaEntry
@@ -5659,9 +5743,13 @@ export interface components {
             /** Version */
             version?: number | null;
             /** Business Area */
-            business_area?: Record<string, never>[];
+            business_area?: {
+                [key: string]: unknown;
+            }[];
             /** Development Role */
-            development_role?: Record<string, never>[];
+            development_role?: {
+                [key: string]: unknown;
+            }[];
         };
         /** PolicyCompareRecordBody */
         PolicyCompareRecordBody: {
@@ -5687,9 +5775,13 @@ export interface components {
             /** Changed Count */
             changed_count: number;
             /** Changed */
-            changed: Record<string, never>[];
+            changed: {
+                [key: string]: unknown;
+            }[];
             /** Gate Outcome */
-            gate_outcome?: Record<string, never> | null;
+            gate_outcome?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * PreflightHistoryEntry
@@ -5699,7 +5791,9 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Preflight */
-            preflight?: Record<string, never> | null;
+            preflight?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** PreflightHistoryResponse */
         PreflightHistoryResponse: {
@@ -5757,7 +5851,9 @@ export interface components {
             distinct_validated_model_id_count: number;
             metrics_export?: components["schemas"]["PreflightMetricsExport"] | null;
             /** Cloud Preflight */
-            cloud_preflight?: Record<string, never> | null;
+            cloud_preflight?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** PreflightMetricsExport */
         PreflightMetricsExport: {
@@ -5988,7 +6084,9 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Briefs */
-            briefs?: Record<string, never>[];
+            briefs?: {
+                [key: string]: unknown;
+            }[];
             /**
              * Count
              * @default 0
@@ -6089,9 +6187,13 @@ export interface components {
             /** Has Escalation */
             has_escalation: boolean;
             /** Run Created Metadata */
-            run_created_metadata?: Record<string, never>;
+            run_created_metadata?: {
+                [key: string]: unknown;
+            };
             /** Persona Assignment */
-            persona_assignment?: Record<string, never> | null;
+            persona_assignment?: {
+                [key: string]: unknown;
+            } | null;
             /** Run Id */
             run_id: string;
         };
@@ -6203,9 +6305,13 @@ export interface components {
             /** Has Escalation */
             has_escalation: boolean;
             /** Run Created Metadata */
-            run_created_metadata?: Record<string, never>;
+            run_created_metadata?: {
+                [key: string]: unknown;
+            };
             /** Persona Assignment */
-            persona_assignment?: Record<string, never> | null;
+            persona_assignment?: {
+                [key: string]: unknown;
+            } | null;
         };
         /**
          * RunTimelineResponse
@@ -6215,63 +6321,121 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Events */
-            events: Record<string, never>[];
+            events: {
+                [key: string]: unknown;
+            }[];
             /** Integrator Gate */
-            integrator_gate?: Record<string, never> | null;
+            integrator_gate?: {
+                [key: string]: unknown;
+            } | null;
             /** Integrator Gate History */
-            integrator_gate_history?: Record<string, never>[] | null;
+            integrator_gate_history?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Integrator Gate Delta */
-            integrator_gate_delta?: Record<string, never> | null;
+            integrator_gate_delta?: {
+                [key: string]: unknown;
+            } | null;
             /** Agent Evaluator */
-            agent_evaluator?: Record<string, never> | null;
+            agent_evaluator?: {
+                [key: string]: unknown;
+            } | null;
             /** Self Refinement */
-            self_refinement?: Record<string, never> | null;
+            self_refinement?: {
+                [key: string]: unknown;
+            } | null;
             /** Self Refinement Marker History */
-            self_refinement_marker_history?: Record<string, never>[] | null;
+            self_refinement_marker_history?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Run Escalated */
-            run_escalated?: Record<string, never> | null;
+            run_escalated?: {
+                [key: string]: unknown;
+            } | null;
             /** Run Escalated History */
-            run_escalated_history?: Record<string, never>[] | null;
+            run_escalated_history?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Run Escalated Delta */
-            run_escalated_delta?: Record<string, never> | null;
+            run_escalated_delta?: {
+                [key: string]: unknown;
+            } | null;
             /** Gate Overridden */
-            gate_overridden?: Record<string, never> | null;
+            gate_overridden?: {
+                [key: string]: unknown;
+            } | null;
             /** Gate Overridden History */
-            gate_overridden_history?: Record<string, never>[] | null;
+            gate_overridden_history?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Security Scan On Verify */
-            security_scan_on_verify?: Record<string, never> | null;
+            security_scan_on_verify?: {
+                [key: string]: unknown;
+            } | null;
             /** Security Scan On Verify History */
-            security_scan_on_verify_history?: Record<string, never>[] | null;
+            security_scan_on_verify_history?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Preflight */
-            preflight?: Record<string, never> | null;
+            preflight?: {
+                [key: string]: unknown;
+            } | null;
             /** Scraper Fetch */
-            scraper_fetch?: Record<string, never> | null;
+            scraper_fetch?: {
+                [key: string]: unknown;
+            } | null;
             /** Universal Critique */
-            universal_critique?: Record<string, never> | null;
+            universal_critique?: {
+                [key: string]: unknown;
+            } | null;
             /** Stage Graph */
-            stage_graph?: Record<string, never> | null;
+            stage_graph?: {
+                [key: string]: unknown;
+            } | null;
             /** Parallel Writer Groups */
-            parallel_writer_groups?: Record<string, never>[] | null;
+            parallel_writer_groups?: {
+                [key: string]: unknown;
+            }[] | null;
             /** Critic Matrix Live */
-            critic_matrix_live?: Record<string, never> | null;
+            critic_matrix_live?: {
+                [key: string]: unknown;
+            } | null;
             /** Persona Assignment */
-            persona_assignment?: Record<string, never> | null;
+            persona_assignment?: {
+                [key: string]: unknown;
+            } | null;
             /** Micro Slice */
-            micro_slice?: Record<string, never> | null;
+            micro_slice?: {
+                [key: string]: unknown;
+            } | null;
             /** Custom Agent */
-            custom_agent?: Record<string, never> | null;
+            custom_agent?: {
+                [key: string]: unknown;
+            } | null;
             /** Security Critique */
-            security_critique?: Record<string, never> | null;
+            security_critique?: {
+                [key: string]: unknown;
+            } | null;
             /** Performance Critique */
-            performance_critique?: Record<string, never> | null;
+            performance_critique?: {
+                [key: string]: unknown;
+            } | null;
             /** Network Resilience Critique */
-            network_resilience_critique?: Record<string, never> | null;
+            network_resilience_critique?: {
+                [key: string]: unknown;
+            } | null;
             /** Refactor Critique */
-            refactor_critique?: Record<string, never> | null;
+            refactor_critique?: {
+                [key: string]: unknown;
+            } | null;
             /** Memory Retrieval */
-            memory_retrieval?: Record<string, never> | null;
+            memory_retrieval?: {
+                [key: string]: unknown;
+            } | null;
             /** Memory Indexed */
-            memory_indexed?: Record<string, never> | null;
+            memory_indexed?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** ScraperArtifactInventoryEntry */
         ScraperArtifactInventoryEntry: {
@@ -6545,16 +6709,22 @@ export interface components {
             /** Dispatch Mode */
             dispatch_mode?: string | null;
             /** Turn */
-            turn?: Record<string, never> | null;
+            turn?: {
+                [key: string]: unknown;
+            } | null;
             /** Replay Alignment */
-            replay_alignment?: Record<string, never> | null;
+            replay_alignment?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** StitchSummaryResponse */
         StitchSummaryResponse: {
             /** Run Id */
             run_id: string;
             /** Events */
-            events?: Record<string, never>[];
+            events?: {
+                [key: string]: unknown;
+            }[];
             /** Transplant Outcome */
             transplant_outcome?: string | null;
         };
@@ -6644,7 +6814,9 @@ export interface components {
             /** Run Id */
             run_id: string;
             /** Messages */
-            messages?: Record<string, never>[];
+            messages?: {
+                [key: string]: unknown;
+            }[];
             /**
              * Count
              * @default 0
@@ -6679,7 +6851,9 @@ export interface components {
             version: number;
             /** Roles */
             roles?: {
-                [key: string]: components["schemas"]["RoleBindingBlock"] | Record<string, never>;
+                [key: string]: components["schemas"]["RoleBindingBlock"] | {
+                    [key: string]: unknown;
+                };
             };
         };
         /** UserEnforcementProfileBody */
@@ -6727,7 +6901,9 @@ export interface components {
              */
             status: "ok" | "failed" | "timeout";
             /** Result */
-            result?: Record<string, never> | null;
+            result?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** WorkspacePathBody */
         WorkspacePathBody: {
@@ -6842,7 +7018,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -6850,7 +7028,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -6866,7 +7046,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -6874,7 +7056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -6906,7 +7090,9 @@ export interface operations {
                      *       "run_id": "11111111-1111-4111-8111-111111111111"
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured validation error (unknown workflow, invalid persona assignment, incomplete critique pairings for registry producers, agent evaluator persona, etc.) */
@@ -6921,7 +7107,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -6929,7 +7117,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -6945,7 +7135,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -6953,7 +7145,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7005,7 +7199,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7013,7 +7209,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7029,7 +7227,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7037,7 +7237,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7053,7 +7255,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7061,7 +7265,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7104,7 +7310,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7112,7 +7320,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7128,7 +7338,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7136,7 +7348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7152,7 +7366,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7160,7 +7376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7194,7 +7412,9 @@ export interface operations {
                      *       "findings": []
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -7209,7 +7429,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7217,7 +7439,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7233,7 +7457,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7241,7 +7467,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7257,7 +7485,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7265,7 +7495,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7288,7 +7520,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -7303,7 +7537,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7311,7 +7547,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7327,7 +7565,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7335,7 +7575,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7351,7 +7593,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7359,7 +7603,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7388,7 +7634,9 @@ export interface operations {
                      *       "rows": []
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -7403,7 +7651,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7411,7 +7661,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7427,7 +7679,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7435,7 +7689,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7451,7 +7707,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7459,7 +7717,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7504,7 +7764,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7512,7 +7774,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7528,7 +7792,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7536,7 +7802,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7552,7 +7820,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7560,7 +7830,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7605,7 +7877,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7613,7 +7887,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7629,7 +7905,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7637,7 +7915,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7653,7 +7933,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7661,7 +7943,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7707,7 +7991,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7715,7 +8001,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7731,7 +8019,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7739,7 +8029,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7755,7 +8047,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7763,7 +8057,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7796,7 +8092,9 @@ export interface operations {
                      *       "slices_blocked": 0
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -7811,7 +8109,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7819,7 +8119,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7835,7 +8137,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7843,7 +8147,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7859,7 +8165,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7867,7 +8175,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7896,7 +8206,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -7911,7 +8223,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7919,7 +8233,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7935,7 +8251,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7943,7 +8261,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -7972,7 +8292,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -7987,7 +8309,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -7995,7 +8319,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8011,7 +8337,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8019,7 +8347,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8045,7 +8375,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -8060,7 +8392,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8068,7 +8402,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8084,7 +8420,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8092,7 +8430,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8117,7 +8457,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -8132,7 +8474,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8140,7 +8484,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8156,7 +8502,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8164,7 +8512,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8205,7 +8555,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8213,7 +8565,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8229,7 +8583,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8237,7 +8593,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8253,7 +8611,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8261,7 +8621,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8299,7 +8661,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8307,7 +8671,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8323,7 +8689,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8331,7 +8699,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8347,7 +8717,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8355,7 +8727,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8393,7 +8767,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8401,7 +8777,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8417,7 +8795,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8425,7 +8805,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8441,7 +8823,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8449,7 +8833,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8487,7 +8873,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8495,7 +8883,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8511,7 +8901,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8519,7 +8911,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8535,7 +8929,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8543,7 +8939,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8581,7 +8979,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8589,7 +8989,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8605,7 +9007,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8613,7 +9017,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8629,7 +9035,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8637,7 +9045,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8675,7 +9085,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8683,7 +9095,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8699,7 +9113,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8707,7 +9123,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8723,7 +9141,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8731,7 +9151,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8769,7 +9191,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8777,7 +9201,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8793,7 +9219,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8801,7 +9229,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8817,7 +9247,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8825,7 +9257,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8863,7 +9297,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8871,7 +9307,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8887,7 +9325,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8895,7 +9335,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8911,7 +9353,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8919,7 +9363,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8963,7 +9409,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8971,7 +9419,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -8987,7 +9437,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -8995,7 +9447,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9011,7 +9465,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9019,7 +9475,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9042,7 +9500,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9057,7 +9517,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9065,7 +9527,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9081,7 +9545,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9089,7 +9555,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9105,7 +9573,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9113,7 +9583,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9151,7 +9623,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9159,7 +9633,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9175,7 +9651,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9183,7 +9661,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9199,7 +9679,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9207,7 +9689,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9249,7 +9733,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9257,7 +9743,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9273,7 +9761,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9281,7 +9771,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9297,7 +9789,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9305,7 +9799,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9343,7 +9839,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9351,7 +9849,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9367,7 +9867,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9375,7 +9877,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9391,7 +9895,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9399,7 +9905,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9441,7 +9949,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9449,7 +9959,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9465,7 +9977,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9473,7 +9987,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9489,7 +10005,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9497,7 +10015,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9535,7 +10055,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9543,7 +10065,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9559,7 +10083,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9567,7 +10093,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9583,7 +10111,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9591,7 +10121,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9633,7 +10165,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9641,7 +10175,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9657,7 +10193,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9665,7 +10203,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9681,7 +10221,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9689,7 +10231,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9712,7 +10256,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -9727,7 +10273,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9735,7 +10283,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9751,7 +10301,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9759,7 +10311,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9775,7 +10329,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9783,7 +10339,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9821,7 +10379,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9829,7 +10389,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9845,7 +10407,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9853,7 +10417,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9869,7 +10435,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9877,7 +10445,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9919,7 +10489,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9927,7 +10499,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9943,7 +10517,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9951,7 +10527,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -9967,7 +10545,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -9975,7 +10555,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10018,7 +10600,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10026,7 +10610,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10042,7 +10628,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10050,7 +10638,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10066,7 +10656,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10074,7 +10666,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10116,7 +10710,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10124,7 +10720,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10140,7 +10738,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10148,7 +10748,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10164,7 +10766,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10172,7 +10776,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10216,7 +10822,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10224,7 +10832,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10240,7 +10850,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10248,7 +10860,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10264,7 +10878,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10272,7 +10888,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10313,7 +10931,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10321,7 +10941,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10337,7 +10959,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10345,7 +10969,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10361,7 +10987,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10369,7 +10997,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10410,7 +11040,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10418,7 +11050,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10434,7 +11068,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10442,7 +11078,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10458,7 +11096,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10466,7 +11106,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10489,7 +11131,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10504,7 +11148,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10512,7 +11158,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10528,7 +11176,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10536,7 +11186,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10552,7 +11204,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10560,7 +11214,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10583,7 +11239,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10598,7 +11256,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10606,7 +11266,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10622,7 +11284,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10630,7 +11294,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10646,7 +11312,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10654,7 +11322,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10692,7 +11362,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10700,7 +11372,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10716,7 +11390,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10724,7 +11400,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10740,7 +11418,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10748,7 +11428,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10788,7 +11470,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10796,7 +11480,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10812,7 +11498,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10820,7 +11508,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10836,7 +11526,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10844,7 +11536,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10867,7 +11561,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10882,7 +11578,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10890,7 +11588,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10906,7 +11606,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10914,7 +11616,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10930,7 +11634,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10938,7 +11644,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -10965,7 +11673,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -10980,7 +11690,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -10988,7 +11700,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11004,7 +11718,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11012,7 +11728,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11028,7 +11746,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11036,7 +11756,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11063,7 +11785,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -11078,7 +11802,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11086,7 +11812,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11102,7 +11830,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11110,7 +11840,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11126,7 +11858,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11134,7 +11868,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11157,7 +11893,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -11172,7 +11910,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11180,7 +11920,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11196,7 +11938,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11204,7 +11948,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11220,7 +11966,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11228,7 +11976,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11251,7 +12001,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -11266,7 +12018,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11274,7 +12028,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11290,7 +12046,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11298,7 +12056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11314,7 +12074,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11322,7 +12084,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11345,7 +12109,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -11360,7 +12126,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11368,7 +12136,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11384,7 +12154,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11392,7 +12164,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11408,7 +12182,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11416,7 +12192,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11454,7 +12232,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11462,7 +12242,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11478,7 +12260,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11486,7 +12270,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11502,7 +12288,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11510,7 +12298,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11555,7 +12345,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11563,7 +12355,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11579,7 +12373,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11587,7 +12383,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11603,7 +12401,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11611,7 +12411,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11656,7 +12458,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11664,7 +12468,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11680,7 +12486,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11688,7 +12496,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11704,7 +12514,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11712,7 +12524,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11753,7 +12567,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11761,7 +12577,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11777,7 +12595,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11785,7 +12605,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11828,7 +12650,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11836,7 +12660,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11852,7 +12678,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11860,7 +12688,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11876,7 +12706,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11884,7 +12716,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11923,7 +12757,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11931,7 +12767,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11947,7 +12785,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11955,7 +12795,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -11971,7 +12813,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -11979,7 +12823,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12022,7 +12868,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12030,7 +12878,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12046,7 +12896,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12054,7 +12906,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12092,7 +12946,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12100,7 +12956,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12116,7 +12974,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12124,7 +12984,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12140,7 +13002,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12148,7 +13012,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12187,7 +13053,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12195,7 +13063,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12211,7 +13081,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12219,7 +13091,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12235,7 +13109,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12243,7 +13119,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12267,7 +13145,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12282,7 +13162,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12290,7 +13172,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12306,7 +13190,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12314,7 +13200,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12339,7 +13227,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12354,7 +13244,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12362,7 +13254,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12378,7 +13272,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12386,7 +13282,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12409,7 +13307,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -12424,7 +13324,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12432,7 +13334,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12448,7 +13352,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12456,7 +13362,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12472,7 +13380,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12480,7 +13390,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12507,7 +13419,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12522,7 +13436,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12530,7 +13446,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12546,7 +13464,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12554,7 +13474,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12577,7 +13499,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12592,7 +13516,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12600,7 +13526,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12616,7 +13544,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12624,7 +13554,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12651,7 +13583,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12666,7 +13600,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12674,7 +13610,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12690,7 +13628,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12698,7 +13638,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12721,7 +13663,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -12736,7 +13680,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12744,7 +13690,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12760,7 +13708,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12768,7 +13718,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12813,7 +13765,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12821,7 +13775,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12837,7 +13793,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12845,7 +13803,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12861,7 +13821,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12869,7 +13831,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12918,7 +13882,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12926,7 +13892,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12942,7 +13910,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12950,7 +13920,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -12966,7 +13938,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -12974,7 +13948,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13023,7 +13999,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13031,7 +14009,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13047,7 +14027,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13055,7 +14037,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13071,7 +14055,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13079,7 +14065,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13116,7 +14104,9 @@ export interface operations {
                      *       "run_id": "00000000-0000-4000-8000-000000000001"
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -13131,7 +14121,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13139,7 +14131,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13155,7 +14149,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13163,7 +14159,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13179,7 +14177,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13187,7 +14187,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13203,7 +14205,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13211,7 +14215,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13227,7 +14233,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13235,7 +14243,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13274,7 +14284,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13282,7 +14294,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13298,7 +14312,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13306,7 +14322,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13322,7 +14340,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13330,7 +14350,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13370,7 +14392,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13378,7 +14402,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13394,7 +14420,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13402,7 +14430,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13418,7 +14448,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13426,7 +14458,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13450,7 +14484,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -13465,7 +14501,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13473,7 +14511,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13489,7 +14529,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13497,7 +14539,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13536,7 +14580,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13544,7 +14590,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13560,7 +14608,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13568,7 +14618,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13584,7 +14636,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13592,7 +14646,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13650,7 +14706,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13658,7 +14716,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13674,7 +14734,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13682,7 +14744,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13718,7 +14782,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13726,7 +14792,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13742,7 +14810,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13750,7 +14820,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13766,7 +14838,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13774,7 +14848,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13816,7 +14892,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13824,7 +14902,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13840,7 +14920,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13848,7 +14930,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13864,7 +14948,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13872,7 +14958,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13888,7 +14976,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13896,7 +14986,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13917,7 +15009,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -13932,7 +15026,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13940,7 +15036,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -13956,7 +15054,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -13964,7 +15064,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14006,7 +15108,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14014,7 +15118,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14030,7 +15136,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14038,7 +15146,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14054,7 +15164,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14062,7 +15174,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14078,7 +15192,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14086,7 +15202,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14102,7 +15220,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14110,7 +15230,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14154,7 +15276,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14162,7 +15286,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14178,7 +15304,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14186,7 +15314,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14202,7 +15332,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14210,7 +15342,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14226,7 +15360,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14234,7 +15370,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14250,7 +15388,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14258,7 +15398,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14300,7 +15442,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14308,7 +15452,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14324,7 +15470,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14332,7 +15480,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14348,7 +15498,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14356,7 +15508,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14372,7 +15526,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14380,7 +15536,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14396,7 +15554,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14404,7 +15564,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14447,7 +15609,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14455,7 +15619,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14471,7 +15637,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14479,7 +15647,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14495,7 +15665,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14503,7 +15675,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14519,7 +15693,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14527,7 +15703,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14543,7 +15721,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14551,7 +15731,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14591,7 +15773,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14599,7 +15783,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14615,7 +15801,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14623,7 +15811,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14639,7 +15829,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14647,7 +15839,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14663,7 +15857,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14671,7 +15867,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14696,7 +15894,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -14711,7 +15911,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14719,7 +15921,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14735,7 +15939,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14743,7 +15949,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14759,7 +15967,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14767,7 +15977,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14790,7 +16002,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14805,7 +16019,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14813,7 +16029,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14829,7 +16047,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14837,7 +16057,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14862,7 +16084,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14877,7 +16101,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14885,7 +16111,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14901,7 +16129,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14909,7 +16139,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14934,7 +16166,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -14949,7 +16183,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14957,7 +16193,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -14973,7 +16211,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -14981,7 +16221,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15000,7 +16242,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": Record<string, never>;
+                "application/json": {
+                    [key: string]: unknown;
+                };
             };
         };
         responses: {
@@ -15010,7 +16254,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -15025,7 +16271,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15033,7 +16281,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15049,7 +16299,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15057,7 +16309,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15124,7 +16378,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15132,7 +16388,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15148,7 +16406,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15156,7 +16416,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15210,7 +16472,9 @@ export interface operations {
                      *       ]
                      *     }
                      */
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Missing or invalid admin token (``X-Nimbusware-Admin-Token``) */
@@ -15225,7 +16489,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15233,7 +16499,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15249,7 +16517,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15257,7 +16527,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15273,7 +16545,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15281,7 +16555,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15356,7 +16632,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15364,7 +16642,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15380,7 +16660,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15388,7 +16670,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15404,7 +16688,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15412,7 +16698,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15488,7 +16776,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15496,7 +16786,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15512,7 +16804,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15520,7 +16814,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15536,7 +16832,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15544,7 +16842,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15560,7 +16860,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15568,7 +16870,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15584,7 +16888,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15592,7 +16898,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15668,7 +16976,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15676,7 +16986,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15692,7 +17004,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15700,7 +17014,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15716,7 +17032,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15724,7 +17042,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15740,7 +17060,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15748,7 +17070,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15764,7 +17088,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15772,7 +17098,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15788,7 +17116,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15796,7 +17126,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15838,7 +17170,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15846,7 +17180,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15862,7 +17198,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15870,7 +17208,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15886,7 +17226,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15894,7 +17236,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15910,7 +17254,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15918,7 +17264,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15934,7 +17282,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15942,7 +17292,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -15958,7 +17310,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -15966,7 +17320,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16042,7 +17398,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16050,7 +17408,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16066,7 +17426,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16074,7 +17436,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16090,7 +17454,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16098,7 +17464,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16114,7 +17482,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16122,7 +17492,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16138,7 +17510,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16146,7 +17520,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16162,7 +17538,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16170,7 +17548,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16206,7 +17586,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16214,7 +17596,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16230,7 +17614,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16238,7 +17624,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16280,7 +17668,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16288,7 +17678,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16304,7 +17696,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16312,7 +17706,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16350,7 +17746,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16358,7 +17756,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16374,7 +17774,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16382,7 +17784,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16398,7 +17802,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16406,7 +17812,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16444,7 +17852,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16452,7 +17862,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16468,7 +17880,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16476,7 +17890,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16492,7 +17908,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16500,7 +17918,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16544,7 +17964,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16552,7 +17974,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16568,7 +17992,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16576,7 +18002,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16592,7 +18020,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16600,7 +18030,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16638,7 +18070,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16646,7 +18080,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16662,7 +18098,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16670,7 +18108,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16712,7 +18152,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16720,7 +18162,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16736,7 +18180,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16744,7 +18190,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16782,7 +18230,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16790,7 +18240,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16806,7 +18258,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16814,7 +18268,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16830,7 +18286,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16838,7 +18296,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16876,7 +18336,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16884,7 +18346,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16900,7 +18364,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16908,7 +18374,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16924,7 +18392,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16932,7 +18402,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -16976,7 +18448,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -16984,7 +18458,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17000,7 +18476,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17008,7 +18486,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17024,7 +18504,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17032,7 +18514,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17072,7 +18556,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17080,7 +18566,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17096,7 +18584,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17104,7 +18594,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17144,7 +18636,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17152,7 +18646,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17168,7 +18664,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17176,7 +18674,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17214,7 +18714,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17222,7 +18724,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17238,7 +18742,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17246,7 +18752,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17282,7 +18790,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17290,7 +18800,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17306,7 +18818,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17314,7 +18828,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17358,7 +18874,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17366,7 +18884,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17382,7 +18902,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17390,7 +18912,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17406,7 +18930,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17414,7 +18940,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17454,7 +18982,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17462,7 +18992,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17478,7 +19010,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17486,7 +19020,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17528,7 +19064,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17536,7 +19074,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17552,7 +19092,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17560,7 +19102,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17602,7 +19146,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17610,7 +19156,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17626,7 +19174,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17634,7 +19184,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17650,7 +19202,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17658,7 +19212,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17698,7 +19254,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17706,7 +19264,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17722,7 +19282,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17730,7 +19292,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17746,7 +19310,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17754,7 +19320,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17798,7 +19366,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17806,7 +19376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17822,7 +19394,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17830,7 +19404,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17846,7 +19422,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17854,7 +19432,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17898,7 +19478,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17906,7 +19488,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17922,7 +19506,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17930,7 +19516,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17946,7 +19534,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -17954,7 +19544,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -17998,7 +19590,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18006,7 +19600,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18022,7 +19618,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18030,7 +19628,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18046,7 +19646,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18054,7 +19656,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18098,7 +19702,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18106,7 +19712,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18122,7 +19730,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18130,7 +19740,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18146,7 +19758,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18154,7 +19768,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18199,7 +19815,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18207,7 +19825,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18223,7 +19843,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18231,7 +19853,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18247,7 +19871,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18255,7 +19881,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18297,7 +19925,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18305,7 +19935,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18321,7 +19953,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18329,7 +19963,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18373,7 +20009,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18381,7 +20019,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18397,7 +20037,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18405,7 +20047,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18421,7 +20065,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18429,7 +20075,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18458,7 +20106,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18473,7 +20123,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18481,7 +20133,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18497,7 +20151,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18505,7 +20161,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18533,7 +20191,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18548,7 +20208,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18556,7 +20218,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18572,7 +20236,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18580,7 +20246,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18609,7 +20277,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18624,7 +20294,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18632,7 +20304,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18648,7 +20322,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18656,7 +20332,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18685,7 +20363,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18700,7 +20380,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18708,7 +20390,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18724,7 +20408,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18732,7 +20418,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18757,7 +20445,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18772,7 +20462,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18780,7 +20472,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18796,7 +20490,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18804,7 +20500,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18833,7 +20531,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18848,7 +20548,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18856,7 +20558,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18872,7 +20576,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18880,7 +20586,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18909,7 +20617,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18924,7 +20634,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18932,7 +20644,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18948,7 +20662,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -18956,7 +20672,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -18981,7 +20699,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -18996,7 +20716,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19004,7 +20726,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19020,7 +20744,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19028,7 +20754,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19057,7 +20785,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19072,7 +20802,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19080,7 +20812,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19096,7 +20830,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19104,7 +20840,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19142,7 +20880,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19150,7 +20890,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19166,7 +20908,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19174,7 +20918,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19190,7 +20936,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19198,7 +20946,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19240,7 +20990,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19248,7 +21000,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19264,7 +21018,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19272,7 +21028,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19288,7 +21046,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19296,7 +21056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19337,7 +21099,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19345,7 +21109,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19361,7 +21127,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19369,7 +21137,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19385,7 +21155,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19393,7 +21165,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19435,7 +21209,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19443,7 +21219,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19459,7 +21237,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19467,7 +21247,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19483,7 +21265,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19491,7 +21275,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19531,7 +21317,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19539,7 +21327,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19555,7 +21345,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19563,7 +21355,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19586,7 +21380,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19601,7 +21397,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19609,7 +21407,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19625,7 +21425,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19633,7 +21435,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19660,7 +21464,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19675,7 +21481,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19683,7 +21491,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19699,7 +21509,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19707,7 +21519,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19731,7 +21545,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19746,7 +21562,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19754,7 +21572,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19770,7 +21590,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19778,7 +21600,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19802,7 +21626,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19817,7 +21643,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19825,7 +21653,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19841,7 +21671,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19849,7 +21681,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19877,7 +21711,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19892,7 +21728,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19900,7 +21738,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19916,7 +21756,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19924,7 +21766,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19948,7 +21792,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -19963,7 +21809,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19971,7 +21819,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -19987,7 +21837,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -19995,7 +21847,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20019,7 +21873,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20034,7 +21890,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20042,7 +21900,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20058,7 +21918,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20066,7 +21928,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20089,7 +21953,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20104,7 +21970,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20112,7 +21980,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20128,7 +21998,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20136,7 +22008,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20161,7 +22035,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20176,7 +22052,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20184,7 +22062,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20200,7 +22080,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20208,7 +22090,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20231,7 +22115,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20246,7 +22132,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20254,7 +22142,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20270,7 +22160,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20278,7 +22170,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20305,7 +22199,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20320,7 +22216,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20328,7 +22226,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20344,7 +22244,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20352,7 +22254,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20373,7 +22277,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20388,7 +22294,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20396,7 +22304,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20412,7 +22322,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20420,7 +22332,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20445,7 +22359,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20460,7 +22376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20468,7 +22386,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20484,7 +22404,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20492,7 +22414,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20519,7 +22443,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20534,7 +22460,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20542,7 +22470,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20558,7 +22488,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20566,7 +22498,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20591,7 +22525,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20606,7 +22542,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20614,7 +22552,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20630,7 +22570,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20638,7 +22580,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20663,7 +22607,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20678,7 +22624,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20686,7 +22634,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20702,7 +22652,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20710,7 +22662,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20733,7 +22687,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20748,7 +22704,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20756,7 +22714,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20772,7 +22732,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20780,7 +22742,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20807,7 +22771,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20822,7 +22788,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20830,7 +22798,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20846,7 +22816,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20854,7 +22826,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20879,7 +22853,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -20894,7 +22870,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20902,7 +22880,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20918,7 +22898,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20926,7 +22908,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20964,7 +22948,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20972,7 +22958,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -20988,7 +22976,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -20996,7 +22986,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21012,7 +23004,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21020,7 +23014,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21060,7 +23056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21068,7 +23066,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21084,7 +23084,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21092,7 +23094,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21108,7 +23112,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21116,7 +23122,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21160,7 +23168,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21168,7 +23178,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21184,7 +23196,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21192,7 +23206,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21208,7 +23224,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21216,7 +23234,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21257,7 +23277,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21265,7 +23287,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21281,7 +23305,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21289,7 +23315,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21305,7 +23333,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21313,7 +23343,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21403,7 +23435,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21411,7 +23445,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21427,7 +23463,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21435,7 +23473,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21496,7 +23536,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21504,7 +23546,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21520,7 +23564,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21528,7 +23574,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21551,7 +23599,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21566,7 +23616,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21574,7 +23626,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21590,7 +23644,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21598,7 +23654,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21625,7 +23683,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21640,7 +23700,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21648,7 +23710,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21664,7 +23728,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21672,7 +23738,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21693,7 +23761,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21708,7 +23778,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21716,7 +23788,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21732,7 +23806,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21740,7 +23816,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21761,7 +23839,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21776,7 +23856,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21784,7 +23866,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21800,7 +23884,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21808,7 +23894,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21831,7 +23919,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21846,7 +23936,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21854,7 +23946,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21870,7 +23964,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21878,7 +23974,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21899,7 +23997,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21914,7 +24014,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21922,7 +24024,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21938,7 +24042,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21946,7 +24052,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -21973,7 +24081,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -21988,7 +24098,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -21996,7 +24108,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22012,7 +24126,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22020,7 +24136,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22043,7 +24161,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22058,7 +24178,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22066,7 +24188,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22082,7 +24206,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22090,7 +24216,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22111,7 +24239,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22126,7 +24256,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22134,7 +24266,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22150,7 +24284,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22158,7 +24294,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22185,7 +24323,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22200,7 +24340,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22208,7 +24350,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22224,7 +24368,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22232,7 +24378,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22253,7 +24401,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22268,7 +24418,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22276,7 +24428,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22292,7 +24446,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22300,7 +24456,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22325,7 +24483,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22340,7 +24500,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22348,7 +24510,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22364,7 +24528,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22372,7 +24538,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22393,7 +24561,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22408,7 +24578,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22416,7 +24588,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22432,7 +24606,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22440,7 +24616,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22466,7 +24644,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22481,7 +24661,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22489,7 +24671,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22505,7 +24689,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22513,7 +24699,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22538,7 +24726,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22553,7 +24743,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22561,7 +24753,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22577,7 +24771,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22585,7 +24781,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22606,7 +24804,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22621,7 +24821,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22629,7 +24831,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22645,7 +24849,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22653,7 +24859,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22678,7 +24886,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22693,7 +24903,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22701,7 +24913,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22717,7 +24931,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22725,7 +24941,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22746,7 +24964,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22761,7 +24981,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22769,7 +24991,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22785,7 +25009,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22793,7 +25019,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22818,7 +25046,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22833,7 +25063,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22841,7 +25073,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22857,7 +25091,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22865,7 +25101,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22890,7 +25128,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22905,7 +25145,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22913,7 +25155,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22929,7 +25173,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22937,7 +25183,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22958,7 +25206,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -22973,7 +25223,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -22981,7 +25233,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -22997,7 +25251,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23005,7 +25261,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23026,7 +25284,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23041,7 +25301,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23049,7 +25311,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23065,7 +25329,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23073,7 +25339,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23096,7 +25364,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23111,7 +25381,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23119,7 +25391,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23135,7 +25409,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23143,7 +25419,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23164,7 +25442,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23179,7 +25459,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23187,7 +25469,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23203,7 +25487,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23211,7 +25497,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23232,7 +25520,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23247,7 +25537,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23255,7 +25547,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23271,7 +25565,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23279,7 +25575,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23300,7 +25598,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23315,7 +25615,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23323,7 +25625,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23339,7 +25643,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23347,7 +25653,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23372,7 +25680,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23387,7 +25697,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23395,7 +25707,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23411,7 +25725,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23419,7 +25735,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23442,7 +25760,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23457,7 +25777,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23465,7 +25787,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23481,7 +25805,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23489,7 +25815,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23516,7 +25844,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23531,7 +25861,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23539,7 +25871,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23555,7 +25889,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23563,7 +25899,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23586,7 +25924,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23601,7 +25941,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23609,7 +25951,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23625,7 +25969,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23633,7 +25979,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23660,7 +26008,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23675,7 +26025,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23683,7 +26035,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23699,7 +26053,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23707,7 +26063,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23732,7 +26090,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23747,7 +26107,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23755,7 +26117,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23771,7 +26135,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23779,7 +26145,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23806,7 +26174,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23821,7 +26191,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23829,7 +26201,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23845,7 +26219,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23853,7 +26229,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23876,7 +26254,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -23891,7 +26271,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23899,7 +26281,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23915,7 +26299,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23923,7 +26309,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23963,7 +26351,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23971,7 +26361,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -23987,7 +26379,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -23995,7 +26389,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24037,7 +26433,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24045,7 +26443,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24061,7 +26461,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24069,7 +26471,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24112,7 +26516,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24120,7 +26526,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24136,7 +26544,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24144,7 +26554,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24171,7 +26583,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24186,7 +26600,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24194,7 +26610,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24210,7 +26628,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24218,7 +26638,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24241,7 +26663,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24256,7 +26680,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24264,7 +26690,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24280,7 +26708,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24288,7 +26718,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24315,7 +26747,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24330,7 +26764,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24338,7 +26774,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24354,7 +26792,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24362,7 +26802,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24385,7 +26827,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24400,7 +26844,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24408,7 +26854,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24424,7 +26872,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24432,7 +26882,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24457,7 +26909,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24472,7 +26926,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24480,7 +26936,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24496,7 +26954,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24504,7 +26964,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24531,7 +26993,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24546,7 +27010,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24554,7 +27020,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24570,7 +27038,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24578,7 +27048,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24607,7 +27079,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24622,7 +27096,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24630,7 +27106,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24646,7 +27124,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24654,7 +27134,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24681,7 +27163,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24696,7 +27180,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24704,7 +27190,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24720,7 +27208,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24728,7 +27218,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24753,7 +27245,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24768,7 +27262,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24776,7 +27272,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24792,7 +27290,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24800,7 +27300,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24829,7 +27331,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24844,7 +27348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24852,7 +27358,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24868,7 +27376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24876,7 +27386,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24901,7 +27413,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -24916,7 +27430,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24924,7 +27440,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24940,7 +27458,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24948,7 +27468,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -24975,7 +27497,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -24990,7 +27514,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -24998,7 +27524,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25014,7 +27542,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25022,7 +27552,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25038,7 +27570,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25046,7 +27580,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25069,7 +27605,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25084,7 +27622,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25092,7 +27632,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25108,7 +27650,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25116,7 +27660,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25139,7 +27685,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25154,7 +27702,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25162,7 +27712,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25178,7 +27730,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25186,7 +27740,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25209,7 +27765,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25224,7 +27782,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25232,7 +27792,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25248,7 +27810,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25256,7 +27820,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25279,7 +27845,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25294,7 +27862,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25302,7 +27872,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25318,7 +27890,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25326,7 +27900,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25347,7 +27923,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25362,7 +27940,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25370,7 +27950,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25386,7 +27968,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25394,7 +27978,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25415,7 +28001,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25430,7 +28018,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25438,7 +28028,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25454,7 +28046,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25462,7 +28056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25483,7 +28079,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25498,7 +28096,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25506,7 +28106,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25522,7 +28124,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25530,7 +28134,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25553,7 +28159,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25568,7 +28176,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25576,7 +28186,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25592,7 +28204,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25600,7 +28214,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25627,7 +28243,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25642,7 +28260,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25650,7 +28270,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25666,7 +28288,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25674,7 +28298,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25695,7 +28321,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25710,7 +28338,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25718,7 +28348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25734,7 +28366,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25742,7 +28376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25767,7 +28403,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -25782,7 +28420,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25790,7 +28430,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25806,7 +28448,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25814,7 +28458,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25853,7 +28499,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25861,7 +28509,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25877,7 +28527,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25885,7 +28537,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25927,7 +28581,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25935,7 +28591,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25951,7 +28609,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -25959,7 +28619,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -25999,7 +28661,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26007,7 +28671,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26023,7 +28689,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26031,7 +28699,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26069,7 +28739,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26077,7 +28749,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26093,7 +28767,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26101,7 +28777,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26139,7 +28817,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26147,7 +28827,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26163,7 +28845,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26171,7 +28855,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26211,7 +28897,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26219,7 +28907,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26235,7 +28925,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26243,7 +28935,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26285,7 +28979,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26293,7 +28989,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26309,7 +29007,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26317,7 +29017,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26359,7 +29061,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26367,7 +29071,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26383,7 +29089,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26391,7 +29099,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26431,7 +29141,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26439,7 +29151,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26455,7 +29169,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26463,7 +29179,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26484,7 +29202,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26499,7 +29219,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26507,7 +29229,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26523,7 +29247,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26531,7 +29257,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26552,7 +29280,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26567,7 +29297,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26575,7 +29307,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26591,7 +29325,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26599,7 +29335,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26622,7 +29360,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26637,7 +29377,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26645,7 +29387,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26661,7 +29405,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26669,7 +29415,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26690,7 +29438,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26705,7 +29455,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26713,7 +29465,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26729,7 +29483,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26737,7 +29493,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26758,7 +29516,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26773,7 +29533,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26781,7 +29543,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26797,7 +29561,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26805,7 +29571,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26830,7 +29598,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26845,7 +29615,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26853,7 +29625,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26869,7 +29643,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26877,7 +29653,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26904,7 +29682,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26919,7 +29699,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26927,7 +29709,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26943,7 +29727,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26951,7 +29737,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -26972,7 +29760,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -26987,7 +29777,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -26995,7 +29787,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27011,7 +29805,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27019,7 +29815,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27044,7 +29842,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27059,7 +29859,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27067,7 +29869,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27083,7 +29887,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27091,7 +29897,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27116,7 +29924,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27131,7 +29941,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27139,7 +29951,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27155,7 +29969,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27163,7 +29979,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27188,7 +30006,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27203,7 +30023,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27211,7 +30033,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27227,7 +30051,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27235,7 +30061,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27259,7 +30087,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27274,7 +30104,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27282,7 +30114,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27298,7 +30132,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27306,7 +30142,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27327,7 +30165,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27342,7 +30182,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27350,7 +30192,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27366,7 +30210,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27374,7 +30220,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27395,7 +30243,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27410,7 +30260,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27418,7 +30270,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27434,7 +30288,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27442,7 +30298,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27463,7 +30321,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27478,7 +30338,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27486,7 +30348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27502,7 +30366,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27510,7 +30376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27531,7 +30399,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27546,7 +30416,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27554,7 +30426,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27570,7 +30444,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27578,7 +30454,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27601,7 +30479,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27616,7 +30496,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27624,7 +30506,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27640,7 +30524,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27648,7 +30534,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27669,7 +30557,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27684,7 +30574,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27692,7 +30584,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27708,7 +30602,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27716,7 +30612,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27741,7 +30639,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27756,7 +30656,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27764,7 +30666,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27780,7 +30684,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27788,7 +30694,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27813,7 +30721,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27828,7 +30738,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27836,7 +30748,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27852,7 +30766,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27860,7 +30776,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27885,7 +30803,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27900,7 +30820,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27908,7 +30830,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27924,7 +30848,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27932,7 +30858,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27955,7 +30883,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -27970,7 +30900,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -27978,7 +30910,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -27994,7 +30928,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28002,7 +30938,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28031,7 +30969,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28046,7 +30986,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28054,7 +30996,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28070,7 +31014,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28078,7 +31024,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28101,7 +31049,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28116,7 +31066,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28124,7 +31076,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28140,7 +31094,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28148,7 +31104,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28177,7 +31135,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28192,7 +31152,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28200,7 +31162,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28216,7 +31180,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28224,7 +31190,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28249,7 +31217,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28264,7 +31234,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28272,7 +31244,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28288,7 +31262,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28296,7 +31272,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28325,7 +31303,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28340,7 +31320,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28348,7 +31330,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28364,7 +31348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28372,7 +31358,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28397,7 +31385,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28412,7 +31402,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28420,7 +31412,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28436,7 +31430,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28444,7 +31440,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28473,7 +31471,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28488,7 +31488,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28496,7 +31498,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28512,7 +31516,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28520,7 +31526,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28544,7 +31552,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28559,7 +31569,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28567,7 +31579,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28583,7 +31597,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28591,7 +31607,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28630,7 +31648,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28638,7 +31658,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28654,7 +31676,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28662,7 +31686,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28683,7 +31709,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28698,7 +31726,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28706,7 +31736,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28722,7 +31754,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28730,7 +31764,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28751,7 +31787,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28766,7 +31804,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28774,7 +31814,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28790,7 +31832,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28798,7 +31842,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28823,7 +31869,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28838,7 +31886,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28846,7 +31896,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28862,7 +31914,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28870,7 +31924,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28891,7 +31947,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28906,7 +31964,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28914,7 +31974,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28930,7 +31992,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28938,7 +32002,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -28963,7 +32029,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -28978,7 +32046,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -28986,7 +32056,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29002,7 +32074,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29010,7 +32084,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29033,7 +32109,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29048,7 +32126,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29056,7 +32136,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29072,7 +32154,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29080,7 +32164,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29107,7 +32193,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29122,7 +32210,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29130,7 +32220,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29146,7 +32238,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29154,7 +32248,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29177,7 +32273,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29192,7 +32290,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29200,7 +32300,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29216,7 +32318,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29224,7 +32328,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29251,7 +32357,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29266,7 +32374,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29274,7 +32384,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29290,7 +32402,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29298,7 +32412,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29321,7 +32437,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29336,7 +32454,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29344,7 +32464,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29360,7 +32482,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29368,7 +32492,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29391,7 +32517,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29406,7 +32534,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29414,7 +32544,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29430,7 +32562,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29438,7 +32572,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29476,7 +32612,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29484,7 +32622,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29500,7 +32640,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29508,7 +32650,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29529,7 +32673,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29544,7 +32690,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29552,7 +32700,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29568,7 +32718,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29576,7 +32728,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29597,7 +32751,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -29612,7 +32768,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29620,7 +32778,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29636,7 +32796,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29644,7 +32806,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29687,7 +32851,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29695,7 +32861,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29711,7 +32879,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29719,7 +32889,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29744,7 +32916,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -29759,7 +32933,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29767,7 +32943,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29783,7 +32961,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29791,7 +32971,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29807,7 +32989,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29815,7 +32999,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29840,7 +33026,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -29855,7 +33043,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29863,7 +33053,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29879,7 +33071,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29887,7 +33081,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29903,7 +33099,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29911,7 +33109,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29936,7 +33136,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -29951,7 +33153,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29959,7 +33163,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29975,7 +33181,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -29983,7 +33191,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -29999,7 +33209,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30007,7 +33219,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30032,7 +33246,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Run not found (no events for ``run_id``) */
@@ -30047,7 +33263,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30055,7 +33273,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30071,7 +33291,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30079,7 +33301,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30095,7 +33319,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30103,7 +33329,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30130,7 +33358,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30145,7 +33375,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30153,7 +33385,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30169,7 +33403,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30177,7 +33413,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30200,7 +33438,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30215,7 +33455,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30223,7 +33465,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30239,7 +33483,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30247,7 +33493,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30273,7 +33521,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30288,7 +33538,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30296,7 +33548,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30312,7 +33566,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30320,7 +33576,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30350,7 +33608,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30365,7 +33625,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30373,7 +33635,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30389,7 +33653,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30397,7 +33663,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30423,7 +33691,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30438,7 +33708,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30446,7 +33718,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30462,7 +33736,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30470,7 +33746,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30500,7 +33778,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30515,7 +33795,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30523,7 +33805,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30539,7 +33823,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30547,7 +33833,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30575,7 +33863,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30590,7 +33880,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30598,7 +33890,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30614,7 +33908,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30622,7 +33918,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30658,7 +33956,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30666,7 +33966,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30682,7 +33984,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30690,7 +33994,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30729,7 +34035,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30737,7 +34045,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30753,7 +34063,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30761,7 +34073,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30800,7 +34114,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30808,7 +34124,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30824,7 +34142,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30832,7 +34152,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30853,7 +34175,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30868,7 +34192,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30876,7 +34202,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30892,7 +34220,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30900,7 +34230,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30936,7 +34268,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30944,7 +34278,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -30960,7 +34296,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -30968,7 +34306,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31008,7 +34348,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31016,7 +34358,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31032,7 +34376,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31040,7 +34386,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31083,7 +34431,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31091,7 +34441,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31107,7 +34459,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31115,7 +34469,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31131,7 +34487,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31139,7 +34497,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31160,7 +34520,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31175,7 +34537,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31183,7 +34547,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31199,7 +34565,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31207,7 +34575,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31232,7 +34602,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31247,7 +34619,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31255,7 +34629,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31271,7 +34647,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31279,7 +34657,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31302,7 +34682,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Record<string, never>;
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -31317,7 +34699,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31325,7 +34709,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };
@@ -31341,7 +34727,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                     "application/problem+json": {
                         /** Code */
@@ -31349,7 +34737,9 @@ export interface operations {
                         /** Message */
                         message: string;
                         /** Details */
-                        details?: Record<string, never> | null;
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
                     };
                 };
             };

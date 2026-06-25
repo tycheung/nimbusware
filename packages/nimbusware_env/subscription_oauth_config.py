@@ -54,9 +54,7 @@ def load_subscription_oauth_config(provider_id: str) -> SubscriptionOAuthConfig:
     client_id = _resolve_env("CLIENT_ID", provider_id=provider_id)
     secret = _resolve_env("CLIENT_SECRET", provider_id=provider_id) or None
     redirect = _resolve_env("REDIRECT_URI", provider_id=provider_id) or _default_redirect_uri()
-    scopes = (
-        _resolve_env("SCOPES", provider_id=provider_id) or "openid profile offline_access"
-    )
+    scopes = _resolve_env("SCOPES", provider_id=provider_id) or "openid profile offline_access"
     return SubscriptionOAuthConfig(
         issuer=issuer,
         client_id=client_id,

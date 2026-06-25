@@ -139,7 +139,5 @@ def test_subscription_oauth_status_reports_not_ready_without_client_id(
         headers={"X-Nimbusware-Admin-Token": DEFAULT_NIMBUSWARE_ADMIN_TOKEN},
     )
     assert res.status_code == 200
-    chatgpt = next(
-        row for row in res.json()["providers"] if row["provider_id"] == "chatgpt_plus"
-    )
+    chatgpt = next(row for row in res.json()["providers"] if row["provider_id"] == "chatgpt_plus")
     assert chatgpt["oauth_ready"] is False

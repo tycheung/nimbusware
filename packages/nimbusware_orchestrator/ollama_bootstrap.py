@@ -16,7 +16,11 @@ def bootstrap_ollama_from_repo(
     scripts_install = repo_root.resolve() / "scripts" / "install"
     if str(scripts_install) not in sys.path:
         sys.path.insert(0, str(scripts_install))
-    from ollama_setup import OllamaSetupError, bootstrap_ollama, ollama_api_host  # noqa: PLC0415
+    from ollama_setup import (  # type: ignore[import-not-found]
+        OllamaSetupError,
+        bootstrap_ollama,
+        ollama_api_host,
+    )
 
     writer = log or (lambda _msg: None)
     host = ollama_api_host()

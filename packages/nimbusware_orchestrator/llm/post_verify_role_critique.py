@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from uuid import UUID
 
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
@@ -18,7 +19,10 @@ def bind_post_verify_role_critique(
     stage_name: str,
     evidence_tag: str,
     review_label: str | None = None,
-):
+) -> tuple[
+    Callable[..., None],
+    Callable[..., bool],
+]:
     label = review_label or producer_tax_key.replace("_", " ")
 
     def emit_stub_panel(

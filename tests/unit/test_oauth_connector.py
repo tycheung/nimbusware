@@ -62,7 +62,9 @@ def test_exchange_authorization_code_posts_to_token_endpoint() -> None:
             "token_endpoint": "https://tenant.auth0.com/oauth/token",
         },
     ):
-        with patch("nimbusware_console.services.oauth_connector.httpx.Client", return_value=mock_client):
+        with patch(
+            "nimbusware_console.services.oauth_connector.httpx.Client", return_value=mock_client
+        ):
             tokens = exchange_authorization_code(cfg, code="code-1", code_verifier="verifier-1")
     assert tokens["refresh_token"] == "rt"
     mock_client.post.assert_called_once()

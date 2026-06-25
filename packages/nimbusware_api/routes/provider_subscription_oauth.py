@@ -29,6 +29,7 @@ from nimbusware_console.services.oauth_connector import (
 from nimbusware_env.admin_token import nimbusware_admin_token
 from nimbusware_env.env_flags import nimbusware_database_url
 from nimbusware_env.subscription_oauth_config import (
+    SubscriptionOAuthConfig,
     load_subscription_oauth_config,
     subscription_oauth_mock_enabled,
 )
@@ -168,7 +169,7 @@ def _upsert_subscription_oauth(
     return _row_to_public(row)
 
 
-def _config_for_provider(repo_root: Path, provider_id: str):
+def _config_for_provider(repo_root: Path, provider_id: str) -> SubscriptionOAuthConfig:
     cfg = load_subscription_oauth_config(provider_id)
     preset = subscription_preset_by_id(repo_root, provider_id) or {}
     oauth_block = preset.get("oauth")
@@ -333,9 +334,7 @@ def subscription_oauth_callback(
         provider_id=provider_id,
         oauth_refresh_token=refresh_token,
     )
-    return_url = (
-        f"{_MAKER_RETURN}&oauth=linked&provider_id={quote(provider_id)}"
-    )
+    return_url = f"{_MAKER_RETURN}&oauth=linked&provider_id={quote(provider_id)}"
     response = RedirectResponse(url=return_url, status_code=302)
     response.delete_cookie(_PKCE_COOKIE, path=_COOKIE_PATH)
     return response

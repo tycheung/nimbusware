@@ -65,8 +65,10 @@ def build_enterprise_audit_bundle_bytes(
     slice_commits: list[dict[str, Any]] = []
     learnings_rows: list[dict[str, Any]] = []
     for row in events:
-        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
-        payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        raw_meta = row.get("metadata")
+        meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
+        raw_payload = row.get("payload")
+        payload: dict[str, Any] = raw_payload if isinstance(raw_payload, dict) else {}
         snap = meta.get("policy_snapshot") or payload.get("policy_snapshot")
         if snap:
             policy_snapshots.append(
@@ -104,8 +106,10 @@ def build_enterprise_audit_bundle_bytes(
 
         workspace_paths: set[str] = set()
         for row in events:
-            meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
-            project = meta.get("project") if isinstance(meta.get("project"), dict) else {}
+            raw_ws_meta = row.get("metadata")
+            ws_meta: dict[str, Any] = raw_ws_meta if isinstance(raw_ws_meta, dict) else {}
+            raw_project = ws_meta.get("project")
+            project: dict[str, Any] = raw_project if isinstance(raw_project, dict) else {}
             ws = project.get("workspace_path")
             if isinstance(ws, str) and ws.strip():
                 workspace_paths.add(ws.strip())
@@ -155,8 +159,8 @@ def build_enterprise_audit_bundle_bytes(
         )
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
-        for name, payload in entries:
-            data = payload.encode("utf-8")
+        for name, file_body in entries:
+            data = file_body.encode("utf-8")
             info = tarfile.TarInfo(name=name)
             info.size = len(data)
             tar.addfile(info, io.BytesIO(data))

@@ -96,7 +96,7 @@ def active_roles_for_context(
     return sorted(found)
 
 
-def _resolve_api_key(binding, *, user_id: str = "") -> str | None:
+def _resolve_api_key(binding: Any, *, user_id: str = "") -> str | None:
     from nimbusware_orchestrator.binding_credentials import resolve_binding_api_key
 
     return resolve_binding_api_key(binding, user_id=user_id)
