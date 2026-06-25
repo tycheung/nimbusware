@@ -28,6 +28,12 @@ Safe Coding is for builders who want working software with **fewer errors**, not
 
 Progress and Review show gate steps as short sentences (e.g. “Automated tests: failed — review before continuing”) instead of raw stage ids.
 
+## Workspace helpers
+
+- **Readiness** — `GET /v1/platform/workspace-readiness?workspace_path=` checks for Playwright, tests, and project markers.
+- **Scaffold** — `POST /v1/platform/workspace-scaffold` adds minimal `tests/e2e` or `tests/test_smoke.py` when missing.
+- **Pre-commit** — `POST /v1/platform/workspace-precommit` installs a consumer `.pre-commit-config.yaml` template (ruff + pytest smoke).
+
 ## Related docs
 
 - [maker.md](maker.md) — Maker tabs and operator ribbons
