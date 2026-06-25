@@ -1,4 +1,5 @@
 import { formatGateSummary } from "../../gate-summary.js";
+import { formatPlainGateSummary } from "../../plain-language.js";
 
 const BLOCKING_SEVERITIES = new Set(["BLOCKER", "HIGH"]);
 
@@ -106,7 +107,7 @@ export function renderFindings(findings) {
 export function renderGateSummaryBanner(body) {
   const mount = document.getElementById("gate-summary-banner");
   if (!mount) return;
-  const text = formatGateSummary(body.gate_summary);
+  const text = formatPlainGateSummary(body.gate_summary) || formatGateSummary(body.gate_summary);
   if (!text) {
     mount.hidden = true;
     mount.textContent = "";

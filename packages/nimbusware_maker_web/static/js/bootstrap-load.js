@@ -2,6 +2,7 @@ import {
   applyBootstrapDefaultProfilesIfUnset,
   setBootstrapDefaultProfiles,
 } from "./operator-default-profiles.js";
+import { maybeShowArchetypePicker } from "./archetype-picker.js";
 
 const res = await fetch("/v1/maker/app/bootstrap.json", { headers: { Accept: "application/json" } });
 if (res.ok) {
@@ -11,3 +12,4 @@ if (res.ok) {
 }
 setBootstrapDefaultProfiles(window.__NIMBUSWARE__?.default_profiles);
 applyBootstrapDefaultProfilesIfUnset();
+maybeShowArchetypePicker();

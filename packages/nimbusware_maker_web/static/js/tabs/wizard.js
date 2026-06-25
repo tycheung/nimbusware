@@ -21,12 +21,12 @@ export async function mountWizard(root) {
     <section class="guided-campaign" data-testid="maker-guided-campaign">
       <h3>First-run setup</h3>
       <p class="muted" data-testid="maker-guided-quick-hint">
-        New here? Run <code>poetry run nimbusware-run --quick</code> in a terminal for an in-memory
-        demo (stub critics, no Postgres), then open Chat below.
+        New here? Use <strong>Open Chat</strong> below for an API-driven demo, or pick a project on Home
+        and start from Chat — no terminal required when the platform is already running.
       </p>
       <ol id="guided-checklist" class="guided-checklist"></ol>
       <div class="actions">
-        <button type="button" id="wizard-start-quick" class="primary" data-testid="maker-guided-start-quick">Open Chat (quick demo)</button>
+        <button type="button" id="wizard-start-quick" class="primary" data-testid="maker-guided-start-quick">Open Chat</button>
         <button type="button" id="wizard-start-campaign" data-testid="maker-guided-start-campaign">Start guided campaign</button>
         <button type="button" id="wizard-start-build">Quick build (non-campaign)</button>
         <button type="button" id="wizard-done" class="secondary">Mark setup complete</button>
@@ -50,7 +50,7 @@ export async function mountWizard(root) {
 
   root.querySelector("#wizard-start-quick")?.addEventListener("click", () => {
     window.location.hash = "/chat";
-    toast("Use Chat with --quick running, or attach tests/fixtures/repos/tiny_python_app", "info");
+    toast("Describe what you want to build in Chat — pick Safe Coding or Engineer preset if prompted.", "info");
   });
   root.querySelector("#wizard-start-campaign")?.addEventListener("click", () => {
     const sel = document.querySelector("#build-project-select");

@@ -1010,3 +1010,31 @@ button.intent-card:hover {
   margin-top: 0.5rem;
   font-size: 0.875rem;
 }
+
+.archetype-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.archetype-picker {
+  max-width: 28rem;
+  padding: 1.25rem;
+}
+
+.archetype-picker-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.archetype-picker-actions .block {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: normal;
+}

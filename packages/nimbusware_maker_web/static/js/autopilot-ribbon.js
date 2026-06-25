@@ -1,4 +1,4 @@
-import { apiJson, toast } from "./api-client.js";
+import { plainCheckpointLabel } from "./plain-language.js";
 import { loadPlatformUserProfiles, populateProfileSelect, ribbonControl } from "./ribbon-shared.js";
 
 export const AUTOPILOT_CHECKPOINT_CATALOG = [
@@ -26,7 +26,7 @@ export function renderAutopilotCheckpoints(mount, selected) {
     box.dataset.testid = `maker-autopilot-cp-${id}`;
     box.checked = selectedSet.has(id);
     label.appendChild(box);
-    label.append(` ${id.replaceAll("_", " ")}`);
+    label.append(` ${plainCheckpointLabel(id)}`);
     mount.appendChild(label);
   });
 }

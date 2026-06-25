@@ -2,6 +2,7 @@ import { apiJson, toast } from "../api-client.js";
 import {
   defaultAutopilotProfileId,
   defaultEnforcementProfileId,
+  defaultWorkflowProfileId,
 } from "../operator-default-profiles.js";
 import { setActiveProjectId, setActiveRun, syncRunIdToShell } from "../session-hub.js";
 import { ensureRunCard } from "./chat_theater_ui.js";
@@ -103,6 +104,8 @@ async function startRunFromSession(
   if (profileId) startPayload.autopilot_profile_id = profileId;
   const enforcementProfileId = defaultEnforcementProfileId();
   if (enforcementProfileId) startPayload.enforcement_profile_id = enforcementProfileId;
+  const workflowProfileId = defaultWorkflowProfileId();
+  if (workflowProfileId) startPayload.workflow_profile = workflowProfileId;
   if (message) {
     startPayload.requirements = { business_prompt: message };
   }

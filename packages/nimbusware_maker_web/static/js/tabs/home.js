@@ -54,6 +54,12 @@ function openChatIntent(intent, extra = {}) {
 export async function mountHome(root) {
   root.innerHTML = `<div id="models-first-mount"></div>
     <div id="readiness-mount"></div>
+    <section class="maker-safe-coding panel" data-testid="maker-home-safe-coding" id="safe-coding-panel" hidden>
+      <h3>Safe Coding</h3>
+      <p class="muted">Extra checkpoints and approval before apply — best for non-engineers.</p>
+      <a href="#/chat?intent=slice" data-testid="maker-home-safe-coding-link">Start in Chat with Safe Coding preset</a>
+      · <a href="https://github.com/nimbusware/nimbusware/blob/main/docs/product/safe-coding.md" target="_blank" rel="noopener">Guide</a>
+    </section>
     <section class="maker-intents panel" data-testid="maker-home-intents">
       <h3>What do you want to do?</h3>
       <p class="muted">Pick an intent — Chat maps it to the right workflow (no raw profile names).</p>
@@ -93,6 +99,10 @@ export async function mountHome(root) {
   try {
     const readiness = await apiJson("/platform/readiness");
     renderReadiness(root.querySelector("#readiness-mount"), readiness);
+    const safePanel = root.querySelector("#safe-coding-panel");
+    if (safePanel && readiness.setup_bundle === "default") {
+      safePanel.hidden = false;
+    }
   } catch (e) {
     toast(String(e.message || e), "error");
   }

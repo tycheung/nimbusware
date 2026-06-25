@@ -48,9 +48,15 @@ export function defaultOperatorProfileIds() {
   };
 }
 
+export function defaultWorkflowProfileId() {
+  return readStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY);
+}
+
 export function applyDefaultProfilesToPayload(payload) {
   const { autopilot, enforcement } = defaultOperatorProfileIds();
+  const workflow = defaultWorkflowProfileId();
   if (autopilot) payload.autopilot_profile_id = autopilot;
   if (enforcement) payload.enforcement_profile_id = enforcement;
+  if (workflow) payload.workflow_profile = workflow;
   return payload;
 }
