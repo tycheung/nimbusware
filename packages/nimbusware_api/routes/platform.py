@@ -3,15 +3,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
+from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_api.routes.platform_hardware import router as hardware_router
 from nimbusware_api.routes.platform_model_routing import router as model_routing_router
+from nimbusware_api.routes.platform_operator_profiles import router as operator_profiles_router
 from nimbusware_api.routes.platform_user_profiles import router as user_profiles_router
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles
+from nimbusware_maker.consumer_precommit_install import install_workspace_precommit
+from nimbusware_maker.consumer_test_scaffold import scaffold_consumer_tests
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace_readiness import assess_workspace_readiness
@@ -19,11 +23,38 @@ from nimbusware_maker.workspace_readiness import assess_workspace_readiness
 router = APIRouter(tags=["platform"])
 router.include_router(hardware_router)
 router.include_router(user_profiles_router)
+router.include_router(operator_profiles_router)
 router.include_router(model_routing_router)
 
 
 class OptimizerWeightsBody(BaseModel):
     weights: dict[str, float] = Field(default_factory=dict)
+
+
+class WorkspacePathBody(BaseModel):
+    workspace_path: str = Field(min_length=1, max_length=2000)
+
+
+@router.post("/platform/workspace-scaffold")
+def post_workspace_scaffold(body: WorkspacePathBody, orch: OrchDep) -> dict[str, Any]:
+    try:
+        return scaffold_consumer_tests(Path(body.workspace_path.strip() or orch.repo_root))
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
+
+
+@router.post("/platform/workspace-precommit")
+def post_workspace_precommit(body: WorkspacePathBody, orch: OrchDep) -> dict[str, Any]:
+    try:
+        return install_workspace_precommit(Path(body.workspace_path.strip() or orch.repo_root))
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=problem("invalid_request", str(exc)),
+        ) from exc
 
 
 @router.get("/platform/edition")

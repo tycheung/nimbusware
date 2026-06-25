@@ -55,6 +55,9 @@ universal_critique:
   default_enabled: true
   unanimous_gate_enforce: true
   critic_pack_id: default-security
+  industry_critic_pack_ids:
+    - fintech-api
+    - healthcare-api
 
 integrator_gate:
   enabled: false

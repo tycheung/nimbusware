@@ -57,6 +57,13 @@ export function renderLaunchScorecard(container, scorecard, { testIdPrefix = "la
     status.dataset.testid = `${testIdPrefix}-scorecard-status`;
     container.appendChild(status);
   }
+  if (scorecard.plain_summary) {
+    const plain = document.createElement("p");
+    plain.className = "launch-plain-summary";
+    plain.dataset.testid = `${testIdPrefix}-scorecard-plain-summary`;
+    plain.textContent = String(scorecard.plain_summary);
+    container.appendChild(plain);
+  }
   for (const [label, key] of DEV_ENV_ROWS) {
     if (scorecard[key] == null) continue;
     const row = document.createElement("p");

@@ -24,6 +24,7 @@ class LaunchEvalScorecard:
     passed: bool
     llm_findings: tuple[str, ...] = field(default_factory=tuple)
     llm_dimensions: tuple[tuple[str, float], ...] = field(default_factory=tuple)
+    plain_summary: str = ""
     dev_env_live_regression_passed: bool | None = None
     dev_env_http_regression_passed: bool | None = None
     dev_env_ui_regression_passed: bool | None = None
@@ -65,6 +66,8 @@ class LaunchEvalScorecard:
             payload["dev_env_ui_failed_step"] = self.dev_env_ui_failed_step
         if self.dev_env_ui_failed_locator:
             payload["dev_env_ui_failed_locator"] = self.dev_env_ui_failed_locator
+        if self.plain_summary:
+            payload["plain_summary"] = self.plain_summary
         return payload
 
 
@@ -171,6 +174,18 @@ def _cap(value: float) -> float:
     return min(10.0, value)
 
 
+def _plain_launch_summary(
+    aggregate: float,
+    passed: bool,
+    findings: tuple[str, ...],
+) -> str:
+    status = "ready to launch" if passed else "needs work before launch"
+    base = f"Overall {aggregate:.1f}/10 — {status}"
+    if findings:
+        return f"{base}. Top note: {findings[0]}"
+    return base
+
+
 def _score_has_file(workspace: Path, pattern: str, *, points: float) -> tuple[float, str | None]:
     if list(workspace.rglob(pattern)):
         return points, None
@@ -242,6 +257,7 @@ def evaluate_workspace_rubric(
         f.startswith("pytest collect failed") for f in findings
     )
     llm_findings, llm_dimensions = _llm_panel_extras(ws)
+    plain = _plain_launch_summary(aggregate, passed, tuple(findings))
     return LaunchEvalScorecard(
         aggregate=aggregate,
         maturity=maturity,
@@ -253,6 +269,7 @@ def evaluate_workspace_rubric(
         passed=passed,
         llm_findings=llm_findings,
         llm_dimensions=llm_dimensions,
+        plain_summary=plain,
     )
 
 
@@ -298,6 +315,7 @@ def merge_dev_env_into_scorecard(
         slice_e2e_passed=slice_e2e if isinstance(slice_e2e, bool) else None,
         dev_env_ui_failed_step=int(failed_step) if failed_step is not None else None,
         dev_env_ui_failed_locator=str(failed_locator) if failed_locator else None,
+        plain_summary=scorecard.plain_summary,
     )
 
 

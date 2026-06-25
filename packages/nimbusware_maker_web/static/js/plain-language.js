@@ -19,6 +19,32 @@ const CHECKPOINT_PLAIN = {
   stop_at_terminal_review: "Pause at final review",
 };
 
+export const LAUNCH_EVAL_PLAIN = {
+  aggregate: "Overall readiness",
+  maturity: "Project maturity",
+  maintainability: "Ease of maintenance",
+  scalability: "Room to grow",
+  security: "Security posture",
+  testability: "Test coverage",
+};
+
+export function launchEvalPlainSummary(scorecard) {
+  if (!scorecard || typeof scorecard !== "object") return "";
+  const parts = [];
+  for (const [key, label] of Object.entries(LAUNCH_EVAL_PLAIN)) {
+    const val = scorecard[key];
+    if (val == null) continue;
+    parts.push(`${label}: ${val}/10`);
+  }
+  if (scorecard.passed != null) {
+    parts.push(scorecard.passed ? "Ready to launch" : "Needs work before launch");
+  }
+  if (scorecard.plain_summary) {
+    parts.push(String(scorecard.plain_summary));
+  }
+  return parts.join(" · ");
+}
+
 export const ARCHETYPE_PRESETS = {
   safe_coding: {
     workflow_profile: "safe_coding",
