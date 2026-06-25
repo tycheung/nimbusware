@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Any
 
 
+def audit_redaction(payload: dict[str, Any]) -> dict[str, Any]:
+    from nimbusware_config.tenant_policy_store import audit_redaction as _redact
+
+    return _redact(payload)
+
+
 def audit_retention_days() -> int:
     from nimbusware_env.settings_resolve import resolve_int
 
@@ -39,16 +45,47 @@ def build_enterprise_audit_bundle_bytes(
                 if occurred < since or occurred > until:
                     continue
             events.append(
-                {
-                    "store_seq": row.get("store_seq"),
-                    "run_id": str(row.get("run_id", "")),
-                    "event_type": row.get("event_type"),
-                    "occurred_at": str(occurred),
-                    "metadata": row.get("metadata")
-                    if isinstance(row.get("metadata"), dict)
-                    else {},
-                    "payload": row.get("payload") if isinstance(row.get("payload"), dict) else {},
-                },
+                audit_redaction(
+                    {
+                        "store_seq": row.get("store_seq"),
+                        "run_id": str(row.get("run_id", "")),
+                        "event_type": row.get("event_type"),
+                        "occurred_at": str(occurred),
+                        "metadata": row.get("metadata")
+                        if isinstance(row.get("metadata"), dict)
+                        else {},
+                        "payload": row.get("payload") if isinstance(row.get("payload"), dict) else {},
+                    },
+                ),
+            )
+
+    policy_snapshots: list[dict[str, Any]] = []
+    slice_commits: list[dict[str, Any]] = []
+    learnings_rows: list[dict[str, Any]] = []
+    for row in events:
+        meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        snap = meta.get("policy_snapshot") or payload.get("policy_snapshot")
+        if snap:
+            policy_snapshots.append(
+                audit_redaction(
+                    {
+                        "run_id": row.get("run_id"),
+                        "occurred_at": row.get("occurred_at"),
+                        "policy_snapshot": snap,
+                    },
+                ),
+            )
+        stage = str(payload.get("stage_name") or "")
+        if stage == "slice.git_commit":
+            slice_commits.append(
+                audit_redaction(
+                    {
+                        "run_id": row.get("run_id"),
+                        "occurred_at": row.get("occurred_at"),
+                        **meta,
+                    },
+                ),
             )
 
     research_rows: list[dict[str, Any]] = []
@@ -61,6 +98,21 @@ def build_enterprise_audit_bundle_bytes(
 
         research_rows = list_enterprise_research_index(repo_root)
         egress_rows = export_egress_audit_rows(repo_root)
+        from nimbusware_orchestrator.learnings_catalog import list_workspace_learnings
+
+        workspace_paths: set[str] = set()
+        for row in events:
+            meta = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+            project = meta.get("project") if isinstance(meta.get("project"), dict) else {}
+            ws = project.get("workspace_path")
+            if isinstance(ws, str) and ws.strip():
+                workspace_paths.add(ws.strip())
+        for ws_str in sorted(workspace_paths):
+            ws = Path(ws_str)
+            if not ws.is_dir():
+                continue
+            for item in list_workspace_learnings(ws, limit=20):
+                learnings_rows.append(audit_redaction({**item, "workspace": ws_str}))
 
     manifest = {
         "since": since.isoformat(),
@@ -70,12 +122,27 @@ def build_enterprise_audit_bundle_bytes(
         "event_row_count": len(events),
         "research_index_row_count": len(research_rows),
         "egress_audit_row_count": len(egress_rows),
+        "policy_snapshot_count": len(policy_snapshots),
+        "slice_commit_count": len(slice_commits),
+        "learnings_index_row_count": len(learnings_rows),
     }
     entries: list[tuple[str, str]] = [
         ("manifest.json", json.dumps(manifest, indent=2)),
         ("iam_actions.jsonl", "\n".join(json.dumps(r) for r in iam_rows)),
         ("events.jsonl", "\n".join(json.dumps(e) for e in events)),
     ]
+    if policy_snapshots:
+        entries.append(
+            ("policy_snapshot.json", json.dumps(policy_snapshots, indent=2)),
+        )
+    if slice_commits:
+        entries.append(
+            ("slice_commits.jsonl", "\n".join(json.dumps(r) for r in slice_commits)),
+        )
+    if learnings_rows:
+        entries.append(
+            ("learnings_index.jsonl", "\n".join(json.dumps(r) for r in learnings_rows)),
+        )
     if research_rows:
         entries.append(
             ("research_index.jsonl", "\n".join(json.dumps(r) for r in research_rows)),

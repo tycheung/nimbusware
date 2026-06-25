@@ -9,6 +9,7 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
 from nimbusware_api.routes.enterprise.fleet_enforcement import _tenant_slug_for_ref
+from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from nimbusware_orchestrator.fleet_slice_policy import (
     FleetSlicePolicy,
     load_fleet_slice_policies,
@@ -55,4 +56,5 @@ def put_fleet_slice_policy(
         require_unanimous_gate=body.require_unanimous_gate,
     )
     save_fleet_slice_policies(policies)
+    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="slice")
     return policies[slug].to_dict()

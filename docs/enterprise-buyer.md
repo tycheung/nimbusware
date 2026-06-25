@@ -16,7 +16,7 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 | Control | Implementation |
 |---------|----------------|
 | Run auditability | Append-only event store (`nimbusware_store`); per-run `GET /v1/runs/{id}/audit-export` |
-| Enterprise export | `GET /v1/enterprise/audit-export` — IAM actions, event index, research/egress ledgers |
+| Enterprise export | `GET /v1/enterprise/audit-export` — IAM actions, events, policy snapshots, slice commits, learnings index |
 | Egress policy | Role-gated allowlists in `nimbusware_executor.egress` |
 | Research index | Tenant JSONL under `.nimbusware/enterprise/{tenant}/` — `docs/enterprise-research-index.md` |
 
@@ -26,6 +26,9 @@ One-page summary for security and platform reviewers evaluating Nimbusware **Ent
 |---------|----------------|
 | Fleet memory | `GET /v1/enterprise/fleet-memory/*` — org-scoped index + canonical sync |
 | Fleet learnings | `GET /v1/enterprise/fleet-learnings/search` — learnings markdown across tenant project workspaces |
+| Fleet commit policy | `GET/PUT /v1/enterprise/tenants/{ref}/commit-policy` — auto-commit and message regex |
+| Tenant collab/model policy | Postgres `tenant_policy` namespace per tenant slug |
+| Compliance summary | `GET /v1/enterprise/compliance/summary` — retention, IAM counts, fleet policy coverage |
 | Config propagation | Postgres `LISTEN/NOTIFY` + `config.document.updated` invalidation |
 | Worker health | Redis dispatch worker metrics; Admin **Fleet** tab at `/v1/admin/app/fleet` |
 | Hardware tiers | Local + optional SSH fleet probe; weekly scheduled workflow with failure alerts ([`docs/deploy/ssh-hardware-probe.md`](deploy/ssh-hardware-probe.md)) |

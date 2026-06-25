@@ -20,12 +20,14 @@ class FleetEnforcementPolicy:
     tenant_slug: str
     min_enforcement_level: int = 0
     max_enforcement_level: int = 10
+    required_enforcement_profile_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "tenant_slug": self.tenant_slug,
             "min_enforcement_level": self.min_enforcement_level,
             "max_enforcement_level": self.max_enforcement_level,
+            "required_enforcement_profile_id": self.required_enforcement_profile_id,
         }
 
 
@@ -53,6 +55,9 @@ def load_fleet_enforcement_policies(
             tenant_slug=slug_s,
             min_enforcement_level=max(0, min(10, int(entry.get("min_enforcement_level") or 0))),
             max_enforcement_level=max(0, min(10, int(entry.get("max_enforcement_level") or 10))),
+            required_enforcement_profile_id=str(
+                entry.get("required_enforcement_profile_id") or "",
+            ).strip(),
         )
     return out
 
@@ -68,6 +73,7 @@ def save_fleet_enforcement_policies(
         slug: {
             "min_enforcement_level": p.min_enforcement_level,
             "max_enforcement_level": p.max_enforcement_level,
+            "required_enforcement_profile_id": p.required_enforcement_profile_id,
         }
         for slug, p in sorted(policies.items(), key=lambda x: x[0])
     }
@@ -106,4 +112,13 @@ def enforce_tenant_enforcement_policy(
     repo_root: Path | None = None,
 ) -> EnforcementProfile:
     policy = tenant_enforcement_policy(tenant_slug, repo_root=repo_root)
+    required_id = policy.required_enforcement_profile_id.strip()
+    if required_id:
+        from nimbusware_orchestrator.user_enforcement_profiles import (
+            resolve_user_enforcement_profile,
+        )
+
+        required = resolve_user_enforcement_profile(required_id, repo_root=repo_root)
+        if required is not None:
+            profile = required
     return clamp_profile_to_policy(profile, policy)

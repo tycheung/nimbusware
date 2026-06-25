@@ -10,6 +10,7 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from nimbusware_orchestrator.autopilot_profiles import CHECKPOINT_CATALOG
 from nimbusware_orchestrator.fleet_autopilot_policy import (
     FleetAutopilotPolicy,
@@ -78,4 +79,5 @@ def put_tenant_autopilot_policy(
     policies = load_fleet_autopilot_policies()
     policies[slug] = policy
     save_fleet_autopilot_policies(policies)
+    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="autopilot")
     return policy.to_dict()

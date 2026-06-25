@@ -23,5 +23,7 @@ KEY_CUSTOM_AGENTS_REGISTRY = "registry"
 
 NS_CRITIC_PACKS = "critic_packs"
 
+NS_TENANT_POLICY = "tenant_policy"
+
 NS_MODEL_BINDINGS = "model_bindings"
 KEY_USER_DEFAULTS = "user_defaults"

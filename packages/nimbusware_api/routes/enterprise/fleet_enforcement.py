@@ -10,6 +10,7 @@ from nimbusware_api.admin import AdminDep
 from nimbusware_api.deps import IamStoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.enterprise.core import EnterpriseDep
+from nimbusware_api.routes.enterprise.iam_audit import log_fleet_policy_updated
 from nimbusware_orchestrator.fleet_enforcement_policy import (
     FleetEnforcementPolicy,
     load_fleet_enforcement_policies,
@@ -23,6 +24,7 @@ router = APIRouter(prefix="/enterprise", tags=["enterprise"])
 class FleetEnforcementPolicyBody(BaseModel):
     min_enforcement_level: int = Field(ge=0, le=10, default=0)
     max_enforcement_level: int = Field(ge=0, le=10, default=10)
+    required_enforcement_profile_id: str = Field(default="", max_length=120)
 
     @model_validator(mode="after")
     def _min_lte_max(self) -> FleetEnforcementPolicyBody:
@@ -78,8 +80,10 @@ def put_tenant_enforcement_policy(
         tenant_slug=slug,
         min_enforcement_level=body.min_enforcement_level,
         max_enforcement_level=body.max_enforcement_level,
+        required_enforcement_profile_id=body.required_enforcement_profile_id.strip(),
     )
     policies = load_fleet_enforcement_policies()
     policies[slug] = policy
     save_fleet_enforcement_policies(policies)
+    log_fleet_policy_updated(iam, tenant_slug=slug, policy_kind="enforcement")
     return policy.to_dict()
