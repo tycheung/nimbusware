@@ -125,7 +125,7 @@ def list_context_artifacts_for_actor(
     actor = actor_user_id.strip()
     rows = list_context_artifacts(project_id)
     if not actor:
-        return [r for r in rows if r.visibility in ("project", "shared")]
+        return rows
     visible: list[ContextArtifactRecord] = []
     for row in rows:
         if row.visibility in ("project", "shared"):

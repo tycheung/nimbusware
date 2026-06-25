@@ -10,7 +10,7 @@
     "gates_failed=0",
     "min_pass_rate_ok"
   ],
-  "duration_sec": 23.498,
+  "duration_sec": 30.615,
   "fixture_root": "tests/fixtures/swe_bench/repo",
   "gates_failed": 0,
   "gates_passed": 1,
@@ -19,8 +19,8 @@
   "mode": "run",
   "ok": true,
   "pass_rate": 1.0,
-  "published_at": "2026-06-25T01:45:52.426999Z",
-  "run_id": "d59400a8-2aea-4fca-9bc7-62054f69eae7",
+  "published_at": "2026-06-25T03:38:05.709259Z",
+  "run_id": "cb3af946-eeb3-495f-81e9-18fcedc91bcb",
   "slices_total": 1,
   "workflow_profile": "micro_slice"
 }

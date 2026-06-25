@@ -32,4 +32,6 @@ def test_via_plan_patch_uses_resolver_for_mapped_stage() -> None:
         "planner",
         messages=[{"role": "user", "content": "hi"}],
         timeout_seconds=120.0,
+        participant_overrides=None,
+        actor_user_id="",
     )
