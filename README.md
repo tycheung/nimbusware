@@ -47,6 +47,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 |------------|------------|
 | Install, bootstrap, and run | [docs/getting-started.md](docs/getting-started.md) |
 | Use the Maker app | [docs/product/maker.md](docs/product/maker.md) |
+| Model Hub (API keys + desktop subscriptions) | [docs/model-hub.md](docs/model-hub.md) |
 | Safe Coding persona | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
 | Install profiles & setup bundles | [docs/install-profiles.md](docs/install-profiles.md) |
 | Understand refactor / code-intel | [docs/agent-runtime.md](docs/agent-runtime.md#refactor-stage) |
@@ -114,4 +115,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3035** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **96,001** non-blank Python lines in `packages/` after §20.33 depth work).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3035** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **96,077** non-blank Python lines in `packages/`).

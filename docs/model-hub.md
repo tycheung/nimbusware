@@ -13,10 +13,15 @@ Maker **Models** tab (`#/models`, `data-testid="maker-model-hub"`) is the operat
 
 ### API connections (`#/models?section=api-connections`)
 
-- Provider cards from `GET /v1/platform/provider-presets` (Ollama, OpenAI, Anthropic Messages API, Google Gemini OpenAI-compat, Grok, OpenRouter, custom)
+- Provider cards from `GET /v1/platform/provider-presets` (OpenAI, Anthropic, Google Gemini, Grok, OpenRouter, custom)
 - Per-user vault via `PUT /v1/platform/provider-connections` (secrets encrypted in Postgres)
 - **Test** runs `POST /v1/platform/provider-connections/{id}/probe`
-- API-key providers only (subscription OAuth presets removed)
+
+### Desktop subscriptions (`#/models?section=desktop-subscriptions`)
+
+- ChatGPT Plus and Claude Pro desktop apps (`connection_kind: subscription` in `configs/model_providers.yaml`)
+- **Connect** calls `POST /v1/platform/provider-connections/subscription-link` — marks subscription active on this machine (no API key on the wire)
+- Each collab participant links subscriptions on their own device; secrets never cross session SSE
 
 ### Cursor card
 
@@ -34,6 +39,7 @@ Readiness actions `start_ollama` / `pull_model` deep-link to Model Hub instead o
 | `models_hub_nav.js` | Section hash navigation |
 | `models_local_ui.js` | Ollama panel, ranked wizard, hardware strip |
 | `models_connections_ui.js` | API connection vault cards |
+| `models_subscriptions_ui.js` | Desktop subscription connect cards |
 
 ## Gitops
 
@@ -43,7 +49,8 @@ Readiness actions `start_ollama` / `pull_model` deep-link to Model Hub instead o
 
 | Method | Path |
 |--------|------|
-| GET | `/v1/platform/provider-presets` |
+| GET | `/v1/platform/provider-presets` (includes `subscription_providers`) |
+| POST | `/v1/platform/provider-connections/subscription-link` |
 | GET | `/v1/platform/provider-connections` |
 | PUT | `/v1/platform/provider-connections` |
 | DELETE | `/v1/platform/provider-connections/{connection_id}` |

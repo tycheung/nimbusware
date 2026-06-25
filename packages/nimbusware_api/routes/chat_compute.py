@@ -217,13 +217,14 @@ def put_participant_binding(
     body: ParticipantRoleBindingBody,
     request: Request,
     chat_store: ChatStoreDep,
+    collab_store: CollabStoreDep,
     user: OptionalUserDep,
     _user: UserDep,
 ) -> dict[str, Any]:
     require_collab_enabled()
     _session_or_404(chat_store, session_id)
     actor_id = user.user_id if user is not None else actor_user_id(request, user)
-    require_session_participant(chat_store, session_id=session_id, user_id=actor_id)
+    require_session_participant(collab_store, session_id=session_id, user_id=actor_id)
     sess = chat_store.get_session(session_id)
     meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
     from nimbusware_orchestrator.collab_binding_resolver import (
