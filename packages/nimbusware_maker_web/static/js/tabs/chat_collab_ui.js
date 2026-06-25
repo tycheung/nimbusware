@@ -7,6 +7,19 @@ export { closeInviteModal } from "./chat_invite_modal_ui.js";
 
 let sessionStreamHandle = null;
 
+export function mountMyModelsLink(root) {
+  if (!getCollabMyRole()) return;
+  const strip = root.querySelector("[data-testid='maker-chat-participants']");
+  if (!strip || strip.querySelector("[data-testid='maker-chat-my-models']")) return;
+  const link = document.createElement("a");
+  link.href = "#/models";
+  link.className = "linkish";
+  link.dataset.testid = "maker-chat-my-models";
+  link.textContent = "My models";
+  link.title = "Pick your cloud or local models — secrets stay on your machine";
+  strip.appendChild(link);
+}
+
 export function mountInviteButton(root, sessionId) {
   const role = getCollabMyRole();
   if (role !== "session_admin") return;

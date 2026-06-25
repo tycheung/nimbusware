@@ -108,7 +108,9 @@ class ModelBindingResolver:
         *,
         run_snapshot: dict[str, Any] | None = None,
         session_overrides: dict[str, Any] | None = None,
+        participant_overrides: dict[str, Any] | None = None,
         user_defaults: dict[str, Any] | None = None,
+        per_user_defaults: dict[str, Any] | None = None,
         workflow_bindings: dict[str, Any] | None = None,
         event_overrides: dict[str, Any] | None = None,
     ) -> ResolvedBinding:
@@ -122,6 +124,11 @@ class ModelBindingResolver:
             if block:
                 return _binding_from_block(role, block, source="model.binding.overridden")
 
+        if participant_overrides and role in participant_overrides:
+            block = mapping_or_empty(participant_overrides[role])
+            if block:
+                return _binding_from_block(role, block, source="collab.participant_binding")
+
         if run_snapshot:
             roles = mapping_or_empty(run_snapshot.get("roles"))
             block = mapping_or_empty(roles.get(role))
@@ -132,6 +139,12 @@ class ModelBindingResolver:
             block = mapping_or_empty(session_overrides[role])
             if block:
                 return _binding_from_block(role, block, source="session.role_binding_overrides")
+
+        if per_user_defaults:
+            roles = mapping_or_empty(per_user_defaults.get("roles"))
+            block = mapping_or_empty(roles.get(role))
+            if block:
+                return _binding_from_block(role, block, source="collab.user_defaults")
 
         if user_defaults is None:
             from nimbusware_config.model_bindings_store import load_user_defaults

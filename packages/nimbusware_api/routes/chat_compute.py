@@ -180,3 +180,72 @@ def session_compute_opt_in(
         "share_policy": body.share_policy,
         "node": row_to_public(node) if node else None,
     }
+
+
+class ParticipantRoleBindingBody(BaseModel):
+    agent_role: str = Field(min_length=1, max_length=128)
+    provider_kind: str = Field(default="cloud", max_length=32)
+    provider_id: str = Field(min_length=1, max_length=64)
+    model_id: str = Field(min_length=1, max_length=256)
+    connection_id: str | None = Field(default=None, max_length=128)
+
+
+@router.get("/sessions/{session_id}/participant-bindings")
+def get_participant_bindings(
+    session_id: UUID,
+    request: Request,
+    chat_store: ChatStoreDep,
+    user: OptionalUserDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    require_collab_enabled()
+    _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else actor_user_id(request, user)
+    sess = chat_store.get_session(session_id)
+    meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
+    from nimbusware_orchestrator.collab_binding_resolver import participant_binding_overrides
+
+    return {
+        "user_id": actor_id,
+        "roles": participant_binding_overrides(meta, actor_id),
+    }
+
+
+@router.put("/sessions/{session_id}/participant-bindings")
+def put_participant_binding(
+    session_id: UUID,
+    body: ParticipantRoleBindingBody,
+    request: Request,
+    chat_store: ChatStoreDep,
+    user: OptionalUserDep,
+    _user: UserDep,
+) -> dict[str, Any]:
+    require_collab_enabled()
+    _session_or_404(chat_store, session_id)
+    actor_id = user.user_id if user is not None else actor_user_id(request, user)
+    require_session_participant(chat_store, session_id=session_id, user_id=actor_id)
+    sess = chat_store.get_session(session_id)
+    meta = dict(sess.metadata if sess and isinstance(sess.metadata, dict) else {})
+    from nimbusware_orchestrator.collab_binding_resolver import (
+        merge_participant_binding,
+        participant_binding_overrides,
+    )
+
+    binding = {
+        "provider_kind": body.provider_kind,
+        "provider_id": body.provider_id,
+        "model_id": body.model_id,
+    }
+    if body.connection_id:
+        binding["connection_id"] = body.connection_id
+    meta = merge_participant_binding(
+        meta,
+        user_id=actor_id,
+        agent_role=body.agent_role,
+        binding=binding,
+    )
+    chat_store.update_session(session_id, metadata=meta)
+    return {
+        "user_id": actor_id,
+        "roles": participant_binding_overrides(meta, actor_id),
+    }

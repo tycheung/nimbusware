@@ -3,6 +3,7 @@ import { refreshAccessibleComputeTrigger } from "./accessible_compute_ui.js";
 import {
   mountCommentaryComposer,
   mountInviteButton,
+  mountMyModelsLink,
   bindSessionStream,
 } from "./chat_collab_ui.js";
 import { refreshHostTransferPanel } from "./chat_host_transfer_ui.js";
