@@ -32,6 +32,7 @@ This file is an index only (no duplicate package tables). Full doc map: [README.
 | [022-per-role-model-routing.md](adr/022-per-role-model-routing.md) | Per-role `ModelBindingResolver`, provider vault, mid-chat swap |
 | [023-collaborative-chat-sessions.md](adr/023-collaborative-chat-sessions.md) | Multi-participant chat sessions (opt-in) |
 | [024-install-profiles.md](adr/024-install-profiles.md) | Recommended vs barebones install profiles |
+| [027-install-setup-bundles.md](adr/027-install-setup-bundles.md) | Default vs enterprise setup bundles |
 | [025-distributed-compute-mesh.md](adr/025-distributed-compute-mesh.md) | Compute node registry and work-unit mesh MVP |
 | [026-enforcement-depth-slider.md](adr/026-enforcement-depth-slider.md) | Enforcement depth 0–10 (workspace CI strictness) |
 | [026-host-transfer.md](adr/026-host-transfer.md) | Collaborative session host transfer MVP |

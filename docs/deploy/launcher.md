@@ -9,9 +9,11 @@ There is **no single binary for all operating systems**. Release builds are per 
 ```text
 Download launcher for your OS
         ↓
-Quick setup  →  Poetry deps, barebones profile (no Postgres/Ollama)
+Quick setup  →  Poetry deps, barebones profile, default setup bundle (no Postgres/Ollama)
    or
-Full setup   →  Poetry + Docker Postgres (when available) + Ollama recommended profile
+Full setup   →  Poetry + Docker Postgres (when available) + Ollama recommended profile (default bundle)
+   or
+Enterprise setup  →  Full setup + enterprise edition strict env + fleet seeds
         ↓
 Run Nimbusware  →  .venv python run.py  →  API + Maker window
 ```

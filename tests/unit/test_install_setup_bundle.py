@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from nimbusware_env.install_setup_bundles import (
     SETUP_BUNDLE_DEFAULT,
     SETUP_BUNDLE_ENTERPRISE,
@@ -12,7 +10,6 @@ from nimbusware_env.install_setup_bundles import (
     bundle_env_vars,
     load_setup_bundle,
 )
-
 
 _REPO = Path(__file__).resolve().parents[2]
 

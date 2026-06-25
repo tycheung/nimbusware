@@ -50,7 +50,11 @@ def bundle_edition(bundle: dict[str, Any]) -> str:
     edition = str(bundle.get("edition") or "").strip().lower()
     if edition in ("individual", "enterprise"):
         return edition
-    return SETUP_BUNDLE_ENTERPRISE if bundle.get("bundle_id") == SETUP_BUNDLE_ENTERPRISE else SETUP_BUNDLE_DEFAULT
+    return (
+        SETUP_BUNDLE_ENTERPRISE
+        if bundle.get("bundle_id") == SETUP_BUNDLE_ENTERPRISE
+        else SETUP_BUNDLE_DEFAULT
+    )
 
 
 def apply_setup_bundle_env(

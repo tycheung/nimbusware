@@ -44,7 +44,9 @@ def build_enterprise_audit_bundle_bytes(
                     "run_id": str(row.get("run_id", "")),
                     "event_type": row.get("event_type"),
                     "occurred_at": str(occurred),
-                    "metadata": row.get("metadata") if isinstance(row.get("metadata"), dict) else {},
+                    "metadata": row.get("metadata")
+                    if isinstance(row.get("metadata"), dict)
+                    else {},
                     "payload": row.get("payload") if isinstance(row.get("payload"), dict) else {},
                 },
             )

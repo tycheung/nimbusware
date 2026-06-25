@@ -28,7 +28,9 @@ def redact_participant_packet(payload: dict) -> dict:
     for item in pkt.findings:
         if not isinstance(item, dict):
             continue
-        clean = {k: redact_collab_output(str(v)) if isinstance(v, str) else v for k, v in item.items()}
+        clean = {
+            k: redact_collab_output(str(v)) if isinstance(v, str) else v for k, v in item.items()
+        }
         clean_findings.append(clean)
     pkt.findings = clean_findings
     return pkt.to_wire_dict()

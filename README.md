@@ -57,7 +57,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
 | Operator ribbons (Maker) | Progress + Chat: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Configure settings (~141 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
+| Configure settings (~249 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
 | First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
@@ -114,4 +114,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3035** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **94,440** non-blank Python lines in `packages/`; measured **~94,381** after round 10 consolidation).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3035** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **94,922** non-blank Python lines in `packages/` after §20.33 consumer archetype fit work).

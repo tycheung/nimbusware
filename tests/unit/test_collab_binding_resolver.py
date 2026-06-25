@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from nimbusware_orchestrator.collab_binding_resolver import merge_participant_binding, participant_binding_overrides
+from nimbusware_orchestrator.collab_binding_resolver import (
+    merge_participant_binding,
+    participant_binding_overrides,
+)
 from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
 from nimbusware_orchestrator.participant_output_packet import ParticipantOutputPacket
 

@@ -18,7 +18,9 @@ def assess_workspace_readiness(workspace_path: Path) -> dict[str, Any]:
     e2e_dir = ws / "tests" / "e2e"
     checks["e2e_dir"] = e2e_dir.is_dir()
     if not checks["e2e_dir"]:
-        warnings.append("No tests/e2e folder — browser checks will skip until you add Playwright tests.")
+        warnings.append(
+            "No tests/e2e folder — browser checks will skip until you add Playwright tests."
+        )
 
     playwright = shutil.which("playwright") or shutil.which("npx")
     checks["playwright_cli"] = bool(playwright)

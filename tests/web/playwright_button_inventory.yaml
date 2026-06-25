@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 125
+  total_buttons: 129
   clicked: 36
   visible_only: 7
-  unwired: 82
-  click_ratio: 0.288
+  unwired: 86
+  click_ratio: 0.2791
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -37,6 +37,24 @@ buttons:
   label: (dynamic)
   clicked_in:
   - tests/e2e/web/maker_accessible_compute.spec.ts
+  visible_only_in: []
+- test_id: maker-archetype-engineer
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  label: ''
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-archetype-picker
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-archetype-safe
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/archetype-picker.js
+  label: ''
+  clicked_in: []
   visible_only_in: []
 - test_id: maker-autopilot-profile-save
   app: maker
@@ -229,6 +247,12 @@ buttons:
 - test_id: maker-chat-model-swap-dialog
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/chat_agent_popover_ui.js
+  label: (dynamic)
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-chat-my-models
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/chat_collab_ui.js
   label: (dynamic)
   clicked_in: []
   visible_only_in: []
@@ -448,7 +472,7 @@ buttons:
 - test_id: maker-guided-start-quick
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/wizard.js
-  label: Open Chat (quick demo)
+  label: Open Chat
   clicked_in:
   - tests/e2e/web/maker_playwright_extended.spec.ts
   visible_only_in: []

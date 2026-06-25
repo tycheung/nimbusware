@@ -5,7 +5,9 @@ from typing import Any
 from agent_core.mapping import mapping_or_empty
 
 
-def participant_binding_overrides(session_metadata: dict[str, Any] | None, user_id: str) -> dict[str, Any]:
+def participant_binding_overrides(
+    session_metadata: dict[str, Any] | None, user_id: str
+) -> dict[str, Any]:
     if not session_metadata or not user_id:
         return {}
     collab = mapping_or_empty(session_metadata.get("collab"))

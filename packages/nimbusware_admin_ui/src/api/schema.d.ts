@@ -1891,6 +1891,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/chat/sessions/{session_id}/participant-bindings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Participant Bindings */
+        get: operations["get_participant_bindings_v1_chat_sessions__session_id__participant_bindings_get"];
+        /** Put Participant Binding */
+        put: operations["put_participant_binding_v1_chat_sessions__session_id__participant_bindings_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/chat/sessions/{session_id}/participants": {
         parameters: {
             query?: never;
@@ -2593,6 +2611,23 @@ export interface paths {
         };
         /** Get Platform Readiness */
         get: operations["get_platform_readiness_v1_platform_readiness_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/workspace-readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Workspace Readiness */
+        get: operations["get_workspace_readiness_v1_platform_workspace_readiness_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3581,6 +3616,24 @@ export interface paths {
         get: operations["get_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_get"];
         /** Put Tenant Enforcement Policy */
         put: operations["put_tenant_enforcement_policy_v1_enterprise_tenants__tenant_ref__enforcement_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/enterprise/tenants/{tenant_ref}/slice-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Fleet Slice Policy */
+        get: operations["get_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_get"];
+        /** Put Fleet Slice Policy */
+        put: operations["put_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -4901,6 +4954,29 @@ export interface components {
             /** Audit Run Id */
             audit_run_id?: string | null;
         };
+        /** FleetSlicePolicyBody */
+        FleetSlicePolicyBody: {
+            /**
+             * Slice Budget Preset
+             * @default standard
+             */
+            slice_budget_preset: string;
+            /**
+             * Max Files
+             * @default 3
+             */
+            max_files: number;
+            /**
+             * Max Loc
+             * @default 120
+             */
+            max_loc: number;
+            /**
+             * Require Unanimous Gate
+             * @default true
+             */
+            require_unanimous_gate: boolean;
+        };
         /** FleetSyncBody */
         FleetSyncBody: {
             /**
@@ -5309,6 +5385,22 @@ export interface components {
             username?: string | null;
             /** Display Name */
             display_name?: string | null;
+        };
+        /** ParticipantRoleBindingBody */
+        ParticipantRoleBindingBody: {
+            /** Agent Role */
+            agent_role: string;
+            /**
+             * Provider Kind
+             * @default cloud
+             */
+            provider_kind: string;
+            /** Provider Id */
+            provider_id: string;
+            /** Model Id */
+            model_id: string;
+            /** Connection Id */
+            connection_id?: string | null;
         };
         /** PatchContextBody */
         PatchContextBody: {
@@ -20263,6 +20355,174 @@ export interface operations {
             };
         };
     };
+    get_participant_bindings_v1_chat_sessions__session_id__participant_bindings_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_participant_binding_v1_chat_sessions__session_id__participant_bindings_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ParticipantRoleBindingBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     list_session_participants_v1_chat_sessions__session_id__participants_get: {
         parameters: {
             query?: never;
@@ -24363,6 +24623,86 @@ export interface operations {
     get_platform_readiness_v1_platform_readiness_get: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_workspace_readiness_v1_platform_workspace_readiness_get: {
+        parameters: {
+            query: {
+                workspace_path: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -29728,6 +30068,174 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["FleetEnforcementPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_fleet_slice_policy_v1_enterprise_tenants__tenant_ref__slice_policy_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetSlicePolicyBody"];
             };
         };
         responses: {

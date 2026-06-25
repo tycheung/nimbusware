@@ -261,8 +261,7 @@ class NimbuswareLauncherApp:
             prompt = (
                 "No Nimbusware install was found.\n\n"
                 f"Source: {clone_url}\n"
-                f"Target: {clone_target}\n\n"
-                + setup_desc
+                f"Target: {clone_target}\n\n" + setup_desc
             )
         else:
             if enterprise:
