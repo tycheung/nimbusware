@@ -12,6 +12,16 @@
 **Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
 **Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
 
+## Consumer personas
+
+| Persona | Setup bundle | First-run choice | Docs |
+|---------|--------------|------------------|------|
+| **Safe Coding** | `default` | Safe Coding in Maker archetype picker | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
+| **Engineer workspace** | `default` | Engineer workspace in Maker | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
+| **Enterprise AI** | `enterprise` | (strict env applied at install) | [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
+
+Install with `--setup-bundle default` or `--setup-bundle enterprise` (see [docs/install-profiles.md](docs/install-profiles.md)). The desktop launcher offers **Quick setup**, **Full setup** (default bundle), and **Enterprise setup**.
+
 ## Quick start
 
 ```bash
@@ -24,7 +34,7 @@ Open Maker at `http://127.0.0.1:8000/v1/maker/app/`. Full install and run option
 
 ### Desktop launcher (Windows / macOS / Linux)
 
-Download the platform build from GitHub Releases (`launcher-v*` tags) or build with `scripts/publish/build_launcher.ps1` / `build_launcher.sh`. The launcher offers **Quick setup** (barebones) and **Full setup** (Postgres + Ollama). Details: **[docs/deploy/launcher.md](docs/deploy/launcher.md)**.
+Download the platform build from GitHub Releases (`launcher-v*` tags) or build with `scripts/publish/build_launcher.ps1` / `build_launcher.sh`. The launcher offers **Quick setup** (barebones), **Full setup** (Postgres + Ollama, default bundle), and **Enterprise setup** (strict env). Details: **[docs/deploy/launcher.md](docs/deploy/launcher.md)**.
 
 ```bash
 pip install nimbusware-bootstrap
@@ -37,6 +47,8 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 |------------|------------|
 | Install, bootstrap, and run | [docs/getting-started.md](docs/getting-started.md) |
 | Use the Maker app | [docs/product/maker.md](docs/product/maker.md) |
+| Safe Coding persona | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
+| Install profiles & setup bundles | [docs/install-profiles.md](docs/install-profiles.md) |
 | Understand refactor / code-intel | [docs/agent-runtime.md](docs/agent-runtime.md#refactor-stage) |
 | Use the Admin Console | [docs/product/admin.md](docs/product/admin.md) |
 | Understand editions & auth | [docs/product/editions.md](docs/product/editions.md) |

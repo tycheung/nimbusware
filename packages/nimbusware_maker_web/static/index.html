@@ -30,7 +30,7 @@
           </template>
         </nav>
         <p class="edition" x-text="editionLabel"></p>
-        <a class="admin-link" href="/v1/admin/app/" target="_blank" rel="noopener">Admin console</a>
+        <a class="admin-link" href="/v1/admin/app/" target="_blank" rel="noopener" x-show="!hideAdminConsole">Admin console</a>
       </aside>
       <main class="main">
         <header

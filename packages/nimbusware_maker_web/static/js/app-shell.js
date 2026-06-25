@@ -129,6 +129,7 @@ function makerShellFactory() {
     editionLabel: "",
     quickModeActive: false,
     quickBannerDismissed: false,
+    hideAdminConsole: false,
     init() {
       this.mobileMode = detectMobileMode();
       if (this.mobileMode) {
@@ -150,7 +151,8 @@ function makerShellFactory() {
       this.quickModeActive = Boolean(b.quick_mode);
       this.quickBannerDismissed =
         sessionStorage.getItem("maker_quick_banner_dismissed") === "1";
-      this.editionLabel = `Edition: ${b.edition || "individual"}${b.quick_mode ? " (quick)" : ""}`;
+      this.editionLabel = `Edition: ${b.edition || "individual"}${b.setup_bundle ? ` · ${b.setup_bundle}` : ""}${b.quick_mode ? " (quick)" : ""}`;
+      this.hideAdminConsole = localStorage.getItem("maker_archetype_subchoice") === "safe_coding";
       window.addEventListener("hashchange", () => {
         this.route = parseRoute();
         applyQueryToRunId();
