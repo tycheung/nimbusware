@@ -94,6 +94,15 @@ class WritersParallelMixin:
                 run_id,
                 session_id,
             )
+        session_metadata = None
+        if session_id is not None:
+            from nimbusware_env.env_flags import nimbusware_database_url
+            from nimbusware_maker.chat_store import build_chat_store
+
+            chat_store = build_chat_store(nimbusware_database_url())
+            sess = chat_store.get_session(session_id)
+            if sess is not None and isinstance(sess.metadata, dict):
+                session_metadata = sess.metadata
         assignments = mesh_assign_parallel_stages(
             run_id=run_id,
             stage_names=stage_names,
@@ -105,6 +114,7 @@ class WritersParallelMixin:
             node_capabilities=node_caps,
             optimizer_weights=opt_weights,
             workspace=ws,
+            session_metadata=session_metadata,
         )
         from nimbusware_compute.mesh_host_sync import (
             absorb_completed_mesh_units,

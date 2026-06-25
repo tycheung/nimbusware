@@ -18,12 +18,13 @@ Normative mitigations for peanut-gallery sessions. Scope: invite links, LAN expo
 | **Cross-project session access** | Data leakage | Invites scoped to `session_id` + `project_id`; join validates token session |
 | **Privilege escalation** | Guest becomes admin | Role changes `session_admin` only; promotion emits `system` turn |
 | **Credential stuffing** | Account takeover | PBKDF2 password hashes; bootstrap owner on first signup only |
-| **Enterprise external collaborators** | Off-org access | Tenant `allow_external_collaborators` default false (B5 policy API) |
+| **Cross-participant secret leak (SSE/theater)** | API keys in theater lines | `collab_output_redaction` on chat session SSE and theater stream; `ParticipantOutputPacket` wire format excludes vault secrets; mesh work units strip `connection_id` from cross-node payloads |
+| **Per-participant cloud LLM with local vault** | Wrong node resolves another user's API key | `binding_credentials` resolves `connection_id` only on owning node (`user_id`-scoped vault); mesh `binding_hint` carries metadata only; worker resolves vault locally via `collab_mesh_context` |
 
 ## Residual risk
 
 - Host machine compromise exposes local Postgres and event store (same as single-operator).
-- Session SSE theater fan-out (0.5s poll, capped backlog) without E2E encryption of theater content — acceptable on trusted operator networks; Enterprise uses ingress TLS.
+- Session SSE theater fan-out (0.5s poll, capped backlog) without E2E encryption of theater content — mitigated by server-side redaction; acceptable on trusted operator networks; Enterprise uses ingress TLS.
 
 ## Out of scope (v1.2)
 

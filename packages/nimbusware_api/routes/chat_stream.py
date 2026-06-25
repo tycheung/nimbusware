@@ -15,6 +15,7 @@ from nimbusware_api.routes.chat_common import session_or_404 as _session_or_404
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
 from nimbusware_auth.permissions import require_session_participant
 from nimbusware_env.env_flags import nimbusware_collab_enabled
+from nimbusware_orchestrator.collab_stream_redaction import redact_theater_lines
 
 router = APIRouter(prefix="/chat", tags=["maker"])
 
@@ -77,6 +78,8 @@ def chat_session_stream(
                 last_fingerprint = fingerprint
                 idle = 0
                 lines = [t.to_dict() for t in turns if t.role in _STREAM_ROLES][-_SESSION_SSE_CAP:]
+                if nimbusware_collab_enabled():
+                    lines = redact_theater_lines(lines)
                 yield _sse_pack(
                     "session",
                     {

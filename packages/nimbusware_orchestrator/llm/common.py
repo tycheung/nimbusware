@@ -248,6 +248,10 @@ def ollama_chat_json_via_plan_patch(
         role = agent_role_for_stage(stage_name)
     if role:
         from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.collab_mesh_context import (
+            mesh_actor_user_id,
+            mesh_participant_overrides,
+        )
         from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
 
         resolver = ModelBindingResolver(find_repo_root())
@@ -255,6 +259,8 @@ def ollama_chat_json_via_plan_patch(
             role,
             messages=messages,
             timeout_seconds=timeout_seconds,
+            participant_overrides=mesh_participant_overrides(),
+            actor_user_id=mesh_actor_user_id(),
         )
     if stage_name:
         from nimbusware_config.persist import load_model_routing_dict

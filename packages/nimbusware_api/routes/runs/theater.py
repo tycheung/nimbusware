@@ -13,9 +13,9 @@ from nimbusware_api.errors import problem
 from nimbusware_api.read_models.run_theater import build_run_theater_messages
 from nimbusware_api.routes.runs.stream import _sse_pack
 from nimbusware_api.schemas.openapi import PROBLEM_RESPONSE_404
-from nimbusware_projections.builders.chat_theater import (
-    build_theater_messages_for_profile,
-)
+from nimbusware_env.env_flags import nimbusware_collab_enabled
+from nimbusware_orchestrator.collab_output_redaction import redact_collab_output
+from nimbusware_projections.builders.chat_theater import build_theater_messages_for_profile
 from nimbusware_projections.exporters.theater_transcript import format_theater_transcript_md
 
 router = APIRouter()
@@ -109,6 +109,13 @@ def get_theater_stream(
             new_msgs = [m for m in msgs if int(m.get("store_seq") or 0) > last_seq]
             if new_msgs:
                 idle = 0
+                if nimbusware_collab_enabled():
+                    new_msgs = [
+                        {**m, "body_md": redact_collab_output(str(m.get("body_md") or ""))}
+                        if m.get("body_md")
+                        else m
+                        for m in new_msgs
+                    ]
                 for m in new_msgs:
                     last_seq = max(last_seq, int(m.get("store_seq") or 0))
                     yield _sse_pack("theater", m)

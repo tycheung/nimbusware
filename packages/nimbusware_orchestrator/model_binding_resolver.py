@@ -181,12 +181,17 @@ class ModelBindingResolver:
         messages: list[dict[str, str]],
         timeout_seconds: float = 120.0,
         api_key: str | None = None,
+        actor_user_id: str = "",
         **resolve_kwargs: Any,
     ) -> dict[str, Any]:
         binding = self.resolve(agent_role, **resolve_kwargs)
         if not binding.model_id:
             msg = f"no model_id resolved for role {agent_role!r}"
             raise ValueError(msg)
+        if api_key is None:
+            from nimbusware_orchestrator.binding_credentials import resolve_binding_api_key
+
+            api_key = resolve_binding_api_key(binding, user_id=actor_user_id)
         provider = provider_for_preset(
             self._repo_root,
             provider_id=binding.provider_id,

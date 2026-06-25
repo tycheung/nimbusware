@@ -3,19 +3,19 @@ from __future__ import annotations
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OrchDep
 from nimbusware_api.errors import problem
-from nimbusware_api.user import UserDep
+from nimbusware_api.user import UserDep, maker_user_id_str
 from nimbusware_config.provider_connections import (
     ProviderConnectionStore,
     _row_to_public,
     encode_secret_payload,
 )
 from nimbusware_env.edition import is_enterprise
-from nimbusware_env.env_flags import nimbusware_database_url
+from nimbusware_env.env_flags import nimbusware_collab_enabled, nimbusware_database_url
 from nimbusware_iam.context import get_auth_context, resolve_store_tenant_id
 from nimbusware_orchestrator.provider_registry import (
     load_provider_presets,
@@ -36,13 +36,15 @@ class ProviderConnectionBody(BaseModel):
     subscription_connected: bool = False
 
 
-def _connection_user_id() -> str:
-    if not is_enterprise():
-        return ""
-    ctx = get_auth_context()
-    if ctx is None:
-        return ""
-    return str(ctx.key_id)
+def _connection_user_id(request: Request) -> str:
+    if is_enterprise():
+        ctx = get_auth_context()
+        if ctx is None:
+            return ""
+        return str(ctx.key_id)
+    if nimbusware_collab_enabled():
+        return maker_user_id_str(request)
+    return ""
 
 
 def _connection_tenant_id() -> str | None:
@@ -65,17 +67,19 @@ def list_provider_presets(orch: OrchDep, _: UserDep) -> dict[str, Any]:
 
 
 @router.get("/platform/provider-connections")
-def list_provider_connections(_: UserDep) -> dict[str, Any]:
+def list_provider_connections(request: Request, _: UserDep) -> dict[str, Any]:
     store = _store()
-    user_id = _connection_user_id()
+    user_id = _connection_user_id(request)
     rows = store.list_for_user(user_id=user_id, tenant_id=_connection_tenant_id())
     return {"connections": [_row_to_public(r) for r in rows]}
 
 
 @router.put("/platform/provider-connections")
-def upsert_provider_connection(body: ProviderConnectionBody, _: UserDep) -> dict[str, Any]:
+def upsert_provider_connection(
+    body: ProviderConnectionBody, request: Request, _: UserDep
+) -> dict[str, Any]:
     store = _store()
-    user_id = _connection_user_id()
+    user_id = _connection_user_id(request)
     secret_blob = None
     if body.api_key is not None or body.connection_kind == "subscription":
         secret_blob = encode_secret_payload(
@@ -98,9 +102,9 @@ def upsert_provider_connection(body: ProviderConnectionBody, _: UserDep) -> dict
 
 
 @router.delete("/platform/provider-connections/{connection_id}")
-def delete_provider_connection(connection_id: UUID, _: UserDep) -> dict[str, Any]:
+def delete_provider_connection(connection_id: UUID, request: Request, _: UserDep) -> dict[str, Any]:
     store = _store()
-    user_id = _connection_user_id()
+    user_id = _connection_user_id(request)
     if not store.delete(connection_id, user_id=user_id):
         raise HTTPException(
             status_code=404,
@@ -113,11 +117,12 @@ def delete_provider_connection(connection_id: UUID, _: UserDep) -> dict[str, Any
 def probe_provider_connection(
     connection_id: UUID,
     orch: OrchDep,
+    request: Request,
     _: UserDep,
     timeout_seconds: Annotated[float, Query(ge=1.0, le=60.0)] = 10.0,
 ) -> dict[str, Any]:
     store = _store()
-    user_id = _connection_user_id()
+    user_id = _connection_user_id(request)
     row = store.get(connection_id, user_id=user_id)
     if row is None:
         raise HTTPException(

@@ -308,7 +308,26 @@ def execute_mesh_stage_on_worker(rec: WorkUnitRecord) -> dict[str, Any]:
             diff_workspace_files,
             workspace_file_digests,
         )
+        from nimbusware_orchestrator.collab_mesh_bindings import participant_overrides_from_hint
+        from nimbusware_orchestrator.collab_mesh_context import (
+            clear_mesh_binding_context,
+            set_mesh_binding_context,
+        )
 
+        hint = None
+        if payload.get("binding_hint_model_id"):
+            hint = {
+                "provider_kind": str(payload.get("binding_hint_provider_kind") or "local"),
+                "provider_id": str(payload.get("binding_hint_provider_id") or "ollama"),
+                "model_id": str(payload.get("binding_hint_model_id") or ""),
+                "connection_id": str(payload.get("binding_hint_connection_id") or ""),
+            }
+        tax = str(payload.get("taxonomy_key") or rec.agent_role or rec.stage_name or "")
+        overrides = participant_overrides_from_hint(hint, tax) if hint else None
+        set_mesh_binding_context(
+            participant_overrides=overrides,
+            actor_user_id=str(rec.executor_user_id or ""),
+        )
         orch = _mesh_orchestrator(workspace)
         before_ids = baseline_event_ids(orch._store, rec.run_id)
         before_digests = (
@@ -330,8 +349,10 @@ def execute_mesh_stage_on_worker(rec: WorkUnitRecord) -> dict[str, Any]:
             patch = diff_workspace_files(before_digests, after_digests, workspace)
             if patch:
                 result["workspace_files"] = patch
+        clear_mesh_binding_context()
         return result
     except Exception as exc:
+        clear_mesh_binding_context()
         return {
             **base,
             "ok": False,

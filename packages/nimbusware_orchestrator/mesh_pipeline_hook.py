@@ -27,6 +27,7 @@ def _mesh_enqueue_payload(
     stage_name: str,
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
+    binding_hint: dict[str, str] | None = None,
 ) -> dict[str, str | bool]:
     payload: dict[str, str | bool] = {
         "node_id": str(node_id),
@@ -39,6 +40,11 @@ def _mesh_enqueue_payload(
     taxonomy = _WRITER_STAGE_TAXONOMY.get(stage_name)
     if taxonomy is not None:
         payload["taxonomy_key"] = taxonomy
+    if binding_hint:
+        payload["binding_hint_provider_kind"] = binding_hint.get("provider_kind", "")
+        payload["binding_hint_provider_id"] = binding_hint.get("provider_id", "")
+        payload["binding_hint_model_id"] = binding_hint.get("model_id", "")
+        payload["binding_hint_connection_id"] = binding_hint.get("connection_id", "")
     return payload
 
 
@@ -63,6 +69,7 @@ def mesh_assign_parallel_stages(
     parallel_group: str = "writers",
     workspace: Path | str | None = None,
     workflow_profile: str | None = None,
+    session_metadata: dict | None = None,
 ) -> dict[str, UUID | None]:
     sched = get_mesh_scheduler()
     sched.set_mode(workload_distribution or "host_only")
@@ -83,20 +90,30 @@ def mesh_assign_parallel_stages(
     if session_id is None or workload_distribution == "host_only":
         return assignments
     queue = get_work_unit_queue()
+    from nimbusware_orchestrator.collab_mesh_bindings import executor_binding_hint
+
     for stage_name, node_id in assignments.items():
         if node_id is None:
             continue
+        executor = _executor_user_for_stage(stage_name, role_claims)
+        tax = _WRITER_STAGE_TAXONOMY.get(stage_name, stage_name)
+        hint = executor_binding_hint(
+            session_metadata,
+            executor_user_id=executor,
+            agent_role=tax,
+        )
         queue.enqueue(
             run_id=run_id,
             session_id=session_id,
             stage_name=stage_name,
             agent_role=stage_name,
-            executor_user_id=_executor_user_for_stage(stage_name, role_claims),
+            executor_user_id=executor,
             payload=_mesh_enqueue_payload(
                 node_id,
                 stage_name=stage_name,
                 workspace=workspace,
                 workflow_profile=workflow_profile,
+                binding_hint=hint,
             ),
         )
     return assignments

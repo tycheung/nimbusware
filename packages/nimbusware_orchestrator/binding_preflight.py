@@ -6,7 +6,6 @@ from typing import Any
 import yaml
 
 from agent_core.mapping import mapping_or_empty
-from nimbusware_env.env_flags import env_str
 from nimbusware_orchestrator.llm.providers import provider_for_preset
 from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
 from nimbusware_orchestrator.workflow_profiles import workflow_profile_dict
@@ -97,12 +96,10 @@ def active_roles_for_context(
     return sorted(found)
 
 
-def _resolve_api_key(binding) -> str | None:
-    ref = binding.api_key_ref
-    if isinstance(ref, str) and ref.strip():
-        val = env_str(ref.strip())
-        return val.strip() or None
-    return None
+def _resolve_api_key(binding, *, user_id: str = "") -> str | None:
+    from nimbusware_orchestrator.binding_credentials import resolve_binding_api_key
+
+    return resolve_binding_api_key(binding, user_id=user_id)
 
 
 def _inference_mode_label(mode: str) -> str:
