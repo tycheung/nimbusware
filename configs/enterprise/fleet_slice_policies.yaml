@@ -1,0 +1,12 @@
+version: 1
+tenants:
+  default:
+    slice_budget_preset: standard
+    max_files: 3
+    max_loc: 120
+    require_unanimous_gate: true
+  strict:
+    slice_budget_preset: tiny
+    max_files: 1
+    max_loc: 40
+    require_unanimous_gate: true
