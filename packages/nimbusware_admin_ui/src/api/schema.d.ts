@@ -2483,6 +2483,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/platform/operator-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Operator Profiles */
+        get: operations["get_operator_profiles_v1_platform_operator_profiles_get"];
+        /** Put Operator Profiles */
+        put: operations["put_operator_profiles_v1_platform_operator_profiles_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/platform/models/catalog-info": {
         parameters: {
             query?: never;
@@ -2579,6 +2597,40 @@ export interface paths {
         get: operations["get_model_dependencies_v1_platform_models_dependencies_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/workspace-scaffold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Workspace Scaffold */
+        post: operations["post_workspace_scaffold_v1_platform_workspace_scaffold_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/platform/workspace-precommit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Workspace Precommit */
+        post: operations["post_workspace_precommit_v1_platform_workspace_precommit_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3641,6 +3693,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/enterprise/tenants/{tenant_ref}/commit-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Fleet Commit Policy */
+        get: operations["get_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_get"];
+        /** Put Fleet Commit Policy */
+        put: operations["put_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/enterprise/fleet/critic-reliability": {
         parameters: {
             query?: never;
@@ -3667,6 +3737,23 @@ export interface paths {
         };
         /** Enterprise Audit Export */
         get: operations["enterprise_audit_export_v1_enterprise_audit_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/enterprise/compliance/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compliance Summary */
+        get: operations["compliance_summary_v1_enterprise_compliance_summary_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3704,6 +3791,42 @@ export interface paths {
         get: operations["get_collab_policy_v1_collab_policy_get"];
         /** Put Collab Policy */
         put: operations["put_collab_policy_v1_collab_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/enterprise/tenants/{tenant_ref}/collab-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tenant Collab Policy */
+        get: operations["get_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_get"];
+        /** Put Tenant Collab Policy */
+        put: operations["put_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/enterprise/tenants/{tenant_ref}/model-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tenant Model Policy */
+        get: operations["get_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_get"];
+        /** Put Tenant Model Policy */
+        put: operations["put_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_put"];
         post?: never;
         delete?: never;
         options?: never;
@@ -4570,6 +4693,11 @@ export interface components {
              * @default note
              */
             kind: string;
+            /**
+             * Visibility
+             * @default private
+             */
+            visibility: string;
         };
         /** ContextArtifactFromCompactionBody */
         ContextArtifactFromCompactionBody: {
@@ -4602,6 +4730,16 @@ export interface components {
             kind: string;
             /** Created At */
             created_at: string;
+            /**
+             * Owner User Id
+             * @default
+             */
+            owner_user_id: string;
+            /**
+             * Visibility
+             * @default private
+             */
+            visibility: string;
         };
         /** ContextBudgetComponents */
         ContextBudgetComponents: {
@@ -4723,6 +4861,8 @@ export interface components {
              * @description Saved operator enforcement profile to apply at run start
              */
             enforcement_profile_id?: string | null;
+            /** Consumer Archetype */
+            consumer_archetype?: string | null;
         };
         /** CustomAgentCreateRequest */
         CustomAgentCreateRequest: {
@@ -4931,18 +5071,18 @@ export interface components {
             /** Required Checkpoints */
             required_checkpoints?: string[];
         };
-        /** FleetEnforcementPolicyBody */
-        FleetEnforcementPolicyBody: {
+        /** FleetCommitPolicyBody */
+        FleetCommitPolicyBody: {
             /**
-             * Min Enforcement Level
-             * @default 0
+             * Require Auto Commit
+             * @default false
              */
-            min_enforcement_level: number;
+            require_auto_commit: boolean;
             /**
-             * Max Enforcement Level
-             * @default 10
+             * Message Regex
+             * @default
              */
-            max_enforcement_level: number;
+            message_regex: string;
         };
         /** FleetRebuildBody */
         FleetRebuildBody: {
@@ -5342,6 +5482,13 @@ export interface components {
             classification?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** OperatorProfilesBody */
+        OperatorProfilesBody: {
+            /** Autopilot Profile Id */
+            autopilot_profile_id?: string | null;
+            /** Enforcement Profile Id */
+            enforcement_profile_id?: string | null;
         };
         /** OptimizerWeightsBody */
         OptimizerWeightsBody: {
@@ -6510,6 +6657,34 @@ export interface components {
             /** Replay From Seq */
             replay_from_seq?: number | null;
         };
+        /** TenantCollabPolicyBody */
+        TenantCollabPolicyBody: {
+            /**
+             * Allow External Collaborators
+             * @default false
+             */
+            allow_external_collaborators: boolean;
+            /**
+             * Max Session Participants
+             * @default 20
+             */
+            max_session_participants: number;
+            /**
+             * Host Transfer Consent Hours
+             * @default 24
+             */
+            host_transfer_consent_hours: number;
+            /**
+             * Default Invite Role
+             * @default session_read
+             */
+            default_invite_role: string;
+            /**
+             * Write May Start Runs
+             * @default false
+             */
+            write_may_start_runs: boolean;
+        };
         /** TenantCreateBody */
         TenantCreateBody: {
             /** Slug */
@@ -6519,6 +6694,23 @@ export interface components {
              * @default
              */
             display_name: string;
+        };
+        /** TenantModelPolicyBody */
+        TenantModelPolicyBody: {
+            /** Allowed Cloud Providers */
+            allowed_cloud_providers?: string[];
+            /**
+             * Require Admin For Cloud Swap
+             * @default false
+             */
+            require_admin_for_cloud_swap: boolean;
+            /** Blocked Model Ids */
+            blocked_model_ids?: string[];
+            /**
+             * Audit Include Binding Events
+             * @default true
+             */
+            audit_include_binding_events: boolean;
         };
         /** TheaterResponse */
         TheaterResponse: {
@@ -6615,6 +6807,42 @@ export interface components {
             result?: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** WorkspacePathBody */
+        WorkspacePathBody: {
+            /** Workspace Path */
+            workspace_path: string;
+        };
+        /** FleetEnforcementPolicyBody */
+        nimbusware_api__routes__admin_ui_bff__FleetEnforcementPolicyBody: {
+            /**
+             * Min Enforcement Level
+             * @default 0
+             */
+            min_enforcement_level: number;
+            /**
+             * Max Enforcement Level
+             * @default 10
+             */
+            max_enforcement_level: number;
+        };
+        /** FleetEnforcementPolicyBody */
+        nimbusware_api__routes__enterprise__fleet_enforcement__FleetEnforcementPolicyBody: {
+            /**
+             * Min Enforcement Level
+             * @default 0
+             */
+            min_enforcement_level: number;
+            /**
+             * Max Enforcement Level
+             * @default 10
+             */
+            max_enforcement_level: number;
+            /**
+             * Required Enforcement Profile Id
+             * @default
+             */
+            required_enforcement_profile_id: string;
         };
     };
     responses: never;
@@ -24061,6 +24289,166 @@ export interface operations {
             };
         };
     };
+    get_operator_profiles_v1_platform_operator_profiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_operator_profiles_v1_platform_operator_profiles_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OperatorProfilesBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     get_model_catalog_info_v1_platform_models_catalog_info_get: {
         parameters: {
             query?: never;
@@ -24472,6 +24860,170 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_workspace_scaffold_v1_platform_workspace_scaffold_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspacePathBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    post_workspace_precommit_v1_platform_workspace_precommit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WorkspacePathBody"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -30067,7 +30619,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FleetEnforcementPolicyBody"];
+                "application/json": components["schemas"]["nimbusware_api__routes__enterprise__fleet_enforcement__FleetEnforcementPolicyBody"];
             };
         };
         responses: {
@@ -30308,6 +30860,174 @@ export interface operations {
             };
         };
     };
+    get_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_fleet_commit_policy_v1_enterprise_tenants__tenant_ref__commit_policy_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FleetCommitPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
     fleet_critic_reliability_v1_enterprise_fleet_critic_reliability_get: {
         parameters: {
             query: {
@@ -30408,6 +31128,84 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    compliance_summary_v1_enterprise_compliance_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Structured error (``code``, ``message``, optional ``details``) */
@@ -30716,6 +31514,334 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["CollabPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_tenant_collab_policy_v1_enterprise_tenants__tenant_ref__collab_policy_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantCollabPolicyBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    get_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    put_tenant_model_policy_v1_enterprise_tenants__tenant_ref__model_policy_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tenant_ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenantModelPolicyBody"];
             };
         };
         responses: {
@@ -32136,7 +33262,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FleetEnforcementPolicyBody"];
+                "application/json": components["schemas"]["nimbusware_api__routes__admin_ui_bff__FleetEnforcementPolicyBody"];
             };
         };
         responses: {
