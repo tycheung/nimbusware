@@ -2741,6 +2741,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/platform/provider-connections/subscription-link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link Subscription Provider */
+        post: operations["link_subscription_provider_v1_platform_provider_connections_subscription_link_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/platform/provider-connections": {
         parameters: {
             query?: never;
@@ -6642,6 +6659,18 @@ export interface components {
             }[];
             /** Transplant Outcome */
             transplant_outcome?: string | null;
+        };
+        /** SubscriptionLinkBody */
+        SubscriptionLinkBody: {
+            /** Provider Id */
+            provider_id: string;
+            /**
+             * Subscription Connected
+             * @default true
+             */
+            subscription_connected: boolean;
+            /** Default Model Id */
+            default_model_id?: string | null;
         };
         /** SwitchModeBody */
         SwitchModeBody: {
@@ -25656,6 +25685,90 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Structured error (``code``, ``message``, optional ``details``) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+            /** @description Uncaught server fault (``code`` is typically ``internal_error``) */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                    "application/problem+json": {
+                        /** Code */
+                        code: string;
+                        /** Message */
+                        message: string;
+                        /** Details */
+                        details?: {
+                            [key: string]: unknown;
+                        } | null;
+                    };
+                };
+            };
+        };
+    };
+    link_subscription_provider_v1_platform_provider_connections_subscription_link_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Nimbusware-Admin-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionLinkBody"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
