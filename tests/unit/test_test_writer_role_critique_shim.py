@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 
-def test_test_writer_role_critique_shim_exports() -> None:
+def test_test_writer_critique_shim_exports() -> None:
+    from nimbusware_orchestrator.llm import post_verify_role_bindings as bindings
     from nimbusware_orchestrator.llm import test_writer_critique as shim
-    from nimbusware_orchestrator.llm import test_writer_role_critique as role
 
-    assert shim.emit_stub_test_writer_critique_panel is role.emit_stub_test_writer_critique_panel
-    assert shim.execute_test_writer_critique_llm is role.execute_test_writer_critique_llm
+    assert (
+        shim.emit_stub_test_writer_critique_panel is bindings.emit_stub_test_writer_critique_panel
+    )
+    assert shim.execute_test_writer_critique_llm is bindings.execute_test_writer_critique_llm
