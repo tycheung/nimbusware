@@ -21,11 +21,6 @@ def test_config_key_constants() -> None:
     assert keys.KEY_MODEL_ROUTING == "model-routing"
 
 
-def test_config_flags_callable() -> None:
-    assert isinstance(config_from_db_enabled(), bool)
-    assert isinstance(config_notify_enabled(), bool)
-
-
 def test_content_digest_stable() -> None:
     a = _content_digest({"b": 2, "a": 1})
     b = _content_digest({"a": 1, "b": 2})

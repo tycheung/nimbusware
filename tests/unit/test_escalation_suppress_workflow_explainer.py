@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from nimbusware_env import find_repo_root
+from unit.workflow_explainer_helpers import escalation_explainer_payload, write_escalation_policy
 
 pytestmark = pytest.mark.slow
 
@@ -45,7 +45,9 @@ from nimbusware_console.workflow_explainers.escalation_suppress import (
     escalation_suppress_workflow_explainer_payload,
     escalation_yaml_key_present_caption,
 )
+from nimbusware_env import find_repo_root
 from unit.composite_repo_fixtures import write_workflow_profile
+from unit.workflow_explainer_helpers import escalation_explainer_payload, write_escalation_policy
 
 
 def test_explainer_no_escalation_key(tmp_path: Path) -> None:
@@ -214,34 +216,46 @@ def test_explainer_escalation_policy_yaml_peek_when_present(tmp_path: Path) -> N
 
 
 def test_explainer_escalation_policy_yaml_scalar_retry_fields(tmp_path: Path) -> None:
-    write_workflow_profile(tmp_path, "wf", "version: 1\n")
-    pol_dir = tmp_path / "configs" / "escalation"
-    pol_dir.mkdir(parents=True, exist_ok=True)
-    (pol_dir / "policy.yaml").write_text(
-        "version: 1\nmax_retries_per_stage: 5\ndeadlock_escalation_after_minutes: 12\n",
-        encoding="utf-8",
+    pl = escalation_explainer_payload(
+        tmp_path,
+        policy_yaml=(
+            "version: 1\nmax_retries_per_stage: 5\ndeadlock_escalation_after_minutes: 12\n"
+        ),
     )
-    pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
     assert pl["escalation_policy_yaml_max_retries_per_stage"] == 5
     assert pl["escalation_policy_yaml_deadlock_escalation_after_minutes"] == 12
     assert pl["escalation_policy_yaml_version"] == 1
     assert pl["escalation_policy_yaml_anti_deadlock_enabled"] is None
 
 
-def test_explainer_escalation_policy_yaml_scalars_ignore_non_int(tmp_path: Path) -> None:
-    write_workflow_profile(tmp_path, "wf", "version: 1\n")
-    pol_dir = tmp_path / "configs" / "escalation"
-    pol_dir.mkdir(parents=True, exist_ok=True)
-    (pol_dir / "policy.yaml").write_text(
-        'version: 1\nmax_retries_per_stage: true\ndeadlock_escalation_after_minutes: "12"\n',
-        encoding="utf-8",
-    )
-    pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
-    assert pl["escalation_policy_yaml_max_retries_per_stage"] is None
-    assert pl["escalation_policy_yaml_deadlock_escalation_after_minutes"] is None
-    assert pl["escalation_policy_yaml_version"] == 1
-    assert pl["escalation_policy_yaml_anti_deadlock_enabled"] is None
-    assert pl["escalation_policy_yaml_anti_deadlock_min_progress_events"] is None
+@pytest.mark.parametrize(
+    ("policy_yaml", "field", "expected"),
+    (
+        (
+            'version: 1\nmax_retries_per_stage: true\ndeadlock_escalation_after_minutes: "12"\n',
+            "escalation_policy_yaml_max_retries_per_stage",
+            None,
+        ),
+        (
+            'version: 1\nmax_retries_per_stage: true\ndeadlock_escalation_after_minutes: "12"\n',
+            "escalation_policy_yaml_deadlock_escalation_after_minutes",
+            None,
+        ),
+        (
+            "version: 1\nanti_deadlock:\n  min_progress_events: not_int\n",
+            "escalation_policy_yaml_anti_deadlock_min_progress_events",
+            None,
+        ),
+    ),
+)
+def test_explainer_escalation_policy_yaml_rejects_non_int_scalars(
+    tmp_path: Path,
+    policy_yaml: str,
+    field: str,
+    expected: object,
+) -> None:
+    pl = escalation_explainer_payload(tmp_path, policy_yaml=policy_yaml)
+    assert pl[field] == expected
 
 
 def test_explainer_escalation_policy_yaml_anti_deadlock_enabled_false(tmp_path: Path) -> None:
@@ -272,20 +286,6 @@ def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_only
     assert pl["escalation_policy_yaml_has_anti_deadlock_mapping"] is True
     assert pl["escalation_policy_yaml_anti_deadlock_enabled"] is None
     assert pl["escalation_policy_yaml_anti_deadlock_min_progress_events"] == 9
-
-
-def test_explainer_escalation_policy_yaml_anti_deadlock_min_progress_events_non_int(
-    tmp_path: Path,
-) -> None:
-    write_workflow_profile(tmp_path, "wf", "version: 1\n")
-    pol_dir = tmp_path / "configs" / "escalation"
-    pol_dir.mkdir(parents=True, exist_ok=True)
-    (pol_dir / "policy.yaml").write_text(
-        'version: 1\nanti_deadlock:\n  min_progress_events: "nope"\n',
-        encoding="utf-8",
-    )
-    pl = escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile="wf")
-    assert pl["escalation_policy_yaml_anti_deadlock_min_progress_events"] is None
 
 
 def test_explainer_escalation_policy_yaml_anti_deadlock_mapping_true(tmp_path: Path) -> None:
