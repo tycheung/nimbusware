@@ -100,6 +100,10 @@ class CreateRunMixin:
             project_workspace_path=project_workspace_path,
             project_template=project_template,
         )
+        if workflow_profile == "safe_coding" and project_meta:
+            from nimbusware_maker.consumer_test_scaffold import maybe_scaffold_safe_coding_workspace
+
+            maybe_scaffold_safe_coding_workspace(Path(str(project_meta["workspace_path"])))
         operator_settings_meta: dict[str, str] | None = None
         if run_policy_overrides:
             raw_op = run_policy_overrides.get("operator_settings")

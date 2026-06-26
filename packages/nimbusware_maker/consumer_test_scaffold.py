@@ -42,3 +42,11 @@ def scaffold_consumer_tests(workspace: Path) -> dict[str, object]:
         pytest_path.write_text(SMOKE_PYTEST_TEMPLATE, encoding="utf-8")
         created.append(str(SMOKE_PYTEST_REL))
     return {"workspace": str(root), "created": created, "skipped": skipped}
+
+
+def maybe_scaffold_safe_coding_workspace(workspace: Path) -> dict[str, object] | None:
+    spec_path = workspace.resolve() / SMOKE_SPEC_REL
+    pytest_path = workspace.resolve() / SMOKE_PYTEST_REL
+    if spec_path.is_file() and pytest_path.is_file():
+        return None
+    return scaffold_consumer_tests(workspace)
