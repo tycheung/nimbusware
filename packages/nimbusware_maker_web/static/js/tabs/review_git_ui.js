@@ -5,9 +5,18 @@ export function wireReviewGitPanel(root, { currentRunId }) {
     const id = await currentRunId();
     if (!id) return;
     const auditLink = root.querySelector("#rev-audit-export");
+    const fleetAudit = root.querySelector("#rev-fleet-audit-export");
     if (auditLink) {
       auditLink.href = `/v1/runs/${encodeURIComponent(id)}/audit-export`;
       auditLink.hidden = false;
+    }
+    try {
+      const readiness = await apiJson("/platform/readiness");
+      if (fleetAudit) {
+        fleetAudit.hidden = readiness.setup_bundle !== "enterprise";
+      }
+    } catch {
+      if (fleetAudit) fleetAudit.hidden = true;
     }
     const el = root.querySelector("#rev-git-status");
     const actions = root.querySelector("#rev-git-actions");

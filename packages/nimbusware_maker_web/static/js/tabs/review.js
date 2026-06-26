@@ -40,6 +40,9 @@ export async function mountReview(root) {
         <a id="rev-audit-export" href="#" download hidden data-testid="maker-review-audit-export">
           Download compliance bundle
         </a>
+        <a id="rev-fleet-audit-export" href="/v1/enterprise/audit-export" download hidden data-testid="maker-review-fleet-audit-export">
+          Download fleet audit export
+        </a>
       </p>
     </section>
     <section id="rev-factory-evidence" class="panel mobile-advanced" data-testid="maker-review-factory-evidence">

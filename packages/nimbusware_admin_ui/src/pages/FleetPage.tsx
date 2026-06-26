@@ -67,6 +67,7 @@ export function FleetPage() {
     }[]
   >([]);
   const [error, setError] = useState("");
+  const [compliance, setCompliance] = useState<Record<string, unknown> | null>(null);
 
   const loadDashboard = useCallback(() => {
     if (!enterpriseApiKey()) {
@@ -88,6 +89,20 @@ export function FleetPage() {
       .catch((e) => setError(String((e as Error).message || e)));
   }, [tenantId, tenants]);
 
+  const loadCompliance = useCallback(() => {
+    if (!enterpriseApiKey()) {
+      setCompliance(null);
+      return;
+    }
+    const slug = tenants.find((t) => t.id === tenantId)?.slug || tenantId || null;
+    const key = resolveEnterpriseApiKeyForTenant(slug);
+    apiJsonEnterprise<Record<string, unknown>>("/enterprise/compliance/summary", {
+      headers: { "X-Nimbusware-Api-Key": key },
+    })
+      .then((body) => setCompliance(body))
+      .catch(() => setCompliance(null));
+  }, [tenantId, tenants]);
+
   useEffect(() => {
     if (!enterpriseApiKey()) {
       return;
@@ -100,6 +115,10 @@ export function FleetPage() {
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    loadCompliance();
+  }, [loadCompliance]);
 
   const loadAutopilotPolicy = useCallback(() => {
     if (!enterpriseApiKey() || !tenantId) {
@@ -354,6 +373,31 @@ export function FleetPage() {
         Refresh
       </button>
       {error ? <p class="error">{error}</p> : null}
+      {compliance ? (
+        <section class="panel" data-testid="admin-fleet-compliance">
+          <h3>Compliance summary</h3>
+          <table class="data-table">
+            <tbody>
+              <tr>
+                <td>Audit retention (days)</td>
+                <td>{String(compliance.audit_retention_days ?? "—")}</td>
+              </tr>
+              <tr>
+                <td>IAM actions indexed</td>
+                <td>{String(compliance.iam_action_count ?? "—")}</td>
+              </tr>
+              <tr>
+                <td>Event rows</td>
+                <td>{String(compliance.event_row_count ?? "—")}</td>
+              </tr>
+              <tr>
+                <td>Tenants</td>
+                <td>{String(compliance.tenant_count ?? "—")}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      ) : null}
       {dashboard ? (
         <>
           {dashboard.sli_caption ? <p>{dashboard.sli_caption}</p> : null}

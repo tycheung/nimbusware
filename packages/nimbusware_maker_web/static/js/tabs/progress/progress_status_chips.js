@@ -19,6 +19,14 @@ export function renderWorkType(body) {
 export function renderEnforcementStatus(body) {
   const chip = document.getElementById("enforcement-chip");
   if (!chip) return;
+  const bundle = window.__NIMBUSWARE__?.setup_bundle || "";
+  if (bundle === "enterprise") {
+    chip.hidden = false;
+    chip.dataset.testid = "maker-enterprise-strict-chips";
+    chip.textContent =
+      "Enterprise strict · platform_grade · tiny slices · auto-commit · audit retention";
+    return;
+  }
   const es = body.enforcement_status;
   if (!es || es.level == null) {
     chip.hidden = true;
