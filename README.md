@@ -58,7 +58,7 @@ nimbusware-bootstrap --print-only    # launcher URL + curl install lines
 | Enforcement depth vs autopilot | [docs/adr/026-enforcement-depth-slider.md](docs/adr/026-enforcement-depth-slider.md) |
 | Operator ribbons (Maker) | Progress + Chat: `interjection-ribbon.js`, `autopilot-ribbon.js`, `enforcement-ribbon.js`, `ribbon-shared.js`, `operator-default-profiles.js` |
 | Read architecture & packages | [ARCHITECTURE.md](ARCHITECTURE.md) |
-| Configure settings (~249 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
+| Configure settings (~256 catalog keys) | [docs/operator-settings.md](docs/operator-settings.md) |
 | Deploy to production / K8s | [docs/deploy/README.md](docs/deploy/README.md) |
 | First PyPI / VSCE publish | [docs/deploy/pypi-publish.md](docs/deploy/pypi-publish.md), `scripts/publish/first_publish_gates.py` |
 | Desktop launcher releases | [docs/deploy/launcher.md](docs/deploy/launcher.md) |
@@ -115,4 +115,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3091** unit tests (plus 84 Playwright specs); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, archetype-fit and collab-LLM audit gates, and packages LOC budget (`scripts/ci/run_*_ci_gate.py`; baseline **96,840** non-blank Python lines in `packages/`).
+Default CI runs **~3100** unit tests under the default pytest marker (plus Playwright specs); full collection is **~3950** tests. CI enforces prune-comments, explainer-export lint, workflow-explainer init sync, archetype-fit, gate-comprehension, and collab-LLM audit gates (`scripts/ci/run_*_ci_gate.py`; baseline **97,300** non-blank Python lines in `packages/`).

@@ -1,9 +1,9 @@
 summary:
-  total_buttons: 136
-  clicked: 36
-  visible_only: 8
-  unwired: 92
-  click_ratio: 0.2647
+  total_buttons: 137
+  clicked: 37
+  visible_only: 7
+  unwired: 93
+  click_ratio: 0.2701
 buttons:
 - test_id: admin-chat-accept-chip
   app: admin
@@ -780,7 +780,8 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/safe-coding-wizard.js
   label: Prepare workspace
-  clicked_in: []
+  clicked_in:
+  - tests/e2e/web/maker_safe_coding_full_journey.spec.ts
   visible_only_in:
   - tests/e2e/web/maker_safe_coding_onboarding.spec.ts
 - test_id: maker-safe-coding-readiness-ribbon
@@ -812,6 +813,12 @@ buttons:
   app: maker
   source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
   label: Load probation reliability
+  clicked_in: []
+  visible_only_in: []
+- test_id: maker-settings-industry-critic-save
+  app: maker
+  source: packages/nimbusware_maker_web/static/js/tabs/settings_shell_html.js
+  label: Save pack
   clicked_in: []
   visible_only_in: []
 - test_id: maker-settings-memory-chunk
