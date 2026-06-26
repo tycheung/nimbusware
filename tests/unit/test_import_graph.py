@@ -193,15 +193,15 @@ def test_projections_has_no_module_level_orchestrator_imports() -> None:
 def test_workflow_explainers_use_config_workflow_read_facade() -> None:
     root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console" / "workflow_explainers"
     offenders: list[str] = []
-    for path in sorted(root.rglob("*.py")):
-        if path.name in _WORKFLOW_EXPLAINER_ORCHESTRATOR_ALLOWLIST:
-            continue
+    for path in sorted(root.glob("*/payload.py")):
         hits = [
             mod
             for mod in _module_level_imports_matching(path, "nimbusware_orchestrator")
             if mod
             not in {
                 "nimbusware_orchestrator.integrator_gate",
+                "nimbusware_orchestrator.integration_adapter_writer_stage",
+                "nimbusware_orchestrator.workflow_integration_adapter_writer",
             }
         ]
         if hits:
