@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from agent_core.coercion import as_float, as_stripped_str, is_number, is_strict_int
+from agent_core.coercion import as_float, as_stripped_str, is_strict_int
 from nimbusware_console.agent_evaluator_display.captions import (
     agent_evaluator_timeline_export_filename_slug,
 )

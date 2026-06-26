@@ -7,7 +7,7 @@ from nimbusware_console.implementation_critique_display import (
 
 
 def test_implementation_critique_caption_empty() -> None:
-    assert "No Phase 3" in implementation_critique_caption({})
+    assert "No implementation critic" in implementation_critique_caption({})
 
 
 def test_implementation_critique_table_rows() -> None:
