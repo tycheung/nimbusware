@@ -8,6 +8,8 @@ from pydantic import BaseModel
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
 from nimbusware_api.user import maker_user_id_str
+from nimbusware_config.collab_settings_store import save_persisted_collab_enabled
+from nimbusware_env import find_repo_root
 from nimbusware_env.collab_runtime import collab_settings_snapshot, set_runtime_collab_enabled
 from nimbusware_env.edition import edition_manifest
 
@@ -48,4 +50,5 @@ def put_collab_settings(
 ) -> dict[str, Any]:
     _require_individual_owner(request, user)
     set_runtime_collab_enabled(body.collab_enabled)
+    save_persisted_collab_enabled(body.collab_enabled, repo_root=find_repo_root())
     return collab_settings_snapshot()

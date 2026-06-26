@@ -5,6 +5,16 @@ function canEditBindings(collabRole) {
   return collabRole === "session_admin" || collabRole === "session_write";
 }
 
+function providerKindFor(providers, providerId) {
+  const match = (providers || []).find(
+    (p) => String(p.id || p.provider_id || "") === String(providerId),
+  );
+  const kind = String(match?.kind || match?.provider_kind || "").toLowerCase();
+  if (kind === "local" || kind === "ollama") return "local";
+  if (kind) return kind;
+  return providerId === "ollama" ? "local" : "cloud";
+}
+
 export function mountCollabModelDrawerTrigger(root, sessionId) {
   const role = getCollabMyRole();
   if (!canEditBindings(role) || !sessionId) return;
@@ -21,13 +31,19 @@ export function mountCollabModelDrawerTrigger(root, sessionId) {
 }
 
 async function loadDrawerData(sessionId) {
-  const [defaults, sessionBindings, rolesBody] = await Promise.all([
+  const [defaults, sessionBindings, rolesBody, connections] = await Promise.all([
     apiJson("/platform/model-bindings/defaults").catch(() => ({ roles: [], defaults: { roles: {} } })),
     apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`),
     apiJson("/platform/model-bindings/roles").catch(() => ({ roles: [] })),
+    apiJson("/platform/provider-connections").catch(() => ({ connections: [] })),
   ]);
   const catalog = rolesBody.roles?.length ? rolesBody.roles : defaults.roles || [];
-  return { catalog, sessionRoles: sessionBindings.roles || {}, providers: defaults.providers || [] };
+  return {
+    catalog,
+    sessionRoles: sessionBindings.roles || {},
+    providers: defaults.providers || [],
+    connections: connections.connections || connections.items || [],
+  };
 }
 
 export async function openCollabModelDrawer(root, sessionId) {
@@ -47,10 +63,11 @@ export async function openCollabModelDrawer(root, sessionId) {
 
   const host = drawer.querySelector("[data-testid='maker-chat-model-drawer-table']");
   try {
-    const { catalog, sessionRoles, providers } = await loadDrawerData(sessionId);
+    const { catalog, sessionRoles, providers, connections } = await loadDrawerData(sessionId);
     const table = document.createElement("table");
     table.className = "data-table";
-    table.innerHTML = "<thead><tr><th>Role</th><th>Provider</th><th>Model</th><th></th></tr></thead>";
+    table.innerHTML =
+      "<thead><tr><th>Role</th><th>Provider</th><th>Model</th><th>Connection</th><th></th></tr></thead>";
     const tbody = document.createElement("tbody");
     for (const row of catalog) {
       const role = row.agent_role || "";
@@ -70,21 +87,36 @@ export async function openCollabModelDrawer(root, sessionId) {
       modelInput.type = "text";
       modelInput.value = String(binding.model_id || "");
       modelInput.dataset.role = role;
+      const connectionSelect = document.createElement("select");
+      connectionSelect.dataset.role = role;
+      const noneOpt = document.createElement("option");
+      noneOpt.value = "";
+      noneOpt.textContent = "(default)";
+      connectionSelect.appendChild(noneOpt);
+      for (const c of connections) {
+        const opt = document.createElement("option");
+        opt.value = String(c.connection_id || c.id || "");
+        opt.textContent = String(c.label || c.name || opt.value);
+        if (opt.value && opt.value === String(binding.connection_id || "")) opt.selected = true;
+        connectionSelect.appendChild(opt);
+      }
       const saveBtn = document.createElement("button");
       saveBtn.type = "button";
       saveBtn.className = "secondary";
       saveBtn.textContent = "Save";
       saveBtn.addEventListener("click", async () => {
         try {
+          const providerId = providerSelect.value;
+          const connId = connectionSelect.value.trim();
           await apiJson(`/chat/sessions/${encodeURIComponent(sessionId)}/participant-bindings`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               agent_role: role,
-              provider_kind: binding.provider_kind || "cloud",
-              provider_id: providerSelect.value,
+              provider_kind: providerKindFor(providers, providerId),
+              provider_id: providerId,
               model_id: modelInput.value.trim(),
-              connection_id: binding.connection_id || null,
+              connection_id: connId || null,
             }),
           });
           toast(`Saved ${role}`, "success");
@@ -95,6 +127,7 @@ export async function openCollabModelDrawer(root, sessionId) {
       tr.appendChild(document.createElement("td")).textContent = row.display_name || role;
       tr.appendChild(document.createElement("td")).appendChild(providerSelect);
       tr.appendChild(document.createElement("td")).appendChild(modelInput);
+      tr.appendChild(document.createElement("td")).appendChild(connectionSelect);
       tr.appendChild(document.createElement("td")).appendChild(saveBtn);
       tbody.appendChild(tr);
     }

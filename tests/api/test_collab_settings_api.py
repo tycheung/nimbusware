@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
@@ -9,7 +10,11 @@ from fastapi.testclient import TestClient
 def test_collab_settings_toggle_without_env_restart(
     client: TestClient,
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
+    from nimbusware_config import collab_settings_store
+
+    monkeypatch.setattr(collab_settings_store, "collab_settings_path", lambda repo_root=None: tmp_path / "collab_settings.yaml")
     monkeypatch.setenv("NIMBUSWARE_COLLAB_ENABLED", "1")
     from nimbusware_env.collab_runtime import set_runtime_collab_enabled
 
@@ -44,3 +49,7 @@ def test_collab_settings_toggle_without_env_restart(
 
     get1 = client.get("/v1/platform/collab-settings")
     assert get1.json()["collab_enabled"] is True
+
+    from nimbusware_config.collab_settings_store import load_persisted_collab_enabled
+
+    assert load_persisted_collab_enabled() is True

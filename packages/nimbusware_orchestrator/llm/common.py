@@ -252,8 +252,10 @@ def ollama_chat_json_via_plan_patch(
             mesh_actor_user_id,
             mesh_participant_overrides,
         )
+        from nimbusware_orchestrator.host_collab_mesh_hydrate import ensure_mesh_binding_for_llm
         from nimbusware_orchestrator.model_binding_resolver import ModelBindingResolver
 
+        ensure_mesh_binding_for_llm()
         resolver = ModelBindingResolver(find_repo_root())
         return resolver.chat_json(
             role,

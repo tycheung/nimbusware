@@ -89,6 +89,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             app.state.run_queue,
         )
     app.state.edition = edition()
+    try:
+        from nimbusware_config.collab_settings_store import load_persisted_collab_enabled
+        from nimbusware_env import find_repo_root
+        from nimbusware_env.collab_runtime import set_runtime_collab_enabled
+
+        persisted = load_persisted_collab_enabled(find_repo_root())
+        if persisted is not None:
+            set_runtime_collab_enabled(persisted)
+    except Exception:
+        logger.exception("Failed to load persisted collab settings")
     if url:
         try:
             from nimbusware_env.settings_resolve import refresh_scope_caches

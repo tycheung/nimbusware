@@ -48,6 +48,13 @@ def dispatch_role_execute(
     *,
     workspace: Path | None = None,
 ) -> dict[str, Any]:
+    from nimbusware_orchestrator.host_collab_mesh_hydrate import (
+        hydrate_mesh_binding_from_run,
+        set_active_run_for_mesh,
+    )
+
+    set_active_run_for_mesh(run_id)
+    hydrate_mesh_binding_from_run(run_id)
     key = taxonomy_key.strip().lower()
     if key not in _SUPPORTED_PRODUCERS:
         msg = f"role execute not supported for taxonomy_key={key!r}"
