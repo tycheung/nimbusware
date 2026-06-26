@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from typing import TypeGuard
 
-def is_strict_int(value: object) -> bool:
+
+def is_strict_int(value: object) -> TypeGuard[int]:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-def is_number(value: object) -> bool:
+def is_number(value: object) -> TypeGuard[int | float]:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 

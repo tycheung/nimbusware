@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import mapping_export_json
 from nimbusware_console.explainer_core.table_rows_csv import field_value_table_rows_csv
 

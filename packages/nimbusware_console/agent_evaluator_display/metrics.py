@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from agent_core.coercion import as_stripped_str, is_number, is_strict_int
+from agent_core.coercion import as_float, as_stripped_str, is_number, is_strict_int
 from nimbusware_console.agent_evaluator_display.captions import (
     agent_evaluator_timeline_export_filename_slug,
 )
@@ -119,10 +119,12 @@ def _agent_evaluator_operator_metrics(ae: Mapping[str, Any] | None) -> dict[str,
 def _format_metric_cell(key: str, val: object) -> str | None:
     if val is None:
         return None
-    if key in _SCORE_KEYS and is_number(val):
-        if key == "rules_vs_llm_score_delta":
-            return f"{float(val):+.3f}"
-        return f"{float(val):.3f}"
+    if key in _SCORE_KEYS:
+        num = as_float(val)
+        if num is not None:
+            if key == "rules_vs_llm_score_delta":
+                return f"{num:+.3f}"
+            return f"{num:.3f}"
     if isinstance(val, bool):
         if key in {"has_persona_id", "has_auto_create_shelf"}:
             return "yes" if val else None
@@ -172,9 +174,9 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
         ("llm_evaluation_score", "llm_policy_score={:.3f}"),
         ("coverage_ratio", "coverage_ratio={:.3f}"),
     ):
-        val = metrics.get(key)
-        if is_number(val):
-            parts.append(fmt.format(float(val)))
+        num = as_float(metrics.get(key))
+        if num is not None:
+            parts.append(fmt.format(num))
     for key, prefix in (
         ("evaluation_score_band", "score_band="),
         ("llm_evaluation_score_band", "llm_policy_score_band="),
@@ -193,9 +195,9 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     gaps_n = metrics.get("evaluation_gaps_count")
     if is_strict_int(gaps_n) and gaps_n > 0:
         parts.append(f"gap_count={gaps_n}")
-    delta = metrics.get("rules_vs_llm_score_delta")
-    if is_number(delta):
-        parts.append(f"llm_minus_rules={float(delta):+.3f}")
+    delta = as_float(metrics.get("rules_vs_llm_score_delta"))
+    if delta is not None:
+        parts.append(f"llm_minus_rules={delta:+.3f}")
     if metrics.get("llm_rules_score_agreement") is True:
         parts.append("bands_agree")
     elif metrics.get("llm_rules_score_agreement") is False:
@@ -217,7 +219,7 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     agent_evaluator_operator_metrics_caption,
     agent_evaluator_operator_metrics_export_json,
     agent_evaluator_operator_metrics_table_rows_csv,
-    agent_evaluator_operator_metrics_export_filename_slug,
+    _agent_evaluator_operator_metrics_export_slug,
 ) = install_operator_metrics_module(
     globals(),
     module_prefix=_PREFIX,
@@ -227,5 +229,10 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     export_slug="agent_evaluator_operator_metrics",
 )
 
-# Timeline exports use run-id slug; operator-metrics export keeps the shared slug above.
-agent_evaluator_operator_metrics_export_filename_slug = agent_evaluator_timeline_export_filename_slug
+
+def agent_evaluator_operator_metrics_export_filename_slug(
+    run_id: str,
+    *,
+    max_len: int = 36,
+) -> str:
+    return agent_evaluator_timeline_export_filename_slug(run_id, max_len=max_len)

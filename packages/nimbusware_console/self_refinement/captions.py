@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.self_refinement.marker_history import self_refinement_from_timeline
 
 

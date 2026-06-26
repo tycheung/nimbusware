@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.self_refinement._helpers import _parse_iso_utc
 from nimbusware_console.self_refinement.latest import _TIMELINE_DESC_PREVIEW_MAX
 

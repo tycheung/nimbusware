@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.explainer_core.operator_metrics_exports import (
     build_metrics_fn,
     caption_from_parts,

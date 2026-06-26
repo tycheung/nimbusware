@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nimbusware_config import config_from_db_enabled, config_notify_enabled, keys
+from nimbusware_config import keys
 from nimbusware_config.store import (
     InMemoryConfigStore,
     PostgresConfigStore,

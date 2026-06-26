@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import (
     sequence_export_json,
     table_rows_csv,

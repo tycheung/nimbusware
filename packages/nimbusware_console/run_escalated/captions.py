@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.run_escalated._common import _stringify
 
 

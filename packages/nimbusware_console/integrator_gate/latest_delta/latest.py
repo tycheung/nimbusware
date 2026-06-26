@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.integrator_gate._helpers import (
     _optional_float,
     _stringify,
@@ -173,9 +173,7 @@ def integrator_gate_latest_tag_overlap_caption(
     overlap = metrics.get("tag_overlap_count")
     project_n = metrics.get("integrator_project_tags_count")
     matched_n = metrics.get("integrator_matched_tags_count")
-    if not all(
-        is_strict_int(x) for x in (overlap, project_n, matched_n)
-    ):
+    if not all(is_strict_int(x) for x in (overlap, project_n, matched_n)):
         return None
     if project_n == 0 and matched_n == 0 and overlap == 0:
         return None

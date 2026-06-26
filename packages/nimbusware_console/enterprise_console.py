@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 import csv
 import io
 import json
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.preflight_cross_run_display import (
     preflight_history_response_sli_caption,
 )

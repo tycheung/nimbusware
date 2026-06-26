@@ -41,4 +41,6 @@ from nimbusware_console.workflow_explainers.escalation_suppress.policy_tables im
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
 )
 
-install_package_workflow_explainer_exports(globals(), "escalation_suppress")  # workflow-explainer-exports
+install_package_workflow_explainer_exports(
+    globals(), "escalation_suppress"
+)  # workflow-explainer-exports

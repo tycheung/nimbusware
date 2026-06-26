@@ -25,4 +25,6 @@ def escalation_explainer_payload(
     write_workflow_profile(tmp_path, workflow_profile, workflow_yaml)
     if policy_yaml is not None:
         write_escalation_policy(tmp_path, policy_yaml)
-    return escalation_suppress_workflow_explainer_payload(tmp_path, workflow_profile=workflow_profile)
+    return escalation_suppress_workflow_explainer_payload(
+        tmp_path, workflow_profile=workflow_profile
+    )

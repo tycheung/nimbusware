@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_number, is_strict_int
 import csv
 import json
 import re
@@ -8,6 +7,7 @@ from collections.abc import Mapping
 from io import StringIO
 from typing import Any
 
+from agent_core.coercion import is_number, is_strict_int
 from nimbusware_extensions.extension_runtime import agent_evaluator_score_band
 
 _AGENT_EVALUATOR_FIELDS: tuple[tuple[str, str], ...] = (

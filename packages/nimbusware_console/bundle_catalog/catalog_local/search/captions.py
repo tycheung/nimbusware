@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_number, is_strict_int
 from nimbusware_console.bundle_catalog.catalog_local._constants import (
     BUNDLE_FAISS_INDEX_WORKFLOW_RELPATH,
 )

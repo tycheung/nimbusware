@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import table_rows_csv
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.explainer_core.workflow_exports import run_id_export_filename_slug

@@ -34,9 +34,9 @@ from nimbusware_api.schemas.personas import (
     PersonaShelvesResponse,
     ProbationReliabilityResponse,
 )
+from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from nimbusware_extensions.persona_scope_overlap import persona_scope_overlap_report
 from nimbusware_extensions.personas import normalize_entry
-from nimbusware_extensions.extension_runtime import AGENT_EVALUATOR_PROMOTION_SCORE_THRESHOLD
 from nimbusware_orchestrator.persona_catalog_audit import append_persona_shelf_updated_event
 from nimbusware_orchestrator.persona_probation_reliability import (
     collect_persona_eval_metrics,

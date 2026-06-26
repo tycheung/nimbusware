@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
+
+from agent_core.coercion import is_strict_int
 
 
 def run_list_response_pagination_caption(

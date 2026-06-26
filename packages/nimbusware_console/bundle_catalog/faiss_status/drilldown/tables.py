@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.bundle_catalog.faiss_status.drilldown.captions import (
     _FAISS_ID_SET_MISMATCH_CSV_COLUMNS,
 )

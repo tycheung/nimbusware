@@ -1,16 +1,11 @@
 from __future__ import annotations
 
-import pytest
-
-from unit.workflow_explainer_helpers import escalation_explainer_payload, write_escalation_policy
-
-pytestmark = pytest.mark.slow
-
-
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+
+import pytest
 
 from nimbusware_console.workflow_explainers.escalation_suppress import (
     escalation_policy_export_filename_slug,
@@ -47,7 +42,9 @@ from nimbusware_console.workflow_explainers.escalation_suppress import (
 )
 from nimbusware_env import find_repo_root
 from unit.composite_repo_fixtures import write_workflow_profile
-from unit.workflow_explainer_helpers import escalation_explainer_payload, write_escalation_policy
+from unit.workflow_explainer_helpers import escalation_explainer_payload
+
+pytestmark = pytest.mark.slow
 
 
 def test_explainer_no_escalation_key(tmp_path: Path) -> None:

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
+
+from agent_core.coercion import is_strict_int
 
 SCRAPER_ARTIFACT_PRUNE_WORKFLOW_RELPATH = ".github/workflows/scraper_artifact_prune.yml"
 

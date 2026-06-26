@@ -6,7 +6,6 @@ from nimbusware_extensions.catalog import (
     search_bundles,
 )
 from nimbusware_extensions.escalation import EscalationPolicy
-from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_extensions.extension_runtime import (
     AgentEvaluator,
     ModuleIntegrator,
@@ -14,6 +13,7 @@ from nimbusware_extensions.extension_runtime import (
     SecurityScannerStub,
     UniversalCritiqueRouter,
 )
+from nimbusware_extensions.personas import PersonaShelf
 from nimbusware_extensions.self_refinement import SelfRefinementPolicy, load_self_refinement_policy
 
 __all__ = [

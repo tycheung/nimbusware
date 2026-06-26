@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from agent_core.coercion import as_float, as_stripped_str, is_number, is_strict_int
+from agent_core.coercion import as_float, as_stripped_str
 from nimbusware_console.explainer_core.metrics_scaffold import (
     apply_bool_payload_fields,
     apply_env_flag_metric,

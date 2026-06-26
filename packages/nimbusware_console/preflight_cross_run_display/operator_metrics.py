@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.explainer_core.operator_metrics_exports import bind_operator_metrics_exports
 from nimbusware_console.preflight_cross_run_display.trend import (
     preflight_cross_run_trend_export_filename_slug,

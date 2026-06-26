@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.explainer_core.compare_timeline import (
     NO_TIMELINE,
     env_override_delta_rows,

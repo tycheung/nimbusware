@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
-from agent_core.coercion import as_float, as_int, as_stripped_str, is_number, is_strict_int
+from agent_core.coercion import as_stripped_str, is_strict_int
 
 
 def default_operator_metrics(defaults: Mapping[str, Any]) -> dict[str, Any]:

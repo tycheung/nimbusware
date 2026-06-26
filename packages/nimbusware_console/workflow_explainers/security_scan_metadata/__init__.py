@@ -34,4 +34,6 @@ from nimbusware_console.workflow_explainers.security_scan_metadata.payload impor
 _SECURITY_SCAN_METADATA_EXPLAINER_CSV_COLUMNS = FIELD_VALUE_COLUMNS
 _SECURITY_SCAN_METADATA_WORKFLOW_EXPLAINER_OPERATOR_METRICS_CSV_COLUMNS = FIELD_VALUE_COLUMNS
 
-install_package_workflow_explainer_exports(globals(), "security_scan_metadata")  # workflow-explainer-exports
+install_package_workflow_explainer_exports(
+    globals(), "security_scan_metadata"
+)  # workflow-explainer-exports

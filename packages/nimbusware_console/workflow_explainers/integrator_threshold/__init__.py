@@ -30,4 +30,6 @@ from nimbusware_console.workflow_explainers.integrator_threshold.snapshots impor
     _thresholds_snapshot,
 )
 
-install_package_workflow_explainer_exports(globals(), "integrator_threshold")  # workflow-explainer-exports
+install_package_workflow_explainer_exports(
+    globals(), "integrator_threshold"
+)  # workflow-explainer-exports

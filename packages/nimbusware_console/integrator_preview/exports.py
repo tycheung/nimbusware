@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.components.operator_metrics import (
     field_value_table_rows_csv,
     sequence_export_json,
@@ -123,9 +123,7 @@ def full_workflow_merge_diff_operator_metrics_caption(
     removed = metrics.get("removed_top_level_count", 0)
     changed = metrics.get("changed_top_level_count", 0)
     unchanged = metrics.get("unchanged_top_level_count", 0)
-    if not all(
-        is_strict_int(x) for x in (added, removed, changed, unchanged)
-    ):
+    if not all(is_strict_int(x) for x in (added, removed, changed, unchanged)):
         return None
     paste_only = metrics.get("paste_only_top_level_count", 0)
     disk_only = metrics.get("disk_only_top_level_count", 0)

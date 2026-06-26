@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
 from typing import Any
 
+from agent_core.coercion import is_strict_int
 from nimbusware_console.bundle_catalog.catalog_local._cells import (
     _BUNDLE_CATALOG_LOCAL_SUMMARY_CSV_COLUMNS,
     _bundle_catalog_local_summary_cell,
