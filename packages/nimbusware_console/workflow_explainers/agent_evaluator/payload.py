@@ -4,6 +4,9 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_config.workflow_read import parse_agent_evaluator_workflow_block
+from nimbusware_console.explainer_core.repo_yaml import json_safe_yaml_fragment
+from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.explainer_core.workflow_profile import yaml_section
 from nimbusware_console.workflow_explainers.agent_evaluator.env import (
     _nimbusware_agent_evaluator_auto_create_env_summary,
     _nimbusware_agent_evaluator_auto_promote_env_summary,
@@ -11,9 +14,6 @@ from nimbusware_console.workflow_explainers.agent_evaluator.env import (
     _would_emit_agent_evaluator_stage,
     _would_emit_llm_evaluation,
 )
-from nimbusware_console.explainer_core.repo_yaml import json_safe_yaml_fragment
-from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
-from nimbusware_console.explainer_core.workflow_profile import yaml_section
 
 
 def agent_evaluator_workflow_explainer_payload(

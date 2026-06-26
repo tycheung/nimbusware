@@ -1,3 +1,7 @@
+from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
+from nimbusware_console.explainer_core.workflow_explainer_registry import (
+    install_package_workflow_explainer_exports,
+)
 from nimbusware_console.workflow_explainers.escalation_suppress.captions import (
     escalation_policy_yaml_age_caption,
     escalation_policy_yaml_anti_deadlock_min_progress_caption,
@@ -35,10 +39,6 @@ from nimbusware_console.workflow_explainers.escalation_suppress.policy_tables im
     escalation_policy_yaml_top_level_kinds_export_json,
     escalation_policy_yaml_top_level_kinds_table_rows,
     escalation_policy_yaml_top_level_kinds_table_rows_csv,
-)
-from nimbusware_console.explainer_core.time import age_seconds_utc as _age_seconds_utc
-from nimbusware_console.explainer_core.workflow_explainer_registry import (
-    install_package_workflow_explainer_exports,
 )
 
 # codegen: workflow_explainer_exports begin

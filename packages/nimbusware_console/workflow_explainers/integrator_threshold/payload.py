@@ -4,6 +4,10 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
+from nimbusware_console.integrator_workflow_preview import (
+    parse_integrator_gate_yaml_fragment,
+    preview_effective_min_score_to_pass,
+)
 from nimbusware_console.workflow_explainers.integrator_threshold.keys import (
     PREVIEW_EFFECTIVE_MIN_SCORE_KEY,
 )
@@ -11,10 +15,6 @@ from nimbusware_console.workflow_explainers.integrator_threshold.snapshots impor
     _emit_integrator_gate_breakdown,
     _env_min_score_to_pass_breakdown,
     _thresholds_snapshot,
-)
-from nimbusware_console.integrator_workflow_preview import (
-    parse_integrator_gate_yaml_fragment,
-    preview_effective_min_score_to_pass,
 )
 from nimbusware_orchestrator.integrator_gate import (
     effective_integrator_min_score_to_pass,
