@@ -9,15 +9,15 @@
 | **Default workflow** | `micro_slice` |
 | **License** | [GPL-3.0](LICENSE) |
 
-**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, an in-session **Session models** drawer, and **Accessible compute** for collaborative mesh sessions. Engineer workspace preset enables collab without editing `.env`.  
-**Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
+**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, an in-session **Session models** drawer (provider + connection per role), and **Accessible compute** for collaborative mesh sessions. The **Engineer workspace** archetype enables and **persists** collab without editing `.env`. **Safe Coding** offers a zero-terminal Home wizard (scaffold → pre-commit → Playwright bootstrap with status polling).  
+**Enterprise** — self-hosted control plane for governed agentic development: audit every run, fleet compliance dashboard (gate pass rates, slice histogram), tenant audit policy, steer autonomy, standardize quality without a SaaS black box.
 
 ## Consumer personas
 
 | Persona | Setup bundle | First-run choice | Docs |
 |---------|--------------|------------------|------|
 | **Safe Coding** | `default` | Safe Coding in Maker archetype picker | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
-| **Engineer workspace** | `default` | Engineer workspace in Maker (enables collab via Settings or archetype preset) | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
+| **Engineer workspace** | `default` | Engineer workspace in Maker (persists collab via Settings or archetype preset) | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
 | **Enterprise AI** | `enterprise` | (strict env applied at install) | [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
 
 Install with `--setup-bundle default` or `--setup-bundle enterprise` (see [docs/install-profiles.md](docs/install-profiles.md)). The desktop launcher offers **Quick setup**, **Full setup** (default bundle), and **Enterprise setup**.

@@ -34,9 +34,13 @@ When Safe Coding is active, Maker **Home** shows:
   - `GET /v1/platform/workspace-readiness`
   - `POST /v1/platform/workspace-scaffold`
   - `POST /v1/platform/workspace-precommit`
-  - `POST /v1/platform/playwright-bootstrap` (poll until ready)
+  - `POST /v1/platform/playwright-bootstrap` then poll `GET` every few seconds until `status` is `ready`
 
 Starting a `safe_coding` run auto-scaffolds missing smoke tests when the workspace lacks `tests/e2e` and `tests/test_smoke.py`.
+
+## Industry critic packs (Settings)
+
+When Safe Coding is active, **Settings** shows an optional **Industry critic pack** selector (`fintech-api`, `healthcare-api`). Preferences persist per user via `GET/PUT /v1/platform/safe-coding-preferences`.
 
 ## Plain-language gates
 
