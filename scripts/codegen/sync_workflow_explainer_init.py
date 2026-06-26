@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync workflow explainer package __init__.py export install blocks from registry (C50)."""
+"""Sync workflow explainer package __init__.py export install lines from registry (C50)."""
 
 from __future__ import annotations
 
@@ -11,10 +11,9 @@ REPO = Path(__file__).resolve().parents[2]
 CONSOLE = REPO / "packages" / "nimbusware_console"
 
 from nimbusware_console.explainer_core.workflow_explainer_registry import (  # noqa: E402
-    CODEGEN_BLOCK_END,
-    CODEGEN_BLOCK_START,
+    EXPORT_INSTALL_MARKER,
     WORKFLOW_EXPLAINER_SPECS,
-    codegen_install_block,
+    codegen_install_line,
 )
 
 _LEGACY_BLOCK_RE = re.compile(
@@ -29,15 +28,21 @@ _LEGACY_BLOCK_RE = re.compile(
     re.MULTILINE,
 )
 
+_LEGACY_CODEGEN_RE = re.compile(
+    r"# codegen: workflow_explainer_exports begin\n"
+    r'install_package_workflow_explainer_exports\(globals\(\), "[^"]+"\)\n'
+    r"# codegen: workflow_explainer_exports end\n?",
+    re.MULTILINE,
+)
+
 _REGISTRY_IMPORT = (
     "from nimbusware_console.explainer_core.workflow_explainer_registry import (\n"
     "    install_package_workflow_explainer_exports,\n"
     ")\n"
 )
 
-_BLOCK_RE = re.compile(
-    rf"{re.escape(CODEGEN_BLOCK_START)}.*?{re.escape(CODEGEN_BLOCK_END)}\n?",
-    re.DOTALL,
+_INSTALL_RE = re.compile(
+    rf'install_package_workflow_explainer_exports\(globals\(\), "[^"]+"\)\s*{re.escape(EXPORT_INSTALL_MARKER)}\n?',
 )
 
 
@@ -74,13 +79,14 @@ def sync_package_init(spec_package: str, slug: str, *, dry_run: bool = False) ->
     if not init_path.is_file():
         print(f"missing {init_path.relative_to(REPO)}")
         return False
-    block = codegen_install_block(slug)
+    line = codegen_install_line(slug)
     text = init_path.read_text(encoding="utf-8")
     new_text = _LEGACY_BLOCK_RE.sub("", text)
-    new_text = _BLOCK_RE.sub("", new_text)
+    new_text = _LEGACY_CODEGEN_RE.sub("", new_text)
+    new_text = _INSTALL_RE.sub("", new_text)
     new_text = _insert_registry_import(new_text)
-    if CODEGEN_BLOCK_START not in new_text:
-        new_text = new_text.rstrip() + "\n\n" + block
+    if EXPORT_INSTALL_MARKER not in new_text:
+        new_text = new_text.rstrip() + "\n\n" + line
     if new_text == text:
         return False
     if dry_run:

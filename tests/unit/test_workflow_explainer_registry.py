@@ -3,10 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_console.explainer_core.workflow_explainer_registry import (
-    CODEGEN_BLOCK_END,
-    CODEGEN_BLOCK_START,
+    EXPORT_INSTALL_MARKER,
     WORKFLOW_EXPLAINER_SPECS,
-    codegen_install_block,
+    codegen_install_line,
 )
 
 
@@ -22,17 +21,15 @@ def test_workflow_explainer_package_dirs_exist() -> None:
         assert (root / spec.package / "__init__.py").is_file()
 
 
-def test_codegen_install_block_markers() -> None:
-    block = codegen_install_block("agent_evaluator")
-    assert CODEGEN_BLOCK_START in block
-    assert CODEGEN_BLOCK_END in block
-    assert 'install_package_workflow_explainer_exports(globals(), "agent_evaluator")' in block
+def test_codegen_install_line_marker() -> None:
+    line = codegen_install_line("agent_evaluator")
+    assert EXPORT_INSTALL_MARKER in line
+    assert 'install_package_workflow_explainer_exports(globals(), "agent_evaluator")' in line
 
 
-def test_workflow_explainer_inits_include_codegen_block() -> None:
+def test_workflow_explainer_inits_include_export_install_line() -> None:
     root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
     for spec in WORKFLOW_EXPLAINER_SPECS:
         text = (root / spec.package / "__init__.py").read_text(encoding="utf-8")
-        assert CODEGEN_BLOCK_START in text
-        assert CODEGEN_BLOCK_END in text
-        assert codegen_install_block(spec.slug).strip() in text
+        assert EXPORT_INSTALL_MARKER in text
+        assert codegen_install_line(spec.slug).strip() in text

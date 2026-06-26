@@ -33,6 +33,4 @@ from nimbusware_console.workflow_explainers.agent_evaluator.payload import (
     agent_evaluator_workflow_explainer_payload,
 )
 
-# codegen: workflow_explainer_exports begin
-install_package_workflow_explainer_exports(globals(), "agent_evaluator")
-# codegen: workflow_explainer_exports end
+install_package_workflow_explainer_exports(globals(), "agent_evaluator")  # workflow-explainer-exports

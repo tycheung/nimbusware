@@ -7,8 +7,18 @@ from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
 
-CODEGEN_BLOCK_START = "# codegen: workflow_explainer_exports begin"
-CODEGEN_BLOCK_END = "# codegen: workflow_explainer_exports end"
+EXPORT_INSTALL_MARKER = "# workflow-explainer-exports"
+
+
+def codegen_install_line(slug: str) -> str:
+    return (
+        f'install_package_workflow_explainer_exports(globals(), "{slug}")'
+        f"  {EXPORT_INSTALL_MARKER}\n"
+    )
+
+
+def codegen_install_block(slug: str) -> str:
+    return codegen_install_line(slug)
 
 
 @dataclass(frozen=True)
@@ -39,11 +49,3 @@ def install_package_workflow_explainer_exports(
     slug: str,
 ) -> WorkflowExplainerExports:
     return install_named_workflow_explainer_exports(namespace, slug)
-
-
-def codegen_install_block(slug: str) -> str:
-    return (
-        f"{CODEGEN_BLOCK_START}\n"
-        f'install_package_workflow_explainer_exports(globals(), "{slug}")\n'
-        f"{CODEGEN_BLOCK_END}\n"
-    )

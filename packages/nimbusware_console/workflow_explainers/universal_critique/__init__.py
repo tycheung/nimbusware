@@ -60,6 +60,4 @@ from nimbusware_console.workflow_explainers.universal_critique.payload import (
     universal_critique_workflow_explainer_payload,
 )
 
-# codegen: workflow_explainer_exports begin
-install_package_workflow_explainer_exports(globals(), "universal_critique")
-# codegen: workflow_explainer_exports end
+install_package_workflow_explainer_exports(globals(), "universal_critique")  # workflow-explainer-exports

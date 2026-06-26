@@ -45,6 +45,4 @@ from nimbusware_console.workflow_explainers.self_refinement.payload import (
     self_refinement_workflow_explainer_payload,
 )
 
-# codegen: workflow_explainer_exports begin
-install_package_workflow_explainer_exports(globals(), "self_refinement")
-# codegen: workflow_explainer_exports end
+install_package_workflow_explainer_exports(globals(), "self_refinement")  # workflow-explainer-exports
