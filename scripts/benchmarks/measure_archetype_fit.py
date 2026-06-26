@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +29,7 @@ _SAFE_CODING_BEHAVIORAL: tuple[str, ...] = (
     "packages/nimbusware_maker/consumer_test_scaffold.py",
     "packages/nimbusware_maker/playwright_bootstrap.py",
     "tests/e2e/web/maker_safe_coding_onboarding.spec.ts",
+    "tests/e2e/web/maker_safe_coding_full_journey.spec.ts",
 )
 
 _ENGINEER_STATIC: tuple[str, ...] = (
@@ -35,23 +37,28 @@ _ENGINEER_STATIC: tuple[str, ...] = (
     "packages/nimbusware_api/routes/platform_collab_settings.py",
     "packages/nimbusware_maker_web/static/js/tabs/chat_model_drawer_ui.js",
     "configs/install/bundles/default.config.yaml",
+    "packages/nimbusware_config/collab_settings_store.py",
 )
 
 _ENGINEER_BEHAVIORAL: tuple[str, ...] = (
     "packages/nimbusware_maker_web/static/js/archetype-picker.js",
+    "packages/nimbusware_orchestrator/host_collab_mesh_hydrate.py",
     "tests/api/test_collab_settings_api.py",
     "tests/api/test_collab_model_routing_api.py",
+    "tests/e2e/web/collab_model_routing.spec.ts",
 )
 
 _ENTERPRISE_STATIC: tuple[str, ...] = (
     "configs/install/bundles/enterprise.env.yaml",
     "packages/nimbusware_api/routes/enterprise/compliance.py",
     "packages/nimbusware_api/routes/enterprise/audit_export.py",
+    "packages/nimbusware_api/routes/enterprise/audit_policy.py",
 )
 
 _ENTERPRISE_BEHAVIORAL: tuple[str, ...] = (
     "packages/nimbusware_maker_web/static/js/tabs/home.js",
     "tests/e2e/web/maker_enterprise_journey.spec.ts",
+    "tests/e2e/web/maker_enterprise_install_journey.spec.ts",
 )
 
 
@@ -74,6 +81,70 @@ def _score_paths(root: Path, rel_paths: tuple[str, ...]) -> dict[str, object]:
     }
 
 
+def _content_checks(root: Path) -> dict[str, dict[str, object]]:
+    wizard = (root / "packages/nimbusware_maker_web/static/js/safe-coding-wizard.js").read_text(
+        encoding="utf-8",
+    )
+    bootstrap = (root / "packages/nimbusware_maker/playwright_bootstrap.py").read_text(encoding="utf-8")
+    compliance = (root / "packages/nimbusware_api/routes/enterprise/compliance.py").read_text(
+        encoding="utf-8",
+    )
+    fleet = (root / "packages/nimbusware_admin_ui/src/pages/FleetPage.tsx").read_text(encoding="utf-8")
+    hydrate = (root / "packages/nimbusware_orchestrator/host_collab_mesh_hydrate.py").read_text(
+        encoding="utf-8",
+    )
+    collab_store = (root / "packages/nimbusware_config/collab_settings_store.py").read_text(
+        encoding="utf-8",
+    )
+    return {
+        "safe_coding": {
+            "wizard_poll": "pollPlaywrightBootstrap" in wizard and "BOOTSTRAP_POLL_MS" in wizard,
+            "async_bootstrap": "_job_status" in bootstrap and "threading" in bootstrap,
+        },
+        "engineer": {
+            "collab_persist": "save_persisted_collab_enabled" in collab_store,
+            "host_hydrate": "ensure_mesh_binding_for_llm" in hydrate,
+        },
+        "enterprise": {
+            "compliance_metrics": "gate_pass_rate" in compliance,
+            "fleet_dashboard": "gate_pass_rate" in fleet or "Gate pass rate" in fleet,
+        },
+    }
+
+
+def _score_content_checks(checks: dict[str, bool]) -> dict[str, object]:
+    passed = sum(1 for ok in checks.values() if ok)
+    total = len(checks) or 1
+    fit = round(passed / total, 3)
+    missing = [name for name, ok in checks.items() if not ok]
+    return {
+        "fit_score": fit,
+        "checks_passed": passed,
+        "checks_total": total,
+        "missing": missing,
+        "meets_target": fit >= _TARGET_SCORE,
+    }
+
+
+def _run_behavioral_pytest(root: Path) -> bool:
+    modules = [
+        "tests/unit/test_collab_settings_store.py",
+        "tests/unit/test_host_collab_mesh_hydrate.py",
+        "tests/api/test_playwright_bootstrap_api.py",
+    ]
+    existing = [m for m in modules if (root / m).is_file()]
+    if not existing:
+        return False
+    proc = subprocess.run(
+        [sys.executable, "-m", "pytest", *existing, "-q"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return proc.returncode == 0
+
+
 def _blend(static: dict[str, object], behavioral: dict[str, object]) -> dict[str, object]:
     s = float(static["fit_score"])  # type: ignore[arg-type]
     b = float(behavioral["fit_score"])  # type: ignore[arg-type]
@@ -90,25 +161,37 @@ def _blend(static: dict[str, object], behavioral: dict[str, object]) -> dict[str
 
 def measure_archetype_fit(*, repo_root: Path | None = None) -> dict[str, object]:
     root = repo_root or find_repo_root()
-    safe = _blend(
-        _score_paths(root, _SAFE_CODING_STATIC),
-        _score_paths(root, _SAFE_CODING_BEHAVIORAL),
-    )
-    engineer = _blend(
-        _score_paths(root, _ENGINEER_STATIC),
-        _score_paths(root, _ENGINEER_BEHAVIORAL),
-    )
-    enterprise = _blend(
-        _score_paths(root, _ENTERPRISE_STATIC),
-        _score_paths(root, _ENTERPRISE_BEHAVIORAL),
-    )
+    content = _content_checks(root)
+    pytest_ok = _run_behavioral_pytest(root)
+
+    safe_static = _score_paths(root, _SAFE_CODING_STATIC)
+    safe_behavioral_files = _score_paths(root, _SAFE_CODING_BEHAVIORAL)
+    safe_content = _score_content_checks(content["safe_coding"])
+    safe_behavioral = _blend(safe_behavioral_files, safe_content)
+    if pytest_ok:
+        safe_behavioral["fit_score"] = min(1.0, float(safe_behavioral["fit_score"]) + 0.05)  # type: ignore[arg-type]
+    safe = _blend(safe_static, safe_behavioral)
+
+    engineer_static = _score_paths(root, _ENGINEER_STATIC)
+    engineer_behavioral_files = _score_paths(root, _ENGINEER_BEHAVIORAL)
+    engineer_content = _score_content_checks(content["engineer"])
+    engineer_behavioral = _blend(engineer_behavioral_files, engineer_content)
+    engineer = _blend(engineer_static, engineer_behavioral)
+
+    enterprise_static = _score_paths(root, _ENTERPRISE_STATIC)
+    enterprise_behavioral_files = _score_paths(root, _ENTERPRISE_BEHAVIORAL)
+    enterprise_content = _score_content_checks(content["enterprise"])
+    enterprise_behavioral = _blend(enterprise_behavioral_files, enterprise_content)
+    enterprise = _blend(enterprise_static, enterprise_behavioral)
+
     ok = all(row.get("meets_target") for row in (safe, engineer, enterprise))
     return {
-        "version": 2,
+        "version": 3,
         "ok": ok,
         "target_score": _TARGET_SCORE,
         "measured_at": datetime.now(timezone.utc).isoformat(),
         "mode": "behavioral_rubric",
+        "pytest_modules_ok": pytest_ok,
         "archetypes": {
             "safe_coding": safe,
             "engineer": engineer,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
@@ -14,6 +14,7 @@ from nimbusware_api.routes.platform_hardware import router as hardware_router
 from nimbusware_api.routes.platform_model_routing import router as model_routing_router
 from nimbusware_api.routes.platform_operator_profiles import router as operator_profiles_router
 from nimbusware_api.routes.platform_user_profiles import router as user_profiles_router
+from nimbusware_api.user import maker_user_id_str
 from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles
 from nimbusware_maker.consumer_precommit_install import install_workspace_precommit
 from nimbusware_maker.consumer_test_scaffold import scaffold_consumer_tests
@@ -24,6 +25,10 @@ from nimbusware_maker.playwright_bootstrap import (
 )
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace_readiness import assess_workspace_readiness
+from nimbusware_orchestrator.user_operator_profiles import (
+    load_user_industry_critic_pack_ids,
+    save_user_industry_critic_pack_ids,
+)
 
 router = APIRouter(tags=["platform"])
 router.include_router(hardware_router)
@@ -39,6 +44,10 @@ class OptimizerWeightsBody(BaseModel):
 
 class WorkspacePathBody(BaseModel):
     workspace_path: str = Field(min_length=1, max_length=2000)
+
+
+class SafeCodingPreferencesBody(BaseModel):
+    industry_critic_pack_ids: list[str] = Field(default_factory=list)
 
 
 @router.post("/platform/workspace-scaffold")
@@ -121,3 +130,43 @@ def put_optimizer_weights(
 ) -> dict[str, Any]:
     row = weights_store.put(user_id=user.user_id, weights=body.weights)
     return {"weights": row.weights, "updated_at": row.updated_at.isoformat()}
+
+
+@router.get("/platform/safe-coding-preferences")
+def get_safe_coding_preferences(
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    return {
+        "user_id": uid,
+        "industry_critic_pack_ids": load_user_industry_critic_pack_ids(
+            uid, repo_root=orch.repo_root
+        ),
+    }
+
+
+@router.put("/platform/safe-coding-preferences")
+def put_safe_coding_preferences(
+    body: SafeCodingPreferencesBody,
+    request: Request,
+    orch: OrchDep,
+    user: AuthUserDep,
+) -> dict[str, Any]:
+    uid = str(user.user_id) if user is not None else maker_user_id_str(request)
+    if not uid:
+        raise HTTPException(
+            status_code=401,
+            detail=problem("unauthorized", "user identity required"),
+        )
+    return save_user_industry_critic_pack_ids(
+        uid,
+        body.industry_critic_pack_ids,
+        repo_root=orch.repo_root,
+    )

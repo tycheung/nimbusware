@@ -111,7 +111,14 @@ def get_chat_session(
     session = _session_or_404(chat_store, session_id)
     payload = session_response(chat_store, session, include_turns=include_turns)
     if nimbusware_collab_enabled():
-        payload["participants"] = [p.to_dict() for p in collab_store.list_participants(session_id)]
+        from nimbusware_env import find_repo_root
+        from nimbusware_orchestrator.user_operator_profiles import enrich_participants_with_profiles
+
+        raw_parts = [p.to_dict() for p in collab_store.list_participants(session_id)]
+        payload["participants"] = enrich_participants_with_profiles(
+            raw_parts,
+            repo_root=find_repo_root(),
+        )
         if user is not None:
             part = collab_store.get_participant(session_id, user.user_id)
             if part is not None:

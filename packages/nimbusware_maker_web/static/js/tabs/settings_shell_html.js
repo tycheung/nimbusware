@@ -39,6 +39,15 @@ export function settingsShellHtml() {
         Collaborative chat enabled
       </label>
     </section>
+    <section id="settings-safe-coding-panel" class="panel" data-testid="maker-settings-safe-coding" hidden>
+      <h3>Safe Coding critics</h3>
+      <p class="muted">Optional industry-specific critic packs for regulated domains.</p>
+      <label>
+        Industry critic pack
+        <select id="settings-industry-critic-pack" data-testid="maker-settings-industry-critic-pack"></select>
+      </label>
+      <button type="button" id="settings-industry-critic-save" class="secondary" data-testid="maker-settings-industry-critic-save">Save pack</button>
+    </section>
     <section id="settings-compute-sharing" class="panel" data-testid="maker-settings-compute-sharing">
       <h3>Compute sharing</h3>
       <p class="muted">Distributed mesh defaults for collaborative sessions.</p>

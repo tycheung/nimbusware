@@ -72,6 +72,24 @@ def save_tenant_model_policy(tenant_slug: str, doc: dict[str, Any]) -> dict[str,
     return dict(row.content)
 
 
+def load_tenant_audit_policy(tenant_slug: str) -> dict[str, Any]:
+    store = _store()
+    if store is None:
+        return {"version": 1, "legal_hold": False, "redaction_patterns": []}
+    row = store.get(NS_TENANT_POLICY, _tenant_key("audit", tenant_slug))
+    if row is None:
+        return {"version": 1, "legal_hold": False, "redaction_patterns": []}
+    return dict(row.content)
+
+
+def save_tenant_audit_policy(tenant_slug: str, doc: dict[str, Any]) -> dict[str, Any]:
+    store = _store()
+    if store is None:
+        return doc
+    row = store.upsert(NS_TENANT_POLICY, _tenant_key("audit", tenant_slug), doc)
+    return dict(row.content)
+
+
 def audit_redaction(payload: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     secret_keys = frozenset(

@@ -22,7 +22,8 @@ def test_measure_archetype_fit_rubric_passes() -> None:
     metrics = mod.measure_archetype_fit(repo_root=_ROOT)
     assert metrics["ok"] is True
     assert metrics["mode"] == "behavioral_rubric"
-    assert metrics["version"] == 2
+    assert metrics["version"] == 3
+    assert metrics.get("pytest_modules_ok") is True
     for name in ("safe_coding", "engineer", "enterprise"):
         row = metrics["archetypes"][name]
         assert row["fit_score"] >= 0.95
