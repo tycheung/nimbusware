@@ -75,17 +75,9 @@ from nimbusware_orchestrator.llm_plan import (
     execute_test_writer_critique_llm,
 )
 from nimbusware_orchestrator.merge import load_yaml, policy_snapshot_from_files
-from nimbusware_orchestrator.network_resilience_critique import (
-    emit_stub_network_resilience_critique_panel,
-    execute_network_resilience_critique_llm,
-)
 from nimbusware_orchestrator.network_resilience_scan import run_network_resilience_scan_summary
 from nimbusware_orchestrator.outbound_http import egress_checked_get_for_run
 from nimbusware_orchestrator.parallel_writers import WriterStageResult, run_parallel_writer_group
-from nimbusware_orchestrator.performance_critique import (
-    emit_stub_performance_critique_panel,
-    execute_performance_critique_llm,
-)
 from nimbusware_orchestrator.persona_coverage_critique import (
     emit_stub_persona_coverage_critique_panel,
     execute_persona_coverage_critique_llm,
@@ -106,15 +98,19 @@ from nimbusware_orchestrator.run_dispatch import (
     run_dispatch_enabled,
     task_payload_workspace,
 )
+from nimbusware_orchestrator.scan_critique_handlers import (
+    emit_stub_network_resilience_critique_panel,
+    emit_stub_performance_critique_panel,
+    emit_stub_security_critique_panel,
+    execute_network_resilience_critique_llm,
+    execute_performance_critique_llm,
+    execute_security_critique_llm,
+    run_security_scan_summary,
+)
 from nimbusware_orchestrator.scraper_artifacts import (
     resolve_scraper_artifact_base_dir,
 )
 from nimbusware_orchestrator.scraper_stage import ScraperFetchConfig, load_scraper_fetch_config
-from nimbusware_orchestrator.security_critique import (
-    emit_stub_security_critique_panel,
-    execute_security_critique_llm,
-    run_security_scan_summary,
-)
 from nimbusware_orchestrator.security_scan import run_security_scan, security_scan_tool_summary
 from nimbusware_orchestrator.stage_graph import (
     event_metadata_for_stage,

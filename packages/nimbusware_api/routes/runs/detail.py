@@ -135,12 +135,12 @@ def timeline(run_id: UUID, store: StoreDep, response: Response) -> RunTimelineRe
     ss_sum = ss_hist[-1] if ss_hist else None
     sr_markers = self_refinement_marker_timeline_history(events)
     from nimbusware_orchestrator.micro_slice import micro_slice_timeline_summary
-    from nimbusware_orchestrator.network_resilience_critique import (
-        network_resilience_critique_timeline_summary,
-    )
-    from nimbusware_orchestrator.performance_critique import performance_critique_timeline_summary
     from nimbusware_orchestrator.refactor_stage import refactor_critique_timeline_summary
-    from nimbusware_orchestrator.security_critique import security_critique_timeline_summary
+    from nimbusware_orchestrator.scan_critique_handlers import (
+        network_resilience_critique_timeline_summary,
+        performance_critique_timeline_summary,
+        security_critique_timeline_summary,
+    )
 
     custom_agent_summary: dict[str, Any] | None = None
     for event_row in events:

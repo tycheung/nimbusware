@@ -5,7 +5,7 @@ from pathlib import Path
 from nimbusware_env import find_repo_root
 from nimbusware_extensions.phase2 import UniversalCritiqueRouter
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
-from nimbusware_orchestrator.security_critique import (
+from nimbusware_orchestrator.scan_critique_handlers import (
     SECURITY_CRITIQUE_STAGE,
     emit_stub_security_critique_panel,
     run_security_scan_summary,

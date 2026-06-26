@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.network_resilience_critique import (
+from nimbusware_orchestrator.scan_critique_handlers import (
     scan_summary_failed,
 )
 from nimbusware_orchestrator.workflow_scan_critique import (

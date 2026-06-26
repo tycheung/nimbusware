@@ -7,11 +7,13 @@ from unittest.mock import patch
 import pytest
 
 from nimbusware_env import find_repo_root
-from nimbusware_orchestrator.network_resilience_critique import NETWORK_RESILIENCE_CRITIQUE_STAGE
-from nimbusware_orchestrator.performance_critique import PERFORMANCE_CRITIQUE_STAGE
 from nimbusware_orchestrator.pipeline import make_dev_orchestrator
 from nimbusware_orchestrator.refactor_stage import REFACTOR_CRITIQUE_STAGE
-from nimbusware_orchestrator.security_critique import SECURITY_CRITIQUE_STAGE
+from nimbusware_orchestrator.scan_critique_handlers import (
+    NETWORK_RESILIENCE_CRITIQUE_STAGE,
+    PERFORMANCE_CRITIQUE_STAGE,
+    SECURITY_CRITIQUE_STAGE,
+)
 from nimbusware_orchestrator.workflow_scan_critique import (
     network_resilience_critique_effective,
     parse_network_resilience_critique_workflow_block,
