@@ -1,3 +1,4 @@
+import { apiJson } from "./api-client.js";
 import {
   ARCHETYPE_PRESETS,
   plainCheckpointLabel,
@@ -14,13 +15,27 @@ export function archetypeSubchoice() {
   return localStorage.getItem(ARCHETYPE_SUBCHOICE_STORAGE_KEY)?.trim() || "";
 }
 
-export function applyArchetypePreset(presetId) {
+async function enableCollabFromPreset(preset) {
+  if (!preset?.collab_hint) return;
+  try {
+    await apiJson("/platform/collab-settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ collab_enabled: true }),
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function applyArchetypePreset(presetId) {
   const preset = ARCHETYPE_PRESETS[presetId];
   if (!preset) return null;
   writeStoredProfileId(WORKFLOW_PROFILE_STORAGE_KEY, preset.workflow_profile);
   writeStoredProfileId(AUTOPILOT_PROFILE_STORAGE_KEY, preset.autopilot_profile_id);
   writeStoredProfileId(ENFORCEMENT_PROFILE_STORAGE_KEY, preset.enforcement_profile_id);
   localStorage.setItem(ARCHETYPE_SUBCHOICE_STORAGE_KEY, presetId);
+  await enableCollabFromPreset(preset);
   return preset;
 }
 
@@ -51,8 +66,7 @@ export function maybeShowArchetypePicker() {
   overlay.addEventListener("click", (ev) => {
     const btn = ev.target.closest("[data-archetype]");
     if (!btn) return;
-    applyArchetypePreset(btn.getAttribute("data-archetype"));
-    overlay.remove();
+    void applyArchetypePreset(btn.getAttribute("data-archetype")).then(() => overlay.remove());
   });
 
   document.body.appendChild(overlay);

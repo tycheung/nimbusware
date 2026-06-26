@@ -37,6 +37,30 @@ export async function mountSettings(root) {
 
   await Promise.all([wireRoutingPresetsPanel(root), wireAgentModelsPanel(root)]);
 
+  const collabSection = root.querySelector("#settings-collab");
+  const collabToggle = root.querySelector("#settings-collab-enabled");
+  if (collabSection && window.__NIMBUSWARE__?.setup_bundle === "default") {
+    collabSection.hidden = false;
+    try {
+      const collab = await apiJson("/platform/collab-settings");
+      if (collabToggle) collabToggle.checked = !!collab.collab_enabled;
+    } catch {
+      /* optional */
+    }
+    collabToggle?.addEventListener("change", async () => {
+      try {
+        await apiJson("/platform/collab-settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ collab_enabled: !!collabToggle.checked }),
+        });
+        toast("Collaborative chat setting saved", "success");
+      } catch (e) {
+        toast(String(e.message || e), "error");
+      }
+    });
+  }
+
   const chatResume = root.querySelector("#settings-chat-resume");
   if (chatResume) {
     const resumeRaw = localStorage.getItem("maker_chat_resume_session");

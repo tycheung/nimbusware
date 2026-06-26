@@ -156,6 +156,11 @@ def nimbusware_database_url() -> str | None:
 
 
 def nimbusware_collab_enabled() -> bool:
+    from nimbusware_env.collab_runtime import runtime_collab_override
+
+    override = runtime_collab_override()
+    if override is not None:
+        return override
     return env_truthy_raw("NIMBUSWARE_COLLAB_ENABLED")
 
 

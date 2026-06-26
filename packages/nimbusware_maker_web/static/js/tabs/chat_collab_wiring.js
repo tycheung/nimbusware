@@ -32,7 +32,7 @@ export async function wireCollabSessionUi(root, sessionId, session) {
   if (!sessionId) return;
   renderMessagesFromSession(root, session);
   mountInviteButton(root, sessionId);
-  mountMyModelsLink(root);
+  mountMyModelsLink(root, sessionId);
   await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
   await refreshSessionOptimizerPanel(root, sessionId, {
     workloadMode: session?.workload_distribution || "host_only",
@@ -60,7 +60,7 @@ export async function wireCollabSessionUi(root, sessionId, session) {
           host_user_id: session?.host_user_id,
         });
         mountInviteButton(root, sessionId);
-        mountMyModelsLink(root);
+        mountMyModelsLink(root, sessionId);
       }
       await refreshAccessibleComputeTrigger(root, sessionId, getCollabMyRole());
       const count = data.turn_count ?? sessionStreamTurnCount;

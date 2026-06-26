@@ -1,4 +1,5 @@
 import { apiJson } from "../api-client.js";
+import { mountCollabModelDrawerTrigger } from "./chat_model_drawer_ui.js";
 import { openSseStream, parseSseJson } from "../sse-client.js";
 import { closeInviteModal, openInviteModal } from "./chat_invite_modal_ui.js";
 import { getCollabMyRole } from "./chat_session_ui.js";
@@ -7,7 +8,8 @@ export { closeInviteModal } from "./chat_invite_modal_ui.js";
 
 let sessionStreamHandle = null;
 
-export function mountMyModelsLink(root) {
+export function mountMyModelsLink(root, sessionId = "") {
+  mountCollabModelDrawerTrigger(root, sessionId);
   if (!getCollabMyRole()) return;
   const strip = root.querySelector("[data-testid='maker-chat-participants']");
   if (!strip || strip.querySelector("[data-testid='maker-chat-my-models']")) return;

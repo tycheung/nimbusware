@@ -31,6 +31,14 @@ export function settingsShellHtml() {
       </div>
       <div id="settings-launch-scorecard" class="launch-scorecard" data-testid="maker-settings-launch-scorecard"></div>
     </section>
+    <section id="settings-collab" class="panel" data-testid="maker-settings-collab" hidden>
+      <h3>Collaborative chat</h3>
+      <p class="muted">Enable multi-user sessions without editing .env.</p>
+      <label>
+        <input type="checkbox" id="settings-collab-enabled" data-testid="maker-settings-collab-enabled" />
+        Collaborative chat enabled
+      </label>
+    </section>
     <section id="settings-compute-sharing" class="panel" data-testid="maker-settings-compute-sharing">
       <h3>Compute sharing</h3>
       <p class="muted">Distributed mesh defaults for collaborative sessions.</p>

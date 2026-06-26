@@ -28,6 +28,14 @@ def _unit_tests_use_file_config(
 
 
 @pytest.fixture(autouse=True)
+def _reset_collab_runtime_override() -> None:
+    yield
+    from nimbusware_env.collab_runtime import clear_runtime_collab_override
+
+    clear_runtime_collab_override()
+
+
+@pytest.fixture(autouse=True)
 def _reset_playwright_sessions() -> None:
     yield
     from nimbusware_orchestrator.browser_controller import close_all_persistent_browsers

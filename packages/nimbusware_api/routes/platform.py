@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from nimbusware_api.deps import OptimizerWeightsStoreDep, OrchDep, StoreDep
 from nimbusware_api.errors import problem
 from nimbusware_api.routes.auth import AuthUserDep
+from nimbusware_api.routes.platform_collab_settings import router as collab_settings_router
 from nimbusware_api.routes.platform_hardware import router as hardware_router
 from nimbusware_api.routes.platform_model_routing import router as model_routing_router
 from nimbusware_api.routes.platform_operator_profiles import router as operator_profiles_router
@@ -17,6 +18,10 @@ from nimbusware_env.edition import edition_manifest, enterprise_compose_profiles
 from nimbusware_maker.consumer_precommit_install import install_workspace_precommit
 from nimbusware_maker.consumer_test_scaffold import scaffold_consumer_tests
 from nimbusware_maker.onboarding import is_onboarded_server, mark_onboarded_server
+from nimbusware_maker.playwright_bootstrap import (
+    playwright_bootstrap_status,
+    run_playwright_bootstrap,
+)
 from nimbusware_maker.readiness import build_platform_readiness
 from nimbusware_maker.workspace_readiness import assess_workspace_readiness
 
@@ -24,6 +29,7 @@ router = APIRouter(tags=["platform"])
 router.include_router(hardware_router)
 router.include_router(user_profiles_router)
 router.include_router(operator_profiles_router)
+router.include_router(collab_settings_router)
 router.include_router(model_routing_router)
 
 
@@ -75,6 +81,16 @@ def get_workspace_readiness(
     orch: OrchDep,
 ) -> dict[str, Any]:
     return assess_workspace_readiness(Path(workspace_path.strip() or orch.repo_root))
+
+
+@router.get("/platform/playwright-bootstrap")
+def get_playwright_bootstrap() -> dict[str, Any]:
+    return playwright_bootstrap_status()
+
+
+@router.post("/platform/playwright-bootstrap")
+def post_playwright_bootstrap() -> dict[str, Any]:
+    return run_playwright_bootstrap()
 
 
 @router.get("/platform/onboarding")
