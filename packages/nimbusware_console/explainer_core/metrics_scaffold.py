@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
+from agent_core.coercion import as_float, as_int, as_stripped_str, is_number, is_strict_int
+
 
 def default_operator_metrics(defaults: Mapping[str, Any]) -> dict[str, Any]:
     return dict(defaults)
@@ -37,7 +39,7 @@ def apply_nonneg_int_fields(
 ) -> None:
     for payload_key, metric_key in fields:
         raw = payload.get(payload_key)
-        if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+        if is_strict_int(raw) and raw >= 0:
             metrics[metric_key] = raw
 
 
@@ -50,7 +52,7 @@ def apply_optional_int_field(
     positive_only: bool = False,
 ) -> None:
     raw = payload.get(payload_key)
-    if not isinstance(raw, int) or isinstance(raw, bool):
+    if not is_strict_int(raw):
         return
     if positive_only and raw <= 0:
         return
@@ -74,8 +76,7 @@ def apply_str_present(
     payload_key: str,
     metric_key: str,
 ) -> None:
-    raw = payload.get(payload_key)
-    metrics[metric_key] = isinstance(raw, str) and bool(raw.strip())
+    metrics[metric_key] = as_stripped_str(payload.get(payload_key)) is not None
 
 
 def metrics_table_rows(

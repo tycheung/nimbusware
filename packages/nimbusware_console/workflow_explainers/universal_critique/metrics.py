@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -66,10 +67,10 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     if metrics.get("mi_enabled") is True:
         parts.append("mi panel **on**")
     lists = metrics.get("list_child_count", 0)
-    if isinstance(lists, int) and not isinstance(lists, bool) and lists > 0:
+    if is_strict_int(lists) and lists > 0:
         parts.append(f"**{lists}** list child(ren)")
     scalar = metrics.get("scalar_leaf_count", 0)
-    if isinstance(scalar, int) and not isinstance(scalar, bool) and scalar > 0:
+    if is_strict_int(scalar) and scalar > 0:
         parts.append(f"**{scalar}** scalar leaf(es)")
     return parts
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
@@ -80,9 +81,9 @@ def scraper_fetch_outcome_caption(summary: Mapping[str, Any] | None) -> str | No
     fc = summary.get("fetch_count")
     tb = summary.get("total_bytes")
     parts = [f"Scraper fetch: {outcome.strip()}."]
-    if isinstance(fc, int) and not isinstance(fc, bool):
+    if is_strict_int(fc):
         parts.append(f" {fc} URL(s)")
-        if isinstance(tb, int) and not isinstance(tb, bool):
+        if is_strict_int(tb):
             parts.append(f", {tb} bytes total.")
         else:
             parts.append(".")
@@ -207,10 +208,10 @@ def scraper_fetch_operator_metrics(
     if isinstance(outcome, str) and outcome.strip():
         metrics["outcome"] = outcome.strip()
     fc = summary.get("fetch_count")
-    if isinstance(fc, int) and not isinstance(fc, bool):
+    if is_strict_int(fc):
         metrics["fetch_count"] = fc
     tb = summary.get("total_bytes")
-    if isinstance(tb, int) and not isinstance(tb, bool):
+    if is_strict_int(tb):
         metrics["total_bytes"] = tb
     metrics["artifact_relpath_count"] = _scraper_fetch_artifact_relpath_count(summary)
     host = summary.get("failed_url_host")
@@ -230,7 +231,7 @@ def scraper_fetch_operator_metrics_table_rows(
     rows.append({"field": "Fetch count", "value": str(metrics.get("fetch_count", 0))})
     rows.append({"field": "Total bytes", "value": str(metrics.get("total_bytes", 0))})
     arc = metrics.get("artifact_relpath_count", 0)
-    if isinstance(arc, int) and not isinstance(arc, bool) and arc > 0:
+    if is_strict_int(arc) and arc > 0:
         rows.append({"field": "Artifact relpath rows", "value": str(arc)})
     if metrics.get("failed_url_present") is True:
         rows.append({"field": "Failed URL host present", "value": "yes"})
@@ -247,13 +248,13 @@ def scraper_fetch_operator_metrics_caption(
         return None
     parts = [f"**{outcome.strip()}**"]
     fc = metrics.get("fetch_count", 0)
-    if isinstance(fc, int) and not isinstance(fc, bool) and fc > 0:
+    if is_strict_int(fc) and fc > 0:
         parts.append(f"**{fc}** URL(s)")
     tb = metrics.get("total_bytes", 0)
-    if isinstance(tb, int) and not isinstance(tb, bool) and tb > 0:
+    if is_strict_int(tb) and tb > 0:
         parts.append(f"**{tb}** bytes")
     arc = metrics.get("artifact_relpath_count", 0)
-    if isinstance(arc, int) and not isinstance(arc, bool) and arc > 0:
+    if is_strict_int(arc) and arc > 0:
         parts.append(f"**{arc}** artifact row(s)")
     return "Scraper fetch metrics: " + ", ".join(parts) + "."
 

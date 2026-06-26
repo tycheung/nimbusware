@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
@@ -96,10 +97,10 @@ def bundle_catalog_local_summary_operator_metrics(
     metrics["has_catalog_yaml"] = has_yaml
     metrics["catalog_yaml_present"] = has_yaml
     bc = summary.get("bundle_count")
-    if isinstance(bc, int) and not isinstance(bc, bool) and bc >= 0:
+    if is_strict_int(bc) and bc >= 0:
         metrics["bundle_count"] = bc
     dtc = summary.get("distinct_tag_count")
-    if isinstance(dtc, int) and not isinstance(dtc, bool) and dtc >= 0:
+    if is_strict_int(dtc) and dtc >= 0:
         metrics["distinct_tag_count"] = dtc
     if metrics["bundle_count"] > 0:
         metrics["avg_tags_per_bundle"] = round(
@@ -126,7 +127,7 @@ def bundle_catalog_local_summary_operator_metrics_table_rows(
         },
     ]
     avg = metrics.get("avg_tags_per_bundle")
-    if isinstance(avg, (int, float)) and not isinstance(avg, bool):
+    if is_number(avg):
         rows.append({"field": "Distinct tags / bundle", "value": str(avg)})
     return rows
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import csv
 import json
 import re
@@ -102,7 +103,7 @@ def critic_matrix_operator_metrics_table_rows(
         bool_lower=False,
     )
     other = metrics.get("other_verdict_count", 0)
-    if isinstance(other, int) and not isinstance(other, bool) and other > 0:
+    if is_strict_int(other) and other > 0:
         rows.append({"field": "Other verdict", "value": str(other)})
     return rows
 
@@ -117,7 +118,7 @@ def critic_matrix_operator_metrics_caption(
         return None
     parts = [f"**{vc}** critic verdict(s)"]
     fail = metrics.get("fail_count", 0)
-    if isinstance(fail, int) and not isinstance(fail, bool) and fail > 0:
+    if is_strict_int(fail) and fail > 0:
         parts.append(f"**{fail}** FAIL")
     return metrics_caption("Critic matrix: ", parts)
 

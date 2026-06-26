@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -24,7 +25,7 @@ def bundle_search_top_hit_preview_caption(
         return None
     parts = [f"top hit id={str(bid).strip()!r}"]
     score = first.get("score")
-    if isinstance(score, (int, float)) and not isinstance(score, bool):
+    if is_number(score):
         parts.append(f"score={score}")
     return "Bundle search: " + ", ".join(parts) + "."
 
@@ -55,7 +56,7 @@ def bundle_search_query_length_caption(
         return None
     n = len(text)
     cap = f"Bundle search query: **{n}** character(s)."
-    if isinstance(hit_count, int) and not isinstance(hit_count, bool) and hit_count >= 0:
+    if is_strict_int(hit_count) and hit_count >= 0:
         word = "hit" if hit_count == 1 else "hits"
         cap = cap[:-1] + f" (**{hit_count}** {word})."
     return cap
@@ -86,7 +87,7 @@ def bundle_search_hits_summary_caption(
     hits = search_payload.get("hits")
     n_hits = len(hits) if isinstance(hits, list) else 0
     parts: list[str] = [f"q={q!r}"]
-    if isinstance(k, int) and not isinstance(k, bool):
+    if is_strict_int(k):
         parts.append(f"k={k}")
     parts.append(f"hits={n_hits}")
     ready = search_payload.get("faiss_index_ready")

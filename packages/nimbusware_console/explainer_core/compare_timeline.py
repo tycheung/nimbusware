@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -7,7 +8,7 @@ NO_TIMELINE = "—"
 
 
 def version_as_optional_int(value: Any) -> int | None:
-    if isinstance(value, int) and not isinstance(value, bool):
+    if is_strict_int(value):
         return value
     if isinstance(value, str) and value.strip().isdigit():
         return int(value.strip())

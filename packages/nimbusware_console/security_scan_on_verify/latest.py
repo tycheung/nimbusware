@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -77,7 +78,7 @@ def security_scan_on_verify_latest_operator_metrics(
     metrics["event_id_present"] = isinstance(eid, str) and bool(eid.strip())
     for key in ("security_scan_ruff_exit", "security_scan_bandit_exit"):
         val = summary.get(key)
-        if isinstance(val, int) and not isinstance(val, bool):
+        if is_strict_int(val):
             metrics[key] = int(val)
     return metrics
 
@@ -93,7 +94,7 @@ def security_scan_on_verify_latest_operator_metrics_table_rows(
     if metrics.get("severity_present") is True:
         rows.append({"field": "Severity present", "value": "yes"})
     scl = metrics.get("snippet_char_len", 0)
-    if isinstance(scl, int) and not isinstance(scl, bool) and scl > 0:
+    if is_strict_int(scl) and scl > 0:
         rows.append({"field": "Snippet length (chars)", "value": str(scl)})
     if metrics.get("finding_id_present") is True:
         rows.append({"field": "Finding id present", "value": "yes"})
@@ -104,7 +105,7 @@ def security_scan_on_verify_latest_operator_metrics_table_rows(
         ("security_scan_bandit_exit", "Bandit exit code"),
     ):
         val = metrics.get(key)
-        if isinstance(val, int) and not isinstance(val, bool):
+        if is_strict_int(val):
             rows.append({"field": label, "value": str(val)})
     return rows
 
@@ -120,15 +121,15 @@ def security_scan_on_verify_latest_operator_metrics_caption(
     if metrics.get("severity_present") is True:
         parts.append("severity")
     scl = metrics.get("snippet_char_len", 0)
-    if isinstance(scl, int) and not isinstance(scl, bool) and scl > 0:
+    if is_strict_int(scl) and scl > 0:
         parts.append(f"**{scl}**-char snippet")
     if metrics.get("finding_id_present") is True:
         parts.append("finding id")
     ruff = metrics.get("security_scan_ruff_exit")
-    if isinstance(ruff, int) and not isinstance(ruff, bool):
+    if is_strict_int(ruff):
         parts.append(f"ruff_exit={ruff}")
     bandit = metrics.get("security_scan_bandit_exit")
-    if isinstance(bandit, int) and not isinstance(bandit, bool):
+    if is_strict_int(bandit):
         parts.append(f"bandit_exit={bandit}")
     if not parts:
         return None

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 import csv
 import json
 import re
@@ -100,7 +101,7 @@ def agent_evaluator_session_caption(ae: Mapping[str, Any] | None) -> str | None:
     if isinstance(stage, str) and stage.strip():
         parts.append(f"stage={stage.strip()!r}")
     attempt = ae.get("attempt")
-    if isinstance(attempt, int) and not isinstance(attempt, bool):
+    if is_strict_int(attempt):
         parts.append(f"attempt={attempt}")
     if not parts:
         return None
@@ -141,7 +142,7 @@ def agent_evaluator_evaluation_branch_caption(ae: Mapping[str, Any] | None) -> s
                 snippet = snippet[:77] + "..."
             llm_parts.append(f"summary={snippet!r}")
         llm_score = ae.get("llm_evaluation_score")
-        if isinstance(llm_score, (int, float)) and not isinstance(llm_score, bool):
+        if is_number(llm_score):
             llm_parts.append(f"policy_score={float(llm_score):.3f}")
             llm_band = ae.get("llm_evaluation_score_band")
             if isinstance(llm_band, str) and llm_band.strip():
@@ -167,7 +168,7 @@ def agent_evaluator_evaluation_caption(ae: Mapping[str, Any] | None) -> str | No
     if isinstance(gaps, list):
         parts.append(f"gap_count={len(gaps)}")
     score = ae.get("evaluation_score")
-    if isinstance(score, (int, float)) and not isinstance(score, bool):
+    if is_number(score):
         score_f = float(score)
         parts.append(f"score={score_f:.3f}")
         band = ae.get("evaluation_score_band")
@@ -175,7 +176,7 @@ def agent_evaluator_evaluation_caption(ae: Mapping[str, Any] | None) -> str | No
             band = agent_evaluator_score_band(score_f)
         parts.append(f"score_band={band.strip()!r}")
     cov_ratio = ae.get("coverage_ratio")
-    if isinstance(cov_ratio, (int, float)) and not isinstance(cov_ratio, bool):
+    if is_number(cov_ratio):
         parts.append(f"coverage_ratio={float(cov_ratio):.3f}")
     promotion_ready = ae.get("promotion_ready")
     if isinstance(promotion_ready, bool):

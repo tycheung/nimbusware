@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -62,10 +63,10 @@ def self_refinement_timeline_operator_metrics(
     if isinstance(ungated, bool):
         out["ungated_loop"] = ungated
     ungated_iters = sr.get("ungated_iteration_count")
-    if isinstance(ungated_iters, int) and not isinstance(ungated_iters, bool):
+    if is_strict_int(ungated_iters):
         out["ungated_iteration_count"] = ungated_iters
     loop_signals = sr.get("loop_signal_count")
-    if isinstance(loop_signals, int) and not isinstance(loop_signals, bool) and loop_signals >= 0:
+    if is_strict_int(loop_signals) and loop_signals >= 0:
         out["loop_signal_count"] = loop_signals
     prior = sr.get("prior_gate_verdict")
     if isinstance(prior, str) and prior.strip():
@@ -74,13 +75,13 @@ def self_refinement_timeline_operator_metrics(
     if isinstance(gate_decision, str) and gate_decision.strip():
         out["gate_decision"] = gate_decision.strip()
     progress = sr.get("iteration_progress_ratio")
-    if isinstance(progress, (int, float)) and not isinstance(progress, bool):
+    if is_number(progress):
         out["iteration_progress_ratio"] = float(progress)
     should_continue = sr.get("should_continue")
     if isinstance(should_continue, bool):
         out["should_continue"] = should_continue
     max_iter = sr.get("max_iterations")
-    if isinstance(max_iter, int) and not isinstance(max_iter, bool) and max_iter >= 1:
+    if is_strict_int(max_iter) and max_iter >= 1:
         out["max_iterations"] = max_iter
     max_exceeded = sr.get("max_iterations_exceeded")
     if isinstance(max_exceeded, bool):

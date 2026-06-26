@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -37,7 +38,7 @@ def integrator_gate_latest_operator_metrics(
     frc = ig.get("failure_reason_code")
     ranking = ig.get("bundle_compatibility_ranking")
     ranking_count = ig.get("bundle_compatibility_ranking_count")
-    if isinstance(ranking_count, int) and not isinstance(ranking_count, bool):
+    if is_strict_int(ranking_count):
         n_ranked = ranking_count
     elif isinstance(ranking, list):
         n_ranked = len(ranking)
@@ -54,7 +55,7 @@ def integrator_gate_latest_operator_metrics(
     }
     if isinstance(n_ranked, int) and n_ranked >= 0:
         out["bundle_compatibility_ranking_count"] = n_ranked
-    if isinstance(sel_rank, int) and not isinstance(sel_rank, bool):
+    if is_strict_int(sel_rank):
         out["selected_bundle_rank"] = sel_rank
     if score is not None:
         out["integrator_score"] = score
@@ -109,18 +110,18 @@ def integrator_gate_compatibility_ranking_caption(
     if not isinstance(ranking, list) or not ranking:
         return None
     count = ig.get("bundle_compatibility_ranking_count")
-    n = int(count) if isinstance(count, int) and not isinstance(count, bool) else len(ranking)
+    n = int(count) if is_strict_int(count) else len(ranking)
     sel_rank = ig.get("selected_bundle_rank")
     sel_id = ig.get("selected_bundle_id") or ig.get("bundle_id")
     parts = [f"**{n}** catalog candidate(s) ranked by integrator score"]
-    if isinstance(sel_rank, int) and not isinstance(sel_rank, bool):
+    if is_strict_int(sel_rank):
         parts.append(f"selected bundle `{sel_id}` at rank **{sel_rank}**")
     elif isinstance(sel_id, str) and sel_id.strip():
         parts.append(f"selected bundle `{sel_id.strip()}`")
     top = ranking[0] if isinstance(ranking[0], dict) else None
     if top and top.get("bundle_id"):
         score = top.get("score")
-        if isinstance(score, (int, float)) and not isinstance(score, bool):
+        if is_number(score):
             parts.append(f"top score **{score:.4g}** (`{top.get('bundle_id')}`)")
     return "Integrator compatibility ranking: " + "; ".join(parts) + "."
 
@@ -147,7 +148,7 @@ def integrator_gate_latest_score_margin_caption(
         return None
     parts: list[str] = []
     margin = metrics.get("latest_score_minus_min_pass")
-    if isinstance(margin, (int, float)) and not isinstance(margin, bool):
+    if is_number(margin):
         meets = metrics.get("score_meets_min_numeric")
         if meets is True:
             parts.append(f"score minus min pass: **{margin:+.6g}** (meets numeric bar)")
@@ -173,7 +174,7 @@ def integrator_gate_latest_tag_overlap_caption(
     project_n = metrics.get("integrator_project_tags_count")
     matched_n = metrics.get("integrator_matched_tags_count")
     if not all(
-        isinstance(x, int) and not isinstance(x, bool) for x in (overlap, project_n, matched_n)
+        is_strict_int(x) for x in (overlap, project_n, matched_n)
     ):
         return None
     if project_n == 0 and matched_n == 0 and overlap == 0:
@@ -188,10 +189,10 @@ def integrator_gate_latest_operator_metrics_caption(
         return None
     parts: list[str] = []
     score = metrics.get("integrator_score")
-    if isinstance(score, (int, float)) and not isinstance(score, bool):
+    if is_number(score):
         parts.append(f"integrator score **{float(score):.4g}**")
     min_pass = metrics.get("min_score_to_pass")
-    if isinstance(min_pass, (int, float)) and not isinstance(min_pass, bool):
+    if is_number(min_pass):
         parts.append(f"min pass **{float(min_pass):.4g}**")
     overlap = metrics.get("tag_overlap_count")
     project_n = metrics.get("integrator_project_tags_count")
@@ -204,7 +205,7 @@ def integrator_gate_latest_operator_metrics_caption(
     ):
         parts.append(f"**{overlap}** tag overlap of **{project_n}** project tag(s)")
     margin = metrics.get("latest_score_minus_min_pass")
-    if isinstance(margin, (int, float)) and not isinstance(margin, bool):
+    if is_number(margin):
         meets = metrics.get("score_meets_min_numeric")
         if meets is True:
             parts.append(f"score minus min pass **{margin:+.6g}** (meets bar)")
@@ -216,10 +217,10 @@ def integrator_gate_latest_operator_metrics_caption(
     if isinstance(frc, str) and frc.strip():
         parts.append(f"failure_reason_code={frc.strip()}")
     n_ranked = metrics.get("bundle_compatibility_ranking_count")
-    if isinstance(n_ranked, int) and not isinstance(n_ranked, bool) and n_ranked > 0:
+    if is_strict_int(n_ranked) and n_ranked > 0:
         parts.append(f"**{n_ranked}** ranked candidate(s)")
     sel_rank = metrics.get("selected_bundle_rank")
-    if isinstance(sel_rank, int) and not isinstance(sel_rank, bool):
+    if is_strict_int(sel_rank):
         parts.append(f"selected rank **{sel_rank}**")
     if not parts:
         return None

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -28,9 +29,9 @@ def universal_critique_workflow_vs_timeline_rows(
     tl_fail_disp = timeline_int_field(tl, "fail_count")
 
     align = NO_TIMELINE
-    if tl is not None and isinstance(wf_enabled, int) and not isinstance(wf_enabled, bool):
+    if tl is not None and is_strict_int(wf_enabled):
         sc_i = tl.get("stage_count")
-        if isinstance(sc_i, int) and not isinstance(sc_i, bool):
+        if is_strict_int(sc_i):
             if wf_enabled == sc_i:
                 align = "stage_count matches enabled:true count"
             else:

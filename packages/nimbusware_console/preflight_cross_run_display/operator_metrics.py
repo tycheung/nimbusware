@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -49,9 +50,9 @@ def preflight_cross_run_operator_metrics_caption(
     if not isinstance(runs, int) or isinstance(runs, bool):
         return None
     parts = [f"**{runs}** run(s)"]
-    if isinstance(with_pf, int) and not isinstance(with_pf, bool):
+    if is_strict_int(with_pf):
         parts.append(f"**{with_pf}** with preflight")
-    if isinstance(with_p95, int) and not isinstance(with_p95, bool):
+    if is_strict_int(with_p95):
         parts.append(f"**{with_p95}** with p95")
     return "Cross-run preflight metrics: " + ", ".join(parts) + "."
 

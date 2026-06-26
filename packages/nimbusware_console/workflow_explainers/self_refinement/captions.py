@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -48,7 +49,7 @@ def self_refinement_merged_description_preview_caption(
     if not text:
         return None
     raw_len = marker_merge.get("merged_description_len")
-    if isinstance(raw_len, int) and not isinstance(raw_len, bool) and raw_len > 0:
+    if is_strict_int(raw_len) and raw_len > 0:
         len_hint = raw_len
     else:
         len_hint = len(text)

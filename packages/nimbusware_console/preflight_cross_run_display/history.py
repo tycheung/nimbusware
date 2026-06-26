@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 import json
 from collections.abc import Mapping
 from typing import Any
@@ -29,7 +30,7 @@ def preflight_history_response_limit(body: Mapping[str, Any] | None) -> int | No
     if not isinstance(body, Mapping):
         return None
     lim = body.get("limit")
-    if isinstance(lim, int) and not isinstance(lim, bool):
+    if is_strict_int(lim):
         return lim
     return None
 
@@ -40,7 +41,7 @@ def preflight_history_response_runs_with_preflight(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("runs_with_preflight")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -51,7 +52,7 @@ def preflight_history_response_coverage_ratio(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("preflight_coverage_ratio")
-    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+    if is_number(raw):
         val = float(raw)
         if 0.0 <= val <= 1.0:
             return val
@@ -64,7 +65,7 @@ def preflight_history_response_runs_without_preflight(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("runs_without_preflight")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -75,7 +76,7 @@ def preflight_history_response_runs_with_multisample_preflight(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("runs_with_multisample_preflight")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -86,7 +87,7 @@ def preflight_history_response_p95_latency_coverage_ratio(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("p95_latency_coverage_ratio")
-    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+    if is_number(raw):
         val = float(raw)
         if 0.0 <= val <= 1.0:
             return val
@@ -99,7 +100,7 @@ def preflight_history_response_avg_p95_latency_ms(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("avg_p95_latency_ms")
-    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+    if is_number(raw):
         val = float(raw)
         if val >= 0:
             return val
@@ -112,7 +113,7 @@ def preflight_history_response_max_p95_latency_ms(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("max_p95_latency_ms")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -123,7 +124,7 @@ def preflight_history_response_runs_with_checks_passed(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("runs_with_checks_passed")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -134,7 +135,7 @@ def preflight_history_response_distinct_validated_model_id_count(
     if not isinstance(body, Mapping):
         return None
     raw = body.get("distinct_validated_model_id_count")
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return None
 
@@ -166,13 +167,13 @@ def preflight_history_response_metrics_export_caption(
         if isinstance(raw_status, str) and raw_status.strip():
             status_filter = raw_status.strip()
     parts: list[str] = []
-    if isinstance(scanned, int) and not isinstance(scanned, bool):
+    if is_strict_int(scanned):
         parts.append(f"runs_scanned={scanned}")
-    if isinstance(total, int) and not isinstance(total, bool):
+    if is_strict_int(total):
         parts.append(f"window_total={total}")
     if isinstance(has_more, bool):
         parts.append(f"has_more={'yes' if has_more else 'no'}")
-    if isinstance(schema_version, int) and not isinstance(schema_version, bool):
+    if is_strict_int(schema_version):
         parts.append(f"schema=v{schema_version}")
     if isinstance(window_consistent, bool):
         parts.append(f"window_consistent={'yes' if window_consistent else 'no'}")

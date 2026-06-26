@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
@@ -209,7 +210,7 @@ def integrator_gate_history_operator_metrics_caption(
         tally = ", ".join(f"{k}={v}" for k, v in sorted(vc.items()))
         parts.append(f"verdicts {tally}")
     dcnt = metrics.get("distinct_bundle_id_count")
-    if isinstance(dcnt, int) and not isinstance(dcnt, bool) and dcnt > 0:
+    if is_strict_int(dcnt) and dcnt > 0:
         suffix = "id" if dcnt == 1 else "ids"
         parts.append(f"**{dcnt}** bundle {suffix}")
     margin = _optional_float(metrics.get("latest_score_minus_min_pass"))

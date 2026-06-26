@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
@@ -33,9 +34,9 @@ def scraper_artifact_inventory_storage_caption(
         parts.append(f"prune_requested={prune_requested}")
     if isinstance(prune_effective, bool):
         parts.append(f"prune_effective={prune_effective}")
-    if isinstance(timeout_seconds, int) and not isinstance(timeout_seconds, bool):
+    if is_strict_int(timeout_seconds):
         parts.append(f"timeout_s={timeout_seconds}")
-    if isinstance(delete_attempts, int) and not isinstance(delete_attempts, bool):
+    if is_strict_int(delete_attempts):
         parts.append(f"delete_attempts={delete_attempts}")
     return "Scraper artifact storage: " + ", ".join(parts) + "."
 

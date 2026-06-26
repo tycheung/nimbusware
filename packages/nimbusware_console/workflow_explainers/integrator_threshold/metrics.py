@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -68,7 +69,7 @@ def _integrator_threshold_operator_metrics(
         list_nonempty_flags=(("paste_parse_errors", "load_error_present"),),
     )
     preview = get_preview_effective_min_score(payload) if isinstance(payload, Mapping) else None
-    if isinstance(preview, (int, float)) and not isinstance(preview, bool):
+    if is_number(preview):
         metrics["min_score_preview"] = float(preview)
     pipe = metrics.get("min_score_pipeline")
     prev = metrics.get("min_score_preview")
@@ -105,7 +106,7 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
         parts.append("env **forces gate off**")
     if metrics.get("min_scores_agree") is True:
         pipe = metrics.get("min_score_pipeline")
-        if isinstance(pipe, (int, float)) and not isinstance(pipe, bool):
+        if is_number(pipe):
             parts.append(f"min score **{float(pipe)}** (pipeline/preview agree)")
     elif metrics.get("min_scores_agree") is False:
         pipe = metrics.get("min_score_pipeline")
@@ -113,7 +114,7 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
         if isinstance(pipe, (int, float)) and isinstance(preview, (int, float)):
             parts.append(f"min score mismatch (pipeline **{pipe}**, preview **{preview}**)")
     tags_len = metrics.get("project_tags_list_length", 0)
-    if isinstance(tags_len, int) and not isinstance(tags_len, bool) and tags_len > 0:
+    if is_strict_int(tags_len) and tags_len > 0:
         suffix = "tag" if tags_len == 1 else "tags"
         parts.append(f"**{tags_len}** workflow project_{suffix}")
     if metrics.get("load_error_present") is True:

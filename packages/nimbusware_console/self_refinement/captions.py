@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -93,12 +94,12 @@ def self_refinement_version_attempt_caption(
         return None
     parts: list[str] = []
     ver = sr.get("version")
-    if isinstance(ver, int) and not isinstance(ver, bool):
+    if is_strict_int(ver):
         parts.append(f"version={ver}")
     elif ver is not None and str(ver).strip():
         parts.append(f"version={str(ver).strip()!r}")
     attempt = sr.get("attempt")
-    if isinstance(attempt, int) and not isinstance(attempt, bool):
+    if is_strict_int(attempt):
         parts.append(f"attempt={attempt}")
     if not parts:
         return None
@@ -140,7 +141,7 @@ def self_refinement_iteration_caption(sr: Mapping[str, Any] | None) -> str | Non
     max_iter = sr.get("max_iterations")
     if not isinstance(attempt, int) or isinstance(attempt, bool):
         return None
-    if isinstance(max_iter, int) and not isinstance(max_iter, bool):
+    if is_strict_int(max_iter):
         exceeded = sr.get("max_iterations_exceeded")
         if exceeded is True:
             return f"Self-refinement iteration: attempt {attempt} exceeded max {max_iter}."
@@ -248,16 +249,16 @@ def self_refinement_ungated_loop_caption(sr: Mapping[str, Any] | None) -> str | 
     should_continue = sr.get("should_continue")
     parts = [f"ungated_loop={ungated}"]
     loop_signals = sr.get("loop_signal_count")
-    if isinstance(loop_signals, int) and not isinstance(loop_signals, bool):
+    if is_strict_int(loop_signals):
         parts.append(f"loop_signal_count={loop_signals}")
     ungated_iters = sr.get("ungated_iteration_count")
-    if isinstance(ungated_iters, int) and not isinstance(ungated_iters, bool):
+    if is_strict_int(ungated_iters):
         parts.append(f"ungated_iteration_count={ungated_iters}")
     if isinstance(gate, str) and gate.strip():
         parts.append(f"gate={gate.strip()}")
-    if isinstance(loops_remaining, int) and not isinstance(loops_remaining, bool):
+    if is_strict_int(loops_remaining):
         parts.append(f"loops_remaining={loops_remaining}")
-    if isinstance(progress_ratio, (int, float)) and not isinstance(progress_ratio, bool):
+    if is_number(progress_ratio):
         parts.append(f"progress_ratio={float(progress_ratio):.3f}")
     if isinstance(should_continue, bool):
         parts.append(f"should_continue={should_continue}")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import re
 from collections.abc import Mapping
 from typing import Any
@@ -82,9 +83,9 @@ def bundle_search_operator_metrics_caption(
     parts = [f"**{hc}** hit(s)", f"**{metrics.get('distinct_tag_count', 0)}** distinct tag(s)"]
     wtags = metrics.get("hits_without_tags", 0)
     wid = metrics.get("hits_without_id", 0)
-    if isinstance(wtags, int) and not isinstance(wtags, bool) and wtags > 0:
+    if is_strict_int(wtags) and wtags > 0:
         parts.append(f"**{wtags}** without tags")
-    if isinstance(wid, int) and not isinstance(wid, bool) and wid > 0:
+    if is_strict_int(wid) and wid > 0:
         parts.append(f"**{wid}** without id")
     return "Bundle search operator metrics: " + ", ".join(parts) + "."
 

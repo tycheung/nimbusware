@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
@@ -106,13 +107,13 @@ def bundle_catalog_bundles_without_tags_rollup_operator_metrics(
         return metrics
     metrics["has_catalog_yaml"] = rollup.get("has_catalog_yaml") is True
     bc = rollup.get("bundle_count")
-    if isinstance(bc, int) and not isinstance(bc, bool) and bc >= 0:
+    if is_strict_int(bc) and bc >= 0:
         metrics["bundle_count"] = bc
     without = rollup.get("bundles_without_tags_count")
-    if isinstance(without, int) and not isinstance(without, bool) and without >= 0:
+    if is_strict_int(without) and without >= 0:
         metrics["bundles_without_tags_count"] = without
     with_tags = rollup.get("bundles_with_tags_count")
-    if isinstance(with_tags, int) and not isinstance(with_tags, bool) and with_tags >= 0:
+    if is_strict_int(with_tags) and with_tags >= 0:
         metrics["bundles_with_tags_count"] = with_tags
     if metrics["bundle_count"] > 0:
         metrics["untagged_ratio"] = round(
@@ -143,7 +144,7 @@ def bundle_catalog_bundles_without_tags_rollup_operator_metrics_table_rows(
         },
     ]
     ratio = metrics.get("untagged_ratio")
-    if isinstance(ratio, (int, float)) and not isinstance(ratio, bool):
+    if is_number(ratio):
         rows.append({"field": "Untagged ratio", "value": str(ratio)})
     return rows
 

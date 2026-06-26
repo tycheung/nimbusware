@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
@@ -143,10 +144,10 @@ def critique_pairings_operator_summary_operator_metrics(
         return metrics
     metrics["has_critique_pairings_yaml"] = summary.get("has_critique_pairings_yaml") is True
     pk = summary.get("producer_taxonomy_key_count")
-    if isinstance(pk, int) and not isinstance(pk, bool) and pk >= 0:
+    if is_strict_int(pk) and pk >= 0:
         metrics["producer_taxonomy_key_count"] = pk
     total = summary.get("critique_pairing_critic_role_entries_total")
-    if isinstance(total, int) and not isinstance(total, bool) and total >= 0:
+    if is_strict_int(total) and total >= 0:
         metrics["critic_role_entries_total"] = total
     err = summary.get("load_error")
     metrics["load_error_present"] = isinstance(err, str) and bool(err.strip())

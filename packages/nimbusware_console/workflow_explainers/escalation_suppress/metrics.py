@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -58,15 +59,15 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
         parts.append("policy file missing")
     if metrics.get("anti_deadlock_mapping_present") is True:
         mp = metrics.get("anti_deadlock_min_progress_events")
-        if isinstance(mp, int) and not isinstance(mp, bool):
+        if is_strict_int(mp):
             parts.append(f"anti_deadlock min_progress **{mp}**")
         elif metrics.get("anti_deadlock_enabled") is True:
             parts.append("anti_deadlock **enabled**")
     age = metrics.get("policy_yaml_age_seconds")
-    if isinstance(age, int) and not isinstance(age, bool):
+    if is_strict_int(age):
         parts.append(f"policy age **{age}s**")
     raw_bytes = metrics.get("policy_yaml_file_bytes")
-    if isinstance(raw_bytes, int) and not isinstance(raw_bytes, bool) and raw_bytes > 0:
+    if is_strict_int(raw_bytes) and raw_bytes > 0:
         parts.append(f"policy YAML **{raw_bytes}** byte(s)")
     if metrics.get("load_error_present") is True:
         parts.append("load error")

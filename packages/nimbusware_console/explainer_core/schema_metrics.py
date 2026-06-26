@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from agent_core.coercion import as_float, as_stripped_str, is_number, is_strict_int
 from nimbusware_console.explainer_core.metrics_scaffold import (
     apply_bool_payload_fields,
     apply_env_flag_metric,
@@ -44,6 +45,8 @@ def build_operator_metrics(
     env_flags: Sequence[EnvFlagSpec] = (),
     workflow_yaml_file: bool = False,
     load_error: bool = False,
+    bool_value_fields: Sequence[tuple[str, str]] = (),
+    str_strip_fields: Sequence[tuple[str, str]] = (),
     load_error_payload_key: str = "load_error",
     load_error_metric_key: str = "load_error_present",
 ) -> dict[str, Any]:
@@ -71,9 +74,9 @@ def build_operator_metrics(
         if isinstance(raw, list) and raw:
             metrics[metric_key] = True
     for payload_key, metric_key in float_fields:
-        raw = payload.get(payload_key)
-        if isinstance(raw, (int, float)) and not isinstance(raw, bool):
-            metrics[metric_key] = float(raw)
+        num = as_float(payload.get(payload_key))
+        if num is not None:
+            metrics[metric_key] = num
     if int_fields:
         apply_nonneg_int_fields(metrics, payload, int_fields)
     for payload_key, metric_key in list_len_fields:
@@ -100,6 +103,14 @@ def build_operator_metrics(
             apply_optional_int_field(metrics, payload, payload_key, metric_key)
     for payload_key, metric_key in str_present:
         apply_str_present(metrics, payload, payload_key, metric_key)
+    for payload_key, metric_key in str_strip_fields:
+        stripped = as_stripped_str(payload.get(payload_key))
+        if stripped is not None:
+            metrics[metric_key] = stripped
+    for payload_key, metric_key in bool_value_fields:
+        val = payload.get(payload_key)
+        if isinstance(val, bool):
+            metrics[metric_key] = val
     for tri_spec in env_tri_state:
         if isinstance(tri_spec, str):
             apply_env_tri_state_metrics(metrics, payload, tri_spec)

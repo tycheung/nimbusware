@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
@@ -136,7 +137,7 @@ def timeline_events_operator_metrics_table_rows(
     rows = metrics_table_rows(metrics, _TIMELINE_EVENTS_TABLE_ROWS, bool_lower=False)
     top = metrics.get("top_event_type")
     tc = metrics.get("top_event_type_count", 0)
-    if isinstance(top, str) and top.strip() and isinstance(tc, int) and not isinstance(tc, bool):
+    if isinstance(top, str) and top.strip() and is_strict_int(tc):
         rows.append({"field": "Top event type", "value": f"{top.strip()} ({tc})"})
     return rows
 
@@ -151,7 +152,7 @@ def timeline_events_operator_metrics_caption(
         return None
     parts = [f"**{ec}** event(s)"]
     det = metrics.get("distinct_event_type_count", 0)
-    if isinstance(det, int) and not isinstance(det, bool) and det > 0:
+    if is_strict_int(det) and det > 0:
         parts.append(f"**{det}** distinct type(s)")
     top = metrics.get("top_event_type")
     if isinstance(top, str) and top.strip():

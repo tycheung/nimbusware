@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -10,7 +11,7 @@ from nimbusware_console.preflight_cross_run_display.trend import (
 
 def _cross_run_row_usable_p95_ms(r: Mapping[str, Any]) -> bool:
     v = r.get("p95_latency_ms")
-    return isinstance(v, int) and not isinstance(v, bool) and v >= 0
+    return is_strict_int(v) and v >= 0
 
 
 def preflight_cross_run_projection_without_p95_count(
@@ -69,7 +70,7 @@ def preflight_cross_run_latency_sample_count_coverage_caption(
             continue
         with_pf += 1
         sc = r.get("sample_count")
-        if isinstance(sc, int) and not isinstance(sc, bool):
+        if is_strict_int(sc):
             with_sc += 1
     if with_pf == 0:
         return None
@@ -128,7 +129,7 @@ def preflight_cross_run_checks_passed_coverage_caption(
             continue
         with_pf += 1
         cpc = r.get("checks_passed_count")
-        if isinstance(cpc, int) and not isinstance(cpc, bool) and cpc > 0:
+        if is_strict_int(cpc) and cpc > 0:
             with_checks += 1
     if with_pf == 0 or with_checks == 0:
         return None

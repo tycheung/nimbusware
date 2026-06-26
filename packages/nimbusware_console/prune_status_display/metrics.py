@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from datetime import datetime, timezone
 from typing import Any
@@ -34,7 +35,7 @@ def _prune_status_is_stale(
 
 def _prune_status_pattern_count(status: Mapping[str, Any], field: str) -> int:
     raw = status.get(field)
-    if isinstance(raw, int) and not isinstance(raw, bool):
+    if is_strict_int(raw):
         return raw
     raw_list = status.get(
         "include_patterns" if field == "include_pattern_count" else "exclude_patterns",
@@ -66,13 +67,13 @@ def prune_status_operator_metrics(
     if not isinstance(status, Mapping):
         return metrics
     pruned = status.get("pruned")
-    if isinstance(pruned, int) and not isinstance(pruned, bool) and pruned >= 0:
+    if is_strict_int(pruned) and pruned >= 0:
         metrics["pruned"] = pruned
     dry = status.get("dry_run")
     if isinstance(dry, bool):
         metrics["dry_run"] = dry
     max_age = status.get("max_age_days")
-    if isinstance(max_age, int) and not isinstance(max_age, bool) and max_age >= 1:
+    if is_strict_int(max_age) and max_age >= 1:
         metrics["max_age_days"] = max_age
     metrics["include_pattern_count"] = _prune_status_pattern_count(
         status,
@@ -83,7 +84,7 @@ def prune_status_operator_metrics(
         "exclude_pattern_count",
     )
     schema = status.get("schema_version")
-    if isinstance(schema, int) and not isinstance(schema, bool) and schema > 0:
+    if is_strict_int(schema) and schema > 0:
         metrics["schema_version"] = schema
     metrics["is_stale"] = _prune_status_is_stale(
         status,
@@ -94,10 +95,10 @@ def prune_status_operator_metrics(
     if isinstance(alert_level, str) and alert_level.strip():
         metrics["retention_alert_level"] = alert_level.strip()
     stale_n = status.get("retention_stale_file_count")
-    if isinstance(stale_n, int) and not isinstance(stale_n, bool) and stale_n >= 0:
+    if is_strict_int(stale_n) and stale_n >= 0:
         metrics["retention_stale_file_count"] = stale_n
     stale_b = status.get("retention_stale_bytes")
-    if isinstance(stale_b, int) and not isinstance(stale_b, bool) and stale_b >= 0:
+    if is_strict_int(stale_b) and stale_b >= 0:
         metrics["retention_stale_bytes"] = stale_b
     lifecycle = status.get("retention_lifecycle_state")
     if isinstance(lifecycle, str) and lifecycle.strip():
@@ -112,22 +113,22 @@ def prune_status_operator_metrics_table_rows(
         return []
     rows: list[dict[str, str]] = []
     pruned = metrics.get("pruned")
-    if isinstance(pruned, int) and not isinstance(pruned, bool):
+    if is_strict_int(pruned):
         rows.append({"field": "Pruned paths", "value": str(pruned)})
     dry = metrics.get("dry_run")
     if isinstance(dry, bool):
         rows.append({"field": "Dry run", "value": str(dry).lower()})
     max_age = metrics.get("max_age_days")
-    if isinstance(max_age, int) and not isinstance(max_age, bool):
+    if is_strict_int(max_age):
         rows.append({"field": "Max age (days)", "value": str(max_age)})
     inc = metrics.get("include_pattern_count", 0)
-    if isinstance(inc, int) and not isinstance(inc, bool) and inc > 0:
+    if is_strict_int(inc) and inc > 0:
         rows.append({"field": "Include patterns", "value": str(inc)})
     exc = metrics.get("exclude_pattern_count", 0)
-    if isinstance(exc, int) and not isinstance(exc, bool) and exc > 0:
+    if is_strict_int(exc) and exc > 0:
         rows.append({"field": "Exclude patterns", "value": str(exc)})
     schema = metrics.get("schema_version")
-    if isinstance(schema, int) and not isinstance(schema, bool):
+    if is_strict_int(schema):
         rows.append({"field": "Schema version", "value": str(schema)})
     if metrics.get("is_stale") is True:
         rows.append({"field": "Stale (>24h)", "value": "yes"})
@@ -135,10 +136,10 @@ def prune_status_operator_metrics_table_rows(
     if isinstance(alert_level, str) and alert_level.strip() and alert_level.strip() != "none":
         rows.append({"field": "Retention alert level", "value": alert_level.strip()})
     stale_n = metrics.get("retention_stale_file_count")
-    if isinstance(stale_n, int) and not isinstance(stale_n, bool):
+    if is_strict_int(stale_n):
         rows.append({"field": "Retention stale files", "value": str(stale_n)})
     stale_b = metrics.get("retention_stale_bytes")
-    if isinstance(stale_b, int) and not isinstance(stale_b, bool):
+    if is_strict_int(stale_b):
         rows.append({"field": "Retention stale bytes", "value": str(stale_b)})
     lifecycle = metrics.get("retention_lifecycle_state")
     if isinstance(lifecycle, str) and lifecycle.strip():

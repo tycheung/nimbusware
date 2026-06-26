@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import csv
 import io
 import json
@@ -130,9 +131,9 @@ def fleet_sli_aggregate_caption(body: Mapping[str, Any] | None) -> str | None:
         parts: list[str] = []
         if isinstance(present, bool):
             parts.append(f"sustained_export={'yes' if present else 'no'}")
-        if isinstance(sustained, int) and not isinstance(sustained, bool):
+        if is_strict_int(sustained):
             parts.append(f"sustained_p95_ms={sustained}")
-        if isinstance(combined, int) and not isinstance(combined, bool):
+        if is_strict_int(combined):
             parts.append(f"combined_max_p95_ms={combined}")
         if parts:
             base = "Fleet Ollama SLI: " + ", ".join(parts) + "."

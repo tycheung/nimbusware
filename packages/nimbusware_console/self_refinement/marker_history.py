@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from datetime import datetime
@@ -130,7 +131,7 @@ def self_refinement_marker_history_operator_metrics_table_rows(
         },
     ]
     window = metrics.get("marker_window_seconds")
-    if isinstance(window, int) and not isinstance(window, bool):
+    if is_strict_int(window):
         rows.append({"field": "Marker window (s)", "value": str(window)})
     return rows
 
@@ -145,10 +146,10 @@ def self_refinement_marker_history_operator_metrics_caption(
         return None
     parts = [f"**{ec}** marker(s)"]
     dvc = metrics.get("distinct_version_count", 0)
-    if isinstance(dvc, int) and not isinstance(dvc, bool) and dvc > 0:
+    if is_strict_int(dvc) and dvc > 0:
         parts.append(f"**{dvc}** distinct version(s)")
     window = metrics.get("marker_window_seconds")
-    if isinstance(window, int) and not isinstance(window, bool) and window > 0:
+    if is_strict_int(window) and window > 0:
         parts.append(f"**{window}**s window")
     return "Self-refinement marker history metrics: " + ", ".join(parts) + "."
 

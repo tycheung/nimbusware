@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -55,7 +56,7 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     if metrics.get("policy_enabled") is True:
         parts.append("policy enabled")
     merged_max = metrics.get("merged_max_iterations")
-    if isinstance(merged_max, int) and not isinstance(merged_max, bool):
+    if is_strict_int(merged_max):
         parts.append(f"max iterations **{merged_max}**")
     elif metrics.get("yaml_present") is True:
         parts.append("YAML block present")

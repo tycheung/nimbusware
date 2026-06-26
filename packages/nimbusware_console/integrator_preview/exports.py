@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
@@ -123,7 +124,7 @@ def full_workflow_merge_diff_operator_metrics_caption(
     changed = metrics.get("changed_top_level_count", 0)
     unchanged = metrics.get("unchanged_top_level_count", 0)
     if not all(
-        isinstance(x, int) and not isinstance(x, bool) for x in (added, removed, changed, unchanged)
+        is_strict_int(x) for x in (added, removed, changed, unchanged)
     ):
         return None
     paste_only = metrics.get("paste_only_top_level_count", 0)
@@ -133,9 +134,9 @@ def full_workflow_merge_diff_operator_metrics_caption(
         f"~{changed} / ={unchanged}."
     )
     hints: list[str] = []
-    if isinstance(paste_only, int) and not isinstance(paste_only, bool) and paste_only > 0:
+    if is_strict_int(paste_only) and paste_only > 0:
         hints.append(f"**{paste_only}** paste-only key(s)")
-    if isinstance(disk_only, int) and not isinstance(disk_only, bool) and disk_only > 0:
+    if is_strict_int(disk_only) and disk_only > 0:
         hints.append(f"**{disk_only}** disk-only key(s)")
     if hints:
         return base[:-1] + "; " + ", ".join(hints) + "."

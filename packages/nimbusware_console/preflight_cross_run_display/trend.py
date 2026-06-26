@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -37,10 +38,10 @@ def preflight_cross_run_trend_rows(
             continue
         base["has_preflight"] = True
         p95 = pf.get("p95_latency_ms")
-        if isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0:
+        if is_strict_int(p95) and p95 >= 0:
             base["p95_latency_ms"] = p95
         sc = pf.get("preflight_latency_sample_count")
-        if isinstance(sc, int) and not isinstance(sc, bool):
+        if is_strict_int(sc):
             base["sample_count"] = sc
         vm = pf.get("validated_model_id")
         if vm is not None:
@@ -114,7 +115,7 @@ def preflight_cross_run_trend_summary(rows: list[Mapping[str, Any]]) -> dict[str
         if not isinstance(r, Mapping) or not r.get("has_preflight"):
             continue
         sc = r.get("sample_count")
-        if isinstance(sc, int) and not isinstance(sc, bool):
+        if is_strict_int(sc):
             with_sc_int += 1
             if sc > 1:
                 with_sc_gt_one += 1

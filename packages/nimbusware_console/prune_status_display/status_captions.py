@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping
 from datetime import datetime, timezone
@@ -130,9 +131,9 @@ def prune_status_pattern_filter_caption(
     exc = status.get("exclude_pattern_count")
     inc_n: int | None = None
     exc_n: int | None = None
-    if isinstance(inc, int) and not isinstance(inc, bool):
+    if is_strict_int(inc):
         inc_n = inc
-    if isinstance(exc, int) and not isinstance(exc, bool):
+    if is_strict_int(exc):
         exc_n = exc
     if inc_n is None and exc_n is None:
         inc_list = status.get("include_patterns")
@@ -228,9 +229,9 @@ def prune_status_retention_alert_caption(
     exec_mode = status.get("retention_execution_mode")
     lifecycle = status.get("retention_lifecycle_state")
     parts = [f"level={level.strip()}"]
-    if isinstance(stale_n, int) and not isinstance(stale_n, bool):
+    if is_strict_int(stale_n):
         parts.append(f"stale_files={stale_n}")
-    if isinstance(stale_b, int) and not isinstance(stale_b, bool):
+    if is_strict_int(stale_b):
         parts.append(f"stale_bytes={stale_b}")
     if isinstance(exec_mode, str) and exec_mode.strip():
         parts.append(f"execution_mode={exec_mode.strip()}")
@@ -262,9 +263,9 @@ def scraper_artifact_inventory_retention_alert_caption(
     stale_b = inventory.get("retention_stale_bytes")
     exec_mode = inventory.get("retention_execution_mode")
     parts = [f"level={level.strip()}"]
-    if isinstance(stale_n, int) and not isinstance(stale_n, bool):
+    if is_strict_int(stale_n):
         parts.append(f"stale_files={stale_n}")
-    if isinstance(stale_b, int) and not isinstance(stale_b, bool):
+    if is_strict_int(stale_b):
         parts.append(f"stale_bytes={stale_b}")
     if isinstance(exec_mode, str) and exec_mode.strip():
         parts.append(f"execution_mode={exec_mode.strip()}")

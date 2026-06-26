@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from typing import Any
@@ -62,16 +63,16 @@ def preflight_history_histogram_mode_caption(
         return None
     raw_samples = summary.get("health_latency_samples_ms")
     if isinstance(raw_samples, list) and raw_samples:
-        samples = [int(s) for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)]
+        samples = [int(s) for s in raw_samples if is_strict_int(s)]
         if samples:
             n = len(samples)
             sc = summary.get("preflight_latency_sample_count")
             tail = ""
-            if isinstance(sc, int) and not isinstance(sc, bool):
+            if is_strict_int(sc):
                 tail = f" Persisted sample_count={sc}."
             return f"Histogram: **{n}** health latency sample(s) from timeline.{tail}"
     p95 = summary.get("p95_latency_ms")
-    if isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0:
+    if is_strict_int(p95) and p95 >= 0:
         return (
             "Histogram: **legacy single-bar** fallback from p95_latency_ms only "
             "(no health_latency_samples_ms on this event)."
@@ -224,11 +225,11 @@ def preflight_history_histogram_payload(
         return None
     raw_samples = summary.get("health_latency_samples_ms")
     if isinstance(raw_samples, list) and raw_samples:
-        samples = [int(s) for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)]
+        samples = [int(s) for s in raw_samples if is_strict_int(s)]
         if samples:
             return build_histogram(samples)
     p95 = summary.get("p95_latency_ms")
-    if isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0:
+    if is_strict_int(p95) and p95 >= 0:
         return build_histogram([p95])
     return empty_histogram()
 
@@ -247,9 +248,9 @@ def preflight_history_operator_metrics(
     if not isinstance(summary, Mapping):
         return metrics
     p95 = summary.get("p95_latency_ms")
-    metrics["has_p95_latency"] = isinstance(p95, int) and not isinstance(p95, bool) and p95 >= 0
+    metrics["has_p95_latency"] = is_strict_int(p95) and p95 >= 0
     sc = summary.get("preflight_latency_sample_count")
-    if isinstance(sc, int) and not isinstance(sc, bool):
+    if is_strict_int(sc):
         metrics["sample_count"] = sc
         metrics["multisample"] = sc > 1
     raw_checks = summary.get("checks_passed")
@@ -260,7 +261,7 @@ def preflight_history_operator_metrics(
     raw_samples = summary.get("health_latency_samples_ms")
     if isinstance(raw_samples, list):
         metrics["health_latency_samples_count"] = sum(
-            1 for s in raw_samples if isinstance(s, int) and not isinstance(s, bool)
+            1 for s in raw_samples if is_strict_int(s)
         )
     vm = summary.get("validated_model_id")
     metrics["validated_model_present"] = vm is not None and str(vm).strip() != ""
@@ -276,15 +277,15 @@ def preflight_history_operator_metrics_table_rows(
     if metrics.get("has_p95_latency") is True:
         rows.append({"field": "Has p95 latency", "value": "yes"})
     sc = metrics.get("sample_count", 0)
-    if isinstance(sc, int) and not isinstance(sc, bool) and sc > 0:
+    if is_strict_int(sc) and sc > 0:
         rows.append({"field": "Sample count", "value": str(sc)})
     if metrics.get("multisample") is True:
         rows.append({"field": "Multisample", "value": "yes"})
     cpc = metrics.get("checks_passed_count", 0)
-    if isinstance(cpc, int) and not isinstance(cpc, bool) and cpc > 0:
+    if is_strict_int(cpc) and cpc > 0:
         rows.append({"field": "Checks passed count", "value": str(cpc)})
     hlc = metrics.get("health_latency_samples_count", 0)
-    if isinstance(hlc, int) and not isinstance(hlc, bool) and hlc > 0:
+    if is_strict_int(hlc) and hlc > 0:
         rows.append({"field": "Health latency samples", "value": str(hlc)})
     if metrics.get("validated_model_present") is True:
         rows.append({"field": "Validated model present", "value": "yes"})
@@ -300,12 +301,12 @@ def preflight_history_operator_metrics_caption(
     if metrics.get("has_p95_latency") is True:
         parts.append("p95 present")
     sc = metrics.get("sample_count", 0)
-    if isinstance(sc, int) and not isinstance(sc, bool) and sc > 0:
+    if is_strict_int(sc) and sc > 0:
         parts.append(f"**{sc}** sample(s)")
     if metrics.get("multisample") is True:
         parts.append("multisample")
     cpc = metrics.get("checks_passed_count", 0)
-    if isinstance(cpc, int) and not isinstance(cpc, bool) and cpc > 0:
+    if is_strict_int(cpc) and cpc > 0:
         parts.append(f"**{cpc}** check(s) passed")
     if metrics.get("validated_model_present") is True:
         parts.append("validated model")

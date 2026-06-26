@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import json
 from collections.abc import Mapping, Sequence
 from functools import partial
@@ -142,7 +143,7 @@ def security_scan_history_operator_metrics(
             ("security_scan_exit", "failed_scan_exit_count"),
         ):
             val = entry.get(field)
-            if isinstance(val, int) and not isinstance(val, bool) and val != 0:
+            if is_strict_int(val) and val != 0:
                 metrics[key] = int(metrics[key]) + 1
     metrics["distinct_severity_count"] = len(severities)
     metrics["severity_sample"] = sorted(severities)[:5]
@@ -175,7 +176,7 @@ def security_scan_history_operator_metrics_table_rows(
         ("failed_scan_exit_count", "Scan non-zero exits"),
     ):
         n = metrics.get(key, 0)
-        if isinstance(n, int) and not isinstance(n, bool) and n > 0:
+        if is_strict_int(n) and n > 0:
             rows.append({"field": label, "value": str(n)})
     return rows
 
@@ -190,7 +191,7 @@ def security_scan_history_operator_metrics_caption(
         return None
     parts = [f"**{ec}** finding(s)"]
     dsc = metrics.get("distinct_severity_count", 0)
-    if isinstance(dsc, int) and not isinstance(dsc, bool) and dsc > 0:
+    if is_strict_int(dsc) and dsc > 0:
         parts.append(f"**{dsc}** distinct severity")
     sample = metrics.get("severity_sample")
     if isinstance(sample, list) and sample:
@@ -207,7 +208,7 @@ def security_scan_history_operator_metrics_caption(
         ("failed_scan_exit_count", "Scan failed"),
     ):
         n = metrics.get(key, 0)
-        if isinstance(n, int) and not isinstance(n, bool) and n > 0:
+        if is_strict_int(n) and n > 0:
             parts.append(f"**{n}** {label}")
     return "Security scan history metrics: " + ", ".join(parts) + "."
 

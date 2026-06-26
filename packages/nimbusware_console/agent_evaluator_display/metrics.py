@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 import json
 from collections.abc import Mapping
 from typing import Any
@@ -74,10 +75,10 @@ def agent_evaluator_operator_metrics(
     if isinstance(pid, str) and pid.strip():
         metrics["has_persona_id"] = True
     attempt = ae.get("attempt")
-    if isinstance(attempt, int) and not isinstance(attempt, bool):
+    if is_strict_int(attempt):
         metrics["attempt"] = attempt
     score = ae.get("evaluation_score")
-    if isinstance(score, (int, float)) and not isinstance(score, bool):
+    if is_number(score):
         metrics["evaluation_score"] = float(score)
         band = ae.get("evaluation_score_band")
         if isinstance(band, str) and band.strip():
@@ -85,7 +86,7 @@ def agent_evaluator_operator_metrics(
         else:
             metrics["evaluation_score_band"] = agent_evaluator_score_band(float(score))
     llm_score = ae.get("llm_evaluation_score")
-    if isinstance(llm_score, (int, float)) and not isinstance(llm_score, bool):
+    if is_number(llm_score):
         metrics["llm_evaluation_score"] = float(llm_score)
     llm_band = ae.get("llm_evaluation_score_band")
     if isinstance(llm_band, str) and llm_band.strip():
@@ -97,7 +98,7 @@ def agent_evaluator_operator_metrics(
     if isinstance(llm_status, str) and llm_status.strip():
         metrics["llm_evaluation_status"] = llm_status.strip()
     cov_ratio = ae.get("coverage_ratio")
-    if isinstance(cov_ratio, (int, float)) and not isinstance(cov_ratio, bool):
+    if is_number(cov_ratio):
         metrics["coverage_ratio"] = float(cov_ratio)
     promotion_ready = ae.get("promotion_ready")
     if isinstance(promotion_ready, bool):
@@ -154,16 +155,16 @@ def agent_evaluator_operator_metrics_table_rows(
     if metrics.get("has_persona_id") is True:
         rows.append({"field": "Has persona id", "value": "yes"})
     attempt = metrics.get("attempt")
-    if isinstance(attempt, int) and not isinstance(attempt, bool):
+    if is_strict_int(attempt):
         rows.append({"field": "Attempt", "value": str(attempt)})
     rules_score = metrics.get("evaluation_score")
-    if isinstance(rules_score, (int, float)) and not isinstance(rules_score, bool):
+    if is_number(rules_score):
         rows.append({"field": "Rules evaluation score", "value": f"{float(rules_score):.3f}"})
     band = metrics.get("evaluation_score_band")
     if isinstance(band, str) and band.strip():
         rows.append({"field": "Evaluation score band", "value": band.strip()})
     llm_score = metrics.get("llm_evaluation_score")
-    if isinstance(llm_score, (int, float)) and not isinstance(llm_score, bool):
+    if is_number(llm_score):
         rows.append({"field": "LLM policy score", "value": f"{float(llm_score):.3f}"})
     llm_band = metrics.get("llm_evaluation_score_band")
     if isinstance(llm_band, str) and llm_band.strip():
@@ -175,7 +176,7 @@ def agent_evaluator_operator_metrics_table_rows(
     if isinstance(llm_status, str) and llm_status.strip():
         rows.append({"field": "LLM evaluation status", "value": llm_status.strip()})
     cov_ratio = metrics.get("coverage_ratio")
-    if isinstance(cov_ratio, (int, float)) and not isinstance(cov_ratio, bool):
+    if is_number(cov_ratio):
         rows.append({"field": "Coverage ratio", "value": f"{float(cov_ratio):.3f}"})
     if metrics.get("promotion_ready") is True:
         rows.append({"field": "Promotion ready", "value": "yes"})
@@ -185,13 +186,13 @@ def agent_evaluator_operator_metrics_table_rows(
     if isinstance(gate_verdict, str) and gate_verdict.strip():
         rows.append({"field": "Persona coverage gate", "value": gate_verdict.strip()})
     gaps_n = metrics.get("evaluation_gaps_count")
-    if isinstance(gaps_n, int) and not isinstance(gaps_n, bool):
+    if is_strict_int(gaps_n):
         rows.append({"field": "Evaluation gaps", "value": str(gaps_n)})
     pcc_branch = metrics.get("persona_coverage_critique_branch")
     if isinstance(pcc_branch, str) and pcc_branch.strip():
         rows.append({"field": "Persona coverage branch", "value": pcc_branch.strip()})
     delta = metrics.get("rules_vs_llm_score_delta")
-    if isinstance(delta, (int, float)) and not isinstance(delta, bool):
+    if is_number(delta):
         rows.append(
             {"field": "LLM − rules score delta", "value": f"{float(delta):+.3f}"},
         )
@@ -222,16 +223,16 @@ def agent_evaluator_operator_metrics_caption(
     if metrics.get("has_persona_id") is True:
         parts.append("persona present")
     attempt = metrics.get("attempt")
-    if isinstance(attempt, int) and not isinstance(attempt, bool):
+    if is_strict_int(attempt):
         parts.append(f"attempt={attempt}")
     rules_score = metrics.get("evaluation_score")
-    if isinstance(rules_score, (int, float)) and not isinstance(rules_score, bool):
+    if is_number(rules_score):
         parts.append(f"rules_score={float(rules_score):.3f}")
     band = metrics.get("evaluation_score_band")
     if isinstance(band, str) and band.strip():
         parts.append(f"score_band={band.strip()!r}")
     llm_score = metrics.get("llm_evaluation_score")
-    if isinstance(llm_score, (int, float)) and not isinstance(llm_score, bool):
+    if is_number(llm_score):
         parts.append(f"llm_policy_score={float(llm_score):.3f}")
     llm_band = metrics.get("llm_evaluation_score_band")
     if isinstance(llm_band, str) and llm_band.strip():
@@ -243,7 +244,7 @@ def agent_evaluator_operator_metrics_caption(
     if isinstance(llm_status, str) and llm_status.strip():
         parts.append(f"llm_status={llm_status.strip()!r}")
     cov_ratio = metrics.get("coverage_ratio")
-    if isinstance(cov_ratio, (int, float)) and not isinstance(cov_ratio, bool):
+    if is_number(cov_ratio):
         parts.append(f"coverage_ratio={float(cov_ratio):.3f}")
     if metrics.get("promotion_ready") is True:
         parts.append("promotion_ready")
@@ -251,13 +252,13 @@ def agent_evaluator_operator_metrics_caption(
     if isinstance(gate_verdict, str) and gate_verdict.strip():
         parts.append(f"coverage_gate={gate_verdict.strip()!r}")
     gaps_n = metrics.get("evaluation_gaps_count")
-    if isinstance(gaps_n, int) and not isinstance(gaps_n, bool) and gaps_n > 0:
+    if is_strict_int(gaps_n) and gaps_n > 0:
         parts.append(f"gap_count={gaps_n}")
     pcc_branch = metrics.get("persona_coverage_critique_branch")
     if isinstance(pcc_branch, str) and pcc_branch.strip():
         parts.append(f"pcc_branch={pcc_branch.strip()!r}")
     delta = metrics.get("rules_vs_llm_score_delta")
-    if isinstance(delta, (int, float)) and not isinstance(delta, bool):
+    if is_number(delta):
         parts.append(f"llm_minus_rules={float(delta):+.3f}")
     if metrics.get("llm_rules_score_agreement") is True:
         parts.append("bands_agree")

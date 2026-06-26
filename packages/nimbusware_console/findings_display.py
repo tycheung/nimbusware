@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 import csv
 import json
 import re
@@ -152,7 +153,7 @@ def findings_operator_metrics_caption(
         return None
     parts = [f"**{fc}** finding(s)"]
     dc = metrics.get("distinct_categories", 0)
-    if isinstance(dc, int) and not isinstance(dc, bool):
+    if is_strict_int(dc):
         parts.append(f"**{dc}** distinct categor{'y' if dc == 1 else 'ies'}")
     for bucket, label in (
         ("severity_blocker", "BLOCKER"),
@@ -161,7 +162,7 @@ def findings_operator_metrics_caption(
         ("severity_low", "LOW"),
     ):
         n = metrics.get(bucket, 0)
-        if isinstance(n, int) and not isinstance(n, bool) and n > 0:
+        if is_strict_int(n) and n > 0:
             parts.append(f"**{n}** {label}")
     return metrics_caption("Findings: ", parts)
 

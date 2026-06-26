@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -17,7 +18,7 @@ def run_list_response_pagination_caption(
     n = len(raw_ids)
     parts: list[str] = [f"this page: {n} run_id(s)"]
     tot = data.get("total")
-    if isinstance(tot, int) and not isinstance(tot, bool):
+    if is_strict_int(tot):
         parts.append(f"total={tot}")
     hm = data.get("has_more")
     if isinstance(hm, bool):
@@ -29,10 +30,10 @@ def run_list_response_pagination_caption(
         parts.append("next_cursor=absent")
     parts.append("Link header=present" if link_header_present else "Link header=absent")
     off = data.get("offset")
-    if isinstance(off, int) and not isinstance(off, bool) and off >= 0:
+    if is_strict_int(off) and off >= 0:
         parts.append(f"offset={off}")
     lim = data.get("limit")
-    if isinstance(lim, int) and not isinstance(lim, bool) and lim >= 1:
+    if is_strict_int(lim) and lim >= 1:
         parts.append(f"limit={lim}")
     return "List pagination: " + " · ".join(parts) + "."
 
@@ -105,10 +106,10 @@ def run_list_active_query_params_caption(
     if isinstance(cur, str) and cur.strip():
         parts.append("cursor=keyset")
     off = params.get("offset")
-    if isinstance(off, int) and not isinstance(off, bool) and off > 0:
+    if is_strict_int(off) and off > 0:
         parts.append(f"offset={off}")
     lim = params.get("limit")
-    if isinstance(lim, int) and not isinstance(lim, bool):
+    if is_strict_int(lim):
         parts.append(f"limit={lim}")
     stv = params.get("status")
     if stv is not None and str(stv).strip():

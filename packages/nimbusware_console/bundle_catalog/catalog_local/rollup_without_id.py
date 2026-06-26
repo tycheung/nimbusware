@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from functools import partial
 from pathlib import Path
@@ -75,13 +76,13 @@ def bundle_catalog_bundles_without_id_rollup_operator_metrics(
         return metrics
     metrics["has_catalog_yaml"] = rollup.get("has_catalog_yaml") is True
     bc = rollup.get("bundle_count")
-    if isinstance(bc, int) and not isinstance(bc, bool) and bc >= 0:
+    if is_strict_int(bc) and bc >= 0:
         metrics["bundle_count"] = bc
     without = rollup.get("bundles_without_id_count")
-    if isinstance(without, int) and not isinstance(without, bool) and without >= 0:
+    if is_strict_int(without) and without >= 0:
         metrics["bundles_without_id_count"] = without
     with_id = rollup.get("bundles_with_id_count")
-    if isinstance(with_id, int) and not isinstance(with_id, bool) and with_id >= 0:
+    if is_strict_int(with_id) and with_id >= 0:
         metrics["bundles_with_id_count"] = with_id
     return metrics
 

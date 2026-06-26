@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping, Sequence
 from functools import partial
 from typing import Any
@@ -103,7 +104,7 @@ def bundle_faiss_index_dir_listing_table_rows(
         if not isinstance(name, str) or not name.strip():
             continue
         b = item.get("bytes")
-        bytes_str = str(b) if isinstance(b, int) and not isinstance(b, bool) else ""
+        bytes_str = str(b) if is_strict_int(b) else ""
         mtime = item.get("mtime_iso")
         mtime_str = str(mtime).strip() if isinstance(mtime, str) else ""
         out.append(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -26,7 +27,7 @@ def persona_catalog_operator_summary_operator_metrics(
 
     def _int_field(key: str) -> int:
         raw = summary.get(key)
-        if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+        if is_strict_int(raw) and raw >= 0:
             return raw
         return 0
 
@@ -48,7 +49,7 @@ def persona_catalog_operator_summary_operator_metrics(
 
 def _int_field_from_dict(d: Mapping[str, Any], key: str) -> int:
     raw = d.get(key)
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+    if is_strict_int(raw) and raw >= 0:
         return raw
     return 0
 
@@ -121,7 +122,7 @@ def persona_catalog_without_instructions_caption(
     if raw == 0:
         return None
     total = operator_summary.get("total_entries")
-    if isinstance(total, int) and not isinstance(total, bool) and total > 0:
+    if is_strict_int(total) and total > 0:
         return f"Personas without instructions: **{raw}** of **{total}** catalog row(s)."
     return f"Personas without instructions: **{raw}** catalog row(s)."
 
@@ -137,7 +138,7 @@ def persona_catalog_without_capability_profile_caption(
     if raw == 0:
         return None
     total = operator_summary.get("total_entries")
-    if isinstance(total, int) and not isinstance(total, bool) and total > 0:
+    if is_strict_int(total) and total > 0:
         return f"Personas without capability_profile: **{raw}** of **{total}** row(s)."
     return f"Personas without capability_profile: **{raw}** row(s)."
 
@@ -160,7 +161,7 @@ def persona_catalog_probation_breakdown_caption(
         return None
     with_ps = operator_summary.get("with_probation_status")
     ps_note = ""
-    if isinstance(with_ps, int) and not isinstance(with_ps, bool):
+    if is_strict_int(with_ps):
         ps_note = f"; {with_ps} row(s) with explicit probation_status"
     return (
         f"Probation breakdown: promoted={promoted}, probation={probation}, "

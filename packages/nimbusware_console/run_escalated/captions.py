@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -178,13 +179,13 @@ def run_escalated_history_operator_metrics_caption(
         return None
     parts = [f"**{ec}** escalation(s)"]
     drc = metrics.get("distinct_reason_codes", 0)
-    if isinstance(drc, int) and not isinstance(drc, bool) and drc > 0:
+    if is_strict_int(drc) and drc > 0:
         parts.append(f"**{drc}** distinct reason code(s)")
     npc = metrics.get("notes_present_count", 0)
-    if isinstance(npc, int) and not isinstance(npc, bool) and npc > 0:
+    if is_strict_int(npc) and npc > 0:
         parts.append(f"**{npc}** with notes")
     dac = metrics.get("distinct_actor_ids", 0)
-    if isinstance(dac, int) and not isinstance(dac, bool) and dac > 0:
+    if is_strict_int(dac) and dac > 0:
         word = "actor" if dac == 1 else "actors"
         parts.append(f"**{dac}** distinct {word}")
     return "Run escalated history metrics: " + ", ".join(parts) + "."

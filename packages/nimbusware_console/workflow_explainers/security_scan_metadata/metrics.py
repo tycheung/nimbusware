@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -54,7 +55,7 @@ def _caption_parts(metrics: Mapping[str, Any]) -> list[str]:
     elif metrics.get("yaml_parsed_bool") is False and metrics.get("yaml_key_present") is True:
         parts.append("effective **disabled**")
     raw_bytes = metrics.get("workflow_yaml_file_bytes")
-    if isinstance(raw_bytes, int) and not isinstance(raw_bytes, bool) and raw_bytes > 0:
+    if is_strict_int(raw_bytes) and raw_bytes > 0:
         parts.append(f"workflow YAML **{raw_bytes}** byte(s)")
     if metrics.get("load_error_present") is True:
         parts.append("load error")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agent_core.coercion import is_number, is_strict_int
 from collections.abc import Mapping
 from typing import Any
 
@@ -77,7 +78,7 @@ def universal_critique_timeline_operator_metrics(
                 metrics["other_verdict_count"] = int(metrics["other_verdict_count"]) + 1
     if metrics["stage_count"] == 0:
         sc = summary.get("stage_count")
-        if isinstance(sc, int) and not isinstance(sc, bool):
+        if is_strict_int(sc):
             metrics["stage_count"] = int(sc)
     if isinstance(summary.get("fail_count"), int) and not isinstance(
         summary.get("fail_count"),
@@ -130,10 +131,10 @@ def universal_critique_timeline_operator_metrics_table_rows(
         return []
     rows = metrics_table_rows(metrics, _BASE_TABLE_ROWS, bool_lower=False)
     fail_rate = metrics.get("fail_rate")
-    if isinstance(fail_rate, (int, float)) and not isinstance(fail_rate, bool):
+    if is_number(fail_rate):
         rows.append({"field": "FAIL rate", "value": f"{100.0 * float(fail_rate):.1f}%"})
     other = metrics.get("other_verdict_count", 0)
-    if isinstance(other, int) and not isinstance(other, bool) and other > 0:
+    if is_strict_int(other) and other > 0:
         rows.append({"field": "Other verdict", "value": str(other)})
     fail_stages = metrics.get("distinct_fail_stages")
     if isinstance(fail_stages, list) and fail_stages:
@@ -162,7 +163,7 @@ def universal_critique_timeline_operator_metrics_table_rows(
         ),
     )
     fc_total = metrics.get("failing_critics_total_count")
-    if isinstance(fc_total, int) and not isinstance(fc_total, bool) and fc_total > 0:
+    if is_strict_int(fc_total) and fc_total > 0:
         rows.append({"field": "Failing critics (total)", "value": str(fc_total)})
     return rows
 
@@ -183,7 +184,7 @@ def universal_critique_timeline_operator_metrics_caption(
     pass_count = metrics.get("pass_count")
     other = metrics.get("other_verdict_count", 0)
     other_suffix = ""
-    if isinstance(other, int) and not isinstance(other, bool) and other > 0:
+    if is_strict_int(other) and other > 0:
         other_suffix = f", **{other}** other verdict(s)"
     policy_suffix = ""
     default_on = metrics.get("default_enabled_effective")
@@ -197,12 +198,12 @@ def universal_critique_timeline_operator_metrics_caption(
     elif unanimous is False:
         policy_suffix += "; unanimous gate legacy"
     reg_n = metrics.get("registry_producer_count")
-    if isinstance(reg_n, int) and not isinstance(reg_n, bool) and reg_n > 0:
+    if is_strict_int(reg_n) and reg_n > 0:
         policy_suffix += f"; **{reg_n}** registry producer(s)"
     fc_total = metrics.get("failing_critics_total_count")
-    if isinstance(fc_total, int) and not isinstance(fc_total, bool) and fc_total > 0:
+    if is_strict_int(fc_total) and fc_total > 0:
         policy_suffix += f"; **{fc_total}** failing critic(s)"
-    if isinstance(pass_count, int) and not isinstance(pass_count, bool) and pass_count > 0:
+    if is_strict_int(pass_count) and pass_count > 0:
         return (
             f"Universal critique gates: **{fail_count}** FAIL, **{pass_count}** PASS"
             f"{other_suffix} of **{stage_count}** stage(s) on this timeline"
