@@ -9,7 +9,7 @@ from nimbusware_console.explainer_core.field_caption import (
     payload_nonempty_str_caption,
     payload_nonneg_int_caption,
 )
-from nimbusware_console.universal_critique_workflow_explainer.compare import (
+from nimbusware_console.workflow_explainers.universal_critique.compare import (
     universal_critique_env_override_deltas,
 )
 

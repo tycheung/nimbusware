@@ -18,19 +18,19 @@ class WorkflowExplainerSpec:
 
 
 WORKFLOW_EXPLAINER_SPECS: tuple[WorkflowExplainerSpec, ...] = (
-    WorkflowExplainerSpec("agent_evaluator", "agent_evaluator_workflow_explainer"),
+    WorkflowExplainerSpec("agent_evaluator", "workflow_explainers/agent_evaluator"),
     WorkflowExplainerSpec(
         "integration_adapter_writer",
-        "integration_adapter_writer_workflow_explainer",
+        "workflow_explainers/integration_adapter_writer",
     ),
-    WorkflowExplainerSpec("universal_critique", "universal_critique_workflow_explainer"),
+    WorkflowExplainerSpec("universal_critique", "workflow_explainers/universal_critique"),
     WorkflowExplainerSpec(
         "security_scan_metadata",
-        "security_scan_metadata_workflow_explainer",
+        "workflow_explainers/security_scan_metadata",
     ),
-    WorkflowExplainerSpec("escalation_suppress", "escalation_suppress_workflow_explainer"),
-    WorkflowExplainerSpec("self_refinement", "self_refinement_workflow_explainer"),
-    WorkflowExplainerSpec("integrator_threshold", "integrator_threshold_explainer"),
+    WorkflowExplainerSpec("escalation_suppress", "workflow_explainers/escalation_suppress"),
+    WorkflowExplainerSpec("self_refinement", "workflow_explainers/self_refinement"),
+    WorkflowExplainerSpec("integrator_threshold", "workflow_explainers/integrator_threshold"),
 )
 
 

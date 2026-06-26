@@ -28,7 +28,7 @@ from nimbusware_console.explainer_core.workflow_explainer_registry import (
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
-from nimbusware_console.universal_critique_workflow_explainer.captions import (
+from nimbusware_console.workflow_explainers.universal_critique.captions import (
     _UNIVERSAL_CRITIQUE_STAGE_KEYS_CAP,
     universal_critique_default_enabled_caption,
     universal_critique_enabled_stages_caption,
@@ -44,11 +44,11 @@ from nimbusware_console.universal_critique_workflow_explainer.captions import (
     universal_critique_yaml_top_level_mapping_child_count_caption,
     universal_critique_yaml_top_level_nonempty_count_caption,
 )
-from nimbusware_console.universal_critique_workflow_explainer.compare import (
+from nimbusware_console.workflow_explainers.universal_critique.compare import (
     universal_critique_env_override_deltas,
     universal_critique_workflow_vs_timeline_rows,
 )
-from nimbusware_console.universal_critique_workflow_explainer.metrics import (
+from nimbusware_console.workflow_explainers.universal_critique.metrics import (
     universal_critique_workflow_explainer_operator_metrics,
     universal_critique_workflow_explainer_operator_metrics_caption,
     universal_critique_workflow_explainer_operator_metrics_export_filename_slug,
@@ -56,7 +56,7 @@ from nimbusware_console.universal_critique_workflow_explainer.metrics import (
     universal_critique_workflow_explainer_operator_metrics_table_rows,
     universal_critique_workflow_explainer_operator_metrics_table_rows_csv,
 )
-from nimbusware_console.universal_critique_workflow_explainer.payload import (
+from nimbusware_console.workflow_explainers.universal_critique.payload import (
     universal_critique_workflow_explainer_payload,
 )
 

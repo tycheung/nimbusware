@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nimbusware_console.integrator_threshold_explainer.keys import (
+from nimbusware_console.workflow_explainers.integrator_threshold.keys import (
     LEGACY_PREVIEW_EFFECTIVE_MIN_SCORE_KEY,
     get_preview_effective_min_score,
 )

@@ -22,7 +22,7 @@ from nimbusware_console.critic_reliability_display import (
     fleet_critic_reliability_table_rows,
 )
 from nimbusware_console.findings_display import findings_list_from_response, findings_table_rows
-from nimbusware_console.integration_adapter_writer_workflow_explainer import (
+from nimbusware_console.workflow_explainers.integration_adapter_writer import (
     integration_adapter_writer_from_events,
     integration_adapter_writer_run_caption,
     integration_adapter_writer_run_table_rows,

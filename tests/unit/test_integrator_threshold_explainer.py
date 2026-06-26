@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from nimbusware_console.integrator_threshold_explainer import (
+from nimbusware_console.workflow_explainers.integrator_threshold import (
     integrator_threshold_explainer_export_json,
     integrator_threshold_explainer_operator_metrics,
     integrator_threshold_explainer_operator_metrics_caption,

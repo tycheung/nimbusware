@@ -41,14 +41,15 @@ def test_universal_critique_counts() -> None:
     assert universal_critique_top_level_enabled_true_count(block) == 1
 
 
-_ALLOWED_EXPLAINER_PACKAGES = frozenset(
+_ALLOWED_EXPLAINER_SLUGS = frozenset(
     {
-        "agent_evaluator_workflow_explainer",
-        "escalation_suppress_workflow_explainer",
-        "integration_adapter_writer_workflow_explainer",
-        "security_scan_metadata_workflow_explainer",
-        "self_refinement_workflow_explainer",
-        "universal_critique_workflow_explainer",
+        "agent_evaluator",
+        "escalation_suppress",
+        "integration_adapter_writer",
+        "integrator_threshold",
+        "security_scan_metadata",
+        "self_refinement",
+        "universal_critique",
     }
 )
 
@@ -62,11 +63,9 @@ def test_metrics_scaffold_field_map() -> None:
 
 
 def test_explainer_package_allowlist_frozen() -> None:
-    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console"
-    found = {
-        p.name for p in root.iterdir() if p.is_dir() and p.name.endswith("_workflow_explainer")
-    }
-    assert found == _ALLOWED_EXPLAINER_PACKAGES, (
-        "New *_workflow_explainer packages require allowlist update (fo714): "
-        f"extra={found - _ALLOWED_EXPLAINER_PACKAGES} missing={_ALLOWED_EXPLAINER_PACKAGES - found}"
+    root = Path(__file__).resolve().parents[2] / "packages" / "nimbusware_console" / "workflow_explainers"
+    found = {p.name for p in root.iterdir() if p.is_dir() and not p.name.startswith("_")}
+    assert found == _ALLOWED_EXPLAINER_SLUGS, (
+        "New workflow_explainers/* packages require allowlist update: "
+        f"extra={found - _ALLOWED_EXPLAINER_SLUGS} missing={_ALLOWED_EXPLAINER_SLUGS - found}"
     )

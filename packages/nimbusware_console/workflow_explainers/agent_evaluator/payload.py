@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_config.workflow_read import parse_agent_evaluator_workflow_block
-from nimbusware_console.agent_evaluator_workflow_explainer.env import (
+from nimbusware_console.workflow_explainers.agent_evaluator.env import (
     _nimbusware_agent_evaluator_auto_create_env_summary,
     _nimbusware_agent_evaluator_auto_promote_env_summary,
     _nimbusware_agent_evaluator_env_summary,

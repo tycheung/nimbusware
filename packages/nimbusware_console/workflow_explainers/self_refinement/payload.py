@@ -9,7 +9,7 @@ from nimbusware_config.workflow_read import (
 )
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
 from nimbusware_console.explainer_core.workflow_profile import yaml_section
-from nimbusware_console.self_refinement_workflow_explainer.env import (
+from nimbusware_console.workflow_explainers.self_refinement.env import (
     _load_policy_or_default,
     _marker_preview,
     _nimbusware_self_refinement_ungated_loop_env_summary,

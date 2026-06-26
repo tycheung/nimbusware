@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_console.agent_evaluator_workflow_explainer import (
+from nimbusware_console.workflow_explainers.agent_evaluator import (
     agent_evaluator_auto_create_env_gate_caption,
     agent_evaluator_auto_promote_env_gate_caption,
     agent_evaluator_env_gate_caption,

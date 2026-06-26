@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any
 
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
-from nimbusware_console.integrator_threshold_explainer.keys import (
+from nimbusware_console.workflow_explainers.integrator_threshold.keys import (
     PREVIEW_EFFECTIVE_MIN_SCORE_KEY,
 )
-from nimbusware_console.integrator_threshold_explainer.snapshots import (
+from nimbusware_console.workflow_explainers.integrator_threshold.snapshots import (
     _emit_integrator_gate_breakdown,
     _env_min_score_to_pass_breakdown,
     _thresholds_snapshot,

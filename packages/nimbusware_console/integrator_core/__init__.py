@@ -3,7 +3,7 @@
 Surfaces:
 - ``integrator_gate`` — timeline history and latest delta
 - ``integrator_preview`` — pasted YAML merge and score preview
-- ``integrator_threshold_explainer`` — min-score cascade and emission policy
+- ``workflow_explainers.integrator_threshold`` — min-score cascade and emission policy
 """
 
 from nimbusware_console.integrator_core.thresholds import (

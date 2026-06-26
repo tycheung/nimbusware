@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nimbusware_console.security_scan_metadata_workflow_explainer import (
+from nimbusware_console.workflow_explainers.security_scan_metadata import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
     security_scan_metadata_explainer_export_json,
@@ -419,7 +419,7 @@ def test_yaml_effective_mismatch_caption_none_for_bad_payload() -> None:
 
 
 def test_security_scan_metadata_operator_metrics_yaml_effective_mismatch() -> None:
-    from nimbusware_console.security_scan_metadata_workflow_explainer import (
+    from nimbusware_console.workflow_explainers.security_scan_metadata import (
         security_scan_metadata_workflow_explainer_operator_metrics,
     )
 

@@ -5,7 +5,7 @@ from nimbusware_console.explainer_core.workflow_explainer_registry import (
 from nimbusware_console.explainer_core.workflow_exports import (
     install_named_workflow_explainer_exports,
 )
-from nimbusware_console.security_scan_metadata_workflow_explainer.captions import (
+from nimbusware_console.workflow_explainers.security_scan_metadata.captions import (
     security_scan_metadata_effective_enabled_caption,
     security_scan_metadata_env_gate_caption,
     security_scan_metadata_mapping_key_count_caption,
@@ -16,10 +16,10 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.captions impor
     security_scan_metadata_yaml_effective_mismatch_caption,
     security_scan_metadata_yaml_raw_type_caption,
 )
-from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
+from nimbusware_console.workflow_explainers.security_scan_metadata.env import (
     _nimbusware_attach_security_scan_metadata_env_summary,
 )
-from nimbusware_console.security_scan_metadata_workflow_explainer.metrics import (
+from nimbusware_console.workflow_explainers.security_scan_metadata.metrics import (
     security_scan_metadata_workflow_explainer_operator_metrics,
     security_scan_metadata_workflow_explainer_operator_metrics_caption,
     security_scan_metadata_workflow_explainer_operator_metrics_export_filename_slug,
@@ -27,7 +27,7 @@ from nimbusware_console.security_scan_metadata_workflow_explainer.metrics import
     security_scan_metadata_workflow_explainer_operator_metrics_table_rows,
     security_scan_metadata_workflow_explainer_operator_metrics_table_rows_csv,
 )
-from nimbusware_console.security_scan_metadata_workflow_explainer.payload import (
+from nimbusware_console.workflow_explainers.security_scan_metadata.payload import (
     security_scan_metadata_workflow_explainer_payload,
 )
 

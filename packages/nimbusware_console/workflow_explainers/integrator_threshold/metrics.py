@@ -9,7 +9,7 @@ from nimbusware_console.explainer_core.operator_metrics_exports import (
     install_operator_metrics_module,
 )
 from nimbusware_console.explainer_core.schema_metrics import build_operator_metrics
-from nimbusware_console.integrator_threshold_explainer.keys import (
+from nimbusware_console.workflow_explainers.integrator_threshold.keys import (
     get_preview_effective_min_score,
 )
 

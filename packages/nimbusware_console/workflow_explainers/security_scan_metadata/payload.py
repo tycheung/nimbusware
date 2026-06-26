@@ -8,7 +8,7 @@ from nimbusware_config.workflow_read import (
     security_scan_metadata_on_verify_enabled,
 )
 from nimbusware_console.explainer_core.workflow_payload_header import workflow_payload_header
-from nimbusware_console.security_scan_metadata_workflow_explainer.env import (
+from nimbusware_console.workflow_explainers.security_scan_metadata.env import (
     _nimbusware_attach_security_scan_metadata_env_summary,
 )
 

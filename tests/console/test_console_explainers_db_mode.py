@@ -7,17 +7,17 @@ import pytest
 from nimbusware_config.materializer import ConfigMaterializer
 from nimbusware_config.seed import seed_config_from_repo, seed_t2_policy_documents_from_repo
 from nimbusware_config.store import InMemoryConfigStore
-from nimbusware_console.agent_evaluator_workflow_explainer import (
+from nimbusware_console.workflow_explainers.agent_evaluator import (
     agent_evaluator_workflow_explainer_payload,
 )
-from nimbusware_console.escalation_suppress_workflow_explainer import (
+from nimbusware_console.workflow_explainers.escalation_suppress import (
     escalation_suppress_workflow_explainer_payload,
 )
-from nimbusware_console.integrator_threshold_explainer import integrator_threshold_explainer_payload
-from nimbusware_console.security_scan_metadata_workflow_explainer import (
+from nimbusware_console.workflow_explainers.integrator_threshold import integrator_threshold_explainer_payload
+from nimbusware_console.workflow_explainers.security_scan_metadata import (
     security_scan_metadata_workflow_explainer_payload,
 )
-from nimbusware_console.self_refinement_workflow_explainer import (
+from nimbusware_console.workflow_explainers.self_refinement import (
     self_refinement_workflow_explainer_payload,
 )
 from nimbusware_env import find_repo_root

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from nimbusware_console.integrator_threshold_explainer.keys import (
+from nimbusware_console.workflow_explainers.integrator_threshold.keys import (
     get_preview_effective_min_score,
 )
 
