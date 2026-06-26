@@ -9,7 +9,7 @@
 | **Default workflow** | `micro_slice` |
 | **License** | [GPL-3.0](LICENSE) |
 
-**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, and an **Accessible compute** drawer for collaborative mesh sessions.  
+**Individuals** — build and fix software on your machine with an agent that must pass tests and security gates, not just generate code. Tune **autonomy** (when the operator is asked) and **enforcement depth** (how strictly workspaces are verified) independently. Campaign workflows decompose a `business_prompt` into verified micro-slices (heuristic or LLM backlog). Maker Chat supports per-role model swap, role claims, an in-session **Session models** drawer, and **Accessible compute** for collaborative mesh sessions. Engineer workspace preset enables collab without editing `.env`.  
 **Enterprise** — self-hosted control plane for governed agentic development: audit every run, steer autonomy, standardize quality without a SaaS black box.
 
 ## Consumer personas
@@ -17,7 +17,7 @@
 | Persona | Setup bundle | First-run choice | Docs |
 |---------|--------------|------------------|------|
 | **Safe Coding** | `default` | Safe Coding in Maker archetype picker | [docs/product/safe-coding.md](docs/product/safe-coding.md) |
-| **Engineer workspace** | `default` | Engineer workspace in Maker | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
+| **Engineer workspace** | `default` | Engineer workspace in Maker (enables collab via Settings or archetype preset) | [docs/product/maker.md](docs/product/maker.md), [docs/collaborative-chat.md](docs/collaborative-chat.md) |
 | **Enterprise AI** | `enterprise` | (strict env applied at install) | [docs/enterprise-buyer.md](docs/enterprise-buyer.md) |
 
 Install with `--setup-bundle default` or `--setup-bundle enterprise` (see [docs/install-profiles.md](docs/install-profiles.md)). The desktop launcher offers **Quick setup**, **Full setup** (default bundle), and **Enterprise setup**.
@@ -115,4 +115,4 @@ Full command list: [docs/reference/cli.md](docs/reference/cli.md).
 .\scripts\ci\ci_check.ps1   # Windows
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3035** unit tests (plus 81 Playwright specs across 48 spec files); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, and packages LOC budget gates (`scripts/ci/run_*_ci_gate.py`; baseline **96,077** non-blank Python lines in `packages/`).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for import boundaries, linting, module size guards, and typing tranches. Default CI runs **~3091** unit tests (plus 84 Playwright specs); full pytest collection is **3886** tests. CI also enforces prune-comments, explainer-export lint, workflow-explainer init sync, archetype-fit and collab-LLM audit gates, and packages LOC budget (`scripts/ci/run_*_ci_gate.py`; baseline **96,840** non-blank Python lines in `packages/`).

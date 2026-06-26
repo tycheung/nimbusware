@@ -4,7 +4,12 @@ Multi-human **peanut gallery** for Maker Chat sessions. See [ADR 023](adr/023-co
 
 ## Enable
 
-Set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loopback hosts then require sign-in (`POST /v1/auth/signup|signin`) or `X-Nimbusware-Admin-Token`.
+Enable collaborative chat on Individual installs without editing `.env`:
+
+- **Engineer workspace** archetype preset calls `PUT /v1/platform/collab-settings` with `collab_enabled: true`
+- **Settings → Collaborative chat** toggle (`GET/PUT /v1/platform/collab-settings`) flips runtime collab in-process
+
+Legacy: set `NIMBUSWARE_COLLAB_ENABLED=1` in `.env` and restart the API. Non-loopback hosts then require sign-in (`POST /v1/auth/signup|signin`) or `X-Nimbusware-Admin-Token`.
 
 ## Roles
 
@@ -38,6 +43,7 @@ Share the join URL from the Chat **Invite** action. Guests open `#/chat/join/{to
 | `chat_shell_html.js` | Layout markup |
 | `chat_run_card_ui.js` | Run card DOM, theater lines in thread |
 | `chat_collab_wiring.js` | Collab session stream + host transfer wiring |
+| `chat_model_drawer_ui.js` | In-session role model swap drawer |
 | `chat_invite_modal_ui.js` | Invite link / directory / group modal |
 | `chat_join.js` | `#/chat/join/{token}` sign-in + redeem |
 | `chat_session_ui.js` | Participants strip, session sidebar, compute nodes |
