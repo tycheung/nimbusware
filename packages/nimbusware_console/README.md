@@ -28,20 +28,18 @@ nimbusware_console/
 ├── components/               # Shared explainer panel + operator metrics helpers
 ├── explainer_core/           # metrics_scaffold, field_caption, repo_yaml, workflow_exports, table_rows_csv
 ├── integrator_core/          # Shared thresholds / min-score / gate emission SSOT (C62)
-├── integration_adapter_writer_workflow_explainer/  # 7th workflow explainer package
+├── workflow_explainers/      # Unified per-workflow operator explainers (7 slugs)
 ├── *_display.py              # Thin facades → sibling packages (see sync_display_facade.py)
 ├── *_display/                # Package-only display modules (no duplicate .py shim)
 ├── operator_chat_core.py     # Operator chat command handling
 ├── admin_gate.py             # Token gate helpers
 ├── integrator_gate/          # Integrator gate latest delta + history
 ├── integrator_preview/       # Merge diff exports via workflow_exports + sequence_export_json (C41)
-├── integrator_threshold_explainer/
 ├── bundle_catalog/           # Local catalog search, FAISS status, tags rollup
 ├── persona_catalog/          # Persona pairings, summary metrics, export
 ├── run_escalated/            # Escalation row formatters
 ├── security_scan_on_verify/  # Security scan timeline + linter alignment
 ├── self_refinement/          # Self-refinement marker history
-├── *_workflow_explainer/     # Per-workflow operator explainers (metrics + payload)
 └── enterprise_console*.py    # Enterprise fleet formatters (Admin Fleet tab)
 ```
 
@@ -92,7 +90,7 @@ Pure facades are regenerated via `scripts/ci/sync_display_facade.py`. Do not col
 | `phase3_critique_display.py` | Phase-3 critique panels |
 | `persona_assignment_display.py` | Persona assignment summary |
 
-Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `*_workflow_explainer/`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
+Nested packages (`bundle_catalog/`, `persona_catalog/`, `integrator_*`, `workflow_explainers/*`) hold split implementation modules kept under the 400-line CI limit. Regenerate thin `*_display.py` facades after changing package exports: `poetry run python scripts/ci/sync_display_facade.py`. Package-only modules (no sibling `.py` shim) are imported by their package name directly.
 
 ## Tests
 
